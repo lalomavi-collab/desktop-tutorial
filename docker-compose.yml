@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  # ── Tailscale sidecar ─────────────────────────────────────────────
+  # Provides the ONLY network path into OpenClaw.
+  # No ports are published to the host — access is via Tailscale only.
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: openclaw-tailscale
+    hostname: openclaw                        # name on your tailnet
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}              # from Tailscale admin console
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_SERVE_CONFIG=/config/serve.json    # reverse-proxy config
+      - TS_USERSPACE=false
+    volumes:
+      - tailscale-state:/var/lib/tailscale    # persist Tailscale state
+      - ./tailscale/serve.json:/config/serve.json:ro
+
+  # ── OpenClaw gateway ──────────────────────────────────────────────
+  # Shares the Tailscale container's network namespace, so it is
+  # reachable ONLY through the tailnet (no public ports).
+  openclaw:
+    image: coollabsio/openclaw:latest
+    container_name: openclaw-gateway
+    restart: unless-stopped
+    network_mode: service:tailscale           # share Tailscale's network
+    depends_on:
+      - tailscale
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - OPENCLAW_GATEWAY_PORT=18789
+      - OPENCLAW_GATEWAY_BIND=loopback
+    volumes:
+      - openclaw-data:/data                   # config + workspace persist
+
+volumes:
+  tailscale-state:
+  openclaw-data:
