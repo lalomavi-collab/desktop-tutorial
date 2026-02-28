@@ -397,8 +397,29 @@ for f in /etc/profile.d/*.sh; do
   bash -n "$f" && echo "OK: $f" || echo "ERROR: $f"
 done
 
+# בדקו גם את ~/.profile עצמו
+bash -n ~/.profile || echo "syntax error in ~/.profile"
+
 # או הרצה מפורטת עם trace
 bash -x /etc/profile 2>&1 | head -60
+```
+
+**גורם נפוץ מאוד – `-e` תועה ב-`~/.profile`:**
+
+אם ב-`~/.profile` קיימת שורה כמו:
+```bash
+PATH="$HOME/bin:$HOME/.local/bin:$PATH" -e
+```
+ה-`-e` בסוף שובר את ה-login shell וגם גורם לשגיאה:
+```
+GLib-GIO-Message: Using the 'memory' GSettings backend.
+Your settings will not be saved or shared with other applications.
+```
+
+**תיקון:**
+```bash
+nano ~/.profile
+# הסירו את -e מהשורה הפוגעת
 ```
 
 **תיקון:**
