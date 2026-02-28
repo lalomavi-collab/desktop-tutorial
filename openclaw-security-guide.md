@@ -416,23 +416,38 @@ GLib-GIO-Message: Using the 'memory' GSettings backend.
 Your settings will not be saved or shared with other applications.
 ```
 
-**תיקון:**
+**תיקון – לפי סדר:**
+
 ```bash
+# 1. פתחו את הקובץ
 nano ~/.profile
-# הסירו את -e מהשורה הפוגעת
+
+# 2. מצאו את השורה הזו והסירו את -e
+#    לפני: PATH="$HOME/bin:$HOME/.local/bin:$PATH" -e
+#    אחרי: PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+# 3. שמרו (Ctrl+O, Enter) וצאו (Ctrl+X)
+
+# 4. טענו מחדש
+source ~/.profile
 ```
 
-**תיקון:**
+**אם הבעיה ב-`/etc/profile.d/` ולא ב-`~/.profile`:**
 
 ```bash
-# אפשרות א' – תקנו את הסקריפט השבור
-sudo nano /etc/profile.d/broken-script.sh
+# מצאו את הסקריפט השבור
+for f in /etc/profile.d/*.sh; do
+  bash -n "$f" && echo "OK: $f" || echo "BROKEN: $f"
+done
 
-# אפשרות ב' – השביתו אותו זמנית
+# השביתו אותו זמנית
 sudo mv /etc/profile.d/broken-script.sh /etc/profile.d/broken-script.sh.bak
 
-# וודאו הרשאות תקינות (readable + executable)
+# וודאו הרשאות תקינות
 sudo chmod +x /etc/profile.d/*.sh
+
+# טענו מחדש
+source /etc/profile
 ```
 
 **לאחר תיקון – טענו מחדש ובדקו:**
