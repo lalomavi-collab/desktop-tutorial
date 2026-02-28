@@ -80,6 +80,36 @@ openclaw onboard
 
 > **אבטחה:** אל תשתפו את המפתח בפומבי. הוא מאוחסן בטקסט גלוי בקובץ `%USERPROFILE%\.openclaw\openclaw.json`.
 
+#### ❌ `Service is loaded but not running (likely exited immediately)`
+
+השירות (Scheduled Task ב-Windows) נרשם אך קורס מיידית בהפעלה. מצב זה נראה ב-`openclaw status` כ-`Runtime: stopped`.
+
+**פתרון שלב-אחר-שלב:**
+
+**1. ראו את הלוג לשגיאה המדויקת:**
+```powershell
+Get-Content "$env:TEMP\openclaw\openclaw-$(Get-Date -f yyyy-MM-dd).log" -Tail 50
+```
+
+**2. הפעילו ידנית לבדיקה** (השגיאה תוצג ישירות):
+```powershell
+openclaw gateway --port 18789
+```
+
+**3. אם הבעיה היא ה-API key – תקנו ואז הפעילו מחדש:**
+```powershell
+openclaw onboard
+openclaw service restart
+```
+
+**4. אם השירות עדיין לא עולה – התקינו מחדש:**
+```powershell
+openclaw service uninstall
+openclaw service install
+```
+
+> כדי לראות את הסטטוס המלא: `openclaw status --all`
+
 ---
 
 ## נתיב מתקדם – התקנה על VPS (Linux)
