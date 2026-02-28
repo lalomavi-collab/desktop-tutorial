@@ -63,6 +63,23 @@ taskkill /F /IM openclaw.exe /T
 
 **פתרון:** וודאו שחלון ה-gateway פתוח ומציג `listening` לפני שמפעילים את ה-TUI.
 
+#### ❌ `HTTP 401 authentication_error: invalid x-api-key`
+
+מפתח ה-API של Anthropic חסר, שגוי, או פג תוקף.
+
+**פתרון מהיר – תיקון אוטומטי:**
+```powershell
+openclaw doctor --fix
+```
+
+**פתרון ידני – הזנה מחדש:**
+```powershell
+openclaw onboard
+```
+בחרו **Anthropic** והזינו מפתח תקין. מפתחות מתחילים ב-`sk-ant-api03-` וניתן ליצור אותם ב-[console.anthropic.com](https://console.anthropic.com) תחת **API Keys**.
+
+> **אבטחה:** אל תשתפו את המפתח בפומבי. הוא מאוחסן בטקסט גלוי בקובץ `%USERPROFILE%\.openclaw\openclaw.json`.
+
 ---
 
 ## נתיב מתקדם – התקנה על VPS (Linux)
