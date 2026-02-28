@@ -381,6 +381,53 @@ openclaw skills install <skill-name>
 
 ---
 
+## תקלות נפוצות ב-Linux / VPS
+
+#### ❌ Gateway לא מתחיל – משתני סביבה לא נטענים (session profile error)
+
+**תסמינים:** `openclaw gateway status` מראה כשל, ובלוגים מופיע שגיאת 401 או "API key not found" — למרות שהמפתח הוגדר.
+
+**סיבה:** סקריפט שבור ב-`/etc/profile.d/` מונע טעינת משתני סביבה (כמו `ANTHROPIC_API_KEY`) ב-login sessions. systemd user services ירשו סביבה חסרה.
+
+**אבחון:**
+
+```bash
+# בדקו אילו סקריפטים נטענים ואיזה נשבר
+for f in /etc/profile.d/*.sh; do
+  bash -n "$f" && echo "OK: $f" || echo "ERROR: $f"
+done
+
+# או הרצה מפורטת עם trace
+bash -x /etc/profile 2>&1 | head -60
+```
+
+**תיקון:**
+
+```bash
+# אפשרות א' – תקנו את הסקריפט השבור
+sudo nano /etc/profile.d/broken-script.sh
+
+# אפשרות ב' – השביתו אותו זמנית
+sudo mv /etc/profile.d/broken-script.sh /etc/profile.d/broken-script.sh.bak
+
+# וודאו הרשאות תקינות (readable + executable)
+sudo chmod +x /etc/profile.d/*.sh
+```
+
+**לאחר תיקון – טענו מחדש ובדקו:**
+
+```bash
+# הפעילו מחדש את ה-service
+systemctl --user restart openclaw-gateway.service
+
+# בדקו שמשתנה הסביבה נטען
+systemctl --user show-environment | grep ANTHROPIC
+```
+
+> **שורש הבעיה דומה לבאג ה-Bootstrap Amnesia:** שני תנאים נסתרים מתחברים ויוצרים כשל שנראה לא קשור. בדקו תמיד את `journalctl --user -u openclaw-gateway.service -e` לשגיאה המדויקת.
+
+---
+
 ## אזהרה: Prompt Injection
 
 > **סכנה אמיתית!** Prompt Injection הוא מצב בו תוכן זדוני (מאתר, מייל, קובץ) מנסה "לשכנע" את הסוכן לבצע פעולות לא רצויות.
