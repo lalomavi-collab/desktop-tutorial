@@ -145,7 +145,60 @@ openclaw --version
 
 ---
 
-## שלב 9 – Onboarding וחיבור Telegram
+## שלב 9 – הפעלת ה-Gateway כ-Service קבוע
+
+ברירת המחדל היא הפעלה ידנית בחזית (foreground), אבל **בשרת ייצור** יש להפעיל את ה-Gateway כ-systemd service כדי שימשיך לרוץ גם אחרי התנתקות.
+
+### אפשרות א' – Foreground (לבדיקות בלבד)
+
+```bash
+openclaw gateway --port 18789
+```
+
+> מסוכן להשאיר ככה בייצור – הבוט ייכבה עם הסשן.
+
+### אפשרות ב' – Service קבוע (מומלץ לשרת)
+
+```bash
+# 1. התקנה כ-systemd user service
+openclaw gateway install
+
+# 2. הפעלה אוטומטית עם האתחול
+systemctl --user enable --now openclaw-gateway.service
+
+# 3. וידוא שרץ
+openclaw gateway status
+```
+
+### הבטחת הרצה גם אחרי logout (Lingering)
+
+ב-Linux, user services נכבים בהתנתקות. כדי למנוע זאת:
+
+```bash
+sudo loginctl enable-linger punchy
+```
+
+> החליפו `punchy` בשם המשתמש שיצרתם בשלב 5.
+
+### פקודות ניהול שימושיות
+
+```bash
+# הפעלה מחדש
+systemctl --user restart openclaw-gateway.service
+
+# עצירה
+systemctl --user stop openclaw-gateway.service
+
+# לוגים בזמן אמת
+journalctl --user -u openclaw-gateway.service -f
+
+# אבחון בעיות
+openclaw doctor
+```
+
+---
+
+## שלב 10 – Onboarding וחיבור Telegram
 
 לאחר ההתקנה, הפעילו את תהליך ה-Onboarding:
 
@@ -161,7 +214,7 @@ openclaw init
 
 ---
 
-## שלב 10 – התקנת Skills
+## שלב 11 – התקנת Skills
 
 Skills מרחיבים את יכולות OpenClaw. להתקנה:
 
@@ -198,6 +251,8 @@ openclaw skills install <skill-name>
 - [ ] משתמש חדש נוצר והוסף ל-sudo
 - [ ] Firewall (UFW) מוגדר ומופעל
 - [ ] OpenClaw מותקן
+- [ ] Gateway מוגדר כ-systemd service
+- [ ] Lingering מופעל (loginctl enable-linger)
 - [ ] Telegram מחובר
 - [ ] Skills מותקנים לפי הצורך
 - [ ] הוסבר סיכון Prompt Injection
