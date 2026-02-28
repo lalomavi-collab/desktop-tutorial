@@ -110,6 +110,47 @@ openclaw service install
 
 > כדי לראות את הסטטוס המלא: `openclaw status --all`
 
+#### ❌ Agent מאבד זהות בכל session חדש ("Bootstrap Amnesia")
+
+**תסמינים:** הסוכן מברך כ"fresh agent" עם אין זיכרון, מתעלם מ-SOUL.md, MEMORY.md ו-AGENTS.md — למרות שבוצעה הגדרה מלאה שבועות קודם.
+
+**סיבת שורש – שני תנאים שמתחברים:**
+1. `BOOTSTRAP.md` **לא נמחק** לאחר ה-session הראשון (ה-agent לא ביצע את ההוראה "delete this file when done")
+2. `IDENTITY.md` **נשאר כ-template ריק** – הזהות הוגדרה דרך SOUL.md אך IDENTITY.md לא מולא
+
+כשה-session החדש מתחיל, ה-agent קורא את `BOOTSTRAP.md`, רואה `IDENTITY.md` ריק, ומסיק שאין לו זהות – ומתעלם לחלוטין מ-SOUL.md.
+
+**תיקון ידני (Workaround):**
+
+```bash
+# שלב 1 – מחקו את BOOTSTRAP.md
+rm /path/to/workspace/BOOTSTRAP.md
+
+# שלב 2 – מלאו את IDENTITY.md בערכים אמיתיים
+nano /path/to/workspace/IDENTITY.md
+```
+
+דוגמה ל-IDENTITY.md תקין:
+```markdown
+# IDENTITY.md
+- **Name:** Rachael
+- **Creature:** AI agent
+- **Vibe:** sharp, direct, resourceful
+- **Emoji:** ⚡
+```
+
+```bash
+# שלב 3 – צרו עוגן ב-MEMORY.md
+echo "# MEMORY.md
+Session anchor: identity established. BOOTSTRAP.md deleted.
+Agent name: Rachael. Workspace: /mnt/antigravity." > /path/to/workspace/MEMORY.md
+```
+
+**מניעה – לאחר כל onboarding חדש:**
+> תמיד מחקו ידנית את `BOOTSTRAP.md` לאחר ה-session הראשון. בדקו שהסוכן אכן מחק אותו — אם לא, מחקו אתם.
+
+> **סטטוס:** OpenClaw v2026.2.24+ — באג ידוע. תיקון מוצע: guard ב-bootstrap שבודק אם SOUL.md מאוכלס, ומחיקה אוטומטית של BOOTSTRAP.md לאחר session ראשון.
+
 ---
 
 ## נתיב מתקדם – התקנה על VPS (Linux)
