@@ -1,8 +1,73 @@
-# מדריך התקנה מאובטחת של OpenClaw על VPS
+# מדריך התקנה מאובטחת של OpenClaw
 
 > **מה זה OpenClaw?** סוכן אוטונומי המחובר למודל שפה (LLM), פועל ברקע תמיד, נגיש מהטלפון, ומשמש כעוזר אישי חכם. עם כוח גדול, האחריות להגנה על המערכת היא שלנו.
 
 ---
+
+## נתיב מהיר – התקנה מקומית על Windows
+
+> מתאים למי שרוצה להתחיל מהר ולהריץ את OpenClaw על המחשב האישי.
+
+### שלב א' – הורדה והתקנה
+
+הורידו את OpenClaw מהאתר הרשמי והתקינו. לאחר מכן, פתחו **שני** חלונות PowerShell נפרדים.
+
+### שלב ב' – הפעלה בשני חלונות
+
+**חלון 1** – Gateway (שמרו אותו פתוח לכל משך הפעלה):
+```powershell
+openclaw gateway
+```
+המתינו עד שמופיע `gateway listening on :18789` **ורק אז** עברו לחלון השני.
+
+**חלון 2** – ממשק TUI:
+```powershell
+openclaw tui
+```
+
+### שלב ג' – Onboarding
+
+```powershell
+openclaw onboard
+```
+
+עקבו אחרי ההוראות לחיבור Telegram.
+
+---
+
+### תקלות נפוצות ב-Windows
+
+#### ❌ `token_mismatch` / `unauthorized`
+
+Gateway אותחל מחדש וה-Control UI שומר טוקן ישן.
+
+**פתרון:**
+1. בחלון ה-gateway יש שורה עם `token=...` – העתיקו אותה
+2. פתחו דפדפן: `http://127.0.0.1:18789`
+3. הדביקו את הטוקן החדש בהגדרות
+
+#### ❌ Telegram 409 Conflict – `terminated by other getUpdates request`
+
+שני מופעים של OpenClaw רצים במקביל על אותו bot token.
+
+**פתרון** – הרגו את כל המופעים ואתחלו מחדש:
+```powershell
+taskkill /F /IM openclaw-gateway.exe /T
+taskkill /F /IM openclaw.exe /T
+```
+לאחר מכן פתחו שני חלונות חדשים והפעילו gateway → tui בסדר הזה.
+
+#### ❌ `gateway disconnected: closed | idle`
+
+ה-gateway נסגר לפני שה-TUI התחבר.
+
+**פתרון:** וודאו שחלון ה-gateway פתוח ומציג `listening` לפני שמפעילים את ה-TUI.
+
+---
+
+## נתיב מתקדם – התקנה על VPS (Linux)
+
+> מתאים לשימוש קבוע 24/7 עם אבטחה מרבית.
 
 ## שלב 1 – יצירת VPS בהוסטינגר
 
@@ -243,6 +308,14 @@ openclaw skills install <skill-name>
 
 ## סיכום – רשימת תיוג
 
+### Windows מקומי
+- [ ] OpenClaw מותקן
+- [ ] Gateway רץ בחלון נפרד
+- [ ] TUI מחובר ל-gateway
+- [ ] Telegram מחובר דרך Onboarding
+- [ ] אין מופעים כפולים (בדוק עם tasklist)
+
+### VPS (Linux)
 - [ ] VPS נוצר ב-Hostinger עם Ubuntu 22.04
 - [ ] Tailscale מותקן ומחובר
 - [ ] SSH מוגבל לממשק ה-VPN בלבד
