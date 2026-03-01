@@ -1,6 +1,0 @@
-# Environment variables - NEVER commit these
-.env
-
-# OpenClaw runtime files
-*.log
-.openclaw/
