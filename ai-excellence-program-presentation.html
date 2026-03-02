@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תוכנית המצוינות התלת-שנתית | בינה מלאכותית, משפט וניהול סיכונים</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #0a1628;
+            --primary-light: #1a2d4a;
+            --accent: #00b4d8;
+            --accent-glow: #00e5ff;
+            --gold: #d4a843;
+            --gold-light: #f0d078;
+            --white: #ffffff;
+            --gray-light: #e8edf5;
+            --text-dark: #0d1b2a;
+            --text-muted: #64748b;
+            --gradient-hero: linear-gradient(135deg, #0a1628 0%, #1b3a5c 40%, #0d2847 100%);
+            --gradient-accent: linear-gradient(135deg, #00b4d8, #0077b6);
+            --gradient-gold: linear-gradient(135deg, #d4a843, #b8860b);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 30px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            color: var(--text-dark);
+            background: #f0f4f8;
+            overflow-x: hidden;
+        }
+
+        /* ===== SLIDE SYSTEM ===== */
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            padding: 80px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .nav-dots {
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot:hover {
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        .nav-dot.active {
+            background: var(--accent-glow);
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        }
+
+        .nav-dot .tooltip {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-dot:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* ===== TOP HEADER BAR ===== */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(10, 22, 40, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .top-bar-logo {
+            font-family: 'Rubik', sans-serif;
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .top-bar-info {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* ===== SLIDE 1: COVER ===== */
+        .slide-cover {
+            background: var(--gradient-hero);
+            position: relative;
+        }
+
+        .slide-cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 180, 216, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(212, 168, 67, 0.06) 0%, transparent 50%);
+        }
+
+        .slide-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 180, 216, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 180, 216, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .cover-content {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .cover-badge {
+            display: inline-block;
+            padding: 8px 28px;
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            color: var(--gold-light);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .cover-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #a8dadc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-subtitle {
+            font-size: 26px;
+            font-weight: 300;
+            color: var(--accent);
+            margin-bottom: 30px;
+        }
+
+        .cover-leader {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 50px;
+        }
+
+        .cover-leader strong {
+            color: var(--gold-light);
+        }
+
+        .cover-divider {
+            width: 80px;
+            height: 3px;
+            background: var(--gradient-gold);
+            margin: 0 auto 40px;
+            border-radius: 2px;
+        }
+
+        .cover-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .cover-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .cover-meta-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(0, 180, 216, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* ===== SLIDE 2: VISION ===== */
+        .slide-vision {
+            background: var(--gradient-hero);
+        }
+
+        .vision-quote-box {
+            background: rgba(0, 180, 216, 0.05);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .vision-quote-box::before {
+            content: '\201F';
+            position: absolute;
+            top: -20px;
+            right: 30px;
+            font-size: 120px;
+            color: var(--accent);
+            opacity: 0.2;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .vision-quote {
+            font-size: 22px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .section-title.white {
+            color: var(--white);
+        }
+
+        .section-number {
+            font-family: 'Rubik', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-number::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to left, transparent, rgba(0, 180, 216, 0.3));
+            max-width: 200px;
+        }
+
+        .vision-text {
+            font-size: 18px;
+            line-height: 2;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .vision-text strong {
+            color: var(--accent);
+        }
+
+        .highlight-box {
+            background: rgba(212, 168, 67, 0.1);
+            border-right: 4px solid var(--gold);
+            padding: 20px 30px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 30px;
+        }
+
+        .highlight-box p {
+            color: var(--gold-light);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        /* ===== SLIDE 3: ABOUT ===== */
+        .slide-about {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .about-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .about-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--white);
+            font-family: 'Rubik', sans-serif;
+            font-weight: 700;
+        }
+
+        .about-name {
+            font-family: 'Rubik', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .about-title-role {
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .about-stat {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .about-stat-number {
+            font-family: 'Rubik', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .about-stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .about-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .about-detail-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border-right: 4px solid var(--accent);
+            transition: transform 0.3s ease;
+        }
+
+        .about-detail-card:hover {
+            transform: translateX(-5px);
+        }
+
+        .about-detail-card:nth-child(2) {
+            border-right-color: var(--gold);
+        }
+
+        .about-detail-card:nth-child(3) {
+            border-right-color: #7c3aed;
+        }
+
+        .about-detail-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-detail-title .icon {
+            font-size: 20px;
+        }
+
+        .about-detail-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        /* ===== SLIDE 4: MASTER PLAN (PILLARS) ===== */
+        .slide-pillars {
+            background: var(--gradient-hero);
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .pillar-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 0 0 0 4px;
+        }
+
+        .pillar-card:nth-child(1)::before { background: var(--accent); }
+        .pillar-card:nth-child(2)::before { background: var(--gold); }
+        .pillar-card:nth-child(3)::before { background: #7c3aed; }
+        .pillar-card:nth-child(4)::before { background: #10b981; }
+
+        .pillar-number {
+            font-family: 'Rubik', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            opacity: 0.15;
+            color: var(--white);
+            position: absolute;
+            top: 15px;
+            left: 20px;
+        }
+
+        .pillar-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .pillar-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .pillar-desc {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .pillar-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .pillar-tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+        }
+
+        /* ===== SLIDE 5: MILITARY TRACK ===== */
+        .slide-military {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0a1628 100%);
+        }
+
+        .military-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 40px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .military-table thead th {
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 15px;
+            padding: 20px 25px;
+            text-align: right;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .military-table tbody td {
+            padding: 22px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.7;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            vertical-align: top;
+        }
+
+        .military-table tbody tr:hover td {
+            background: rgba(0, 180, 216, 0.05);
+        }
+
+        .military-table tbody td:first-child {
+            font-weight: 600;
+            color: var(--accent);
+            width: 30%;
+        }
+
+        .military-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(212, 168, 67, 0.15);
+            color: var(--gold-light);
+            margin-left: 8px;
+        }
+
+        /* ===== SLIDE 6: YEAR 1 ===== */
+        .slide-year {
+            position: relative;
+        }
+
+        .slide-year-1 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .slide-year-2 {
+            background: linear-gradient(135deg, #0f3460 0%, #1a1a4e 50%, #2d1b69 100%);
+        }
+
+        .slide-year-3 {
+            background: linear-gradient(135deg, #1b4332 0%, #1a3a3a 50%, #0a2628 100%);
+        }
+
+        .year-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .year-badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rubik', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .year-badge-1 { background: var(--gradient-accent); }
+        .year-badge-2 { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .year-badge-3 { background: linear-gradient(135deg, #059669, #10b981); }
+
+        .year-info h2 {
+            font-family: 'Rubik', sans-serif;
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+
+        .year-info p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .year-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .year-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .year-card:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .year-card-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .year-card-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .year-card-text {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .year-product {
+            grid-column: 1 / -1;
+            background: rgba(212, 168, 67, 0.08);
+            border: 1px solid rgba(212, 168, 67, 0.25);
+            text-align: center;
+        }
+
+        .year-product .year-card-title {
+            color: var(--gold-light);
+        }
+
+        /* ===== SLIDE 9: RECIR MODEL ===== */
+        .recir-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .recir-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 25px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .recir-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .recir-letter {
+            font-family: 'Rubik', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .recir-item:nth-child(1) .recir-letter { color: #00b4d8; }
+        .recir-item:nth-child(2) .recir-letter { color: #7c3aed; }
+        .recir-item:nth-child(3) .recir-letter { color: #f59e0b; }
+        .recir-item:nth-child(4) .recir-letter { color: #10b981; }
+        .recir-item:nth-child(5) .recir-letter { color: #ef4444; }
+
+        .recir-en {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .recir-he {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* ===== SLIDE: GAPAN DETAILS ===== */
+        .slide-gapan {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .gapan-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .gapan-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border-top: 4px solid var(--accent);
+        }
+
+        .gapan-card:nth-child(2) { border-top-color: var(--gold); }
+        .gapan-card:nth-child(3) { border-top-color: #7c3aed; }
+        .gapan-card:nth-child(4) { border-top-color: #10b981; }
+
+        .gapan-card-title {
+            font-family: 'Rubik', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gapan-card-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .gapan-card-text strong {
+            color: var(--primary);
+        }
+
+        .section-title.dark {
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        /* ===== SLIDE: CONTACT ===== */
+        .slide-contact {
+            background: var(--gradient-hero);
+        }
+
+        .contact-quote {
+            background: rgba(212, 168, 67, 0.08);
+            border: 1px solid rgba(212, 168, 67, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .contact-quote p {
+            font-size: 20px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.85);
+            font-style: italic;
+        }
+
+        .contact-quote .author {
+            margin-top: 20px;
+            font-style: normal;
+            font-weight: 600;
+            color: var(--gold-light);
+            font-size: 16px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+        }
+
+        .contact-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .contact-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+        }
+
+        .contact-value {
+            font-size: 15px;
+            color: var(--white);
+            font-weight: 500;
+            direction: ltr;
+        }
+
+        .contact-cta {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 50px;
+            background: var(--gradient-gold);
+            color: var(--primary);
+            font-family: 'Rubik', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 168, 67, 0.4);
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            right: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent), var(--gold), #7c3aed);
+            border-radius: 2px;
+            transform: translateX(50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            right: calc(50% - 8px);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--primary);
+            z-index: 2;
+        }
+
+        .timeline-item:nth-child(2) .timeline-dot { background: var(--gold); }
+        .timeline-item:nth-child(3) .timeline-dot { background: #7c3aed; }
+
+        .timeline-content {
+            width: 45%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: 55%;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+        }
+
+        .timeline-year-label {
+            font-family: 'Rubik', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .timeline-item:nth-child(2) .timeline-year-label { color: var(--gold); }
+        .timeline-item:nth-child(3) .timeline-year-label { color: #7c3aed; }
+
+        .timeline-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-delay-1 { transition-delay: 0.1s; }
+        .fade-in-delay-2 { transition-delay: 0.2s; }
+        .fade-in-delay-3 { transition-delay: 0.3s; }
+        .fade-in-delay-4 { transition-delay: 0.4s; }
+        .fade-in-delay-5 { transition-delay: 0.5s; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .slide-content { padding: 80px 40px; }
+            .cover-title { font-size: 38px; }
+            .pillars-grid { grid-template-columns: 1fr; }
+            .about-grid { grid-template-columns: 1fr; }
+            .recir-grid { grid-template-columns: repeat(3, 1fr); }
+            .year-cards { grid-template-columns: 1fr; }
+            .gapan-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .military-table { font-size: 13px; }
+            .timeline::before { right: 20px; }
+            .timeline-dot { right: 12px !important; }
+            .timeline-content { width: 85% !important; margin-right: 50px !important; margin-left: 0 !important; }
+        }
+
+        @media (max-width: 768px) {
+            .slide-content { padding: 70px 25px; }
+            .cover-title { font-size: 30px; }
+            .cover-subtitle { font-size: 20px; }
+            .section-title { font-size: 28px; }
+            .nav-dots { display: none; }
+            .top-bar { padding: 10px 20px; }
+            .recir-grid { grid-template-columns: repeat(2, 1fr); }
+            .cover-meta { flex-direction: column; align-items: center; gap: 15px; }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            .slide { min-height: auto; page-break-after: always; }
+            .nav-dots, .top-bar { display: none; }
+            .slide-content { padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-logo">AI EXCELLENCE PROGRAM</div>
+    <div class="top-bar-info">תוכנית גפ"ן | משרד החינוך | תוכנית מס' 9069</div>
+</div>
+
+<!-- Navigation Dots -->
+<nav class="nav-dots" id="navDots">
+    <div class="nav-dot active" data-slide="0"><span class="tooltip">שער</span></div>
+    <div class="nav-dot" data-slide="1"><span class="tooltip">חזון</span></div>
+    <div class="nav-dot" data-slide="2"><span class="tooltip">אודות</span></div>
+    <div class="nav-dot" data-slide="3"><span class="tooltip">עמודי תווך</span></div>
+    <div class="nav-dot" data-slide="4"><span class="tooltip">יחידות עלית</span></div>
+    <div class="nav-dot" data-slide="5"><span class="tooltip">שנה א'</span></div>
+    <div class="nav-dot" data-slide="6"><span class="tooltip">שנה ב'</span></div>
+    <div class="nav-dot" data-slide="7"><span class="tooltip">שנה ג'</span></div>
+    <div class="nav-dot" data-slide="8"><span class="tooltip">מערכת גפ"ן</span></div>
+    <div class="nav-dot" data-slide="9"><span class="tooltip">יצירת קשר</span></div>
+</nav>
+
+<!-- ===== SLIDE 1: COVER ===== -->
+<section class="slide slide-cover" id="slide-0">
+    <div class="slide-content cover-content">
+        <div class="cover-badge fade-in">תוכנית מצוינות תלת-שנתית | מערכת גפ"ן</div>
+        <h1 class="cover-title fade-in fade-in-delay-1">בינה מלאכותית (AI),<br>משפט וניהול סיכונים</h1>
+        <p class="cover-subtitle fade-in fade-in-delay-2">Artificial Intelligence, Law & Risk Management</p>
+        <div class="cover-divider fade-in fade-in-delay-2"></div>
+        <p class="cover-leader fade-in fade-in-delay-3">בהובלת <strong>ד"ר אברהם (אבי) ללום</strong> | Ph.D.C, עו"ד</p>
+        <div class="cover-meta fade-in fade-in-delay-4">
+            <div class="cover-meta-item">
+                <div class="cover-meta-icon">&#128218;</div>
+                <span>3 שנות לימוד | כיתות י'-י"ב</span>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-icon">&#127891;</div>
+                <span>הערכה חלופית לבגרות 30%</span>
+            </div>
+            <div class="cover-meta-item">
+                <div class="cover-meta-icon">&#9733;</div>
+                <span>תוכנית מס' 9069</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 2: VISION ===== -->
+<section class="slide slide-vision" id="slide-1">
+    <div class="slide-content">
+        <div class="section-number fade-in">01 &mdash; חזון התוכנית</div>
+        <h2 class="section-title white fade-in fade-in-delay-1">אסטרטגיה ומשפט בעידן האוטונומי</h2>
+
+        <div class="vision-quote-box fade-in fade-in-delay-2">
+            <p class="vision-quote">
+                "במקום שבו הבינה המלאכותית משרטטת מציאות חדשה, המשפט הוא הריבון המוסרי המבטיח את עליונות הרוח האנושית ואת יציבותו של הסדר החברתי."
+            </p>
+        </div>
+
+        <p class="vision-text fade-in fade-in-delay-3">
+            בעולם שבו <strong>"המחוקק תמיד מצוי בפיגור כרוני אחר הדינמיקה הטכנולוגית"</strong>, נוצר ואקום מנהיגותי מסוכן.
+            תוכנית המצוינות נועדה להכשיר את חוד החנית של דור העתיד: מנהיגים המסוגלים לגשר על הפער שבין קוד למשפט, ובין אלגוריתם לאתיקה.
+        </p>
+
+        <div class="highlight-box fade-in fade-in-delay-4">
+            <p>
+                <strong>מטרתנו:</strong> טרנספורמציה קוגניטיבית &mdash; הפיכת התלמיד מ"צרכן טכנולוגיה" פסיבי ל"אסטרטג מדיניות" בעל יכולת ניתוח רב-ממדית. מסלול elite המיועד לתלמידים השואפים להשתלב ביחידות העילית של צה"ל ובמסלולי העתודה המשפטית והאקדמית.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 3: ABOUT ===== -->
+<section class="slide slide-about" id="slide-2">
+    <div class="slide-content">
+        <div class="section-number fade-in" style="color: var(--primary);">02 &mdash; אודות ראש התוכנית</div>
+        <h2 class="section-title dark fade-in fade-in-delay-1">דוקטורנט אברהם (אבי) ללום</h2>
+
+        <div class="about-grid">
+            <div class="about-card fade-in fade-in-delay-2">
+                <div class="about-avatar">א.ל</div>
+                <h3 class="about-name">אברהם (אבי) ללום</h3>
+                <p class="about-title-role">Ph.D.C | עו"ד | חוקר | מרצה</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">University of C&oacute;rdoba, Spain</p>
+                <div class="about-stats">
+                    <div class="about-stat">
+                        <div class="about-stat-number">+20</div>
+                        <div class="about-stat-label">שנות ניסיון</div>
+                    </div>
+                    <div class="about-stat">
+                        <div class="about-stat-number">7</div>
+                        <div class="about-stat-label">ספרים מקצועיים</div>
+                    </div>
+                    <div class="about-stat">
+                        <div class="about-stat-number">&#8734;</div>
+                        <div class="about-stat-label">מאמרים אקדמיים</div>
+                    </div>
+                    <div class="about-stat">
+                        <div class="about-stat-number">B$</div>
+                        <div class="about-stat-label">היקף פרויקטים</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-details">
+                <div class="about-detail-card fade-in fade-in-delay-2">
+                    <div class="about-detail-title">
+                        <span class="icon">&#9889;</span> חדשנות משפטית
+                    </div>
+                    <p class="about-detail-text">
+                        מפתח מודל ה"גישור מכוון-הכרעה" (Decision-Oriented Mediation) ומומחה בניתוח שפת גוף וניהול משאי ומתן בלחץ גבוה.
+                    </p>
+                </div>
+
+                <div class="about-detail-card fade-in fade-in-delay-3">
+                    <div class="about-detail-title">
+                        <span class="icon">&#128214;</span> כתיבה והנהגה אקדמית
+                    </div>
+                    <p class="about-detail-text">
+                        מחבר שבעה ספרים מקצועיים, ביניהם "מורה דרך לעסקאות תמ"א 38" ו"מורה דרך לפינוי בינוי". מייסד המדרשה למשפט של לשכת עורכי הדין.
+                    </p>
+                </div>
+
+                <div class="about-detail-card fade-in fade-in-delay-4">
+                    <div class="about-detail-title">
+                        <span class="icon">&#127760;</span> תחומי התמחות
+                    </div>
+                    <p class="about-detail-text">
+                        משפט מסחרי בינלאומי, דיני מקרקעין, אתיקה מקצועית, ניתוח סיכוני AI ורגולציה טכנולוגית לרבות בינה מלאכותית.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 4: MASTER PLAN ===== -->
+<section class="slide slide-pillars" id="slide-3">
+    <div class="slide-content">
+        <div class="section-number fade-in">03 &mdash; עמודי התווך של התוכנית</div>
+        <h2 class="section-title white fade-in fade-in-delay-1">The Master Plan</h2>
+
+        <div class="pillars-grid">
+            <div class="pillar-card fade-in fade-in-delay-1">
+                <div class="pillar-number">01</div>
+                <div class="pillar-icon">&#128260;</div>
+                <h3 class="pillar-title">התפתחות ספירלית</h3>
+                <p class="pillar-desc">
+                    <strong style="color: var(--accent);">Deconstruction to Synthesis</strong><br>
+                    שנה א': דקונסטרוקציה של "הקופסה השחורה"<br>
+                    שנה ב': אנליטיקה וניהול סיכונים<br>
+                    שנה ג': סינתזה והנהגה
+                </p>
+                <div class="pillar-tags">
+                    <span class="pillar-tag">אוריינות ביקורתית</span>
+                    <span class="pillar-tag">חשיבה מחקרית</span>
+                    <span class="pillar-tag">עיצוב מדיניות</span>
+                </div>
+            </div>
+
+            <div class="pillar-card fade-in fade-in-delay-2">
+                <div class="pillar-number">02</div>
+                <div class="pillar-icon">&#128269;</div>
+                <h3 class="pillar-title">מתודולוגיית Case Method</h3>
+                <p class="pillar-desc">
+                    למידה דרך ניתוח אירועי אמת תקדימיים: תביעת ה-NYT נגד OpenAI, מערכת COMPAS והטיות אלגוריתמיות &mdash; תקדימים שמשנים את עולם המשפט.
+                </p>
+                <div class="pillar-tags">
+                    <span class="pillar-tag">NYT v. OpenAI</span>
+                    <span class="pillar-tag">COMPAS</span>
+                    <span class="pillar-tag">Algorithmic Bias</span>
+                </div>
+            </div>
+
+            <div class="pillar-card fade-in fade-in-delay-3">
+                <div class="pillar-number">03</div>
+                <div class="pillar-icon">&#127891;</div>
+                <h3 class="pillar-title">הערכה חלופית לבגרות</h3>
+                <p class="pillar-desc">
+                    התוכנית נבנתה כ-30% הערכה חלופית באזרחות או במדעי החברה, תוך מינוף עבודות החקר של התלמידים לציוני בגרות איכותיים.
+                </p>
+                <div class="pillar-tags">
+                    <span class="pillar-tag">30% הערכה חלופית</span>
+                    <span class="pillar-tag">אזרחות</span>
+                    <span class="pillar-tag">מדעי החברה</span>
+                </div>
+            </div>
+
+            <div class="pillar-card fade-in fade-in-delay-4">
+                <div class="pillar-number">04</div>
+                <div class="pillar-icon">&#127942;</div>
+                <h3 class="pillar-title">אוריינטציה ליחידות עלית</h3>
+                <p class="pillar-desc">
+                    הקניית "ארגז כלים" המותאם לדרישות המיון המחמירות של אמ"ן וחיל הטכנולוגיה &mdash; חשיבה אנליטית, עבודה תחת לחץ ושליטה במרחב הדיגיטלי.
+                </p>
+                <div class="pillar-tags">
+                    <span class="pillar-tag">אמ"ן</span>
+                    <span class="pillar-tag">חיל הטכנולוגיה</span>
+                    <span class="pillar-tag">עתודה</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 5: MILITARY TRACK ===== -->
+<section class="slide slide-military" id="slide-4">
+    <div class="slide-content">
+        <div class="section-number fade-in">04 &mdash; המסלול אל חיל המודיעין ויחידות העלית</div>
+        <h2 class="section-title white fade-in fade-in-delay-1">מיומנויות אסטרטגיות ליישום צבאי ואקדמי</h2>
+
+        <table class="military-table fade-in fade-in-delay-2">
+            <thead>
+                <tr>
+                    <th>מיומנות אסטרטגית</th>
+                    <th>יישום צבאי / אקדמי</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        חשיבה ביקורתית ואימות נתונים
+                        <span class="military-badge">OSINT</span>
+                    </td>
+                    <td>ניתוח מודיעין ממקורות גלויים (OSINT) ולוחמת מידע: מניעת הונאה בעידן של סינתזת מידע.</td>
+                </tr>
+                <tr>
+                    <td>
+                        ניתוח השלכות וניהול סיכונים
+                        <span class="military-badge">CYBER</span>
+                    </td>
+                    <td>סייבר ואסטרטגיה: ניתוח הפרעות אלגוריתמיות במערכות קבלת החלטות בלוחמה קינטית ולא-קינטית.</td>
+                </tr>
+                <tr>
+                    <td>
+                        כתיבת ניירות מדיניות וטיעון משפטי
+                        <span class="military-badge">עתודה</span>
+                    </td>
+                    <td>הפרקליטות הצבאית: הכנה לכתיבת חוות דעת משפטיות תחת דיני המלחמה הבינלאומיים והרגולציה הטכנולוגית.</td>
+                </tr>
+                <tr>
+                    <td>
+                        מבדק אלגוריתמי
+                        <span class="military-badge">Algorithm Audit</span>
+                    </td>
+                    <td>מו"פ וטכנולוגיה: בחינת תקינות, שקיפות ואתיקה במערכות תומכות לחימה מבוססות AI.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ===== SLIDE 6: YEAR 1 ===== -->
+<section class="slide slide-year slide-year-1" id="slide-5">
+    <div class="slide-content">
+        <div class="year-header fade-in">
+            <div class="year-badge year-badge-1">&#1488;'</div>
+            <div class="year-info">
+                <h2>שנה א' &mdash; כיתה י'</h2>
+                <p>אוריינות דיגיטלית: "לשבור את הקופסה השחורה"</p>
+            </div>
+        </div>
+
+        <div class="year-cards">
+            <div class="year-card fade-in fade-in-delay-1">
+                <div class="year-card-icon">&#129504;</div>
+                <h3 class="year-card-title">תכני לימוד</h3>
+                <p class="year-card-text">
+                    הארכיטקטורה של LLM מול מנועי חיפוש. ניתוח תופעת ה"הזיות" (Hallucinations) ככשל מבני. אתיקה אקדמית בעידן הגנרטיבי.
+                </p>
+            </div>
+
+            <div class="year-card fade-in fade-in-delay-2">
+                <div class="year-card-icon">&#128274;</div>
+                <h3 class="year-card-title">הגנת הפרטיות</h3>
+                <p class="year-card-text">
+                    ניתוח הדימיון והשוני בין "חופש הביטוי" לבין "הזכות לשכחה" ודיני לשון הרע במרחב הסינתטי.
+                </p>
+            </div>
+
+            <div class="year-card year-product fade-in fade-in-delay-3">
+                <div class="year-card-icon">&#128220;</div>
+                <h3 class="year-card-title">תוצר שנתי: "אמנת האתיקה הדיגיטלית הכיתתית"</h3>
+                <p class="year-card-text">
+                    מסמך מדיניות פנים-ארגוני המגדיר גבולות לשימוש ב-AI &mdash; נכתב, נדון ומאושר על ידי התלמידים עצמם.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 7: YEAR 2 ===== -->
+<section class="slide slide-year slide-year-2" id="slide-6">
+    <div class="slide-content">
+        <div class="year-header fade-in">
+            <div class="year-badge year-badge-2">&#1489;'</div>
+            <div class="year-info">
+                <h2>שנה ב' &mdash; כיתה י"א</h2>
+                <p>מעבדת אנליטיקה וניהול סיכונים</p>
+            </div>
+        </div>
+
+        <div class="year-cards">
+            <div class="year-card fade-in fade-in-delay-1">
+                <div class="year-card-icon">&#9878;</div>
+                <h3 class="year-card-title">אפליה אלגוריתמית וקניין רוחני</h3>
+                <p class="year-card-text">
+                    ניתוח דוקטרינת ה"שימוש ההוגן" (Fair Use) מול "שימוש טרנספורמטיבי" בתביעות ענק נגד OpenAI.
+                </p>
+            </div>
+
+            <div class="year-card fade-in fade-in-delay-2">
+                <div class="year-card-icon">&#128200;</div>
+                <h3 class="year-card-title">מודל RECIR להערכת סיכונים</h3>
+                <p class="year-card-text">
+                    הטמעת המודל המחקרי של ד"ר ללום לבחינת אפליקציות וטכנולוגיות לפי חמישה ממדי עומק.
+                </p>
+            </div>
+        </div>
+
+        <!-- RECIR Model -->
+        <div class="recir-grid fade-in fade-in-delay-3">
+            <div class="recir-item">
+                <div class="recir-letter">R</div>
+                <div class="recir-en">Reliability & Transparency</div>
+                <div class="recir-he">מהימנות ושקיפות המודל</div>
+            </div>
+            <div class="recir-item">
+                <div class="recir-letter">E</div>
+                <div class="recir-en">Ethics & Bias</div>
+                <div class="recir-he">איתור הטיות ופגיעה בשוויון</div>
+            </div>
+            <div class="recir-item">
+                <div class="recir-letter">C</div>
+                <div class="recir-en">Confidentiality</div>
+                <div class="recir-he">הגנה על פרטיות וסודיות</div>
+            </div>
+            <div class="recir-item">
+                <div class="recir-letter">I</div>
+                <div class="recir-en">Integrity</div>
+                <div class="recir-he">יושרה ואמינות הפלט</div>
+            </div>
+            <div class="recir-item">
+                <div class="recir-letter">R</div>
+                <div class="recir-en">Regulation</div>
+                <div class="recir-he">עמידה בסטנדרטים משפטיים</div>
+            </div>
+        </div>
+
+        <div class="year-cards" style="margin-top: 25px;">
+            <div class="year-card year-product fade-in fade-in-delay-4" style="border-color: rgba(168, 85, 247, 0.4);">
+                <div class="year-card-icon">&#128203;</div>
+                <h3 class="year-card-title" style="color: #a855f7;">תוצר שנתי: "דו"ח מבדק אלגוריתמי" (Algorithm Audit)</h3>
+                <p class="year-card-text">
+                    חוות דעת משפטית-טכנית מקצועית &mdash; תלמידים עורכים ביקורת שלמה על מערכת AI אמיתית.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 8: YEAR 3 ===== -->
+<section class="slide slide-year slide-year-3" id="slide-7">
+    <div class="slide-content">
+        <div class="year-header fade-in">
+            <div class="year-badge year-badge-3">&#1490;'</div>
+            <div class="year-info">
+                <h2>שנה ג' &mdash; כיתה י"ב</h2>
+                <p>הנהגה ואסטרטגיה גלובלית</p>
+            </div>
+        </div>
+
+        <div class="year-cards">
+            <div class="year-card fade-in fade-in-delay-1">
+                <div class="year-card-icon">&#127758;</div>
+                <h3 class="year-card-title">מרוץ החימוש וביטחון לאומי</h3>
+                <p class="year-card-text">
+                    מאזן הכוחות בין ארה"ב לסין. השפעת בוטים על טוהר הבחירות. לוחמה אוטונומית בראי הדין הבינלאומי.
+                </p>
+            </div>
+
+            <div class="year-card fade-in fade-in-delay-2">
+                <div class="year-card-icon">&#9878;</div>
+                <h3 class="year-card-title">רגולציה השוואתית</h3>
+                <p class="year-card-text">
+                    ה-EU AI Act האירופי מול הגישה המבוזרת בישראל ובארה"ב &mdash; ניתוח השוואתי של מודלים רגולטוריים.
+                </p>
+            </div>
+
+            <div class="year-card year-product fade-in fade-in-delay-3" style="border-color: rgba(16, 185, 129, 0.4);">
+                <div class="year-card-icon">&#127942;</div>
+                <h3 class="year-card-title" style="color: #10b981;">פרויקט גמר (Capstone)</h3>
+                <p class="year-card-text">
+                    <strong style="color: rgba(255,255,255,0.85);">מסלול א':</strong> "משפט מבוים פומבי" (Mock Trial) &mdash; סימולציית בג"ץ עתידני.<br>
+                    <strong style="color: rgba(255,255,255,0.85);">מסלול ב':</strong> כתיבת "נייר מדיניות / הצעת חוק" להגשה בוועדות הכנסת.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 9: GAPAN DETAILS ===== -->
+<section class="slide slide-gapan" id="slide-8">
+    <div class="slide-content">
+        <div class="section-number fade-in" style="color: var(--primary);">08 &mdash; היבטים תפעוליים</div>
+        <h2 class="section-title dark fade-in fade-in-delay-1">אישור מערכת גפ"ן &mdash; משרד החינוך</h2>
+        <p class="section-subtitle fade-in fade-in-delay-1">התוכנית מוגשת רשמית למאגר התוכניות של משרד החינוך ומותאמת לרכש מיידי.</p>
+
+        <div class="gapan-grid">
+            <div class="gapan-card fade-in fade-in-delay-2">
+                <div class="gapan-card-title">&#128196; מספר תוכנית</div>
+                <p class="gapan-card-text">
+                    <strong style="font-size: 32px; color: var(--accent); font-family: 'Rubik', sans-serif;">9069</strong><br>
+                    מאגר תוכניות גפ"ן &mdash; משרד החינוך
+                </p>
+            </div>
+
+            <div class="gapan-card fade-in fade-in-delay-2">
+                <div class="gapan-card-title">&#128230; סלי מענים רלוונטיים</div>
+                <p class="gapan-card-text">
+                    <strong>1. מענים פדגוגיים ורגשיים:</strong> תת-סל תחומי מדע, טכנולוגיה ומתמטיקה (פעילות ישירה עם תלמידים).<br><br>
+                    <strong>2. מנהיגות חינוכית:</strong> תת-סל מומחה תוכן &mdash; פיתוח מקצועי, ייעוץ וליווי לצוות הניהולי והחינוכי.
+                </p>
+            </div>
+
+            <div class="gapan-card fade-in fade-in-delay-3">
+                <div class="gapan-card-title">&#128176; תמחור</div>
+                <p class="gapan-card-text">
+                    בהתאם ל<strong>"מחירי הגג"</strong> המאושרים על ידי משרד החינוך. תמחור שקוף ומוסדר.
+                </p>
+            </div>
+
+            <div class="gapan-card fade-in fade-in-delay-3">
+                <div class="gapan-card-title">&#128295; גמישות</div>
+                <p class="gapan-card-text">
+                    ניתן להזמין כ<strong>תוכנית ליווי שנתית</strong> (3-8 חודשים) או כ<strong>סדרת הרצאות/סדנאות</strong> ממוקדות בהתאמה אישית.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SLIDE 10: CONTACT ===== -->
+<section class="slide slide-contact" id="slide-9">
+    <div class="slide-content">
+        <div class="section-number fade-in">09 &mdash; סיכום ויצירת קשר</div>
+        <h2 class="section-title white fade-in fade-in-delay-1">הצטרפו למסע</h2>
+
+        <div class="contact-quote fade-in fade-in-delay-2">
+            <p>
+                "משימתנו היא לבנות את דור המנהיגות הבא של ישראל &mdash; דור שאינו חושש מהטכנולוגיה, אלא יודע לרתום אותה לטובת הצדק, הביטחון והחוסן הלאומי. אנו מעניקים לתלמידים את הכלים להוביל בביטחון בעולם של אי-ודאות אלגוריתמית."
+            </p>
+            <p class="author">&mdash; ד"ר אברהם ללום</p>
+        </div>
+
+        <div class="contact-grid fade-in fade-in-delay-3">
+            <div class="contact-card">
+                <div class="contact-icon">&#128205;</div>
+                <div class="contact-label">כתובת המשרד</div>
+                <div class="contact-value" style="font-size: 13px; direction: ltr;">
+                    Herzliya Business Park, Building G<br>
+                    85 Medinat HaYehudim St., 3rd Floor<br>
+                    Herzliya Pituach
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">&#128222;</div>
+                <div class="contact-label">טלפון משרד</div>
+                <div class="contact-value">03-3104959</div>
+                <div class="contact-label" style="margin-top: 15px;">טלפון נייד</div>
+                <div class="contact-value">052-2490420</div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">&#127760;</div>
+                <div class="contact-label">אתר אינטרנט</div>
+                <div class="contact-value" style="font-size: 13px;">
+                    אברהם ללום ושות'<br>
+                    משרד עורכי דין ונוטריון
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-cta fade-in fade-in-delay-4">
+            <span class="cta-button">לתיאום פגישת אפיון אסטרטגית לבית הספר</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ===== INTERSECTION OBSERVER FOR ANIMATIONS =====
+    const observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ===== NAVIGATION DOTS =====
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.nav-dot');
+
+    const slideObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const slideIndex = Array.from(slides).indexOf(entry.target);
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === slideIndex);
+                });
+            }
+        });
+    }, { threshold: 0.5 });
+
+    slides.forEach(slide => slideObserver.observe(slide));
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const slideIndex = parseInt(dot.dataset.slide);
+            slides[slideIndex].scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // ===== KEYBOARD NAVIGATION =====
+    let currentSlide = 0;
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+            e.preventDefault();
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+            e.preventDefault();
+            if (currentSlide > 0) {
+                currentSlide--;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+
+    // Update currentSlide on scroll
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                currentSlide = Array.from(slides).indexOf(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    slides.forEach(slide => scrollObserver.observe(slide));
+</script>
+
+</body>
+</html>
