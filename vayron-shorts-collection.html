@@ -7,474 +7,355 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@300;400;600;700;800;900&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #0a0a0a;
-            color: #ffffff;
+            background: #0b0b0b;
+            color: #fff;
             font-family: 'Montserrat', 'Heebo', sans-serif;
             min-height: 100vh;
         }
 
-        .page-container {
-            max-width: 1200px;
+        .page {
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 50px 20px 40px;
         }
 
         /* Header */
-        .brand-header {
+        .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 12px;
         }
-
-        .brand-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 64px;
+        .header h1 {
+            font-size: 58px;
             font-weight: 900;
-            letter-spacing: 12px;
-            color: #ffffff;
+            letter-spacing: 16px;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            text-shadow: 0 0 40px rgba(255,255,255,0.1);
         }
-
-        .brand-subtitle {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
+        .header .sub {
+            font-size: 13px;
             font-weight: 300;
-            letter-spacing: 8px;
-            color: #888;
+            letter-spacing: 10px;
+            color: #777;
             text-transform: uppercase;
+            margin-top: 2px;
         }
 
-        .collection-title {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .collection-title h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: 6px;
-            color: #c9a84c;
-            text-transform: uppercase;
-        }
-
-        .divider {
-            width: 60px;
+        /* Gold line */
+        .gold-line {
+            width: 80px;
             height: 2px;
             background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-            margin: 15px auto;
+            margin: 28px auto 40px;
         }
 
-        /* Product Grid */
-        .products-grid {
+        /* Grid */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            margin-bottom: 50px;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 768px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Product Card */
-        .product-card {
-            background: linear-gradient(145deg, #1a1a1a, #111111);
-            border-radius: 16px;
+        /* Card */
+        .card {
+            background: #141414;
+            border-radius: 18px;
+            border: 1px solid #1e1e1e;
             overflow: hidden;
-            border: 1px solid #222;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
+            transition: transform .3s, box-shadow .3s;
         }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,.6);
         }
-
-        .product-card.featured {
-            border-color: #c9a84c44;
-        }
+        .card.gold-border { border-color: rgba(201,168,76,.25); }
 
         .badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(135deg, #c9a84c, #f0d78c);
+            top: 14px;
+            left: 14px;
+            background: linear-gradient(135deg, #c9a84c, #e8d48b);
             color: #000;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             letter-spacing: 2px;
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
             text-transform: uppercase;
-            z-index: 2;
+            z-index: 3;
         }
 
-        .product-visual {
-            width: 100%;
-            height: 380px;
+        /* Visual area */
+        .visual {
+            height: 340px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            padding: 30px;
             position: relative;
+            overflow: hidden;
         }
-
-        /* Outfit Display — T-shirt + Shorts */
-        .outfit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* T-Shirt Shape */
-        .tshirt {
-            width: 120px;
-            height: 130px;
-            position: relative;
-        }
-
-        .tshirt-body {
-            width: 100%;
-            height: 100%;
-            border-radius: 4px 4px 8px 8px;
-            position: relative;
-        }
-
-        .tshirt-body::before {
+        .visual::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 36px;
-            height: 14px;
-            border-radius: 0 0 18px 18px;
-            background: #0a0a0a;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            opacity: .06;
+            filter: blur(40px);
         }
+        .card-green .visual::before { background: #3a7d50; }
+        .card-black .visual::before { background: #c9a84c; }
+        .card-white .visual::before { background: #ffffff; }
+        .card-sky .visual::before   { background: #5ba4c9; }
 
-        /* Sleeves */
-        .tshirt-body::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -18px;
-            width: 156px;
-            height: 40px;
-            border-radius: 8px 8px 0 0;
-            background: inherit;
-            z-index: -1;
-            clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
-        }
-
-        .tshirt-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Montserrat', sans-serif;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
-
-        /* Shorts Shape */
-        .shorts {
-            width: 110px;
-            height: 70px;
+        .visual svg {
             position: relative;
-            display: flex;
-            gap: 3px;
-            justify-content: center;
+            z-index: 1;
+            filter: drop-shadow(0 8px 24px rgba(0,0,0,.4));
         }
 
-        .shorts-leg {
-            width: 50%;
-            height: 100%;
-            border-radius: 4px 4px 8px 8px;
+        /* Info */
+        .info {
+            padding: 18px 22px 22px;
+            border-top: 1px solid #1e1e1e;
+            text-align: right;
         }
-
-        .shorts-waist {
-            position: absolute;
-            top: -4px;
-            left: 0;
-            right: 0;
-            height: 12px;
-            border-radius: 4px 4px 0 0;
-        }
-
-        /* Color Themes */
-
-        /* Green Set */
-        .color-green .tshirt-body,
-        .color-green .tshirt-body::after {
-            background: linear-gradient(180deg, #2d5a3d, #1e3d2a);
-        }
-        .color-green .shorts-leg,
-        .color-green .shorts-waist {
-            background: linear-gradient(180deg, #2d5a3d, #1e3d2a);
-        }
-        .color-green .tshirt-logo { color: #ffffff; }
-        .product-card.color-green-card { background: linear-gradient(145deg, #1a2a1e, #111); }
-
-        /* Black Set */
-        .color-black .tshirt-body,
-        .color-black .tshirt-body::after {
-            background: linear-gradient(180deg, #2a2a2a, #111111);
-        }
-        .color-black .shorts-leg,
-        .color-black .shorts-waist {
-            background: linear-gradient(180deg, #2a2a2a, #111111);
-        }
-        .color-black .tshirt-logo { color: #c9a84c; }
-        .product-card.color-black-card { background: linear-gradient(145deg, #1a1a1a, #0d0d0d); }
-        .product-card.color-black-card { border-color: #c9a84c33; }
-
-        /* White Set */
-        .color-white .tshirt-body,
-        .color-white .tshirt-body::after {
-            background: linear-gradient(180deg, #f5f5f5, #e0e0e0);
-        }
-        .color-white .shorts-leg,
-        .color-white .shorts-waist {
-            background: linear-gradient(180deg, #f5f5f5, #e0e0e0);
-        }
-        .color-white .tshirt-logo { color: #1a1a1a; }
-        .product-card.color-white-card { background: linear-gradient(145deg, #1e1e1e, #141414); }
-
-        /* Sky Blue Set */
-        .color-sky .tshirt-body,
-        .color-sky .tshirt-body::after {
-            background: linear-gradient(180deg, #5ba4c9, #3d8ab5);
-        }
-        .color-sky .shorts-leg,
-        .color-sky .shorts-waist {
-            background: linear-gradient(180deg, #5ba4c9, #3d8ab5);
-        }
-        .color-sky .tshirt-logo { color: #ffffff; }
-        .product-card.color-sky-card { background: linear-gradient(145deg, #152a35, #111); }
-
-        /* Product Info */
-        .product-info {
-            padding: 20px 25px 25px;
-            border-top: 1px solid #222;
-        }
-
-        .product-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 18px;
+        .info .name {
+            font-size: 17px;
             font-weight: 700;
-            margin-bottom: 4px;
-            color: #fff;
+            margin-bottom: 3px;
         }
-
-        .product-edition {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 11px;
-            font-weight: 400;
+        .info .edition {
+            font-size: 10px;
+            font-weight: 500;
             letter-spacing: 3px;
             color: #c9a84c;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-
-        .product-details {
+        .info .desc {
             font-family: 'Heebo', sans-serif;
             font-size: 13px;
-            color: #888;
-            line-height: 1.7;
+            color: #777;
+            line-height: 1.8;
         }
-
-        .product-details span {
-            display: block;
-        }
-
-        .size-range {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
+        .info .sizes {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #555;
             letter-spacing: 1px;
         }
-
-        .size-range strong {
-            color: #aaa;
-        }
+        .info .sizes b { color: #999; }
 
         /* Footer */
         .footer {
             text-align: center;
-            padding: 30px 0;
-            border-top: 1px solid #1a1a1a;
+            margin-top: 50px;
+            padding-top: 24px;
+            border-top: 1px solid #181818;
         }
-
-        .footer-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 28px;
+        .footer .logo {
+            font-size: 24px;
             font-weight: 900;
             letter-spacing: 8px;
-            color: #333;
+            color: #2a2a2a;
         }
-
-        .footer-tagline {
-            font-size: 11px;
-            letter-spacing: 4px;
-            color: #444;
-            margin-top: 5px;
+        .footer .tag {
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: #333;
             text-transform: uppercase;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="page-container">
+<div class="page">
 
-        <!-- Brand Header -->
-        <header class="brand-header">
-            <div class="brand-logo">VAYRON</div>
-            <div class="brand-subtitle">Premium Collection</div>
-        </header>
+    <!-- Header -->
+    <div class="header">
+        <h1>VAYRON</h1>
+        <div class="sub">Premium Collection</div>
+    </div>
+    <div class="gold-line"></div>
 
-        <!-- Collection Title -->
-        <div class="collection-title">
-            <h2>Shorts Collection 2026</h2>
-            <div class="divider"></div>
+    <!-- Grid -->
+    <div class="grid">
+
+        <!-- ==================== 1. GREEN SET ==================== -->
+        <div class="card card-green">
+            <div class="visual">
+                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- T-SHIRT -->
+                    <g>
+                        <!-- Left sleeve -->
+                        <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#2d6b3f"/>
+                        <!-- Right sleeve -->
+                        <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#2d6b3f"/>
+                        <!-- Body -->
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#307d47" />
+                        <!-- Collar -->
+                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <!-- Neckline -->
+                        <path d="M42 20 Q60 12 75 18" fill="#2d6b3f"/>
+                        <path d="M158 20 Q140 12 125 18" fill="#2d6b3f"/>
+                        <!-- Shoulder seams -->
+                        <line x1="42" y1="20" x2="30" y2="20" stroke="#276838" stroke-width="1.5"/>
+                        <line x1="158" y1="20" x2="170" y2="20" stroke="#276838" stroke-width="1.5"/>
+                        <!-- Logo -->
+                        <text x="100" y="92" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
+                    </g>
+                    <!-- SHORTS -->
+                    <g>
+                        <!-- Waistband -->
+                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#276838"/>
+                        <!-- Left leg -->
+                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#307d47"/>
+                        <!-- Right leg -->
+                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#307d47"/>
+                        <!-- Center seam -->
+                        <line x1="100" y1="167" x2="100" y2="210" stroke="#276838" stroke-width="1"/>
+                        <!-- Drawstring -->
+                        <path d="M90 160 Q100 166 110 160" stroke="#ddd" stroke-width="0.8" fill="none"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="info">
+                <div class="name">Green Set</div>
+                <div class="edition">Classic Edition</div>
+                <div class="desc">
+                    חולצת טי + מכנס קצר<br>
+                    בד פרימיום נושם | גזרה נוחה
+                </div>
+                <div class="sizes"><b>S — XXL</b></div>
+            </div>
         </div>
 
-        <!-- Products Grid -->
-        <div class="products-grid">
-
-            <!-- 1. Green Set -->
-            <div class="product-card color-green-card">
-                <div class="product-visual">
-                    <div class="outfit color-green">
-                        <div class="tshirt">
-                            <div class="tshirt-body">
-                                <span class="tshirt-logo">VAYRON</span>
-                            </div>
-                        </div>
-                        <div class="shorts">
-                            <div class="shorts-waist" style="background: linear-gradient(180deg, #2d5a3d, #1e3d2a);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #2d5a3d, #1e3d2a);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #2d5a3d, #1e3d2a);"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="product-name">Green Set</div>
-                    <div class="product-edition">Classic Edition</div>
-                    <div class="product-details">
-                        <span>חולצת טי + מכנס קצר</span>
-                        <span>בד פרימיום נושם | גזרה נוחה</span>
-                    </div>
-                    <div class="size-range"><strong>S — XXL</strong></div>
-                </div>
+        <!-- ==================== 2. BLACK SET ==================== -->
+        <div class="card card-black gold-border">
+            <div class="badge">Elegant</div>
+            <div class="visual">
+                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- T-SHIRT -->
+                    <g>
+                        <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#1a1a1a"/>
+                        <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#1a1a1a"/>
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#222222"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M42 20 Q60 12 75 18" fill="#1a1a1a"/>
+                        <path d="M158 20 Q140 12 125 18" fill="#1a1a1a"/>
+                        <line x1="42" y1="20" x2="30" y2="20" stroke="#151515" stroke-width="1.5"/>
+                        <line x1="158" y1="20" x2="170" y2="20" stroke="#151515" stroke-width="1.5"/>
+                        <text x="100" y="92" text-anchor="middle" fill="#c9a84c" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
+                    </g>
+                    <!-- SHORTS -->
+                    <g>
+                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#151515"/>
+                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#222222"/>
+                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#222222"/>
+                        <line x1="100" y1="167" x2="100" y2="210" stroke="#151515" stroke-width="1"/>
+                        <path d="M90 160 Q100 166 110 160" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+                    </g>
+                </svg>
             </div>
-
-            <!-- 2. Black Set -->
-            <div class="product-card color-black-card featured">
-                <div class="badge">Elegant</div>
-                <div class="product-visual">
-                    <div class="outfit color-black">
-                        <div class="tshirt">
-                            <div class="tshirt-body">
-                                <span class="tshirt-logo" style="color:#c9a84c;">VAYRON</span>
-                            </div>
-                        </div>
-                        <div class="shorts">
-                            <div class="shorts-waist" style="background: linear-gradient(180deg, #2a2a2a, #111111);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #2a2a2a, #111111);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #2a2a2a, #111111);"></div>
-                        </div>
-                    </div>
+            <div class="info">
+                <div class="name">Black Set</div>
+                <div class="edition">Elegant Edition</div>
+                <div class="desc">
+                    חולצת טי + מכנס קצר<br>
+                    בד פרימיום נושם | לוגו זהב
                 </div>
-                <div class="product-info">
-                    <div class="product-name">Black Set</div>
-                    <div class="product-edition">Elegant Edition</div>
-                    <div class="product-details">
-                        <span>חולצת טי + מכנס קצר</span>
-                        <span>בד פרימיום נושם | לוגו זהב</span>
-                    </div>
-                    <div class="size-range"><strong>S — XXL</strong></div>
-                </div>
+                <div class="sizes"><b>S — XXL</b></div>
             </div>
-
-            <!-- 3. White Set -->
-            <div class="product-card color-white-card">
-                <div class="product-visual">
-                    <div class="outfit color-white">
-                        <div class="tshirt">
-                            <div class="tshirt-body">
-                                <span class="tshirt-logo" style="color:#1a1a1a;">VAYRON</span>
-                            </div>
-                        </div>
-                        <div class="shorts">
-                            <div class="shorts-waist" style="background: linear-gradient(180deg, #f5f5f5, #e0e0e0);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #f5f5f5, #e0e0e0);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #f5f5f5, #e0e0e0);"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="product-name">White Set</div>
-                    <div class="product-edition">Clean Edition</div>
-                    <div class="product-details">
-                        <span>חולצת טי + מכנס קצר</span>
-                        <span>בד פרימיום נושם | מראה נקי</span>
-                    </div>
-                    <div class="size-range"><strong>S — XXL</strong></div>
-                </div>
-            </div>
-
-            <!-- 4. Sky Blue Set -->
-            <div class="product-card color-sky-card featured">
-                <div class="badge">Limited</div>
-                <div class="product-visual">
-                    <div class="outfit color-sky">
-                        <div class="tshirt">
-                            <div class="tshirt-body">
-                                <span class="tshirt-logo">VAYRON</span>
-                            </div>
-                        </div>
-                        <div class="shorts">
-                            <div class="shorts-waist" style="background: linear-gradient(180deg, #5ba4c9, #3d8ab5);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #5ba4c9, #3d8ab5);"></div>
-                            <div class="shorts-leg" style="background: linear-gradient(180deg, #5ba4c9, #3d8ab5);"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="product-name">Sky Blue Set</div>
-                    <div class="product-edition">Limited Edition — Sky Billion</div>
-                    <div class="product-details">
-                        <span>חולצת טי + מכנס קצר</span>
-                        <span>בד פרימיום נושם | מהדורה מוגבלת</span>
-                    </div>
-                    <div class="size-range"><strong>S — XXL</strong></div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-logo">VAYRON</div>
-            <div class="footer-tagline">Premium Streetwear</div>
-        </footer>
+        <!-- ==================== 3. WHITE SET ==================== -->
+        <div class="card card-white">
+            <div class="visual">
+                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- T-SHIRT -->
+                    <g>
+                        <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#e0e0e0"/>
+                        <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#e0e0e0"/>
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#f0f0f0"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#ccc" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M42 20 Q60 12 75 18" fill="#e0e0e0"/>
+                        <path d="M158 20 Q140 12 125 18" fill="#e0e0e0"/>
+                        <line x1="42" y1="20" x2="30" y2="20" stroke="#d5d5d5" stroke-width="1.5"/>
+                        <line x1="158" y1="20" x2="170" y2="20" stroke="#d5d5d5" stroke-width="1.5"/>
+                        <text x="100" y="92" text-anchor="middle" fill="#1a1a1a" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
+                    </g>
+                    <!-- SHORTS -->
+                    <g>
+                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#d5d5d5"/>
+                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#f0f0f0"/>
+                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#f0f0f0"/>
+                        <line x1="100" y1="167" x2="100" y2="210" stroke="#d5d5d5" stroke-width="1"/>
+                        <path d="M90 160 Q100 166 110 160" stroke="#999" stroke-width="0.8" fill="none"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="info">
+                <div class="name">White Set</div>
+                <div class="edition">Clean Edition</div>
+                <div class="desc">
+                    חולצת טי + מכנס קצר<br>
+                    בד פרימיום נושם | מראה נקי
+                </div>
+                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+        </div>
+
+        <!-- ==================== 4. SKY BLUE SET ==================== -->
+        <div class="card card-sky gold-border">
+            <div class="badge">Limited</div>
+            <div class="visual">
+                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- T-SHIRT -->
+                    <g>
+                        <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#4a94b8"/>
+                        <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#4a94b8"/>
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#5ba4c9"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M42 20 Q60 12 75 18" fill="#4a94b8"/>
+                        <path d="M158 20 Q140 12 125 18" fill="#4a94b8"/>
+                        <line x1="42" y1="20" x2="30" y2="20" stroke="#4290b0" stroke-width="1.5"/>
+                        <line x1="158" y1="20" x2="170" y2="20" stroke="#4290b0" stroke-width="1.5"/>
+                        <text x="100" y="92" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
+                    </g>
+                    <!-- SHORTS -->
+                    <g>
+                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#4290b0"/>
+                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#5ba4c9"/>
+                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#5ba4c9"/>
+                        <line x1="100" y1="167" x2="100" y2="210" stroke="#4290b0" stroke-width="1"/>
+                        <path d="M90 160 Q100 166 110 160" stroke="#fff" stroke-width="0.8" fill="none"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="info">
+                <div class="name">Sky Blue Set</div>
+                <div class="edition">Limited Edition — Sky Billion</div>
+                <div class="desc">
+                    חולצת טי + מכנס קצר<br>
+                    בד פרימיום נושם | מהדורה מוגבלת
+                </div>
+                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+        </div>
 
     </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="logo">VAYRON</div>
+        <div class="tag">Premium Streetwear</div>
+    </div>
+
+</div>
 </body>
 </html>
