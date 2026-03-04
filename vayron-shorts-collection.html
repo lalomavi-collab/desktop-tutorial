@@ -3,382 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VAYRON - Premium Shorts Collection</title>
+    <title>VAYRON - קטלוג קולקציית פרימיום</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Montserrat:wght@300;400;600;700;800;900&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #0b0b0b;
-            color: #fff;
+            background: #f5f3ef;
+            color: #1a1a1a;
             font-family: 'Montserrat', 'Heebo', sans-serif;
             min-height: 100vh;
         }
 
-        .page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 50px 20px 40px;
-        }
-
-        /* Header */
-        .header {
+        /* ===== CATALOG COVER ===== */
+        .cover {
+            background: #0b0b0b;
+            color: #fff;
             text-align: center;
-            margin-bottom: 12px;
+            padding: 60px 20px 50px;
+            position: relative;
+            overflow: hidden;
         }
-        .header h1 {
-            font-size: 58px;
-            font-weight: 900;
-            letter-spacing: 16px;
-            text-transform: uppercase;
+        .cover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0b0b0b, #c9a84c, #0b0b0b);
         }
-        .header .brand-name {
-            font-family: 'Heebo', sans-serif;
-            font-size: 16px;
-            font-weight: 300;
-            color: #c9a84c;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-        .header .sub {
+        .cover .brand-name {
             font-family: 'Heebo', sans-serif;
             font-size: 14px;
             font-weight: 300;
-            letter-spacing: 4px;
-            color: #999;
-            margin-top: 4px;
+            color: #c9a84c;
+            letter-spacing: 2px;
         }
-        .header .tagline {
+        .cover h1 {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: 20px;
+            margin: 8px 0 6px;
+        }
+        .cover .sub {
+            font-family: 'Heebo', sans-serif;
+            font-size: 16px;
+            font-weight: 300;
+            color: #999;
+            letter-spacing: 3px;
+        }
+        .cover .tagline {
             font-size: 11px;
             font-weight: 300;
             letter-spacing: 6px;
             color: #555;
-            text-transform: lowercase;
             font-style: italic;
-            margin-top: 6px;
+            margin-top: 8px;
         }
-
-        /* Gold line */
-        .gold-line {
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-            margin: 28px auto 40px;
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 28px;
-        }
-        @media (max-width: 700px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        /* Card */
-        .card {
-            background: #141414;
-            border-radius: 18px;
-            border: 1px solid #1e1e1e;
-            overflow: hidden;
-            position: relative;
-            transition: transform .3s, box-shadow .3s;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 48px rgba(0,0,0,.6);
-        }
-        .card.gold-border { border-color: rgba(201,168,76,.25); }
-
-        .badge {
-            position: absolute;
-            top: 14px;
-            left: 14px;
-            background: linear-gradient(135deg, #c9a84c, #e8d48b);
-            color: #000;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 4px 12px;
-            border-radius: 20px;
+        .cover .season {
+            display: inline-block;
+            margin-top: 22px;
+            border: 1px solid #333;
+            padding: 6px 24px;
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: #666;
             text-transform: uppercase;
-            z-index: 3;
         }
 
-        /* Visual area */
-        .visual {
-            height: 340px;
+        /* ===== CATALOG BODY ===== */
+        .catalog {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        /* Section title */
+        .section-title {
+            text-align: center;
+            padding: 40px 0 10px;
+            font-family: 'Heebo', sans-serif;
+        }
+        .section-title h2 {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 5px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .section-divider {
+            width: 40px;
+            height: 1px;
+            background: #c9a84c;
+            margin: 12px auto 30px;
+        }
+
+        /* ===== CATALOG ITEM ROW ===== */
+        .catalog-item {
+            display: flex;
+            align-items: stretch;
+            background: #fff;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 2px 20px rgba(0,0,0,.06);
+            border: 1px solid #e8e4de;
+            transition: box-shadow .3s;
+        }
+        .catalog-item:hover {
+            box-shadow: 0 8px 40px rgba(0,0,0,.1);
+        }
+
+        /* Item number */
+        .item-num {
+            width: 54px;
+            min-width: 54px;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .visual::before {
-            content: '';
-            position: absolute;
-            width: 220px; height: 220px;
-            border-radius: 50%;
-            opacity: .06;
-            filter: blur(40px);
-        }
-        .card-green .visual::before { background: #3a7d50; }
-        .card-black .visual::before { background: #c9a84c; }
-        .card-white .visual::before { background: #ffffff; }
-        .card-sky .visual::before   { background: #5ba4c9; }
-
-        .visual svg {
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 8px 24px rgba(0,0,0,.4));
+            font-size: 28px;
+            font-weight: 900;
+            color: #e8e4de;
+            border-left: 1px solid #f0ece6;
+            background: #fcfaf7;
         }
 
-        /* Info */
-        .info {
-            padding: 18px 22px 22px;
-            border-top: 1px solid #1e1e1e;
-            text-align: right;
+        /* Product visual */
+        .item-visual {
+            width: 220px;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            position: relative;
         }
-        .info .name {
-            font-size: 17px;
+        .item-visual svg { filter: drop-shadow(0 4px 12px rgba(0,0,0,.1)); }
+
+        /* Shirt + shorts side by side inside visual */
+        .item-pieces {
+            display: flex;
+            gap: 14px;
+            align-items: flex-end;
+        }
+
+        /* Product details */
+        .item-details {
+            flex: 1;
+            padding: 28px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid #f0ece6;
+        }
+        .item-details .item-name {
+            font-family: 'Heebo', sans-serif;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
-        .info .edition {
-            font-size: 10px;
-            font-weight: 500;
+        .item-details .item-edition {
+            font-size: 9px;
+            font-weight: 600;
             letter-spacing: 3px;
             color: #c9a84c;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
-        .info .desc {
+        .item-details .item-desc {
             font-family: 'Heebo', sans-serif;
             font-size: 13px;
-            color: #777;
-            line-height: 1.8;
+            color: #888;
+            line-height: 1.9;
         }
-        .info .sizes {
-            margin-top: 8px;
-            font-size: 11px;
+
+        /* Specs column */
+        .item-specs {
+            width: 180px;
+            min-width: 180px;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #fcfaf7;
+        }
+        .item-specs .spec-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: #aaa;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .item-specs .spec-sizes {
+            font-size: 13px;
+            font-weight: 600;
             color: #555;
             letter-spacing: 1px;
+            margin-bottom: 14px;
         }
-        .info .sizes b { color: #999; }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 24px;
-            border-top: 1px solid #181818;
+        .item-specs .spec-includes {
+            font-family: 'Heebo', sans-serif;
+            font-size: 11px;
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
-        .footer .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 8px;
-            color: #2a2a2a;
-        }
-        .footer .tag {
+        .item-specs .btn {
+            display: inline-block;
+            padding: 8px 22px;
+            border: 1.5px solid #1a1a1a;
+            border-radius: 30px;
             font-size: 10px;
-            letter-spacing: 5px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all .25s;
+            cursor: pointer;
+            background: transparent;
+        }
+        .item-specs .btn:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .item-specs .btn.gold {
+            border-color: #c9a84c;
+            color: #c9a84c;
+        }
+        .item-specs .btn.gold:hover {
+            background: #c9a84c;
+            color: #000;
+        }
+
+        /* Badge on item */
+        .item-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #c9a84c, #e8d48b);
+            color: #000;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        /* ===== FOOTER ===== */
+        .catalog-footer {
+            background: #0b0b0b;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .catalog-footer .logo {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            color: #222;
+        }
+        .catalog-footer .tag {
+            font-size: 9px;
+            letter-spacing: 4px;
             color: #333;
             text-transform: uppercase;
-            margin-top: 4px;
+            margin-top: 6px;
+        }
+        .catalog-footer .contact {
+            font-family: 'Heebo', sans-serif;
+            font-size: 12px;
+            color: #444;
+            margin-top: 16px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 800px) {
+            .catalog-item {
+                flex-direction: column;
+            }
+            .item-num { width: 100%; min-width: auto; height: 40px; border-left: none; border-bottom: 1px solid #f0ece6; }
+            .item-visual { width: 100%; min-width: auto; }
+            .item-details { border-right: none; border-bottom: 1px solid #f0ece6; padding: 20px; }
+            .item-specs { width: 100%; min-width: auto; padding: 20px; }
         }
     </style>
 </head>
 <body>
-<div class="page">
 
-    <!-- Header -->
-    <div class="header">
+    <!-- ===== CATALOG COVER ===== -->
+    <div class="cover">
         <div class="brand-name">ארי ללום</div>
         <h1>VAYRON</h1>
         <div class="sub">קולקציית פרימיום</div>
         <div class="tagline">define your legacy</div>
+        <div class="season">Spring / Summer 2026</div>
     </div>
-    <div class="gold-line"></div>
 
-    <!-- Grid -->
-    <div class="grid">
+    <!-- ===== CATALOG BODY ===== -->
+    <div class="catalog">
 
-        <!-- ==================== 1. GREEN SET ==================== -->
-        <div class="card card-green">
-            <div class="visual">
-                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- T-SHIRT -->
-                    <g>
-                        <!-- Left sleeve -->
+        <div class="section-title">
+            <h2>מכנסיים קצרים + חולצות טי</h2>
+        </div>
+        <div class="section-divider"></div>
+
+        <!-- ===== 1. GREEN SET ===== -->
+        <div class="catalog-item">
+            <div class="item-num">01</div>
+            <div class="item-visual">
+                <div class="item-pieces">
+                    <!-- T-Shirt -->
+                    <svg width="90" height="120" viewBox="0 0 200 160" fill="none">
                         <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#2d6b3f"/>
-                        <!-- Right sleeve -->
                         <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#2d6b3f"/>
-                        <!-- Body -->
-                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#307d47" />
-                        <!-- Collar -->
-                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
-                        <!-- Neckline -->
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#307d47"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#f5f3ef" stroke-width="8" fill="none" stroke-linecap="round"/>
                         <path d="M42 20 Q60 12 75 18" fill="#2d6b3f"/>
                         <path d="M158 20 Q140 12 125 18" fill="#2d6b3f"/>
-                        <!-- Shoulder seams -->
-                        <line x1="42" y1="20" x2="30" y2="20" stroke="#276838" stroke-width="1.5"/>
-                        <line x1="158" y1="20" x2="170" y2="20" stroke="#276838" stroke-width="1.5"/>
-                        <!-- Logo -->
-                        <text x="100" y="88" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
-                        <text x="100" y="104" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Montserrat,sans-serif" font-size="6" font-weight="500" letter-spacing="2">BORN LEADER</text>
-                    </g>
-                    <!-- SHORTS -->
-                    <g>
-                        <!-- Waistband -->
-                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#276838"/>
-                        <!-- Left leg -->
-                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#307d47"/>
-                        <!-- Right leg -->
-                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#307d47"/>
-                        <!-- Center seam -->
-                        <line x1="100" y1="167" x2="100" y2="210" stroke="#276838" stroke-width="1"/>
-                        <!-- Drawstring -->
-                        <path d="M90 160 Q100 166 110 160" stroke="#ddd" stroke-width="0.8" fill="none"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="info">
-                <div class="name">סט ירוק</div>
-                <div class="edition">Classic Edition</div>
-                <div class="desc">
-                    חולצת טי + מכנס קצר<br>
-                    מראה נקי ואלגנטי
+                        <text x="100" y="88" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="14" font-weight="800" letter-spacing="3">VAYRON</text>
+                        <text x="100" y="106" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Montserrat,sans-serif" font-size="7" font-weight="500" letter-spacing="2">BORN LEADER</text>
+                    </svg>
+                    <!-- Shorts -->
+                    <svg width="70" height="80" viewBox="0 0 130 100" fill="none">
+                        <rect x="3" y="0" width="124" height="12" rx="3" fill="#276838"/>
+                        <path d="M3 12 L3 85 Q3 93 11 93 L57 93 Q61 93 62 89 L65 12 Z" fill="#307d47"/>
+                        <path d="M65 12 L68 89 Q69 93 73 93 L119 93 Q127 93 127 85 L127 12 Z" fill="#307d47"/>
+                        <line x1="65" y1="12" x2="65" y2="55" stroke="#276838" stroke-width="1"/>
+                        <path d="M55 5 Q65 11 75 5" stroke="#ddd" stroke-width="0.8" fill="none"/>
+                    </svg>
                 </div>
-                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+            <div class="item-details">
+                <div class="item-name">סט ירוק</div>
+                <div class="item-edition">Classic Edition</div>
+                <div class="item-desc">
+                    חולצת טי אוברסייז + מכנס קצר בגזרה נוחה<br>
+                    בד פרימיום נושם | מראה נקי ואלגנטי
+                </div>
+            </div>
+            <div class="item-specs">
+                <div class="spec-label">מידות</div>
+                <div class="spec-sizes">S — XXL</div>
+                <div class="spec-includes">חולצה + מכנס קצר</div>
+                <button class="btn">הזמן עכשיו</button>
             </div>
         </div>
 
-        <!-- ==================== 2. BLACK SET ==================== -->
-        <div class="card card-black gold-border">
-            <div class="badge">Elegant</div>
-            <div class="visual">
-                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- T-SHIRT -->
-                    <g>
+        <!-- ===== 2. BLACK SET ===== -->
+        <div class="catalog-item">
+            <div class="item-num">02</div>
+            <div class="item-visual">
+                <div class="item-badge">Elegant</div>
+                <div class="item-pieces">
+                    <svg width="90" height="120" viewBox="0 0 200 160" fill="none">
                         <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#1a1a1a"/>
                         <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#1a1a1a"/>
-                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#222222"/>
-                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#222"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#f5f3ef" stroke-width="8" fill="none" stroke-linecap="round"/>
                         <path d="M42 20 Q60 12 75 18" fill="#1a1a1a"/>
                         <path d="M158 20 Q140 12 125 18" fill="#1a1a1a"/>
-                        <line x1="42" y1="20" x2="30" y2="20" stroke="#151515" stroke-width="1.5"/>
-                        <line x1="158" y1="20" x2="170" y2="20" stroke="#151515" stroke-width="1.5"/>
-                        <text x="100" y="88" text-anchor="middle" fill="#c9a84c" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
-                        <text x="100" y="104" text-anchor="middle" fill="rgba(201,168,76,0.6)" font-family="Montserrat,sans-serif" font-size="6" font-weight="500" letter-spacing="2">BORN LEADER</text>
-                    </g>
-                    <!-- SHORTS -->
-                    <g>
-                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#151515"/>
-                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#222222"/>
-                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#222222"/>
-                        <line x1="100" y1="167" x2="100" y2="210" stroke="#151515" stroke-width="1"/>
-                        <path d="M90 160 Q100 166 110 160" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="info">
-                <div class="name">סט שחור</div>
-                <div class="edition">Elegant Edition</div>
-                <div class="desc">
-                    חולצת טי + מכנס קצר<br>
-                    אלגנטיות ויוקרה | לוגו זהב
+                        <text x="100" y="88" text-anchor="middle" fill="#c9a84c" font-family="Montserrat,sans-serif" font-size="14" font-weight="800" letter-spacing="3">VAYRON</text>
+                        <text x="100" y="106" text-anchor="middle" fill="rgba(201,168,76,0.5)" font-family="Montserrat,sans-serif" font-size="7" font-weight="500" letter-spacing="2">BORN LEADER</text>
+                    </svg>
+                    <svg width="70" height="80" viewBox="0 0 130 100" fill="none">
+                        <rect x="3" y="0" width="124" height="12" rx="3" fill="#151515"/>
+                        <path d="M3 12 L3 85 Q3 93 11 93 L57 93 Q61 93 62 89 L65 12 Z" fill="#222"/>
+                        <path d="M65 12 L68 89 Q69 93 73 93 L119 93 Q127 93 127 85 L127 12 Z" fill="#222"/>
+                        <line x1="65" y1="12" x2="65" y2="55" stroke="#151515" stroke-width="1"/>
+                        <path d="M55 5 Q65 11 75 5" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+                    </svg>
                 </div>
-                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+            <div class="item-details">
+                <div class="item-name">סט שחור</div>
+                <div class="item-edition">Elegant Edition</div>
+                <div class="item-desc">
+                    חולצת טי אוברסייז + מכנס קצר בגזרה נוחה<br>
+                    אלגנטיות ויוקרה | לוגו זהב בולט
+                </div>
+            </div>
+            <div class="item-specs">
+                <div class="spec-label">מידות</div>
+                <div class="spec-sizes">S — XXL</div>
+                <div class="spec-includes">חולצה + מכנס קצר</div>
+                <button class="btn gold">הזמן עכשיו</button>
             </div>
         </div>
 
-        <!-- ==================== 3. WHITE SET ==================== -->
-        <div class="card card-white">
-            <div class="visual">
-                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- T-SHIRT -->
-                    <g>
+        <!-- ===== 3. WHITE SET ===== -->
+        <div class="catalog-item">
+            <div class="item-num">03</div>
+            <div class="item-visual">
+                <div class="item-pieces">
+                    <svg width="90" height="120" viewBox="0 0 200 160" fill="none">
                         <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#e0e0e0"/>
                         <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#e0e0e0"/>
                         <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#f0f0f0"/>
-                        <path d="M75 18 Q100 34 125 18" stroke="#ccc" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#d5d5d5" stroke-width="8" fill="none" stroke-linecap="round"/>
                         <path d="M42 20 Q60 12 75 18" fill="#e0e0e0"/>
                         <path d="M158 20 Q140 12 125 18" fill="#e0e0e0"/>
-                        <line x1="42" y1="20" x2="30" y2="20" stroke="#d5d5d5" stroke-width="1.5"/>
-                        <line x1="158" y1="20" x2="170" y2="20" stroke="#d5d5d5" stroke-width="1.5"/>
-                        <text x="100" y="88" text-anchor="middle" fill="#1a1a1a" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
-                        <text x="100" y="104" text-anchor="middle" fill="rgba(26,26,26,0.5)" font-family="Montserrat,sans-serif" font-size="6" font-weight="500" letter-spacing="2">BORN LEADER</text>
-                    </g>
-                    <!-- SHORTS -->
-                    <g>
-                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#d5d5d5"/>
-                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#f0f0f0"/>
-                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#f0f0f0"/>
-                        <line x1="100" y1="167" x2="100" y2="210" stroke="#d5d5d5" stroke-width="1"/>
-                        <path d="M90 160 Q100 166 110 160" stroke="#999" stroke-width="0.8" fill="none"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="info">
-                <div class="name">סט לבן</div>
-                <div class="edition">Clean Edition</div>
-                <div class="desc">
-                    חולצת טי + מכנס קצר<br>
-                    ייחודיות ויוקרה
+                        <text x="100" y="88" text-anchor="middle" fill="#1a1a1a" font-family="Montserrat,sans-serif" font-size="14" font-weight="800" letter-spacing="3">VAYRON</text>
+                        <text x="100" y="106" text-anchor="middle" fill="rgba(26,26,26,0.4)" font-family="Montserrat,sans-serif" font-size="7" font-weight="500" letter-spacing="2">BORN LEADER</text>
+                    </svg>
+                    <svg width="70" height="80" viewBox="0 0 130 100" fill="none">
+                        <rect x="3" y="0" width="124" height="12" rx="3" fill="#d5d5d5"/>
+                        <path d="M3 12 L3 85 Q3 93 11 93 L57 93 Q61 93 62 89 L65 12 Z" fill="#f0f0f0"/>
+                        <path d="M65 12 L68 89 Q69 93 73 93 L119 93 Q127 93 127 85 L127 12 Z" fill="#f0f0f0"/>
+                        <line x1="65" y1="12" x2="65" y2="55" stroke="#d5d5d5" stroke-width="1"/>
+                        <path d="M55 5 Q65 11 75 5" stroke="#bbb" stroke-width="0.8" fill="none"/>
+                    </svg>
                 </div>
-                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+            <div class="item-details">
+                <div class="item-name">סט לבן</div>
+                <div class="item-edition">Clean Edition</div>
+                <div class="item-desc">
+                    חולצת טי אוברסייז + מכנס קצר בגזרה נוחה<br>
+                    ייחודיות ויוקרה | מראה נקי
+                </div>
+            </div>
+            <div class="item-specs">
+                <div class="spec-label">מידות</div>
+                <div class="spec-sizes">S — XXL</div>
+                <div class="spec-includes">חולצה + מכנס קצר</div>
+                <button class="btn">הזמן עכשיו</button>
             </div>
         </div>
 
-        <!-- ==================== 4. SKY BLUE SET ==================== -->
-        <div class="card card-sky gold-border">
-            <div class="badge">Limited</div>
-            <div class="visual">
-                <svg width="200" height="280" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- T-SHIRT -->
-                    <g>
+        <!-- ===== 4. SKY BLUE SET ===== -->
+        <div class="catalog-item">
+            <div class="item-num">04</div>
+            <div class="item-visual">
+                <div class="item-badge">Limited</div>
+                <div class="item-pieces">
+                    <svg width="90" height="120" viewBox="0 0 200 160" fill="none">
                         <path d="M30 20 L0 50 L12 62 L42 38 Z" fill="#4a94b8"/>
                         <path d="M170 20 L200 50 L188 62 L158 38 Z" fill="#4a94b8"/>
                         <path d="M42 20 L42 140 Q42 148 50 148 L150 148 Q158 148 158 140 L158 20 Z" fill="#5ba4c9"/>
-                        <path d="M75 18 Q100 34 125 18" stroke="#0b0b0b" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <path d="M75 18 Q100 34 125 18" stroke="#f5f3ef" stroke-width="8" fill="none" stroke-linecap="round"/>
                         <path d="M42 20 Q60 12 75 18" fill="#4a94b8"/>
                         <path d="M158 20 Q140 12 125 18" fill="#4a94b8"/>
-                        <line x1="42" y1="20" x2="30" y2="20" stroke="#4290b0" stroke-width="1.5"/>
-                        <line x1="158" y1="20" x2="170" y2="20" stroke="#4290b0" stroke-width="1.5"/>
-                        <text x="100" y="88" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="13" font-weight="800" letter-spacing="3">VAYRON</text>
-                        <text x="100" y="104" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Montserrat,sans-serif" font-size="6" font-weight="500" letter-spacing="2">BORN LEADER</text>
-                    </g>
-                    <!-- SHORTS -->
-                    <g>
-                        <rect x="38" y="155" width="124" height="12" rx="3" fill="#4290b0"/>
-                        <path d="M38 167 L38 240 Q38 248 46 248 L92 248 Q96 248 97 244 L100 167 Z" fill="#5ba4c9"/>
-                        <path d="M100 167 L103 244 Q104 248 108 248 L154 248 Q162 248 162 240 L162 167 Z" fill="#5ba4c9"/>
-                        <line x1="100" y1="167" x2="100" y2="210" stroke="#4290b0" stroke-width="1"/>
-                        <path d="M90 160 Q100 166 110 160" stroke="#fff" stroke-width="0.8" fill="none"/>
-                    </g>
-                </svg>
+                        <text x="100" y="88" text-anchor="middle" fill="white" font-family="Montserrat,sans-serif" font-size="14" font-weight="800" letter-spacing="3">VAYRON</text>
+                        <text x="100" y="106" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Montserrat,sans-serif" font-size="7" font-weight="500" letter-spacing="2">BORN LEADER</text>
+                    </svg>
+                    <svg width="70" height="80" viewBox="0 0 130 100" fill="none">
+                        <rect x="3" y="0" width="124" height="12" rx="3" fill="#4290b0"/>
+                        <path d="M3 12 L3 85 Q3 93 11 93 L57 93 Q61 93 62 89 L65 12 Z" fill="#5ba4c9"/>
+                        <path d="M65 12 L68 89 Q69 93 73 93 L119 93 Q127 93 127 85 L127 12 Z" fill="#5ba4c9"/>
+                        <line x1="65" y1="12" x2="65" y2="55" stroke="#4290b0" stroke-width="1"/>
+                        <path d="M55 5 Q65 11 75 5" stroke="#fff" stroke-width="0.8" fill="none"/>
+                    </svg>
+                </div>
             </div>
-            <div class="info">
-                <div class="name">סט תכלת</div>
-                <div class="edition">Limited Edition — Sky Billion</div>
-                <div class="desc">
-                    חולצת טי + מכנס קצר<br>
+            <div class="item-details">
+                <div class="item-name">סט תכלת</div>
+                <div class="item-edition">Limited Edition — Sky Billion</div>
+                <div class="item-desc">
+                    חולצת טי אוברסייז + מכנס קצר בגזרה נוחה<br>
                     מהדורה מוגבלת | סגנון ייחודי
                 </div>
-                <div class="sizes"><b>S — XXL</b></div>
+            </div>
+            <div class="item-specs">
+                <div class="spec-label">מידות</div>
+                <div class="spec-sizes">S — XXL</div>
+                <div class="spec-includes">חולצה + מכנס קצר</div>
+                <button class="btn gold">הזמן עכשיו</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
+    <!-- ===== FOOTER ===== -->
+    <div class="catalog-footer">
         <div class="logo">VAYRON</div>
         <div class="tag">Born Leader — define your legacy</div>
+        <div class="contact">להזמנות ופרטים נוספים: ארי ללום</div>
     </div>
 
-</div>
 </body>
 </html>
