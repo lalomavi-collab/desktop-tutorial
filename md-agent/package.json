@@ -1,0 +1,13 @@
+{
+  "name": "md-agent",
+  "version": "1.0.0",
+  "description": "Interactive agent that builds MD files for new projects",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs",
+    "build-md": "node index.mjs"
+  },
+  "dependencies": {
+    "inquirer": "^9.2.12"
+  }
+}
