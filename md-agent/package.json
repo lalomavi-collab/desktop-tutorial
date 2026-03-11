@@ -1,11 +1,18 @@
 {
-  "name": "md-agent",
+  "name": "dev-agents",
   "version": "1.0.0",
-  "description": "Interactive agent that builds MD files for new projects",
-  "main": "index.mjs",
+  "description": "Interactive CLI agents for faster development",
+  "main": "cli.mjs",
+  "bin": {
+    "dev-agents": "./cli.mjs"
+  },
   "scripts": {
-    "start": "node index.mjs",
-    "build-md": "node index.mjs"
+    "start": "node cli.mjs",
+    "md": "node index.mjs",
+    "component": "node agents/component-agent.mjs",
+    "api": "node agents/api-agent.mjs",
+    "test-gen": "node agents/test-agent.mjs",
+    "git": "node agents/git-agent.mjs"
   },
   "dependencies": {
     "inquirer": "^9.2.12"
