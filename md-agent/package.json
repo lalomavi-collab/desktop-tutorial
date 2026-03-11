@@ -12,9 +12,12 @@
     "component": "node agents/component-agent.mjs",
     "api": "node agents/api-agent.mjs",
     "test-gen": "node agents/test-agent.mjs",
-    "git": "node agents/git-agent.mjs"
+    "git": "node agents/git-agent.mjs",
+    "email": "node agents/email-agent.mjs"
   },
   "dependencies": {
-    "inquirer": "^9.2.12"
+    "@azure/msal-node": "^5.0.6",
+    "inquirer": "^9.2.12",
+    "node-fetch": "^3.3.2"
   }
 }

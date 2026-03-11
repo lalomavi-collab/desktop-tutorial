@@ -56,6 +56,12 @@ const AGENTS = [
     script: "agents/git-agent.mjs",
     description: "Smart commit, branch, push/pull, and PR creation",
   },
+  {
+    name: "📧  Email Agent     — Outlook mail manager",
+    value: "email",
+    script: "agents/email-agent.mjs",
+    description: "Read, search, summarize & send emails via Microsoft Graph",
+  },
 ];
 
 async function main() {
