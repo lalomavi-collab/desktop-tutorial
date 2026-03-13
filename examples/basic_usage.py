@@ -1,80 +1,117 @@
-"""דוגמה בסיסית לשימוש בסוכן בניית הפרומפטים"""
+"""דוגמה: בניית פרומפט לאפליקציה משפטית - ללא API"""
 
 from prompt_builder.agents.builder_agent import PromptBuilderAgent
-from prompt_builder.agents.quick_build import quick_build
-from prompt_builder.templates.app_templates import ALL_TEMPLATES
-from prompt_builder.utils.formatter import format_template_list
+from prompt_builder.templates.app_templates import ALL_DOMAINS
+from prompt_builder.utils.formatter import format_domain_list
 
 
-def example_manual_build():
-    """דוגמה לבנייה ידנית של פרומפט ללא API"""
-    print("=" * 60)
-    print("דוגמה 1: בנייה ידנית (ללא Claude API)")
-    print("=" * 60)
-
-    # הצגת תבניות זמינות
-    print(format_template_list(ALL_TEMPLATES))
+def example_legal_prompt():
+    """
+    דוגמה: בניית פרומפט לכלי ניתוח חוזי נדל"ן
+    כפי שמתואר ב-6 השלבים.
+    """
+    print("=" * 70)
+    print("דוגמה: בניית פרומפט משפטי ב-6 שלבים (ללא API)")
+    print("=" * 70)
     print()
 
-    # יצירת סוכן ובחירת תבנית
+    # הצגת תחומים זמינים
+    print(format_domain_list(ALL_DOMAINS))
+    print()
+
+    # יצירת סוכן
     agent = PromptBuilderAgent.__new__(PromptBuilderAgent)
     agent.conversation = []
     agent.answers = {}
-    agent.current_section_idx = 0
-    agent.template = ALL_TEMPLATES["web_app"]
+    agent.current_step_idx = 0
+    agent.follow_ups_asked = set()
     agent.client = None
+    agent.project_name = "ניתוח חוזי נדל\"ן"
 
-    # מילוי תשובות
-    agent.answers["project_name"] = "מערכת ניהול משימות"
-    agent.save_answer("סקירה כללית", "אפליקציית ווב לניהול משימות צוותיות עם תמיכה ב-Kanban")
-    agent.save_answer("קהל יעד", "צוותי פיתוח קטנים עד בינוניים (5-20 אנשים)")
-    agent.save_answer("טכנולוגיות", "React + TypeScript, Node.js + Express, PostgreSQL")
-    agent.save_answer("פיצ'רים עיקריים", """
-- יצירה וניהול משימות עם תגיות ועדיפויות
-- לוח Kanban עם drag & drop
-- הקצאת משימות לחברי צוות
-- תצוגת Timeline / Gantt
-- התראות בזמן אמת
-- חיפוש וסינון מתקדם
-""")
-    agent.save_answer("מודל נתונים", """
-- User: id, name, email, role
-- Team: id, name, members[]
-- Task: id, title, description, status, priority, assignee, due_date
-- Board: id, name, columns[], team_id
-""")
-    agent.save_answer("API Endpoints", """
-- POST /api/tasks - יצירת משימה
-- GET /api/tasks - רשימת משימות (עם סינון)
-- PUT /api/tasks/:id - עדכון משימה
-- GET /api/boards/:id - טעינת לוח
-- WebSocket /ws - עדכונים בזמן אמת
-""")
-    agent.save_answer("אימות והרשאות", "JWT + OAuth2 (Google), roles: admin, member, viewer")
-    agent.save_answer("UI/UX", "Material Design, Dark mode support, Responsive")
+    # בחירת תחום משפטי
+    agent.domain = ALL_DOMAINS["legal"]
+    print(f"תחום שנבחר: {agent.domain.display_name}")
+    print(f"תיאור: {agent.domain.description}")
+    print()
 
-    # יצירת הפרומפט
-    prompt = agent.generate_prompt()
-    print(prompt)
+    # מילוי 6 השלבים
+    print("--- שלב 1: תפקיד ---")
+    agent.save_answer("role", "עורך דין מומחה להתחדשות עירונית")
+    print(f"  ✓ {agent.answers['role']}")
+
+    print("--- שלב 2: קהל יעד ---")
+    agent.save_answer("audience", "לקוח הקליניקה")
+    print(f"  ✓ {agent.answers['audience']}")
+
+    print("--- שלב 3: נתונים ---")
+    agent.save_answer("input_context", "קובץ החוזה המצורף")
+    print(f"  ✓ {agent.answers['input_context']}")
+
+    print("--- שלב 4: משימה ---")
+    agent.save_answer("task", "לייצר סיכום סיכונים")
+    print(f"  ✓ {agent.answers['task']}")
+
+    print("--- שלב 5: אילוצים ---")
+    agent.save_answer("constraints", "שפה ברורה שאינה משפטית מורכבת")
+    print(f"  ✓ {agent.answers['constraints']}")
+
+    print("--- שלב 6: מבנה פלט ---")
+    agent.save_answer("output_structure", "טבלה המורכבת משלוש עמודות: סיכון, משמעות כספית, והמלצה לביצוע")
+    print(f"  ✓ {agent.answers['output_structure']}")
+
+    print()
+
+    # יצירת One-liner
+    print("=" * 70)
+    print("📝 פרומפט בשורה אחת:")
+    print("=" * 70)
+    one_liner = agent.generate_one_liner()
+    print(one_liner)
+    print()
+
+    # יצירת פרומפט מלא
+    print("=" * 70)
+    print("📄 פרומפט מלא:")
+    print("=" * 70)
+    full_prompt = agent.generate_prompt()
+    print(full_prompt)
 
 
-def example_quick_build():
-    """דוגמה לבנייה מהירה עם Claude API"""
-    print("=" * 60)
-    print("דוגמה 2: בנייה מהירה (דורש ANTHROPIC_API_KEY)")
-    print("=" * 60)
+def example_education_prompt():
+    """דוגמה: בניית פרומפט לכלי חינוכי"""
+    print("=" * 70)
+    print("דוגמה: בניית פרומפט לקורס אקדמי")
+    print("=" * 70)
+    print()
 
-    try:
-        prompt = quick_build(
-            description="אפליקציית ניהול מתכונים עם חיפוש לפי מרכיבים",
-            app_type="web_app",
-        )
-        print(prompt)
-    except Exception as e:
-        print(f"שגיאה (נדרש API key): {e}")
+    agent = PromptBuilderAgent.__new__(PromptBuilderAgent)
+    agent.conversation = []
+    agent.answers = {}
+    agent.current_step_idx = 0
+    agent.follow_ups_asked = set()
+    agent.client = None
+    agent.project_name = "עוזר הוראה לקורס משפט חוקתי"
+
+    agent.domain = ALL_DOMAINS["education"]
+
+    agent.save_answer("role", "מרצה אקדמי למשפט חוקתי")
+    agent.save_answer("audience", "סטודנטים לתואר ראשון במשפטים")
+    agent.save_answer("input_context", "סילבוס הקורס ופסקי דין מנחים")
+    agent.save_answer("task", "בניית מערך שיעור לנושא חופש הביטוי")
+    agent.save_answer("constraints", "שיעור של 90 דקות, כולל דיון כיתתי")
+    agent.save_answer("output_structure", "מערך שיעור מובנה: פתיחה (15 דק), הרצאה (30 דק), ניתוח פסק דין (25 דק), דיון (15 דק), סיכום (5 דק)")
+
+    one_liner = agent.generate_one_liner()
+    print("📝 פרומפט בשורה אחת:")
+    print(one_liner)
+    print()
+
+    full_prompt = agent.generate_prompt()
+    print("📄 פרומפט מלא:")
+    print(full_prompt)
 
 
 if __name__ == "__main__":
-    example_manual_build()
-    print("\n" + "=" * 60 + "\n")
-    example_quick_build()
+    example_legal_prompt()
+    print("\n\n")
+    example_education_prompt()
