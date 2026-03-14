@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI LALUM - משחק רכיבת סוסים</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;900&display=swap');
+
+        body {
+            font-family: 'Rubik', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3f 50%, #1a472a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; inset: 0;
+            background: linear-gradient(180deg, #0d1b2a 0%, #1b2838 40%, #2d4a22 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease;
+        }
+        #splash-screen.hidden { opacity: 0; pointer-events: none; }
+
+        .splash-horse {
+            font-size: 120px;
+            animation: horseGallop 1s ease-in-out infinite;
+        }
+        @keyframes horseGallop {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-3deg); }
+            50% { transform: translateY(-5px) rotate(0deg); }
+            75% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        .splash-title {
+            font-size: 64px; font-weight: 900;
+            background: linear-gradient(90deg, #f5c542, #e8a020, #f5c542);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin: 20px 0 10px;
+            text-shadow: none;
+            letter-spacing: 4px;
+        }
+        .splash-subtitle {
+            font-size: 22px; color: #b8d4a8;
+            margin-bottom: 40px;
+        }
+        .start-btn {
+            padding: 18px 60px;
+            font-size: 24px; font-weight: 700;
+            background: linear-gradient(135deg, #f5c542, #e8a020);
+            color: #1a2a0f; border: none; border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(245, 197, 66, 0.4);
+            font-family: 'Rubik', Arial, sans-serif;
+        }
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 35px rgba(245, 197, 66, 0.6);
+        }
+
+        /* --- MAIN GAME UI --- */
+        #game-container { display: none; }
+        #game-container.active { display: block; }
+
+        .top-bar {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            padding: 12px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid rgba(245, 197, 66, 0.3);
+        }
+        .game-logo { font-size: 24px; font-weight: 900; color: #f5c542; }
+        .stats {
+            display: flex; gap: 25px; align-items: center;
+        }
+        .stat {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 16px; font-weight: 600;
+        }
+        .stat-icon { font-size: 22px; }
+        .stat-value { color: #f5c542; font-size: 20px; }
+
+        /* Level Progress */
+        .level-bar {
+            background: rgba(0,0,0,0.3); padding: 8px 30px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .level-label { font-weight: 700; color: #b8d4a8; white-space: nowrap; }
+        .progress-track {
+            flex: 1; height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a, #f5c542);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .level-text { font-weight: 600; white-space: nowrap; }
+
+        /* --- GAME AREA --- */
+        .game-area {
+            display: flex;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Sidebar - Lessons */
+        .sidebar {
+            width: 320px; min-width: 320px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 2px solid rgba(245, 197, 66, 0.2);
+        }
+        .sidebar h2 {
+            color: #f5c542; font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .lesson-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .lesson-card:hover {
+            background: rgba(245, 197, 66, 0.1);
+            border-color: rgba(245, 197, 66, 0.4);
+            transform: translateX(-5px);
+        }
+        .lesson-card.active {
+            background: rgba(245, 197, 66, 0.15);
+            border-color: #f5c542;
+        }
+        .lesson-card.completed {
+            border-color: #4caf50;
+        }
+        .lesson-card.completed::after {
+            content: ' ✓'; color: #4caf50; font-weight: bold;
+        }
+        .lesson-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .lesson-number {
+            font-size: 12px; color: #b8d4a8;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .lesson-title {
+            font-size: 16px; font-weight: 700;
+            margin: 5px 0;
+        }
+        .lesson-desc {
+            font-size: 13px; color: #aaa;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1; padding: 30px;
+            display: flex; flex-direction: column;
+            align-items: center;
+        }
+
+        /* Canvas area */
+        #game-canvas {
+            width: 100%; max-width: 800px;
+            height: 400px;
+            background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 50%, #4a7c3f 50%, #3a6a2f 100%);
+            border-radius: 20px;
+            border: 3px solid rgba(245, 197, 66, 0.4);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Horse Scene */
+        .scene { position: absolute; inset: 0; }
+
+        .sun {
+            position: absolute; top: 20px; left: 30px;
+            width: 60px; height: 60px;
+            background: radial-gradient(circle, #fff700, #ffa500);
+            border-radius: 50%;
+            box-shadow: 0 0 30px #ffa500, 0 0 60px rgba(255, 165, 0, 0.3);
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+        }
+        .cloud-1 { top: 30px; right: 100px; width: 100px; height: 30px; animation: cloudMove 20s linear infinite; }
+        .cloud-2 { top: 60px; right: 250px; width: 70px; height: 22px; animation: cloudMove 25s linear infinite; }
+        .cloud-3 { top: 20px; right: 400px; width: 90px; height: 26px; animation: cloudMove 30s linear infinite; }
+        @keyframes cloudMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-800px); }
+        }
+
+        .fence {
+            position: absolute; bottom: 48%; width: 100%;
+            display: flex; gap: 60px; padding: 0 20px;
+        }
+        .fence-post {
+            width: 8px; height: 40px;
+            background: #8B4513;
+            position: relative;
+        }
+        .fence-post::before, .fence-post::after {
+            content: '';
+            position: absolute;
+            width: 68px; height: 6px;
+            background: #a0522d;
+            right: -30px;
+        }
+        .fence-post::before { top: 8px; }
+        .fence-post::after { top: 24px; }
+
+        .ground-detail {
+            position: absolute; bottom: 0; width: 100%; height: 50%;
+            background: linear-gradient(180deg, #4a7c3f 0%, #3a6a2f 60%, #2d5520 100%);
+        }
+        .grass {
+            position: absolute; top: -5px; width: 100%; height: 15px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px, transparent 8px,
+                #5a9a4a 8px, #5a9a4a 10px,
+                transparent 10px, transparent 18px
+            );
+        }
+
+        /* Horse */
+        .horse-container {
+            position: absolute;
+            bottom: 45%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.3s ease;
+        }
+        .horse-emoji {
+            font-size: 80px;
+            display: block;
+            transform: scaleX(-1);
+        }
+        .horse-container.walking .horse-emoji {
+            animation: horseWalk 0.6s ease-in-out infinite;
+        }
+        .horse-container.trotting .horse-emoji {
+            animation: horseTrot 0.4s ease-in-out infinite;
+        }
+        .horse-container.galloping .horse-emoji {
+            animation: horseGallop2 0.3s ease-in-out infinite;
+        }
+        @keyframes horseWalk {
+            0%, 100% { transform: scaleX(-1) translateY(0); }
+            50% { transform: scaleX(-1) translateY(-5px); }
+        }
+        @keyframes horseTrot {
+            0%, 100% { transform: scaleX(-1) translateY(0) rotate(0deg); }
+            50% { transform: scaleX(-1) translateY(-12px) rotate(-2deg); }
+        }
+        @keyframes horseGallop2 {
+            0%, 100% { transform: scaleX(-1) translateY(0) rotate(0deg); }
+            30% { transform: scaleX(-1) translateY(-20px) rotate(-4deg); }
+            60% { transform: scaleX(-1) translateY(-8px) rotate(2deg); }
+        }
+
+        .rider-emoji {
+            font-size: 40px;
+            position: absolute;
+            top: -25px; left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+        .horse-container.mounted .rider-emoji {
+            display: block;
+        }
+
+        /* Controls below canvas */
+        .controls-area {
+            width: 100%; max-width: 800px;
+            margin-top: 20px;
+        }
+
+        /* Lesson Content Box */
+        .lesson-content-box {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(245, 197, 66, 0.3);
+            margin-bottom: 20px;
+        }
+        .lesson-content-box h3 {
+            color: #f5c542; font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .lesson-content-box p {
+            font-size: 16px; line-height: 1.7;
+            color: #ddd;
+            margin-bottom: 12px;
+        }
+        .lesson-content-box .tip {
+            background: rgba(76, 175, 80, 0.15);
+            border-right: 4px solid #4caf50;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #b8d4a8;
+        }
+
+        /* Interactive Controls */
+        .game-controls {
+            display: flex; gap: 12px;
+            flex-wrap: wrap; justify-content: center;
+        }
+        .control-btn {
+            padding: 12px 24px;
+            font-size: 16px; font-weight: 600;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', Arial, sans-serif;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .control-btn:hover {
+            background: rgba(245, 197, 66, 0.2);
+            border-color: #f5c542;
+            transform: translateY(-2px);
+        }
+        .control-btn:active { transform: translateY(0); }
+        .control-btn.primary {
+            background: linear-gradient(135deg, #f5c542, #e8a020);
+            color: #1a2a0f; border-color: #f5c542;
+        }
+        .control-btn.success {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+            border-color: #4caf50;
+        }
+        .control-btn:disabled {
+            opacity: 0.4; cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Quiz */
+        .quiz-box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(100, 149, 237, 0.4);
+            margin-top: 15px;
+        }
+        .quiz-box h4 {
+            color: #87ceeb; font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .quiz-option {
+            display: block; width: 100%;
+            padding: 12px 18px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff; font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: right;
+            font-family: 'Rubik', Arial, sans-serif;
+        }
+        .quiz-option:hover {
+            background: rgba(100, 149, 237, 0.15);
+            border-color: rgba(100, 149, 237, 0.5);
+        }
+        .quiz-option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        .quiz-option.wrong {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+
+        .feedback-msg {
+            text-align: center;
+            font-size: 18px; font-weight: 700;
+            margin-top: 15px; padding: 12px;
+            border-radius: 10px;
+            display: none;
+        }
+        .feedback-msg.show { display: block; }
+        .feedback-msg.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+        .feedback-msg.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+        }
+
+        /* Speed Meter */
+        .speed-meter {
+            display: flex; align-items: center; gap: 10px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+        .speed-label { font-weight: 600; color: #b8d4a8; }
+        .speed-track {
+            width: 200px; height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px; overflow: hidden;
+        }
+        .speed-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #4caf50, #ffc107, #f44336);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .speed-value { font-weight: 700; color: #f5c542; min-width: 60px; }
+
+        /* Completion Screen */
+        #completion-screen {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 500;
+            flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        #completion-screen.active {
+            display: flex;
+        }
+        .completion-trophy { font-size: 100px; margin-bottom: 20px; }
+        .completion-title {
+            font-size: 48px; font-weight: 900;
+            color: #f5c542; margin-bottom: 10px;
+        }
+        .completion-text {
+            font-size: 20px; color: #b8d4a8;
+            margin-bottom: 30px; text-align: center;
+        }
+        .final-score {
+            font-size: 36px; font-weight: 700;
+            color: #fff; margin-bottom: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .game-area { flex-direction: column; }
+            .sidebar {
+                width: 100%; min-width: unset;
+                max-height: 200px;
+                border-left: none;
+                border-top: 2px solid rgba(245, 197, 66, 0.2);
+                order: 2;
+            }
+            .main-content { order: 1; }
+            .splash-title { font-size: 40px; }
+        }
+
+        /* Keyboard hints */
+        .key-hints {
+            display: flex; gap: 15px; justify-content: center;
+            margin-top: 10px; flex-wrap: wrap;
+        }
+        .key-hint {
+            font-size: 13px; color: #888;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .key-hint kbd {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px; border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-family: monospace; color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash-screen">
+    <div class="splash-horse">🐴</div>
+    <div class="splash-title">EMI LALUM</div>
+    <div class="splash-subtitle">למד לרכב על סוס כמו מקצוען!</div>
+    <button class="start-btn" onclick="startGame()">🏇 בוא נתחיל!</button>
+    <p style="margin-top: 20px; color: #667; font-size: 14px;">משחק חינוכי לגילאי 13 ומעלה</p>
+</div>
+
+<!-- GAME -->
+<div id="game-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="game-logo">🐴 EMI LALUM</div>
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-icon">⭐</span>
+                <span>ניקוד:</span>
+                <span class="stat-value" id="score">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">🏅</span>
+                <span>דרגה:</span>
+                <span class="stat-value" id="rank">מתחיל</span>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">❤️</span>
+                <span>קשר עם הסוס:</span>
+                <span class="stat-value" id="bond">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Bar -->
+    <div class="level-bar">
+        <span class="level-label">התקדמות כללית:</span>
+        <div class="progress-track">
+            <div class="progress-fill" id="total-progress"></div>
+        </div>
+        <span class="level-text" id="progress-text">0 / 8 שיעורים</span>
+    </div>
+
+    <!-- Game Area -->
+    <div class="game-area">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Canvas -->
+            <div id="game-canvas">
+                <div class="scene">
+                    <div class="sun"></div>
+                    <div class="cloud cloud-1"></div>
+                    <div class="cloud cloud-2"></div>
+                    <div class="cloud cloud-3"></div>
+
+                    <div class="fence">
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                        <div class="fence-post"></div>
+                    </div>
+
+                    <div class="ground-detail">
+                        <div class="grass"></div>
+                    </div>
+
+                    <div class="horse-container" id="horse">
+                        <span class="rider-emoji">🧑</span>
+                        <span class="horse-emoji">🐎</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Speed Meter -->
+            <div class="speed-meter" id="speed-meter" style="display:none;">
+                <span class="speed-label">מהירות:</span>
+                <div class="speed-track">
+                    <div class="speed-fill" id="speed-fill"></div>
+                </div>
+                <span class="speed-value" id="speed-value">עומד</span>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="controls-area">
+                <div class="lesson-content-box" id="lesson-content">
+                    <h3>ברוכים הבאים ל-EMI LALUM!</h3>
+                    <p>בחר שיעור מהתפריט כדי להתחיל ללמוד על רכיבת סוסים. כל שיעור מלמד מיומנות חדשה ומאפשר לך לתרגל אותה באופן אינטראקטיבי.</p>
+                    <div class="tip">💡 טיפ: התחל מהשיעור הראשון ועבור לפי הסדר כדי לבנות את המיומנויות שלך בהדרגה!</div>
+                </div>
+
+                <div class="game-controls" id="game-controls">
+                    <!-- Dynamic buttons -->
+                </div>
+
+                <div class="key-hints" id="key-hints" style="display:none;">
+                    <span class="key-hint"><kbd>→</kbd> הליכה</span>
+                    <span class="key-hint"><kbd>↑</kbd> העלאת מהירות</span>
+                    <span class="key-hint"><kbd>↓</kbd> האטה</span>
+                    <span class="key-hint"><kbd>Space</kbd> עצירה</span>
+                </div>
+
+                <div id="quiz-container"></div>
+                <div class="feedback-msg" id="feedback"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>📚 שיעורים</h2>
+            <div id="lessons-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Completion Screen -->
+<div id="completion-screen">
+    <div class="completion-trophy">🏆</div>
+    <div class="completion-title">כל הכבוד!</div>
+    <div class="completion-text">סיימת את כל השיעורים ב-EMI LALUM!<br>עכשיו אתה יודע את הבסיס של רכיבת סוסים!</div>
+    <div class="final-score">ניקוד סופי: <span id="final-score-value">0</span> ⭐</div>
+    <button class="start-btn" onclick="resetGame()">🔄 שחק שוב</button>
+</div>
+
+<script>
+// ==================== GAME DATA ====================
+const LESSONS = [
+    {
+        id: 1,
+        title: "הכרת הסוס",
+        desc: "למד על גזעי סוסים, חלקי הגוף שלהם והתנהגותם",
+        content: `
+            <h3>🐴 שיעור 1: הכרת הסוס</h3>
+            <p>לפני שנעלה על הסוס, חשוב להכיר אותו! סוסים הם בעלי חיים חכמים ורגישים שחיים כבר אלפי שנים לצד בני אדם.</p>
+            <p><strong>חלקי גוף חשובים:</strong></p>
+            <p>• <strong>קודקוד (Poll)</strong> - החלק העליון של הראש, בין האוזניים<br>
+            • <strong>שׂובר (Withers)</strong> - הנקודה הגבוהה ביותר בגב, שם מודדים את גובה הסוס<br>
+            • <strong>צלעות (Barrel)</strong> - חלק הגוף המרכזי<br>
+            • <strong>פרסות (Hooves)</strong> - כפות הרגליים, צריכות טיפול קבוע<br>
+            • <strong>רעמה (Mane)</strong> - השיער שעל הצוואר</p>
+            <p><strong>גזעים נפוצים:</strong> ערבי, תורובקרד (סוס מירוצים), קוורטר הורס (אמריקאי), פוני ולש</p>
+            <div class="tip">💡 סוסים מתקשרים דרך שפת הגוף - האוזניים, הזנב והעיניים שלהם מראים לך מה הם מרגישים!</div>
+        `,
+        quiz: {
+            question: "איפה מודדים את גובה הסוס?",
+            options: ["בקודקוד (Poll)", "בשׂובר (Withers)", "בפרסות (Hooves)", "בזנב"],
+            correct: 1
+        },
+        action: "greet",
+        points: 50
+    },
+    {
+        id: 2,
+        title: "ציוד רכיבה",
+        desc: "הכר את הציוד החיוני לרכיבה בטוחה",
+        content: `
+            <h3>🎒 שיעור 2: ציוד רכיבה</h3>
+            <p>ציוד נכון הוא הבסיס לרכיבה בטוחה ונוחה - גם לרוכב וגם לסוס!</p>
+            <p><strong>ציוד לרוכב:</strong></p>
+            <p>• <strong>קסדת רכיבה</strong> - הפריט החשוב ביותר! חובה תמיד!<br>
+            • <strong>מגפי רכיבה</strong> - עם עקב קטן כדי שהרגל לא תחליק מהאבזנג<br>
+            • <strong>מכנסי רכיבה</strong> - עשויים מבד גמיש ועמיד<br>
+            • <strong>כפפות</strong> - מגנות על הידיים ומשפרות אחיזה במושכות</p>
+            <p><strong>ציוד לסוס (Tack):</strong></p>
+            <p>• <strong>אוכף (Saddle)</strong> - יושבים עליו, חייב להתאים לסוס<br>
+            • <strong>רסן (Bridle)</strong> - על הראש, כולל את הפה (Bit) והמושכות<br>
+            • <strong>אבזנגים (Stirrups)</strong> - מחזיקים את כפות הרגליים<br>
+            • <strong>חבק (Girth)</strong> - רצועה שמחזיקה את האוכף במקומו</p>
+            <div class="tip">💡 תמיד בדוק שהחבק מהודק לפני שעולים! חבק רפוי יכול לגרום לאוכף להחליק.</div>
+        `,
+        quiz: {
+            question: "מה הפריט הכי חשוב בציוד הרוכב?",
+            options: ["מגפי רכיבה", "כפפות", "קסדת רכיבה", "מכנסי רכיבה"],
+            correct: 2
+        },
+        action: "equip",
+        points: 50
+    },
+    {
+        id: 3,
+        title: "עלייה על הסוס",
+        desc: "למד את הטכניקה הנכונה לעלות ולרדת מהסוס",
+        content: `
+            <h3>🏇 שיעור 3: עלייה על הסוס (Mounting)</h3>
+            <p>עלייה על הסוס דורשת טכניקה! תמיד עולים מהצד השמאלי - זהו מנהג שנמשך מאות שנים.</p>
+            <p><strong>שלבי העלייה:</strong></p>
+            <p>1. עמוד בצד שמאל של הסוס, פנים לזנב<br>
+            2. אחוז במושכות ביד שמאל, ובשׂובר (רעמה) לחיזוק<br>
+            3. הכנס את כף הרגל השמאלית לאבזנג<br>
+            4. דחוף עם הרגל הימנית והתרומם<br>
+            5. העבר את הרגל הימנית מעל גב הסוס<br>
+            6. שב בעדינות באוכף - אל תיפול עליו!</p>
+            <p><strong>ירידה (Dismounting):</strong></p>
+            <p>הוצא את שתי הרגליים מהאבזנגים, הישען קדימה, העבר רגל ימין מאחור, ורד בעדינות.</p>
+            <div class="tip">💡 תמיד ירד מהסוס לפני שאתה עייף מדי - שליטה טובה חשובה לבטיחות!</div>
+        `,
+        quiz: {
+            question: "מאיזה צד עולים על הסוס?",
+            options: ["מצד ימין", "מצד שמאל", "מאחורה", "לא משנה מאיזה צד"],
+            correct: 1
+        },
+        action: "mount",
+        points: 75
+    },
+    {
+        id: 4,
+        title: "ישיבה נכונה",
+        desc: "גלה כיצד לשבת נכון באוכף לרכיבה טובה",
+        content: `
+            <h3>🪑 שיעור 4: ישיבה נכונה באוכף</h3>
+            <p>ישיבה נכונה היא המפתח לרכיבה טובה! תנוחה שגויה עלולה לגרום לכאבים ולפגוע בשליטה.</p>
+            <p><strong>עקרונות הישיבה:</strong></p>
+            <p>• <strong>גב ישר</strong> - דמיין חוט שמושך אותך למעלה מהקודקוד<br>
+            • <strong>כתפיים לאחור</strong> - פתוחות ורפויות, לא מתוחות<br>
+            • <strong>מרפקים צמודים</strong> - ליד הגוף, לא פרושים לצדדים<br>
+            • <strong>עקבים למטה</strong> - הנקודה הכי נמוכה בגוף! מונע החלקה מהאבזנג<br>
+            • <strong>מבט קדימה</strong> - תמיד הסתכל לאן שאתה הולך, לא למטה!</p>
+            <p><strong>הקו הישר:</strong> דמיין קו ישר שעובר דרך: <strong>אוזן → כתף → ירך → עקב</strong>. זה הקו המושלם!</p>
+            <div class="tip">💡 אם אתה מסתכל למטה, הגוף שלך מתכופף ואתה מאבד איזון. תמיד מבט קדימה!</div>
+        `,
+        quiz: {
+            question: "מה הקו הישר הנכון בישיבה?",
+            options: [
+                "ראש → ברך → כף רגל",
+                "אוזן → כתף → ירך → עקב",
+                "כתף → מותן → ברך",
+                "אין קו ישר מוגדר"
+            ],
+            correct: 1
+        },
+        action: "posture",
+        points: 75
+    },
+    {
+        id: 5,
+        title: "הליכה (Walk)",
+        desc: "צעד ראשון - לגרום לסוס ללכת ולעצור",
+        content: `
+            <h3>🚶 שיעור 5: הליכה - Walk</h3>
+            <p>הליכה היא ההילוך הראשון שתלמד. זהו הילוך בקצב 4 פעימות - כל רגל נוגעת בקרקע בנפרד.</p>
+            <p><strong>איך מתחילים ללכת:</strong></p>
+            <p>• לחץ בעדינות עם שני הצדדים של הרגליים (Leg Aid)<br>
+            • שחרר קצת מהמושכות כדי לאפשר לסוס לנוע<br>
+            • שב ישר ועמוק באוכף<br>
+            • אמור "Walk on" או "הנה" בנימה רגועה</p>
+            <p><strong>איך עוצרים (Halt):</strong></p>
+            <p>• שב עמוק באוכף ועצור את תנועת הירכיים<br>
+            • סגור בעדינות את האצבעות על המושכות<br>
+            • אל תמשוך חזק! - לחץ עדין ושחרר<br>
+            • אמור "Whoa" או "הו" בנימה נמוכה</p>
+            <div class="tip">💡 הסוס מרגיש אפילו זבוב שנוחת עליו - אז הוא בטוח מרגיש את הלחץ של הרגליים שלך!</div>
+        `,
+        quiz: {
+            question: "כמה פעימות יש בהילוך הליכה?",
+            options: ["2 פעימות", "3 פעימות", "4 פעימות", "5 פעימות"],
+            correct: 2
+        },
+        action: "walk",
+        points: 100
+    },
+    {
+        id: 6,
+        title: "ריצה קלה (Trot)",
+        desc: "למד את ההילוך של שתי פעימות",
+        content: `
+            <h3>🏃 שיעור 6: ריצה קלה - Trot</h3>
+            <p>הטרוט הוא הילוך בקצב 2 פעימות - הסוס מזיז זוגות רגליים אלכסוניים ביחד. זה ההילוך הכי קשה לשבת בו בהתחלה!</p>
+            <p><strong>מעבר לטרוט:</strong></p>
+            <p>• מהליכה, לחץ חזק יותר עם הרגליים<br>
+            • קצר קצת את המושכות<br>
+            • אמור "Trot" בנימה אנרגטית</p>
+            <p><strong>Rising Trot (טרוט עולה):</strong></p>
+            <p>במקום לשבת ולקפוץ באוכף, למד את הטרוט העולה:<br>
+            • <strong>עלה-שב, עלה-שב</strong> - בקצב של הסוס<br>
+            • התרומם קלות מהאוכף ושוב למטה<br>
+            • תן למתיחות ברגליים ולאבזנגים לעזור<br>
+            • זה מגן על גב הסוס ונוח יותר לשניכם!</p>
+            <div class="tip">💡 הסוד לטרוט טוב: תני לסוס לדחוף אותך למעלה - אל תקפוץ בעצמך!</div>
+        `,
+        quiz: {
+            question: "מה זה Rising Trot?",
+            options: [
+                "לרוץ ליד הסוס",
+                "להתרומם ולשבת באוכף בקצב הסוס",
+                "לעמוד באבזנגים כל הזמן",
+                "לשבת בלי לזוז"
+            ],
+            correct: 1
+        },
+        action: "trot",
+        points: 100
+    },
+    {
+        id: 7,
+        title: "דהירה (Canter/Gallop)",
+        desc: "ההילוך המתקדם - שלוש פעימות מרגשות",
+        content: `
+            <h3>💨 שיעור 7: דהירה - Canter & Gallop</h3>
+            <p>הדהירה היא ההילוך בקצב 3 פעימות ורגע ריחוף! זהו ההילוך הכי נוח ומהנה ברגע שמתרגלים אליו.</p>
+            <p><strong>Canter (דהירה מבוקרת):</strong></p>
+            <p>• שב עמוק באוכף וזוז עם תנועת הסוס<br>
+            • הרגל החיצונית לוחצת מאחורי החבק<br>
+            • הרגל הפנימית לוחצת במקום הרגיל<br>
+            • תנועת הירכיים כמו "נדנדה" - קדימה ואחורה</p>
+            <p><strong>Gallop (דהירה מהירה):</strong></p>
+            <p>• 4 פעימות - ההילוך המהיר ביותר!<br>
+            • הרוכב עומד קלות באבזנגים (Two-point position)<br>
+            • הגוף מוטה קדימה<br>
+            • רק לרוכבים מנוסים!</p>
+            <div class="tip">💡 אל תמהר לדהור! קודם תשלוט מצוין בהליכה ובטרוט. סבלנות = בטיחות.</div>
+        `,
+        quiz: {
+            question: "כמה פעימות יש ב-Canter?",
+            options: ["2 פעימות", "3 פעימות + ריחוף", "4 פעימות", "5 פעימות"],
+            correct: 1
+        },
+        action: "gallop",
+        points: 125
+    },
+    {
+        id: 8,
+        title: "בטיחות וכיבוד הסוס",
+        desc: "כללי הזהב לרכיבה בטוחה",
+        content: `
+            <h3>⚠️ שיעור 8: בטיחות וכיבוד הסוס</h3>
+            <p>רכיבה על סוסים יכולה להיות מאוד מהנה, אבל חשוב תמיד לזכור את כללי הבטיחות!</p>
+            <p><strong>כללי בטיחות:</strong></p>
+            <p>• 🪖 <strong>תמיד עם קסדה</strong> - ללא יוצא מהכלל!<br>
+            • 👟 <strong>נעליים מתאימות</strong> - מגפי רכיבה עם עקב<br>
+            • 🚫 <strong>לעולם אל תעמוד מאחורי סוס</strong> - הוא יכול לבעוט!<br>
+            • 🗣️ <strong>דבר לסוס</strong> כשאתה מתקרב כדי שידע שאתה שם<br>
+            • 🤝 <strong>תמיד רכב עם מדריך</strong> בשלב ההתחלתי<br>
+            • 🌡️ <strong>בדוק מזג אוויר</strong> - לא רוכבים בסערה!</p>
+            <p><strong>כיבוד הסוס:</strong></p>
+            <p>• הסוס הוא שותף, לא מכונה - התייחס אליו בכבוד<br>
+            • אחרי רכיבה: הורד אוכף, נקה, ספק מים ואוכל<br>
+            • למד לקרוא את שפת הגוף שלו<br>
+            • סוס שמח = רכיבה בטוחה ומהנה!</p>
+            <div class="tip">💡 הכלל החשוב ביותר: אם אתה מפחד או לא בטוח - עצור ובקש עזרה. זה לא חולשה, זו חוכמה!</div>
+        `,
+        quiz: {
+            question: "מה הכי חשוב לזכור לגבי בטיחות?",
+            options: [
+                "לרכב הכי מהר שאפשר",
+                "לעמוד מאחורי הסוס כדי לראות אותו",
+                "תמיד עם קסדה ולעולם לא לעמוד מאחורי סוס",
+                "לרכב לבד כדי להתרגל"
+            ],
+            correct: 2
+        },
+        action: "safety",
+        points: 100
+    }
+];
+
+// ==================== GAME STATE ====================
+let state = {
+    score: 0,
+    bond: 0,
+    currentLesson: -1,
+    completedLessons: new Set(),
+    mounted: false,
+    speed: 0, // 0=standing, 1=walk, 2=trot, 3=gallop
+    rank: "מתחיל"
+};
+
+// ==================== FUNCTIONS ====================
+function startGame() {
+    document.getElementById('splash-screen').classList.add('hidden');
+    setTimeout(() => {
+        document.getElementById('game-container').classList.add('active');
+        renderLessonsList();
+    }, 500);
+}
+
+function renderLessonsList() {
+    const list = document.getElementById('lessons-list');
+    list.innerHTML = LESSONS.map((lesson, i) => {
+        const isCompleted = state.completedLessons.has(lesson.id);
+        const isLocked = i > 0 && !state.completedLessons.has(LESSONS[i-1].id);
+        const isActive = state.currentLesson === i;
+        let cls = 'lesson-card';
+        if (isCompleted) cls += ' completed';
+        if (isLocked) cls += ' locked';
+        if (isActive) cls += ' active';
+
+        return `
+            <div class="${cls}" onclick="${isLocked ? '' : `selectLesson(${i})`}">
+                <div class="lesson-number">${isLocked ? '🔒' : isCompleted ? '✅' : '📖'} שיעור ${lesson.id}</div>
+                <div class="lesson-title">${lesson.title}</div>
+                <div class="lesson-desc">${lesson.desc}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectLesson(index) {
+    state.currentLesson = index;
+    const lesson = LESSONS[index];
+
+    document.getElementById('lesson-content').innerHTML = lesson.content;
+    document.getElementById('quiz-container').innerHTML = '';
+    document.getElementById('feedback').className = 'feedback-msg';
+
+    renderControls(lesson);
+    renderLessonsList();
+}
+
+function renderControls(lesson) {
+    const controls = document.getElementById('game-controls');
+    const speedMeter = document.getElementById('speed-meter');
+    const keyHints = document.getElementById('key-hints');
+
+    speedMeter.style.display = 'none';
+    keyHints.style.display = 'none';
+
+    switch(lesson.action) {
+        case 'greet':
+            controls.innerHTML = `
+                <button class="control-btn primary" onclick="actionGreet()">👋 גש להכיר את הסוס</button>
+                <button class="control-btn" onclick="actionPet()">🤚 ליטוף</button>
+                <button class="control-btn" onclick="actionFeed()">🥕 תן גזר</button>
+            `;
+            break;
+        case 'equip':
+            controls.innerHTML = `
+                <button class="control-btn" onclick="actionEquip('helmet')" id="btn-helmet">🪖 שים קסדה</button>
+                <button class="control-btn" onclick="actionEquip('boots')" id="btn-boots">👢 נעל מגפיים</button>
+                <button class="control-btn" onclick="actionEquip('saddle')" id="btn-saddle">🐴 שים אוכף</button>
+                <button class="control-btn" onclick="actionEquip('bridle')" id="btn-bridle">🔗 שים רסן</button>
+            `;
+            break;
+        case 'mount':
+            controls.innerHTML = `
+                <button class="control-btn primary" onclick="actionMount()">🦶 עלה על הסוס</button>
+            `;
+            break;
+        case 'posture':
+            state.mounted = true;
+            updateHorse();
+            controls.innerHTML = `
+                <button class="control-btn" onclick="actionPosture('back')">🔙 ישר את הגב</button>
+                <button class="control-btn" onclick="actionPosture('shoulders')">💪 כתפיים לאחור</button>
+                <button class="control-btn" onclick="actionPosture('heels')">👟 עקבים למטה</button>
+                <button class="control-btn primary" onclick="actionPosture('look')">👀 מבט קדימה</button>
+            `;
+            break;
+        case 'walk':
+            state.mounted = true;
+            updateHorse();
+            speedMeter.style.display = 'flex';
+            keyHints.style.display = 'flex';
+            controls.innerHTML = `
+                <button class="control-btn primary" onclick="actionWalk()">🚶 התחל ללכת</button>
+                <button class="control-btn" onclick="actionHalt()">✋ עצור</button>
+            `;
+            break;
+        case 'trot':
+            state.mounted = true;
+            updateHorse();
+            speedMeter.style.display = 'flex';
+            keyHints.style.display = 'flex';
+            controls.innerHTML = `
+                <button class="control-btn" onclick="actionWalk()">🚶 הליכה</button>
+                <button class="control-btn primary" onclick="actionTrot()">🏃 טרוט</button>
+                <button class="control-btn" onclick="actionHalt()">✋ עצור</button>
+                <button class="control-btn" onclick="actionRisingTrot()" id="btn-rising">⬆️⬇️ Rising Trot</button>
+            `;
+            break;
+        case 'gallop':
+            state.mounted = true;
+            updateHorse();
+            speedMeter.style.display = 'flex';
+            keyHints.style.display = 'flex';
+            controls.innerHTML = `
+                <button class="control-btn" onclick="actionWalk()">🚶 הליכה</button>
+                <button class="control-btn" onclick="actionTrot()">🏃 טרוט</button>
+                <button class="control-btn primary" onclick="actionGallop()">💨 דהירה!</button>
+                <button class="control-btn" onclick="actionHalt()">✋ עצור</button>
+            `;
+            break;
+        case 'safety':
+            controls.innerHTML = `
+                <button class="control-btn primary" onclick="showQuiz()">📝 מבחן בטיחות סופי</button>
+            `;
+            break;
+    }
+}
+
+// ==================== ACTIONS ====================
+function actionGreet() {
+    showFeedback('success', '🐴 הסוס מרים את הראש ומביט בך בסקרנות! הוא נראה ידידותי.');
+    addScore(10);
+    addBond(5);
+    setTimeout(() => showQuiz(), 2000);
+}
+function actionPet() {
+    showFeedback('success', '💕 הסוס נהנה מהליטוף! הוא מוריד את הראש ונושף בעדינות.');
+    addScore(10);
+    addBond(10);
+}
+function actionFeed() {
+    showFeedback('success', '🥕 הסוס אוכל את הגזר בשמחה! הוא כבר אוהב אותך!');
+    addScore(10);
+    addBond(15);
+}
+
+let equipped = new Set();
+function actionEquip(item) {
+    equipped.add(item);
+    const btn = document.getElementById('btn-' + item);
+    if (btn) {
+        btn.classList.add('success');
+        btn.disabled = true;
+        btn.textContent = '✓ ' + btn.textContent;
+    }
+    addScore(10);
+
+    if (equipped.size === 4) {
+        showFeedback('success', '🎉 כל הציוד מוכן! אתה מוכן לרכוב!');
+        setTimeout(() => showQuiz(), 1500);
+    } else {
+        showFeedback('success', `✓ מצוין! עוד ${4 - equipped.size} פריטים`);
+    }
+}
+
+function actionMount() {
+    state.mounted = true;
+    updateHorse();
+    addScore(20);
+    addBond(10);
+    showFeedback('success', '🏇 עלית על הסוס בהצלחה! ישיבה יציבה - כל הכבוד!');
+    setTimeout(() => showQuiz(), 2000);
+}
+
+let postureChecks = new Set();
+function actionPosture(part) {
+    postureChecks.add(part);
+    addScore(10);
+
+    const msgs = {
+        back: '✓ גב ישר - מצוין!',
+        shoulders: '✓ כתפיים לאחור - נהדר!',
+        heels: '✓ עקבים למטה - מושלם!',
+        look: '✓ מבט קדימה - בדיוק ככה!'
+    };
+    showFeedback('success', msgs[part]);
+
+    if (postureChecks.size === 4) {
+        setTimeout(() => {
+            showFeedback('success', '🌟 תנוחה מושלמת! אוזן-כתף-ירך-עקב בקו ישר!');
+            setTimeout(() => showQuiz(), 1500);
+        }, 800);
+    }
+}
+
+function actionWalk() {
+    state.speed = 1;
+    updateHorse();
+    updateSpeed();
+    addScore(5);
+    showFeedback('success', '🚶 הסוס הולך! קצב 4 פעימות - הרגש את הנדנוד.');
+    if (state.currentLesson === 4) setTimeout(() => showQuiz(), 3000);
+}
+function actionTrot() {
+    state.speed = 2;
+    updateHorse();
+    updateSpeed();
+    addScore(10);
+    showFeedback('success', '🏃 טרוט! 2 פעימות - עלה-שב, עלה-שב!');
+    if (state.currentLesson === 5) setTimeout(() => showQuiz(), 3000);
+}
+function actionRisingTrot() {
+    showFeedback('success', '⬆️⬇️ Rising Trot! אתה עולה ויורד בקצב מושלם עם הסוס!');
+    addScore(15);
+    addBond(5);
+}
+function actionGallop() {
+    state.speed = 3;
+    updateHorse();
+    updateSpeed();
+    addScore(15);
+    addBond(10);
+    showFeedback('success', '💨 דהירה! 3 פעימות + ריחוף! הרגש את הרוח!');
+    if (state.currentLesson === 6) setTimeout(() => showQuiz(), 3000);
+}
+function actionHalt() {
+    state.speed = 0;
+    updateHorse();
+    updateSpeed();
+    addScore(5);
+    showFeedback('success', '✋ עצירה מושלמת! "הו..." - הסוס עוצר ברכות.');
+}
+
+// ==================== HORSE ANIMATION ====================
+function updateHorse() {
+    const horse = document.getElementById('horse');
+    horse.className = 'horse-container';
+
+    if (state.mounted) horse.classList.add('mounted');
+
+    switch(state.speed) {
+        case 1: horse.classList.add('walking'); break;
+        case 2: horse.classList.add('trotting'); break;
+        case 3: horse.classList.add('galloping'); break;
+    }
+}
+
+function updateSpeed() {
+    const fill = document.getElementById('speed-fill');
+    const value = document.getElementById('speed-value');
+    const speeds = ['עומד', 'הליכה', 'טרוט', 'דהירה'];
+    const percents = [0, 30, 60, 100];
+
+    fill.style.width = percents[state.speed] + '%';
+    value.textContent = speeds[state.speed];
+}
+
+// ==================== QUIZ ====================
+function showQuiz() {
+    const lesson = LESSONS[state.currentLesson];
+    if (!lesson || !lesson.quiz) return;
+
+    const q = lesson.quiz;
+    const container = document.getElementById('quiz-container');
+
+    container.innerHTML = `
+        <div class="quiz-box">
+            <h4>📝 שאלה: ${q.question}</h4>
+            ${q.options.map((opt, i) => `
+                <button class="quiz-option" onclick="checkAnswer(${i}, ${q.correct}, this)">
+                    ${String.fromCharCode(1488 + i)}. ${opt}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function checkAnswer(selected, correct, btn) {
+    const options = btn.parentElement.querySelectorAll('.quiz-option');
+    options.forEach(o => o.disabled = true);
+
+    if (selected === correct) {
+        btn.classList.add('correct');
+        const lesson = LESSONS[state.currentLesson];
+        addScore(lesson.points);
+        addBond(10);
+        state.completedLessons.add(lesson.id);
+
+        showFeedback('success', `🎉 תשובה נכונה! +${lesson.points} נקודות!`);
+        updateProgress();
+        renderLessonsList();
+
+        // Check if all lessons complete
+        if (state.completedLessons.size === LESSONS.length) {
+            setTimeout(showCompletion, 2000);
+        }
+    } else {
+        btn.classList.add('wrong');
+        options[correct].classList.add('correct');
+        showFeedback('error', '❌ לא נכון! התשובה הנכונה מסומנת בירוק. נסה ללמוד שוב!');
+    }
+}
+
+// ==================== UI HELPERS ====================
+function showFeedback(type, msg) {
+    const fb = document.getElementById('feedback');
+    fb.className = `feedback-msg show ${type}`;
+    fb.textContent = msg;
+    setTimeout(() => { fb.className = 'feedback-msg'; }, 4000);
+}
+
+function addScore(points) {
+    state.score += points;
+    document.getElementById('score').textContent = state.score;
+    updateRank();
+}
+
+function addBond(amount) {
+    state.bond = Math.min(100, state.bond + amount);
+    document.getElementById('bond').textContent = state.bond + '%';
+}
+
+function updateRank() {
+    const ranks = [
+        [0, 'מתחיל'],
+        [100, 'חניך'],
+        [250, 'רוכב צעיר'],
+        [400, 'רוכב מתקדם'],
+        [600, 'פרש מנוסה'],
+        [800, 'אלוף הסוסים']
+    ];
+    for (let i = ranks.length - 1; i >= 0; i--) {
+        if (state.score >= ranks[i][0]) {
+            state.rank = ranks[i][1];
+            break;
+        }
+    }
+    document.getElementById('rank').textContent = state.rank;
+}
+
+function updateProgress() {
+    const pct = (state.completedLessons.size / LESSONS.length) * 100;
+    document.getElementById('total-progress').style.width = pct + '%';
+    document.getElementById('progress-text').textContent =
+        `${state.completedLessons.size} / ${LESSONS.length} שיעורים`;
+}
+
+function showCompletion() {
+    document.getElementById('final-score-value').textContent = state.score;
+    document.getElementById('completion-screen').classList.add('active');
+}
+
+function resetGame() {
+    state = {
+        score: 0, bond: 0, currentLesson: -1,
+        completedLessons: new Set(),
+        mounted: false, speed: 0, rank: "מתחיל"
+    };
+    equipped = new Set();
+    postureChecks = new Set();
+
+    document.getElementById('completion-screen').classList.remove('active');
+    document.getElementById('score').textContent = '0';
+    document.getElementById('rank').textContent = 'מתחיל';
+    document.getElementById('bond').textContent = '0%';
+    updateProgress();
+    updateHorse();
+    renderLessonsList();
+
+    document.getElementById('lesson-content').innerHTML = `
+        <h3>ברוכים הבאים ל-EMI LALUM!</h3>
+        <p>בחר שיעור מהתפריט כדי להתחיל ללמוד על רכיבת סוסים.</p>
+        <div class="tip">💡 טיפ: התחל מהשיעור הראשון ועבור לפי הסדר!</div>
+    `;
+    document.getElementById('game-controls').innerHTML = '';
+    document.getElementById('quiz-container').innerHTML = '';
+}
+
+// ==================== KEYBOARD CONTROLS ====================
+document.addEventListener('keydown', (e) => {
+    if (state.currentLesson < 4 || !state.mounted) return;
+
+    switch(e.key) {
+        case 'ArrowRight':
+        case 'ArrowLeft':
+            if (state.speed === 0) actionWalk();
+            break;
+        case 'ArrowUp':
+            if (state.speed === 0) actionWalk();
+            else if (state.speed === 1) actionTrot();
+            else if (state.speed === 2) actionGallop();
+            break;
+        case 'ArrowDown':
+            if (state.speed === 3) { state.speed = 2; actionTrot(); }
+            else if (state.speed === 2) { state.speed = 1; actionWalk(); }
+            else if (state.speed === 1) actionHalt();
+            break;
+        case ' ':
+            e.preventDefault();
+            actionHalt();
+            break;
+    }
+});
+</script>
+</body>
+</html>

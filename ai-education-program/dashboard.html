@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דשבורד תכניות AI — חינוך ומשפט</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --accent1: #3b82f6;
+    --accent2: #8b5cf6;
+    --accent3: #06b6d4;
+    --accent4: #f59e0b;
+    --accent5: #10b981;
+    --accent6: #ef4444;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --border: #475569;
+    --glow1: rgba(59,130,246,0.15);
+    --glow2: rgba(139,92,246,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
+    padding: 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--glow1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--glow2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header .subtitle {
+    color: var(--text2);
+    font-size: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .header-stat {
+    text-align: center;
+  }
+
+  .header-stat .num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent3);
+  }
+
+  .header-stat .label {
+    font-size: 0.75rem;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+  }
+
+  .tab {
+    padding: 1rem 2rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text2);
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    user-select: none;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent1);
+    border-bottom-color: var(--accent1);
+    background: rgba(59,130,246,0.05);
+  }
+
+  .tab.active.tab-purple {
+    color: var(--accent2);
+    border-bottom-color: var(--accent2);
+    background: rgba(139,92,246,0.05);
+  }
+
+  /* Main */
+  .main { padding: 2rem 3rem; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    color: var(--text2);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .card-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-title .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  /* Progress bars */
+  .progress-container {
+    margin-bottom: 1rem;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.5s ease;
+    width: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-right: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent5));
+    border-radius: 3px;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0.75rem 2rem 1.5rem 0;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 1rem;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 3px solid var(--accent1);
+    background: var(--bg);
+  }
+
+  .timeline-item .year {
+    font-size: 0.75rem;
+    color: var(--accent3);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .timeline-item .content {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .timeline-item .detail {
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+
+  /* RECIR Heatmap */
+  .heatmap {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    margin-top: 1rem;
+  }
+
+  .heatmap-cell {
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .heatmap-header {
+    background: var(--surface2);
+    color: var(--text2);
+    font-weight: 700;
+  }
+
+  .heat-low { background: rgba(16,185,129,0.2); color: #34d399; }
+  .heat-med { background: rgba(245,158,11,0.2); color: #fbbf24; }
+  .heat-high { background: rgba(239,68,68,0.2); color: #f87171; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.3rem;
+  }
+
+  .tag-blue { background: rgba(59,130,246,0.15); color: var(--accent1); }
+  .tag-purple { background: rgba(139,92,246,0.15); color: var(--accent2); }
+  .tag-green { background: rgba(16,185,129,0.15); color: var(--accent5); }
+  .tag-yellow { background: rgba(245,158,11,0.15); color: var(--accent4); }
+  .tag-red { background: rgba(239,68,68,0.15); color: var(--accent6); }
+  .tag-cyan { background: rgba(6,182,212,0.15); color: var(--accent3); }
+
+  /* Module cards */
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    border-right: 4px solid var(--accent1);
+    transition: all 0.2s;
+  }
+
+  .module-card:hover {
+    border-right-color: var(--accent3);
+    background: rgba(30,41,59,0.8);
+  }
+
+  .module-card.purple { border-right-color: var(--accent2); }
+  .module-card.purple:hover { border-right-color: var(--accent3); }
+
+  .module-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent3);
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+  }
+
+  .module-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .module-hours {
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+
+  /* Donut chart */
+  .donut-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .donut {
+    width: 120px;
+    height: 120px;
+    position: relative;
+  }
+
+  .donut svg {
+    transform: rotate(-90deg);
+    width: 120px;
+    height: 120px;
+  }
+
+  .donut circle {
+    fill: none;
+    stroke-width: 12;
+    cx: 60;
+    cy: 60;
+    r: 50;
+  }
+
+  .donut .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  /* Conclusion boxes */
+  .conclusion-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conclusion-box::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    font-size: 5rem;
+    font-weight: 900;
+    opacity: 0.05;
+    color: var(--text);
+  }
+
+  .conclusion-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--accent3);
+  }
+
+  .conclusion-text {
+    font-size: 0.85rem;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* Full-width card */
+  .full-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 0.75rem 1rem;
+    text-align: right;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(71,85,105,0.3);
+    font-size: 0.85rem;
+  }
+
+  tr:hover td { background: rgba(59,130,246,0.03); }
+
+  /* Bar chart */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    height: 200px;
+    padding-top: 1rem;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .bar {
+    width: 100%;
+    max-width: 60px;
+    border-radius: 6px 6px 0 0;
+    transition: height 1.5s ease;
+    position: relative;
+  }
+
+  .bar-value {
+    position: absolute;
+    top: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .bar-label {
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text2);
+    text-align: center;
+  }
+
+  /* Pill list */
+  .pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+    .header-content { flex-direction: column; gap: 1rem; }
+    .main { padding: 1rem; }
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate { animation: fadeInUp 0.5s ease forwards; }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-content">
+    <div>
+      <h1>AI Education & LawTech Programs</h1>
+      <div class="subtitle">תכניות חינוך AI לבתי ספר ותכנית Just-AI למשפטנים — דשבורד אסטרטגי</div>
+    </div>
+    <div class="header-stats">
+      <div class="header-stat">
+        <div class="num">2</div>
+        <div class="label">תכניות</div>
+      </div>
+      <div class="header-stat">
+        <div class="num">600</div>
+        <div class="label">שעות הוראה</div>
+      </div>
+      <div class="header-stat">
+        <div class="num">16</div>
+        <div class="label">מודולים</div>
+      </div>
+      <div class="header-stat">
+        <div class="num">13</div>
+        <div class="label">מסמכים</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview', this)">סקירה כללית</div>
+  <div class="tab" onclick="switchTab('schools', this)">AI בבתי ספר</div>
+  <div class="tab tab-purple" onclick="switchTab('justai', this)">Just-AI — משפטנים</div>
+  <div class="tab" onclick="switchTab('recir', this)">מודל RECIR</div>
+  <div class="tab" onclick="switchTab('strategy', this)">מסקנות אסטרטגיות</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+<!-- ==================== PANEL: OVERVIEW ==================== -->
+<div class="panel active" id="panel-overview">
+
+  <!-- KPI Cards -->
+  <div class="grid-5 animate delay-1">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">שנות לימוד</div>
+        <div class="card-icon" style="background:var(--glow1);color:var(--accent1)">&#x1F4C5;</div>
+      </div>
+      <div class="card-value" style="color:var(--accent1)">6+2</div>
+      <div class="card-desc">6 שנים בי״ס + 2 שנות Just-AI</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">שעות הוראה כוללות</div>
+        <div class="card-icon" style="background:var(--glow2);color:var(--accent2)">&#x23F0;</div>
+      </div>
+      <div class="card-value" style="color:var(--accent2)">600</div>
+      <div class="card-desc">480 בי״ס + 120 Just-AI</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">קבוצות גיל</div>
+        <div class="card-icon" style="background:rgba(6,182,212,0.15);color:var(--accent3)">&#x1F465;</div>
+      </div>
+      <div class="card-value" style="color:var(--accent3)">12-60+</div>
+      <div class="card-desc">תלמידים, סטודנטים, מקצוענים</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">מערכי שיעור</div>
+        <div class="card-icon" style="background:rgba(16,185,129,0.15);color:var(--accent5)">&#x1F4DD;</div>
+      </div>
+      <div class="card-value" style="color:var(--accent5)">6</div>
+      <div class="card-desc">מערכי שיעור מפורטים לדוגמה</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">מסלולי הסמכה</div>
+        <div class="card-icon" style="background:rgba(245,158,11,0.15);color:var(--accent4)">&#x1F3C6;</div>
+      </div>
+      <div class="card-value" style="color:var(--accent4)">7</div>
+      <div class="card-desc">4 רמות מורים + 3 רמות משפטנים</div>
+    </div>
+  </div>
+
+  <!-- Two program comparison -->
+  <div class="grid-2 animate delay-2">
+
+    <!-- Schools Program -->
+    <div class="card" style="border-top: 3px solid var(--accent1);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div>
+          <div style="font-size:1.2rem;font-weight:700;">AI בבתי ספר</div>
+          <div style="font-size:0.8rem;color:var(--text2);">חטיבה + תיכון | כיתות ז׳-י״ב</div>
+        </div>
+        <span class="tag tag-blue">480 שעות</span>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה ז׳ — מפגש ראשון</span><span>60 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="12.5%" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה ח׳ — איך AI לומד</span><span>60 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="12.5%" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה ט׳ — AI בחברה</span><span>60 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="12.5%" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה י׳ — יסודות AI</span><span>90 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="18.75%" style="background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה י״א — AI מתקדם</span><span>90 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="18.75%" style="background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>כיתה י״ב — AI בעולם האמיתי</span><span>120 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="25%" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+      </div>
+    </div>
+
+    <!-- Just-AI Program -->
+    <div class="card" style="border-top: 3px solid var(--accent2);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div>
+          <div style="font-size:1.2rem;font-weight:700;">Just-AI — המשפטן-טכנולוג</div>
+          <div style="font-size:0.8rem;color:var(--text2);">מסלול עומק דו-שנתי | 120 שעות</div>
+        </div>
+        <span class="tag tag-purple">120 שעות</span>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-label"><span>M1 — AI 101 למשפטן</span><span>12 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="10%" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>M2 — Prompt Engineering משפטי</span><span>10 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="8.3%" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>M3 — כלי AI בעשייה משפטית</span><span>14 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="11.7%" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>M4-M5 — פרטיות + פרויקט א׳</span><span>24 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="20%" style="background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>M6-M8 — RECIR + ליטיגציה + אסדרה</span><span>38 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="31.7%" style="background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-label"><span>M9-M10 — שינוי + פרויקט גמר</span><span>22 ש׳</span></div>
+        <div class="progress-bar"><div class="progress-fill" data-width="18.3%" style="background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teaching methodology split -->
+  <div class="section-title">
+    <span class="icon" style="background:rgba(245,158,11,0.15);color:var(--accent4);">&#x1F4CA;</span>
+    מתודולוגיות הוראה — השוואה
+  </div>
+
+  <div class="grid-2 animate delay-3">
+    <div class="full-card">
+      <div style="font-weight:600;margin-bottom:1rem;color:var(--accent1);">AI בבתי ספר</div>
+      <div class="donut-container">
+        <div class="donut">
+          <svg viewBox="0 0 120 120">
+            <circle stroke="var(--surface2)" stroke-dasharray="314" stroke-dashoffset="0" />
+            <circle stroke="#3b82f6" stroke-dasharray="314" stroke-dashoffset="188" />
+            <circle stroke="#06b6d4" stroke-dasharray="314" stroke-dashoffset="236" />
+            <circle stroke="#8b5cf6" stroke-dasharray="314" stroke-dashoffset="267" />
+            <circle stroke="#10b981" stroke-dasharray="314" stroke-dashoffset="298" />
+          </svg>
+          <div class="center-text" style="color:var(--accent1)">7</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent1)"></div>למידה חווייתית (40%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div>פרויקטים מעשיים (25%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>הרצאות ודיונים (20%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>הערכה ורפלקציה (15%)</div>
+        </div>
+      </div>
+    </div>
+    <div class="full-card">
+      <div style="font-weight:600;margin-bottom:1rem;color:var(--accent2);">Just-AI</div>
+      <div class="donut-container">
+        <div class="donut">
+          <svg viewBox="0 0 120 120">
+            <circle stroke="var(--surface2)" stroke-dasharray="314" stroke-dashoffset="0" />
+            <circle stroke="#8b5cf6" stroke-dasharray="314" stroke-dashoffset="188" />
+            <circle stroke="#f59e0b" stroke-dasharray="314" stroke-dashoffset="236" />
+            <circle stroke="#3b82f6" stroke-dasharray="314" stroke-dashoffset="267" />
+            <circle stroke="#10b981" stroke-dasharray="314" stroke-dashoffset="298" />
+          </svg>
+          <div class="center-text" style="color:var(--accent2)">5</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>סדנאות מעשיות (40%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent4)"></div>Case Studies (25%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent1)"></div>הרצאות מומחים (15%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent5)"></div>פרויקטים ומנטורינג (20%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PANEL: SCHOOLS ==================== -->
+<div class="panel" id="panel-schools">
+
+  <div class="section-title">
+    <span class="icon" style="background:var(--glow1);color:var(--accent1);">&#x1F393;</span>
+    תכנית AI לחטיבה ותיכון — 480 שעות | 6 שנים
+  </div>
+
+  <!-- Grade breakdown -->
+  <div class="grid-3 animate delay-1">
+    <div class="module-card">
+      <div class="module-num">כיתה ז׳ | 60 שעות</div>
+      <div class="module-name">"מפגש ראשון עם AI"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-blue">מושגי יסוד</span>
+        <span class="tag tag-cyan">כלי AI</span>
+        <span class="tag tag-green">אתיקה</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">4 יחידות: מבוא | כלי AI | אתיקה | פרויקט</div>
+    </div>
+    <div class="module-card">
+      <div class="module-num">כיתה ח׳ | 60 שעות</div>
+      <div class="module-name">"איך AI לומד?"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-blue">ML</span>
+        <span class="tag tag-cyan">NLP</span>
+        <span class="tag tag-purple">ראייה ממוחשבת</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">4 יחידות: ML | NLP | Computer Vision | פרויקט</div>
+    </div>
+    <div class="module-card">
+      <div class="module-num">כיתה ט׳ | 60 שעות</div>
+      <div class="module-name">"AI בחברה"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-red">אתיקה מתקדמת</span>
+        <span class="tag tag-green">AI for Good</span>
+        <span class="tag tag-yellow">Design Thinking</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">3 יחידות: אתיקה | חדשנות חברתית | פרויקט קהילתי</div>
+    </div>
+    <div class="module-card" style="border-right-color:var(--accent3);">
+      <div class="module-num">כיתה י׳ | 90 שעות</div>
+      <div class="module-name">"יסודות הבינה המלאכותית"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-blue">Python</span>
+        <span class="tag tag-cyan">Scikit-learn</span>
+        <span class="tag tag-purple">Neural Networks</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">4 יחידות: CS+Python | ML | Neural Nets | פרויקט</div>
+    </div>
+    <div class="module-card" style="border-right-color:var(--accent3);">
+      <div class="module-num">כיתה י״א | 90 שעות</div>
+      <div class="module-name">"AI מתקדם"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-purple">Deep Learning</span>
+        <span class="tag tag-cyan">Transformers</span>
+        <span class="tag tag-yellow">AI גנרטיבי</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">5 יחידות: DL | NLP | CV | מדיניות | פרויקט</div>
+    </div>
+    <div class="module-card" style="border-right-color:var(--accent5);">
+      <div class="module-num">כיתה י״ב | 120 שעות</div>
+      <div class="module-name">"AI בעולם האמיתי"</div>
+      <div style="margin-top:0.5rem;">
+        <span class="tag tag-green">MLOps</span>
+        <span class="tag tag-yellow">יזמות</span>
+        <span class="tag tag-red">RL</span>
+        <span class="tag tag-purple">פרויקט גמר</span>
+      </div>
+      <div class="module-hours" style="margin-top:0.75rem;">4 יחידות: Engineering | מתקדם | פרויקט גמר | הכנה</div>
+    </div>
+  </div>
+
+  <!-- Teacher Training + Hours Bar Chart -->
+  <div class="grid-2 animate delay-2">
+    <div class="full-card">
+      <div style="font-weight:600;margin-bottom:1rem;">שעות הוראה לפי כיתה</div>
+      <div class="bar-chart">
+        <div class="bar-group">
+          <div class="bar" data-height="50%" style="background:linear-gradient(to top,#3b82f6,#60a5fa);">
+            <div class="bar-value" style="color:var(--accent1)">60</div>
+          </div>
+          <div class="bar-label">ז׳</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" data-height="50%" style="background:linear-gradient(to top,#3b82f6,#60a5fa);">
+            <div class="bar-value" style="color:var(--accent1)">60</div>
+          </div>
+          <div class="bar-label">ח׳</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" data-height="50%" style="background:linear-gradient(to top,#3b82f6,#60a5fa);">
+            <div class="bar-value" style="color:var(--accent1)">60</div>
+          </div>
+          <div class="bar-label">ט׳</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" data-height="75%" style="background:linear-gradient(to top,#06b6d4,#22d3ee);">
+            <div class="bar-value" style="color:var(--accent3)">90</div>
+          </div>
+          <div class="bar-label">י׳</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" data-height="75%" style="background:linear-gradient(to top,#06b6d4,#22d3ee);">
+            <div class="bar-value" style="color:var(--accent3)">90</div>
+          </div>
+          <div class="bar-label">י״א</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" data-height="100%" style="background:linear-gradient(to top,#8b5cf6,#a78bfa);">
+            <div class="bar-value" style="color:var(--accent2)">120</div>
+          </div>
+          <div class="bar-label">י״ב</div>
+        </div>
+      </div>
+    </div>
+    <div class="full-card">
+      <div style="font-weight:600;margin-bottom:1rem;">הכשרת מורים — 3 מסלולים</div>
+      <table>
+        <tr>
+          <th>מסלול</th>
+          <th>קהל</th>
+          <th>שעות</th>
+          <th>הסמכה</th>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">בסיסי</span></td>
+          <td>כלל המורים</td>
+          <td>30</td>
+          <td>רמה 1</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-purple">מתקדם</span></td>
+          <td>מורי CS / מדעים</td>
+          <td>120</td>
+          <td>רמה 2-3</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">מנטורינג</span></td>
+          <td>אנשי הייטק</td>
+          <td>16</td>
+          <td>מנטור</td>
+        </tr>
+      </table>
+      <div style="margin-top:1rem;font-size:0.8rem;color:var(--text2);">
+        <strong>יישום:</strong> פיילוט 20 בתי ספר → 500+ בשנה ג׳ → כלל המערכת<br>
+        <strong>תקציב פיילוט:</strong> ₪1,550,000
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Tools -->
+  <div class="section-title">
+    <span class="icon" style="background:rgba(6,182,212,0.15);color:var(--accent3);">&#x1F6E0;</span>
+    כלים וטכנולוגיות
+  </div>
+  <div class="pill-list animate delay-3">
+    <div class="pill">Scratch + AI</div>
+    <div class="pill">Teachable Machine</div>
+    <div class="pill">Google Colab</div>
+    <div class="pill">Python</div>
+    <div class="pill">Scikit-learn</div>
+    <div class="pill">TensorFlow / Keras</div>
+    <div class="pill">OpenCV</div>
+    <div class="pill">Hugging Face</div>
+    <div class="pill">YOLO</div>
+    <div class="pill">Streamlit</div>
+    <div class="pill">ChatGPT / Claude</div>
+    <div class="pill">DALL-E</div>
+    <div class="pill">Jupyter Notebooks</div>
+  </div>
+</div>
+
+<!-- ==================== PANEL: JUST-AI ==================== -->
+<div class="panel" id="panel-justai">
+
+  <div class="section-title">
+    <span class="icon" style="background:var(--glow2);color:var(--accent2);">&#x2696;</span>
+    Just-AI — הכשרת ה"משפטן-טכנולוג" | 120 שעות | 2 שנים
+  </div>
+
+  <!-- Profile -->
+  <div class="full-card animate delay-1" style="border-top:3px solid var(--accent2);margin-bottom:1.5rem;">
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+      <div style="flex:1;min-width:250px;">
+        <div style="font-weight:700;color:var(--accent3);margin-bottom:0.5rem;">פרופיל הבוגר</div>
+        <table>
+          <tr><td style="color:var(--accent1);font-weight:600;">ידע</td><td>ארכיטקטורת LLMs, מחזור ML, רגולציה בינלאומית</td></tr>
+          <tr><td style="color:var(--accent2);font-weight:600;">מיומנות</td><td>Prompt Eng., ניתוח RECIR, Bias Audits</td></tr>
+          <tr><td style="color:var(--accent5);font-weight:600;">עמדה</td><td>יועץ אסטרטגי מבוסס-נתונים; שומר סף אתי</td></tr>
+          <tr><td style="color:var(--accent4);font-weight:600;">ייחוד</td><td>"שפה משותפת" עם מהנדסים — ללא כתיבת קוד</td></tr>
+        </table>
+      </div>
+      <div style="flex:1;min-width:250px;">
+        <div style="font-weight:700;color:var(--accent3);margin-bottom:0.5rem;">3 רמות הסמכה</div>
+        <div class="progress-container">
+          <div class="progress-label"><span>L1 — AI-Literate Lawyer</span><span>שנה א׳</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="33%" style="background:var(--accent1)"></div></div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label"><span>L2 — AI-Strategic Lawyer</span><span>שנה ב׳</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="66%" style="background:var(--accent2)"></div></div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label"><span>L3 — AI-Leadership Lawyer</span><span>+ ניסיון</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="100%" style="background:linear-gradient(90deg,var(--accent5),var(--accent3))"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Year 1 modules -->
+  <div style="font-weight:600;color:var(--accent1);margin-bottom:0.75rem;font-size:1.05rem;">שנה א׳ — אוריינות טכנולוגית (60 ש׳)</div>
+  <div class="grid-5 animate delay-2">
+    <div class="module-card purple">
+      <div class="module-num">M1 | 12 ש׳</div>
+      <div class="module-name">AI 101 למשפטן</div>
+      <div class="module-hours">LLMs, הזיות, מחזור חיי מודל</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M2 | 10 ש׳</div>
+      <div class="module-name">Prompt Engineering</div>
+      <div class="module-hours">מסגרת CLEAR, 10 טכניקות</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M3 | 14 ש׳</div>
+      <div class="module-name">כלי AI משפטיים</div>
+      <div class="module-hours">Harvey, Luminance, DD</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M4 | 10 ש׳</div>
+      <div class="module-name">נתונים ופרטיות</div>
+      <div class="module-hours">GDPR, AI Use Policy</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M5 | 14 ש׳</div>
+      <div class="module-name">פרויקט "Pilot AI"</div>
+      <div class="module-hours">יישום מקצה לקצה</div>
+    </div>
+  </div>
+
+  <!-- Year 2 modules -->
+  <div style="font-weight:600;color:var(--accent2);margin-bottom:0.75rem;font-size:1.05rem;">שנה ב׳ — אסטרטגיה והנהגה (60 ש׳)</div>
+  <div class="grid-5 animate delay-3">
+    <div class="module-card purple">
+      <div class="module-num">M6 | 14 ש׳</div>
+      <div class="module-name">מודל RECIR</div>
+      <div class="module-hours">כימות סיכונים, Bias Audit</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M7 | 12 ש׳</div>
+      <div class="module-name">ליטיגציה דיגיטלית</div>
+      <div class="module-hours">ראיות, e-Discovery, משבר</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M8 | 12 ש׳</div>
+      <div class="module-name">אסדרה גלובלית</div>
+      <div class="module-hours">EU AI Act, ESG, ישראל</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M9 | 8 ש׳</div>
+      <div class="module-name">ניהול שינוי</div>
+      <div class="module-hours">LEAD-AI, Culture</div>
+    </div>
+    <div class="module-card purple">
+      <div class="module-num">M10 | 14 ש׳</div>
+      <div class="module-name">פרויקט גמר 2030</div>
+      <div class="module-hours">חזון אסטרטגי + ועדה</div>
+    </div>
+  </div>
+
+  <!-- Key Case Studies -->
+  <div class="section-title" style="margin-top:1.5rem;">
+    <span class="icon" style="background:rgba(239,68,68,0.15);color:var(--accent6);">&#x26A0;</span>
+    מקרי מבחן מרכזיים
+  </div>
+  <div class="grid-3 animate delay-4">
+    <div class="card" style="border-right:3px solid var(--accent6);">
+      <div style="font-weight:700;color:var(--accent6);font-size:0.9rem;">Mata v. Avianca (2023)</div>
+      <div style="font-size:0.8rem;color:var(--text2);margin-top:0.5rem;">עורך דין הגיש ציטוטי פסיקה בדויים מ-ChatGPT. קנסות, נזיפה, וחובת הכשרה.</div>
+      <div style="margin-top:0.5rem;"><span class="tag tag-red">הזיות</span> <span class="tag tag-yellow">Rule 3.3</span></div>
+    </div>
+    <div class="card" style="border-right:3px solid var(--accent4);">
+      <div style="font-weight:700;color:var(--accent4);font-size:0.9rem;">COMPAS Algorithm</div>
+      <div style="font-size:0.8rem;color:var(--text2);margin-top:0.5rem;">אלגוריתם חיזוי חזרה לעבריינות שהוטה 45% נגד שחורים. פרדוקס ההוגנות.</div>
+      <div style="margin-top:0.5rem;"><span class="tag tag-red">Bias</span> <span class="tag tag-purple">Fairness Metrics</span></div>
+    </div>
+    <div class="card" style="border-right:3px solid var(--accent3);">
+      <div style="font-weight:700;color:var(--accent3);font-size:0.9rem;">UnitedHealth AI Claims</div>
+      <div style="font-size:0.8rem;color:var(--text2);margin-top:0.5rem;">אלגוריתם דחה תביעות בריאות של קשישים — תביעות ייצוגיות.</div>
+      <div style="margin-top:0.5rem;"><span class="tag tag-red">אפליה</span> <span class="tag tag-green">Human Override</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PANEL: RECIR ==================== -->
+<div class="panel" id="panel-recir">
+
+  <div class="section-title">
+    <span class="icon" style="background:rgba(245,158,11,0.15);color:var(--accent4);">&#x1F4CA;</span>
+    מודל RECIR — כימות סיכונים אלגוריתמיים
+  </div>
+
+  <!-- 5 dimensions -->
+  <div class="grid-5 animate delay-1">
+    <div class="card" style="border-top:3px solid #ef4444;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem;font-weight:900;color:#ef4444;">R</div>
+        <div style="font-weight:600;font-size:0.9rem;">Regulatory</div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">סיכון רגולטורי</div>
+        <div style="margin-top:0.5rem;"><span class="tag tag-red">25%</span></div>
+        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.5rem;">EU AI Act, GDPR, רגולציה סקטוריאלית</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem;font-weight:900;color:#f59e0b;">E</div>
+        <div style="font-weight:600;font-size:0.9rem;">Ethical</div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">סיכון אתי</div>
+        <div style="margin-top:0.5rem;"><span class="tag tag-yellow">25%</span></div>
+        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.5rem;">הטיה, שקיפות, אוטונומיה, הסכמה</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #3b82f6;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem;font-weight:900;color:#3b82f6;">C</div>
+        <div style="font-weight:600;font-size:0.9rem;">Competitive</div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">סיכון תחרותי</div>
+        <div style="margin-top:0.5rem;"><span class="tag tag-blue">15%</span></div>
+        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.5rem;">קצב אימוץ, ציפיות, Pricing</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #8b5cf6;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem;font-weight:900;color:#8b5cf6;">I</div>
+        <div style="font-weight:600;font-size:0.9rem;">Implementation</div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">סיכון יישום</div>
+        <div style="margin-top:0.5rem;"><span class="tag tag-purple">20%</span></div>
+        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.5rem;">בגרות ספק, נתונים, אינטגרציה</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid #06b6d4;">
+      <div style="text-align:center;">
+        <div style="font-size:2rem;font-weight:900;color:#06b6d4;">R</div>
+        <div style="font-weight:600;font-size:0.9rem;">Reputational</div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:0.3rem;">סיכון מוניטין</div>
+        <div style="margin-top:0.5rem;"><span class="tag tag-cyan">15%</span></div>
+        <div style="font-size:0.7rem;color:var(--text2);margin-top:0.5rem;">חשיפה, קהל, Social Media</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula + Interpretation -->
+  <div class="full-card animate delay-2" style="margin-top:0.5rem;">
+    <div style="font-weight:700;margin-bottom:0.75rem;">נוסחת הציון הכולל</div>
+    <div style="background:var(--surface2);padding:1rem;border-radius:8px;font-family:monospace;direction:ltr;text-align:center;font-size:1.1rem;letter-spacing:1px;">
+      RECIR = (R × 0.25) + (E × 0.25) + (C × 0.15) + (I × 0.20) + (Rep × 0.15)
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
+      <div style="flex:1;min-width:150px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#34d399;">1.0-3.0</div>
+        <div style="font-size:0.8rem;color:#34d399;font-weight:600;">LOW RISK</div>
+        <div style="font-size:0.75rem;color:var(--text2);">אמץ</div>
+      </div>
+      <div style="flex:1;min-width:150px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:0.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#fbbf24;">3.1-5.0</div>
+        <div style="font-size:0.8rem;color:#fbbf24;font-weight:600;">MODERATE</div>
+        <div style="font-size:0.75rem;color:var(--text2);">פיילוט</div>
+      </div>
+      <div style="flex:1;min-width:150px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:0.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#fb923c;">5.1-7.0</div>
+        <div style="font-size:0.8rem;color:#fb923c;font-weight:600;">HIGH RISK</div>
+        <div style="font-size:0.75rem;color:var(--text2);">זהירות</div>
+      </div>
+      <div style="flex:1;min-width:150px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:0.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#f87171;">7.1-10</div>
+        <div style="font-size:0.8rem;color:#f87171;font-weight:600;">CRITICAL</div>
+        <div style="font-size:0.75rem;color:var(--text2);">הימנע</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example RECIR analysis -->
+  <div class="section-title" style="margin-top:1.5rem;">
+    <span class="icon" style="background:rgba(16,185,129,0.15);color:var(--accent5);">&#x2705;</span>
+    דוגמה: הערכת כלי DD AI לפירמת M&A
+  </div>
+  <div class="full-card animate delay-3">
+    <div class="heatmap">
+      <div class="heatmap-cell heatmap-header">ממד</div>
+      <div class="heatmap-cell heatmap-header">R</div>
+      <div class="heatmap-cell heatmap-header">E</div>
+      <div class="heatmap-cell heatmap-header">C</div>
+      <div class="heatmap-cell heatmap-header">I</div>
+      <div class="heatmap-cell heatmap-header">Rep</div>
+
+      <div class="heatmap-cell heatmap-header">ניקוד</div>
+      <div class="heatmap-cell heat-med">4.2</div>
+      <div class="heatmap-cell heat-low">3.8</div>
+      <div class="heatmap-cell heat-high">7.5</div>
+      <div class="heatmap-cell heat-med">5.5</div>
+      <div class="heatmap-cell heat-low">3.0</div>
+
+      <div class="heatmap-cell heatmap-header">משקל</div>
+      <div class="heatmap-cell" style="background:var(--surface2);color:var(--text2);">×0.25</div>
+      <div class="heatmap-cell" style="background:var(--surface2);color:var(--text2);">×0.25</div>
+      <div class="heatmap-cell" style="background:var(--surface2);color:var(--text2);">×0.15</div>
+      <div class="heatmap-cell" style="background:var(--surface2);color:var(--text2);">×0.20</div>
+      <div class="heatmap-cell" style="background:var(--surface2);color:var(--text2);">×0.15</div>
+    </div>
+    <div style="text-align:center;margin-top:1.25rem;">
+      <div style="display:inline-block;background:rgba(245,158,11,0.15);border:2px solid var(--accent4);border-radius:12px;padding:0.75rem 2rem;">
+        <div style="font-size:0.8rem;color:var(--text2);">RECIR SCORE</div>
+        <div style="font-size:2.5rem;font-weight:900;color:var(--accent4);">4.7</div>
+        <div style="font-size:0.85rem;font-weight:600;color:var(--accent4);">MODERATE — פיילוט מומלץ</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;padding:0.75rem;background:var(--surface2);border-radius:8px;font-size:0.85rem;">
+      <strong style="color:var(--accent5);">המלצה:</strong> פיילוט בתיק בינוני, עם Human Oversight מלא, בחינה לאחר 10 מקרים. הסיכון התחרותי (C=7.5) מצדיק פעולה מהירה.
+    </div>
+  </div>
+
+  <!-- Explainability -->
+  <div class="full-card animate delay-4" style="border-right:4px solid var(--accent5);">
+    <div style="font-weight:700;color:var(--accent5);margin-bottom:0.5rem;">יתרון מפתח: Explainability</div>
+    <div style="font-size:0.85rem;color:var(--text2);line-height:1.7;">
+      בניגוד ל"קופסה שחורה", מודל RECIR מאפשר למשפטן להסביר <strong style="color:var(--text);">אילו משתנים הובילו להחלטה</strong>, ובכך לבסס אחריות אלגוריתמית. זהו תנאי הכרחי לציות ל-EU AI Act Art. 13 (שקיפות) ו-GDPR Art. 22 (זכות להסבר).
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PANEL: STRATEGY ==================== -->
+<div class="panel" id="panel-strategy">
+
+  <div class="section-title">
+    <span class="icon" style="background:rgba(16,185,129,0.15);color:var(--accent5);">&#x1F680;</span>
+    ארבע המסקנות האסטרטגיות
+  </div>
+
+  <div class="grid-2 animate delay-1">
+    <div class="conclusion-box" data-num="1" style="border-right:4px solid var(--accent1);">
+      <div class="conclusion-title">1. מאינטואיציה לכימות</div>
+      <div class="conclusion-text">
+        מודלים כדוגמת RECIR משדרגים את המשפטן ליועץ אסטרטגי מבוסס-נתונים הניתן לביקורת. המעבר מ"אני חושב ש..." ל"הנתונים מצביעים על..." הוא המהפכה.
+      </div>
+    </div>
+    <div class="conclusion-box" data-num="2" style="border-right:4px solid var(--accent2);">
+      <div class="conclusion-title">2. אוריינות כהכרח קיומי</div>
+      <div class="conclusion-text">
+        עורכי דין שלא יאמצו AI יידחקו לשוליים התחרותיים על ידי אלו שירתמו אותו. האוריינות אינה "Nice to have" — היא תנאי להישרדות מקצועית.
+      </div>
+    </div>
+    <div class="conclusion-box" data-num="3" style="border-right:4px solid var(--accent4);">
+      <div class="conclusion-title">3. שומר הסף האתי</div>
+      <div class="conclusion-text">
+        בעידן של מערכות אוטונומיות, תפקידו של המשפטן להבטיח הוגנות וזכויות אדם הפך לקריטי מאי פעם. Human-in-the-Loop אינו המלצה — הוא חובה.
+      </div>
+    </div>
+    <div class="conclusion-box" data-num="4" style="border-right:4px solid var(--accent5);">
+      <div class="conclusion-title">4. עליונות אסטרטגית</div>
+      <div class="conclusion-text">
+        השילוב בין מומחיות משפטית לאקוסיסטם טכנולוגי עמוק (Deep Tech) מציב את ישראל בעמדה להוביל את תחום ה-LawTech ולעצב את "עולם המשפט 2030".
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title" style="margin-top:1.5rem;">
+    <span class="icon" style="background:rgba(59,130,246,0.15);color:var(--accent1);">&#x1F4C6;</span>
+    ציר זמן ליישום
+  </div>
+
+  <div class="grid-2 animate delay-2">
+    <div class="full-card">
+      <div style="font-weight:600;color:var(--accent1);margin-bottom:1rem;">AI בבתי ספר</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="year">שנה א׳</div>
+          <div class="content">פיילוט — 20 בתי ספר</div>
+          <div class="detail">60 מורים, תכנית ז׳-ט׳</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">שנה ב׳</div>
+          <div class="content">הרחבה — 100 בתי ספר</div>
+          <div class="detail">300 מורים, תכנית ז׳-י׳</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">שנה ג׳</div>
+          <div class="content">Scale — 500 בתי ספר</div>
+          <div class="detail">1,500 מורים, תכנית מלאה</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">שנה ד׳-ה׳</div>
+          <div class="content">כלל מערכת החינוך</div>
+          <div class="detail">כל בתי הספר בישראל</div>
+        </div>
+      </div>
+    </div>
+    <div class="full-card">
+      <div style="font-weight:600;color:var(--accent2);margin-bottom:1rem;">Just-AI למשפטנים</div>
+      <div class="timeline">
+        <div class="timeline-item" style="--color:var(--accent2)">
+          <div class="year">Q1-Q2</div>
+          <div class="content">שנה א׳ — אוריינות</div>
+          <div class="detail">M1-M5: LLMs, Prompt Eng., כלים, פרטיות</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">Q3-Q4</div>
+          <div class="content">שנה ב׳ — אסטרטגיה</div>
+          <div class="detail">M6-M10: RECIR, ליטיגציה, רגולציה</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">שנה ג׳+</div>
+          <div class="content">Level 3 + CPD</div>
+          <div class="detail">הנהגה, הוראה, פרסום</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2030</div>
+          <div class="content">Israel LawTech Hub</div>
+          <div class="detail">מרכז R&D עולמי של LawTech</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Regulatory landscape -->
+  <div class="section-title" style="margin-top:1.5rem;">
+    <span class="icon" style="background:rgba(239,68,68,0.15);color:var(--accent6);">&#x1F30D;</span>
+    מפת האסדרה הגלובלית
+  </div>
+  <div class="full-card animate delay-3">
+    <table>
+      <tr>
+        <th>גוש</th>
+        <th>גישה</th>
+        <th>מסמך מפתח</th>
+        <th>חובת Bias Audit</th>
+        <th>זכות להסבר</th>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">EU</span></td>
+        <td>Risk-based, מחמיר</td>
+        <td>EU AI Act (2024)</td>
+        <td><span style="color:var(--accent5)">&#10004; חובה (HR)</span></td>
+        <td><span style="color:var(--accent5)">&#10004; כן</span></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-cyan">ארה"ב</span></td>
+        <td>Sectoral, מינימלי</td>
+        <td>EO 14110, NIST RMF</td>
+        <td><span style="color:var(--accent4)">&#x25CB; סקטוריאלי</span></td>
+        <td><span style="color:var(--accent4)">&#x25CB; מוגבל</span></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-red">סין</span></td>
+        <td>שליטה ממשלתית</td>
+        <td>Gen AI Regs (2023)</td>
+        <td><span style="color:var(--accent6)">&#x2716; לא</span></td>
+        <td><span style="color:var(--accent6)">&#x2716; לא</span></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">UK</span></td>
+        <td>Pro-innovation</td>
+        <td>AI Safety Institute</td>
+        <td><span style="color:var(--accent4)">&#x25CB; המלצה</span></td>
+        <td><span style="color:var(--accent4)">&#x25CB; חלקי</span></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-yellow">ישראל</span></td>
+        <td>Sandboxing</td>
+        <td>ILITA Guidance</td>
+        <td><span style="color:var(--accent4)">&#x25CB; המלצה</span></td>
+        <td><span style="color:var(--accent4)">&#x25CB; חלקי</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Call to action -->
+  <div class="full-card animate delay-4" style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1));border:1px solid rgba(139,92,246,0.3);text-align:center;padding:2rem;">
+    <div style="font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      "Israel LawTech 2030"
+    </div>
+    <div style="font-size:1rem;color:var(--text2);margin-top:0.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
+      השילוב בין מערכת חינוך AI מתקדמת, תכנית Just-AI למשפטנים, ואקוסיסטם Deep Tech — מציב את ישראל בעמדת מנהיגות עולמית.
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+function switchTab(panelId, tabEl) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById('panel-' + panelId).classList.add('active');
+  animateBars();
+}
+
+function animateBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill').forEach(el => {
+      el.style.width = el.dataset.width;
+    });
+    document.querySelectorAll('.bar').forEach(el => {
+      el.style.height = el.dataset.height;
+    });
+  }, 100);
+}
+
+// Init
+animateBars();
+</script>
+
+</body>
+</html>
