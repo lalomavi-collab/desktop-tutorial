@@ -1,163 +1,186 @@
 """
-סוכן בניית פרומפטים - מודל 6 השלבים.
+סוכן בניית פרומפטים גנרי - מודל 6 השלבים.
 
-הסוכן מנהל שיחה אינטראקטיבית עם המשתמש, עובר שלב-אחרי-שלב,
-שואל שאלות מעמיקות, ובסוף מייצר פרומפט מקצועי ומובנה.
+הסוכן מתאים את עצמו דינמית לכל תחום:
+- שואל מה התחום ולאן בונים
+- בכל שלב שואל שאלה + אפשרויות רלוונטיות לתחום (נוצרות ע"י Claude)
+- שואל שאלת העמקה מקצועית
+- בסוף מייצר פרומפט מקצועי
 """
 
 import anthropic
 
-from prompt_builder.templates.app_templates import (
-    ALL_DOMAINS,
-    DomainTemplate,
-    PromptStep,
-)
+from prompt_builder.templates.app_templates import STEPS, PromptSession
 
 
 SYSTEM_PROMPT = """\
 אתה סוכן מומחה בבניית פרומפטים לאפליקציות AI.
-אתה עובד במודל של 6 שלבים מובנים:
-
-1. **תפקיד (Role)** - מי ה-AI? איזה Persona הוא מאמץ?
-2. **קהל יעד (Audience)** - עבור מי התוצר?
-3. **הזנת נתונים (Input)** - על איזה מידע ה-AI נשען?
-4. **המשימה (Task)** - מה הפעולה הספציפית?
-5. **אילוצים (Constraints)** - מה המגבלות והחוקים?
-6. **מבנה הפלט (Output)** - איך התוצאה נראית?
 
 ## איך אתה עובד:
-- בכל שלב, שאל שאלה ממוקדת אחת
-- הצג את האפשרויות הזמינות
-- אם המשתמש בחר אפשרות, שאל שאלת העמקה אחת רלוונטית
-- אל תציף - שאלה אחת בכל פעם
-- כשיש לך מספיק מידע בשלב, עבור לשלב הבא
-- הצע ברירות מחדל חכמות כשאפשר
-- כתוב בעברית
+אתה מנהל שיחה מובנית של 6 שלבים לבניית פרומפט מושלם.
+בכל שלב אתה:
+1. מציג את השאלה המרכזית
+2. מציע 3-4 אפשרויות רלוונטיות **לתחום הספציפי** שהמשתמש הגדיר
+3. נותן למשתמש לבחור או להקליד תשובה חופשית
+4. שואל שאלת העמקה אחת חכמה ומקצועית שרלוונטית לתחום
 
-## כשמבקשים לייצר את הפרומפט הסופי:
-צור פרומפט מובנה שמשלב את כל 6 השלבים לפרומפט אחד זורם ומקצועי.
-הפרומפט צריך להיות מוכן להעתקה ושימוש ישיר.
+## כללים:
+- שאלה אחת בכל פעם - אל תציף
+- התאם את האפשרויות, השפה, והדוגמאות לתחום המקצועי
+- שאל שאלות מקצועיות שרק מומחה בתחום היה שואל
+- כשהמשתמש עונה בקצרה, בקש פירוט אם חסר
+- הצע ברירות מחדל חכמות
+- כתוב בעברית
+- כשאתה שואל שאלת העמקה, הסבר למה היא חשובה
+
+## מבנה ה-6 שלבים:
+1. תפקיד (Role) - מי ה-AI
+2. קהל יעד (Audience) - עבור מי
+3. נתונים (Input) - על בסיס מה
+4. משימה (Task) - מה לעשות
+5. אילוצים (Constraints) - מה המגבלות
+6. פלט (Output) - איך נראה
 """
 
 
 class PromptBuilderAgent:
-    """סוכן אינטראקטיבי לבניית פרומפטים במודל 6 שלבים"""
+    """סוכן גנרי לבניית פרומפטים - מתאים את עצמו לכל תחום"""
 
     def __init__(self, api_key: str | None = None):
         self.client = anthropic.Anthropic(api_key=api_key) if api_key else anthropic.Anthropic()
         self.conversation: list[dict] = []
-        self.domain: DomainTemplate | None = None
-        self.current_step_idx: int = 0
-        self.answers: dict[str, str] = {}
-        self.project_name: str = ""
-        self.follow_ups_asked: set[str] = set()
+        self.session = PromptSession()
 
     # ------------------------------------------------------------------
-    # Domain & Step Management
+    # Setup
     # ------------------------------------------------------------------
 
-    def select_domain(self, domain_name: str) -> DomainTemplate | None:
-        """בחירת תחום מקצועי"""
-        self.domain = ALL_DOMAINS.get(domain_name)
-        return self.domain
-
-    def get_current_step(self) -> PromptStep | None:
-        """מחזיר את השלב הנוכחי"""
-        if not self.domain:
-            return None
-        if self.current_step_idx >= len(self.domain.steps):
-            return None
-        return self.domain.steps[self.current_step_idx]
-
-    def advance_step(self) -> bool:
-        """עובר לשלב הבא. מחזיר False אם סיימנו את כל 6 השלבים."""
-        self.current_step_idx += 1
-        if not self.domain:
-            return False
-        return self.current_step_idx < len(self.domain.steps)
-
-    def is_complete(self) -> bool:
-        """האם עברנו על כל 6 השלבים?"""
-        if not self.domain:
-            return False
-        return self.current_step_idx >= len(self.domain.steps)
-
-    def save_answer(self, key: str, answer: str) -> None:
-        """שומר תשובה לשלב"""
-        self.answers[key] = answer
+    def set_project_info(self, name: str, domain: str, platform: str = "") -> None:
+        """הגדרת פרטי הפרויקט"""
+        self.session.project_name = name
+        self.session.domain = domain
+        self.session.platform = platform
 
     # ------------------------------------------------------------------
-    # Formatted step display
+    # Step-by-step interaction
     # ------------------------------------------------------------------
 
-    def format_step_display(self) -> str | None:
-        """מחזיר תצוגה מעוצבת של השלב הנוכחי"""
-        step = self.get_current_step()
+    def ask_step(self, user_message: str | None = None) -> str:
+        """
+        מריץ את השלב הנוכחי.
+        - אם user_message=None: מציג את השאלה עם אפשרויות
+        - אם user_message מסופק: מעבד את התשובה ושואל העמקה
+        """
+        step = self.session.get_current_step()
         if not step:
-            return None
+            return self._generate_final_prompt()
 
-        lines = [
-            f"━━━ שלב {step.number}/6: {step.title} ━━━",
-            "",
-            f"❓ {step.question}",
-            "",
-        ]
+        # בניית הקשר
+        context = self._build_context()
 
-        if step.options:
-            lines.append("אפשרויות:")
-            for i, opt in enumerate(step.options, 1):
-                desc = f" - {opt.description}" if opt.description else ""
-                lines.append(f"  {i}. {opt.label}{desc}")
-
-        if step.allow_custom:
-            lines.append("")
-            lines.append("  (או הקלד תשובה חופשית)")
-
-        return "\n".join(lines)
-
-    def get_progress_bar(self) -> str:
-        """מחזיר בר התקדמות ויזואלי"""
-        if not self.domain:
-            return ""
-        total = len(self.domain.steps)
-        filled = min(self.current_step_idx, total)
-        bar = "█" * filled + "░" * (total - filled)
-        return f"[{bar}] {filled}/{total}"
-
-    # ------------------------------------------------------------------
-    # AI Chat
-    # ------------------------------------------------------------------
-
-    def chat(self, user_message: str) -> str:
-        """שולח הודעה לסוכן ומקבל תשובה"""
-        # בניית ההקשר
-        context_parts = []
-
-        if self.domain:
-            context_parts.append(f"תחום: {self.domain.display_name}")
-            context_parts.append(f"התקדמות: שלב {self.current_step_idx + 1} מתוך {len(self.domain.steps)}")
-
-        step = self.get_current_step()
-        if step:
-            options_str = ", ".join(o.label for o in step.options)
-            context_parts.append(
-                f"שלב נוכחי: {step.title}\n"
-                f"שאלה: {step.question}\n"
-                f"אפשרויות: {options_str}\n"
-                f"רמז להעמקה: {step.follow_up_hint}"
+        if user_message is None:
+            # שלב חדש - בקש מ-Claude להציג שאלה עם אפשרויות מותאמות לתחום
+            prompt = (
+                f"אנחנו בשלב {step.number}/6: **{step.title_he}** ({step.title_en})\n\n"
+                f"השאלה המרכזית: {step.core_question}\n"
+                f"הנחיה: {step.guidance}\n\n"
+                f"הצג למשתמש את השאלה, והצע 3-4 אפשרויות ממוספרות שרלוונטיות "
+                f"לתחום '{self.session.domain}'"
+                f"{f' בפלטפורמת {self.session.platform}' if self.session.platform else ''}.\n"
+                f"הוסף אפשרות לתשובה חופשית."
+            )
+        else:
+            # המשתמש ענה - שמור ושאל העמקה
+            self.session.save_answer(user_message)
+            prompt = (
+                f"בשלב {step.number}/6 ({step.title_he}), המשתמש ענה: '{user_message}'\n\n"
+                f"שאל שאלת העמקה אחת קצרה וחכמה שתעזור לחדד את הפרומפט.\n"
+                f"השאלה צריכה להיות מקצועית ורלוונטית לתחום '{self.session.domain}'.\n"
+                f"הסבר בקצרה למה השאלה חשובה."
             )
 
-        if self.answers:
-            filled = "\n".join(f"- {k}: {v}" for k, v in self.answers.items())
-            context_parts.append(f"תשובות שנאספו עד כה:\n{filled}")
+        return self._chat(prompt, context)
 
-        if self.domain and self.domain.extra_questions:
-            extras = "\n".join(f"- {q}" for q in self.domain.extra_questions)
-            context_parts.append(f"שאלות נוספות שכדאי לשאול בהקשר:\n{extras}")
+    def process_follow_up(self, answer: str) -> None:
+        """מעבד תשובת העמקה ומעדכן את התשובה"""
+        step = self.session.get_current_step()
+        if step and answer:
+            current = self.session.answers.get(step.key, "")
+            self.session.save_answer(f"{current}. {answer}" if current else answer)
 
-        system = SYSTEM_PROMPT
-        if context_parts:
-            system += "\n\n## הקשר נוכחי:\n" + "\n\n".join(context_parts)
+    def advance(self) -> bool:
+        """עובר לשלב הבא"""
+        return self.session.advance()
+
+    # ------------------------------------------------------------------
+    # Direct chat (free-form conversation)
+    # ------------------------------------------------------------------
+
+    def chat(self, message: str) -> str:
+        """שיחה חופשית עם הסוכן"""
+        context = self._build_context()
+        return self._chat(message, context)
+
+    # ------------------------------------------------------------------
+    # Prompt generation
+    # ------------------------------------------------------------------
+
+    def generate_prompt(self) -> str:
+        """מייצר את הפרומפט המובנה"""
+        return self.session.generate_full_prompt()
+
+    def generate_one_liner(self) -> str:
+        """מייצר פרומפט בשורה אחת"""
+        return self.session.generate_one_liner()
+
+    def generate_enhanced_prompt(self) -> str:
+        """משתמש ב-Claude לשפר את הפרומפט"""
+        raw = self.session.generate_full_prompt()
+
+        response = self.client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system=(
+                f"אתה מומחה בכתיבת פרומפטים מקצועיים בתחום: {self.session.domain}.\n"
+                f"קיבלת פרומפט גולמי שנבנה ב-6 שלבים.\n"
+                f"שפר אותו: הפוך לפרומפט אחד זורם ומקצועי, "
+                f"הוסף פרטים חסרים לפי הידע שלך בתחום, "
+                f"הבהר דרישות עמומות, ותן דוגמה לפלט צפוי.\n"
+                f"שמור על פורמט Markdown. כתוב בעברית."
+            ),
+            messages=[{"role": "user", "content": f"שפר את הפרומפט:\n\n{raw}"}],
+        )
+        return response.content[0].text
+
+    # ------------------------------------------------------------------
+    # Internal
+    # ------------------------------------------------------------------
+
+    def _build_context(self) -> str:
+        """בונה את ההקשר המלא לשיחה"""
+        parts = [
+            f"שם הפרויקט: {self.session.project_name}",
+            f"תחום: {self.session.domain}",
+        ]
+        if self.session.platform:
+            parts.append(f"פלטפורמה: {self.session.platform}")
+
+        step = self.session.get_current_step()
+        if step:
+            parts.append(f"שלב נוכחי: {step.number}/6 - {step.title_he}")
+            parts.append(f"התקדמות: {self.session.get_progress()}")
+
+        if self.session.answers:
+            parts.append("\nתשובות שנאספו:")
+            for s in STEPS:
+                if s.key in self.session.answers:
+                    parts.append(f"  שלב {s.number} ({s.title_he}): {self.session.answers[s.key]}")
+
+        return "\n".join(parts)
+
+    def _chat(self, user_message: str, context: str) -> str:
+        """שולח הודעה ל-Claude עם הקשר"""
+        system = SYSTEM_PROMPT + f"\n\n## הקשר נוכחי:\n{context}"
 
         self.conversation.append({"role": "user", "content": user_message})
 
@@ -168,119 +191,13 @@ class PromptBuilderAgent:
             messages=self.conversation,
         )
 
-        assistant_text = response.content[0].text
-        self.conversation.append({"role": "assistant", "content": assistant_text})
-        return assistant_text
+        text = response.content[0].text
+        self.conversation.append({"role": "assistant", "content": text})
+        return text
 
-    # ------------------------------------------------------------------
-    # Prompt Generation
-    # ------------------------------------------------------------------
-
-    def generate_prompt(self) -> str:
-        """מייצר פרומפט מובנה מ-6 השלבים"""
-        lines: list[str] = []
-        lines.append(f"# פרומפט: {self.project_name or 'אפליקציה חדשה'}")
-        lines.append("")
-
-        step_labels = {
-            "role": ("תפקיד", "פעל כ"),
-            "audience": ("קהל יעד", "התוצר מיועד עבור"),
-            "input_context": ("בסיס נתונים", "התבסס על"),
-            "task": ("המשימה", "המשימה היא"),
-            "constraints": ("אילוצים", "הקפד על"),
-            "output_structure": ("מבנה הפלט", "הפלט צריך להיות"),
-        }
-
-        # פרומפט זורם
-        lines.append("## הפרומפט המוכן")
-        lines.append("")
-
-        prompt_parts = []
-        for key, (title, prefix) in step_labels.items():
-            answer = self.answers.get(key, "")
-            if answer:
-                prompt_parts.append(f"{prefix} {answer}")
-
-        if prompt_parts:
-            lines.append(". ".join(prompt_parts) + ".")
-        lines.append("")
-
-        # פירוט לפי שלבים
-        lines.append("---")
-        lines.append("")
-        lines.append("## פירוט לפי שלבים")
-        lines.append("")
-
-        for key, (title, _prefix) in step_labels.items():
-            answer = self.answers.get(key, "")
-            emoji_map = {
-                "role": "🎭",
-                "audience": "👥",
-                "input_context": "📊",
-                "task": "🎯",
-                "constraints": "⚖️",
-                "output_structure": "📋",
-            }
-            emoji = emoji_map.get(key, "•")
-            lines.append(f"### {emoji} {title}")
-            if answer:
-                lines.append(answer)
-            else:
-                lines.append("*לא הוגדר*")
-            lines.append("")
-
-        return "\n".join(lines)
-
-    def generate_enhanced_prompt(self) -> str:
-        """משתמש ב-Claude כדי ליצור פרומפט משופר ומקצועי"""
-        raw_prompt = self.generate_prompt()
-
-        response = self.client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=4096,
-            system=(
-                "אתה מומחה בכתיבת פרומפטים מקצועיים לאפליקציות AI. "
-                "קיבלת פרומפט גולמי שנבנה ב-6 שלבים. "
-                "שפר אותו: הפוך אותו לפרומפט אחד זורם ומקצועי, "
-                "הוסף פרטים שחסרים, הבהר דרישות עמומות, "
-                "ותן דוגמה לפלט צפוי. "
-                "שמור על פורמט Markdown. כתוב בעברית."
-            ),
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"שפר את הפרומפט הבא:\n\n{raw_prompt}",
-                }
-            ],
+    def _generate_final_prompt(self) -> str:
+        """מייצר הודעת סיום עם הפרומפט"""
+        return (
+            "כל 6 השלבים הושלמו! הנה הפרומפט שנבנה:\n\n"
+            + self.session.generate_one_liner()
         )
-        return response.content[0].text
-
-    def generate_one_liner(self) -> str:
-        """מייצר פרומפט בשורה אחת מקצועית (כמו בדוגמה של המשתמש)"""
-        parts = []
-
-        role = self.answers.get("role", "")
-        if role:
-            parts.append(f"פעל כ{role} (1)")
-
-        audience = self.answers.get("audience", "")
-        if audience:
-            parts.append(f"התוצר מיועד ל{audience} (2)")
-
-        input_ctx = self.answers.get("input_context", "")
-        if input_ctx:
-            parts.append(f"התבסס על {input_ctx} (3)")
-
-        task = self.answers.get("task", "")
-        if task:
-            parts.append(f"המשימה היא {task} (4)")
-
-        constraints = self.answers.get("constraints", "")
-        if constraints:
-            parts.append(f"הקפד על {constraints} (5)")
-
-        output = self.answers.get("output_structure", "")
-        if output:
-            parts.append(f"הפלט צריך להיות {output} (6)")
-
-        return ". ".join(parts) + "."

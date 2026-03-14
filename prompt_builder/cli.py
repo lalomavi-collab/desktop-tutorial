@@ -1,4 +1,4 @@
-"""ממשק CLI אינטראקטיבי - מודל 6 השלבים לבניית פרומפטים"""
+"""ממשק CLI אינטראקטיבי - מודל 6 השלבים הגנרי"""
 
 import sys
 from pathlib import Path
@@ -8,10 +8,9 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
-from rich.text import Text
 
 from prompt_builder.agents.builder_agent import PromptBuilderAgent
-from prompt_builder.templates.app_templates import ALL_DOMAINS
+from prompt_builder.templates.app_templates import STEPS
 
 
 console = Console()
@@ -22,13 +21,14 @@ def print_welcome() -> None:
     console.print(
         Panel(
             "[bold cyan]סוכן בניית פרומפטים מקצועיים[/]\n\n"
-            "הסוכן יוביל אותך דרך [bold]6 שלבים[/] מובנים:\n"
-            "  1️⃣  תפקיד (Role)        - מי ה-AI?\n"
-            "  2️⃣  קהל יעד (Audience)   - עבור מי?\n"
-            "  3️⃣  נתונים (Input)       - על בסיס מה?\n"
-            "  4️⃣  משימה (Task)         - מה לעשות?\n"
-            "  5️⃣  אילוצים (Constraints) - מה המגבלות?\n"
-            "  6️⃣  פלט (Output)         - איך זה נראה?\n\n"
+            "הסוכן ילווה אותך דרך [bold]6 שלבים[/] לבניית פרומפט מושלם:\n"
+            "  1️⃣  תפקיד (Role)         - מי ה-AI?\n"
+            "  2️⃣  קהל יעד (Audience)    - עבור מי?\n"
+            "  3️⃣  נתונים (Input)        - על בסיס מה?\n"
+            "  4️⃣  משימה (Task)          - מה לעשות?\n"
+            "  5️⃣  אילוצים (Constraints)  - מה המגבלות?\n"
+            "  6️⃣  פלט (Output)          - איך זה נראה?\n\n"
+            "[bold]עובד עם כל תחום[/] - הסוכן מתאים את השאלות לתחום שלך\n\n"
             "[dim]הקלד 'יציאה' בכל שלב כדי לצאת | 'דלג' כדי לדלג על שלב[/]",
             title="🏗️  Prompt Builder Agent",
             border_style="cyan",
@@ -36,132 +36,101 @@ def print_welcome() -> None:
     )
 
 
-def select_domain() -> str | None:
-    """מציג את התחומים המקצועיים ומבקש בחירה"""
+def get_project_info() -> tuple[str, str, str] | None:
+    """שואל שם פרויקט, תחום, ופלטפורמה"""
     console.print()
+    name = Prompt.ask("📌 [bold]מה שם הפרויקט / האפליקציה?[/]")
+    if name == "יציאה":
+        return None
 
-    table = Table(title="תחומים מקצועיים", show_header=True, border_style="blue")
-    table.add_column("#", style="bold cyan", width=3)
-    table.add_column("תחום", style="bold")
-    table.add_column("תיאור", style="dim")
+    domain = Prompt.ask("🏷️  [bold]מה התחום המקצועי?[/] (לדוגמה: משפטי, חינוך, בריאות, טכנולוגיה, פיננסים...)")
+    if domain == "יציאה":
+        return None
 
-    domain_names = list(ALL_DOMAINS.keys())
-    for i, (key, domain) in enumerate(ALL_DOMAINS.items(), 1):
-        table.add_row(str(i), domain.display_name, domain.description)
-
-    console.print(table)
-    console.print()
-
-    choice = Prompt.ask(
-        "בחר תחום (מספר או שם)",
-        default="1",
+    platform = Prompt.ask(
+        "🖥️  [bold]לאן בונים?[/] (לדוגמה: אתר, אפליקציה, בוט ווטסאפ, שלוחת GPT...)",
+        default="",
     )
-
-    if choice == "יציאה":
+    if platform == "יציאה":
         return None
 
-    if choice.isdigit():
-        idx = int(choice) - 1
-        if 0 <= idx < len(domain_names):
-            return domain_names[idx]
-        console.print("[red]מספר לא תקין[/]")
-        return None
-
-    # חיפוש לפי שם
-    for key, domain in ALL_DOMAINS.items():
-        if choice in (key, domain.display_name):
-            return key
-
-    console.print(f"[red]תחום '{choice}' לא נמצא[/]")
-    return None
+    return name, domain, platform
 
 
 def run_step(agent: PromptBuilderAgent, use_ai: bool = True) -> bool:
     """מריץ שלב בודד. מחזיר False אם המשתמש רוצה לצאת."""
-    step = agent.get_current_step()
+    step = agent.session.get_current_step()
     if not step:
         return True
 
-    # הצגת השלב
-    progress = agent.get_progress_bar()
-    step_display = agent.format_step_display()
-
+    progress = agent.session.get_progress()
     console.print()
     console.print(f"  [dim]{progress}[/]")
-    console.print(Panel(step_display, border_style="blue"))
 
-    # קבלת תשובה מהמשתמש
+    if use_ai:
+        # Claude מציג את השאלה עם אפשרויות מותאמות לתחום
+        try:
+            question_display = agent.ask_step(user_message=None)
+            console.print(Panel(question_display, title=f"שלב {step.number}/6: {step.title_he}", border_style="blue"))
+        except Exception as e:
+            # fallback בלי AI
+            console.print(Panel(
+                f"❓ {step.core_question}\n\n[dim]{step.guidance}[/]",
+                title=f"שלב {step.number}/6: {step.title_he}",
+                border_style="blue",
+            ))
+    else:
+        console.print(Panel(
+            f"❓ {step.core_question}\n\n[dim]{step.guidance}[/]",
+            title=f"שלב {step.number}/6: {step.title_he}",
+            border_style="blue",
+        ))
+
+    # תשובת המשתמש
     user_input = Prompt.ask("[bold cyan]התשובה שלך[/]")
 
     if user_input == "יציאה":
         return False
     if user_input == "דלג":
-        agent.advance_step()
+        agent.advance()
         return True
 
-    # פענוח בחירה ממוספרת
-    if user_input.isdigit() and step.options:
-        idx = int(user_input) - 1
-        if 0 <= idx < len(step.options):
-            selected = step.options[idx]
-            user_input = selected.label
-            console.print(f"  [green]✓ נבחר: {selected.label}[/]")
-
-    # שמירת התשובה
-    agent.save_answer(step.key, user_input)
-
-    # שיחה עם AI להעמקה (אם זמין)
+    # שמירה + שאלת העמקה
     if use_ai:
         try:
-            ai_response = agent.chat(
-                f"בשלב '{step.title}', המשתמש ענה: '{user_input}'. "
-                f"שאל שאלת העמקה אחת קצרה וממוקדת כדי לחדד את התשובה. "
-                f"רמז: {step.follow_up_hint}"
-            )
+            follow_up = agent.ask_step(user_message=user_input)
             console.print()
-            console.print(Panel(ai_response, title="🤖 הסוכן שואל", border_style="magenta"))
+            console.print(Panel(follow_up, title="🤖 שאלת העמקה", border_style="magenta"))
 
-            # תשובת המשתמש להעמקה
-            follow_up = Prompt.ask("[bold cyan]תשובתך (או Enter לדלג)[/]", default="")
-            if follow_up and follow_up not in ("יציאה", "דלג"):
-                # עדכון התשובה עם ההעמקה
-                current = agent.answers.get(step.key, "")
-                agent.save_answer(step.key, f"{current}. {follow_up}")
-
-                # תשובת AI
-                ai_ack = agent.chat(follow_up)
-                console.print(f"  [magenta]🤖 {ai_ack[:200]}{'...' if len(ai_ack) > 200 else ''}[/]")
-            elif follow_up == "יציאה":
+            follow_answer = Prompt.ask("[bold cyan]תשובתך (או Enter לדלג)[/]", default="")
+            if follow_answer and follow_answer not in ("יציאה", "דלג"):
+                agent.process_follow_up(follow_answer)
+                # אישור מהסוכן
+                ack = agent.chat(follow_answer)
+                console.print(f"  [magenta]🤖 {ack[:250]}{'...' if len(ack) > 250 else ''}[/]")
+            elif follow_answer == "יציאה":
                 return False
         except Exception as e:
+            agent.session.save_answer(user_input)
             console.print(f"  [dim]⚠ לא ניתן להתחבר ל-AI: {e}[/]")
+    else:
+        agent.session.save_answer(user_input)
 
-    agent.advance_step()
+    agent.advance()
     return True
 
 
 def show_summary(agent: PromptBuilderAgent) -> None:
-    """מציג סיכום של כל התשובות לפני יצירת הפרומפט"""
+    """מציג סיכום של כל התשובות"""
     console.print()
-
     table = Table(title="📋 סיכום התשובות", show_header=True, border_style="green")
-    table.add_column("שלב", style="bold cyan", width=20)
+    table.add_column("שלב", style="bold cyan", width=22)
     table.add_column("תשובה", style="white")
 
-    step_names = {
-        "role": "1. תפקיד",
-        "audience": "2. קהל יעד",
-        "input_context": "3. נתונים",
-        "task": "4. משימה",
-        "constraints": "5. אילוצים",
-        "output_structure": "6. מבנה פלט",
-    }
-
-    for key, label in step_names.items():
-        answer = agent.answers.get(key, "[לא הוגדר]")
-        # חותך תשובות ארוכות
+    for step in STEPS:
+        answer = agent.session.answers.get(step.key, "[לא הוגדר]")
         display = answer if len(answer) <= 80 else answer[:77] + "..."
-        table.add_row(label, display)
+        table.add_row(f"{step.number}. {step.title_he}", display)
 
     console.print(table)
 
@@ -169,71 +138,58 @@ def show_summary(agent: PromptBuilderAgent) -> None:
 def interactive_session(agent: PromptBuilderAgent) -> None:
     """מנהל את הסשן המלא"""
 
-    # שם הפרויקט
-    project_name = Prompt.ask("\n📌 מה שם הפרויקט / האפליקציה?")
-    if project_name == "יציאה":
-        return
-    agent.project_name = project_name
-
-    # האם להשתמש ב-AI?
+    # AI או מצב מהיר
     use_ai_choice = Prompt.ask(
-        "\nלהשתמש ב-AI לשאלות העמקה?",
+        "\n💡 להשתמש ב-AI לשאלות מותאמות ושאלות העמקה?",
         choices=["כן", "לא"],
         default="כן",
     )
     use_ai = use_ai_choice == "כן"
 
     if use_ai:
-        console.print("  [green]✓ הסוכן ישאל שאלות העמקה בכל שלב[/]")
+        console.print("  [green]✓ הסוכן יתאים את השאלות לתחום שלך וישאל שאלות העמקה[/]")
     else:
-        console.print("  [yellow]→ מצב מהיר - ללא שאלות העמקה[/]")
+        console.print("  [yellow]→ מצב מהיר - שאלות בסיסיות בלבד[/]")
 
     # מעבר על 6 השלבים
-    while not agent.is_complete():
+    while not agent.session.is_complete:
         if not run_step(agent, use_ai=use_ai):
             return
 
     # סיכום
     show_summary(agent)
 
-    # אישור ועריכה
+    # עריכה
     console.print()
     edit_choice = Prompt.ask(
         "לערוך שלב כלשהו?",
         choices=["לא", "1", "2", "3", "4", "5", "6"],
         default="לא",
     )
-
     if edit_choice != "לא":
         step_idx = int(edit_choice) - 1
-        if agent.domain and 0 <= step_idx < len(agent.domain.steps):
-            step = agent.domain.steps[step_idx]
-            console.print(f"\n[bold]עריכת שלב: {step.title}[/]")
-            console.print(f"[dim]ערך נוכחי: {agent.answers.get(step.key, '')}[/]")
+        if 0 <= step_idx < len(STEPS):
+            step = STEPS[step_idx]
+            console.print(f"\n[bold]עריכת שלב: {step.title_he}[/]")
+            console.print(f"[dim]ערך נוכחי: {agent.session.answers.get(step.key, '')}[/]")
             new_val = Prompt.ask("ערך חדש")
             if new_val and new_val != "יציאה":
-                agent.save_answer(step.key, new_val)
+                agent.session.answers[step.key] = new_val
                 show_summary(agent)
 
-    # יצירת הפרומפטים
+    # יצירת פרומפטים
     console.print("\n[bold yellow]⚡ מייצר פרומפטים...[/]\n")
 
-    # פרומפט One-liner
     one_liner = agent.generate_one_liner()
-    console.print(
-        Panel(one_liner, title="📝 פרומפט בשורה אחת", border_style="yellow")
-    )
+    console.print(Panel(one_liner, title="📝 פרומפט בשורה אחת", border_style="yellow"))
 
-    # פרומפט מלא
     full_prompt = agent.generate_prompt()
-    console.print(
-        Panel(Markdown(full_prompt), title="📄 פרומפט מלא", border_style="green")
-    )
+    console.print(Panel(Markdown(full_prompt), title="📄 פרומפט מלא", border_style="green"))
 
-    # שמירה לקובץ
+    # שמירה
     save = Prompt.ask("\nלשמור לקובץ?", choices=["כן", "לא"], default="כן")
     if save == "כן":
-        filename = f"{agent.project_name.replace(' ', '_')}_prompt.md"
+        filename = f"{agent.session.project_name.replace(' ', '_')}_prompt.md"
         Path(filename).write_text(full_prompt, encoding="utf-8")
         console.print(f"  [green]✓ נשמר: {filename}[/]")
 
@@ -244,33 +200,32 @@ def interactive_session(agent: PromptBuilderAgent) -> None:
             console.print("\n[bold yellow]🔄 משפר את הפרומפט...[/]\n")
             try:
                 enhanced = agent.generate_enhanced_prompt()
-                console.print(
-                    Panel(Markdown(enhanced), title="✨ פרומפט משופר", border_style="magenta")
-                )
-                enhanced_filename = f"{agent.project_name.replace(' ', '_')}_enhanced.md"
+                console.print(Panel(Markdown(enhanced), title="✨ פרומפט משופר", border_style="magenta"))
+                enhanced_filename = f"{agent.session.project_name.replace(' ', '_')}_enhanced.md"
                 Path(enhanced_filename).write_text(enhanced, encoding="utf-8")
                 console.print(f"  [green]✓ נשמר: {enhanced_filename}[/]")
             except Exception as e:
-                console.print(f"  [red]שגיאה בשיפור: {e}[/]")
+                console.print(f"  [red]שגיאה: {e}[/]")
 
 
 def main() -> None:
-    """נקודת כניסה ראשית"""
+    """נקודת כניסה"""
     print_welcome()
 
-    domain_name = select_domain()
-    if not domain_name:
+    info = get_project_info()
+    if not info:
         console.print("[yellow]להתראות![/]")
         sys.exit(0)
 
-    agent = PromptBuilderAgent()
-    domain = agent.select_domain(domain_name)
-    if not domain:
-        console.print(f"[red]תחום '{domain_name}' לא נמצא[/]")
-        sys.exit(1)
+    name, domain, platform = info
 
-    console.print(f"\n  [green]✓ נבחר תחום: {domain.display_name}[/]")
-    console.print(f"  [dim]{domain.description}[/]")
+    agent = PromptBuilderAgent()
+    agent.set_project_info(name, domain, platform)
+
+    console.print(f"\n  [green]✓ פרויקט: {name}[/]")
+    console.print(f"  [green]✓ תחום: {domain}[/]")
+    if platform:
+        console.print(f"  [green]✓ פלטפורמה: {platform}[/]")
 
     interactive_session(agent)
     console.print("\n[bold cyan]תודה שהשתמשת ב-Prompt Builder Agent! 🚀[/]\n")

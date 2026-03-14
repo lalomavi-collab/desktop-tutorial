@@ -1,11 +1,12 @@
 """פורמט פלט - utilities"""
 
-from prompt_builder.templates.app_templates import DomainTemplate
+from prompt_builder.templates.app_templates import STEPS
 
 
-def format_domain_list(domains: dict[str, DomainTemplate]) -> str:
-    """מציג רשימת תחומים זמינים"""
-    lines = ["תחומים מקצועיים זמינים:", ""]
-    for i, (key, domain) in enumerate(domains.items(), 1):
-        lines.append(f"  {i}. {domain.display_name:<25} - {domain.description}")
+def format_steps_overview() -> str:
+    """מציג סקירה של 6 השלבים"""
+    lines = ["6 השלבים לבניית פרומפט:", ""]
+    for step in STEPS:
+        lines.append(f"  {step.number}. {step.title_he} ({step.title_en})")
+        lines.append(f"     {step.core_question}")
     return "\n".join(lines)
