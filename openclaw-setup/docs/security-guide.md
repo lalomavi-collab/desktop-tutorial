@@ -1,0 +1,517 @@
+# מדריך התקנה מאובטחת של OpenClaw
+
+> **מה זה OpenClaw?** סוכן אוטונומי המחובר למודל שפה (LLM), פועל ברקע תמיד, נגיש מהטלפון, ומשמש כעוזר אישי חכם. עם כוח גדול, האחריות להגנה על המערכת היא שלנו.
+
+---
+
+## נתיב מהיר – התקנה מקומית על Windows
+
+> מתאים למי שרוצה להתחיל מהר ולהריץ את OpenClaw על המחשב האישי.
+
+### שלב א' – הורדה והתקנה
+
+הורידו את OpenClaw מהאתר הרשמי והתקינו. לאחר מכן, פתחו **שני** חלונות PowerShell נפרדים.
+
+### שלב ב' – הפעלה בשני חלונות
+
+**חלון 1** – Gateway (שמרו אותו פתוח לכל משך הפעלה):
+```powershell
+openclaw gateway
+```
+המתינו עד שמופיע `gateway listening on :18789` **ורק אז** עברו לחלון השני.
+
+**חלון 2** – ממשק TUI:
+```powershell
+openclaw tui
+```
+
+### שלב ג' – Onboarding
+
+```powershell
+openclaw onboard
+```
+
+עקבו אחרי ההוראות לחיבור Telegram.
+
+---
+
+### תקלות נפוצות ב-Windows
+
+#### ❌ `token_mismatch` / `unauthorized`
+
+Gateway אותחל מחדש וה-Control UI שומר טוקן ישן.
+
+**פתרון:**
+1. בחלון ה-gateway יש שורה עם `token=...` – העתיקו אותה
+2. פתחו דפדפן: `http://127.0.0.1:18789`
+3. הדביקו את הטוקן החדש בהגדרות
+
+#### ❌ Telegram 409 Conflict – `terminated by other getUpdates request`
+
+שני מופעים של OpenClaw רצים במקביל על אותו bot token.
+
+**פתרון** – הרגו את כל המופעים ואתחלו מחדש:
+```powershell
+taskkill /F /IM openclaw-gateway.exe /T
+taskkill /F /IM openclaw.exe /T
+```
+לאחר מכן פתחו שני חלונות חדשים והפעילו gateway → tui בסדר הזה.
+
+#### ❌ `gateway disconnected: closed | idle`
+
+ה-gateway נסגר לפני שה-TUI התחבר.
+
+**פתרון:** וודאו שחלון ה-gateway פתוח ומציג `listening` לפני שמפעילים את ה-TUI.
+
+#### ❌ `HTTP 401 authentication_error: invalid x-api-key`
+
+מפתח ה-API של Anthropic חסר, שגוי, או פג תוקף.
+
+**פתרון מהיר – תיקון אוטומטי:**
+```powershell
+openclaw doctor --fix
+```
+
+**פתרון ידני – הזנה מחדש:**
+```powershell
+openclaw onboard
+```
+בחרו **Anthropic** והזינו מפתח תקין. מפתחות מתחילים ב-`sk-ant-api03-` וניתן ליצור אותם ב-[console.anthropic.com](https://console.anthropic.com) תחת **API Keys**.
+
+> **אבטחה:** אל תשתפו את המפתח בפומבי. הוא מאוחסן בטקסט גלוי בקובץ `%USERPROFILE%\.openclaw\openclaw.json`.
+
+#### ❌ `Service is loaded but not running (likely exited immediately)`
+
+השירות (Scheduled Task ב-Windows) נרשם אך קורס מיידית בהפעלה. מצב זה נראה ב-`openclaw status` כ-`Runtime: stopped`.
+
+**פתרון שלב-אחר-שלב:**
+
+**1. ראו את הלוג לשגיאה המדויקת:**
+```powershell
+Get-Content "$env:TEMP\openclaw\openclaw-$(Get-Date -f yyyy-MM-dd).log" -Tail 50
+```
+
+**2. הפעילו ידנית לבדיקה** (השגיאה תוצג ישירות):
+```powershell
+openclaw gateway --port 18789
+```
+
+**3. אם הבעיה היא ה-API key – תקנו ואז הפעילו מחדש:**
+```powershell
+openclaw onboard
+openclaw service restart
+```
+
+**4. אם השירות עדיין לא עולה – התקינו מחדש:**
+```powershell
+openclaw service uninstall
+openclaw service install
+```
+
+> כדי לראות את הסטטוס המלא: `openclaw status --all`
+
+#### ❌ Agent מאבד זהות בכל session חדש ("Bootstrap Amnesia")
+
+**תסמינים:** הסוכן מברך כ"fresh agent" עם אין זיכרון, מתעלם מ-SOUL.md, MEMORY.md ו-AGENTS.md — למרות שבוצעה הגדרה מלאה שבועות קודם.
+
+**סיבת שורש – שני תנאים שמתחברים:**
+1. `BOOTSTRAP.md` **לא נמחק** לאחר ה-session הראשון (ה-agent לא ביצע את ההוראה "delete this file when done")
+2. `IDENTITY.md` **נשאר כ-template ריק** – הזהות הוגדרה דרך SOUL.md אך IDENTITY.md לא מולא
+
+כשה-session החדש מתחיל, ה-agent קורא את `BOOTSTRAP.md`, רואה `IDENTITY.md` ריק, ומסיק שאין לו זהות – ומתעלם לחלוטין מ-SOUL.md.
+
+**תיקון ידני (Workaround):**
+
+```bash
+# שלב 1 – מחקו את BOOTSTRAP.md
+rm /path/to/workspace/BOOTSTRAP.md
+
+# שלב 2 – מלאו את IDENTITY.md בערכים אמיתיים
+nano /path/to/workspace/IDENTITY.md
+```
+
+דוגמה ל-IDENTITY.md תקין:
+```markdown
+# IDENTITY.md
+- **Name:** Rachael
+- **Creature:** AI agent
+- **Vibe:** sharp, direct, resourceful
+- **Emoji:** ⚡
+```
+
+```bash
+# שלב 3 – צרו עוגן ב-MEMORY.md
+echo "# MEMORY.md
+Session anchor: identity established. BOOTSTRAP.md deleted.
+Agent name: Rachael. Workspace: /mnt/antigravity." > /path/to/workspace/MEMORY.md
+```
+
+**מניעה – לאחר כל onboarding חדש:**
+> תמיד מחקו ידנית את `BOOTSTRAP.md` לאחר ה-session הראשון. בדקו שהסוכן אכן מחק אותו — אם לא, מחקו אתם.
+
+> **סטטוס:** OpenClaw v2026.2.24+ — באג ידוע. תיקון מוצע: guard ב-bootstrap שבודק אם SOUL.md מאוכלס, ומחיקה אוטומטית של BOOTSTRAP.md לאחר session ראשון.
+
+---
+
+## נתיב מתקדם – התקנה על VPS (Linux)
+
+> מתאים לשימוש קבוע 24/7 עם אבטחה מרבית.
+
+## שלב 1 – יצירת VPS בהוסטינגר
+
+1. היכנסו לאתר **Hostinger** וצרו חשבון
+2. רכשו VPS (מומלץ Ubuntu 22.04)
+3. לאחר ההפעלה, שמרו את **כתובת ה-IP** וסיסמת ה-root שקיבלתם
+
+---
+
+## שלב 2 – התחברות ראשונית ב-SSH
+
+```bash
+ssh root@<SERVER_IP>
+```
+
+אם Windows – השתמשו ב-PowerShell או ב-PuTTY.
+
+---
+
+## שלב 3 – התקנה וחיבור ל-VPN (Tailscale)
+
+Tailscale יוצר רשת פרטית מאובטחת בין המחשב שלכם לשרת, ומייתר חשיפה ישירה לאינטרנט.
+
+```bash
+# התקנת Tailscale
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# הפעלה עם SSH מאובטח
+tailscale up --ssh
+
+# בדיקת סטטוס וקבלת כתובת ה-Tailscale IP
+tailscale status
+```
+
+שמרו את ה-**Tailscale IP** שמוצג (נראה כמו `100.x.x.x`) – תשתמשו בו מעכשיו **במקום** ה-IP הציבורי.
+
+---
+
+## שלב 4 – הגבלת SSH לרשת ה-VPN בלבד
+
+ערכו את קובץ ההגדרות של SSH:
+
+```bash
+vim /etc/ssh/sshd_config
+```
+
+שנו / הוסיפו את השורות הבאות:
+
+```
+# האזנה רק על ממשק ה-VPN
+ListenAddress 100.x.x.x
+
+# ביטול כניסה עם סיסמה
+PasswordAuthentication no
+
+# ביטול כניסה ישירה כ-root
+PermitRootLogin no
+```
+
+> **החליפו** את `100.x.x.x` בכתובת ה-Tailscale IP האמיתית שלכם.
+
+הפעילו מחדש את SSH:
+
+```bash
+systemctl restart ssh
+```
+
+**התנתקו:**
+
+```bash
+logout
+```
+
+---
+
+## שלב 5 – יצירת משתמש חדש (לא root)
+
+**חשוב:** לעולם אל תעבדו כ-root לאחר ההגדרה הראשונית.
+
+```bash
+# חיבור מחדש דרך Tailscale
+ssh root@<TAILSCALE_IP>
+
+# יצירת משתמש חדש
+adduser punchy
+
+# הוספה לקבוצת sudo
+usermod -aG sudo punchy
+```
+
+---
+
+## שלב 6 – בדיקת חיבור עם המשתמש החדש
+
+פתחו טרמינל **חדש** ובדקו את החיבור לפני שתסגרו את הישן:
+
+```bash
+ssh punchy@<TAILSCALE_IP>
+```
+
+אם החיבור עובד – אפשר לסגור את הסשן כ-root.
+
+---
+
+## שלב 7 – הגדרת Firewall (UFW)
+
+```bash
+# התקנה
+sudo apt install ufw -y
+
+# חסימת הכל כברירת מחדל
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# אפשור SSH רק מ-Tailscale
+sudo ufw allow in on tailscale0 to any port 22
+
+# הפעלה
+sudo ufw enable
+
+# בדיקת סטטוס
+sudo ufw status verbose
+```
+
+---
+
+## שלב 8 – הורדת והתקנת OpenClaw
+
+```bash
+# עדכון המערכת
+sudo apt update && sudo apt upgrade -y
+
+# הורדת OpenClaw (עקבו אחרי ההוראות הרשמיות מהאתר)
+# לדוגמה:
+curl -fsSL https://get.openclaw.ai | bash
+
+# בדיקת התקנה
+openclaw --version
+```
+
+---
+
+## שלב 9 – הפעלת ה-Gateway כ-Service קבוע
+
+ברירת המחדל היא הפעלה ידנית בחזית (foreground), אבל **בשרת ייצור** יש להפעיל את ה-Gateway כ-systemd service כדי שימשיך לרוץ גם אחרי התנתקות.
+
+### אפשרות א' – Foreground (לבדיקות בלבד)
+
+```bash
+openclaw gateway --port 18789
+```
+
+> מסוכן להשאיר ככה בייצור – הבוט ייכבה עם הסשן.
+
+### אפשרות ב' – Service קבוע (מומלץ לשרת)
+
+```bash
+# 1. התקנה כ-systemd user service
+openclaw gateway install
+
+# 2. הפעלה אוטומטית עם האתחול
+systemctl --user enable --now openclaw-gateway.service
+
+# 3. וידוא שרץ
+openclaw gateway status
+```
+
+### הבטחת הרצה גם אחרי logout (Lingering)
+
+ב-Linux, user services נכבים בהתנתקות. כדי למנוע זאת:
+
+```bash
+sudo loginctl enable-linger punchy
+```
+
+> החליפו `punchy` בשם המשתמש שיצרתם בשלב 5.
+
+### פקודות ניהול שימושיות
+
+```bash
+# הפעלה מחדש
+systemctl --user restart openclaw-gateway.service
+
+# עצירה
+systemctl --user stop openclaw-gateway.service
+
+# לוגים בזמן אמת
+journalctl --user -u openclaw-gateway.service -f
+
+# אבחון בעיות
+openclaw doctor
+```
+
+---
+
+## שלב 10 – Onboarding וחיבור Telegram
+
+לאחר ההתקנה, הפעילו את תהליך ה-Onboarding:
+
+```bash
+openclaw init
+```
+
+עקבו אחרי ההוראות:
+1. **הפעלת הבוט בטלגרם** – חפשו את הבוט הרשמי של OpenClaw ב-Telegram
+2. **העתיקו את ה-Token** שמתקבל
+3. **הדביקו** אותו בתהליך ה-Onboarding בטרמינל
+4. **בדקו** שהחיבור עובד על ידי שליחת הודעה בטלגרם
+
+---
+
+## שלב 11 – התקנת Skills
+
+Skills מרחיבים את יכולות OpenClaw. להתקנה:
+
+```bash
+# רשימת Skills זמינים
+openclaw skills list
+
+# התקנת Skill ספציפי
+openclaw skills install <skill-name>
+```
+
+---
+
+## תקלות נפוצות ב-Linux / VPS
+
+#### ❌ Gateway לא מתחיל – משתני סביבה לא נטענים (session profile error)
+
+**תסמינים:** `openclaw gateway status` מראה כשל, ובלוגים מופיע שגיאת 401 או "API key not found" — למרות שהמפתח הוגדר.
+
+**סיבה:** סקריפט שבור ב-`/etc/profile.d/` מונע טעינת משתני סביבה (כמו `ANTHROPIC_API_KEY`) ב-login sessions. systemd user services ירשו סביבה חסרה.
+
+**אבחון:**
+
+```bash
+# בדקו אילו סקריפטים נטענים ואיזה נשבר
+for f in /etc/profile.d/*.sh; do
+  bash -n "$f" && echo "OK: $f" || echo "ERROR: $f"
+done
+
+# בדקו גם את ~/.profile עצמו
+bash -n ~/.profile || echo "syntax error in ~/.profile"
+
+# או הרצה מפורטת עם trace
+bash -x /etc/profile 2>&1 | head -60
+```
+
+**גורם נפוץ מאוד – `-e` תועה ב-`~/.profile`:**
+
+אם ב-`~/.profile` קיימת שורה כמו:
+```bash
+PATH="$HOME/bin:$HOME/.local/bin:$PATH" -e
+```
+ה-`-e` בסוף שובר את ה-login shell וגם גורם לשגיאה:
+```
+GLib-GIO-Message: Using the 'memory' GSettings backend.
+Your settings will not be saved or shared with other applications.
+```
+
+**תיקון – לפי סדר:**
+
+```bash
+# 1. פתחו את הקובץ
+nano ~/.profile
+
+# 2. מצאו את השורה הזו והסירו את -e
+#    לפני: PATH="$HOME/bin:$HOME/.local/bin:$PATH" -e
+#    אחרי: PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+# 3. שמרו (Ctrl+O, Enter) וצאו (Ctrl+X)
+
+# 4. טענו מחדש
+source ~/.profile
+```
+
+**אם הבעיה ב-`/etc/profile.d/` ולא ב-`~/.profile`:**
+
+```bash
+# מצאו את הסקריפט השבור
+for f in /etc/profile.d/*.sh; do
+  bash -n "$f" && echo "OK: $f" || echo "BROKEN: $f"
+done
+
+# השביתו אותו זמנית
+sudo mv /etc/profile.d/broken-script.sh /etc/profile.d/broken-script.sh.bak
+
+# וודאו הרשאות תקינות
+sudo chmod +x /etc/profile.d/*.sh
+
+# טענו מחדש
+source /etc/profile
+```
+
+**לאחר תיקון – טענו מחדש ובדקו:**
+
+```bash
+# הפעילו מחדש את ה-service
+systemctl --user restart openclaw-gateway.service
+
+# בדקו שמשתנה הסביבה נטען
+systemctl --user show-environment | grep ANTHROPIC
+```
+
+> **שורש הבעיה דומה לבאג ה-Bootstrap Amnesia:** שני תנאים נסתרים מתחברים ויוצרים כשל שנראה לא קשור. בדקו תמיד את `journalctl --user -u openclaw-gateway.service -e` לשגיאה המדויקת.
+
+---
+
+## אזהרה: Prompt Injection
+
+> **סכנה אמיתית!** Prompt Injection הוא מצב בו תוכן זדוני (מאתר, מייל, קובץ) מנסה "לשכנע" את הסוכן לבצע פעולות לא רצויות.
+
+### כיצד להגן:
+
+- **אל תתנו** ל-OpenClaw גישה ישירה לאינטרנט בלי פילטרים
+- **הגבילו הרשאות** – תנו לסוכן רק מה שהוא צריך
+- **סקרו לוגים** באופן קבוע
+- **הגדירו allowlist** של פעולות מותרות בלבד
+
+---
+
+## סיכום – רשימת תיוג
+
+### Windows מקומי
+- [ ] OpenClaw מותקן
+- [ ] Gateway רץ בחלון נפרד
+- [ ] TUI מחובר ל-gateway
+- [ ] Telegram מחובר דרך Onboarding
+- [ ] אין מופעים כפולים (בדוק עם tasklist)
+
+### VPS (Linux)
+- [ ] VPS נוצר ב-Hostinger עם Ubuntu 22.04
+- [ ] Tailscale מותקן ומחובר
+- [ ] SSH מוגבל לממשק ה-VPN בלבד
+- [ ] כניסה בסיסמה מבוטלת
+- [ ] כניסה כ-root מבוטלת
+- [ ] משתמש חדש נוצר והוסף ל-sudo
+- [ ] Firewall (UFW) מוגדר ומופעל
+- [ ] OpenClaw מותקן
+- [ ] Gateway מוגדר כ-systemd service
+- [ ] Lingering מופעל (loginctl enable-linger)
+- [ ] Telegram מחובר
+- [ ] Skills מותקנים לפי הצורך
+- [ ] הוסבר סיכון Prompt Injection
+
+---
+
+## טיפים נוספים
+
+| נושא | המלצה |
+|------|--------|
+| גיבויים | גבו את תצורת OpenClaw שבועית |
+| עדכונים | עדכנו את OpenClaw וה-OS באופן קבוע |
+| מפתחות SSH | השתמשו במפתחות ED25519 |
+| ניטור | הגדירו התראות על פעולות חריגות |
+
+---
+
+*מדריך זה מבוסס על שיטות עבודה מומלצות לאבטחת שרתים Linux. תמיד בדקו את התיעוד הרשמי של OpenClaw לגרסה העדכנית ביותר.*
