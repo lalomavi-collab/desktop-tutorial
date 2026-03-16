@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "description": "Auto-download skills configuration for Claude Code",
+  "auto_refresh_auth": true,
+  "retry_on_failure": true,
+  "max_retries": 4,
+  "retry_backoff_seconds": [2, 4, 8, 16],
+  "skills": [
+    {
+      "name": "claude-skills",
+      "description": "Core Claude Code skills (~/.claude/skills)",
+      "source": "default",
+      "target_dir": "~/.claude/skills",
+      "auto_download": true,
+      "priority": "high",
+      "required": true
+    },
+    {
+      "name": "agents-skills",
+      "description": "Agent-based skills (~/.agents/skills/)",
+      "source": "default",
+      "target_dir": "~/.agents/skills",
+      "auto_download": true,
+      "priority": "medium",
+      "required": true
+    },
+    {
+      "name": "skill-creator",
+      "description": "Skill creation and management toolkit",
+      "source": "default",
+      "target_dir": "~/.claude/skill-creator",
+      "auto_download": true,
+      "priority": "medium",
+      "required": false
+    }
+  ],
+  "hooks": {
+    "on_session_start": true,
+    "on_auth_error": "prompt_relogin",
+    "on_skill_missing": "auto_install",
+    "on_download_fail": "retry_with_backoff"
+  },
+  "auth": {
+    "auto_detect_expiry": true,
+    "prompt_on_401": true,
+    "error_message_he": "טוקן האימות פג תוקף. הרץ /login כדי לחדש את החיבור.",
+    "error_message_en": "OAuth token has expired. Run /login to refresh your connection."
+  }
+}
