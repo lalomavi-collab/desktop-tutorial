@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
-import { SocialMediaAgent } from './components/SocialMediaAgent';
+import { SocialMediaManager } from './components/SocialMediaManager';
 import { mockAgents, mockActivity } from './data/mockData';
 
 type View = 'dashboard' | 'social' | 'analytics' | 'settings';
@@ -10,13 +10,12 @@ function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const selectedAgent = mockAgents.find(a => a.id === selectedAgentId) ?? null;
-  const socialAgent = mockAgents.find(a => a.type === 'social-media')!;
+  const socialManager = mockAgents.find(a => a.type === 'social-manager')!;
 
   const handleSelectAgent = (id: string) => {
     setSelectedAgentId(id);
     const agent = mockAgents.find(a => a.id === id);
-    if (agent?.type === 'social-media') {
+    if (agent?.type === 'social-manager') {
       setActiveView('social');
     }
   };
@@ -24,7 +23,7 @@ function App() {
   const handleViewChange = (view: View) => {
     setActiveView(view);
     if (view === 'social') {
-      setSelectedAgentId(socialAgent.id);
+      setSelectedAgentId(socialManager.id);
     }
   };
 
@@ -49,11 +48,20 @@ function App() {
 
         {activeView === 'social' && (
           <div>
-            <div className="mb-6 text-right">
-              <h1 className="text-white font-bold text-2xl">רשתות חברתיות</h1>
-              <p className="text-gray-500 text-sm mt-1">ניהול פרסומים, חיבורים ואנליטיקס</p>
+            <div className="mb-5 text-right">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-gray-600 text-xs">
+                  <span>אורי מנכ"ל</span>
+                  <span>›</span>
+                  <span className="text-purple-400">עידית מנהלת השיווק</span>
+                </div>
+                <div>
+                  <h1 className="text-white font-bold text-2xl">ניהול רשתות חברתיות</h1>
+                  <p className="text-gray-500 text-sm mt-0.5">עידית ← Twitter · Instagram · LinkedIn · Facebook · TikTok</p>
+                </div>
+              </div>
             </div>
-            <SocialMediaAgent agent={selectedAgent?.type === 'social-media' ? selectedAgent : socialAgent} />
+            <SocialMediaManager agent={socialManager} />
           </div>
         )}
 

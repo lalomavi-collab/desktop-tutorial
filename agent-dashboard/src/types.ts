@@ -10,6 +10,17 @@ export interface PlatformConnection {
   lastSync?: string;
 }
 
+/** A platform sub-agent managed by the Social Media Manager */
+export interface PlatformAgent {
+  platform: Platform;
+  status: AgentStatus;
+  connection: PlatformConnection;
+  postsToday: number;
+  postsTotal: number;
+  lastPost?: string;
+  scheduledPosts: number;
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -19,6 +30,8 @@ export interface Agent {
   tasksCompleted: number;
   tasksRunning: number;
   connections?: PlatformConnection[];
+  /** Sub-agents, used by the social media manager */
+  platformAgents?: PlatformAgent[];
   lastActive: string;
 }
 
