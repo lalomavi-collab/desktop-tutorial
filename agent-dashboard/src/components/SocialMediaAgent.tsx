@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   CheckCircle2, XCircle, RefreshCw, Plus, Users,
   TrendingUp, Eye, MessageCircle, Repeat2, Heart,
-  Link, Unlink
+  Link, Unlink, Zap
 } from 'lucide-react';
 import type { Agent, Platform, PlatformConnection } from '../types';
 import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
@@ -229,6 +229,10 @@ export function SocialMediaAgent({ agent }: SocialMediaAgentProps) {
             <Plus size={15} />
             פוסט חדש
           </button>
+          <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-3 py-1.5 rounded-lg">
+            <Zap size={13} className="text-orange-400" />
+            <span className="text-orange-400 text-xs font-medium">Zapier מחובר</span>
+          </div>
           <div className="flex items-center gap-4 mr-auto">
             <div className="text-center">
               <p className="text-white font-bold">{connectedCount}</p>

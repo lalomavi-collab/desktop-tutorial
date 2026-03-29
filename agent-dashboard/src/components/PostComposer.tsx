@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import {
-  X, Send, Clock, Image, Smile, Hash, CheckCircle2
+  X, Send, Clock, Image, Smile, Hash, CheckCircle2, AlertCircle, Loader2, Zap
 } from 'lucide-react';
 import type { Platform, PlatformConnection } from '../types';
 import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
+import { sendToZapier } from '../lib/zapier';
 
 interface PostComposerProps {
   connections: PlatformConnection[];
@@ -35,6 +36,8 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('09:00');
   const [published, setPublished] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [zapError, setZapError] = useState<string | null>(null);
 
   const connectedConnections = connections.filter(c => c.connected);
   const maxChars = selectedPlatforms.includes('twitter') ? 280 : 2200;
@@ -48,10 +51,29 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
     );
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!content.trim() || selectedPlatforms.length === 0) return;
+    setSending(true);
+    setZapError(null);
+
+    const result = await sendToZapier({
+      content,
+      platforms: selectedPlatforms,
+      schedule_mode: scheduleMode,
+      scheduled_at: scheduleMode === 'scheduled' ? `${scheduleDate} ${scheduleTime}` : undefined,
+      agent: 'Social Media Agent',
+      timestamp: new Date().toISOString(),
+    });
+
+    setSending(false);
+
+    if (!result.ok) {
+      setZapError(result.error ?? 'שגיאה לא ידועה');
+      return;
+    }
+
     setPublished(true);
-    setTimeout(onClose, 2000);
+    setTimeout(onClose, 2500);
   };
 
   return (
@@ -67,13 +89,19 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
 
         {published ? (
           <div className="p-10 text-center">
-            <CheckCircle2 size={48} className="text-green-400 mx-auto mb-3" />
+            <div className="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={32} className="text-green-400" />
+            </div>
             <p className="text-white font-semibold text-lg">
-              {scheduleMode === 'now' ? 'הפוסט פורסם בהצלחה!' : 'הפוסט תוזמן בהצלחה!'}
+              {scheduleMode === 'now' ? 'הפוסט נשלח ל-Zapier!' : 'הפוסט תוזמן בהצלחה!'}
             </p>
-            <p className="text-gray-500 text-sm mt-1">
-              {scheduleMode === 'scheduled' && `יפורסם ב-${scheduleDate} ${scheduleTime}`}
-            </p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <Zap size={14} className="text-orange-400" />
+              <p className="text-gray-500 text-sm">Zap הופעל בהצלחה</p>
+            </div>
+            {scheduleMode === 'scheduled' && (
+              <p className="text-gray-600 text-xs mt-1">יפורסם ב-{scheduleDate} {scheduleTime}</p>
+            )}
           </div>
         ) : (
           <>
@@ -183,6 +211,14 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
               )}
             </div>
 
+            {/* Zapier error */}
+            {zapError && (
+              <div className="mx-5 mb-3 flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
+                <p className="text-red-400 text-xs">שגיאה בחיבור ל-Zapier: {zapError}</p>
+              </div>
+            )}
+
             {/* Footer */}
             <div className="flex items-center justify-between p-5 border-t border-gray-800">
               <button
@@ -193,19 +229,21 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
               </button>
               <button
                 onClick={handlePublish}
-                disabled={!content.trim() || selectedPlatforms.length === 0}
+                disabled={!content.trim() || selectedPlatforms.length === 0 || sending}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  content.trim() && selectedPlatforms.length > 0
+                  content.trim() && selectedPlatforms.length > 0 && !sending
                     ? scheduleMode === 'now'
                       ? 'bg-purple-600 hover:bg-purple-500 text-white'
                       : 'bg-orange-600 hover:bg-orange-500 text-white'
                     : 'bg-gray-800 text-gray-600 cursor-not-allowed'
                 }`}
               >
-                {scheduleMode === 'now' ? (
-                  <><Send size={14} /> פרסם ({selectedPlatforms.length})</>
+                {sending ? (
+                  <><Loader2 size={14} className="animate-spin" /> שולח ל-Zapier...</>
+                ) : scheduleMode === 'now' ? (
+                  <><Zap size={14} /> פרסם דרך Zapier ({selectedPlatforms.length})</>
                 ) : (
-                  <><Clock size={14} /> תזמן</>
+                  <><Clock size={14} /> תזמן דרך Zapier</>
                 )}
               </button>
             </div>
