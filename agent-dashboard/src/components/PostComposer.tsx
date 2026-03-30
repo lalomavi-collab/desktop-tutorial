@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import {
-  X, Send, Clock, Image, Smile, Hash, CheckCircle2, AlertCircle, Loader2, Zap
+  X, Send, Clock, Image, CheckCircle2, AlertCircle, Loader2, Zap,
+  ChevronDown, ChevronUp, Globe,
 } from 'lucide-react';
 import type { Platform, PlatformConnection } from '../types';
 import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon } from './SocialIcons';
-import { sendToZapier } from '../lib/zapier';
+import { sendToZapier, sendToTelegram } from '../lib/zapier';
 
 interface PostComposerProps {
   connections: PlatformConnection[];
@@ -12,28 +13,58 @@ interface PostComposerProps {
 }
 
 const platformIcons: Record<Platform, React.ReactNode> = {
-  twitter: <TwitterIcon size={14} />,
+  twitter:   <TwitterIcon size={14} />,
   instagram: <InstagramIcon size={14} />,
-  linkedin: <LinkedinIcon size={14} />,
-  facebook: <FacebookIcon size={14} />,
-  tiktok: <TikTokIcon size={14} />,
-  telegram: <TelegramIcon size={14} />,
+  linkedin:  <LinkedinIcon size={14} />,
+  facebook:  <FacebookIcon size={14} />,
+  tiktok:    <TikTokIcon size={14} />,
+  telegram:  <TelegramIcon size={14} />,
 };
 
 const platformColors: Record<Platform, string> = {
-  twitter: 'text-sky-400 border-sky-500/40 bg-sky-500/10',
+  twitter:   'text-sky-400 border-sky-500/40 bg-sky-500/10',
   instagram: 'text-pink-400 border-pink-500/40 bg-pink-500/10',
-  linkedin: 'text-blue-400 border-blue-500/40 bg-blue-500/10',
-  facebook: 'text-blue-500 border-blue-600/40 bg-blue-600/10',
-  tiktok: 'text-fuchsia-400 border-fuchsia-500/40 bg-fuchsia-500/10',
-  telegram: 'text-sky-300 border-sky-400/40 bg-sky-400/10',
+  linkedin:  'text-blue-400 border-blue-500/40 bg-blue-500/10',
+  facebook:  'text-blue-500 border-blue-600/40 bg-blue-600/10',
+  tiktok:    'text-fuchsia-400 border-fuchsia-500/40 bg-fuchsia-500/10',
+  telegram:  'text-sky-300 border-sky-400/40 bg-sky-400/10',
 };
+
+const platformLabels: Record<Platform, string> = {
+  twitter:   'Twitter',
+  instagram: 'Instagram',
+  linkedin:  'LinkedIn',
+  facebook:  'Facebook',
+  tiktok:    'TikTok',
+  telegram:  'Telegram',
+};
+
+/** Platforms that get per-platform content overrides by default */
+const OVERRIDE_DEFAULTS: Partial<Record<Platform, { lang: 'he' | 'en'; placeholder: string }>> = {
+  linkedin: { lang: 'en', placeholder: 'LinkedIn — write in English (professional tone)' },
+  facebook: { lang: 'he', placeholder: 'Facebook — כתוב בעברית (טון חברתי)' },
+};
+
+interface PlatformOverride {
+  content: string;
+  lang: 'he' | 'en';
+  open: boolean;
+}
 
 export function PostComposer({ connections, onClose }: PostComposerProps) {
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [showImage, setShowImage] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>(
     connections.filter(c => c.connected).map(c => c.platform)
   );
+  const [overrides, setOverrides] = useState<Partial<Record<Platform, PlatformOverride>>>(() => {
+    const init: Partial<Record<Platform, PlatformOverride>> = {};
+    for (const [p, def] of Object.entries(OVERRIDE_DEFAULTS) as [Platform, { lang: 'he' | 'en'; placeholder: string }][]) {
+      init[p] = { content: '', lang: def.lang, open: false };
+    }
+    return init;
+  });
   const [scheduleMode, setScheduleMode] = useState<'now' | 'scheduled'>('now');
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('09:00');
@@ -53,24 +84,47 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
     );
   };
 
+  const updateOverride = (platform: Platform, patch: Partial<PlatformOverride>) => {
+    setOverrides(prev => ({
+      ...prev,
+      [platform]: { ...prev[platform]!, ...patch },
+    }));
+  };
+
+  const getContentFor = (platform: Platform): string => {
+    const ov = overrides[platform];
+    if (ov && ov.content.trim()) return ov.content;
+    return content;
+  };
+
   const handlePublish = async () => {
     if (!content.trim() || selectedPlatforms.length === 0) return;
     setSending(true);
     setZapError(null);
 
-    const result = await sendToZapier({
-      content,
-      platforms: selectedPlatforms,
-      schedule_mode: scheduleMode,
+    const base = {
+      schedule_mode: scheduleMode as 'now' | 'scheduled',
       scheduled_at: scheduleMode === 'scheduled' ? `${scheduleDate} ${scheduleTime}` : undefined,
-      agent: 'Social Media Agent',
+      image_url: imageUrl.trim() || undefined,
+      agent: 'עידית — מנהלת השיווק',
       timestamp: new Date().toISOString(),
+    };
+
+    // Send each platform individually so overrides work correctly
+    const jobs = selectedPlatforms.map(async platform => {
+      const platformContent = getContentFor(platform);
+      if (platform === 'telegram') {
+        return sendToTelegram({ ...base, content: platformContent, platforms: [] });
+      }
+      return sendToZapier({ ...base, content: platformContent, platforms: [platform] });
     });
 
+    const results = await Promise.all(jobs);
     setSending(false);
 
-    if (!result.ok) {
-      setZapError(result.error ?? 'שגיאה לא ידועה');
+    const failed = results.find(r => !r.ok);
+    if (failed) {
+      setZapError(failed.error ?? 'שגיאה לא ידועה');
       return;
     }
 
@@ -80,9 +134,10 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#13151f] border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl">
+      <div className="bg-[#13151f] border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-800">
+        <div className="flex items-center justify-between p-5 border-b border-gray-800 sticky top-0 bg-[#13151f] z-10">
           <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-800">
             <X size={18} />
           </button>
@@ -101,9 +156,6 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
               <Zap size={14} className="text-orange-400" />
               <p className="text-gray-500 text-sm">Zap הופעל בהצלחה</p>
             </div>
-            {scheduleMode === 'scheduled' && (
-              <p className="text-gray-600 text-xs mt-1">יפורסם ב-{scheduleDate} {scheduleTime}</p>
-            )}
           </div>
         ) : (
           <>
@@ -119,9 +171,7 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
                       key={conn.platform}
                       onClick={() => togglePlatform(conn.platform)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                        isSelected
-                          ? colorClass
-                          : 'text-gray-500 border-gray-700 bg-transparent hover:border-gray-600'
+                        isSelected ? colorClass : 'text-gray-500 border-gray-700 bg-transparent hover:border-gray-600'
                       }`}
                     >
                       {conn.username}
@@ -135,41 +185,114 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
               </div>
             </div>
 
-            {/* Content editor */}
-            <div className="p-5">
+            {/* Main content editor */}
+            <div className="p-5 border-b border-gray-800">
+              <p className="text-gray-500 text-xs mb-2 text-right">תוכן ראשי (ברירת מחדל לכל הרשתות)</p>
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 placeholder="מה תרצה לשתף?"
                 maxLength={maxChars}
                 className="w-full bg-transparent text-white placeholder-gray-600 text-sm resize-none outline-none text-right leading-relaxed"
-                rows={5}
+                rows={4}
                 dir="rtl"
               />
-
-              {/* Toolbar */}
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-800">
-                <div className="flex items-center gap-1">
-                  <span className={`text-xs ${remaining < 20 ? 'text-red-400' : 'text-gray-600'}`}>
-                    {remaining}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="text-gray-500 hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-800 transition-all">
-                    <Hash size={16} />
-                  </button>
-                  <button className="text-gray-500 hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-800 transition-all">
-                    <Smile size={16} />
-                  </button>
-                  <button className="text-gray-500 hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-800 transition-all">
-                    <Image size={16} />
-                  </button>
-                </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-800">
+                <span className={`text-xs ${remaining < 20 ? 'text-red-400' : 'text-gray-600'}`}>{remaining}</span>
+                <button
+                  onClick={() => setShowImage(v => !v)}
+                  className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all ${
+                    showImage
+                      ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                      : 'text-gray-500 hover:text-gray-300 border border-gray-700'
+                  }`}
+                >
+                  <Image size={13} />
+                  תמונה
+                </button>
               </div>
+
+              {showImage && (
+                <div className="mt-3">
+                  <input
+                    type="url"
+                    dir="ltr"
+                    value={imageUrl}
+                    onChange={e => setImageUrl(e.target.value)}
+                    placeholder="https://... (URL לתמונה)"
+                    className="w-full bg-gray-800 border border-gray-700 text-white text-xs rounded-lg px-3 py-2.5 outline-none focus:border-purple-500 placeholder-gray-600 text-left font-mono"
+                  />
+                  {imageUrl && (
+                    <img
+                      src={imageUrl}
+                      alt="preview"
+                      className="mt-2 rounded-lg max-h-32 object-cover w-full border border-gray-700"
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  )}
+                </div>
+              )}
             </div>
 
+            {/* Per-platform overrides */}
+            {selectedPlatforms.some(p => p in OVERRIDE_DEFAULTS) && (
+              <div className="p-5 border-b border-gray-800 space-y-2">
+                <div className="flex items-center gap-1.5 justify-end mb-1">
+                  <p className="text-gray-500 text-xs">תוכן מותאם לפלטפורמה</p>
+                  <Globe size={12} className="text-gray-500" />
+                </div>
+
+                {(selectedPlatforms.filter(p => p in OVERRIDE_DEFAULTS) as Platform[]).map(platform => {
+                  const ov = overrides[platform];
+                  if (!ov) return null;
+                  const def = OVERRIDE_DEFAULTS[platform]!;
+                  const hasOverride = ov.content.trim().length > 0;
+                  return (
+                    <div key={platform} className={`border rounded-xl overflow-hidden ${platformColors[platform].split(' ').find(c => c.startsWith('border')) ?? 'border-gray-700'}`}>
+                      <button
+                        onClick={() => updateOverride(platform, { open: !ov.open })}
+                        className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-gray-800/20 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                          {ov.open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                          <span className={`text-xs ${def.lang === 'en' ? 'text-blue-300' : 'text-green-300'}`}>
+                            {def.lang === 'en' ? 'English' : 'עברית'}
+                          </span>
+                          {hasOverride && <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {platformIcons[platform]}
+                          <span className={`text-xs font-medium ${platformColors[platform].split(' ')[0]}`}>
+                            {platformLabels[platform]}
+                          </span>
+                        </div>
+                      </button>
+
+                      {ov.open && (
+                        <div className="border-t border-gray-800 p-3">
+                          <textarea
+                            value={ov.content}
+                            onChange={e => updateOverride(platform, { content: e.target.value })}
+                            placeholder={def.placeholder}
+                            rows={3}
+                            dir={def.lang === 'he' ? 'rtl' : 'ltr'}
+                            className="w-full bg-gray-800 text-white text-xs rounded-lg px-3 py-2.5 outline-none focus:border-purple-500 placeholder-gray-600 resize-none border border-gray-700"
+                          />
+                          {!hasOverride && (
+                            <p className="text-gray-600 text-xs mt-1.5 text-right">
+                              ריק = ישתמש בתוכן הראשי
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Schedule options */}
-            <div className="px-5 pb-4">
+            <div className="px-5 pt-4 pb-3">
               <div className="flex gap-2 mb-3 justify-end">
                 <button
                   onClick={() => setScheduleMode('scheduled')}
@@ -223,10 +346,7 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
 
             {/* Footer */}
             <div className="flex items-center justify-between p-5 border-t border-gray-800">
-              <button
-                onClick={onClose}
-                className="text-gray-500 hover:text-white text-sm transition-colors"
-              >
+              <button onClick={onClose} className="text-gray-500 hover:text-white text-sm transition-colors">
                 ביטול
               </button>
               <button
@@ -241,7 +361,7 @@ export function PostComposer({ connections, onClose }: PostComposerProps) {
                 }`}
               >
                 {sending ? (
-                  <><Loader2 size={14} className="animate-spin" /> שולח ל-Zapier...</>
+                  <><Loader2 size={14} className="animate-spin" /> שולח...</>
                 ) : scheduleMode === 'now' ? (
                   <><Zap size={14} /> פרסם דרך Zapier ({selectedPlatforms.length})</>
                 ) : (

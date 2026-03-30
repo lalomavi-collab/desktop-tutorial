@@ -48,6 +48,31 @@ export interface Post {
   imageUrl?: string;
 }
 
+export interface ScheduledTime {
+  id: string;
+  dayOfWeek: number; // 0=Sun, 6=Sat
+  hour: number;
+  minute: number;
+  active: boolean;
+  label?: string;
+}
+
+export type ContentStyle = 'professional' | 'casual' | 'news' | 'promotional' | 'educational' | 'inspirational';
+export type EmojiStyle = 'none' | 'minimal' | 'rich';
+export type HashtagStyle = 'none' | 'few' | 'many';
+
+export interface PlatformAgentConfig {
+  platform: Platform;
+  webhookUrl?: string;
+  contentStyle: ContentStyle;
+  scheduledTimes: ScheduledTime[];
+  autoPost: boolean;
+  postTemplate?: string;
+  emojiStyle: EmojiStyle;
+  hashtagStyle: HashtagStyle;
+  maxPostsPerDay: number;
+}
+
 export interface ActivityItem {
   id: string;
   agentId: string;

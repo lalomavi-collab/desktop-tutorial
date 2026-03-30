@@ -14,6 +14,8 @@ import type { MotzeiShabbatPost } from './ContentCalendar';
 import type { ScheduleSettings } from './ScheduleConfig';
 import { sendToZapier } from '../lib/zapier';
 import { mockPosts } from '../data/mockData';
+import { PlatformAgentDetail, defaultConfig } from './PlatformAgentDetail';
+import type { PlatformAgentConfig } from '../types';
 
 interface SocialMediaManagerProps {
   agent: Agent;
@@ -30,6 +32,8 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
   const [orgExpanded, setOrgExpanded] = useState(true);
   const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings | null>(null);
   const [calendarPosts, setCalendarPosts] = useState<MotzeiShabbatPost[]>([]);
+  const [detailPlatform, setDetailPlatform] = useState<Platform | null>(null);
+  const [agentConfigs, setAgentConfigs] = useState<Partial<Record<Platform, PlatformAgentConfig>>>({});
 
   const connectedAgents = platformAgents.filter(a => a.connection.connected);
   const totalFollowers = connectedAgents.reduce((s, a) => s + (a.connection.followers ?? 0), 0);
@@ -72,8 +76,12 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
     }, 1500);
   };
 
-  const handleOpenDetail = (_platform: Platform) => {
-    setActiveTab('analytics');
+  const handleOpenDetail = (platform: Platform) => {
+    setDetailPlatform(platform);
+  };
+
+  const handleSaveConfig = (platform: Platform, config: PlatformAgentConfig) => {
+    setAgentConfigs(prev => ({ ...prev, [platform]: config }));
   };
 
   const handleSendNow = async (post: MotzeiShabbatPost) => {
@@ -306,6 +314,20 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
           onClose={() => setShowBroadcast(false)}
         />
       )}
+
+      {/* Platform agent detail panel */}
+      {detailPlatform && (() => {
+        const pa = platformAgents.find(a => a.platform === detailPlatform);
+        if (!pa) return null;
+        return (
+          <PlatformAgentDetail
+            agent={pa}
+            config={agentConfigs[detailPlatform] ?? defaultConfig(detailPlatform)}
+            onClose={() => setDetailPlatform(null)}
+            onSaveConfig={handleSaveConfig}
+          />
+        );
+      })()}
     </div>
   );
 }

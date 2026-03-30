@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   CheckCircle2, RefreshCw, Users, Calendar,
-  Send, TrendingUp, Link, Unlink, Zap, ChevronRight
+  Send, Settings2, Link, Unlink, Zap,
 } from 'lucide-react';
 import type { PlatformAgent, Platform } from '../types';
 import {
@@ -218,10 +218,11 @@ export function PlatformAgentCard({
                 </button>
                 <button
                   onClick={() => onOpenDetail(agent.platform)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs text-gray-500 hover:text-white bg-gray-800/60 hover:bg-gray-700/60 transition-all"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white bg-gray-800/60 hover:bg-gray-700/60 transition-all"
+                  title="הגדרות סוכן"
                 >
-                  <TrendingUp size={12} />
-                  <ChevronRight size={11} />
+                  <Settings2 size={13} />
+                  הגדר
                 </button>
               </>
             ) : (
