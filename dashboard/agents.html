@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Command Center</title>
+    <style>
+        :root {
+            --obsidian: #1B1B1B;
+            --jet: #0A0A0A;
+            --gold: #D4AF37;
+            --gold-light: #F5E6A3;
+            --cream: #FFFDD0;
+            --burgundy: #800020;
+            --slate: #708090;
+            --silver: #C0C0C0;
+            --green: #66BB6A;
+            --orange: #FFB74D;
+            --red: #EF5350;
+            --blue: #42A5F5;
+            --purple: #AB47BC;
+            --cyan: #00FFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--jet); color: var(--cream); min-height: 100vh; }
+
+        /* HEADER */
+        .header { background: var(--obsidian); border-bottom: 2px solid var(--gold); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 1.5rem; font-weight: 300; }
+        .header h1 span { background: linear-gradient(135deg, var(--gold), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .header-stats { display: flex; gap: 20px; }
+        .hstat { text-align: center; padding: 6px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; }
+        .hstat-n { font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+        .hstat-l { font-size: 0.65rem; color: var(--slate); text-transform: uppercase; letter-spacing: 1px; }
+
+        .main { max-width: 1300px; margin: 0 auto; padding: 30px 20px; }
+
+        /* SECTION */
+        .section { margin-bottom: 40px; }
+        .stitle { font-size: 1.3rem; color: var(--gold); margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid rgba(212,175,55,0.2); display: flex; align-items: center; gap: 10px; }
+
+        /* ORG CHART */
+        .org { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 40px; }
+        .org-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .org-line { width: 2px; height: 30px; background: linear-gradient(var(--gold), rgba(212,175,55,0.3)); margin: 0 auto; }
+        .org-branch { display: flex; justify-content: center; gap: 0; }
+        .org-branch::before { content: ''; display: block; width: 100%; height: 2px; background: rgba(212,175,55,0.2); position: relative; top: 0; }
+
+        /* AGENT CARD */
+        .acard { background: linear-gradient(145deg, #222, var(--obsidian)); border: 1px solid rgba(212,175,55,0.15); border-radius: 14px; padding: 20px; min-width: 220px; max-width: 280px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .acard:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(212,175,55,0.12); }
+        .acard.ceo { border-color: rgba(212,175,55,0.4); background: linear-gradient(145deg, #2a2510, var(--obsidian)); }
+        .acard.manager { border-color: rgba(171,71,188,0.4); }
+        .acard.platform { min-width: 160px; max-width: 180px; padding: 16px; }
+
+        .acard-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .acard-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .icon-gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); }
+        .icon-purple { background: linear-gradient(135deg, #9C27B0, #CE93D8); }
+        .icon-blue { background: linear-gradient(135deg, #1565C0, #42A5F5); }
+        .icon-green { background: linear-gradient(135deg, #2E7D32, #66BB6A); }
+        .icon-orange { background: linear-gradient(135deg, #E65100, #FF9800); }
+        .icon-red { background: linear-gradient(135deg, #B71C1C, #EF5350); }
+        .icon-cyan { background: linear-gradient(135deg, #006064, #00BCD4); }
+        .icon-pink { background: linear-gradient(135deg, #AD1457, #F06292); }
+        .icon-dark { background: linear-gradient(135deg, #263238, #546E7A); }
+
+        .acard-name { font-size: 1rem; font-weight: 600; color: var(--cream); }
+        .acard-role { font-size: 0.72rem; color: var(--gold); letter-spacing: 0.5px; }
+        .acard-desc { font-size: 0.82rem; color: var(--silver); line-height: 1.5; margin-bottom: 12px; }
+
+        .acard-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+        .astat { text-align: center; }
+        .astat-n { font-size: 1rem; font-weight: 700; color: var(--cream); }
+        .astat-l { font-size: 0.6rem; color: var(--slate); text-transform: uppercase; }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 6px; }
+        .dot-active { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .dot-idle { background: var(--slate); }
+        .dot-paused { background: var(--orange); }
+        .dot-error { background: var(--red); }
+
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+        .badge-active { background: rgba(102,187,106,0.15); color: var(--green); border: 1px solid rgba(102,187,106,0.3); }
+        .badge-idle { background: rgba(112,128,144,0.15); color: var(--slate); border: 1px solid rgba(112,128,144,0.3); }
+        .badge-paused { background: rgba(255,183,77,0.15); color: var(--orange); border: 1px solid rgba(255,183,77,0.3); }
+
+        /* PLATFORM CARDS */
+        .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-top: 20px; }
+
+        .pcard { background: linear-gradient(145deg, #222, var(--obsidian)); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; text-align: center; transition: all 0.3s; }
+        .pcard:hover { transform: translateY(-2px); }
+        .pcard.connected { border-color: rgba(102,187,106,0.3); }
+        .pcard.disconnected { opacity: 0.5; }
+
+        .pcard-icon { font-size: 2rem; margin-bottom: 8px; }
+        .pcard-name { font-size: 0.95rem; font-weight: 600; color: var(--cream); margin-bottom: 4px; }
+        .pcard-user { font-size: 0.75rem; color: var(--slate); margin-bottom: 8px; }
+        .pcard-stats { display: flex; justify-content: center; gap: 16px; font-size: 0.75rem; color: var(--silver); }
+        .pcard-stats strong { color: var(--cream); }
+
+        /* POSTS QUEUE */
+        .queue-table { width: 100%; border-collapse: collapse; }
+        .queue-table th { text-align: right; padding: 10px 14px; color: var(--gold); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .queue-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.88rem; color: var(--silver); }
+        .queue-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .status-pill { padding: 3px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .pill-approved { background: rgba(102,187,106,0.15); color: var(--green); }
+        .pill-pending { background: rgba(255,183,77,0.15); color: var(--orange); }
+        .pill-failed { background: rgba(239,83,80,0.15); color: var(--red); }
+        .pill-sent { background: rgba(212,175,55,0.15); color: var(--gold); }
+
+        /* WORKFLOW */
+        .wf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .wf-card { background: var(--obsidian); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; }
+        .wf-card h4 { color: var(--cream); font-size: 1rem; margin-bottom: 6px; }
+        .wf-card p { color: var(--slate); font-size: 0.85rem; line-height: 1.5; }
+        .wf-trigger { display: inline-block; margin-top: 8px; padding: 4px 12px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; color: var(--gold); font-size: 0.78rem; }
+
+        /* CONNECTIONS */
+        .conn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .conn-card { background: var(--obsidian); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; }
+        .conn-card.active { border-color: rgba(102,187,106,0.3); }
+        .conn-icon { font-size: 1.8rem; }
+        .conn-info { flex: 1; }
+        .conn-name { font-weight: 600; color: var(--cream); font-size: 0.95rem; }
+        .conn-url { font-size: 0.7rem; color: var(--slate); font-family: monospace; word-break: break-all; }
+        .conn-status { font-size: 0.75rem; }
+        .conn-ok { color: var(--green); }
+        .conn-fail { color: var(--red); }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 30px; border-top: 1px solid rgba(212,175,55,0.1); color: var(--slate); font-size: 0.8rem; margin-top: 40px; }
+
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        .acard, .pcard, .wf-card, .conn-card { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .acard:nth-child(1) { animation-delay: 0.05s; }
+        .acard:nth-child(2) { animation-delay: 0.1s; }
+        .acard:nth-child(3) { animation-delay: 0.15s; }
+        .pcard:nth-child(1) { animation-delay: 0.05s; }
+        .pcard:nth-child(2) { animation-delay: 0.1s; }
+        .pcard:nth-child(3) { animation-delay: 0.15s; }
+        .pcard:nth-child(4) { animation-delay: 0.2s; }
+        .pcard:nth-child(5) { animation-delay: 0.25s; }
+        .pcard:nth-child(6) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <h1><span>Agent Command Center</span></h1>
+    <div class="header-stats">
+        <div class="hstat"><div class="hstat-n">9</div><div class="hstat-l">Total Agents</div></div>
+        <div class="hstat"><div class="hstat-n">6</div><div class="hstat-l">Active</div></div>
+        <div class="hstat"><div class="hstat-n">5</div><div class="hstat-l">Posts in Queue</div></div>
+        <div class="hstat"><div class="hstat-n">4</div><div class="hstat-l">Connected</div></div>
+    </div>
+</header>
+
+<div class="main">
+
+    <!-- ORG CHART -->
+    <div class="section">
+        <div class="stitle">&#x1F3E2; Organizational Hierarchy</div>
+
+        <div class="org">
+            <!-- CEO -->
+            <div class="org-row">
+                <div class="acard ceo">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-gold">&#x1F451;</div>
+                        <div>
+                            <div class="acard-name">&#x202B;אורי <span class="status-dot dot-active"></span></div>
+                            <div class="acard-role">CEO / &#x202B;מנכ"ל</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;מנכ"ל, מפקח על כלל הסוכנים. מאשר אסטרטגיה ותקציב.</div>
+                    <span class="badge badge-active">&#x25CF; Active</span>
+                </div>
+            </div>
+
+            <div class="org-line"></div>
+
+            <!-- MANAGERS ROW -->
+            <div class="org-row" style="gap: 24px;">
+
+                <!-- עידית -->
+                <div class="acard manager">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-purple">&#x1F469;&#x200D;&#x1F4BC;</div>
+                        <div>
+                            <div class="acard-name">&#x202B;עידית <span class="status-dot dot-active"></span></div>
+                            <div class="acard-role">&#x202B;מנהלת השיווק | Social Media Manager</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;מפקדת על סוכני הרשתות החברתיות. מדווחת לאורי מנכ"ל. מנהלת לוח שידורים, אישורים ופרסום.</div>
+                    <div class="acard-stats">
+                        <div class="astat"><div class="astat-n">620</div><div class="astat-l">Tasks Done</div></div>
+                        <div class="astat"><div class="astat-n">5</div><div class="astat-l">Running</div></div>
+                        <div class="astat"><div class="astat-n">6</div><div class="astat-l">Sub-Agents</div></div>
+                    </div>
+                </div>
+
+                <!-- Prompt Builder -->
+                <div class="acard" style="border-color: rgba(0,188,212,0.3);">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-cyan">&#x1F3AF;</div>
+                        <div>
+                            <div class="acard-name">Prompt Builder <span class="status-dot dot-active"></span></div>
+                            <div class="acard-role">&#x202B;סוכן בניית פרומפטים | 6 Steps</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;בונה פרומפטים מקצועיים ב-6 שלבים. מומחה בתחומים: משפטים, רו"ח, ייעוץ עסקי, ביטוח, שמאות.</div>
+                    <div class="acard-stats">
+                        <div class="astat"><div class="astat-n">6</div><div class="astat-l">Steps</div></div>
+                        <div class="astat"><div class="astat-n">5</div><div class="astat-l">Domains</div></div>
+                        <div class="astat"><div class="astat-n">4</div><div class="astat-l">Examples</div></div>
+                    </div>
+                </div>
+
+                <!-- Content Writer -->
+                <div class="acard">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-blue">&#x270D;&#xFE0F;</div>
+                        <div>
+                            <div class="acard-name">Content Writer <span class="status-dot dot-active"></span></div>
+                            <div class="acard-role">&#x202B;יוצר תוכן שיווקי</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;יוצר תוכן שיווקי, בלוגים ותיאורי מוצרים. כותב בעברית ואנגלית.</div>
+                    <div class="acard-stats">
+                        <div class="astat"><div class="astat-n">89</div><div class="astat-l">Tasks Done</div></div>
+                        <div class="astat"><div class="astat-n">1</div><div class="astat-l">Running</div></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="org-line"></div>
+
+            <!-- INDEPENDENT AGENTS -->
+            <div class="org-row" style="gap: 16px;">
+
+                <!-- Analytics -->
+                <div class="acard">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-green">&#x1F4CA;</div>
+                        <div>
+                            <div class="acard-name">Analytics <span class="status-dot dot-idle"></span></div>
+                            <div class="acard-role">&#x202B;מנתח ביצועים</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;מנתח ביצועים, מגמות ונתוני קהל יעד.</div>
+                    <div class="acard-stats">
+                        <div class="astat"><div class="astat-n">310</div><div class="astat-l">Tasks</div></div>
+                    </div>
+                    <span class="badge badge-idle">&#x25CF; Idle</span>
+                </div>
+
+                <!-- Email -->
+                <div class="acard">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-orange">&#x1F4E7;</div>
+                        <div>
+                            <div class="acard-name">Email Marketing <span class="status-dot dot-paused"></span></div>
+                            <div class="acard-role">&#x202B;קמפיינים ואוטומציה</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;מנהל קמפיינים ואוטומציה של מיילים.</div>
+                    <div class="acard-stats">
+                        <div class="astat"><div class="astat-n">56</div><div class="astat-l">Tasks</div></div>
+                    </div>
+                    <span class="badge badge-paused">&#x25CF; Paused</span>
+                </div>
+
+                <!-- Quick Build -->
+                <div class="acard">
+                    <div class="acard-header">
+                        <div class="acard-icon icon-dark">&#x26A1;</div>
+                        <div>
+                            <div class="acard-name">Quick Build <span class="status-dot dot-active"></span></div>
+                            <div class="acard-role">&#x202B;בנייה מהירה | One-Shot</div>
+                        </div>
+                    </div>
+                    <div class="acard-desc">&#x202B;בנייה מהירה של פרומפט מלא מתיאור קצר. API call אחד ללא אינטראקציה.</div>
+                    <span class="badge badge-active">&#x25CF; Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLATFORM AGENTS (עידית's sub-agents) -->
+    <div class="section">
+        <div class="stitle">&#x1F4F1; &#x202B;סוכני הפלטפורמות (תחת עידית)</div>
+        <div class="platforms-grid">
+            <div class="pcard connected">
+                <div class="pcard-icon">&#x1F44D;</div>
+                <div class="pcard-name">Facebook</div>
+                <div class="pcard-user">Connected <span class="status-dot dot-active"></span></div>
+                <div class="pcard-stats"><span>Webhook: <strong>Active</strong></span></div>
+            </div>
+            <div class="pcard connected">
+                <div class="pcard-icon">&#x1F4F1;</div>
+                <div class="pcard-name">Telegram</div>
+                <div class="pcard-user">@My Brand Bot <span class="status-dot dot-active"></span></div>
+                <div class="pcard-stats"><span>Posts: <strong>89</strong></span> <span>Followers: <strong>3.8K</strong></span></div>
+            </div>
+            <div class="pcard connected">
+                <div class="pcard-icon">&#x1F4BC;</div>
+                <div class="pcard-name">LinkedIn</div>
+                <div class="pcard-user">My Brand Ltd <span class="status-dot dot-active"></span></div>
+                <div class="pcard-stats"><span>Posts: <strong>97</strong></span> <span>Followers: <strong>5.2K</strong></span></div>
+            </div>
+            <div class="pcard connected">
+                <div class="pcard-icon">&#x1F4F7;</div>
+                <div class="pcard-name">Instagram</div>
+                <div class="pcard-user">@my_brand <span class="status-dot dot-active"></span></div>
+                <div class="pcard-stats"><span>Posts: <strong>184</strong></span> <span>Followers: <strong>28.7K</strong></span></div>
+            </div>
+            <div class="pcard disconnected">
+                <div class="pcard-icon">&#x1F3B5;</div>
+                <div class="pcard-name">TikTok</div>
+                <div class="pcard-user">Not Connected <span class="status-dot dot-idle"></span></div>
+                <div class="pcard-stats"><span style="color:var(--slate)">Disconnected</span></div>
+            </div>
+            <div class="pcard disconnected">
+                <div class="pcard-icon">&#x1F426;</div>
+                <div class="pcard-name">Twitter / X</div>
+                <div class="pcard-user">@my_brand <span class="status-dot dot-active"></span></div>
+                <div class="pcard-stats"><span>Posts: <strong>218</strong></span> <span>Followers: <strong>12.4K</strong></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POSTS QUEUE -->
+    <div class="section">
+        <div class="stitle">&#x1F4CB; &#x202B;תור פוסטים</div>
+        <div style="overflow-x: auto;">
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>&#x202B;נושא</th>
+                        <th>Status</th>
+                        <th>&#x202B;פלטפורמות</th>
+                        <th>&#x202B;תזמון</th>
+                        <th>&#x202B;יוצר</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-family:monospace; font-size:0.8rem;">q-legal-algorist-005</td>
+                        <td><strong style="color:var(--cream);">&#x202B;האלגוריסט המשפטי</strong></td>
+                        <td><span class="status-pill pill-approved">&#x2705; Approved</span></td>
+                        <td>FB, TG, LI, IG</td>
+                        <td>&#x202B;מיידי</td>
+                        <td>Prompt Builder</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family:monospace; font-size:0.8rem;">q-ai-creativity-002</td>
+                        <td>&#x202B;AI ויצירתיות</td>
+                        <td><span class="status-pill pill-pending">&#x23F3; Pending</span></td>
+                        <td>TG, LI, FB, IG</td>
+                        <td>11/04/2026</td>
+                        <td>&#x202B;עידית</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family:monospace; font-size:0.8rem;">q-ai-business-003</td>
+                        <td>&#x202B;AI לעסקים קטנים</td>
+                        <td><span class="status-pill pill-pending">&#x23F3; Pending</span></td>
+                        <td>TG, LI, FB, TW</td>
+                        <td>18/04/2026</td>
+                        <td>&#x202B;עידית</td>
+                    </tr>
+                    <tr>
+                        <td style="font-family:monospace; font-size:0.8rem;">q-future-work-004</td>
+                        <td>&#x202B;עתיד העבודה עם AI</td>
+                        <td><span class="status-pill pill-pending">&#x23F3; Pending</span></td>
+                        <td>TG, LI, FB</td>
+                        <td>25/04/2026</td>
+                        <td>&#x202B;עידית</td>
+                    </tr>
+                    <tr style="opacity: 0.5;">
+                        <td style="font-family:monospace; font-size:0.8rem;">q-law-ai-001</td>
+                        <td>&#x202B;משפט ו-AI</td>
+                        <td><span class="status-pill pill-failed">&#x274C; Failed</span></td>
+                        <td>TG, LI, FB</td>
+                        <td>-</td>
+                        <td>&#x202B;עידית</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ZAPIER CONNECTIONS -->
+    <div class="section">
+        <div class="stitle">&#x1F517; Zapier Connections</div>
+        <div class="conn-grid">
+            <div class="conn-card active">
+                <div class="conn-icon">&#x1F44D;</div>
+                <div class="conn-info">
+                    <div class="conn-name">Facebook</div>
+                    <div class="conn-url">hooks.zapier.com/.../uniufh3/</div>
+                </div>
+                <div class="conn-status conn-ok">&#x2705; Active</div>
+            </div>
+            <div class="conn-card active">
+                <div class="conn-icon">&#x1F4F1;</div>
+                <div class="conn-info">
+                    <div class="conn-name">Telegram</div>
+                    <div class="conn-url">hooks.zapier.com/.../unrrbau/</div>
+                </div>
+                <div class="conn-status conn-ok">&#x2705; Active</div>
+            </div>
+            <div class="conn-card active">
+                <div class="conn-icon">&#x1F4BC;</div>
+                <div class="conn-info">
+                    <div class="conn-name">LinkedIn</div>
+                    <div class="conn-url">hooks.zapier.com/.../unr1xen/</div>
+                </div>
+                <div class="conn-status conn-ok">&#x2705; Active</div>
+            </div>
+            <div class="conn-card active">
+                <div class="conn-icon">&#x1F4F7;</div>
+                <div class="conn-info">
+                    <div class="conn-name">Instagram</div>
+                    <div class="conn-url">hooks.zapier.com/.../unsk715/</div>
+                </div>
+                <div class="conn-status conn-ok">&#x2705; Active</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WORKFLOWS -->
+    <div class="section">
+        <div class="stitle">&#x2699;&#xFE0F; GitHub Workflows</div>
+        <div class="wf-grid">
+            <div class="wf-card">
+                <h4>&#x1F4E2; Social Media Agent</h4>
+                <p>&#x202B;סוכן עידית — שולח פוסטים מאושרים דרך Zapier. רץ כל שבת 19:00 או ידנית.</p>
+                <div class="wf-trigger">&#x23F0; Every Saturday 19:00 IST</div>
+                <div class="wf-trigger">&#x1F3AF; force_send_id + dry_run</div>
+            </div>
+            <div class="wf-card">
+                <h4>&#x1F4E4; Send Social Media Post</h4>
+                <p>&#x202B;שליחה ישירה לפלטפורמה ספציפית. בוחרים platform + message.</p>
+                <div class="wf-trigger">&#x1F504; Manual Dispatch</div>
+            </div>
+            <div class="wf-card">
+                <h4>&#x1F4DD; Post 001: Legal Algorist</h4>
+                <p>&#x202B;פוסט מתוזמן - עברית ל-FB/TG/IG, אנגלית ל-LinkedIn.</p>
+                <div class="wf-trigger">&#x1F4C5; April 5, 2026 20:00 IST</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    Agent Command Center &copy; 2026 &nbsp;|&nbsp; Prestige Executive Theme &nbsp;|&nbsp; 9 Agents &nbsp;|&nbsp; 4 Platforms Connected
+</footer>
+
+</body>
+</html>
