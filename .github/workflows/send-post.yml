@@ -11,6 +11,7 @@ on:
           - facebook
           - telegram
           - linkedin
+          - instagram
           - all
       message:
         description: "The post content"
@@ -49,6 +50,14 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
           echo "LinkedIn: SENT"
+
+      - name: "\U0001F4E4 Send to Instagram"
+        if: inputs.platform == 'instagram' || inputs.platform == 'all'
+        run: |
+          curl -s -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
+          echo "Instagram: SENT"
 
       - name: "\u2705 Summary"
         run: |
