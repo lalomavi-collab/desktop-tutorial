@@ -8,6 +8,11 @@ import type { Agent, Platform, PlatformAgent } from '../types';
 import { PlatformAgentCard, platformMeta } from './PlatformAgentCard';
 import { PostComposer } from './PostComposer';
 import { PostList } from './PostList';
+import { ScheduleConfig } from './ScheduleConfig';
+import { ContentCalendar } from './ContentCalendar';
+import type { MotzeiShabbatPost } from './ContentCalendar';
+import type { ScheduleSettings } from './ScheduleConfig';
+import { sendToZapier } from '../lib/zapier';
 import { mockPosts } from '../data/mockData';
 
 interface SocialMediaManagerProps {
@@ -21,8 +26,10 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
   const [syncing, setSyncing] = useState<Platform | null>(null);
   const [connecting, setConnecting] = useState<Platform | null>(null);
   const [showBroadcast, setShowBroadcast] = useState(false);
-  const [activeTab, setActiveTab] = useState<'agents' | 'posts' | 'analytics'>('agents');
+  const [activeTab, setActiveTab] = useState<'agents' | 'calendar' | 'posts' | 'analytics'>('agents');
   const [orgExpanded, setOrgExpanded] = useState(true);
+  const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings | null>(null);
+  const [calendarPosts, setCalendarPosts] = useState<MotzeiShabbatPost[]>([]);
 
   const connectedAgents = platformAgents.filter(a => a.connection.connected);
   const totalFollowers = connectedAgents.reduce((s, a) => s + (a.connection.followers ?? 0), 0);
@@ -69,8 +76,28 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
     setActiveTab('analytics');
   };
 
+  const handleSendNow = async (post: MotzeiShabbatPost) => {
+    const result = await sendToZapier({
+      content: post.content,
+      platforms: post.platforms,
+      schedule_mode: 'now',
+      agent: 'עידית — מנהלת השיווק',
+      timestamp: new Date().toISOString(),
+    });
+    if (result.ok) {
+      setCalendarPosts(prev =>
+        prev.map(p => p.id === post.id ? { ...p, status: 'sent' } : p)
+      );
+    } else {
+      setCalendarPosts(prev =>
+        prev.map(p => p.id === post.id ? { ...p, status: 'failed' } : p)
+      );
+    }
+  };
+
   const tabs = [
     { id: 'agents', label: 'סוכנים' },
+    { id: 'calendar', label: 'מוצ"ש' },
     { id: 'posts', label: 'פוסטים' },
     { id: 'analytics', label: 'ביצועים' },
   ] as const;
@@ -245,6 +272,22 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {activeTab === 'calendar' && (
+        <div className="space-y-4">
+          <ScheduleConfig
+            platforms={connectedAgents.map(a => a.platform)}
+            onSave={s => setScheduleSettings(s)}
+          />
+          {scheduleSettings?.enabled !== false && (
+            <ContentCalendar
+              posts={calendarPosts}
+              onUpdate={setCalendarPosts}
+              onSendNow={handleSendNow}
+            />
+          )}
         </div>
       )}
 
