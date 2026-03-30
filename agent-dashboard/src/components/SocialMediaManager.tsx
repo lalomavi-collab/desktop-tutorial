@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Zap, Send, Calendar, Users,
   Plus, Eye, Heart, Repeat2, MessageCircle,
-  ChevronDown, ChevronUp, Crown, UserCircle2
+  ChevronDown, ChevronUp, Crown, UserCircle2,
+  Timer, CheckCircle2, AlertTriangle,
 } from 'lucide-react';
 import type { Agent, Platform, PlatformAgent } from '../types';
 import { PlatformAgentCard, platformMeta } from './PlatformAgentCard';
@@ -17,6 +18,7 @@ import { mockPosts } from '../data/mockData';
 import { PlatformAgentDetail, defaultConfig } from './PlatformAgentDetail';
 import { PostApprovalQueue, SEED_POSTS } from './PostApprovalQueue';
 import type { PlatformAgentConfig, QueuedPost } from '../types';
+import { useScheduler, msUntilNextSat19, formatCountdown } from '../lib/useScheduler';
 
 interface SocialMediaManagerProps {
   agent: Agent;
@@ -36,6 +38,8 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
   const [detailPlatform, setDetailPlatform] = useState<Platform | null>(null);
   const [agentConfigs, setAgentConfigs] = useState<Partial<Record<Platform, PlatformAgentConfig>>>({});
   const [queuedPosts, setQueuedPosts] = useState<QueuedPost[]>(SEED_POSTS);
+  const [countdown, setCountdown] = useState(() => formatCountdown(msUntilNextSat19()));
+  const [lastSent, setLastSent] = useState<{ topic: string; ok: boolean } | null>(null);
 
   const connectedAgents = platformAgents.filter(a => a.connection.connected);
   const totalFollowers = connectedAgents.reduce((s, a) => s + (a.connection.followers ?? 0), 0);
@@ -85,6 +89,28 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
   const handleSaveConfig = (platform: Platform, config: PlatformAgentConfig) => {
     setAgentConfigs(prev => ({ ...prev, [platform]: config }));
   };
+
+  // ── Countdown timer (updates every minute) ──────────────────────────────
+  useEffect(() => {
+    const tick = () => setCountdown(formatCountdown(msUntilNextSat19()));
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // ── Auto-scheduler: send approved posts when their time arrives ──────────
+  const handlePostSent = useCallback((id: string, ok: boolean) => {
+    const post = queuedPosts.find(p => p.id === id);
+    setQueuedPosts(prev =>
+      prev.map(p => p.id === id
+        ? { ...p, status: ok ? 'sent' : 'failed', sentAt: ok ? new Date().toISOString() : undefined }
+        : p
+      )
+    );
+    if (post) setLastSent({ topic: post.topic, ok });
+  }, [queuedPosts]);
+
+  useScheduler({ posts: queuedPosts, onPostSent: handlePostSent });
 
   const handleSendNow = async (post: MotzeiShabbatPost) => {
     const result = await sendToZapier({
@@ -248,6 +274,44 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
             פרסם לכל הרשתות (Broadcast)
           </button>
         </div>
+      </div>
+
+      {/* Scheduler status banner */}
+      <div className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all ${
+        lastSent
+          ? lastSent.ok
+            ? 'bg-green-500/5 border-green-500/20'
+            : 'bg-red-500/5 border-red-500/20'
+          : 'bg-[#13151f] border-gray-800'
+      }`}>
+        {lastSent ? (
+          <>
+            <button
+              onClick={() => setLastSent(null)}
+              className="text-gray-600 hover:text-gray-400 text-xs"
+            >✕</button>
+            <div className="flex items-center gap-2 text-right">
+              {lastSent.ok
+                ? <><CheckCircle2 size={14} className="text-green-400" /><span className="text-green-300 text-sm font-medium">נשלח: {lastSent.topic}</span></>
+                : <><AlertTriangle size={14} className="text-red-400" /><span className="text-red-300 text-sm">שליחה נכשלה: {lastSent.topic}</span></>
+              }
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="text-purple-400 text-sm font-mono font-bold">{countdown}</span>
+              <span className="text-gray-600 text-xs">עד השליחה</span>
+            </div>
+            <div className="flex items-center gap-2 text-right">
+              <div>
+                <span className="text-white text-sm font-medium">שבת 19:00</span>
+                <span className="text-gray-500 text-xs mr-1.5">— שעון ישראל</span>
+              </div>
+              <Timer size={14} className="text-purple-400" />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Tabs */}

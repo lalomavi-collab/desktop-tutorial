@@ -8,20 +8,21 @@ import type { Platform, QueuedPost } from '../types';
 import { platformMeta } from './PlatformAgentCard';
 import { sendToZapier, sendToTelegram } from '../lib/zapier';
 
-/** Returns "YYYY-MM-DDT19:00:00" for the next (or current) Saturday at 19:00 */
-function nextSaturdayAt19(): string {
+/** Returns "YYYY-MM-DDT19:00:00" for Saturday N weeks from now */
+function saturdayAt19(weeksAhead = 0): string {
   const now = new Date();
   const day = now.getDay(); // 0=Sun … 6=Sat
   let daysUntil = (6 - day + 7) % 7;
-  // If today IS Saturday but 19:00 already passed, jump to next week
   if (daysUntil === 0 && now.getHours() >= 19) daysUntil = 7;
   const sat = new Date(now);
-  sat.setDate(now.getDate() + daysUntil);
+  sat.setDate(now.getDate() + daysUntil + weeksAhead * 7);
   const yyyy = sat.getFullYear();
   const mm   = String(sat.getMonth() + 1).padStart(2, '0');
   const dd   = String(sat.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}T19:00:00`;
 }
+
+function nextSaturdayAt19() { return saturdayAt19(0); }
 
 interface PostApprovalQueueProps {
   posts: QueuedPost[];
@@ -59,6 +60,101 @@ export const SEED_POSTS: QueuedPost[] = [
     status: 'pending',
     createdAt: new Date().toISOString(),
     scheduledFor: nextSaturdayAt19(),
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+
+  // ── שבוע 2: AI ויצירתיות ────────────────────────────────────────────────
+  {
+    id: 'q-ai-creativity-002',
+    topic: 'AI ויצירתיות',
+    content:
+      '🎨 האם AI יכול להיות יצירתי?\n\n' +
+      'כשמוזיקה מתולדת ע"י אלגוריתם, ציורים מוכרים במיליונים, ' +
+      'ורומנים נכתבים ללא יד אנושית — עולה השאלה:\n' +
+      'מה נשאר ייחודי לנו?\n\n' +
+      '🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\n' +
+      'AI מייצר — אנחנו יוצרים משמעות.\n\n' +
+      '#AI #יצירתיות #עתיד #בינהמלאכותית #אמנות',
+    platformOverrides: {
+      linkedin:
+        'Can AI Be Truly Creative? 🎨\n\n' +
+        'AI-generated music sells for millions. AI art wins competitions.\n' +
+        'AI writes novels. What remains uniquely human?\n\n' +
+        'The answer: intention, emotion, and the story behind the work.\n' +
+        'AI produces — humans create meaning.\n\n' +
+        'In the AI era, our competitive edge is our humanity.\n\n' +
+        '#AI #Creativity #FutureOfWork #ArtificialIntelligence #HumanTouch',
+    },
+    platforms: ['telegram', 'linkedin', 'facebook', 'instagram'],
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    scheduledFor: saturdayAt19(1),
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+
+  // ── שבוע 3: AI בעסקים קטנים ─────────────────────────────────────────────
+  {
+    id: 'q-ai-business-003',
+    topic: 'AI לעסקים קטנים',
+    content:
+      '💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n' +
+      '5 כלי AI שכל בעל עסק קטן צריך ב-2025:\n' +
+      '1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n' +
+      '2️⃣ Canva AI — עיצוב מהיר ומקצועי\n' +
+      '3️⃣ Zapier AI — אוטומציה של תהליכים\n' +
+      '4️⃣ Notion AI — ניהול ידע ופגישות\n' +
+      '5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\n' +
+      'מה הכלי שהכי שינה את העסק שלך? 👇\n\n' +
+      '#AI #עסקיםקטנים #יזמות #טכנולוגיה',
+    platformOverrides: {
+      linkedin:
+        'AI Isn\'t Just for Big Tech — It\'s for YOUR Business 💼\n\n' +
+        '5 AI tools every small business owner needs in 2025:\n' +
+        '1️⃣ ChatGPT — Content, emails, proposals\n' +
+        '2️⃣ Canva AI — Fast, professional design\n' +
+        '3️⃣ Zapier AI — Workflow automation\n' +
+        '4️⃣ Notion AI — Knowledge & meeting management\n' +
+        '5️⃣ Claude — Research, analysis, strategy\n\n' +
+        'Which tool has made the biggest impact on your business? 👇\n\n' +
+        '#AI #SmallBusiness #Entrepreneurship #ProductivityTools',
+    },
+    platforms: ['telegram', 'linkedin', 'facebook', 'twitter'],
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    scheduledFor: saturdayAt19(2),
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+
+  // ── שבוע 4: עתיד העבודה ─────────────────────────────────────────────────
+  {
+    id: 'q-future-work-004',
+    topic: 'עתיד העבודה עם AI',
+    content:
+      '🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\n' +
+      'מחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\n' +
+      'הכישורים שישמרו עליך רלוונטי:\n' +
+      '✅ חשיבה ביקורתית\n' +
+      '✅ אינטליגנציה רגשית\n' +
+      '✅ יכולת לעבוד עם AI (לא נגדו)\n' +
+      '✅ יצירתיות ופתרון בעיות מורכבות\n\n' +
+      'ה-AI הוא הכלי — אתה ה-מנהל.\n\n' +
+      '#עתידהעבודה #AI #כישורים #קריירה #בינהמלאכותית',
+    platformOverrides: {
+      linkedin:
+        'The Future of Work in 2030 — What We Already Know 🚀\n\n' +
+        'McKinsey research: 30% of jobs in 2030 don\'t exist yet.\n\n' +
+        'The skills that will keep you relevant:\n' +
+        '✅ Critical thinking\n' +
+        '✅ Emotional intelligence\n' +
+        '✅ Working WITH AI (not against it)\n' +
+        '✅ Creativity and complex problem-solving\n\n' +
+        'AI is the tool — you are the manager.\n\n' +
+        '#FutureOfWork #AI #Skills #Career #ArtificialIntelligence',
+    },
+    platforms: ['telegram', 'linkedin', 'facebook'],
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    scheduledFor: saturdayAt19(3),
     createdBy: 'עידית — מנהלת השיווק',
   },
 ];
