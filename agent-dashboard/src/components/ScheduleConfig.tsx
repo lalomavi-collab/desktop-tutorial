@@ -77,6 +77,7 @@ export function ScheduleConfig({ platforms, onSave }: ScheduleConfigProps) {
     linkedin: 'LinkedIn',
     facebook: 'Facebook',
     tiktok: 'TikTok',
+    telegram: 'Telegram',
   };
 
   return (
@@ -296,6 +297,7 @@ function ZapierSetupCard({ day, minute, utcHour, isDst, platforms }: ZapierSetup
     linkedin: 'LinkedIn → Create Share Update',
     facebook: 'Facebook Pages → Create Page Post',
     tiktok: 'TikTok → Create Video Post ⚠️',
+    telegram: 'Telegram Bot → Send Message ✅',
   };
 
   return (

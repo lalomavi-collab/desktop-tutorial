@@ -3,7 +3,7 @@ import {
   X, Send, Clock, Image, Smile, Hash, CheckCircle2, AlertCircle, Loader2, Zap
 } from 'lucide-react';
 import type { Platform, PlatformConnection } from '../types';
-import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
+import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon } from './SocialIcons';
 import { sendToZapier } from '../lib/zapier';
 
 interface PostComposerProps {
@@ -17,6 +17,7 @@ const platformIcons: Record<Platform, React.ReactNode> = {
   linkedin: <LinkedinIcon size={14} />,
   facebook: <FacebookIcon size={14} />,
   tiktok: <TikTokIcon size={14} />,
+  telegram: <TelegramIcon size={14} />,
 };
 
 const platformColors: Record<Platform, string> = {
@@ -25,6 +26,7 @@ const platformColors: Record<Platform, string> = {
   linkedin: 'text-blue-400 border-blue-500/40 bg-blue-500/10',
   facebook: 'text-blue-500 border-blue-600/40 bg-blue-600/10',
   tiktok: 'text-fuchsia-400 border-fuchsia-500/40 bg-fuchsia-500/10',
+  telegram: 'text-sky-300 border-sky-400/40 bg-sky-400/10',
 };
 
 export function PostComposer({ connections, onClose }: PostComposerProps) {

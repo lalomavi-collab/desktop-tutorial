@@ -1,6 +1,6 @@
 import { Plus, Heart, Repeat2, MessageCircle, Clock, CheckCircle2, FileText, AlertCircle } from 'lucide-react';
 import type { Post, Platform } from '../types';
-import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
+import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon } from './SocialIcons';
 
 interface PostListProps {
   posts: Post[];
@@ -13,6 +13,7 @@ const platformIcons: Record<Platform, React.ReactNode> = {
   linkedin: <LinkedinIcon size={12} className="text-blue-400" />,
   facebook: <FacebookIcon size={12} className="text-blue-500" />,
   tiktok: <TikTokIcon size={12} className="text-fuchsia-400" />,
+  telegram: <TelegramIcon size={12} className="text-sky-300" />,
 };
 
 const statusConfig = {

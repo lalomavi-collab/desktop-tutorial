@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, Send, Clock, Image, Smile, Hash, CheckCircle2, AlertCircle, Loader2, Zap } from 'lucide-react';
 import type { Platform } from '../types';
 import { platformMeta } from './PlatformAgentCard';
-import { sendToZapier } from '../lib/zapier';
+import { sendToZapier, sendToTelegram } from '../lib/zapier';
 
 interface SinglePlatformComposerProps {
   platform: Platform;
@@ -29,14 +29,19 @@ export function SinglePlatformComposer({ platform, username, onClose }: SinglePl
     setState('sending');
     setErrorMsg('');
 
-    const result = await sendToZapier({
+    const payload = {
       content,
-      platforms: [platform],
-      schedule_mode: scheduleMode,
+      platforms: [platform] as Platform[],
+      schedule_mode: scheduleMode as 'now' | 'scheduled',
       scheduled_at: scheduleMode === 'scheduled' ? `${scheduleDate} ${scheduleTime}` : undefined,
       agent: `${meta.label} Agent`,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Telegram uses its own dedicated webhook
+    const result = platform === 'telegram'
+      ? await sendToTelegram(payload)
+      : await sendToZapier(payload);
 
     if (result.ok) {
       setState('success');

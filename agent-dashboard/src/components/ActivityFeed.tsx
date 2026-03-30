@@ -1,6 +1,6 @@
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import type { ActivityItem, Platform } from '../types';
-import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
+import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon } from './SocialIcons';
 
 interface ActivityFeedProps {
   activities: ActivityItem[];
@@ -12,6 +12,7 @@ const platformIcons: Record<Platform, React.ReactNode> = {
   linkedin: <LinkedinIcon size={12} className="text-blue-400" />,
   facebook: <FacebookIcon size={12} className="text-blue-600" />,
   tiktok: <TikTokIcon size={12} className="text-fuchsia-400" />,
+  telegram: <TelegramIcon size={12} className="text-sky-300" />,
 };
 
 const statusConfig = {

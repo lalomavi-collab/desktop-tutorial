@@ -5,7 +5,7 @@ import {
   Link, Unlink, Zap
 } from 'lucide-react';
 import type { Agent, Platform, PlatformConnection } from '../types';
-import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon } from './SocialIcons';
+import { TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon } from './SocialIcons';
 import { PostComposer } from './PostComposer';
 import { PostList } from './PostList';
 import { mockPosts } from '../data/mockData';
@@ -61,6 +61,14 @@ const platformConfig: Record<Platform, {
     border: 'border-fuchsia-500/30',
     icon: <TikTokIcon size={20} />,
     description: 'וידאו קצר, דואטים',
+  },
+  telegram: {
+    label: 'Telegram',
+    color: 'text-sky-300',
+    bg: 'bg-sky-400/10',
+    border: 'border-sky-400/30',
+    icon: <TelegramIcon size={20} />,
+    description: 'הודעות לבוט וערוצים',
   },
 };
 

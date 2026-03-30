@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type { PlatformAgent, Platform } from '../types';
 import {
-  TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon,
+  TwitterIcon, InstagramIcon, LinkedinIcon, FacebookIcon, TikTokIcon, TelegramIcon,
 } from './SocialIcons';
 import { SinglePlatformComposer } from './SinglePlatformComposer';
 
@@ -78,6 +78,16 @@ export const platformMeta: Record<Platform, {
     glowColor: 'shadow-fuchsia-500/20',
     icon: <TikTokIcon size={14} />,
     iconLg: <TikTokIcon size={22} />,
+  },
+  telegram: {
+    label: 'Telegram',
+    color: 'from-sky-400/20 to-blue-500/10',
+    textColor: 'text-sky-300',
+    bg: 'bg-sky-400/10',
+    border: 'border-sky-400/30',
+    glowColor: 'shadow-sky-400/20',
+    icon: <TelegramIcon size={14} />,
+    iconLg: <TelegramIcon size={22} />,
   },
 };
 

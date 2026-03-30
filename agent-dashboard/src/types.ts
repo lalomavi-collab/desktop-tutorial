@@ -1,6 +1,6 @@
 export type AgentStatus = 'active' | 'idle' | 'paused' | 'error';
 
-export type Platform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'tiktok';
+export type Platform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'tiktok' | 'telegram';
 
 export interface PlatformConnection {
   platform: Platform;

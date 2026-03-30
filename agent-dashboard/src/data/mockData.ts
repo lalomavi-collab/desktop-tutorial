@@ -54,6 +54,15 @@ export const mockAgents: Agent[] = [
         postsTotal: 0,
         scheduledPosts: 0,
       },
+      {
+        platform: 'telegram',
+        status: 'active',
+        connection: { platform: 'telegram', connected: true, username: 'My Brand Bot', followers: 3800, lastSync: 'לפני 7 דקות' },
+        postsToday: 3,
+        postsTotal: 89,
+        lastPost: 'לפני 30 דקות',
+        scheduledPosts: 2,
+      },
     ],
   },
   {
