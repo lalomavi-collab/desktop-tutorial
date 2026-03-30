@@ -11,203 +11,167 @@
             background: #111;
             color: #eee;
             padding: 20px;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        h1 {
-            text-align: center;
-            color: #D4AF37;
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
+        h1 { text-align: center; color: #D4AF37; font-size: 1.4rem; margin-bottom: 6px; }
+        .sub { text-align: center; color: #666; font-size: 0.82rem; margin-bottom: 30px; }
 
-        .subtitle {
-            text-align: center;
-            color: #888;
-            font-size: 0.85rem;
-            margin-bottom: 30px;
-        }
-
-        /* Post Card */
+        /* Post card */
         .post {
             background: #1B1B1B;
             border: 1px solid #333;
             border-radius: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             overflow: hidden;
         }
-
         .post-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            border-bottom: 1px solid #282828;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 18px; border-bottom: 1px solid #282828; flex-wrap: wrap; gap: 8px;
+        }
+        .post-name { font-weight: 600; font-size: 1rem; }
+        .tags { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+        .tag { padding: 2px 9px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; }
+        .t-fb { background: #1877F218; color: #5B9BF7; }
+        .t-tg { background: #0088CC18; color: #29B6F6; }
+        .t-ig { background: #E1306C18; color: #F06292; }
+        .t-li { background: #0A66C218; color: #42A5F5; }
+        .st { padding: 2px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 700; }
+        .st-ok { background: #2E7D3218; color: #66BB6A; }
+        .st-wait { background: #F57C0018; color: #FFB74D; }
+
+        /* Two columns */
+        .cols { display: grid; grid-template-columns: 1fr 1fr; }
+        @media (max-width: 750px) { .cols { grid-template-columns: 1fr; } }
+
+        .col-text { padding: 16px 18px; }
+        .col-img { padding: 16px 18px; border-right: 1px solid #222; background: #0e0e0e; }
+
+        .lbl { font-size: 0.68rem; color: #D4AF37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+        .lbl-gray { font-size: 0.68rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+        .txt {
+            background: #0a0a0a; border: 1px solid #222; border-radius: 8px;
+            padding: 12px; font-size: 0.8rem; line-height: 1.65; color: #bbb;
+            white-space: pre-wrap; max-height: 320px; overflow-y: auto;
+        }
+        .txt.ltr { direction: ltr; text-align: left; }
+        .txt::-webkit-scrollbar { width: 4px; }
+        .txt::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
+
+        .en-block { margin-top: 14px; padding-top: 14px; border-top: 1px dashed #282828; }
+
+        .foot {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 18px; border-top: 1px solid #222; font-size: 0.75rem; color: #555;
         }
 
-        .post-name {
-            font-size: 1rem;
-            font-weight: 600;
+        .divider {
+            color: #D4AF37; font-size: 0.85rem; font-weight: 600;
+            margin: 30px 0 10px; padding-bottom: 5px; border-bottom: 1px solid #333;
         }
 
-        .badges {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
+        /* ===== EMBEDDED IMAGES ===== */
+        .img-wrap {
+            border-radius: 8px; overflow: hidden; border: 1px solid #222;
+            margin-bottom: 10px;
+        }
+        .img-size { text-align: center; font-size: 0.62rem; color: #444; margin-bottom: 14px; }
+
+        /* Scaled-down image cards */
+        .img-card-wide {
+            width: 100%; aspect-ratio: 1200/630;
+            background: linear-gradient(145deg, #1B1B1B 0%, #0A0A0A 60%, #1a0a0f 100%);
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            padding: 5% 6%; overflow: hidden;
+        }
+        .img-card-wide-en {
+            width: 100%; aspect-ratio: 1200/630;
+            background: linear-gradient(145deg, #0A0A0A 0%, #1B1B1B 50%, #0f0a1a 100%);
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            padding: 5% 6%; overflow: hidden;
+        }
+        .img-card-sq {
+            width: 100%; aspect-ratio: 1/1;
+            background: linear-gradient(160deg, #0A0A0A 0%, #1B1B1B 40%, #1a0a0f 100%);
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center; padding: 7% 6%; overflow: hidden;
         }
 
-        .badge {
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 600;
+        /* Image inner elements */
+        .i-bar-top {
+            position: absolute; top: 0; right: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, #D4AF37, #F5E6A3, #D4AF37);
         }
-
-        .b-fb { background: #1877F220; color: #5B9BF7; }
-        .b-tg { background: #0088CC20; color: #29B6F6; }
-        .b-ig { background: #E1306C20; color: #F06292; }
-        .b-li { background: #0A66C220; color: #42A5F5; }
-
-        .status {
-            padding: 3px 12px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 700;
+        .i-bar-bot {
+            position: absolute; bottom: 0; right: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, #800020, #D4AF37);
         }
-        .s-pending { background: #F57C0020; color: #FFB74D; }
-        .s-approved { background: #2E7D3220; color: #66BB6A; }
-        .s-sent { background: #D4AF3720; color: #D4AF37; }
-        .s-failed { background: #C6282820; color: #EF5350; }
-
-        /* Content area */
-        .post-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
+        .i-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #D4AF37, #F5E6A3, #D4AF37);
+            color: #0A0A0A; padding: 2px 10px; border-radius: 10px;
+            font-size: 0.5em; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; margin-bottom: 4%; width: fit-content;
         }
-        @media (max-width: 700px) {
-            .post-content { grid-template-columns: 1fr; }
+        .i-quote {
+            font-size: 1em; font-weight: 300; color: #FFFDD0; line-height: 1.5;
+            margin-bottom: 3%;
         }
-
-        .text-side {
-            padding: 16px 20px;
+        .i-quote strong { color: #D4AF37; font-weight: 600; }
+        .i-line { width: 30px; height: 2px; background: #D4AF37; margin-bottom: 2%; border-radius: 1px; }
+        .i-title { font-size: 1.4em; font-weight: 700; margin-bottom: 1%; }
+        .i-title .gold {
+            background: linear-gradient(135deg, #D4AF37, #F5E6A3, #D4AF37);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .text-label {
-            font-size: 0.7rem;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .i-title .wh { color: #FFFDD0; }
+        .i-sub { font-size: 0.65em; color: #708090; line-height: 1.5; }
+        .i-hash { font-size: 0.5em; color: #D4AF37; position: absolute; bottom: 5%; right: 6%; }
+        .i-icon { position: absolute; top: 8%; left: 6%; font-size: 1.8em; }
+        .i-icon-r { position: absolute; top: 8%; right: 6%; font-size: 1.8em; }
+        .i-frame {
+            position: absolute; top: 3%; right: 3%; bottom: 3%; left: 3%;
+            border: 1px solid rgba(212,175,55,0.2); border-radius: 3px; pointer-events: none;
         }
+        .i-checks { display: flex; gap: 12px; margin-top: 2%; flex-wrap: wrap; }
+        .i-checks-v { display: flex; flex-direction: column; gap: 6px; margin-top: 2%; text-align: right; }
+        .i-chk { color: #C0C0C0; font-size: 0.55em; }
+        .i-chk span { color: #D4AF37; }
 
-        .text-box {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 0.82rem;
-            line-height: 1.7;
-            color: #ccc;
-            white-space: pre-wrap;
-            max-height: 350px;
-            overflow-y: auto;
-        }
-        .text-box.ltr { direction: ltr; text-align: left; }
-        .text-box::-webkit-scrollbar { width: 4px; }
-        .text-box::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
-
-        .image-side {
-            padding: 16px 20px;
-            border-right: 1px solid #222;
-            background: #0e0e0e;
-        }
-
-        .img-label {
-            font-size: 0.7rem;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .img-frame {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #222;
-        }
-
-        .img-frame iframe {
-            width: 100%;
-            border: none;
-            display: block;
-        }
-
-        .img-size {
-            text-align: center;
-            font-size: 0.65rem;
-            color: #555;
-            margin-top: 4px;
-        }
-
-        /* Schedule info */
-        .post-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-top: 1px solid #222;
-            font-size: 0.78rem;
-            color: #666;
-        }
-
-        /* Section divider */
-        .section {
-            color: #D4AF37;
+        /* Empty image placeholder */
+        .no-img {
+            padding: 40px 16px; text-align: center; color: #444;
             font-size: 0.85rem;
-            font-weight: 600;
-            margin: 32px 0 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #333;
         }
-
-        /* LinkedIn separate card */
-        .en-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px dashed #333;
-        }
+        .no-img-icon { font-size: 1.8rem; margin-bottom: 6px; }
     </style>
 </head>
 <body>
 
-    <h1>אישור פוסטים לפני פרסום</h1>
-    <p class="subtitle">בדוק טקסט + תמונה לכל פלטפורמה. אשר כשמוכן.</p>
+<h1>אישור פוסטים לפני פרסום</h1>
+<p class="sub">פתח קובץ זה בדפדפן. בדוק טקסט + תמונה. תן אישור כשמוכן.</p>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">001 - האלגוריסט המשפטי</div>
-    <!-- ═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="divider">001 - האלגוריסט המשפטי</div>
+<!-- ══════════════════════════════════════════════ -->
 
-    <!-- Hebrew version (Facebook / Telegram / Instagram) -->
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">האלגוריסט המשפטי</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-ig">Instagram</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
+<!-- HE version (Facebook / Telegram / Instagram) -->
+<div class="post">
+    <div class="post-top">
+        <span class="post-name">האלגוריסט המשפטי</span>
+        <div class="tags">
+            <span class="tag t-fb">Facebook</span>
+            <span class="tag t-tg">Telegram</span>
+            <span class="tag t-ig">Instagram</span>
+            <span class="st st-ok">APPROVED</span>
         </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️
+    </div>
+    <div class="cols">
+        <div class="col-text">
+            <div class="lbl">טקסט בעברית</div>
+            <div class="txt">הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️
 
 "הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה"
 
@@ -227,44 +191,66 @@
 ✅ קיימת אחריות מלאה על התוצאה.
 
 #LegalTech #AIandLaw #האלגוריסטהמשפטי #עורכידין</div>
-            </div>
-            <div class="image-side">
-                <div class="img-label">תמונה רחבה (1200x630)</div>
-                <div class="img-frame">
-                    <iframe src="images/001_legal_algorist_he.html" height="280" scrolling="no"></iframe>
-                </div>
-                <div class="img-size">Facebook / Telegram</div>
-
-                <div style="margin-top:16px;">
-                    <div class="img-label">תמונה מרובעת (1080x1080)</div>
-                    <div class="img-frame">
-                        <iframe src="images/001_legal_algorist_ig.html" height="280" scrolling="no"></iframe>
-                    </div>
-                    <div class="img-size">Instagram</div>
-                </div>
-            </div>
         </div>
-        <div class="post-bottom">
-            <span>שבת, 5 באפריל 2026 | 20:00</span>
-            <span>posts/001_legal_algorist_he.md</span>
+        <div class="col-img">
+            <!-- Facebook/Telegram image (1200x630) embedded -->
+            <div class="lbl-gray">תמונה רחבה — Facebook / Telegram</div>
+            <div class="img-wrap">
+                <div class="img-card-wide">
+                    <div class="i-bar-top"></div>
+                    <div class="i-bar-bot"></div>
+                    <div class="i-icon">⚖️</div>
+                    <div class="i-badge">THE LEGAL ALGORIST | 2026</div>
+                    <div class="i-quote">הסכנה אינה שהמכונה תחשוב כאדם,<br>אלא שבן האדם יתחיל <strong>לחשוב כמו מכונה</strong></div>
+                    <div class="i-line"></div>
+                    <div class="i-title"><span class="gold">הָאַלְגּוֹרִיסְט</span> <span class="wh">הַמִּשְׁפָּטִי</span></div>
+                    <div class="i-sub">המקצוע החדש שכל משרד עו"ד, גוף ציבורי וחברת נדל"ן חייבים להכיר</div>
+                    <div class="i-hash">#LegalTech #AutomationBias #AI</div>
+                </div>
+            </div>
+            <div class="img-size">1200 x 630 px</div>
+
+            <!-- Instagram image (1080x1080) embedded -->
+            <div class="lbl-gray">תמונה מרובעת — Instagram</div>
+            <div class="img-wrap">
+                <div class="img-card-sq">
+                    <div class="i-frame"></div>
+                    <div style="font-size:2em; margin-bottom:4%;">⚖️</div>
+                    <div class="i-badge">THE LEGAL ALGORIST</div>
+                    <div class="i-quote">הסכנה אינה שהמכונה תחשוב כאדם,<br>אלא שבן האדם יתחיל<br><strong>לחשוב כמו מכונה</strong></div>
+                    <div style="width:40px; height:2px; background:linear-gradient(90deg,#800020,#D4AF37); margin:0 auto 3%; border-radius:1px;"></div>
+                    <div class="i-title"><span class="gold">הָאַלְגּוֹרִיסְט</span><br><span class="wh">הַמִּשְׁפָּטִי</span></div>
+                    <div class="i-sub">המקצוע החדש שכל משרד עו"ד,<br>גוף ציבורי וחברת נדל"ן חייבים להכיר</div>
+                    <div class="i-checks-v" style="text-align:center;">
+                        <div class="i-chk"><span>✓</span> לוגיקה משפטית גוברת על סטטיסטיקה</div>
+                        <div class="i-chk"><span>✓</span> ציות ואתיקה מוטמעים ב-Output</div>
+                        <div class="i-chk"><span>✓</span> אחריות מלאה על התוצאה</div>
+                    </div>
+                    <div class="i-hash" style="right:auto; left:50%; transform:translateX(-50%);">#LegalTech #AutomationBias #האלגוריסטהמשפטי</div>
+                </div>
+            </div>
+            <div class="img-size">1080 x 1080 px</div>
         </div>
     </div>
+    <div class="foot">
+        <span>שבת, 5 באפריל 2026 | 20:00</span>
+        <span>posts/001_legal_algorist_he.md</span>
+    </div>
+</div>
 
-    <!-- English version (LinkedIn) -->
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">The Legal Algorist</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
+<!-- EN version (LinkedIn) -->
+<div class="post">
+    <div class="post-top">
+        <span class="post-name">The Legal Algorist</span>
+        <div class="tags">
+            <span class="tag t-li">LinkedIn</span>
+            <span class="st st-ok">APPROVED</span>
         </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">English Text</div>
-                <div class="text-box ltr">The Legal Algorist: Are You Ready for the New Profession of 2026? ⚖️
+    </div>
+    <div class="cols">
+        <div class="col-text">
+            <div class="lbl">English Text</div>
+            <div class="txt ltr">The Legal Algorist: Are You Ready for the New Profession of 2026? ⚖️
 
 "The danger is not that the machine will think like a human, but that humans will start thinking like machines."
 
@@ -285,42 +271,55 @@ A new profession is emerging worldwide: The Legal Algorist.
 The real expert dares to say: "I don't know" — and that is exactly what makes them the gatekeeper.
 
 #LegalTech #AIandLaw #TheLegalAlgorist #LawyersOfLinkedIn #FutureOfLaw</div>
-            </div>
-            <div class="image-side">
-                <div class="img-label">English Image (1200x630)</div>
-                <div class="img-frame">
-                    <iframe src="images/001_legal_algorist_en.html" height="280" scrolling="no"></iframe>
-                </div>
-                <div class="img-size">LinkedIn</div>
-            </div>
         </div>
-        <div class="post-bottom">
-            <span>Saturday, April 5, 2026 | 20:00 IST</span>
-            <span>posts/001_legal_algorist_en.md</span>
+        <div class="col-img">
+            <div class="lbl-gray">LinkedIn Image (1200x630)</div>
+            <div class="img-wrap">
+                <div class="img-card-wide-en" dir="ltr" style="text-align:left;">
+                    <div class="i-bar-top"></div>
+                    <div style="position:absolute;bottom:0;right:0;left:0;height:3px;background:linear-gradient(90deg,#4682B4,#D4AF37);"></div>
+                    <div class="i-icon-r">⚖️</div>
+                    <div class="i-badge">THE LEGAL ALGORIST | 2026</div>
+                    <div class="i-quote" style="font-style:italic;">"The danger is not that the machine will think like a human,<br>but that humans will start <strong>thinking like machines.</strong>"</div>
+                    <div class="i-line"></div>
+                    <div class="i-title"><span class="gold">The Legal</span> <span class="wh">Algorist</span></div>
+                    <div class="i-sub">The new profession every law firm, public institution,<br>and real estate company must know about.</div>
+                    <div class="i-checks">
+                        <div class="i-chk"><span>✓</span> Legal logic over statistics</div>
+                        <div class="i-chk"><span>✓</span> Compliance embedded</div>
+                        <div class="i-chk"><span>✓</span> Full accountability</div>
+                    </div>
+                    <div class="i-hash">#LegalTech #AIandLaw #FutureOfLaw</div>
+                </div>
+            </div>
+            <div class="img-size">1200 x 630 px</div>
         </div>
     </div>
+    <div class="foot">
+        <span>Saturday, April 5, 2026 | 20:00 IST</span>
+        <span>posts/001_legal_algorist_en.md</span>
+    </div>
+</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">002 - AI ויצירתיות</div>
-    <!-- ═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="divider">002 - AI ויצירתיות</div>
+<!-- ══════════════════════════════════════════════ -->
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">AI ויצירתיות</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-ig">Instagram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
+<div class="post">
+    <div class="post-top">
+        <span class="post-name">AI ויצירתיות</span>
+        <div class="tags">
+            <span class="tag t-fb">Facebook</span>
+            <span class="tag t-tg">Telegram</span>
+            <span class="tag t-ig">Instagram</span>
+            <span class="tag t-li">LinkedIn</span>
+            <span class="st st-ok">APPROVED</span>
         </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">🎨 האם AI יכול להיות יצירתי?
+    </div>
+    <div class="cols">
+        <div class="col-text">
+            <div class="lbl">טקסט בעברית</div>
+            <div class="txt">🎨 האם AI יכול להיות יצירתי?
 
 כשמוזיקה מתולדת ע"י אלגוריתם, ציורים מוכרים במיליונים,
 ורומנים נכתבים ללא יד אנושית — עולה השאלה:
@@ -331,9 +330,9 @@ AI מייצר — אנחנו יוצרים משמעות.
 
 #AI #יצירתיות #עתיד #בינהמלאכותית #אמנות</div>
 
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">Can AI Be Truly Creative? 🎨
+            <div class="en-block">
+                <div class="lbl">LinkedIn (English)</div>
+                <div class="txt ltr">Can AI Be Truly Creative? 🎨
 
 AI-generated music sells for millions. AI art wins competitions.
 AI writes novels. What remains uniquely human?
@@ -344,41 +343,39 @@ AI produces — humans create meaning.
 In the AI era, our competitive edge is our humanity.
 
 #AI #Creativity #FutureOfWork #ArtificialIntelligence #HumanTouch</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
             </div>
         </div>
-        <div class="post-bottom">
-            <span>שבת, 11 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
+        <div class="col-img">
+            <div class="no-img">
+                <div class="no-img-icon">🖼️</div>
+                תמונות ייווצרו לאחר שתאשר את הטקסט
+            </div>
         </div>
     </div>
+    <div class="foot">
+        <span>שבת, 11 באפריל 2026 | 19:00</span>
+        <span>טרם נוצר קובץ</span>
+    </div>
+</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">003 - AI לעסקים קטנים</div>
-    <!-- ═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="divider">003 - AI לעסקים קטנים</div>
+<!-- ══════════════════════════════════════════════ -->
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">AI לעסקים קטנים</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
+<div class="post">
+    <div class="post-top">
+        <span class="post-name">AI לעסקים קטנים</span>
+        <div class="tags">
+            <span class="tag t-fb">Facebook</span>
+            <span class="tag t-tg">Telegram</span>
+            <span class="tag t-li">LinkedIn</span>
+            <span class="st st-ok">APPROVED</span>
         </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">💼 AI לא רק לחברות ענק — גם לעסק שלך!
+    </div>
+    <div class="cols">
+        <div class="col-text">
+            <div class="lbl">טקסט בעברית</div>
+            <div class="txt">💼 AI לא רק לחברות ענק — גם לעסק שלך!
 
 5 כלי AI שכל בעל עסק קטן צריך ב-2025:
 1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר
@@ -391,9 +388,9 @@ In the AI era, our competitive edge is our humanity.
 
 #AI #עסקיםקטנים #יזמות #טכנולוגיה</div>
 
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">AI Isn't Just for Big Tech — It's for YOUR Business 💼
+            <div class="en-block">
+                <div class="lbl">LinkedIn (English)</div>
+                <div class="txt ltr">AI Isn't Just for Big Tech — It's for YOUR Business 💼
 
 5 AI tools every small business owner needs in 2025:
 1️⃣ ChatGPT — Content, emails, proposals
@@ -405,41 +402,39 @@ In the AI era, our competitive edge is our humanity.
 Which tool has made the biggest impact on your business? 👇
 
 #AI #SmallBusiness #Entrepreneurship #ProductivityTools</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
             </div>
         </div>
-        <div class="post-bottom">
-            <span>שבת, 18 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
+        <div class="col-img">
+            <div class="no-img">
+                <div class="no-img-icon">🖼️</div>
+                תמונות ייווצרו לאחר שתאשר את הטקסט
+            </div>
         </div>
     </div>
+    <div class="foot">
+        <span>שבת, 18 באפריל 2026 | 19:00</span>
+        <span>טרם נוצר קובץ</span>
+    </div>
+</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">004 - עתיד העבודה עם AI</div>
-    <!-- ═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="divider">004 - עתיד העבודה עם AI</div>
+<!-- ══════════════════════════════════════════════ -->
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">עתיד העבודה עם AI</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
+<div class="post">
+    <div class="post-top">
+        <span class="post-name">עתיד העבודה עם AI</span>
+        <div class="tags">
+            <span class="tag t-fb">Facebook</span>
+            <span class="tag t-tg">Telegram</span>
+            <span class="tag t-li">LinkedIn</span>
+            <span class="st st-ok">APPROVED</span>
         </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום
+    </div>
+    <div class="cols">
+        <div class="col-text">
+            <div class="lbl">טקסט בעברית</div>
+            <div class="txt">🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום
 
 מחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.
 
@@ -453,9 +448,9 @@ Which tool has made the biggest impact on your business? 👇
 
 #עתידהעבודה #AI #כישורים #קריירה #בינהמלאכותית</div>
 
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">The Future of Work in 2030 — What We Already Know 🚀
+            <div class="en-block">
+                <div class="lbl">LinkedIn (English)</div>
+                <div class="txt ltr">The Future of Work in 2030 — What We Already Know 🚀
 
 McKinsey research: 30% of jobs in 2030 don't exist yet.
 
@@ -468,20 +463,20 @@ The skills that will keep you relevant:
 AI is the tool — you are the manager.
 
 #FutureOfWork #AI #Skills #Career #ArtificialIntelligence</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
             </div>
         </div>
-        <div class="post-bottom">
-            <span>שבת, 25 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
+        <div class="col-img">
+            <div class="no-img">
+                <div class="no-img-icon">🖼️</div>
+                תמונות ייווצרו לאחר שתאשר את הטקסט
+            </div>
         </div>
     </div>
+    <div class="foot">
+        <span>שבת, 25 באפריל 2026 | 19:00</span>
+        <span>טרם נוצר קובץ</span>
+    </div>
+</div>
 
 </body>
 </html>
