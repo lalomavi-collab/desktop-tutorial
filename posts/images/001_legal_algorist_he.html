@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, height=630">
+    <title>Post Image - Legal Algorist HE</title>
+    <style>
+        /* 1200x630 - Facebook/LinkedIn optimal */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(145deg, #1B1B1B 0%, #0A0A0A 60%, #1a0a0f 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 80px;
+            overflow: hidden;
+        }
+
+        /* Gold corner accents */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.15), transparent 70%);
+            pointer-events: none;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle at bottom left, rgba(128, 0, 32, 0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Top bar */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+        }
+
+        /* Bottom bar */
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #800020 0%, #D4AF37 100%);
+        }
+
+        /* Scale icon */
+        .icon-area {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            font-size: 3.5rem;
+            opacity: 0.9;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            color: #0A0A0A;
+            padding: 6px 22px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        /* Main quote */
+        .quote {
+            font-size: 2.1rem;
+            font-weight: 300;
+            color: #FFFDD0;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            max-width: 900px;
+            position: relative;
+        }
+
+        .quote::before {
+            content: '"';
+            position: absolute;
+            right: -40px;
+            top: -20px;
+            font-size: 6rem;
+            color: rgba(212, 175, 55, 0.2);
+            font-family: Georgia, serif;
+        }
+
+        .quote strong {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 1.3rem;
+            color: #708090;
+            margin-bottom: 30px;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        /* Title */
+        .title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .title .gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title .white {
+            color: #FFFDD0;
+        }
+
+        /* Bottom info */
+        .bottom-info {
+            position: absolute;
+            bottom: 30px;
+            right: 80px;
+            left: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .author {
+            color: #708090;
+            font-size: 0.95rem;
+        }
+
+        .hashtags {
+            color: #D4AF37;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Decorative elements */
+        .line-accent {
+            width: 60px;
+            height: 3px;
+            background: #D4AF37;
+            margin-bottom: 20px;
+            border-radius: 2px;
+        }
+
+        .grid-dots {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            display: grid;
+            grid-template-columns: repeat(5, 8px);
+            gap: 12px;
+            opacity: 0.15;
+        }
+
+        .grid-dots .dot {
+            width: 8px;
+            height: 8px;
+            background: #D4AF37;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top-bar"></div>
+        <div class="bottom-bar"></div>
+
+        <div class="icon-area">⚖️</div>
+
+        <div class="badge">THE LEGAL ALGORIST | 2026</div>
+
+        <div class="quote">
+            הסכנה אינה שהמכונה תחשוב כאדם,<br>
+            אלא שבן האדם יתחיל <strong>לחשוב כמו מכונה</strong>
+        </div>
+
+        <div class="line-accent"></div>
+
+        <div class="title">
+            <span class="gold">הָאַלְגּוֹרִיסְט</span>
+            <span class="white">הַמִּשְׁפָּטִי</span>
+        </div>
+
+        <div class="subtitle">
+            המקצוע החדש שכל משרד עו"ד, גוף ציבורי וחברת נדל"ן חייבים להכיר
+        </div>
+
+        <div class="bottom-info">
+            <div class="hashtags">#LegalTech #AutomationBias #AI</div>
+            <div class="author">⬛ Automation Bias Research | MIT Moral Machine</div>
+        </div>
+    </div>
+</body>
+</html>
