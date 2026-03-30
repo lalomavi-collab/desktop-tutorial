@@ -434,18 +434,26 @@ export function PlatformAgentDetail({ agent, config: initialConfig, onClose, onS
 /** Build a default config for a platform (used the first time) */
 export function defaultConfig(platform: Platform): PlatformAgentConfig {
   const defaults: Record<Platform, Partial<PlatformAgentConfig>> = {
-    twitter:   { contentStyle: 'casual',       maxPostsPerDay: 3, hashtagStyle: 'few',  emojiStyle: 'minimal' },
-    instagram: { contentStyle: 'inspirational',maxPostsPerDay: 2, hashtagStyle: 'many', emojiStyle: 'rich'    },
-    linkedin:  { contentStyle: 'professional', maxPostsPerDay: 1, hashtagStyle: 'few',  emojiStyle: 'none'    },
-    facebook:  { contentStyle: 'promotional',  maxPostsPerDay: 2, hashtagStyle: 'few',  emojiStyle: 'minimal' },
-    tiktok:    { contentStyle: 'casual',        maxPostsPerDay: 1, hashtagStyle: 'many', emojiStyle: 'rich'    },
-    telegram:  { contentStyle: 'news',          maxPostsPerDay: 5, hashtagStyle: 'none', emojiStyle: 'minimal' },
+    twitter:   { contentStyle: 'casual',        maxPostsPerDay: 3, hashtagStyle: 'few',  emojiStyle: 'minimal' },
+    instagram: { contentStyle: 'inspirational', maxPostsPerDay: 2, hashtagStyle: 'many', emojiStyle: 'rich'    },
+    linkedin:  { contentStyle: 'professional',  maxPostsPerDay: 1, hashtagStyle: 'few',  emojiStyle: 'none'    },
+    facebook:  { contentStyle: 'promotional',   maxPostsPerDay: 2, hashtagStyle: 'few',  emojiStyle: 'minimal' },
+    tiktok:    { contentStyle: 'casual',         maxPostsPerDay: 1, hashtagStyle: 'many', emojiStyle: 'rich'    },
+    telegram:  { contentStyle: 'news',           maxPostsPerDay: 5, hashtagStyle: 'none', emojiStyle: 'minimal' },
   };
   return {
     platform,
     webhookUrl: platform === 'telegram' ? TELEGRAM_WEBHOOK : ((PLATFORM_WEBHOOKS[platform] as string | undefined) ?? ''),
     contentStyle: 'casual',
-    scheduledTimes: [],
+    /** Every Saturday at 19:00 Israel time — fixed weekly cadence */
+    scheduledTimes: [{
+      id: `default-sat-${platform}`,
+      dayOfWeek: 6, // שבת
+      hour: 19,
+      minute: 0,
+      active: true,
+      label: 'שבת 19:00 — פוסט שבועי',
+    }],
     autoPost: false,
     maxPostsPerDay: 1,
     hashtagStyle: 'few',

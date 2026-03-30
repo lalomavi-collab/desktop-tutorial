@@ -8,6 +8,21 @@ import type { Platform, QueuedPost } from '../types';
 import { platformMeta } from './PlatformAgentCard';
 import { sendToZapier, sendToTelegram } from '../lib/zapier';
 
+/** Returns "YYYY-MM-DDT19:00:00" for the next (or current) Saturday at 19:00 */
+function nextSaturdayAt19(): string {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun … 6=Sat
+  let daysUntil = (6 - day + 7) % 7;
+  // If today IS Saturday but 19:00 already passed, jump to next week
+  if (daysUntil === 0 && now.getHours() >= 19) daysUntil = 7;
+  const sat = new Date(now);
+  sat.setDate(now.getDate() + daysUntil);
+  const yyyy = sat.getFullYear();
+  const mm   = String(sat.getMonth() + 1).padStart(2, '0');
+  const dd   = String(sat.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}T19:00:00`;
+}
+
 interface PostApprovalQueueProps {
   posts: QueuedPost[];
   onUpdate: (posts: QueuedPost[]) => void;
@@ -43,6 +58,7 @@ export const SEED_POSTS: QueuedPost[] = [
     platforms: ['telegram', 'linkedin', 'facebook'],
     status: 'pending',
     createdAt: new Date().toISOString(),
+    scheduledFor: nextSaturdayAt19(),
     createdBy: 'עידית — מנהלת השיווק',
   },
 ];
@@ -67,7 +83,8 @@ function NewPostForm({ connectedPlatforms, onAdd, onCancel }: NewPostFormProps) 
   const [topic, setTopic] = useState('');
   const [content, setContent] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>(connectedPlatforms);
-  const [scheduledFor, setScheduledFor] = useState('');
+  // Default to next Saturday date + 19:00
+  const [scheduledFor, setScheduledFor] = useState(() => nextSaturdayAt19().slice(0, 10));
   const [schedTime, setSchedTime] = useState('19:00');
   const [linkedinEn, setLinkedinEn] = useState('');
 
@@ -222,12 +239,23 @@ function PostCard({ post, onApprove, onReject, onSend, onDelete, sending }: Post
             </div>
             <p className="text-gray-600 text-xs mt-0.5">
               {post.createdBy} · {new Date(post.createdAt).toLocaleDateString('he-IL')}
-              {post.scheduledFor && (
-                <span className="text-orange-400 mr-2">
-                  · 🕐 {new Date(post.scheduledFor).toLocaleString('he-IL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                </span>
-              )}
             </p>
+            {post.scheduledFor && (() => {
+              const d = new Date(post.scheduledFor);
+              const isSat = d.getDay() === 6;
+              return (
+                <div className={`inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${
+                  isSat
+                    ? 'text-purple-300 bg-purple-500/10 border-purple-500/20'
+                    : 'text-orange-300 bg-orange-500/10 border-orange-500/20'
+                }`}>
+                  <Clock size={10} />
+                  {isSat ? 'שבת ' : ''}
+                  {d.toLocaleString('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  {isSat && <span className="opacity-70">— שעון ישראל</span>}
+                </div>
+              );
+            })()}
           </div>
         </div>
 
