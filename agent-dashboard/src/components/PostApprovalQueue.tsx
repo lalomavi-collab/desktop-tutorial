@@ -57,9 +57,8 @@ export const SEED_POSTS: QueuedPost[] = [
         '#AI #LegalTech #ArtificialIntelligence #FutureOfWork #Law',
     },
     platforms: ['telegram', 'linkedin', 'facebook'],
-    status: 'pending',
+    status: 'approved',
     createdAt: new Date().toISOString(),
-    scheduledFor: nextSaturdayAt19(),
     createdBy: 'עידית — מנהלת השיווק',
   },
 
