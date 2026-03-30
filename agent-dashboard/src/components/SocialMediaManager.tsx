@@ -15,7 +15,8 @@ import type { ScheduleSettings } from './ScheduleConfig';
 import { sendToZapier } from '../lib/zapier';
 import { mockPosts } from '../data/mockData';
 import { PlatformAgentDetail, defaultConfig } from './PlatformAgentDetail';
-import type { PlatformAgentConfig } from '../types';
+import { PostApprovalQueue, SEED_POSTS } from './PostApprovalQueue';
+import type { PlatformAgentConfig, QueuedPost } from '../types';
 
 interface SocialMediaManagerProps {
   agent: Agent;
@@ -28,12 +29,13 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
   const [syncing, setSyncing] = useState<Platform | null>(null);
   const [connecting, setConnecting] = useState<Platform | null>(null);
   const [showBroadcast, setShowBroadcast] = useState(false);
-  const [activeTab, setActiveTab] = useState<'agents' | 'calendar' | 'posts' | 'analytics'>('agents');
+  const [activeTab, setActiveTab] = useState<'agents' | 'approval' | 'calendar' | 'posts' | 'analytics'>('agents');
   const [orgExpanded, setOrgExpanded] = useState(true);
   const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings | null>(null);
   const [calendarPosts, setCalendarPosts] = useState<MotzeiShabbatPost[]>([]);
   const [detailPlatform, setDetailPlatform] = useState<Platform | null>(null);
   const [agentConfigs, setAgentConfigs] = useState<Partial<Record<Platform, PlatformAgentConfig>>>({});
+  const [queuedPosts, setQueuedPosts] = useState<QueuedPost[]>(SEED_POSTS);
 
   const connectedAgents = platformAgents.filter(a => a.connection.connected);
   const totalFollowers = connectedAgents.reduce((s, a) => s + (a.connection.followers ?? 0), 0);
@@ -103,11 +105,14 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
     }
   };
 
+  const pendingCount = queuedPosts.filter(p => p.status === 'pending').length;
+
   const tabs = [
-    { id: 'agents', label: 'סוכנים' },
+    { id: 'agents',   label: 'סוכנים' },
+    { id: 'approval', label: pendingCount > 0 ? `אישורים (${pendingCount})` : 'אישורים' },
     { id: 'calendar', label: 'מוצ"ש' },
-    { id: 'posts', label: 'פוסטים' },
-    { id: 'analytics', label: 'ביצועים' },
+    { id: 'posts',    label: 'פוסטים' },
+    { id: 'analytics',label: 'ביצועים' },
   ] as const;
 
   const connections = platformAgents.map(a => a.connection);
@@ -281,6 +286,14 @@ export function SocialMediaManager({ agent }: SocialMediaManagerProps) {
             ))}
           </div>
         </div>
+      )}
+
+      {activeTab === 'approval' && (
+        <PostApprovalQueue
+          posts={queuedPosts}
+          onUpdate={setQueuedPosts}
+          connectedPlatforms={connectedAgents.map(a => a.platform)}
+        />
       )}
 
       {activeTab === 'calendar' && (

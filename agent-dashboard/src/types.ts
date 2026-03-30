@@ -73,6 +73,20 @@ export interface PlatformAgentConfig {
   maxPostsPerDay: number;
 }
 
+export interface QueuedPost {
+  id: string;
+  topic: string;
+  content: string;
+  platforms: Platform[];
+  platformOverrides?: Partial<Record<Platform, string>>;
+  imageUrl?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'sent' | 'failed';
+  createdAt: string;
+  scheduledFor?: string;
+  sentAt?: string;
+  createdBy: string;
+}
+
 export interface ActivityItem {
   id: string;
   agentId: string;
