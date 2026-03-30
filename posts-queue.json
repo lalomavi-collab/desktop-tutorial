@@ -2,14 +2,35 @@
   {
     "id": "q-law-ai-001",
     "topic": "משפט ו-AI",
-    "status": "approved",
+    "status": "failed",
     "createdAt": "2026-03-30T10:00:00.000Z",
     "createdBy": "עידית — מנהלת השיווק",
-    "platforms": ["telegram", "linkedin", "facebook"],
+    "platforms": [
+      "telegram",
+      "linkedin",
+      "facebook"
+    ],
     "content": "📚 בינה מלאכותית ומשפט — המהפכה כבר כאן\n\nAI משנה את עולם המשפט לבלי הכר:\n✅ ניתוח חוזים תוך שניות\n✅ חיזוי פסקי דין על בסיס פסיקה היסטורית\n✅ סיוע לעורכי דין בחקר משפטי מעמיק\n\nהאם AI יחליף עורכי דין? 🤔\nלא — אבל עורך דין שמשתמש ב-AI ייקח את מקומו של מי שלא.\n\n#AI #משפט #בינהמלאכותית #עתיד_המקצועות",
     "platformOverrides": {
       "linkedin": "AI & Law: The Legal Revolution Is Here 🏛️\n\nArtificial Intelligence is fundamentally reshaping the legal profession:\n✅ Contract analysis in seconds\n✅ Case outcome prediction based on historical precedents\n✅ Automated legal research at scale\n\nThe question isn't whether AI will impact law —\nit's whether legal professionals will lead this transformation or follow it.\n\nThe future belongs to those who adapt. ⚖️\n\n#AI #LegalTech #ArtificialIntelligence #FutureOfWork #Law"
-    }
+    },
+    "results": [
+      {
+        "platform": "telegram",
+        "ok": false,
+        "error": "HTTP 404"
+      },
+      {
+        "platform": "linkedin",
+        "ok": false,
+        "error": "HTTP 404"
+      },
+      {
+        "platform": "facebook",
+        "ok": false,
+        "error": "HTTP 404"
+      }
+    ]
   },
   {
     "id": "q-ai-creativity-002",
@@ -18,7 +39,12 @@
     "createdAt": "2026-03-30T10:00:00.000Z",
     "scheduledFor": "2026-04-11T19:00:00",
     "createdBy": "עידית — מנהלת השיווק",
-    "platforms": ["telegram", "linkedin", "facebook", "instagram"],
+    "platforms": [
+      "telegram",
+      "linkedin",
+      "facebook",
+      "instagram"
+    ],
     "content": "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #אמנות",
     "platformOverrides": {
       "linkedin": "Can AI Be Truly Creative? 🎨\n\nAI-generated music sells for millions. AI art wins competitions.\nAI writes novels. What remains uniquely human?\n\nThe answer: intention, emotion, and the story behind the work.\nAI produces — humans create meaning.\n\nIn the AI era, our competitive edge is our humanity.\n\n#AI #Creativity #FutureOfWork #ArtificialIntelligence #HumanTouch"
@@ -31,7 +57,12 @@
     "createdAt": "2026-03-30T10:00:00.000Z",
     "scheduledFor": "2026-04-18T19:00:00",
     "createdBy": "עידית — מנהלת השיווק",
-    "platforms": ["telegram", "linkedin", "facebook", "twitter"],
+    "platforms": [
+      "telegram",
+      "linkedin",
+      "facebook",
+      "twitter"
+    ],
     "content": "💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n5 כלי AI שכל בעל עסק קטן צריך ב-2025:\n1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n2️⃣ Canva AI — עיצוב מהיר ומקצועי\n3️⃣ Zapier AI — אוטומציה של תהליכים\n4️⃣ Notion AI — ניהול ידע ופגישות\n5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\nמה הכלי שהכי שינה את העסק שלך? 👇\n\n#AI #עסקיםקטנים #יזמות #טכנולוגיה",
     "platformOverrides": {
       "linkedin": "AI Isn't Just for Big Tech — It's for YOUR Business 💼\n\n5 AI tools every small business owner needs in 2025:\n1️⃣ ChatGPT — Content, emails, proposals\n2️⃣ Canva AI — Fast, professional design\n3️⃣ Zapier AI — Workflow automation\n4️⃣ Notion AI — Knowledge & meeting management\n5️⃣ Claude — Research, analysis, strategy\n\nWhich tool has made the biggest impact on your business? 👇\n\n#AI #SmallBusiness #Entrepreneurship #ProductivityTools"
@@ -44,7 +75,11 @@
     "createdAt": "2026-03-30T10:00:00.000Z",
     "scheduledFor": "2026-04-25T19:00:00",
     "createdBy": "עידית — מנהלת השיווק",
-    "platforms": ["telegram", "linkedin", "facebook"],
+    "platforms": [
+      "telegram",
+      "linkedin",
+      "facebook"
+    ],
     "content": "🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\nמחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\nהכישורים שישמרו עליך רלוונטי:\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ יכולת לעבוד עם AI (לא נגדו)\n✅ יצירתיות ופתרון בעיות מורכבות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n#עתידהעבודה #AI #כישורים #קריירה #בינהמלאכותית",
     "platformOverrides": {
       "linkedin": "The Future of Work in 2030 — What We Already Know 🚀\n\nMcKinsey research: 30% of jobs in 2030 don't exist yet.\n\nThe skills that will keep you relevant:\n✅ Critical thinking\n✅ Emotional intelligence\n✅ Working WITH AI (not against it)\n✅ Creativity and complex problem-solving\n\nAI is the tool — you are the manager.\n\n#FutureOfWork #AI #Skills #Career #ArtificialIntelligence"
