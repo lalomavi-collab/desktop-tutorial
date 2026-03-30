@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, height=630">
+    <title>Post Image - Legal Algorist EN</title>
+    <style>
+        /* 1200x630 - LinkedIn optimal */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(145deg, #0A0A0A 0%, #1B1B1B 50%, #0f0a1a 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 80px;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.12), transparent 70%);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle at bottom right, rgba(70, 130, 180, 0.08), transparent 70%);
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+        }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0; right: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4682B4 0%, #D4AF37 100%);
+        }
+
+        .icon-area {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            font-size: 3.5rem;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            color: #0A0A0A;
+            padding: 6px 22px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            width: fit-content;
+        }
+
+        .quote {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #FFFDD0;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            max-width: 950px;
+            font-style: italic;
+        }
+
+        .quote strong {
+            color: #D4AF37;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .line-accent {
+            width: 60px;
+            height: 3px;
+            background: #D4AF37;
+            margin-bottom: 22px;
+            border-radius: 2px;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .title .gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title .white {
+            color: #FFFDD0;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #708090;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 30px;
+            right: 80px;
+            left: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .author {
+            color: #708090;
+            font-size: 0.9rem;
+        }
+
+        .hashtags {
+            color: #D4AF37;
+            font-size: 0.85rem;
+        }
+
+        .checks {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .check-item {
+            color: #C0C0C0;
+            font-size: 0.95rem;
+        }
+
+        .check-item span {
+            color: #D4AF37;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top-bar"></div>
+        <div class="bottom-bar"></div>
+
+        <div class="icon-area">⚖️</div>
+
+        <div class="badge">THE LEGAL ALGORIST | 2026</div>
+
+        <div class="quote">
+            "The danger is not that the machine will think like a human,<br>
+            but that humans will start <strong>thinking like machines.</strong>"
+        </div>
+
+        <div class="line-accent"></div>
+
+        <div class="title">
+            <span class="gold">The Legal</span>
+            <span class="white">Algorist</span>
+        </div>
+
+        <div class="subtitle">
+            The new profession every law firm, public institution,<br>
+            and real estate company must know about.
+        </div>
+
+        <div class="checks">
+            <div class="check-item"><span>&#10003;</span> Legal logic over statistics</div>
+            <div class="check-item"><span>&#10003;</span> Compliance embedded</div>
+            <div class="check-item"><span>&#10003;</span> Full accountability</div>
+        </div>
+
+        <div class="bottom-info">
+            <div class="author">Based on MIT Moral Machine Study (Nature) | Automation Bias Research</div>
+            <div class="hashtags">#LegalTech #AIandLaw #FutureOfLaw</div>
+        </div>
+    </div>
+</body>
+</html>

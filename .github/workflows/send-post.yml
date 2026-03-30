@@ -1,0 +1,65 @@
+name: "\U0001F4E2 Send Social Media Post"
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to post to"
+        required: true
+        type: choice
+        options:
+          - facebook
+          - telegram
+          - linkedin
+          - instagram
+          - all
+      message:
+        description: "The post content"
+        required: true
+        type: string
+
+jobs:
+  send-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "\U0001F4CB Post Details"
+        run: |
+          echo "Platform: ${{ inputs.platform }}"
+          echo "Message: ${{ inputs.message }}"
+
+      - name: "\U0001F4E4 Send to Facebook"
+        if: inputs.platform == 'facebook' || inputs.platform == 'all'
+        run: |
+          curl -s -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
+          echo "Facebook: SENT"
+
+      - name: "\U0001F4E4 Send to Telegram"
+        if: inputs.platform == 'telegram' || inputs.platform == 'all'
+        run: |
+          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
+          echo "Telegram: SENT"
+
+      - name: "\U0001F4E4 Send to LinkedIn"
+        if: inputs.platform == 'linkedin' || inputs.platform == 'all'
+        run: |
+          curl -s -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
+          echo "LinkedIn: SENT"
+
+      - name: "\U0001F4E4 Send to Instagram"
+        if: inputs.platform == 'instagram' || inputs.platform == 'all'
+        run: |
+          curl -s -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}"
+          echo "Instagram: SENT"
+
+      - name: "\u2705 Summary"
+        run: |
+          echo "Post sent successfully to: ${{ inputs.platform }}"
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
