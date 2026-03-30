@@ -1,26 +1,17 @@
 import type { Platform } from '../types';
 
 /**
- * Per-platform Zapier webhook endpoints.
- * Each platform has its own Zap that receives the payload and publishes.
+ * Per-platform Zapier webhook endpoints — verified & active
  */
 export const PLATFORM_WEBHOOKS: Partial<Record<Platform, string>> = {
-  // LinkedIn Posts to Business Account
-  linkedin: 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/',
-  // Facebook Posts to Facebook Page  (URL TBD — add when ready)
-  facebook: 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/',
-  // Twitter — same hub for now (add dedicated URL when ready)
-  twitter: 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/',
-  // Instagram — same hub for now
-  instagram: 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/',
+  linkedin:  'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/',
+  facebook:  'https://hooks.zapier.com/hooks/catch/26446500/uniufh3/',
+  twitter:   'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/', // TBD — dedicated URL
+  instagram: 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/', // TBD — dedicated URL
 };
 
-/**
- * Telegram webhook — sends to Telegram Bot
- */
 export const TELEGRAM_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/26446500/unrrbau/';
 
-/** Fallback / broadcast webhook */
 const BROADCAST_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/26446500/unr1xen/';
 
 export interface ZapierPayload {
@@ -28,16 +19,14 @@ export interface ZapierPayload {
   platforms: Platform[];
   schedule_mode: 'now' | 'scheduled' | 'motzei_shabbat';
   scheduled_at?: string;
-  /** Israel time: e.g. "Saturday 19:00 Asia/Jerusalem" */
   israel_time?: string;
-  /** UTC equivalent for Zapier scheduler */
   utc_time?: string;
   image_url?: string;
   agent: string;
   timestamp: string;
 }
 
-interface SendResult {
+export interface SendResult {
   ok: boolean;
   platform?: Platform | 'telegram' | 'broadcast';
   error?: string;
@@ -59,10 +48,6 @@ async function postWebhook(
   }
 }
 
-/**
- * Send to each platform's individual webhook in parallel.
- * Falls back to the broadcast webhook for platforms without a dedicated URL.
- */
 export async function sendToZapier(
   payload: ZapierPayload
 ): Promise<{ ok: boolean; error?: string }> {
@@ -70,15 +55,10 @@ export async function sendToZapier(
     const url = PLATFORM_WEBHOOKS[platform] ?? BROADCAST_WEBHOOK;
     return postWebhook(url, { ...payload, platforms: [platform] });
   });
-
   const results = await Promise.all(targets);
-  const failed = results.find(r => !r.ok);
-  return failed ?? { ok: true };
+  return results.find(r => !r.ok) ?? { ok: true };
 }
 
-/**
- * Send to Telegram bot webhook.
- */
 export async function sendToTelegram(
   payload: ZapierPayload
 ): Promise<SendResult> {
@@ -86,9 +66,6 @@ export async function sendToTelegram(
   return { ...result, platform: 'telegram' };
 }
 
-/**
- * Send to ALL channels: each platform webhook + Telegram.
- */
 export async function broadcastAll(
   payload: ZapierPayload
 ): Promise<SendResult[]> {
@@ -97,13 +74,10 @@ export async function broadcastAll(
     const r = await postWebhook(url, { ...payload, platforms: [platform] });
     return { ...r, platform } as SendResult;
   });
-
   const telegramResult = sendToTelegram(payload);
-
   return Promise.all([...platformResults, telegramResult]);
 }
 
-/** Helper: build a Motzei Shabbat payload */
 export function buildMotzeiShabbatPayload(
   content: string,
   platforms: Platform[],
@@ -112,7 +86,6 @@ export function buildMotzeiShabbatPayload(
   const now = new Date();
   const isDst = now.getMonth() >= 2 && now.getMonth() <= 9;
   const utcHour = isDst ? 16 : 17;
-
   return {
     content,
     platforms,
