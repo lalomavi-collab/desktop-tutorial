@@ -22,6 +22,14 @@ except ImportError:
     print("ERROR: notebooklm-py not installed. Run: pip install 'notebooklm-py[browser]'")
     sys.exit(1)
 
+# Optional Obsidian integration
+OBSIDIAN_ENABLED = os.getenv("OBSIDIAN_ENABLED", "true").lower() == "true"
+try:
+    from obsidian_client import save_ai_research_to_obsidian
+    OBSIDIAN_AVAILABLE = True
+except ImportError:
+    OBSIDIAN_AVAILABLE = False
+
 # Output directory on Desktop
 OUTPUT_BASE = Path.home() / "Desktop" / "notebooklm_daily"
 
@@ -119,6 +127,16 @@ async def run_daily_workflow():
             print(f"  Saved: {infographic_file.name}")
         except Exception as e:
             print(f"  ! Infographic generation failed: {e}")
+
+    # --- Save to Obsidian (if available and enabled) ---
+    if OBSIDIAN_AVAILABLE and OBSIDIAN_ENABLED:
+        print("\nSaving to Obsidian vault...")
+        try:
+            save_ai_research_to_obsidian(date_str, out_dir)
+        except RuntimeError as e:
+            print(f"  ! Obsidian sync skipped: {e}")
+    elif not OBSIDIAN_AVAILABLE:
+        print("\n(Obsidian sync skipped — obsidian_client.py not found)")
 
     print(f"\nWorkflow complete. All files saved to:\n  {out_dir}\n")
 
