@@ -1,0 +1,31 @@
+name: 🔔 Telegram Test — Holiday Message
+
+on:
+  push:
+    branches:
+      - claude/test-telegram-connection-CaAnT
+    paths:
+      - '.github/workflows/telegram-test-now.yml'
+
+jobs:
+  send-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📤 Send Holiday Test Message to Telegram
+        run: |
+          MESSAGE="🔔 הודעת בדיקה — החג מתקרב! 🎉\nזוהי הודעת טסט לבדיקת חיבור הטלגרם.\nפסח שמח!"
+
+          RESPONSE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": \"$MESSAGE\"}")
+
+          echo "HTTP Status: $RESPONSE"
+          echo "Response:"
+          cat /tmp/response.txt
+
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
+            echo "✅ SUCCESS — ההודעה נשלחה לטלגרם!"
+          else
+            echo "❌ FAILED — HTTP $RESPONSE"
+            exit 1
+          fi
