@@ -1,0 +1,47 @@
+name: 🔌 Test Telegram Connection
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Test message to send (Hebrew supported)"
+        required: false
+        default: "בדיקת חיבור טלגרם ✅ — הודעה זו נשלחה מ-GitHub Actions"
+
+jobs:
+  test-telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Check Secret Exists
+        run: |
+          if [ -z "${{ secrets.ZAPIER_TELEGRAM }}" ]; then
+            echo "❌ ERROR: ZAPIER_TELEGRAM secret is not set!"
+            exit 1
+          else
+            echo "✅ ZAPIER_TELEGRAM secret is configured"
+          fi
+
+      - name: 📤 Send Test Message to Telegram
+        run: |
+          RESPONSE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo '${{ inputs.message }}' | jq -Rs .)}")
+
+          echo "HTTP Status: $RESPONSE"
+          echo "Response Body:"
+          cat /tmp/response.txt
+
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 300 ]; then
+            echo "✅ Telegram connection: SUCCESS (HTTP $RESPONSE)"
+          else
+            echo "❌ Telegram connection: FAILED (HTTP $RESPONSE)"
+            exit 1
+          fi
+
+      - name: 📋 Summary
+        run: |
+          echo "==========================="
+          echo "Telegram Connection Test"
+          echo "==========================="
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "Message sent: ${{ inputs.message }}"
