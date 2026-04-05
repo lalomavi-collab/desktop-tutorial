@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rift — GitHub Repo Analyzer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --warn: #d29922;
+      --error: #f85149;
+      --folder: #e3b341;
+      --file: #8b949e;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+    }
+    header .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+    header .logo span { color: var(--accent); }
+    header .tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* ── Search Bar ── */
+    .search-wrap {
+      padding: 28px 32px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'Courier New', monospace;
+    }
+    .search-box input::placeholder { color: var(--text-muted); }
+    .search-box button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .search-box button:hover { background: #79b8ff; }
+    .search-box button:disabled { background: var(--surface2); color: var(--text-muted); cursor: default; }
+
+    .token-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .token-box label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .token-box input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      width: 220px;
+      outline: none;
+    }
+    .token-box input:focus { border-color: var(--accent); }
+
+    /* ── Status ── */
+    .status-bar {
+      padding: 0 32px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      min-height: 22px;
+    }
+    .status-bar.error { color: var(--error); }
+
+    /* ── Repo Meta ── */
+    .repo-meta {
+      margin: 0 32px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: none;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .repo-meta.visible { display: flex; }
+    .meta-main { flex: 1; min-width: 200px; }
+    .meta-main h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .meta-main p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .meta-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .stat .val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .stat .lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .lang-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .lang-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent2);
+    }
+
+    /* ── Summary Bar ── */
+    .summary-bar {
+      margin: 0 32px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .summary-bar.visible { display: flex; }
+    .filter-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-wrap input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px 10px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 200px;
+    }
+    .filter-wrap input:focus { border-color: var(--accent); }
+    .btn-sm {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-sm:hover { background: var(--border); }
+
+    /* ── Tree ── */
+    .tree-wrap {
+      margin: 0 32px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: none;
+    }
+    .tree-wrap.visible { display: block; }
+
+    .tree-header {
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .tree-header span { cursor: pointer; }
+    .tree-header span:hover { color: var(--text); }
+
+    #tree-container {
+      padding: 8px 0;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .node {
+      display: flex;
+      align-items: center;
+      padding: 3px 16px;
+      cursor: pointer;
+      gap: 6px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      user-select: none;
+      transition: background 0.08s;
+    }
+    .node:hover { background: var(--surface2); }
+    .node.hidden { display: none; }
+    .node .indent { flex-shrink: 0; }
+    .node .icon { flex-shrink: 0; font-size: 14px; }
+    .node .name { color: var(--text); }
+    .node.type-tree .name { color: var(--folder); font-weight: 500; }
+    .node.type-blob .name { color: var(--text); }
+    .node .ext { color: var(--text-muted); font-size: 11px; }
+    .node .size {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .node .toggle { font-size: 10px; color: var(--text-muted); width: 12px; flex-shrink: 0; }
+
+    .node-children { /* no extra styles needed, children are flat nodes with indent */ }
+
+    /* ── Loader ── */
+    .loader {
+      display: none;
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .loader.visible { display: block; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Extension Colors ── */
+    .ext-js, .ext-jsx, .ext-mjs, .ext-cjs { color: #f7df1e !important; }
+    .ext-ts, .ext-tsx { color: #3178c6 !important; }
+    .ext-py { color: #3572a5 !important; }
+    .ext-rb { color: #cc342d !important; }
+    .ext-go { color: #00add8 !important; }
+    .ext-rs { color: #dea584 !important; }
+    .ext-java, .ext-kt { color: #b07219 !important; }
+    .ext-css, .ext-scss, .ext-sass { color: #563d7c !important; }
+    .ext-html { color: #e34c26 !important; }
+    .ext-md { color: #083fa1 !important; }
+    .ext-json { color: #f1c40f !important; }
+    .ext-yml, .ext-yaml { color: #cb171e !important; }
+    .ext-sh, .ext-bash { color: #89e051 !important; }
+    .ext-c, .ext-cpp, .ext-h { color: #555555 !important; }
+    .ext-php { color: #4f5d95 !important; }
+    .ext-swift { color: #ffac45 !important; }
+
+    /* ── Scrollbar ── */
+    #tree-container::-webkit-scrollbar { width: 6px; }
+    #tree-container::-webkit-scrollbar-track { background: var(--surface); }
+    #tree-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    footer {
+      margin-top: auto;
+      padding: 16px 32px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">rift<span>.</span></div>
+  <div class="tagline">GitHub Repository Structure Analyzer</div>
+</header>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <input type="text" id="repo-input" placeholder="owner/repo  (e.g. facebook/react)" autocomplete="off" />
+    <button id="analyze-btn" onclick="analyze()">Analyze</button>
+  </div>
+  <div class="token-box">
+    <label>Token (optional):</label>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" />
+  </div>
+</div>
+
+<div class="status-bar" id="status"></div>
+
+<div class="repo-meta" id="repo-meta">
+  <div class="meta-main">
+    <h2 id="meta-name"></h2>
+    <p id="meta-desc"></p>
+    <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;" id="meta-badges"></div>
+  </div>
+  <div class="meta-stats" id="meta-stats"></div>
+</div>
+
+<div class="summary-bar" id="summary-bar">
+  <span id="summary-text"></span>
+  <div class="filter-wrap">
+    <input type="text" id="filter-input" placeholder="Filter files..." oninput="filterTree(this.value)" />
+    <button class="btn-sm" onclick="expandAll()">Expand All</button>
+    <button class="btn-sm" onclick="collapseAll()">Collapse All</button>
+  </div>
+</div>
+
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  Loading repository structure...
+</div>
+
+<div class="tree-wrap" id="tree-wrap">
+  <div class="tree-header">
+    <span>Path</span>
+    <span style="margin-left:auto">Size</span>
+  </div>
+  <div id="tree-container"></div>
+</div>
+
+<footer>rift — runs entirely in-browser · uses GitHub REST API · no data stored</footer>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────
+  let treeData = [];     // flat list from API
+  let folderState = {};  // path → collapsed (bool)
+
+  // ── Entry point ───────────────────────────────────────────────────
+  async function analyze() {
+    const raw = document.getElementById('repo-input').value.trim();
+    const token = document.getElementById('token-input').value.trim();
+    const match = raw.match(/^([^/\s]+)\/([^/\s]+)$/);
+    if (!match) {
+      setStatus('Enter a valid owner/repo (e.g. facebook/react)', 'error');
+      return;
+    }
+    const [, owner, repo] = match;
+    setStatus('');
+    setLoading(true);
+    hideResults();
+
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      // 1. Repo info
+      const infoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+      if (!infoRes.ok) {
+        const err = await infoRes.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${infoRes.status}`);
+      }
+      const info = await infoRes.json();
+
+      // 2. Default branch tree
+      const branch = info.default_branch || 'main';
+      setStatus(`Fetching tree for branch: ${branch}…`);
+      const treeRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
+        { headers }
+      );
+      if (!treeRes.ok) {
+        const err = await treeRes.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${treeRes.status}`);
+      }
+      const treeJson = await treeRes.json();
+
+      if (treeJson.truncated) {
+        setStatus(`Tree truncated (>100k files). Showing partial results.`, 'warn');
+      } else {
+        setStatus('');
+      }
+
+      treeData = treeJson.tree || [];
+      folderState = {};
+      renderMeta(info);
+      renderTree(treeData);
+    } catch (e) {
+      setStatus('Error: ' + e.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Render Meta ───────────────────────────────────────────────────
+  function renderMeta(info) {
+    document.getElementById('meta-name').textContent = info.full_name;
+    document.getElementById('meta-desc').textContent = info.description || 'No description';
+
+    const badges = document.getElementById('meta-badges');
+    badges.innerHTML = '';
+    if (info.language) {
+      const langColors = {
+        JavaScript:'#f7df1e',TypeScript:'#3178c6',Python:'#3572a5',Ruby:'#cc342d',
+        Go:'#00add8',Rust:'#dea584',Java:'#b07219',Kotlin:'#a97bff',
+        'C#':'#178600',C:'#555555','C++':'#f34b7d',PHP:'#4f5d95',
+        Swift:'#ffac45',HTML:'#e34c26',CSS:'#563d7c',Shell:'#89e051'
+      };
+      const dot = `<span class="lang-dot" style="background:${langColors[info.language]||'#8b949e'}"></span>`;
+      badges.innerHTML += `<span class="lang-badge">${dot}${info.language}</span>`;
+    }
+    if (info.license?.spdx_id) {
+      badges.innerHTML += `<span class="lang-badge">📄 ${info.license.spdx_id}</span>`;
+    }
+    if (info.topics?.length) {
+      info.topics.slice(0, 4).forEach(t => {
+        badges.innerHTML += `<span class="lang-badge" style="color:var(--accent)">#${t}</span>`;
+      });
+    }
+
+    const stats = document.getElementById('meta-stats');
+    stats.innerHTML = [
+      ['⭐', fmtNum(info.stargazers_count), 'Stars'],
+      ['🍴', fmtNum(info.forks_count), 'Forks'],
+      ['👁', fmtNum(info.watchers_count), 'Watchers'],
+      ['⚠️', fmtNum(info.open_issues_count), 'Issues'],
+    ].map(([icon, val, lbl]) =>
+      `<div class="stat"><div class="val">${icon} ${val}</div><div class="lbl">${lbl}</div></div>`
+    ).join('');
+
+    document.getElementById('repo-meta').classList.add('visible');
+  }
+
+  // ── Render Tree ───────────────────────────────────────────────────
+  function renderTree(items) {
+    const container = document.getElementById('tree-container');
+    container.innerHTML = '';
+
+    const sorted = [...items].sort((a, b) => {
+      // folders first, then alphabetical
+      if (a.type !== b.type) return a.type === 'tree' ? -1 : 1;
+      return a.path.localeCompare(b.path);
+    });
+
+    sorted.forEach(item => {
+      const depth = item.path.split('/').length - 1;
+      const name = item.path.split('/').pop();
+      const ext = name.includes('.') ? name.split('.').pop().toLowerCase() : '';
+      const isDir = item.type === 'tree';
+
+      const node = document.createElement('div');
+      node.className = `node type-${item.type}`;
+      node.dataset.path = item.path;
+      node.dataset.depth = depth;
+      node.dataset.type = item.type;
+
+      const toggleIcon = isDir ? '▶' : '';
+      const fileIcon = isDir ? '📁' : getIcon(ext);
+      const sizeStr = !isDir && item.size ? fmtSize(item.size) : '';
+      const extClass = ext ? `ext-${ext}` : '';
+
+      node.innerHTML = `
+        <span class="indent" style="display:inline-block;width:${depth * 18}px"></span>
+        <span class="toggle">${toggleIcon}</span>
+        <span class="icon">${fileIcon}</span>
+        <span class="name ${extClass}">${name}</span>
+        <span class="size">${sizeStr}</span>
+      `;
+
+      if (isDir) {
+        folderState[item.path] = false; // expanded by default for top-level, collapsed for deep
+        if (depth >= 2) {
+          folderState[item.path] = true;
+        }
+        node.addEventListener('click', () => toggleFolder(item.path));
+      }
+
+      container.appendChild(node);
+    });
+
+    applyFolderStates();
+    updateSummary(sorted);
+    document.getElementById('tree-wrap').classList.add('visible');
+    document.getElementById('summary-bar').classList.add('visible');
+  }
+
+  function toggleFolder(path) {
+    folderState[path] = !folderState[path];
+    applyFolderStates();
+  }
+
+  function applyFolderStates() {
+    const nodes = document.querySelectorAll('.node');
+    nodes.forEach(node => {
+      const path = node.dataset.path;
+      const type = node.dataset.type;
+      let hidden = false;
+
+      // Check if any ancestor folder is collapsed
+      const parts = path.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        const ancestor = parts.slice(0, i).join('/');
+        if (folderState[ancestor]) { hidden = true; break; }
+      }
+
+      node.classList.toggle('hidden', hidden);
+
+      // Update toggle icon for folders
+      if (type === 'tree') {
+        const toggle = node.querySelector('.toggle');
+        const icon = node.querySelector('.icon');
+        if (toggle) toggle.textContent = folderState[path] ? '▶' : '▼';
+        if (icon) icon.textContent = folderState[path] ? '📁' : '📂';
+      }
+    });
+  }
+
+  function expandAll() {
+    Object.keys(folderState).forEach(k => folderState[k] = false);
+    applyFolderStates();
+  }
+
+  function collapseAll() {
+    Object.keys(folderState).forEach(k => folderState[k] = true);
+    applyFolderStates();
+  }
+
+  function filterTree(q) {
+    const query = q.trim().toLowerCase();
+    document.querySelectorAll('.node').forEach(node => {
+      if (!query) {
+        node.classList.remove('hidden');
+        applyFolderStates();
+        return;
+      }
+      const path = node.dataset.path.toLowerCase();
+      node.classList.toggle('hidden', !path.includes(query));
+    });
+  }
+
+  function updateSummary(items) {
+    const files = items.filter(i => i.type === 'blob').length;
+    const dirs = items.filter(i => i.type === 'tree').length;
+    const totalSize = items.reduce((s, i) => s + (i.size || 0), 0);
+    document.getElementById('summary-text').textContent =
+      `${dirs} folders · ${files} files · ${fmtSize(totalSize)} total`;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function setStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status-bar' + (type === 'error' ? ' error' : '');
+  }
+
+  function setLoading(v) {
+    document.getElementById('loader').classList.toggle('visible', v);
+    document.getElementById('analyze-btn').disabled = v;
+    document.getElementById('analyze-btn').textContent = v ? 'Loading…' : 'Analyze';
+  }
+
+  function hideResults() {
+    document.getElementById('repo-meta').classList.remove('visible');
+    document.getElementById('tree-wrap').classList.remove('visible');
+    document.getElementById('summary-bar').classList.remove('visible');
+  }
+
+  function fmtNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  function fmtSize(bytes) {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function getIcon(ext) {
+    const map = {
+      js:'🟨', jsx:'🟨', ts:'🔷', tsx:'🔷', mjs:'🟨', cjs:'🟨',
+      py:'🐍', rb:'💎', go:'🐹', rs:'🦀', java:'☕', kt:'🎯',
+      c:'⚙️', cpp:'⚙️', h:'⚙️', cs:'🎮', php:'🐘',
+      html:'🌐', css:'🎨', scss:'🎨', sass:'🎨',
+      json:'📋', yaml:'📋', yml:'📋', toml:'📋', xml:'📋',
+      md:'📝', txt:'📄', rst:'📄',
+      sh:'💻', bash:'💻', zsh:'💻', fish:'💻',
+      svg:'🖼️', png:'🖼️', jpg:'🖼️', jpeg:'🖼️', gif:'🖼️', ico:'🖼️', webp:'🖼️',
+      pdf:'📕', zip:'📦', gz:'📦', tar:'📦',
+      lock:'🔒', env:'🔑', gitignore:'🚫',
+      dockerfile:'🐳', tf:'🏗️',
+      swift:'🐦', dart:'🎯', vue:'💚', svelte:'🔴',
+    };
+    return map[ext] || '📄';
+  }
+
+  // ── Keyboard shortcut ─────────────────────────────────────────────
+  document.getElementById('repo-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') analyze();
+  });
+
+  // ── Load from URL hash ────────────────────────────────────────────
+  window.addEventListener('load', () => {
+    const hash = location.hash.replace('#', '');
+    if (hash && hash.includes('/')) {
+      document.getElementById('repo-input').value = hash;
+      analyze();
+    }
+  });
+</script>
+</body>
+</html>
