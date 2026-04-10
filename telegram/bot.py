@@ -187,9 +187,9 @@ def run() -> None:
         format="%(asctime)s  %(levelname)-8s  %(message)s",
     )
     logger.info("Telegram bridge bot starting…")
-    store = load_store()
 
     while True:
+        store = load_store()  # reload every cycle to pick up pairing changes
         updates = get_updates(store["offset"])
         for upd in updates:
             try:
