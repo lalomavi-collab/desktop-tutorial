@@ -1,0 +1,43 @@
+name: Handle Telegram Message
+
+# Triggered by the bot via GitHub repository_dispatch when a paired chat sends a message.
+on:
+  repository_dispatch:
+    types: [telegram-message]
+
+permissions:
+  contents: write
+
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write message to queue
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          mkdir -p telegram/messages
+          FILENAME="telegram/messages/$(date -u +%Y%m%dT%H%M%S%3N)_${{ github.event.client_payload.chat_id }}.json"
+          echo "$PAYLOAD" > "$FILENAME"
+          echo "Queued: $FILENAME"
+          cat "$FILENAME"
+
+      - name: Commit message to queue
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add telegram/messages/
+          git commit -m "📨 Telegram message from chat ${{ github.event.client_payload.chat_id }} [skip ci]"
+          git push
+
+      - name: Show message summary
+        run: |
+          echo "=== Incoming Telegram Message ==="
+          echo "Chat ID : ${{ github.event.client_payload.chat_id }}"
+          echo "Session : ${{ github.event.client_payload.session_id }}"
+          echo "Time    : ${{ github.event.client_payload.ts }}"
+          echo "Text    : ${{ github.event.client_payload.text }}"

@@ -1,0 +1,42 @@
+name: Telegram Bridge Bot
+
+on:
+  schedule:
+    # Poll every 5 minutes. Each run long-polls for ~4 min then commits store.
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Poll Telegram (4 min window)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        # timeout exits 124 on timeout — we treat that as success so the step passes.
+        run: |
+          timeout 240 python -m telegram.bot || [ $? -eq 124 ]
+
+      - name: Commit updated pairing store
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add telegram/store.json
+          git diff --staged --quiet || git commit -m "🤖 Update Telegram pairing store [skip ci]"
+          git push

@@ -5,6 +5,7 @@ description = "סוכן לבניית פרומפטים מובנים לפיתוח 
 requires-python = ">=3.10"
 dependencies = [
     "anthropic>=0.42.0",
+    "httpx>=0.27.0",
     "rich>=13.0.0",
     "pyyaml>=6.0",
 ]
