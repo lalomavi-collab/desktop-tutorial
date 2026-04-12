@@ -1,15 +1,17 @@
 import { AgentCard } from './AgentCard';
 import { StatsBar } from './StatsBar';
 import { ActivityFeed } from './ActivityFeed';
+import { OrgChart } from './OrgChart';
 import type { Agent, ActivityItem } from '../types';
 
 interface DashboardViewProps {
   agents: Agent[];
   activities: ActivityItem[];
+  selectedAgentId: string | null;
   onSelectAgent: (id: string) => void;
 }
 
-export function DashboardView({ agents, activities, onSelectAgent }: DashboardViewProps) {
+export function DashboardView({ agents, activities, selectedAgentId, onSelectAgent }: DashboardViewProps) {
   return (
     <div>
       <div className="mb-6 text-right">
@@ -18,6 +20,18 @@ export function DashboardView({ agents, activities, onSelectAgent }: DashboardVi
       </div>
 
       <StatsBar agents={agents} />
+
+      {/* Org chart */}
+      <div className="mb-6">
+        <h2 className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-3 text-right">
+          מבנה ארגוני
+        </h2>
+        <OrgChart
+          agents={agents}
+          selectedAgentId={selectedAgentId}
+          onSelectAgent={onSelectAgent}
+        />
+      </div>
 
       <div className="grid grid-cols-3 gap-5">
         {/* Agents grid */}

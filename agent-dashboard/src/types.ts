@@ -21,18 +21,33 @@ export interface PlatformAgent {
   scheduledPosts: number;
 }
 
+export interface AgentMetrics {
+  successRate: number;      // 0–100
+  uptime: number;           // 0–100
+  avgTaskDuration: string;  // e.g. "2.4 דק'"
+  tasksThisWeek: number;
+  tokensUsed?: number;
+  costThisMonth?: number;   // USD
+}
+
 export interface Agent {
   id: string;
   name: string;
   type: string;
   status: AgentStatus;
   description: string;
+  role?: string;            // short role label (e.g. "מנכ\"ל")
+  parent?: string;          // parent agent id (for hierarchy)
   tasksCompleted: number;
   tasksRunning: number;
+  tasksQueue?: number;
   connections?: PlatformConnection[];
   /** Sub-agents, used by the social media manager */
   platformAgents?: PlatformAgent[];
   lastActive: string;
+  metrics?: AgentMetrics;
+  skills?: string[];
+  color?: string;           // accent color class e.g. 'purple'
 }
 
 export interface Post {
