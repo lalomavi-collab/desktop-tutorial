@@ -1,0 +1,29 @@
+name: "📢 Post 005: AI Memory - Telegram"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  post-telegram:
+    name: "🇮🇱 Send to Telegram (LalumBot)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "📤 Send to Telegram"
+        run: |
+          MESSAGE=$(cat posts/005_ai_memory_he.md)
+          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
+          echo "Telegram: SENT"
+
+      - name: "✅ Summary"
+        run: |
+          echo "============================================"
+          echo "Post 005: למה ה-AI שלכם לא זוכר כלום?"
+          echo "============================================"
+          echo "Target: Telegram (via LalumBot)"
+          echo "File: posts/005_ai_memory_he.md"
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================"
