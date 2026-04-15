@@ -1,0 +1,69 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  python:
+    name: Python (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install pytest
+        # The agent's runtime deps (anthropic, rich, pyyaml) aren't required
+        # for tests — conftest.py installs an `anthropic` stub when missing.
+        run: pip install pytest
+
+      - name: Run pytest
+        run: pytest
+
+  node-script:
+    name: Node script (send-posts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run send-posts tests
+        # Built-in node:test runner — no install step needed.
+        run: node --test 'scripts/__tests__/*.test.js'
+
+  dashboard:
+    name: Dashboard (vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: agent-dashboard/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run vitest
+        run: npm test

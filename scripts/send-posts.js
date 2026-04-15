@@ -127,7 +127,17 @@ async function main() {
   console.log('\n✔ הסוכן סיים.');
 }
 
-main().catch(err => {
-  console.error('Fatal:', err);
-  process.exit(1);
-});
+// Only auto-run when invoked directly (e.g. `node scripts/send-posts.js`),
+// so unit tests can `require()` this module without firing the agent.
+if (require.main === module) {
+  main().catch(err => {
+    console.error('Fatal:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  isReadyToSend,
+  sendWebhook,
+  main,
+};
