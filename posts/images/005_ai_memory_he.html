@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, height=630">
+    <title>Post Image - AI Memory HE</title>
+    <style>
+        /* 1200x630 - Facebook/Telegram optimal */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(145deg, #1B1B1B 0%, #0A0A0A 60%, #1a0a0f 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 80px;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 70%);
+            pointer-events: none;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle at bottom left, rgba(128, 0, 32, 0.14), transparent 70%);
+            pointer-events: none;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+        }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0; right: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #800020 0%, #D4AF37 100%);
+        }
+
+        .icon-area {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            font-size: 3.5rem;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            color: #0A0A0A;
+            padding: 6px 22px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            width: fit-content;
+        }
+
+        .title {
+            font-size: 3.4rem;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 22px;
+            max-width: 1000px;
+        }
+
+        .title .gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6A3 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title .white { color: #FFFDD0; }
+
+        .line-accent {
+            width: 60px;
+            height: 3px;
+            background: #D4AF37;
+            margin-bottom: 22px;
+            border-radius: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.45rem;
+            color: #FFFDD0;
+            line-height: 1.55;
+            max-width: 960px;
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        .subtitle strong {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+
+        .pillars {
+            display: flex;
+            gap: 28px;
+            margin-top: 4px;
+        }
+
+        .pillar {
+            color: #708090;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .pillar .check { color: #D4AF37; margin-left: 6px; }
+
+        .bottom-info {
+            position: absolute;
+            bottom: 30px;
+            right: 80px;
+            left: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .author {
+            color: #708090;
+            font-size: 0.95rem;
+        }
+
+        .hashtags {
+            color: #D4AF37;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top-bar"></div>
+        <div class="bottom-bar"></div>
+
+        <div class="icon-area">🧠</div>
+
+        <div class="badge">LALUM LEGAL CLINIC | 2026</div>
+
+        <div class="title">
+            <span class="white">למה ה-AI שלכם</span>
+            <span class="gold">לא זוכר כלום?</span>
+        </div>
+
+        <div class="line-accent"></div>
+
+        <div class="subtitle">
+            העתיד של עריכת הדין אינו "להשתמש ב-AI" —<br>
+            הוא <strong>לבנות ארכיטקטורת ידע</strong> שמשתפרת עם כל תיק חדש.
+        </div>
+
+        <div class="pillars">
+            <div class="pillar"><span class="check">✓</span> חיבור נקודות אוטומטי</div>
+            <div class="pillar"><span class="check">✓</span> ניהול סיכונים חסין</div>
+            <div class="pillar"><span class="check">✓</span> ידע שנשאר אצלכם</div>
+        </div>
+
+        <div class="bottom-info">
+            <div class="hashtags">#LegalAlgorist #LegalTech #AI</div>
+            <div class="author">⚖️ אבי ללום, עו"ד | Ph.D.c למשפטים וכלכלה</div>
+        </div>
+    </div>
+</body>
+</html>
