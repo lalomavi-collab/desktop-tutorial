@@ -2,6 +2,10 @@ name: "📢 Post 005: AI Memory - Telegram"
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/send-post-005-telegram.yml'
 
 jobs:
   post-telegram:
