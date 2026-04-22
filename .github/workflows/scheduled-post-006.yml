@@ -1,0 +1,69 @@
+name: "📢 Post 006: IP, Copyright & AI Decision-Making"
+
+on:
+  # Saturday April 25, 2026 at 19:00 Israel Time (16:00 UTC)
+  schedule:
+    - cron: '0 16 25 4 *'
+  workflow_dispatch:
+
+jobs:
+  post-hebrew:
+    name: "🇮🇱 Hebrew - Facebook / Telegram / Instagram"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "📤 Send to Facebook"
+        run: |
+          MESSAGE=$(cat posts/006_ip_ai_decision_he.md)
+          curl -s -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
+          echo "Facebook: SENT"
+
+      - name: "📤 Send to Telegram"
+        run: |
+          MESSAGE=$(cat posts/006_ip_ai_decision_he.md)
+          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
+          echo "Telegram: SENT"
+
+      - name: "📤 Send to Instagram"
+        run: |
+          MESSAGE=$(cat posts/006_ip_ai_decision_he.md)
+          curl -s -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
+          echo "Instagram: SENT"
+
+  post-english:
+    name: "🇬🇧 English - LinkedIn"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "📤 Send to LinkedIn (English)"
+        run: |
+          MESSAGE=$(cat posts/006_ip_ai_decision_en.md)
+          curl -s -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
+          echo "LinkedIn (EN): SENT"
+
+  summary:
+    name: "✅ Post Summary"
+    needs: [post-hebrew, post-english]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Summary"
+        run: |
+          echo "============================================"
+          echo "Post 006: IP, Copyright & AI Decision-Making"
+          echo "============================================"
+          echo ""
+          echo "Hebrew (Facebook, Telegram, Instagram): SENT"
+          echo "English (LinkedIn): SENT"
+          echo ""
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================"
