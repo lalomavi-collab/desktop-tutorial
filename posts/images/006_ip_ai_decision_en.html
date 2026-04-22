@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #1B1B1B;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  .gold-bar {
+    width: 8px;
+    background: #D4AF37;
+    flex-shrink: 0;
+  }
+  .main {
+    flex: 1;
+    padding: 52px 60px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  .accent-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #800020, #D4AF37, #800020);
+  }
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .brand {
+    font-size: 13px;
+    color: #D4AF37;
+    letter-spacing: 3px;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+  }
+  .tag {
+    font-size: 12px;
+    color: #800020;
+    letter-spacing: 2px;
+    border: 1px solid #800020;
+    padding: 4px 12px;
+    font-family: Arial, sans-serif;
+  }
+  .headline {
+    font-size: 50px;
+    color: #FFFDD0;
+    font-weight: 700;
+    line-height: 1.15;
+    max-width: 820px;
+  }
+  .headline .gold { color: #D4AF37; }
+  .subtext {
+    font-size: 20px;
+    color: #FFFDD0;
+    opacity: 0.72;
+    line-height: 1.55;
+    max-width: 720px;
+    font-family: Arial, sans-serif;
+  }
+  .questions {
+    display: flex;
+    gap: 20px;
+  }
+  .q-box {
+    background: rgba(212,175,55,0.08);
+    border: 1px solid rgba(212,175,55,0.3);
+    padding: 14px 18px;
+    flex: 1;
+  }
+  .q-number {
+    font-size: 26px;
+    color: #D4AF37;
+    font-weight: 900;
+    font-family: Arial, sans-serif;
+    line-height: 1;
+  }
+  .q-text {
+    font-size: 13px;
+    color: #FFFDD0;
+    opacity: 0.85;
+    margin-top: 6px;
+    line-height: 1.4;
+    font-family: Arial, sans-serif;
+  }
+  .bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(212,175,55,0.25);
+    padding-top: 16px;
+  }
+  .dom-badge {
+    font-size: 11px;
+    color: #D4AF37;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    font-family: Arial, sans-serif;
+  }
+  .tagline {
+    font-size: 14px;
+    color: #FFFDD0;
+    opacity: 0.6;
+    font-style: italic;
+    max-width: 480px;
+    text-align: right;
+    font-family: Georgia, serif;
+  }
+</style>
+</head>
+<body>
+<div class="gold-bar"></div>
+<div class="main">
+  <div class="accent-line"></div>
+
+  <div class="top-row">
+    <div class="brand">THE LEGAL ALGORIST</div>
+    <div class="tag">IP · AI · LIABILITY</div>
+  </div>
+
+  <div>
+    <div class="headline">
+      When a self-driving car kills someone —<br>
+      <span class="gold">who faces criminal liability?</span>
+    </div>
+    <div class="subtext" style="margin-top:14px;">
+      Replace "car" with "AI system that advised you on a complex transaction."<br>
+      You're standing in exactly the same legal vacuum.
+    </div>
+  </div>
+
+  <div class="questions">
+    <div class="q-box">
+      <div class="q-number">01</div>
+      <div class="q-text">Who owns the output?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-number">02</div>
+      <div class="q-text">Who bears liability for the damage?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-number">03</div>
+      <div class="q-text">A black box doesn't testify in court. You do.</div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="dom-badge">DOM MODEL · DECISION-ORIENTED MEDIATION · LALUM LEGAL CLINIC</div>
+    <div class="tagline">"A decision without comprehension is not a decision — it's a guess wearing a suit."</div>
+  </div>
+</div>
+</body>
+</html>

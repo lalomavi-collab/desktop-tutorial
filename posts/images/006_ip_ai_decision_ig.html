@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: #1B1B1B;
+    font-family: 'Arial Hebrew', 'David', Arial, sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 70px;
+    position: relative;
+  }
+  .accent-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #800020, #D4AF37, #800020);
+  }
+  .accent-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #800020, #D4AF37, #800020);
+  }
+  .gold-bar-right {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: #D4AF37;
+  }
+  .top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+  }
+  .brand {
+    font-size: 14px;
+    color: #D4AF37;
+    letter-spacing: 3px;
+    font-weight: 700;
+  }
+  .tag {
+    font-size: 12px;
+    color: #800020;
+    letter-spacing: 2px;
+    border: 1px solid #800020;
+    padding: 5px 14px;
+  }
+  .center {
+    text-align: center;
+    z-index: 1;
+    width: 100%;
+  }
+  .car-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+    opacity: 0.4;
+    filter: grayscale(1);
+  }
+  .headline {
+    font-size: 64px;
+    color: #FFFDD0;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .headline .gold { color: #D4AF37; }
+  .headline .burg { color: #800020; }
+  .sub {
+    font-size: 24px;
+    color: #FFFDD0;
+    opacity: 0.72;
+    line-height: 1.55;
+    margin-bottom: 40px;
+  }
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: #D4AF37;
+    margin: 0 auto 40px;
+  }
+  .questions {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+  .q-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(212,175,55,0.07);
+    border-right: 3px solid #D4AF37;
+    padding: 16px 24px;
+  }
+  .q-num {
+    font-size: 32px;
+    color: #D4AF37;
+    font-weight: 900;
+    min-width: 48px;
+  }
+  .q-text {
+    font-size: 20px;
+    color: #FFFDD0;
+    opacity: 0.88;
+    line-height: 1.35;
+  }
+  .tagline-box {
+    border: 1px solid rgba(212,175,55,0.35);
+    padding: 20px 30px;
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+  }
+  .tagline {
+    font-size: 19px;
+    color: #D4AF37;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .bottom {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+  }
+  .dom {
+    font-size: 11px;
+    color: #D4AF37;
+    opacity: 0.6;
+    letter-spacing: 2px;
+  }
+  .hashtag {
+    font-size: 12px;
+    color: #FFFDD0;
+    opacity: 0.4;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+  <div class="accent-top"></div>
+  <div class="accent-bottom"></div>
+  <div class="gold-bar-right"></div>
+
+  <div class="top">
+    <div class="brand">The Legal Algorist</div>
+    <div class="tag">AI · IP · LAW</div>
+  </div>
+
+  <div class="center">
+    <div class="headline">
+      מי <span class="gold">אחראי</span><br>
+      כש<span class="burg">הרכב</span> טועה?
+    </div>
+    <div class="sub">
+      ועכשיו שאלו את אותה שאלה<br>
+      על ה-AI שמייעץ לכם בעסקה.
+    </div>
+    <div class="divider"></div>
+    <div class="questions">
+      <div class="q-row">
+        <div class="q-num">01</div>
+        <div class="q-text">מי הבעלים של פלט ה-AI?</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">02</div>
+        <div class="q-text">מי נושא באחריות לנזק?</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">03</div>
+        <div class="q-text">קופסה שחורה לא מעידה בבית משפט — אתם כן.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tagline-box">
+    <div class="tagline">"הכרעה ללא הבנה היא לא הכרעה — היא ניחוש במדים."</div>
+  </div>
+
+  <div class="bottom">
+    <div class="dom">DOM MODEL · LALUM LEGAL CLINIC</div>
+    <div class="hashtag">#LegalAlgorist</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #1B1B1B;
+    font-family: 'Arial Hebrew', 'David', Arial, sans-serif;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  .gold-bar-right {
+    width: 8px;
+    background: #D4AF37;
+    flex-shrink: 0;
+  }
+  .main {
+    flex: 1;
+    padding: 52px 60px 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .brand {
+    font-size: 13px;
+    color: #D4AF37;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .tag {
+    font-size: 12px;
+    color: #800020;
+    letter-spacing: 2px;
+    border: 1px solid #800020;
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+  .headline {
+    font-size: 52px;
+    color: #FFFDD0;
+    font-weight: 900;
+    line-height: 1.15;
+    max-width: 750px;
+    margin-top: 8px;
+  }
+  .headline .gold { color: #D4AF37; }
+  .subtext {
+    font-size: 22px;
+    color: #FFFDD0;
+    opacity: 0.75;
+    line-height: 1.5;
+    max-width: 680px;
+    margin-top: 16px;
+  }
+  .questions {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .q-box {
+    background: rgba(212,175,55,0.08);
+    border: 1px solid rgba(212,175,55,0.3);
+    padding: 14px 20px;
+    flex: 1;
+  }
+  .q-number {
+    font-size: 28px;
+    color: #D4AF37;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .q-text {
+    font-size: 14px;
+    color: #FFFDD0;
+    opacity: 0.85;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(212,175,55,0.25);
+    padding-top: 16px;
+  }
+  .dom-badge {
+    font-size: 12px;
+    color: #D4AF37;
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+  .tagline {
+    font-size: 15px;
+    color: #FFFDD0;
+    opacity: 0.6;
+    font-style: italic;
+    max-width: 480px;
+    text-align: left;
+    direction: rtl;
+  }
+  .accent-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #800020, #D4AF37, #800020);
+  }
+</style>
+</head>
+<body>
+<div class="gold-bar-right"></div>
+<div class="main">
+  <div class="accent-line"></div>
+
+  <div class="top-row">
+    <div class="brand">The Legal Algorist</div>
+    <div class="tag">IP · AI · LIABILITY</div>
+  </div>
+
+  <div>
+    <div class="headline">
+      כשרכב אוטונומי דורס אדם —<br>
+      <span class="gold">מי הולך לכלא?</span>
+    </div>
+    <div class="subtext">
+      עכשיו תחליפו "רכב" ב-"מערכת AI שנתנה לכם המלצה בעסקה".<br>
+      אתם בדיוק באותו חלל משפטי ריק.
+    </div>
+  </div>
+
+  <div class="questions">
+    <div class="q-box">
+      <div class="q-number">01</div>
+      <div class="q-text">מי הבעלים של הפלט?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-number">02</div>
+      <div class="q-text">מי נושא באחריות לנזק?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-number">03</div>
+      <div class="q-text">קופסה שחורה לא מעידה בבית משפט. אתם כן.</div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="dom-badge">DOM MODEL · DECISION-ORIENTED MEDIATION</div>
+    <div class="tagline">הכרעה ללא הבנה היא לא הכרעה — היא ניחוש במדים.</div>
+  </div>
+</div>
+</body>
+</html>
