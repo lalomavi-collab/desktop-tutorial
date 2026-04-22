@@ -59,3 +59,24 @@ posts/
 - LinkedIn: ZAPIER_LINKEDIN secret
 - Instagram: ZAPIER_INSTAGRAM secret
 - LinkedIn gets English version, all others get Hebrew
+
+## Content Strategy — Law + AI Only
+**All posts must focus exclusively on the intersection of Law and AI.**
+
+Core topics (mandatory):
+- Algorithmic risk management in complex transactions
+- IP and copyright in AI-generated content
+- Legal liability when AI causes damage
+- Decision-making transparency (DOM model)
+- Urban renewal + real estate with AI tools
+- Attorney ethics and professional responsibility in AI era
+- Israeli/EU regulation of AI (AI Act, privacy law)
+
+**Scheduling cadence:** Every Saturday at 19:00 IST
+**Numbering:** Sequential — next post after 006 is 007, then 008, etc.
+**Topic bank:** See `posts/topics-bank.md` for pre-approved future topics
+
+When user asks for "פוסט להיום" or next post:
+1. Pick the next topic from `posts/topics-bank.md` (lowest unused number)
+2. Follow the 5-step approval flow above
+3. Schedule for the next available Saturday 19:00

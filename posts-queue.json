@@ -145,5 +145,86 @@
       "image_ig": "posts/images/006_ip_ai_decision_ig.html"
     },
     "workflow": ".github/workflows/scheduled-post-006.yml"
+  },
+  {
+    "id": "q-eu-ai-act-007",
+    "topic": "חוק ה-AI האירופי — מה זה אומר לעורכי דין ישראלים?",
+    "hook": "האיחוד האירופי חוקק. ישראל עוד ישנה. הלקוחות שלכם כבר נחשפים.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-05-02T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-deepfake-evidence-008",
+    "topic": "ראיות Deepfake בבית משפט — האם אפשר לסמוך על מה שרואים?",
+    "hook": "הסרטון הוכיח שהנאשם היה שם. אבל הסרטון היה מזויף.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-05-09T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-liability-gap-009",
+    "topic": "פער האחריות ב-AI — מי משלם כשהאלגוריתם טועה?",
+    "hook": "לא הקוד. לא המפתח. ולא 'הכלי'. — אז מי?",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-05-16T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-attorney-privilege-010",
+    "topic": "סודיות עורך דין-לקוח וכלי AI — האם השיחה שלכם מוגנת?",
+    "hook": "הדבקתם מסמך לקוח ב-ChatGPT. עכשיו הוא חלק מהמודל.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-05-23T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-smart-contracts-011",
+    "topic": "חוזים חכמים בנדל\"ן — מחייב משפטית או כאוס?",
+    "hook": "הקוד בוצע אוטומטית. אבל אף אחד לא קרא את הסעיפים ברישום.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-05-30T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-ai-bias-courts-012",
+    "topic": "הטיית AI בהחלטות שיפוטיות — כשהאלגוריתם גזר את העונש",
+    "hook": "COMPAS קבע שהוא בסיכון גבוה. הוא ישב 3 שנות יתר.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-06-06T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-dom-ai-mediation-013",
+    "topic": "מודל ה-DOM בעידן הגישור האלגוריתמי",
+    "hook": "AI הציע פשרה. שני הצדדים קיבלו. אף אחד לא הבין למה.",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-06-13T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-urban-renewal-ai-014",
+    "topic": "התחדשות עירונית וקבלת החלטות אלגוריתמית",
+    "hook": "האלגוריתם סימן 40 מבנים לפינוי. תושב אחד שאל: על פי מה?",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-06-20T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
+  },
+  {
+    "id": "q-privacy-ai-015",
+    "topic": "חוק הגנת הפרטיות החדש ו-AI — מה נשמע בחדר הישיבות נשאר... איפה?",
+    "hook": "הפגישה תומללה ב-AI. הנתונים עברו לשרת בפרנקפורט. מותר?",
+    "status": "pending",
+    "contentFocus": "Law + AI",
+    "scheduledFor": "2026-06-27T19:00:00",
+    "platforms": ["facebook","telegram","instagram","linkedin"]
   }
 ]
