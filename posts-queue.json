@@ -122,5 +122,28 @@
         "ok": true
       }
     ]
+  },
+  {
+    "id": "q-ip-ai-decision-006",
+    "topic": "קניין רוחני, זכויות יוצרים וקבלת החלטות ב-AI",
+    "status": "approved",
+    "createdAt": "2026-04-22T17:00:00.000Z",
+    "scheduledFor": "2026-04-25T19:00:00",
+    "createdBy": "Prompt Builder Agent",
+    "contentFocus": "Law + AI",
+    "platforms": [
+      "facebook",
+      "telegram",
+      "instagram",
+      "linkedin"
+    ],
+    "files": {
+      "hebrew": "posts/006_ip_ai_decision_he.md",
+      "english": "posts/006_ip_ai_decision_en.md",
+      "image_he": "posts/images/006_ip_ai_decision_he.html",
+      "image_en": "posts/images/006_ip_ai_decision_en.html",
+      "image_ig": "posts/images/006_ip_ai_decision_ig.html"
+    },
+    "workflow": ".github/workflows/scheduled-post-006.yml"
   }
 ]
