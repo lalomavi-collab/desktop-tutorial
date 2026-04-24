@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
-AUTHORITY = "https://login.microsoftonline.com/common"
+AUTHORITY = "https://login.microsoftonline.com/consumers"
 SCOPES = ["https://graph.microsoft.com/Calendars.ReadWrite"]
 GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0/me/events"
 TOKEN_CACHE_FILE = ".token_cache.json"
