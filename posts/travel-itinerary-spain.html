@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מסע לספרד – מאי 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #1B1B1B;
+            color: #FFFDD0;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+            padding: 28px 20px;
+            border: 1px solid #D4AF37;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1B1B1B 0%, #2a2a2a 100%);
+        }
+
+        .header h1 {
+            color: #D4AF37;
+            font-size: 1.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .header .subtitle {
+            color: #FFFDD0;
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        .day-block {
+            margin-bottom: 28px;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            background: #800020;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #FFFDD0;
+        }
+
+        .day-header .date-num {
+            background: #D4AF37;
+            color: #1B1B1B;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .events {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 8px;
+        }
+
+        .event {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            background: #252525;
+            border-right: 4px solid #D4AF37;
+            transition: transform 0.15s;
+        }
+
+        .event:hover {
+            transform: translateX(-3px);
+        }
+
+        .event.flight   { border-right-color: #4a90d9; }
+        .event.hotel    { border-right-color: #6aaf5e; }
+        .event.train    { border-right-color: #e0a030; }
+        .event.defense  { border-right-color: #D4AF37; background: #2a2010; }
+        .event.prep     { border-right-color: #a0c4ff; }
+        .event.celebrate{ border-right-color: #ff6b8a; }
+        .event.dinner   { border-right-color: #ff8c42; }
+
+        .event .emoji {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .event .content {
+            flex: 1;
+        }
+
+        .event .title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #FFFDD0;
+            margin-bottom: 4px;
+        }
+
+        .event.defense .title {
+            color: #D4AF37;
+            font-size: 1.1rem;
+        }
+
+        .event .meta {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 0.83rem;
+            color: #aaa;
+        }
+
+        .event .meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .event .time {
+            color: #D4AF37;
+            font-weight: 600;
+            font-size: 0.88rem;
+        }
+
+        .event.defense .time {
+            color: #ff6b8a;
+        }
+
+        .lock-badge {
+            background: #800020;
+            color: #FFFDD0;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .route {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+
+        .location-tag {
+            background: #333;
+            border-radius: 4px;
+            padding: 2px 8px;
+            color: #ccc;
+            font-size: 0.78rem;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: #aaa;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 36px;
+            color: #555;
+            font-size: 0.8rem;
+            border-top: 1px solid #333;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>✈️ מסע לספרד – הגנת דוקטורט</h1>
+    <div class="subtitle">25–28 מאי 2026 &nbsp;|&nbsp; TLV → MAD → Córdoba → MAD → TLV</div>
+</div>
+
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4a90d9"></div> טיסה</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e0a030"></div> רכבת</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6aaf5e"></div> מלון</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#D4AF37"></div> הגנת דוקטורט</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b8a"></div> חגיגה</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff8c42"></div> ארוחה</div>
+</div>
+
+<!-- Day 1: May 25 -->
+<div class="day-block">
+    <div class="day-header">
+        <div class="date-num">25</div>
+        <span>יום ראשון, 25 מאי – יציאה לספרד</span>
+    </div>
+    <div class="events">
+
+        <div class="event flight">
+            <div class="emoji">✈️</div>
+            <div class="content">
+                <div class="title">טיסה למדריד – EL AL LY395</div>
+                <div class="meta">
+                    <span class="time">17:00 → 22:10</span>
+                    <span class="route">TLV → MAD</span>
+                    <span class="location-tag">נתב"ג</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event hotel">
+            <div class="emoji">🏨</div>
+            <div class="content">
+                <div class="title">NH Madrid Barajas Airport</div>
+                <div class="meta">
+                    <span class="time">לינה</span>
+                    <span class="location-tag">מדריד</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Day 2: May 26 -->
+<div class="day-block">
+    <div class="day-header">
+        <div class="date-num">26</div>
+        <span>יום שני, 26 מאי – נסיעה לקורדובה</span>
+    </div>
+    <div class="events">
+
+        <div class="event train">
+            <div class="emoji">🚂</div>
+            <div class="content">
+                <div class="title">רכבת מהירה לקורדובה – AVE 2080</div>
+                <div class="meta">
+                    <span class="time">08:00 → 10:30</span>
+                    <span class="route">Madrid → Córdoba</span>
+                    <span class="location-tag">2.5 שעות</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event hotel">
+            <div class="emoji">🏨</div>
+            <div class="content">
+                <div class="title">NH Córdoba Califa</div>
+                <div class="meta">
+                    <span class="time">26–28 מאי</span>
+                    <span class="location-tag">קורדובה</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Day 3: May 27 -->
+<div class="day-block">
+    <div class="day-header">
+        <div class="date-num">27</div>
+        <span>יום שלישי, 27 מאי – יום ההגנה ⭐</span>
+    </div>
+    <div class="events">
+
+        <div class="event prep">
+            <div class="emoji">📚</div>
+            <div class="content">
+                <div class="title">הכנה להגנת הדוקטורט</div>
+                <div class="meta">
+                    <span class="time">08:00 → 10:00</span>
+                    <span class="location-tag">Universidad de Córdoba</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event defense">
+            <div class="emoji">🎓</div>
+            <div class="content">
+                <div class="title">הגנת דוקטורט 🔒</div>
+                <div class="meta">
+                    <span class="time">10:00 → 11:00</span>
+                    <span><span class="lock-badge">סגור לציבור</span></span>
+                    <span class="location-tag">קורדובה</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event celebrate">
+            <div class="emoji">🎉</div>
+            <div class="content">
+                <div class="title">חגיגת סיום – אחרי ההגנה</div>
+                <div class="meta">
+                    <span class="time">12:00 → 15:00</span>
+                    <span class="location-tag">קורדובה</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Day 4: May 28 -->
+<div class="day-block">
+    <div class="day-header">
+        <div class="date-num">28</div>
+        <span>יום רביעי, 28 מאי – חזרה הביתה</span>
+    </div>
+    <div class="events">
+
+        <div class="event train">
+            <div class="emoji">🚂</div>
+            <div class="content">
+                <div class="title">רכבת חזרה למדריד</div>
+                <div class="meta">
+                    <span class="time">13:50 → 15:35</span>
+                    <span class="route">Córdoba → Madrid</span>
+                    <span class="location-tag">1:45 שעות</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event dinner">
+            <div class="emoji">🍽️</div>
+            <div class="content">
+                <div class="title">ארוחת ערב במדריד</div>
+                <div class="meta">
+                    <span class="time">16:00 → 20:30</span>
+                    <span class="location-tag">מדריד</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="event flight">
+            <div class="emoji">✈️</div>
+            <div class="content">
+                <div class="title">טיסה הביתה – EL AL LY396</div>
+                <div class="meta">
+                    <span class="time">22:45 → 05:15+1</span>
+                    <span class="route">MAD → TLV</span>
+                    <span class="location-tag">נחיתה 29 מאי</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer">
+    מסע לספרד – הגנת דוקטורט – מאי 2026
+</div>
+
+</body>
+</html>
