@@ -196,6 +196,37 @@
             border-top: 1px solid #333;
             padding-top: 16px;
         }
+
+        .cal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px 28px;
+            background: #D4AF37;
+            color: #1B1B1B;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .cal-btn:hover {
+            background: #e8c84a;
+            transform: translateY(-2px);
+        }
+
+        .cal-actions {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cal-hint {
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +234,13 @@
 <div class="header">
     <h1>✈️ מסע לספרד – הגנת דוקטורט</h1>
     <div class="subtitle">25–28 מאי 2026 &nbsp;|&nbsp; TLV → MAD → Córdoba → MAD → TLV</div>
+</div>
+
+<div class="cal-actions">
+    <a class="cal-btn" href="travel-itinerary-spain.ics" download="phd-trip-spain-may2026.ics">
+        📅 הוסף ליומן (ייבוא ICS)
+    </a>
+    <div class="cal-hint">תואם Google Calendar · Apple Calendar · Outlook</div>
 </div>
 
 <div class="legend">
@@ -375,6 +413,9 @@
 
 <div class="footer">
     מסע לספרד – הגנת דוקטורט – מאי 2026
+    <br>כל הזמנים: שעון מקומי (ישראל / מדריד)
+    <br><br>
+    <a href="travel-itinerary-spain.ics" download="phd-trip-spain-may2026.ics" style="color:#D4AF37; text-decoration:none;">📅 הורד קובץ יומן (.ics)</a>
 </div>
 
 </body>
