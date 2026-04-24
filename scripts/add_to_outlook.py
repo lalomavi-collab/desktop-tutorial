@@ -106,6 +106,9 @@ def save_cache(cache):
         open(TOKEN_CACHE_FILE, "w").write(cache.serialize())
 
 
+NATIVE_REDIRECT = "https://login.microsoftonline.com/common/oauth2/nativeclient"
+
+
 def get_token():
     cache = load_cache()
     app = msal.PublicClientApplication(
@@ -121,16 +124,22 @@ def get_token():
             save_cache(cache)
             return result["access_token"]
 
-    flow = app.initiate_device_flow(scopes=SCOPES)
-    if "user_code" not in flow:
-        raise SystemExit(f"Device flow failed: {flow.get('error_description', flow)}")
+    flow = app.initiate_auth_code_flow(SCOPES, redirect_uri=NATIVE_REDIRECT)
 
-    print("\n" + "═" * 50)
-    print(f"  1. פתח בדפדפן:  https://microsoft.com/devicelogin")
-    print(f"  2. הזן את הקוד:  {flow['user_code']}")
-    print("═" * 50 + "\n")
+    print("\n" + "═" * 60)
+    print("  שלב 1 – פתח את הקישור הזה בדפדפן:")
+    print(f"\n  {flow['auth_uri']}\n")
+    print("  שלב 2 – היכנס עם חשבון Microsoft שלך ואשר הרשאות")
+    print("  שלב 3 – לאחר ההתחברות העתק את כתובת ה-URL המלאה")
+    print("          מסרגל הכתובת והדבק אותה כאן למטה")
+    print("═" * 60 + "\n")
 
-    result = app.acquire_token_by_device_flow(flow)
+    callback_url = input("► הדבק URL: ").strip()
+
+    from urllib.parse import urlparse, parse_qs
+    params = {k: v[0] for k, v in parse_qs(urlparse(callback_url).query).items()}
+
+    result = app.acquire_token_by_auth_code_flow(flow, params)
     save_cache(cache)
 
     if "access_token" not in result:
