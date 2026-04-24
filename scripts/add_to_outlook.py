@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 """
 Add Spain PhD trip events directly to Outlook Calendar via Microsoft Graph API.
-Run once: browser opens for Microsoft login, then all 10 events are created.
+Uses Device Code Flow – no redirect URI needed, works in any environment.
 """
 
 import os
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-import webbrowser
-
 import msal
 import requests
 from dotenv import load_dotenv
@@ -17,9 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
-CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 AUTHORITY = "https://login.microsoftonline.com/common"
-REDIRECT_URI = "http://localhost:8080/callback"
 SCOPES = ["https://graph.microsoft.com/Calendars.ReadWrite"]
 GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0/me/events"
 TOKEN_CACHE_FILE = ".token_cache.json"
@@ -115,10 +108,9 @@ def save_cache(cache):
 
 def get_token():
     cache = load_cache()
-    app = msal.ConfidentialClientApplication(
+    app = msal.PublicClientApplication(
         CLIENT_ID,
         authority=AUTHORITY,
-        client_credential=CLIENT_SECRET,
         token_cache=cache,
     )
 
@@ -129,27 +121,16 @@ def get_token():
             save_cache(cache)
             return result["access_token"]
 
-    flow = app.initiate_auth_code_flow(SCOPES, redirect_uri=REDIRECT_URI)
-    print(f"\n🌐 פותח דפדפן לאימות Microsoft...")
-    print(f"אם הדפדפן לא נפתח, היכנס ידנית ל:\n{flow['auth_uri']}\n")
-    webbrowser.open(flow["auth_uri"])
+    flow = app.initiate_device_flow(scopes=SCOPES)
+    if "user_code" not in flow:
+        raise SystemExit(f"Device flow failed: {flow.get('error_description', flow)}")
 
-    auth_response = {}
+    print("\n" + "═" * 50)
+    print(f"  1. פתח בדפדפן:  https://microsoft.com/devicelogin")
+    print(f"  2. הזן את הקוד:  {flow['user_code']}")
+    print("═" * 50 + "\n")
 
-    class CallbackHandler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            params = parse_qs(urlparse(self.path).query)
-            auth_response.update({k: v[0] for k, v in params.items()})
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"<h2>Authenticated! You can close this tab.</h2>")
-
-        def log_message(self, *args):
-            pass
-
-    HTTPServer(("localhost", 8080), CallbackHandler).handle_request()
-
-    result = app.acquire_token_by_auth_code_flow(flow, auth_response)
+    result = app.acquire_token_by_device_flow(flow)
     save_cache(cache)
 
     if "access_token" not in result:
