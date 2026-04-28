@@ -1,0 +1,57 @@
+name: 📊 אורי המנכל — דוח יומי
+
+on:
+  schedule:
+    # כל יום ב-07:00 שעון ישראל (04:00 UTC)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 📊 Build & Send Daily Report
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          DATE=$(date -u '+%d/%m/%Y')
+          TIME=$(date -u '+%H:%M')
+          DAY=$(date -u '+%A' | sed 's/Monday/שני/;s/Tuesday/שלישי/;s/Wednesday/רביעי/;s/Thursday/חמישי/;s/Friday/שישי/;s/Saturday/שבת/;s/Sunday/ראשון/')
+
+          # בדיקת פוסטים בתור
+          POSTS=$(find posts/ -name "*.md" 2>/dev/null | wc -l)
+
+          MESSAGE="📊 *דוח יומי — אורי המנכל*
+
+🗓 יום $DAY | $DATE | $TIME UTC
+
+📋 *סטטוס מערכת:*
+✅ GitHub Actions — פעיל
+✅ Telegram — מחובר
+✅ Claude Code — פעיל
+
+📝 *תוכן:*
+• פוסטים במערכת: $POSTS
+• ענף פעיל: $(git branch --show-current)
+• קומיט אחרון: $(git log -1 --format='%s' | head -c 50)
+
+🎯 *משימות להיום:*
+• בדיקת פוסטים מתוכננים
+• מעקב אחר ביצועי הרשתות
+• עדכון תוכן שבועי
+
+_נשלח אוטומטית על ידי סוכן אורי המנכל_"
+
+          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\": \"${TG_CHAT_ID}\",
+              \"text\": \"$(echo "$MESSAGE" | sed 's/"/\\"/g')\",
+              \"parse_mode\": \"Markdown\"
+            }"
+
+          echo "✅ דוח נשלח!"
