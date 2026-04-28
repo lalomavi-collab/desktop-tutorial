@@ -1,0 +1,50 @@
+name: "🔌 Test Telegram Connection"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-telegram:
+    name: "בדיקת חיבור טלגרם"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📤 Send test message to Telegram"
+        id: send
+        run: |
+          MESSAGE="🔌 *בדיקת חיבור* — $(date -u '+%Y-%m-%d %H:%M UTC')
+
+          זוהי הודעת בדיקה אוטומטית מהסוכן החברתי.
+          אם קיבלת הודעה זו — החיבור לטלגרם תקין ✅"
+
+          HTTP_STATUS=$(curl -s -o /tmp/telegram_response.json -w "%{http_code}" \
+            -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}")
+
+          echo "http_status=$HTTP_STATUS" >> "$GITHUB_OUTPUT"
+          echo "response=$(cat /tmp/telegram_response.json)" >> "$GITHUB_OUTPUT"
+
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Response: $(cat /tmp/telegram_response.json)"
+
+      - name: "✅ Connection OK"
+        if: steps.send.outputs.http_status == '200'
+        run: |
+          echo "============================================"
+          echo "✅  Telegram connection: WORKING"
+          echo "HTTP Status: ${{ steps.send.outputs.http_status }}"
+          echo "Response: ${{ steps.send.outputs.response }}"
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================"
+
+      - name: "❌ Connection FAILED"
+        if: steps.send.outputs.http_status != '200'
+        run: |
+          echo "============================================"
+          echo "❌  Telegram connection: FAILED"
+          echo "HTTP Status: ${{ steps.send.outputs.http_status }}"
+          echo "Response: ${{ steps.send.outputs.response }}"
+          echo "============================================"
+          echo ""
+          echo "בדוק שה-secret ZAPIER_TELEGRAM מוגדר נכון ב-Settings > Secrets."
+          exit 1
