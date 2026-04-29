@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "id": "developer",
+      "type": "text",
+      "x": 400,
+      "y": -200,
+      "width": 220,
+      "height": 140,
+      "color": "1",
+      "text": "## 🏗️ יזם\n**Developer**\n\n- מממן הפרויקט\n- אינטרס: מקסום רווח\n- **משלם את שכר העו\"ד**"
+    },
+    {
+      "id": "lawyer",
+      "type": "text",
+      "x": 100,
+      "y": 50,
+      "width": 240,
+      "height": 160,
+      "color": "1",
+      "text": "## ⚖️ עו\"ד מלווה\n\n- **לקוח רשמי:** דיירים\n- **מממן בפועל:** יזם\n\n⚠️ **ניגוד עניינים**\nכלל 14 לכללי האתיקה"
+    },
+    {
+      "id": "residents",
+      "type": "text",
+      "x": -200,
+      "y": 300,
+      "width": 220,
+      "height": 140,
+      "color": "4",
+      "text": "## 🏠 דיירים\n**Residents**\n\n- הצד החלש\n- אינם יודעים על המימון\n- עלולים להיפגע"
+    },
+    {
+      "id": "ethics",
+      "type": "text",
+      "x": 450,
+      "y": 200,
+      "width": 220,
+      "height": 140,
+      "color": "3",
+      "text": "## 📋 כללי האתיקה\nלשכת עורכי הדין\n\n**סעיף 14:**\nחובת גילוי + הסכמה\nמדעת בכתב"
+    },
+    {
+      "id": "conflict",
+      "type": "text",
+      "x": 100,
+      "y": -350,
+      "width": 280,
+      "height": 100,
+      "color": "1",
+      "text": "# ⚠️ ניגוד עניינים מובנה\nעו\"ד ממומן על ידי הצד שכנגד לקוחותיו"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "fromNode": "developer",
+      "fromSide": "bottom",
+      "toNode": "lawyer",
+      "toSide": "top",
+      "color": "1",
+      "label": "💰 שכר טרחה ישיר"
+    },
+    {
+      "id": "e2",
+      "fromNode": "lawyer",
+      "fromSide": "bottom",
+      "toNode": "residents",
+      "toSide": "top",
+      "color": "4",
+      "label": "ייצוג רשמי"
+    },
+    {
+      "id": "e3",
+      "fromNode": "developer",
+      "fromSide": "left",
+      "toNode": "residents",
+      "toSide": "right",
+      "color": "6",
+      "label": "צד לעסקה"
+    },
+    {
+      "id": "e4",
+      "fromNode": "lawyer",
+      "fromSide": "right",
+      "toNode": "ethics",
+      "toSide": "left",
+      "color": "3",
+      "label": "הפרה פוטנציאלית"
+    }
+  ]
+}
