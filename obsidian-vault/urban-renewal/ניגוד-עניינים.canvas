@@ -3,7 +3,7 @@
     {
       "id": "moc",
       "type": "file",
-      "file": "urban-renewal/MOC - ניגוד עניינים.md",
+      "file": "MOC - ניגוד עניינים.md",
       "x": 100,
       "y": -400,
       "width": 260,
@@ -12,7 +12,7 @@
     {
       "id": "developer",
       "type": "file",
-      "file": "urban-renewal/entities/יזם.md",
+      "file": "entities/יזם.md",
       "x": 500,
       "y": -200,
       "width": 240,
@@ -22,7 +22,7 @@
     {
       "id": "lawyer",
       "type": "file",
-      "file": "urban-renewal/entities/עו\"ד מלווה.md",
+      "file": "entities/עו\"ד מלווה.md",
       "x": 100,
       "y": -50,
       "width": 260,
@@ -32,7 +32,7 @@
     {
       "id": "residents",
       "type": "file",
-      "file": "urban-renewal/entities/דיירים.md",
+      "file": "entities/דיירים.md",
       "x": -300,
       "y": 150,
       "width": 240,
@@ -42,7 +42,7 @@
     {
       "id": "project",
       "type": "file",
-      "file": "urban-renewal/entities/פרויקט התחדשות עירונית.md",
+      "file": "entities/פרויקט התחדשות עירונית.md",
       "x": 500,
       "y": 150,
       "width": 240,
@@ -52,7 +52,7 @@
     {
       "id": "analysis",
       "type": "file",
-      "file": "urban-renewal/analysis/ניגוד עניינים - ניתוח.md",
+      "file": "analysis/ניגוד עניינים - ניתוח.md",
       "x": 100,
       "y": 300,
       "width": 260,
@@ -62,7 +62,7 @@
     {
       "id": "ethics",
       "type": "file",
-      "file": "urban-renewal/legal/כללי האתיקה - ניגוד עניינים.md",
+      "file": "legal/כללי האתיקה - ניגוד עניינים.md",
       "x": 500,
       "y": 400,
       "width": 240,
@@ -72,7 +72,7 @@
     {
       "id": "recommendations",
       "type": "file",
-      "file": "urban-renewal/analysis/המלצות לפעולה.md",
+      "file": "analysis/המלצות לפעולה.md",
       "x": -300,
       "y": 400,
       "width": 240,
