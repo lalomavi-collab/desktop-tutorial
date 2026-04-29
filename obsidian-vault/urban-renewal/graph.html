@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>גרף ניגוד עניינים — התחדשות עירונית</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1B1B1B; color: #FFFDD0; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; }
+
+  #header {
+    position: fixed; top: 0; width: 100%; padding: 12px 24px;
+    background: rgba(27,27,27,0.95); border-bottom: 1px solid #D4AF37;
+    z-index: 100; display: flex; align-items: center; gap: 16px;
+  }
+  #header h1 { font-size: 18px; color: #D4AF37; }
+  #header span { font-size: 13px; color: #FFFDD0; opacity: 0.7; }
+
+  #canvas-container { width: 100vw; height: 100vh; padding-top: 50px; }
+  svg { width: 100%; height: 100%; }
+
+  /* Nodes */
+  .node circle { cursor: pointer; transition: all 0.2s; }
+  .node circle:hover { filter: brightness(1.3); }
+  .node text { pointer-events: none; font-size: 13px; fill: #FFFDD0; font-weight: 600; }
+  .node .sublabel { font-size: 11px; fill: #D4AF37; font-weight: 400; }
+
+  /* Links */
+  .link { stroke-width: 2; fill: none; opacity: 0.8; }
+  .link-conflict { stroke: #800020; stroke-width: 3; stroke-dasharray: 6,3; }
+  .link-represent { stroke: #4a9eff; }
+  .link-transaction { stroke: #888; }
+  .link-reference { stroke: #D4AF37; stroke-dasharray: 4,4; }
+
+  /* Legend */
+  #legend {
+    position: fixed; bottom: 20px; right: 20px;
+    background: rgba(27,27,27,0.92); border: 1px solid #333;
+    border-radius: 8px; padding: 14px; font-size: 12px;
+  }
+  #legend h3 { color: #D4AF37; margin-bottom: 10px; font-size: 13px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .legend-line { width: 30px; height: 3px; }
+
+  /* Info panel */
+  #info {
+    position: fixed; top: 70px; left: 20px;
+    background: rgba(27,27,27,0.95); border: 1px solid #D4AF37;
+    border-radius: 8px; padding: 16px; width: 280px;
+    font-size: 13px; display: none;
+  }
+  #info h3 { color: #D4AF37; margin-bottom: 8px; }
+  #info p { line-height: 1.6; opacity: 0.9; }
+  #info .warning { color: #ff6b6b; margin-top: 8px; font-weight: 600; }
+
+  /* Alert badge */
+  .conflict-badge {
+    position: fixed; top: 70px; right: 20px;
+    background: #800020; color: #FFFDD0;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; border: 1px solid #ff6b6b;
+    max-width: 220px; line-height: 1.5;
+  }
+  .conflict-badge strong { display: block; font-size: 15px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>⚖️ גרף ניגוד עניינים</h1>
+  <span>פרויקט התחדשות עירונית — לחץ על צומת לפרטים</span>
+</div>
+
+<div class="conflict-badge">
+  <strong>⚠️ ניגוד עניינים</strong>
+  עו"ד מקבל שכר<br>ישירות מהיזם
+</div>
+
+<div id="info">
+  <h3 id="info-title"></h3>
+  <p id="info-desc"></p>
+  <p class="warning" id="info-warn"></p>
+</div>
+
+<div id="canvas-container">
+<svg id="graph" viewBox="0 0 900 650">
+  <defs>
+    <marker id="arrow-conflict" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#800020"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4a9eff"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#888"/>
+    </marker>
+    <marker id="arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#D4AF37"/>
+    </marker>
+    <filter id="glow-red">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-gold">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- LINKS -->
+  <!-- יזם → עו"ד: שכר טרחה (ניגוד עניינים) -->
+  <path class="link link-conflict" d="M 480,200 C 480,260 430,280 390,300"
+    marker-end="url(#arrow-conflict)" filter="url(#glow-red)"/>
+
+  <!-- עו"ד → דיירים: ייצוג רשמי -->
+  <path class="link link-represent" d="M 330,340 C 260,360 230,380 210,400"
+    marker-end="url(#arrow-blue)"/>
+
+  <!-- יזם ↔ דיירים: עסקה -->
+  <path class="link link-transaction" d="M 450,240 C 380,300 300,360 240,410"
+    marker-end="url(#arrow-gray)"/>
+
+  <!-- עו"ד → אתיקה -->
+  <path class="link link-reference" d="M 370,360 C 380,420 400,440 430,460"
+    marker-end="url(#arrow-gold)"/>
+
+  <!-- LINK LABELS -->
+  <text x="455" y="258" fill="#800020" font-size="11" font-weight="700" transform="rotate(-25,455,258)">💰 שכר טרחה</text>
+  <text x="240" y="368" fill="#4a9eff" font-size="11" transform="rotate(-18,240,368)">ייצוג רשמי</text>
+  <text x="320" y="315" fill="#888" font-size="11" transform="rotate(-35,320,315)">עסקה</text>
+
+  <!-- NODE: יזם -->
+  <g class="node" transform="translate(500,185)"
+    onclick="showInfo('יזם (Developer)', 'הגורם שיוזם ומממן את הפרויקט. בעל אינטרס למקסם רווח ולמזער פיצויים לדיירים.', '⚠️ משלם ישירות את שכר הטרחה של עורך הדין המייצג את הדיירים — יוצר תמריץ מובנה לניגוד עניינים.')">
+    <circle r="60" fill="#800020" opacity="0.9" stroke="#D4AF37" stroke-width="2"/>
+    <text text-anchor="middle" dy="-8">יזם</text>
+    <text class="sublabel" text-anchor="middle" dy="12">Developer</text>
+    <text text-anchor="middle" dy="28" font-size="20">🏗️</text>
+  </g>
+
+  <!-- NODE: עו"ד מלווה -->
+  <g class="node" transform="translate(360,320)"
+    onclick="showInfo('עו"ד מלווה', 'אמור לייצג את הדיירים ולשמור על זכויותיהם. מינויו נעשה בהסכמת הצדדים.', '⚠️ שכר טרחתו משולם ישירות על ידי היזם — הלקוח האמיתי שלו הוא לא הדיירים! הפרה פוטנציאלית של כללי האתיקה, סעיף 14.')">
+    <circle r="65" fill="#1B3A5C" opacity="0.95" stroke="#ff6b6b" stroke-width="3" filter="url(#glow-red)"/>
+    <text text-anchor="middle" dy="-10">עו"ד מלווה</text>
+    <text class="sublabel" text-anchor="middle" dy="8" fill="#ff6b6b">⚠️ ניגוד עניינים</text>
+    <text text-anchor="middle" dy="26" font-size="20">⚖️</text>
+  </g>
+
+  <!-- NODE: דיירים -->
+  <g class="node" transform="translate(190,425)"
+    onclick="showInfo('דיירים (Residents)', 'הצד החלש בעסקה — אמורים להיות מיוצגים על ידי העו"ד המלווה.', '⚠️ אינם יודעים שהעו"ד ממומן על ידי היזם. עלולים לחתום על הסכמים שאינם לטובתם ללא ייצוג אמיתי.')">
+    <circle r="55" fill="#1B5C3A" opacity="0.9" stroke="#4a9eff" stroke-width="2"/>
+    <text text-anchor="middle" dy="-8">דיירים</text>
+    <text class="sublabel" text-anchor="middle" dy="10">Residents</text>
+    <text text-anchor="middle" dy="26" font-size="20">🏠</text>
+  </g>
+
+  <!-- NODE: כללי אתיקה -->
+  <g class="node" transform="translate(460,490)"
+    onclick="showInfo('כללי לשכת עורכי הדין', 'כללי האתיקה המקצועית, תשמ"ו-1986, סעיף 14.', 'חובת גילוי מלא + הסכמה מדעת בכתב נדרשים כאשר צד שלישי (היזם) מממן את שכר הטרחה. אי-קיום = עבירה משמעתית.')">
+    <circle r="50" fill="#3A2A00" opacity="0.9" stroke="#D4AF37" stroke-width="2" filter="url(#glow-gold)"/>
+    <text text-anchor="middle" dy="-6" font-size="11">כללי אתיקה</text>
+    <text class="sublabel" text-anchor="middle" dy="10" font-size="10">לשכת עוה"ד</text>
+    <text text-anchor="middle" dy="26" font-size="18">📋</text>
+  </g>
+
+  <!-- Central conflict indicator -->
+  <text x="450" y="130" fill="#800020" font-size="22" font-weight="900" text-anchor="middle" opacity="0.6">⚠️ ניגוד עניינים מובנה</text>
+
+</svg>
+</div>
+
+<div id="legend">
+  <h3>מפתח</h3>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#800020; height:3px; border-top:3px dashed #800020;"></div>
+    <span>מימון / ניגוד עניינים</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#4a9eff;"></div>
+    <span>ייצוג רשמי</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#888;"></div>
+    <span>עסקה</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-line" style="background:#D4AF37; border-top:3px dashed #D4AF37;"></div>
+    <span>הפניה משפטית</span>
+  </div>
+</div>
+
+<script>
+function showInfo(title, desc, warn) {
+  document.getElementById('info-title').textContent = title;
+  document.getElementById('info-desc').textContent = desc;
+  document.getElementById('info-warn').textContent = warn || '';
+  document.getElementById('info').style.display = 'block';
+}
+document.getElementById('graph').addEventListener('click', function(e) {
+  if (e.target === this || e.target.tagName === 'svg') {
+    document.getElementById('info').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
