@@ -1,92 +1,164 @@
 {
   "nodes": [
     {
+      "id": "moc",
+      "type": "file",
+      "file": "urban-renewal/MOC - ניגוד עניינים.md",
+      "x": 100,
+      "y": -400,
+      "width": 260,
+      "height": 120
+    },
+    {
       "id": "developer",
-      "type": "text",
-      "x": 400,
+      "type": "file",
+      "file": "urban-renewal/entities/יזם.md",
+      "x": 500,
       "y": -200,
-      "width": 220,
-      "height": 140,
-      "color": "1",
-      "text": "## 🏗️ יזם\n**Developer**\n\n- מממן הפרויקט\n- אינטרס: מקסום רווח\n- **משלם את שכר העו\"ד**"
+      "width": 240,
+      "height": 130,
+      "color": "1"
     },
     {
       "id": "lawyer",
-      "type": "text",
+      "type": "file",
+      "file": "urban-renewal/entities/עו\"ד מלווה.md",
       "x": 100,
-      "y": 50,
-      "width": 240,
-      "height": 160,
-      "color": "1",
-      "text": "## ⚖️ עו\"ד מלווה\n\n- **לקוח רשמי:** דיירים\n- **מממן בפועל:** יזם\n\n⚠️ **ניגוד עניינים**\nכלל 14 לכללי האתיקה"
+      "y": -50,
+      "width": 260,
+      "height": 130,
+      "color": "1"
     },
     {
       "id": "residents",
-      "type": "text",
-      "x": -200,
+      "type": "file",
+      "file": "urban-renewal/entities/דיירים.md",
+      "x": -300,
+      "y": 150,
+      "width": 240,
+      "height": 130,
+      "color": "4"
+    },
+    {
+      "id": "project",
+      "type": "file",
+      "file": "urban-renewal/entities/פרויקט התחדשות עירונית.md",
+      "x": 500,
+      "y": 150,
+      "width": 240,
+      "height": 130,
+      "color": "6"
+    },
+    {
+      "id": "analysis",
+      "type": "file",
+      "file": "urban-renewal/analysis/ניגוד עניינים - ניתוח.md",
+      "x": 100,
       "y": 300,
-      "width": 220,
-      "height": 140,
-      "color": "4",
-      "text": "## 🏠 דיירים\n**Residents**\n\n- הצד החלש\n- אינם יודעים על המימון\n- עלולים להיפגע"
+      "width": 260,
+      "height": 130,
+      "color": "1"
     },
     {
       "id": "ethics",
-      "type": "text",
-      "x": 450,
-      "y": 200,
-      "width": 220,
-      "height": 140,
-      "color": "3",
-      "text": "## 📋 כללי האתיקה\nלשכת עורכי הדין\n\n**סעיף 14:**\nחובת גילוי + הסכמה\nמדעת בכתב"
+      "type": "file",
+      "file": "urban-renewal/legal/כללי האתיקה - ניגוד עניינים.md",
+      "x": 500,
+      "y": 400,
+      "width": 240,
+      "height": 130,
+      "color": "3"
     },
     {
-      "id": "conflict",
-      "type": "text",
-      "x": 100,
-      "y": -350,
-      "width": 280,
-      "height": 100,
-      "color": "1",
-      "text": "# ⚠️ ניגוד עניינים מובנה\nעו\"ד ממומן על ידי הצד שכנגד לקוחותיו"
+      "id": "recommendations",
+      "type": "file",
+      "file": "urban-renewal/analysis/המלצות לפעולה.md",
+      "x": -300,
+      "y": 400,
+      "width": 240,
+      "height": 130,
+      "color": "5"
     }
   ],
   "edges": [
     {
-      "id": "e1",
-      "fromNode": "developer",
+      "id": "e-moc-lawyer",
+      "fromNode": "moc",
       "fromSide": "bottom",
       "toNode": "lawyer",
       "toSide": "top",
+      "label": "מוקד הבעיה"
+    },
+    {
+      "id": "e-dev-lawyer",
+      "fromNode": "developer",
+      "fromSide": "left",
+      "toNode": "lawyer",
+      "toSide": "right",
       "color": "1",
       "label": "💰 שכר טרחה ישיר"
     },
     {
-      "id": "e2",
+      "id": "e-lawyer-residents",
       "fromNode": "lawyer",
-      "fromSide": "bottom",
+      "fromSide": "left",
       "toNode": "residents",
-      "toSide": "top",
+      "toSide": "right",
       "color": "4",
       "label": "ייצוג רשמי"
     },
     {
-      "id": "e3",
+      "id": "e-dev-project",
       "fromNode": "developer",
-      "fromSide": "left",
-      "toNode": "residents",
-      "toSide": "right",
+      "fromSide": "bottom",
+      "toNode": "project",
+      "toSide": "top",
+      "color": "6",
+      "label": "יוזם"
+    },
+    {
+      "id": "e-residents-project",
+      "fromNode": "residents",
+      "fromSide": "right",
+      "toNode": "project",
+      "toSide": "left",
       "color": "6",
       "label": "צד לעסקה"
     },
     {
-      "id": "e4",
+      "id": "e-lawyer-analysis",
       "fromNode": "lawyer",
+      "fromSide": "bottom",
+      "toNode": "analysis",
+      "toSide": "top",
+      "label": "מנותח ב-"
+    },
+    {
+      "id": "e-analysis-ethics",
+      "fromNode": "analysis",
       "fromSide": "right",
       "toNode": "ethics",
       "toSide": "left",
       "color": "3",
-      "label": "הפרה פוטנציאלית"
+      "label": "מבוסס על"
+    },
+    {
+      "id": "e-analysis-recommendations",
+      "fromNode": "analysis",
+      "fromSide": "left",
+      "toNode": "recommendations",
+      "toSide": "right",
+      "color": "5",
+      "label": "מוביל ל-"
+    },
+    {
+      "id": "e-ethics-lawyer",
+      "fromNode": "ethics",
+      "fromSide": "top",
+      "toNode": "lawyer",
+      "toSide": "bottom",
+      "color": "3",
+      "label": "מחייב"
     }
   ]
 }
