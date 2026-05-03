@@ -6,6 +6,7 @@ on:
                     description: 'Message to post on Facebook'
                             required: true
                                     default: 'Test message from GitHub Actions'
+
                                     jobs:
                                       send-facebook:
                                           runs-on: ubuntu-latest
@@ -19,12 +20,15 @@ on:
                                                                                                               -d "access_token=${{ secrets.FACEBOOK_ACCESS_TOKEN }}" \
                                                                                                                           -w "\n" \
                                                                                                                                       -o response.json
-                                                                                                                                                cat response.json
-                                                                                                                                                          # Check if response contains an error
-                                                                                                                                                                    if grep -q '"error"' response.json; then
-                                                                                                                                                                                echo "Error posting to Facebook:"
-                                                                                                                                                                                            cat response.json
-                                                                                                                                                                                                        exit 1
-                                                                                                                                                                                                                  else
-                                                                                                                                                                                                                              echo "✅ Message posted successfully to Facebook"
-                                                                                                                                                                                                                                        fi
+                                                                                                                                                
+                                                                                                                                                          cat response.json
+                                                                                                                                                                    
+                                                                                                                                                                              # Check if response contains an error
+                                                                                                                                                                                        if grep -q "error" response.json; then
+                                                                                                                                                                                                    echo "Error posting to Facebook:"
+                                                                                                                                                                                                                cat response.json
+                                                                                                                                                                                                                            exit 1
+                                                                                                                                                                                                                                      else
+                                                                                                                                                                                                                                                  echo "✅ Message posted successfully to Facebook"
+                                                                                                                                                                                                                                                              cat response.json
+                                                                                                                                                                                                                                                                        fi
