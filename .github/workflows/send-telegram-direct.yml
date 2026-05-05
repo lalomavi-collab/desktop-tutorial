@@ -1,53 +1,33 @@
-name: "📱 Direct Telegram Notification"
-
+name: '🟣 Direct Telegram Notification'
 on:
   workflow_dispatch:
-    push:
-        branches: [main]
-            paths:
-                  - '.github/workflows/send-telegram-direct.yml'
+      inputs:
+            message:
+                    description: 'Message to post on Telegram'
+                            required: true
+                                    default: 'Test message from GitHub Actions'
 
-                  jobs:
-                    send-telegram:
-                        name: "🔔 Send Telegram Message"
-                            runs-on: ubuntu-latest
-                                steps:
-                                      - uses: actions/checkout@v4
+                                    jobs:
+                                      send-telegram:
+                                          runs-on: ubuntu-latest
+                                              steps:
+                                                    - uses: actions/checkout@v4
+                                                          - name: Send to Telegram API
+                                                                  run: |
+                                                                            # Test message
+                                                                                      MESSAGE="🤖 GitHub Actions Test\n Repository: ${{ github.repo }}"
 
-                                            - name: "📤 Send to Telegram API"
-                                                    run: |
-                                                              TELEGRAM_URL="https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
-
-                                                                                  # Test message
-                                                                                            MESSAGE="🤖 GitHub Actions Test\n📍 Repository: ${{ github.repository }}\n🔗 Branch: ${{ github.ref_name }}\n✅ Workflow executed successfully!"
-                                                                                                      
-                                                                                                                # Send message to Telegram
-                                                                                                                          RESPONSE=$(curl -s -X POST "$TELEGRAM_URL" \
-                                                                                                                                      -H "Content-Type: application/json" \
-                                                                                                                                                  -d "{
-                                                                                                                                                                \"chat_id\": ${{ secrets.TELEGRAM_CHAT_ID }},
-                                                                                                                                                                              \"text\": \"$MESSAGE\",
-                                                                                                                                                                                            \"parse_mode\": \"MarkdownV2\"
-                                                                                                                                                                                                        }")
-                                                                                                                                                                                                                  
-                                                                                                                                                                                                                            echo "Telegram Response: $RESPONSE"
-                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                # Check if message was sent successfully
-                                                                                                                                                                                                                                                          if echo "$RESPONSE" | grep -q '"ok":true'; then
-                                                                                                                                                                                                                                                                      echo "✅ Message sent successfully to Telegram!"
-                                                                                                                                                                                                                                                                                  exit 0
-                                                                                                                                                                                                                                                                                            else
-                                                                                                                                                                                                                                                                                                        echo "❌ Failed to send message to Telegram"
-                                                                                                                                                                                                                                                                                                                    echo "Response: $RESPONSE"
-                                                                                                                                                                                                                                                                                                                                exit 1
-                                                                                                                                                                                                                                                                                                                                          fi
-                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                - name: "✅ Summary"
-                                                                                                                                                                                                                                                                                                                                                        if: success()
-                                                                                                                                                                                                                                                                                                                                                                run: |
-                                                                                                                                                                                                                                                                                                                                                                          echo "============================================"
-                                                                                                                                                                                                                                                                                                                                                                                    echo "✅ Telegram Integration Test Successful"
-                                                                                                                                                                                                                                                                                                                                                                                              echo "============================================"
-                                                                                                                                                                                                                                                                                                                                                                                                        echo "Recipient Chat ID: ${{ secrets.TELEGRAM_CHAT_ID }}"
-                                                                                                                                                                                                                                                                                                                                                                                                                  echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-                                                                                                                                                                                                                                                                                                                                                                                                                            echo "============================================"
+                                                                                                # Send message to Telegram
+                                                                                                          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+                                                                                                                      -H "Content-Type: application/json" \
+                                                                                                                                  -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
+                                                                                                                                  
+                                                                                                                                            # Check if response contains an error
+                                                                                                                                                      if echo "$RESPONSE" | grep -q "error_code"; then
+                                                                                                                                                                  echo "Error posting to Telegram:"
+                                                                                                                                                                              echo "$RESPONSE"
+                                                                                                                                                                                          exit 1
+                                                                                                                                                                                                    else
+                                                                                                                                                                                                                echo "✅ Message posted successfully to Telegram"
+                                                                                                                                                                                                                            echo "$RESPONSE"
+                                                                                                                                                                                                                                      fi
