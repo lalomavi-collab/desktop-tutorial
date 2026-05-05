@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { SocialMediaManager } from './components/SocialMediaManager';
+import { EmailDashboard } from './components/EmailDashboard';
 import { mockAgents, mockActivity } from './data/mockData';
 
-type View = 'dashboard' | 'social' | 'analytics' | 'settings';
+type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'email';
 
 function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -21,7 +22,7 @@ function App() {
   };
 
   const handleViewChange = (view: View) => {
-    setActiveView(view);
+    setActiveView(view as View);
     if (view === 'social') {
       setSelectedAgentId(socialManager.id);
     }
@@ -63,6 +64,10 @@ function App() {
             </div>
             <SocialMediaManager agent={socialManager} />
           </div>
+        )}
+
+        {activeView === 'email' && (
+          <EmailDashboard />
         )}
 
         {activeView === 'analytics' && (

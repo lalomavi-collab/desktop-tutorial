@@ -1,0 +1,206 @@
+{
+  "fetchedAt": "2026-05-05T07:00:00.000Z",
+  "account": "lalomavi@gmail.com",
+  "totalCount": 18,
+  "unreadCount": 12,
+  "emails": [
+    {
+      "id": "alert-github-token",
+      "from": "GitHub",
+      "fromEmail": "noreply@github.com",
+      "subject": "Your personal access token (LALUM) will expire in 1 day",
+      "preview": "Token LALUM will expire on May 6, 2026. Create a new token before it expires to continue using the GitHub API.",
+      "timestamp": "2026-05-05T06:14:00.000Z",
+      "category": "alerts",
+      "read": false,
+      "urgent": true
+    },
+    {
+      "id": "alert-google-security",
+      "from": "Google",
+      "fromEmail": "no-reply@accounts.google.com",
+      "subject": "New app access to your Google Account — Timeless",
+      "preview": "The app Timeless was recently granted access to your Google Account lalomavi@gmail.com. If you didn't do this, review your account.",
+      "timestamp": "2026-05-05T05:48:00.000Z",
+      "category": "alerts",
+      "read": false,
+      "urgent": true
+    },
+    {
+      "id": "linkedin-perf-001",
+      "from": "LinkedIn",
+      "fromEmail": "jobs-noreply@linkedin.com",
+      "subject": "Your post is getting 3× more views this week",
+      "preview": "Congratulations! Your recent post about AI and legal tech is performing exceptionally well.",
+      "timestamp": "2026-05-05T07:02:00.000Z",
+      "category": "linkedin",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "linkedin-conn-001",
+      "from": "LinkedIn",
+      "fromEmail": "invitations@linkedin.com",
+      "subject": "Kinneret אבן-צור רוצה להתחבר אליך",
+      "preview": "Kinneret, עורכת דין | מומחית לקניין רוחני — sent you a connection request.",
+      "timestamp": "2026-05-05T04:30:00.000Z",
+      "category": "linkedin",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "linkedin-jobs-001",
+      "from": "LinkedIn Jobs",
+      "fromEmail": "jobs-noreply@linkedin.com",
+      "subject": "4 משרות חדשות שיכולות לעניין אותך",
+      "preview": "AI Product Manager at Wix · Senior ML Engineer at Monday.com · Head of AI at IronSource · LegalTech Advisor",
+      "timestamp": "2026-05-04T20:00:00.000Z",
+      "category": "linkedin",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "linkedin-news-001",
+      "from": "LinkedIn News",
+      "fromEmail": "news@linkedin.com",
+      "subject": "Top stories: AI regulation, Israel tech ecosystem",
+      "preview": "EU AI Act enforcement begins · Israel ranks #5 globally in AI startups per capita · ChatGPT usage in enterprise up 40%",
+      "timestamp": "2026-05-04T18:00:00.000Z",
+      "category": "linkedin",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "tech-gemini-001",
+      "from": "Google AI",
+      "fromEmail": "no-reply@google.com",
+      "subject": "Gemini API: Webhook delivery confirmed",
+      "preview": "Your Zapier webhook endpoint received 3 successful API calls in the last 24 hours. Total tokens used: 12,450.",
+      "timestamp": "2026-05-05T06:00:00.000Z",
+      "category": "tech",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "tech-ollama-001",
+      "from": "Ollama Community",
+      "fromEmail": "hello@ollama.ai",
+      "subject": "Ollama + Claude integration guide — new patterns",
+      "preview": "Run Claude locally with Ollama's new API compatibility layer. Zero latency, full privacy, enterprise-grade performance.",
+      "timestamp": "2026-05-05T03:00:00.000Z",
+      "category": "tech",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "tech-openrouter-001",
+      "from": "OpenRouter",
+      "fromEmail": "noreply@openrouter.ai",
+      "subject": "Your monthly usage summary — April 2026",
+      "preview": "Models used: claude-sonnet-4, gpt-4o, llama-3.3 · Total spend: $14.22 · Tokens: 890K",
+      "timestamp": "2026-05-04T22:00:00.000Z",
+      "category": "tech",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "tech-gdg-hackathon",
+      "from": "GDG Rehovot",
+      "fromEmail": "events@gdgrehovot.com",
+      "subject": "AI Hackathon — רשמי! 17 מאי 2026",
+      "preview": "Join us for a 48-hour AI hackathon at Google Campus TLV. Prizes up to ₪50,000. Teams of 2-4. Registration closes May 10.",
+      "timestamp": "2026-05-04T16:00:00.000Z",
+      "category": "tech",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "tech-gdg-io",
+      "from": "GDG Tel Aviv",
+      "fromEmail": "events@gdgtlv.com",
+      "subject": "Google I/O Extended — Watch Party — 20 מאי",
+      "preview": "Join us to watch Google I/O 2026 live. Keynote + breakout sessions + networking. Google Campus Tel Aviv.",
+      "timestamp": "2026-05-04T15:00:00.000Z",
+      "category": "tech",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "newsletter-medium-001",
+      "from": "Medium Daily Digest",
+      "fromEmail": "noreply@medium.com",
+      "subject": "Stories for you: The future of AI agents, LLM economics",
+      "preview": "Why AI agents will replace SaaS · The economics of running your own LLM · How Israeli startups are winning in GenAI",
+      "timestamp": "2026-05-05T06:30:00.000Z",
+      "category": "newsletters",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "newsletter-invest-001",
+      "from": "The Generalist",
+      "fromEmail": "newsletter@thegeneralist.io",
+      "subject": "AI in 2026: The companies that matter",
+      "preview": "Anthropic surpasses $5B ARR · Mistral raises €600M · Why Claude is winning enterprise · The agent stack explained",
+      "timestamp": "2026-05-04T21:00:00.000Z",
+      "category": "newsletters",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "newsletter-literary-001",
+      "from": "סוכנות ספרותית מעוף",
+      "fromEmail": "contact@maofliterary.co.il",
+      "subject": "הצעת שיתוף פעולה — כתיבת תוכן AI",
+      "preview": "אנו מחפשים כותבים עם רקע ב-AI לפרויקט ייחודי. שכר: ₪8,000 לחודש. ניתן לעבוד מרחוק.",
+      "timestamp": "2026-05-04T14:00:00.000Z",
+      "category": "newsletters",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "promo-google-ads-001",
+      "from": "Google Ads",
+      "fromEmail": "ads-noreply@google.com",
+      "subject": "3 הצעות לשיפור ביצועי הקמפיין שלך",
+      "preview": "הוסף מילות מפתח חדשות · הגדל תקציב יומי ב-20% · השתמש ב-Smart Bidding לשיפור ROI",
+      "timestamp": "2026-05-05T08:00:00.000Z",
+      "category": "promotions",
+      "read": false,
+      "urgent": false
+    },
+    {
+      "id": "promo-monday-001",
+      "from": "Monday.com",
+      "fromEmail": "hello@monday.com",
+      "subject": "חדש: AI Workflow Builder עכשיו זמין!",
+      "preview": "בנה תהליכי עבודה אוטומטיים עם AI. אמור לסוכן מה אתה רוצה — הוא יבנה את ה-workflow בשבילך.",
+      "timestamp": "2026-05-04T12:00:00.000Z",
+      "category": "promotions",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "promo-canva-001",
+      "from": "Canva",
+      "fromEmail": "noreply@canva.com",
+      "subject": "Canva Pro — 30% off — הצעה ל-48 שעות",
+      "preview": "Get Canva Pro with AI tools, unlimited storage, and premium templates. Offer ends May 7.",
+      "timestamp": "2026-05-04T10:00:00.000Z",
+      "category": "promotions",
+      "read": true,
+      "urgent": false
+    },
+    {
+      "id": "promo-aws-001",
+      "from": "AWS",
+      "fromEmail": "aws-marketing@amazon.com",
+      "subject": "$300 AWS Credits for AI/ML Projects",
+      "preview": "Apply for AWS Activate and receive $300 in credits for building AI/ML applications on AWS Bedrock.",
+      "timestamp": "2026-05-04T09:00:00.000Z",
+      "category": "promotions",
+      "read": true,
+      "urgent": false
+    }
+  ]
+}

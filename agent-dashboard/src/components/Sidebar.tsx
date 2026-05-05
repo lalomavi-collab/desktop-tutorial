@@ -1,12 +1,14 @@
-import { Bot, LayoutDashboard, Share2, BarChart2, Settings, Zap } from 'lucide-react';
+import { Bot, LayoutDashboard, Share2, BarChart2, Settings, Zap, Mail } from 'lucide-react';
 import type { Agent } from '../types';
+
+type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'email';
 
 interface SidebarProps {
   agents: Agent[];
   selectedAgentId: string | null;
-  activeView: 'dashboard' | 'social' | 'analytics' | 'settings';
+  activeView: View;
   onSelectAgent: (id: string) => void;
-  onViewChange: (view: 'dashboard' | 'social' | 'analytics' | 'settings') => void;
+  onViewChange: (view: View) => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -17,12 +19,13 @@ const statusColors: Record<string, string> = {
 };
 
 export function Sidebar({ agents, selectedAgentId, activeView, onSelectAgent, onViewChange }: SidebarProps) {
-  const navItems = [
-    { id: 'dashboard', label: 'דשבורד', icon: LayoutDashboard },
-    { id: 'social', label: 'רשתות חברתיות', icon: Share2 },
-    { id: 'analytics', label: 'אנליטיקס', icon: BarChart2 },
-    { id: 'settings', label: 'הגדרות', icon: Settings },
-  ] as const;
+  const navItems: { id: View; label: string; icon: React.ElementType; badge?: number }[] = [
+    { id: 'dashboard', label: 'דשבורד',         icon: LayoutDashboard },
+    { id: 'social',    label: 'רשתות חברתיות', icon: Share2 },
+    { id: 'email',     label: 'מיילים',          icon: Mail, badge: 12 },
+    { id: 'analytics', label: 'אנליטיקס',       icon: BarChart2 },
+    { id: 'settings',  label: 'הגדרות',          icon: Settings },
+  ];
 
   return (
     <aside className="w-64 flex-shrink-0 bg-[#13151f] border-r border-gray-800 flex flex-col h-screen sticky top-0">
@@ -41,7 +44,7 @@ export function Sidebar({ agents, selectedAgentId, activeView, onSelectAgent, on
 
       {/* Navigation */}
       <nav className="p-3 border-b border-gray-800">
-        {navItems.map(({ id, label, icon: Icon }) => (
+        {navItems.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => onViewChange(id)}
@@ -52,7 +55,12 @@ export function Sidebar({ agents, selectedAgentId, activeView, onSelectAgent, on
             }`}
           >
             <Icon size={16} />
-            {label}
+            <span className="flex-1 text-right">{label}</span>
+            {badge && (
+              <span className="px-1.5 py-0.5 rounded-full text-xs bg-blue-500/20 text-blue-400 font-medium">
+                {badge}
+              </span>
+            )}
           </button>
         ))}
       </nav>
