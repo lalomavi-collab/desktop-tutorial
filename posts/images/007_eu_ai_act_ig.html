@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    background: #1B1B1B;
+    font-family: 'Arial Hebrew', Arial, sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 56px 68px;
+    position: relative;
+  }
+  .accent-top { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #800020, #D4AF37, #800020); }
+  .accent-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #800020, #D4AF37, #800020); }
+  .gold-bar-right { position: absolute; right: 0; top: 0; bottom: 0; width: 6px; background: linear-gradient(180deg, #D4AF37, #800020, #D4AF37); }
+
+  .top { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 1; }
+  .brand { font-size: 13px; color: #D4AF37; letter-spacing: 3px; font-weight: 700; }
+  .tag { font-size: 11px; color: #800020; letter-spacing: 2px; border: 1px solid #800020; padding: 5px 12px; }
+
+  /* EU Stars circle - center visual */
+  .eu-visual {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    z-index: 1;
+    margin: -10px auto;
+  }
+  .eu-visual svg { width: 100%; height: 100%; }
+
+  .center { text-align: center; z-index: 1; width: 100%; }
+
+  .deadline-pill {
+    display: inline-block;
+    background: rgba(128,0,32,0.25);
+    border: 1px solid #800020;
+    color: #D4AF37;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    padding: 8px 24px;
+    margin-bottom: 18px;
+  }
+
+  .headline { font-size: 62px; color: #FFFDD0; font-weight: 900; line-height: 1.15; margin-bottom: 10px; }
+  .headline .gold { color: #D4AF37; }
+  .headline .burg { color: #800020; }
+
+  .sub { font-size: 22px; color: #FFFDD0; opacity: 0.72; line-height: 1.55; margin-bottom: 28px; }
+  .sub strong { color: #D4AF37; }
+
+  .divider { width: 60px; height: 2px; background: #D4AF37; margin: 0 auto 28px; }
+
+  .qs { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+  .q-row {
+    display: flex; align-items: center; gap: 18px;
+    background: rgba(212,175,55,0.06);
+    border-right: 3px solid #D4AF37;
+    padding: 14px 20px;
+  }
+  .q-num { font-size: 30px; color: #D4AF37; font-weight: 900; min-width: 44px; }
+  .q-txt { font-size: 19px; color: #FFFDD0; opacity: 0.88; line-height: 1.35; }
+
+  .bottom { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 1; }
+  .dom { font-size: 11px; color: #D4AF37; opacity: 0.55; letter-spacing: 2px; }
+  .hash { font-size: 12px; color: #FFFDD0; opacity: 0.35; }
+</style>
+</head>
+<body>
+  <div class="accent-top"></div>
+  <div class="accent-bottom"></div>
+  <div class="gold-bar-right"></div>
+
+  <div class="top">
+    <div class="brand">The Legal Algorist</div>
+    <div class="tag">EU AI ACT · §8</div>
+  </div>
+
+  <div class="eu-visual">
+    <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="90" r="80" fill="none" stroke="#D4AF37" stroke-width="1" stroke-dasharray="3 5" opacity="0.25"/>
+      <circle cx="90" cy="90" r="62" fill="none" stroke="#800020" stroke-width="0.8" opacity="0.2"/>
+      <g fill="#D4AF37" opacity="0.5" font-size="16">
+        <text x="90" y="20" text-anchor="middle">★</text>
+        <text x="127" y="35" text-anchor="middle">★</text>
+        <text x="152" y="68" text-anchor="middle">★</text>
+        <text x="152" y="108" text-anchor="middle">★</text>
+        <text x="130" y="142" text-anchor="middle">★</text>
+        <text x="96" y="162" text-anchor="middle">★</text>
+        <text x="58" y="163" text-anchor="middle">★</text>
+        <text x="26" y="144" text-anchor="middle">★</text>
+        <text x="6" y="110" text-anchor="middle">★</text>
+        <text x="6" y="70" text-anchor="middle">★</text>
+        <text x="26" y="36" text-anchor="middle">★</text>
+        <text x="60" y="18" text-anchor="middle">★</text>
+      </g>
+      <text x="90" y="103" text-anchor="middle" fill="#800020" font-size="48" font-weight="900" opacity="0.7">!</text>
+    </svg>
+  </div>
+
+  <div class="center">
+    <div class="deadline-pill">⏰ DEADLINE: אוגוסט 2026</div>
+    <div class="headline">
+      ישראל ישנה.<br>
+      הלקוחות<br>
+      <span class="gold">כבר בסיכון.</span>
+    </div>
+    <div class="sub">
+      עבודה משפטית עם AI = <strong>סיכון גבוה</strong>.<br>
+      קנס: <strong>€35M</strong> או 7% מהמחזור.
+    </div>
+    <div class="divider"></div>
+    <div class="qs">
+      <div class="q-row"><div class="q-num">01</div><div class="q-txt">הכלים שלך — מסווגים כסיכון גבוה?</div></div>
+      <div class="q-row"><div class="q-num">02</div><div class="q-txt">יש לך סעיף שקיפות אלגוריתמית?</div></div>
+      <div class="q-row"><div class="q-num">03</div><div class="q-txt">לקוח EU עוצר עסקה — מה האחריות שלך?</div></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="dom">DOM MODEL · LALUM LEGAL CLINIC</div>
+    <div class="hash">#LegalAlgorist</div>
+  </div>
+</body>
+</html>

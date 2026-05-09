@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px;
+    background: #1B1B1B;
+    font-family: Georgia, serif;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+  }
+  .gold-bar { width: 7px; background: linear-gradient(180deg, #D4AF37, #800020, #D4AF37); flex-shrink: 0; }
+  .main { flex: 1; padding: 48px 56px 36px 56px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+  .accent-top { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #800020, #D4AF37, #800020); }
+
+  .top-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .brand { font-size: 12px; color: #D4AF37; letter-spacing: 3px; font-weight: 700; font-family: Arial, sans-serif; }
+  .tag { font-size: 11px; color: #800020; letter-spacing: 2px; border: 1px solid #800020; padding: 4px 12px; font-family: Arial, sans-serif; }
+
+  .countdown {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .countdown-box {
+    background: rgba(128,0,32,0.2);
+    border: 1px solid #800020;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .countdown-num { font-size: 32px; font-weight: 900; color: #D4AF37; font-family: Arial, sans-serif; line-height: 1; }
+  .countdown-label { font-size: 10px; color: #FFFDD0; opacity: 0.6; letter-spacing: 2px; font-family: Arial, sans-serif; }
+  .countdown-sep { font-size: 28px; color: #D4AF37; font-family: Arial, sans-serif; opacity: 0.4; }
+  .deadline-text { font-size: 13px; color: #FFFDD0; opacity: 0.65; font-family: Arial, sans-serif; letter-spacing: 1px; }
+
+  .headline { font-size: 48px; color: #FFFDD0; font-weight: 700; line-height: 1.15; margin-bottom: 14px; max-width: 820px; }
+  .headline .gold { color: #D4AF37; }
+  .sub { font-size: 19px; color: #FFFDD0; opacity: 0.7; line-height: 1.6; max-width: 700px; font-family: Arial, sans-serif; }
+
+  .three-qs {
+    display: flex;
+    gap: 16px;
+  }
+  .q-box {
+    flex: 1;
+    background: rgba(212,175,55,0.06);
+    border: 1px solid rgba(212,175,55,0.25);
+    padding: 12px 16px;
+  }
+  .q-num { font-size: 22px; color: #D4AF37; font-weight: 900; font-family: Arial, sans-serif; line-height: 1; }
+  .q-txt { font-size: 13px; color: #FFFDD0; opacity: 0.82; margin-top: 5px; line-height: 1.4; font-family: Arial, sans-serif; }
+
+  .bottom-row { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 14px; }
+  .penalty { font-size: 13px; color: #D4AF37; font-family: Arial, sans-serif; font-weight: 700; }
+  .penalty span { color: #FFFDD0; font-size: 11px; opacity: 0.55; font-weight: 400; display: block; }
+  .dom { font-size: 10px; color: #D4AF37; opacity: 0.5; letter-spacing: 2px; font-family: Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div class="gold-bar"></div>
+<div class="main">
+  <div class="accent-top"></div>
+
+  <div class="top-row">
+    <div class="brand">THE LEGAL ALGORIST</div>
+    <div class="tag">EU AI ACT · ANNEX III §8 · HIGH RISK</div>
+  </div>
+
+  <div>
+    <div class="countdown">
+      <div class="countdown-box">
+        <div class="countdown-num">AUG</div>
+        <div class="countdown-label">2026</div>
+      </div>
+      <div class="countdown-sep">→</div>
+      <div class="deadline-text">FULL COMPLIANCE REQUIRED<br>FOR HIGH-RISK AI SYSTEMS</div>
+    </div>
+
+    <div class="headline">
+      The EU legislated.<br>
+      Israel is still asleep.<br>
+      <span class="gold">Your clients are already exposed.</span>
+    </div>
+    <div class="sub" style="margin-top:10px;">
+      Legal proceedings, evidence analysis, decision support = <strong>High-Risk AI</strong> under Annex III §8.<br>
+      Penalty: up to <strong style="color:#D4AF37;">€35M</strong> or <strong style="color:#D4AF37;">7%</strong> of worldwide annual turnover.
+    </div>
+  </div>
+
+  <div class="three-qs">
+    <div class="q-box">
+      <div class="q-num">01</div>
+      <div class="q-txt">Which tools you use qualify as high-risk under Annex III?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-num">02</div>
+      <div class="q-txt">Do your contracts include transparency clauses?</div>
+    </div>
+    <div class="q-box">
+      <div class="q-num">03</div>
+      <div class="q-txt">If a European client halts a deal — what is your liability?</div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="penalty">
+      Extraterritorial reach applies
+      <span>Serving EU clients from Israel = in scope. No exceptions.</span>
+    </div>
+    <div class="dom">DOM MODEL · DECISION-ORIENTED MEDIATION</div>
+  </div>
+</div>
+</body>
+</html>

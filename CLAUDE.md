@@ -6,12 +6,24 @@
 
 Every post MUST follow this flow:
 
+### Step 0: World Case Research (MANDATORY)
+Before writing ANY post, perform a web search for real-world cases:
+- Search for 2–3 real legal/court cases related to the topic
+- Prefer cases from 2023–2026 for maximum relevance
+- Include case name, jurisdiction, outcome, and why it matters
+- These cases become the factual backbone of the post
+- Save findings in the post draft and in `posts/topics-bank.md`
+
 ### Step 1: Draft
 - Write Hebrew text (Facebook, Telegram, Instagram)
 - Write English text (LinkedIn)
+- Each post must reference at least one real-world case
 - Save to `posts/` directory
 
-### Step 2: Create Images
+### Step 2: Create Images — Topic-Specific (NOT generic)
+Every image must visually reflect the specific post topic:
+- Use a unique visual concept per post (not just the brand template)
+- Include a relevant visual metaphor (scales, broken chain, split face, etc.)
 - Hebrew wide (1200x630) for Facebook/Telegram
 - English wide (1200x630) for LinkedIn
 - Hebrew square (1080x1080) for Instagram
@@ -21,18 +33,24 @@ Every post MUST follow this flow:
 ### Step 3: Preview Page
 - Create/update `posts/preview.html` showing ALL content:
   - Post text (Hebrew + English)
-  - Images embedded (all sizes)
+  - ALL THREE images embedded side by side
+  - Real-world cases referenced
   - Target platforms
   - Scheduled date/time
 - Tell the user to open the preview page in their browser
 
-### Step 4: Wait for Approval
-- **DO NOT** create workflow files or trigger any dispatch until user says "approved" / "מאושר"
-- If user requests changes, update and show preview again
-- Only after explicit approval: create the scheduled workflow and commit
+### Step 4: Wait for Approval — Three Explicit Approvals Required
+The user must approve ALL THREE separately:
+1. **Instagram** — Hebrew square image + Hebrew text
+2. **Facebook** — Hebrew wide image + Hebrew text
+3. **LinkedIn** — English wide image + English text
+
+- **DO NOT** create workflow files until all three are approved
+- If user requests changes to any one, update only that item and re-show
+- Only after explicit "approved" / "מאושר" for all three: proceed to Step 5
 
 ### Step 5: Publish
-- Only after approval: create `.github/workflows/` file
+- Only after full approval: create `.github/workflows/` file
 - Commit and push
 - User merges to main and triggers
 
