@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {
   CheckCircle2, XCircle, Send, Clock, Zap, Plus, Loader2,
-  AlertCircle, ChevronDown, ChevronUp, Sparkles, Eye, EyeOff,
-  Calendar, RefreshCw, Trash2,
+  AlertCircle, Sparkles, Eye, EyeOff,
+  Calendar, RefreshCw, Trash2, Square, CheckSquare, MinusSquare,
 } from 'lucide-react';
 import type { Platform, QueuedPost } from '../types';
 import { platformMeta } from './PlatformAgentCard';
@@ -303,15 +303,18 @@ interface PostCardProps {
   onSend: (id: string) => Promise<void>;
   onDelete: (id: string) => void;
   sending: string | null;
+  selected: boolean;
+  onToggleSelect: (id: string) => void;
 }
 
-function PostCard({ post, onApprove, onReject, onSend, onDelete, sending }: PostCardProps) {
+function PostCard({ post, onApprove, onReject, onSend, onDelete, sending, selected, onToggleSelect }: PostCardProps) {
   const [expanded, setExpanded] = useState(false);
   const sm = STATUS_META[post.status];
   const isSending = sending === post.id;
 
   return (
     <div className={`bg-[#13151f] border rounded-xl overflow-hidden transition-all ${
+      selected ? 'border-purple-500/50 ring-1 ring-purple-500/20' :
       post.status === 'sent' ? 'border-green-500/20' :
       post.status === 'pending' ? 'border-yellow-500/20' :
       post.status === 'rejected' ? 'border-gray-800' :
@@ -320,10 +323,18 @@ function PostCard({ post, onApprove, onReject, onSend, onDelete, sending }: Post
       {/* Header */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
-          {/* Status badge */}
-          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${sm.color}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`} />
-            {sm.label}
+          {/* Checkbox + Status badge */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onToggleSelect(post.id)}
+              className="text-gray-600 hover:text-purple-400 transition-colors flex-shrink-0"
+            >
+              {selected ? <CheckSquare size={16} className="text-purple-400" /> : <Square size={16} />}
+            </button>
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${sm.color}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`} />
+              {sm.label}
+            </div>
           </div>
 
           {/* Topic + meta */}
@@ -484,8 +495,33 @@ export function PostApprovalQueue({ posts, onUpdate, connectedPlatforms }: PostA
   const [showNewForm, setShowNewForm] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | QueuedPost['status']>('all');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const filtered = filter === 'all' ? posts : posts.filter(p => p.status === filter);
+
+  const selectableIds = filtered.map(p => p.id);
+  const allSelected = selectableIds.length > 0 && selectableIds.every(id => selected.has(id));
+  const someSelected = selectableIds.some(id => selected.has(id));
+  const selectedInView = selectableIds.filter(id => selected.has(id));
+
+  const toggleSelect = (id: string) =>
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelected(prev => {
+        const next = new Set(prev);
+        selectableIds.forEach(id => next.delete(id));
+        return next;
+      });
+    } else {
+      setSelected(prev => new Set([...prev, ...selectableIds]));
+    }
+  };
 
   const counts = {
     pending:  posts.filter(p => p.status === 'pending').length,
@@ -499,6 +535,16 @@ export function PostApprovalQueue({ posts, onUpdate, connectedPlatforms }: PostA
   const handleApprove = (id: string) => updatePost(id, { status: 'approved' });
   const handleReject  = (id: string) => updatePost(id, { status: 'rejected' });
   const handleDelete  = (id: string) => onUpdate(posts.filter(p => p.id !== id));
+
+  const handleBulkApprove = () => {
+    onUpdate(posts.map(p => selected.has(p.id) && p.status === 'pending' ? { ...p, status: 'approved' } : p));
+    setSelected(new Set());
+  };
+
+  const handleBulkReject = () => {
+    onUpdate(posts.map(p => selected.has(p.id) && (p.status === 'pending' || p.status === 'approved') ? { ...p, status: 'rejected' } : p));
+    setSelected(new Set());
+  };
 
   const handleSend = async (id: string) => {
     const post = posts.find(p => p.id === id);
@@ -588,6 +634,42 @@ export function PostApprovalQueue({ posts, onUpdate, connectedPlatforms }: PostA
         </div>
       )}
 
+      {/* Select all bar */}
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            {someSelected && (
+              <>
+                <button
+                  onClick={handleBulkApprove}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-all"
+                >
+                  <CheckCircle2 size={12} /> אשר נבחרים
+                </button>
+                <button
+                  onClick={handleBulkReject}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/15 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-all"
+                >
+                  <XCircle size={12} /> דחה נבחרים
+                </button>
+              </>
+            )}
+          </div>
+          <button
+            onClick={toggleSelectAll}
+            className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            <span>{allSelected ? 'בטל בחירה' : 'בחר הכל'}</span>
+            {allSelected
+              ? <CheckSquare size={15} className="text-purple-400" />
+              : someSelected
+                ? <MinusSquare size={15} className="text-purple-400" />
+                : <Square size={15} />
+            }
+          </button>
+        </div>
+      )}
+
       {/* Post list */}
       {filtered.length === 0 ? (
         <div className="bg-[#13151f] border border-gray-800 rounded-xl p-10 text-center">
@@ -607,8 +689,19 @@ export function PostApprovalQueue({ posts, onUpdate, connectedPlatforms }: PostA
               onSend={handleSend}
               onDelete={handleDelete}
               sending={sending}
+              selected={selected.has(post.id)}
+              onToggleSelect={toggleSelect}
             />
           ))}
+        </div>
+      )}
+
+      {/* Selected count badge */}
+      {selectedInView.length > 0 && (
+        <div className="flex items-center justify-end">
+          <span className="text-xs text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">
+            {selectedInView.length} נבחרו
+          </span>
         </div>
       )}
     </div>
