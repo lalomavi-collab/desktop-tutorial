@@ -25,7 +25,7 @@ export function Sidebar({ agents, selectedAgentId, activeView, onSelectAgent, on
   ] as const;
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-[#13151f] border-r border-gray-800 flex flex-col h-screen sticky top-0">
+    <aside className="w-64 flex-shrink-0 bg-[#13151f] border-r border-gray-800 flex flex-col h-screen sticky top-0" dir="rtl">
       {/* Logo */}
       <div className="p-5 border-b border-gray-800">
         <div className="flex items-center gap-3">
