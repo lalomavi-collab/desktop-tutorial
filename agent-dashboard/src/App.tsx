@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { DashboardView } from './components/DashboardView';
+import { MainDashboard } from './components/MainDashboard';
 import { SocialMediaManager } from './components/SocialMediaManager';
-import { mockAgents, mockActivity } from './data/mockData';
+import { mockAgents, mockActivity, mockQueuedPosts } from './data/mockData';
 
 type View = 'dashboard' | 'social' | 'analytics' | 'settings';
 
@@ -39,9 +39,10 @@ function App() {
 
       <main className="flex-1 overflow-auto p-6">
         {activeView === 'dashboard' && (
-          <DashboardView
+          <MainDashboard
             agents={mockAgents}
             activities={mockActivity}
+            queuedPosts={mockQueuedPosts}
             onSelectAgent={handleSelectAgent}
           />
         )}

@@ -1,4 +1,4 @@
-import type { Agent, Post, ActivityItem } from '../types';
+import type { Agent, Post, ActivityItem, QueuedPost } from '../types';
 
 export const mockAgents: Agent[] = [
   {
@@ -130,6 +130,62 @@ export const mockPosts: Post[] = [
     likes: 521,
     shares: 89,
     comments: 67,
+  },
+];
+
+export const mockQueuedPosts: QueuedPost[] = [
+  {
+    id: 'q-pending-001',
+    topic: 'ChatGPT vs Claude',
+    content: '🤖 ChatGPT מול Claude — מי מנצח ב-2026?\n\nבדקנו 100 משימות ביזנס אמיתיות:\n✅ ניסוח הצעות עסקיות\n✅ ניתוח נתונים ודוחות\n✅ יצירת תוכן שיווקי\n\nהתוצאות יפתיעו אתכם. 👇\n\n#AI #ChatGPT #Claude #בינהמלאכותית',
+    platforms: ['facebook', 'telegram', 'linkedin', 'instagram'],
+    platformOverrides: {
+      linkedin: 'ChatGPT vs Claude in 2026 — We Tested 100 Real Business Tasks\n\nThe results across proposal writing, data analysis, and content creation surprised us.\n\nKey finding: the best tool depends entirely on the use case.\n\n#AI #LLM #BusinessProductivity #ArtificialIntelligence',
+    },
+    status: 'pending',
+    createdAt: '2026-05-10T08:30:00.000Z',
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+  {
+    id: 'q-pending-002',
+    topic: 'טיפים לאוטומציה',
+    content: '⚙️ 5 אוטומציות שיחסכו לכם 10 שעות בשבוע\n\n1️⃣ תזמון פוסטים ברשתות חברתיות\n2️⃣ מענה אוטומטי לפניות נפוצות\n3️⃣ דיווחי ביצועים יומיים\n4️⃣ סינון וסיכום אימיילים\n5️⃣ עדכון CRM אוטומטי\n\nאיזו אוטומציה הכי שינתה לכם את החיים? 💬\n\n#אוטומציה #פרודוקטיביות #AI #עסקים',
+    platforms: ['facebook', 'telegram', 'instagram'],
+    status: 'pending',
+    createdAt: '2026-05-09T14:00:00.000Z',
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+  {
+    id: 'q-law-ai-001',
+    topic: 'משפט ו-AI',
+    content: '📚 בינה מלאכותית ומשפט — המהפכה כבר כאן\n\nAI משנה את עולם המשפט לבלי הכר:\n✅ ניתוח חוזים תוך שניות\n✅ חיזוי פסקי דין על בסיס פסיקה היסטורית\n✅ סיוע לעורכי דין בחקר משפטי מעמיק\n\nהאם AI יחליף עורכי דין? 🤔\nלא — אבל עורך דין שמשתמש ב-AI ייקח את מקומו של מי שלא.\n\n#AI #משפט #בינהמלאכותית #עתיד_המקצועות',
+    platforms: ['telegram', 'linkedin', 'facebook'],
+    platformOverrides: {
+      linkedin: 'AI & Law: The Legal Revolution Is Here 🏛️\n\nAI is reshaping the legal profession:\n✅ Contract analysis in seconds\n✅ Case outcome prediction\n✅ Automated legal research at scale\n\n#AI #LegalTech #ArtificialIntelligence',
+    },
+    status: 'failed',
+    createdAt: '2026-03-30T10:00:00.000Z',
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+  {
+    id: 'q-ai-creativity-002',
+    topic: 'AI ויצירתיות',
+    content: '🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n#AI #יצירתיות #עתיד',
+    platforms: ['telegram', 'linkedin', 'facebook', 'instagram'],
+    status: 'approved',
+    createdAt: '2026-03-30T10:00:00.000Z',
+    scheduledFor: '2026-05-14T19:00:00',
+    createdBy: 'עידית — מנהלת השיווק',
+  },
+  {
+    id: 'q-ai-business-003',
+    topic: 'AI לעסקים קטנים',
+    content: '🚀 AI לעסקים קטנים — המדריך המלא\n\nאיך עסקים קטנים מתחרים בתאגידים גדולים? עם AI.\n\n💡 כלים שכבר עושים את זה:\n• יצירת תוכן שיווקי אוטומטי\n• שירות לקוחות 24/7\n• ניתוח מתחרים בזמן אמת\n\n#עסקים #AI #יזמות',
+    platforms: ['telegram', 'linkedin', 'facebook'],
+    status: 'approved',
+    createdAt: '2026-03-30T10:00:00.000Z',
+    scheduledFor: '2026-05-21T19:00:00',
+    createdBy: 'עידית — מנהלת השיווק',
   },
 ];
 
