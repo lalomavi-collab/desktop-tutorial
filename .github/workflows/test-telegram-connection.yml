@@ -22,14 +22,6 @@ jobs:
           MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC')
 
 
-הסוכנים המחוברים:
-• Claude Code (Stop Hook)
-• Builder Agent (Python)
-• Quick Build Agent (Python)
-• Social Media Agent (GitHub Actions)
-• שליחת פוסטים ידנית
-• פוסטים מתוזמנים"
-
           RESPONSE=$(curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
