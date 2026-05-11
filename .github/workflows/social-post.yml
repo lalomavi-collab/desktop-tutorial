@@ -5,11 +5,23 @@ on:
   schedule:
     - cron: '0 16 * * 6'
 
-  # Manual trigger — for testing NOW from GitHub Actions tab
+  # Manual trigger — run NOW from the Actions tab
   workflow_dispatch:
     inputs:
+      telegram_url:
+        description: 'Zapier Webhook — Telegram'
+        required: false
+        default: ''
+      linkedin_url:
+        description: 'Zapier Webhook — LinkedIn'
+        required: false
+        default: ''
+      facebook_url:
+        description: 'Zapier Webhook — Facebook'
+        required: false
+        default: ''
       force_send_id:
-        description: 'Post ID to force-send (leave empty to send all approved)'
+        description: 'Post ID to force-send (empty = all approved)'
         required: false
         default: ''
       dry_run:
@@ -23,24 +35,20 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to commit the updated queue back
+      contents: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Send posts via Zapier webhooks
         env:
-          ZAPIER_TELEGRAM: ${{ secrets.ZAPIER_TELEGRAM }}
-          ZAPIER_LINKEDIN:  ${{ secrets.ZAPIER_LINKEDIN }}
-          ZAPIER_FACEBOOK:  ${{ secrets.ZAPIER_FACEBOOK }}
-          ZAPIER_TWITTER:   ${{ secrets.ZAPIER_TWITTER }}
-          ZAPIER_INSTAGRAM: ${{ secrets.ZAPIER_INSTAGRAM }}
+          # Prefer manually-entered URLs; fall back to repo Secrets
+          ZAPIER_TELEGRAM: ${{ github.event.inputs.telegram_url || secrets.ZAPIER_TELEGRAM }}
+          ZAPIER_LINKEDIN:  ${{ github.event.inputs.linkedin_url  || secrets.ZAPIER_LINKEDIN }}
+          ZAPIER_FACEBOOK:  ${{ github.event.inputs.facebook_url  || secrets.ZAPIER_FACEBOOK }}
           FORCE_POST_ID:    ${{ github.event.inputs.force_send_id }}
           DRY_RUN:          ${{ github.event.inputs.dry_run || 'false' }}
         run: node scripts/send-posts.js
@@ -53,7 +61,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "✅ סמן פוסטים שנשלחו [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git commit -m "✅ פוסטים נשלחו [$(date -u '+%Y-%m-%d %H:%M UTC')]"
             git push
           fi
 

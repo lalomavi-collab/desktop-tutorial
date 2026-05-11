@@ -154,6 +154,24 @@ export function ContentCalendar({ posts, onUpdate, onSendNow }: ContentCalendarP
               {/* Post content */}
               {post && (
                 <div className="p-4">
+                  <div className="flex gap-1 mb-3 border-b border-gray-800 pb-2">
+                    <button
+                      onClick={() => setEditingId(post.id)}
+                      className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        isEditing ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-300'
+                      }`}
+                    >
+                      כתיבה
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        !isEditing ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-300'
+                      }`}
+                    >
+                      תצוגה מקדימה
+                    </button>
+                  </div>
                   {isEditing ? (
                     <PostEditor
                       post={post}
@@ -165,7 +183,6 @@ export function ContentCalendar({ posts, onUpdate, onSendNow }: ContentCalendarP
                   ) : (
                     <PostPreview
                       post={post}
-                      onEdit={() => setEditingId(post.id)}
                       onSendNow={() => onSendNow(post)}
                       onDelete={() => deletePost(post.id)}
                     />
@@ -270,12 +287,11 @@ function PostEditor({ post, onChange, onMarkReady, onDelete, onClose }: PostEdit
 
 interface PostPreviewProps {
   post: MotzeiShabbatPost;
-  onEdit: () => void;
   onSendNow: () => void;
   onDelete: () => void;
 }
 
-function PostPreview({ post, onEdit, onSendNow, onDelete }: PostPreviewProps) {
+function PostPreview({ post, onSendNow, onDelete }: PostPreviewProps) {
   return (
     <div>
       <p className="text-gray-300 text-sm text-right leading-relaxed mb-3 line-clamp-3">
@@ -296,12 +312,6 @@ function PostPreview({ post, onEdit, onSendNow, onDelete }: PostPreviewProps) {
                   שלח עכשיו
                 </button>
               )}
-              <button
-                onClick={onEdit}
-                className="text-xs text-gray-500 hover:text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-all"
-              >
-                עריכה
-              </button>
               <button
                 onClick={onDelete}
                 className="p-1.5 text-gray-600 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10"
