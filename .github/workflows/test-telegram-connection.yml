@@ -1,21 +1,17 @@
-name: Test Telegram Connection v2
-on: [workflow_dispatch, push]
-jobs:
-  test-telegram:
-      name: Test Telegram
-          runs-on: ubuntu-latest
-              steps:
-                    - name: Send test message
-                            run: |
-                                      BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
-                                                CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
-                                                          MESSAGE="Test Telegram Bot - $(date -u '+%d/%m/%Y %H:%M UTC')"
-                                                                    RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" -H "Content-Type: application/json" -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${MESSAGE}\"}")
-                                                                              echo "Response: ${RESPONSE}"
-                                                                                        if echo "${RESPONSE}" | grep -q '"ok":true'; then
-                                                                                                    echo "SUCCESS - message sent to Telegram"
-                                                                                                              else
-                                                                                                                          echo "FAILED"
-                                                                                                                                      echo "Hint: check that TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set"
-                                                                                                                                                  exit 1
-                                                                                                                                                            fi
+name: Test Telegram Connection
+on:
+  push:
+      branches: [main, 'claude/**']
+        workflow_dispatch:
+        jobs:
+          telegram-test:
+              runs-on: ubuntu-latest
+                  steps:
+                        - run: |
+                                  BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
+                                            CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
+                                                      MESSAGE="Test from GitHub - $(date -u '+%Y-%m-%d %H:%M:%S')"
+                                                                curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+                                                                            -H "Content-Type: application/json" \
+                                                                                        -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${MESSAGE}\"}" | grep -q '"ok":true' \
+                                                                                                    && echo 'SUCCESS' || echo 'FAILED'
