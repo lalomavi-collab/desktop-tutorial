@@ -16,8 +16,7 @@ jobs:
     steps:
       - name: "📤 Send test message"
         run: |
-          MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC') — אם קיבלת זאת הכל עובד ✅"
-
+            MESSAGE="Test Telegram Bot - ${date -u '+%d/%m/%Y %H:%M UTC'}"
           RESPONSE=$(curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
