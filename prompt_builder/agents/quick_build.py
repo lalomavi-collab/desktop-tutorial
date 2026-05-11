@@ -5,6 +5,7 @@ import json
 import anthropic
 
 from prompt_builder.templates.app_templates import STEP_KEYS, STEPS, PromptSession
+from prompt_builder.utils.telegram import notify_agent_done
 
 
 def quick_build(description: str, domain: str = "") -> str:
@@ -55,4 +56,9 @@ def quick_build(description: str, domain: str = "") -> str:
     except json.JSONDecodeError:
         session.answers["task"] = raw
 
-    return session.generate_full_prompt()
+    result = session.generate_full_prompt()
+    notify_agent_done(
+        "Quick Build",
+        f"תיאור: {description[:80]}\nתחום: {domain or 'כללי'}",
+    )
+    return result

@@ -11,6 +11,7 @@
 import anthropic
 
 from prompt_builder.templates.app_templates import STEPS, PromptSession
+from prompt_builder.utils.telegram import notify_agent_done
 
 
 SYSTEM_PROMPT = """\
@@ -213,7 +214,9 @@ class PromptBuilderAgent:
 
     def _generate_final_prompt(self) -> str:
         """מייצר הודעת סיום עם הפרומפט"""
-        return (
-            "כל 6 השלבים הושלמו! הנה הפרומפט שנבנה:\n\n"
-            + self.session.generate_one_liner()
+        one_liner = self.session.generate_one_liner()
+        notify_agent_done(
+            "סוכן בניית פרומפטים",
+            f"פרויקט: {self.session.project_name}\nתחום: {self.session.domain}\nפרומפט: {one_liner[:120]}...",
         )
+        return "כל 6 השלבים הושלמו! הנה הפרומפט שנבנה:\n\n" + one_liner

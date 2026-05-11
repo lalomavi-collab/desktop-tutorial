@@ -2,6 +2,14 @@ name: "🔌 Test Telegram Connection"
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+    paths:
+      - '.github/workflows/test-telegram-connection.yml'
+      - 'scripts/notify-telegram.sh'
+      - 'prompt_builder/utils/telegram.py'
 
 jobs:
   test-telegram:
@@ -11,10 +19,17 @@ jobs:
       - name: "📤 Send test message to Telegram"
         id: send
         run: |
-          MESSAGE="🔌 *בדיקת חיבור* — $(date -u '+%Y-%m-%d %H:%M UTC')
+          MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC')
 
-          זוהי הודעת בדיקה אוטומטית מהסוכן החברתי.
-          אם קיבלת הודעה זו — החיבור לטלגרם תקין ✅"
+אם קיבלת הודעה זו — הכל עובד ✅
+
+הסוכנים המחוברים:
+• סוכן Claude Code (Stop Hook)
+• סוכן בניית פרומפטים (Python)
+• Quick Build Agent (Python)
+• Social Media Agent (GitHub Actions)
+• שליחת פוסטים ידנית
+• פוסטים מתוזמנים"
 
           HTTP_STATUS=$(curl -s -o /tmp/telegram_response.json -w "%{http_code}" \
             -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
