@@ -1,4 +1,4 @@
-name: "🔌 Test Telegram Connection v2"
+name: "🔌 Test Telegram Connection"
 
 on:
   workflow_dispatch:
@@ -8,8 +8,6 @@ on:
       - 'claude/**'
     paths:
       - '.github/workflows/test-telegram-connection.yml'
-      - 'scripts/notify-telegram.sh'
-      - 'prompt_builder/utils/telegram.py'
 
 jobs:
   test-telegram:
@@ -17,32 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "📤 Send test message"
-        id: send
         run: |
-          MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC')
-
+          MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC') — אם קיבלת זאת הכל עובד ✅"
 
           RESPONSE=$(curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": $(echo "$MESSAGE" | jq -Rs .)}")
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
 
-          echo "response=$RESPONSE" >> "$GITHUB_OUTPUT"
+          echo "Response: $RESPONSE"
 
           if echo "$RESPONSE" | grep -q '"ok":true'; then
-            echo "status=success" >> "$GITHUB_OUTPUT"
+            echo "✅ SUCCESS — message sent to Telegram"
           else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "❌ FAILED"
+            echo "Hint: check that TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set"
+            exit 1
           fi
-
-      - name: "✅ Connection OK"
-        if: contains(steps.send.outputs.response, '"ok":true')
-        run: echo "✅ Telegram connection WORKING"
-
-      - name: "❌ Connection FAILED"
-        if: "!contains(steps.send.outputs.response, '\"ok\":true')"
-        run: |
-          echo "❌ Telegram connection FAILED"
-          echo "Response: ${{ steps.send.outputs.response }}"
-          echo "בדוק שה-secrets TELEGRAM_BOT_TOKEN ו-TELEGRAM_CHAT_ID מוגדרים נכון"
-          exit 1
