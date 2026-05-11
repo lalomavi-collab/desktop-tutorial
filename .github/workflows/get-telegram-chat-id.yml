@@ -1,0 +1,23 @@
+name: "🔍 Get Telegram Chat ID"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  get-chat-id:
+    name: "מצא Chat ID של LALUM"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Get updates from bot"
+        run: |
+          echo "=== All recent chats the bot has seen ==="
+          curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/getUpdates" \
+            | jq -r '.result[] |
+                (.message.chat // .channel_post.chat // .my_chat_member.chat) |
+                "\(.type) | ID: \(.id) | Title: \(.title // .username // .first_name)"' \
+            | sort -u
+
+          echo ""
+          echo "=== Raw last update (if above is empty) ==="
+          curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/getUpdates" \
+            | jq '.result | last'
