@@ -48,3 +48,15 @@ jobs:
           echo ""
           echo "בדוק שה-secret ZAPIER_TELEGRAM מוגדר נכון ב-Settings > Secrets."
           exit 1
+
+      - name: "🔔 Notify result via Telegram"
+        if: always()
+        run: |
+          STATUS="${{ steps.send.outputs.http_status == '200' && '✅ החיבור לטלגרם תקין' || '❌ החיבור לטלגרם נכשל' }}"
+          MESSAGE="$STATUS
+HTTP Status: ${{ steps.send.outputs.http_status }}
+זמן: $(date -u '+%d/%m/%Y %H:%M UTC')
+Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
