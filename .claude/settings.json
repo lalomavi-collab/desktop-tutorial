@@ -1,4 +1,9 @@
 {
+  "sandbox": {
+    "network": {
+      "allowedDomains": ["hooks.zapier.com"]
+    }
+  },
   "hooks": {
     "Stop": [
       {
