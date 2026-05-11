@@ -21,7 +21,6 @@ jobs:
         run: |
           MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC')
 
-אם קיבלת הודעה זו — הכל עובד ✅
 
 הסוכנים המחוברים:
 • Claude Code (Stop Hook)
