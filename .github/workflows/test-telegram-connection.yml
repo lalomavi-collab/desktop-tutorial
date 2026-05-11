@@ -1,38 +1,32 @@
-name: "🔌 Test Telegram Connection"
+name: " Test Telegram Connection v2"
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
-      - 'claude/**'
-    paths:
-      - '.github/workflows/test-telegram-connection.yml'
+        - main
+            - 'claude/**'
+            paths:
+                - '.github/workflows/test-telegram-connection.yml'
+                    - 'scripts/notify-telegram.sh'
+                        - 'prompt_builder/utils/telegram.py'
 
-jobs:
-  test-telegram:
-    name: "בדיקת חיבור @Lalumbot"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "📤 Send test message"
-run: |
-            MESSAGE="Test Telegram Bot - $(date -u '+%d/%m/%Y %H:%M UTC')"
-                        curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -H "Content-Type: application/json" -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}" > /tmp/response.json
-                                    RESPONSE=$(cat /tmp/response.json)
-                                                echo "Response: $RESPONSE"
-                                                            if echo "$RESPONSE" | grep -q "ok":true; then
-                                                                          echo "SUCCESS - message sent to Telegram"
-                                                                                      else
-                                                                                                    echo "FAILED"
-                                                                                                                  echo "Hint: check that TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set"
-                                                                                                                                exit 1
-                                                                                                                                            fi
-          echo "Response: $RESPONSE"
-
-          if echo "$RESPONSE" | grep -q '"ok":true'; then
-            echo "✅ SUCCESS — message sent to Telegram"
-          else
-            echo "❌ FAILED"
-            echo "Hint: check that TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set"
-            exit 1
-          fi
+                        jobs:
+                          test-telegram:
+                              name: "בדיקות בחקירה @Lalumbot"
+                                  runs-on: ubuntu-latest
+                                      steps:
+                                            - name: "🔍 Send test message"
+                                                    run: |
+                                                              BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
+                                                                        CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
+                                                                                  MESSAGE="Test Telegram Bot - $(date -u '+%d/%m/%Y %H:%M UTC')"
+                                                                                            RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" -H "Content-Type: application/json" -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${MESSAGE}\"}")
+                                                                                                      echo "Response: ${RESPONSE}"
+                                                                                                                if echo "${RESPONSE}" | grep -q '"ok":true'; then
+                                                                                                                            echo "✅ SUCCESS - message sent to Telegram"
+                                                                                                                                      else
+                                                                                                                                                  echo "❌ FAILED"
+                                                                                                                                                              echo "Hint: check that TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set"
+                                                                                                                                                                          exit 1
+                                                                                                                                                                                    fi
