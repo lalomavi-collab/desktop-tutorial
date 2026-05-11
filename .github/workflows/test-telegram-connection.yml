@@ -16,7 +16,7 @@ jobs:
     name: "בדיקת חיבור טלגרם"
     runs-on: ubuntu-latest
     steps:
-      - name: "📤 Send test message to Telegram"
+      - name: "📤 Send test message"
         id: send
         run: |
           MESSAGE="🔌 בדיקת חיבור — $(date -u '+%d/%m/%Y %H:%M UTC')
@@ -24,54 +24,34 @@ jobs:
 אם קיבלת הודעה זו — הכל עובד ✅
 
 הסוכנים המחוברים:
-• סוכן Claude Code (Stop Hook)
-• סוכן בניית פרומפטים (Python)
+• Claude Code (Stop Hook)
+• Builder Agent (Python)
 • Quick Build Agent (Python)
 • Social Media Agent (GitHub Actions)
 • שליחת פוסטים ידנית
 • פוסטים מתוזמנים"
 
-          HTTP_STATUS=$(curl -s -o /tmp/telegram_response.json -w "%{http_code}" \
-            -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+          RESPONSE=$(curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}")
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": $(echo "$MESSAGE" | jq -Rs .)}")
 
-          echo "http_status=$HTTP_STATUS" >> "$GITHUB_OUTPUT"
-          echo "response=$(cat /tmp/telegram_response.json)" >> "$GITHUB_OUTPUT"
+          echo "response=$RESPONSE" >> "$GITHUB_OUTPUT"
 
-          echo "HTTP Status: $HTTP_STATUS"
-          echo "Response: $(cat /tmp/telegram_response.json)"
+          if echo "$RESPONSE" | grep -q '"ok":true'; then
+            echo "status=success" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: "✅ Connection OK"
-        if: steps.send.outputs.http_status == '200'
-        run: |
-          echo "============================================"
-          echo "✅  Telegram connection: WORKING"
-          echo "HTTP Status: ${{ steps.send.outputs.http_status }}"
-          echo "Response: ${{ steps.send.outputs.response }}"
-          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          echo "============================================"
+        if: contains(steps.send.outputs.response, '"ok":true')
+        run: echo "✅ Telegram connection WORKING"
 
       - name: "❌ Connection FAILED"
-        if: steps.send.outputs.http_status != '200'
+        if: "!contains(steps.send.outputs.response, '\"ok\":true')"
         run: |
-          echo "============================================"
-          echo "❌  Telegram connection: FAILED"
-          echo "HTTP Status: ${{ steps.send.outputs.http_status }}"
+          echo "❌ Telegram connection FAILED"
           echo "Response: ${{ steps.send.outputs.response }}"
-          echo "============================================"
-          echo ""
-          echo "בדוק שה-secret ZAPIER_TELEGRAM מוגדר נכון ב-Settings > Secrets."
+          echo "בדוק שה-secrets TELEGRAM_BOT_TOKEN ו-TELEGRAM_CHAT_ID מוגדרים נכון"
           exit 1
-
-      - name: "🔔 Notify result via Telegram"
-        if: always()
-        run: |
-          STATUS="${{ steps.send.outputs.http_status == '200' && '✅ החיבור לטלגרם תקין' || '❌ החיבור לטלגרם נכשל' }}"
-          MESSAGE="$STATUS
-HTTP Status: ${{ steps.send.outputs.http_status }}
-זמן: $(date -u '+%d/%m/%Y %H:%M UTC')
-Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"

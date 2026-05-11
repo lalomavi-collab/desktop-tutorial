@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
-# Sends a notification to Telegram via Zapier webhook.
+# Sends a Telegram message via Bot API.
+# Reads credentials from env vars or .env file.
 # Usage:
+#   ./notify-telegram.sh "message"
 #   echo "msg" | ./notify-telegram.sh
-#   ./notify-telegram.sh "msg"
-#   called with no args: reads JSON from stdin (Claude Code Stop hook mode)
+#   called with no args + JSON stdin: Claude Code Stop hook mode
 
-TELEGRAM_WEBHOOK="https://hooks.zapier.com/hooks/catch/26446500/unrrbau/"
+BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-8204059324:AAFu6ys7r31S9FANf0FUjmrArgobcJ4Agaw}"
+CHAT_ID="${TELEGRAM_CHAT_ID:-6260591961}"
+
+# Load .env if present
+if [ -f "$(dirname "$0")/../.env" ]; then
+  source "$(dirname "$0")/../.env"
+fi
 
 # Determine message
 if [ -n "$1" ]; then
   MESSAGE="$1"
 else
-  # Try to read JSON from stdin (Claude Code Stop hook)
   INPUT=$(cat)
   if echo "$INPUT" | jq -e . >/dev/null 2>&1; then
     SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "unknown"')
-    MESSAGE="✅ הסוכן סיים את המשימה
+    MESSAGE="✅ הסוכן סיים משימה
 Session: ${SESSION_ID:0:8}...
 זמן: $(date '+%d/%m/%Y %H:%M')"
   else
@@ -23,13 +29,12 @@ Session: ${SESSION_ID:0:8}...
   fi
 fi
 
-if [ -z "$MESSAGE" ]; then
-  exit 0
-fi
+[ -z "$MESSAGE" ] && exit 0
 
-curl -s -X POST "$TELEGRAM_WEBHOOK" \
+curl -s -X POST \
+  "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
   -H "Content-Type: application/json" \
-  -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}" \
+  -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": $(echo "$MESSAGE" | jq -Rs .)}" \
   > /dev/null
 
 exit 0
