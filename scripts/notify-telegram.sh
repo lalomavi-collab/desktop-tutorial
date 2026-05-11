@@ -1,20 +1,17 @@
 #!/usr/bin/env bash
-# Sends a Telegram message via Bot API.
-# Reads credentials from env vars or .env file.
+# Sends a Telegram message via @Lalumbot.
+# Credentials come from env vars or .env file — never hardcoded.
 # Usage:
 #   ./notify-telegram.sh "message"
 #   echo "msg" | ./notify-telegram.sh
-#   called with no args + JSON stdin: Claude Code Stop hook mode
+#   JSON on stdin → Claude Code Stop hook mode
 
-BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-8204059324:AAFu6ys7r31S9FANf0FUjmrArgobcJ4Agaw}"
-CHAT_ID="${TELEGRAM_CHAT_ID:-6260591961}"
+ENV_FILE="$(dirname "$0")/../.env"
+[ -f "$ENV_FILE" ] && source "$ENV_FILE"
 
-# Load .env if present
-if [ -f "$(dirname "$0")/../.env" ]; then
-  source "$(dirname "$0")/../.env"
-fi
+BOT_TOKEN="${TELEGRAM_BOT_TOKEN:?TELEGRAM_BOT_TOKEN not set}"
+CHAT_ID="${TELEGRAM_CHAT_ID:?TELEGRAM_CHAT_ID not set}"
 
-# Determine message
 if [ -n "$1" ]; then
   MESSAGE="$1"
 else
