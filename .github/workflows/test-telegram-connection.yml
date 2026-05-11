@@ -13,7 +13,7 @@ on:
 
 jobs:
   test-telegram:
-    name: "בדיקת חיבור טלגרם"
+    name: "בדיקת חיבור @Lalumbot"
     runs-on: ubuntu-latest
     steps:
       - name: "📤 Send test message"
