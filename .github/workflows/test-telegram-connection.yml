@@ -1,4 +1,4 @@
-name: "🔌 Test Telegram Connection (send now)"
+name: "🔌 Test Telegram Connection"
 
 on:
   workflow_dispatch:
