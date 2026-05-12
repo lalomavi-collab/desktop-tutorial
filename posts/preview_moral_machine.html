@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="he" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>RECIR Defense — Slides 26–28 Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0A0A0A;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 40px 20px;
+  }
+  h1 {
+    color: #D4AF37;
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0.8;
+  }
+  .slide-wrap {
+    width: 960px;
+    margin: 0 auto 50px;
+  }
+  .slide-label {
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .slide {
+    width: 960px;
+    height: 540px;
+    background: #1B1B1B;
+    border: 1px solid #2a2a2a;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+  }
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: #D4AF37;
+    z-index: 10;
+  }
+  .slide-num {
+    position: absolute;
+    top: 18px; right: 22px;
+    color: #D4AF37;
+    font-size: 11px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+  .breadcrumb {
+    position: absolute;
+    top: 18px; left: 44px;
+    color: #555;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .slide-title {
+    position: absolute;
+    top: 56px; left: 44px;
+    color: #FFFDD0;
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+  .slide-subtitle {
+    position: absolute;
+    top: 100px; left: 44px; right: 44px;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ── SLIDE 26 ── */
+  .s26 .core-box {
+    position: absolute;
+    top: 134px; left: 44px; right: 44px;
+    background: rgba(212,175,55,0.07);
+    border-left: 3px solid #D4AF37;
+    padding: 12px 18px;
+    color: #FFFDD0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .s26 .core-box .label {
+    color: #D4AF37;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+  }
+  .s26 .pillars {
+    position: absolute;
+    top: 232px; left: 44px; right: 44px;
+    display: flex;
+    gap: 14px;
+  }
+  .s26 .pillar {
+    flex: 1;
+    background: #242424;
+    border-top: 3px solid #D4AF37;
+    padding: 14px;
+  }
+  .s26 .pillar .num {
+    color: #D4AF37;
+    font-size: 22px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .s26 .pillar .ptitle {
+    color: #FFFDD0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .s26 .pillar .pdesc {
+    color: #999;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  .s26 .pillar .tag {
+    margin-top: 10px;
+    color: #D4AF37;
+    font-size: 9px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+  .s26 .quote {
+    position: absolute;
+    bottom: 42px; left: 44px; right: 44px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    color: #666;
+    font-size: 11px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .s26 .quote .ql { color: #D4AF37; font-size: 22px; vertical-align: -4px; margin-right: 4px; }
+  .s26 .closer {
+    position: absolute;
+    bottom: 18px; right: 44px;
+    color: #444;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── SLIDE 27 ── */
+  .s27 .narrative {
+    position: absolute;
+    top: 102px; left: 44px; width: 510px;
+    background: rgba(212,175,55,0.06);
+    border-left: 3px solid #D4AF37;
+    padding: 14px 18px;
+    color: #FFFDD0;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .s27 .dilemma-box {
+    position: absolute;
+    top: 102px; right: 44px; width: 320px;
+    background: #222;
+    border: 1px solid #333;
+  }
+  .s27 .dilemma-box .d-title {
+    background: #D4AF37;
+    color: #1B1B1B;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+  }
+  .s27 .actor {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 12px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .s27 .actor:last-child { border-bottom: none; }
+  .s27 .actor .letter {
+    color: #D4AF37;
+    font-size: 18px;
+    font-weight: 700;
+    width: 28px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .s27 .actor .info .name {
+    color: #FFFDD0;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .s27 .actor .info .detail {
+    color: #777;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+  .s27 .question-box {
+    position: absolute;
+    bottom: 52px; right: 44px; width: 320px;
+    background: rgba(128,0,32,0.3);
+    border: 1px solid #800020;
+    padding: 12px;
+  }
+  .s27 .question-box .q-label {
+    color: #D4AF37;
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .s27 .question-box .q-text {
+    color: #FFFDD0;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .s27 .footer {
+    position: absolute;
+    bottom: 16px; left: 44px; right: 44px;
+    color: #444;
+    font-size: 9px;
+    letter-spacing: 1px;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 8px;
+  }
+
+  /* ── SLIDE 28 ── */
+  .s28 .directions {
+    position: absolute;
+    top: 132px; left: 44px; right: 44px;
+    display: flex;
+    gap: 14px;
+  }
+  .s28 .dir {
+    flex: 1;
+    background: #232323;
+    border-top: 2px solid #555;
+    padding: 12px;
+  }
+  .s28 .dir .dnum {
+    color: #D4AF37;
+    font-size: 20px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .s28 .dir .dtitle {
+    color: #D4AF37;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .s28 .dir .dname {
+    color: #FFFDD0;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .s28 .dir .ddesc {
+    color: #888;
+    font-size: 9.5px;
+    line-height: 1.5;
+  }
+  .s28 .frontier {
+    position: absolute;
+    bottom: 44px; left: 44px; right: 44px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(128,0,32,0.12));
+    border: 1px solid #D4AF37;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .s28 .frontier .f-badge {
+    background: #D4AF37;
+    color: #1B1B1B;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .s28 .frontier .f-num {
+    color: #D4AF37;
+    font-size: 22px;
+    font-weight: 300;
+    flex-shrink: 0;
+    line-height: 1;
+    align-self: center;
+  }
+  .s28 .frontier .f-content .f-title {
+    color: #D4AF37;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .s28 .frontier .f-content .f-text {
+    color: #FFFDD0;
+    font-size: 10.5px;
+    line-height: 1.6;
+  }
+  .s28 .tagline {
+    position: absolute;
+    bottom: 18px; left: 44px; right: 44px;
+    color: #444;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-align: center;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>RECIR Defense &nbsp;·&nbsp; Slides 26 – 27 – 28 &nbsp;·&nbsp; Moral Machine &amp; Future Research</h1>
+
+<!-- ══════════════════ SLIDE 26 ══════════════════ -->
+<div class="slide-wrap">
+  <div class="slide-label">Slide 26 / 40 &nbsp;·&nbsp; Decisions Under Risk</div>
+  <div class="slide s26">
+    <div class="breadcrumb">PART 8 · CONCLUSIONS · FUTURE RESEARCH · MORAL MACHINE</div>
+    <div class="slide-num">26 / 40</div>
+    <div class="slide-title">Decisions Under Risk</div>
+    <div class="slide-subtitle">To conclude: looking toward the future — how do we translate human morality into executable code when unavoidable harm becomes a programmed decision?</div>
+
+    <div class="core-box">
+      <span class="label">The Core Problem</span>
+      The core problem: when a programmed decision must choose between lives — how do law, economics, and ethics respond? This is the Moral Machine paradox.
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="num">I</div>
+        <div class="ptitle">Vulnerability Weighting</div>
+        <div class="pdesc">Legal frameworks for prioritizing diverse road users — child, elderly, parent with infant — in emergency scenarios.</div>
+        <div class="tag">Legal · Ethics</div>
+      </div>
+      <div class="pillar">
+        <div class="num">II</div>
+        <div class="ptitle">Judicial Auditability</div>
+        <div class="pdesc">Designing protocols for courts to cross-examine black-box accident decisions post-collision.</div>
+        <div class="tag">Procedural Law · XAI</div>
+      </div>
+      <div class="pillar">
+        <div class="num">III</div>
+        <div class="ptitle">Market Legitimacy</div>
+        <div class="pdesc">Establishing socio-economic pricing for "ethical" algorithmic choices and their public acceptance.</div>
+        <div class="tag">Economics · Public Policy</div>
+      </div>
+    </div>
+
+    <div class="quote"><span class="ql">"</span>The challenge of the next decade is not teaching a machine to see, but teaching it how to choose when all paths carry risk.</div>
+    <div class="closer">— Concluding Insight —</div>
+  </div>
+</div>
+
+<!-- ══════════════════ SLIDE 27 ══════════════════ -->
+<div class="slide-wrap">
+  <div class="slide-label">Slide 27 / 40 &nbsp;·&nbsp; The Moral Machine — An Illustrative Case</div>
+  <div class="slide s27">
+    <div class="breadcrumb">PART 8 · CONCLUSIONS · FUTURE RESEARCH · ILLUSTRATIVE CASE</div>
+    <div class="slide-num">27 / 40</div>
+    <div class="slide-title">The Moral Machine — An Illustrative Case</div>
+
+    <div class="narrative">
+      Imagine a single intersection: an autonomous vehicle faces a dilemma — an elderly person with right of way, a child in the road, a parent with an infant at a crosswalk.<br><br>
+      Whose life does the algorithm value, and on what legal, economic, and ethical basis?<br><br>
+      This case illustrates why extending our Law, Economics &amp; XAI framework from real-estate risk to autonomous systems is the critical next frontier.
+    </div>
+
+    <div class="dilemma-box">
+      <div class="d-title">The Dilemma</div>
+      <div class="actor">
+        <div class="letter">L</div>
+        <div class="info">
+          <div class="name">ELDERLY</div>
+          <div class="detail">Right of way · low mobility</div>
+        </div>
+      </div>
+      <div class="actor">
+        <div class="letter">C</div>
+        <div class="info">
+          <div class="name">CHILD AT PLAY</div>
+          <div class="detail">Center of road · ball pursuit</div>
+        </div>
+      </div>
+      <div class="actor">
+        <div class="letter">R</div>
+        <div class="info">
+          <div class="name">PARENT + INFANT</div>
+          <div class="detail">Crosswalk · vulnerable group</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-box">
+      <div class="q-label">The Question</div>
+      <div class="q-text">Whose life does the algorithm value — and on what legal, economic, and ethical basis?</div>
+    </div>
+
+    <div class="footer">Illustrative scenario · Drawn from the canonical "Moral Machine" experiment (MIT Media Lab) — adapted for Law, Economics &amp; XAI analysis.</div>
+  </div>
+</div>
+
+<!-- ══════════════════ SLIDE 28 ══════════════════ -->
+<div class="slide-wrap">
+  <div class="slide-label">Slide 28 / 40 &nbsp;·&nbsp; Future Research Directions</div>
+  <div class="slide s28">
+    <div class="breadcrumb">PART 8 · CONCLUSIONS · FUTURE RESEARCH</div>
+    <div class="slide-num">28 / 40</div>
+    <div class="slide-title">Future Research Directions</div>
+    <div class="slide-subtitle">Three near-term trajectories + one strategic frontier.</div>
+
+    <div class="directions">
+      <div class="dir">
+        <div class="dnum">I</div>
+        <div class="dtitle">Temporal Extension</div>
+        <div class="dname">Update the Database</div>
+        <div class="ddesc">Refresh the panel with post-2023 data to capture recent regulatory shifts and new market behaviour.</div>
+      </div>
+      <div class="dir">
+        <div class="dnum">II</div>
+        <div class="dtitle">Architecture Refinement</div>
+        <div class="dname">Refine the RECIR Model</div>
+        <div class="ddesc">Iterative refinement of the seven-index architecture: re-calibrate weights, sharpen XAI, tighten regulatory mapping.</div>
+      </div>
+      <div class="dir">
+        <div class="dnum">III</div>
+        <div class="dtitle">Parsimony Optimization</div>
+        <div class="dname">Subset of Variables</div>
+        <div class="ddesc">Identify a focused subset of explanatory variables to improve parsimony without sacrificing accuracy.</div>
+      </div>
+    </div>
+
+    <div class="frontier">
+      <div class="f-badge">★ STRATEGIC FRONTIER</div>
+      <div class="f-num">IV</div>
+      <div class="f-content">
+        <div class="f-title">Autonomous Systems — A Frontier for Law, Economics, and AI</div>
+        <div class="f-text">This illustrates our next strategic frontier: extending the RECIR framework of Law, Economics, and Explainable AI from real-estate risk to the complex decision-making of autonomous systems — where algorithmic choices carry irreversible human consequences.</div>
+      </div>
+    </div>
+
+    <div class="tagline">From real-estate risk to autonomous decision-making — the L&amp;E + XAI lens generalizes.</div>
+  </div>
+</div>
+
+</body>
+</html>
