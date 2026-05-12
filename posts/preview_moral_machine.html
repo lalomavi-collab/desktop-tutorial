@@ -169,9 +169,14 @@
     font-size: 12px;
     line-height: 1.7;
   }
-  .s27 .dilemma-box {
+  .s27 .right-col {
     position: absolute;
     top: 102px; right: 44px; width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .s27 .dilemma-box {
     background: #222;
     border: 1px solid #333;
   }
@@ -187,7 +192,7 @@
   .s27 .actor {
     display: flex;
     align-items: flex-start;
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-bottom: 1px solid #2a2a2a;
   }
   .s27 .actor:last-child { border-bottom: none; }
@@ -210,8 +215,6 @@
     margin-top: 2px;
   }
   .s27 .question-box {
-    position: absolute;
-    bottom: 52px; right: 44px; width: 320px;
     background: rgba(128,0,32,0.3);
     border: 1px solid #800020;
     padding: 12px;
@@ -230,7 +233,7 @@
   }
   .s27 .footer {
     position: absolute;
-    bottom: 16px; left: 44px; right: 44px;
+    bottom: 14px; left: 44px; right: 44px;
     color: #444;
     font-size: 9px;
     letter-spacing: 1px;
@@ -277,7 +280,7 @@
   }
   .s28 .frontier {
     position: absolute;
-    bottom: 44px; left: 44px; right: 44px;
+    top: 318px; left: 44px; right: 44px;
     background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(128,0,32,0.12));
     border: 1px solid #D4AF37;
     padding: 14px 18px;
@@ -319,7 +322,7 @@
   }
   .s28 .tagline {
     position: absolute;
-    bottom: 18px; left: 44px; right: 44px;
+    bottom: 14px; left: 44px; right: 44px;
     color: #444;
     font-size: 9px;
     letter-spacing: 1px;
@@ -386,34 +389,35 @@
       This case illustrates why extending our Law, Economics &amp; XAI framework from real-estate risk to autonomous systems is the critical next frontier.
     </div>
 
-    <div class="dilemma-box">
-      <div class="d-title">The Dilemma</div>
-      <div class="actor">
-        <div class="letter">L</div>
-        <div class="info">
-          <div class="name">ELDERLY</div>
-          <div class="detail">Right of way · low mobility</div>
+    <div class="right-col">
+      <div class="dilemma-box">
+        <div class="d-title">The Dilemma</div>
+        <div class="actor">
+          <div class="letter">L</div>
+          <div class="info">
+            <div class="name">ELDERLY</div>
+            <div class="detail">Right of way · low mobility</div>
+          </div>
+        </div>
+        <div class="actor">
+          <div class="letter">C</div>
+          <div class="info">
+            <div class="name">CHILD AT PLAY</div>
+            <div class="detail">Center of road · ball pursuit</div>
+          </div>
+        </div>
+        <div class="actor">
+          <div class="letter">R</div>
+          <div class="info">
+            <div class="name">PARENT + INFANT</div>
+            <div class="detail">Crosswalk · vulnerable group</div>
+          </div>
         </div>
       </div>
-      <div class="actor">
-        <div class="letter">C</div>
-        <div class="info">
-          <div class="name">CHILD AT PLAY</div>
-          <div class="detail">Center of road · ball pursuit</div>
-        </div>
+      <div class="question-box">
+        <div class="q-label">The Question</div>
+        <div class="q-text">Whose life does the algorithm value — and on what legal, economic, and ethical basis?</div>
       </div>
-      <div class="actor">
-        <div class="letter">R</div>
-        <div class="info">
-          <div class="name">PARENT + INFANT</div>
-          <div class="detail">Crosswalk · vulnerable group</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="question-box">
-      <div class="q-label">The Question</div>
-      <div class="q-text">Whose life does the algorithm value — and on what legal, economic, and ethical basis?</div>
     </div>
 
     <div class="footer">Illustrative scenario · Drawn from the canonical "Moral Machine" experiment (MIT Media Lab) — adapted for Law, Economics &amp; XAI analysis.</div>
