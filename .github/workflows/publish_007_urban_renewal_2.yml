@@ -1,0 +1,42 @@
+name: Publish Post 007 - Urban Renewal #2
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 15 5 *'  # May 15, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "הסכם דיירים שנחתם בבהילות — מתפרק לאט.\n\nזה הכלל הראשון שאני מלמד כל יזם שניגש לעסקת פינוי-בינוי.\n\nרוב היזמים מגיעים עם כוונות טובות ותוכנית עסקית מוצקה.\nהם מכינים הצגה יפה, מבטיחים דירות גדולות יותר, מרפסות, חניות.\n\nואז בא הרגע שבו עורך הדין של היזם מושיט לדיירים הסכם בן 60 עמוד.\n\nמה שקורה בהמשך:\n✦ דייר אחד קורא ומוצא משהו שמפחיד אותו\n✦ הוא מדבר עם הסוסה. הסוסה מדברת עם עוד אחד.\n✦ עד סוף השבוע — נבנתה קואליציית התנגדות שקטה\n\nלא בגלל שהצעת הבינוי רעה.\nבגלל שאמון לא נבנה לפני שנחתמו חתימות.\n\nמה שעובד:\n→ שלב מיפוי הדיירים לפני כל מסמך\n→ זיהוי ה\"שוער\" — הדייר שכולם מקשיבים לו\n→ בניית מנגנון שקיפות שמוריד חרדה לפני שהיא עולה\n\nהעסקאות שנסגרות — לא נסגרות כי ההצעה הייתה טובה יותר.\nהן נסגרות כי הדיירים הרגישו שמישהו לצידם.\n\n↳ LALUM | אדריכלות הסכמה בעסקאות התחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #נדלן #יזמות #התחדשותעירונית #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "הסכם דיירים שנחתם בבהילות — מתפרק לאט.\n\nמה שעובד:\n→ מיפוי דיירים לפני כל מסמך\n→ זיהוי ה\"שוער\" — הדייר שכולם מקשיבים לו\n→ שקיפות שמורידה חרדה לפני שהיא עולה\n\nהעסקאות שנסגרות — נסגרות כי הדיירים הרגישו שמישהו לצידם.\n\n↳ LALUM | אדריכלות הסכמה בעסקאות התחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #נדלן #התחדשותעירונית #LALUM"
+            }'
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "הסכם שנחתם בבהילות — מתפרק לאט.\n\nאמון לא נבנה עם חוזה בן 60 עמוד.\nהוא נבנה לפני שמושיטים אותו.\n\n→ מיפוי דיירים לפני כל מסמך\n→ זיהוי ה\"שוער\"\n→ שקיפות שמורידה חרדה\n\n↳ LALUM | אדריכלות הסכמה\nwww.lalum.co\n\n#פינויבינוי #נדלן #התחדשותעירונית #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "An agreement signed in haste — unravels slowly.\n\nThat'\''s the first rule I teach every developer entering an urban renewal deal.\n\nMost developers arrive with good intentions and a solid business plan.\nThey prepare a beautiful presentation. Larger apartments. Balconies. Parking. The full package.\n\nThen comes the moment their attorney hands residents a 60-page agreement.\n\nWhat happens next:\n✦ One tenant reads it and finds something that frightens them\n✦ They talk to a neighbor. That neighbor talks to another.\n✦ By week'\''s end — a quiet opposition coalition has formed\n\nNot because the proposal was bad.\nBecause trust wasn'\''t built before signatures were requested.\n\nWhat actually works:\n→ A tenant mapping phase before any document is prepared\n→ Identifying the gatekeeper — the resident everyone listens to\n→ Building a transparency mechanism that reduces anxiety before it rises\n\nThe deals that close — don'\''t close because the offer was better.\nThey close because residents felt someone was genuinely on their side.\n\n↳ LALUM | Consensus Architecture in Urban Renewal\nwww.lalum.co\n\n#UrbanRenewal #RealEstateDevelopment #PropertyLaw #Negotiation #LALUM"
+            }'
