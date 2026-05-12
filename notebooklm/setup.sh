@@ -3,7 +3,7 @@
 set -e
 
 echo "==> Installing notebooklm-py with browser support..."
-pip install "notebooklm-py[browser]" mcp
+pip install --break-system-packages --ignore-installed "notebooklm-py[browser]" mcp
 
 echo ""
 echo "==> Installing Playwright browser (Chromium)..."
