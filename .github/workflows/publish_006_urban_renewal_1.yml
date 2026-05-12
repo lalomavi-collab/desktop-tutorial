@@ -1,0 +1,42 @@
+name: Publish Post 006 - Urban Renewal #1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 12 5 *'  # May 12, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "פינוי-בינוי נתקע?\nהבעיה לא בעירייה.\nהבעיה בקומה השנייה.\n\nמתוך עשרות עסקאות תמ\"א 38 ופינוי-בינוי שליוויתי — הדפוס אחד:\n\n✦ דייר אחד מחזיק את כולם עם הגב לקיר.\n\nלא בגלל שהוא נגד הפרויקט.\nבגלל שאף אחד לא דיבר איתו נכון.\nבגלל שאיש לא הבין מה הוא באמת מפחד לאבד.\n\n80% הסכמה נדרשת בחוק —\nאבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.\n\nהמפתח הוא לא לחץ. המפתח הוא ארכיטקטורה.\n\nכשמביאים את כל בעלי האינטרס לחדר אחד —\nעם מנגנון הכרעה ברור ומוסכם מראש —\nהעסקה זזת.\n\nזה לא גישור.\nזה לא ייעוץ.\nזה בניית מסגרת החלטות שמונעת מהסכסוך להתפוצץ מלכתחילה.\n\nאם הפרויקט שלך נתקע — כדאי שנדבר.\n\n↳ LALUM | מומחיות בהתחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #תמא38 #התחדשותעירונית #נדלן #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "פינוי-בינוי נתקע?\nהבעיה לא בעירייה.\nהבעיה בקומה השנייה.\n\nמתוך עשרות עסקאות תמ\"א 38 ופינוי-בינוי שליוויתי — הדפוס אחד:\n\n✦ דייר אחד מחזיק את כולם עם הגב לקיר.\n\nלא בגלל שהוא נגד הפרויקט.\nבגלל שאף אחד לא דיבר איתו נכון.\n\n80% הסכמה נדרשת בחוק —\nאבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.\n\nהמפתח הוא לא לחץ. המפתח הוא ארכיטקטורה.\n\nאם הפרויקט שלך נתקע — כדאי שנדבר.\n\n↳ LALUM | מומחיות בהתחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #תמא38 #התחדשותעירונית #נדלן #LALUM"
+            }'
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "פינוי-בינוי נתקע?\nהבעיה לא בעירייה.\nהבעיה בקומה השנייה.\n\n80% הסכמה נדרשת בחוק —\nאבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.\n\nהמפתח הוא לא לחץ. המפתח הוא ארכיטקטורה.\n\nאם הפרויקט שלך נתקע — כדאי שנדבר.\n\n↳ LALUM | מומחיות בהתחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #תמא38 #התחדשותעירונית #נדלן #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "Urban renewal projects don'\''t stall because of bureaucracy.\nThey stall because of one tenant on the second floor.\n\nAfter guiding dozens of urban renewal transactions in Israel — the pattern is always the same:\n\nOne holdout. One person who didn'\''t feel heard.\n\nNot because they oppose the project.\nBecause no one spoke to them correctly.\nBecause no one understood what they were truly afraid to lose.\n\nIsraeli law requires 80% consent —\nbut 20% can control everyone'\''s timeline indefinitely.\n\nThe answer isn'\''t pressure. The answer is architecture.\n\nWhen you bring all stakeholders into a structured decision-making framework — with clear, pre-agreed resolution mechanisms — the deal moves.\n\nThis is what I call the DOM model: Decision-Oriented Mediation.\nNot classic mediation. Not negotiation.\nA framework that prevents conflict from escalating in the first place.\n\nIf your project is stuck — let'\''s talk.\n\n↳ LALUM | Urban Renewal & Real Estate Law\nwww.lalum.co\n\n#UrbanRenewal #RealEstateLaw #PropertyDevelopment #Israel #LALUM"
+            }'
