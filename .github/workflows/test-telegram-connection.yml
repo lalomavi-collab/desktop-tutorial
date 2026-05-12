@@ -7,7 +7,7 @@ jobs:
                 - run: |
                           BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
                                     CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
-                                              MESSAGE="\u05dc\u05d9\u05dc\u05d4 \u05d8\u05d5\u05d1 - Good night message from GitHub Actions"
+                                              MESSAGE="Good night - Lilah tov (\u05dc\u05d9\u05dc\u05d4 \u05d8\u05d5\u05d1)"
                                                         curl -s -X POST https://api.telegram.org/bot${BOT_TOKEN}/sendMessage \
                                                                     -H 'Content-Type: application/json' \
-                                                                                -d '{"chat_id":"'${CHAT_ID}'","text":"'"$MESSAGE"'"}'
+                                                                                -d '{"chat_id":"'"${CHAT_ID}"'","text":"'"${MESSAGE}"'"}'
