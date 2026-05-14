@@ -3,8 +3,7 @@ name: "📋 Zoom Meeting Summary Processor"
 on:
   schedule:
     # Runs every 30 minutes, 24/7
-    - cron: "*/30 * * * *"
-  workflow_dispatch:
+    cron: "0 */3 * * *"  # Runs every 3 hours, 24/7  workflow_dispatch:
     inputs:
       lookback_minutes:
         description: "How many minutes back to look for ended meetings"
