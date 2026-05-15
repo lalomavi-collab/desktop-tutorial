@@ -1,0 +1,19 @@
+# Supervisor Review Queue
+# Managed by /legal-clinic:supervisor-review-queue
+# DO NOT edit manually — use /supervisor-review-queue commands
+
+meta:
+  active: false   # set to true when supervision model is "formal review queue"
+  last_updated: ""
+
+queue: []
+# Each entry format:
+# - item_id: "RQ-NNN"
+#   case_id: "YYYY-NNN"
+#   document_type: ""      # e.g., Eviction Answer / Asylum Declaration / Demand Letter
+#   student: ""
+#   submitted: "YYYY-MM-DD"
+#   status: pending        # pending / approved / returned / closed
+#   reviewed_by: ""
+#   reviewed_date: ""
+#   professor_notes: ""

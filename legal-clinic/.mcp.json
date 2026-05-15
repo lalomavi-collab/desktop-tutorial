@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "courtlistener": {
+      "description": "CourtListener — Free Law Project. U.S. court opinions and PACER dockets. Citation verification for U.S. case law.",
+      "status": "optional",
+      "citation_tag": "VERIFIED: CourtListener",
+      "fallback": "All citations tagged [VERIFY] — student confirms against primary source"
+    },
+    "descrybe": {
+      "description": "Descrybe — Primary-law search, citation lookup, quoted-language verification.",
+      "status": "optional",
+      "citation_tag": "VERIFIED: Descrybe",
+      "fallback": "All citations tagged [VERIFY] — student confirms against primary source"
+    },
+    "clio": {
+      "description": "Clio — Case management. Optional future integration. 120+ law schools use Clio. Starting with file upload; connector would let /client-intake and /status pull case data directly.",
+      "status": "future",
+      "note": "Not bundled. Requires Clio MCP server in environment."
+    },
+    "google-drive": {
+      "description": "Google Drive — Search, read, and fetch clinic documents.",
+      "status": "optional"
+    },
+    "slack": {
+      "description": "Slack — Search messages, read channels, find discussions.",
+      "status": "optional"
+    }
+  },
+  "note": "Run /legal-clinic:integrations to see which servers are available in your environment. Without research tools, all citations are tagged [VERIFY]. Plugin functions either way."
+}
