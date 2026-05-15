@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Manage isolated matter workspaces for multi-client private practice. Creates, lists, switches, and closes matter-specific contexts so that each client's AI governance work is isolated from other matters. Prevents context leakage across clients.
+Manage isolated matter workspaces for multi-client private practice. Provide structured context separation between client matters to support conflict management and reduce risk of inadvertent cross-matter data disclosure. Matter isolation is the attorney's responsibility — this skill provides structure, not enforcement.
 
 ---
 
@@ -16,17 +16,19 @@ Manage isolated matter workspaces for multi-client private practice. Creates, li
 /ai-governance-legal:matter-workspace none
 ```
 
+If called without a subcommand, display the list of available subcommands and ask the user what they want to do.
+
 ---
 
-## Base path
+## Configuration path
 
-All matter workspaces are stored under:
+All matter workspace files are stored under:
 
 ```
 ~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/
 ```
 
-The active matter is tracked in:
+Active matter is tracked in:
 
 ```
 ~/.claude/plugins/config/claude-for-legal/ai-governance-legal/.active-matter
@@ -36,148 +38,212 @@ The active matter is tracked in:
 
 ## Instructions
 
-Read the practice profile at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` to confirm the plugin is set up. If no profile exists, say: "No practice profile found. Run /ai-governance-legal:cold-start-interview first."
+You are assisting an attorney in managing matter workspaces for multi-client AI governance work. Before any operation, note:
 
-Determine subcommand from the argument:
+> "Matter isolation is a structural aid — not an enforcement mechanism. You are responsible for ensuring that confidential information from one client matter is not disclosed or used in another matter context."
+
+Read the practice profile at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` before any operation, if it exists.
 
 ---
 
-### Subcommand: `new`
+## Subcommand: new
 
-**Purpose:** Create a new isolated matter workspace.
+### Purpose
+Create a new isolated matter workspace for a specific client/matter.
 
-**Steps:**
+### Steps
 
-1. Ask if not provided:
+1. Parse the matter name from the argument. If not provided or ambiguous, ask:
    - Client name (use a placeholder if preferred)
    - Matter name or number
-   - Matter type (e.g., AI contract review, AI impact assessment for client, regulatory inquiry, AI policy advisory)
-   - Applicable regulations for this matter (may differ from firm defaults)
-   - Key dates (e.g., filing deadline, agreement execution date, regulatory response due date)
-   - Conflict check status: `[ATTORNEY DECISION REQUIRED: confirm conflicts cleared before creating matter workspace]`
+   - Matter type (e.g., AI governance review, AIA for client system, vendor contract review, regulatory compliance assessment, internal investigation)
 
-2. Generate a matter slug from the client and matter name: lowercase, hyphens, no spaces. Example: `acme-corp-ai-procurement-review`.
+2. Ask intake questions:
+   - Which jurisdictions apply to this matter? (may differ from firm-level profile)
+   - What regulations are relevant to this specific matter?
+   - Are there any matter-specific red lines or constraints beyond the firm-level red lines?
+   - Are there key dates (e.g., regulatory deadline, contract execution date, board presentation)?
+   - Who is the responsible attorney for this matter?
 
-3. Create the matter config file at:
-   ```
-   ~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/[matter-slug]/matter.md
-   ```
+3. Generate a matter slug: lowercase, hyphens only, max 40 characters. Example: `acme-corp-ai-procurement-2024`
 
-   Use this format:
-   ```markdown
-   # Matter Workspace — [Client Name / Matter Name]
+4. Show the user the matter profile that will be created:
 
-   > Created: [date]. This workspace is isolated — do not reference other matter contexts here.
+```
+## Matter Profile — [Matter Name]
+Created: [date]
+Last modified: [date]
+Status: Open
 
-   ## Matter profile
-   - **Client:** [name or PLACEHOLDER]
-   - **Matter name/number:** [name]
-   - **Matter type:** [type]
-   - **Created:** [date]
-   - **Status:** Open
+### Matter identification
+- Client: [client name or placeholder]
+- Matter name/number: [matter name/number]
+- Matter type: [type]
+- Responsible attorney: [name or role]
+- Created: [date]
 
-   ## Applicable regulations (matter-specific)
-   [List regulations specific to this matter — may supplement or differ from firm defaults]
+### Matter-specific jurisdictions
+[List jurisdictions for this matter — may differ from firm-level profile]
 
-   ## Key dates
-   [List deadlines, effective dates, response due dates]
+### Matter-specific regulations
+[List regulations applicable to this matter]
 
-   ## Matter-specific positions
-   [Any positions, red lines, or conditions specific to this client/matter — override firm defaults where noted]
+### Matter-specific red lines
+[Any constraints specific to this client/matter, in addition to firm-level red lines]
 
-   ## Conflict check
-   - Cleared: [Yes / No / Pending — ATTORNEY DECISION REQUIRED]
-   - Cleared by: [role]
-   - Date: [date]
+### Key dates
+[List key dates]
 
-   ## Notes
-   [Attorney notes — free text]
-   ```
+### Notes
+[Any additional context]
+```
 
-4. Set this matter as the active matter by writing the matter slug to `.active-matter`.
+5. Ask for confirmation before creating:
+   > "I'll create this matter workspace at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/[matter-slug]/matter.md`. Shall I proceed? (yes / no)"
 
-5. Confirm creation:
-   > "Matter workspace '[matter-slug]' created and set as active. All AI governance skill outputs in this session will reference this matter context. To return to firm-level context, run `/ai-governance-legal:matter-workspace none`."
-
-6. Add a reminder: "Matter isolation is your responsibility — the plugin provides structure, not enforcement. Do not reference one client's information in another matter's workspace."
+6. Only after explicit confirmation:
+   - Create the directory `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/[matter-slug]/`
+   - Write the matter profile to `matter.md`
+   - Write the matter slug to `.active-matter` (switch to this matter as active)
+   - Confirm: "Matter workspace `[matter-slug]` created and set as active. All AI governance outputs in this session will be labeled for this matter."
 
 ---
 
-### Subcommand: `list`
+## Subcommand: list
 
-**Purpose:** List all open matter workspaces.
+### Purpose
+List all open matter workspaces with status.
 
-**Steps:**
+### Steps
 
-1. Read the `matters/` directory.
-2. For each matter folder (excluding `archived/`), read `matter.md` and extract: client name, matter name, creation date, last modified date, status.
-3. Output a table:
+1. Read the matters directory at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/`
+
+2. For each matter directory (excluding `archived/`):
+   - Read `matter.md`
+   - Extract: client name, matter name, matter type, created date, last modified date, status
+
+3. Read `.active-matter` if it exists to identify the currently active matter.
+
+4. Output a table:
 
 ```
-## Open Matter Workspaces
+## Matter Workspaces
 
-| Matter slug | Client | Matter name | Created | Last modified | Status |
+Active matter: [matter name or "None — working at firm level"]
+
+| Matter | Client | Type | Created | Last Modified | Status |
 |---|---|---|---|---|---|
-| [slug] | [client] | [matter] | [date] | [date] | Open |
+| [matter-slug] | [client] | [type] | [date] | [date] | [Open / Active] |
+[rows]
 
-Active matter: [current active matter or "none — firm level"]
+Archived matters: [count] (run `/ai-governance-legal:matter-workspace list` to show archived)
 ```
 
-4. If no matters exist, say: "No matter workspaces found. Run `/ai-governance-legal:matter-workspace new` to create one."
+5. If no matters exist: "No matter workspaces found. Run `/ai-governance-legal:matter-workspace new [name]` to create one."
 
 ---
 
-### Subcommand: `switch`
+## Subcommand: switch
 
-**Purpose:** Switch the active matter context.
+### Purpose
+Switch the active workspace context to a specific matter.
 
-**Steps:**
+### Steps
 
-1. Verify the matter slug exists in `matters/` (not archived).
-2. If not found, list available matter slugs and ask the user to confirm the correct one.
-3. Write the matter slug to `.active-matter`.
-4. Read the matter's `matter.md` and display a brief summary.
-5. Confirm:
-   > "Active matter switched to '[matter-slug]'. AI governance skill outputs will now reference this matter context."
+1. Parse the matter name from the argument. If ambiguous, show the list and ask the user to select.
 
----
+2. Verify the matter exists at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/[matter-slug]/matter.md`.
 
-### Subcommand: `close`
+3. If not found: "Matter `[name]` not found. Run `/ai-governance-legal:matter-workspace list` to see available matters."
 
-**Purpose:** Archive a matter workspace when the matter is complete.
+4. Write the matter slug to `.active-matter`.
 
-**Steps:**
+5. Read the matter profile and confirm:
+   > "Switched to matter: **[Matter Name]** ([client name])
+   > Type: [matter type]
+   > Jurisdictions: [list]
+   > Key dates: [list]
+   >
+   > All subsequent AI governance outputs will be labeled for this matter. To clear the active matter, run `/ai-governance-legal:matter-workspace none`."
 
-1. Verify the matter slug exists.
-2. **Gate behind explicit confirmation:**
-   > "You are about to close matter '[matter-slug]'. This will move the workspace to `matters/archived/[matter-slug]/`. The files will be preserved but the matter will no longer appear in the active list. Are you sure? (yes / no)"
-3. Only proceed after "yes" or explicit equivalent.
-4. Move the matter folder to `matters/archived/[matter-slug]/`.
-5. Update the matter's `matter.md` status to "Archived" and note the close date.
-6. If this was the active matter, clear `.active-matter`.
-7. Confirm:
-   > "Matter '[matter-slug]' has been archived. If it was your active matter, you are now at firm level."
+6. Note any matter-specific regulations or red lines that differ from the firm-level profile:
+   > "Note: This matter has [N] matter-specific regulation(s) that supplement the firm-level profile: [list]."
 
 ---
 
-### Subcommand: `none`
+## Subcommand: close
 
-**Purpose:** Clear the active matter and return to firm-level context.
+### Purpose
+Archive a matter workspace.
 
-**Steps:**
+### Steps
 
-1. Read `.active-matter` to confirm what is currently active.
-2. Delete or clear the `.active-matter` file.
+1. Parse the matter name from the argument. If ambiguous, show the list.
+
+2. Verify the matter exists.
+
+3. Read the matter profile.
+
+4. **Gate behind explicit confirmation:**
+   > "You are about to archive matter **[Matter Name]** ([client name]).
+   > - The matter folder will be moved to `matters/archived/[matter-slug]/`
+   > - The matter will no longer appear in the active matters list
+   > - If this is the active matter, the active matter will be cleared
+   >
+   > This action can be reversed by moving the folder back manually.
+   >
+   > Are you sure you want to close this matter? (yes to confirm / no to cancel)"
+
+5. Only after explicit "yes":
+   - Create `matters/archived/` if it does not exist
+   - Move `matters/[matter-slug]/` to `matters/archived/[matter-slug]/`
+   - Update matter.md status to "Closed" and add closed date
+   - If this was the active matter: clear `.active-matter`
+   - Confirm: "Matter `[matter-slug]` archived. It can be found at `matters/archived/[matter-slug]/`. Active matter cleared."
+
+6. If "no": "Close cancelled. Matter `[matter-slug]` remains open."
+
+---
+
+## Subcommand: none
+
+### Purpose
+Clear the active matter context and confirm working at firm level (not matter level).
+
+### Steps
+
+1. Read `.active-matter` if it exists. Note the current active matter (if any).
+
+2. Clear `.active-matter` (delete or empty the file).
+
 3. Confirm:
-   > "Active matter cleared. You are now working at firm level. AI governance skill outputs will use the firm practice profile only."
+   > "Active matter cleared. Working at firm level.
+   > No matter context is active — outputs will not be labeled for a specific client matter.
+   > Reminder: confirm that no client-specific information is in your current session before proceeding with firm-level work."
+
+---
+
+## Cross-matter contamination warning
+
+At any point during a session, if the user appears to reference information from a different matter than the currently active matter (e.g., references a client name, matter number, or fact pattern that does not match the active matter), flag it:
+
+> "⚑ Possible cross-matter reference detected. You are currently working in matter **[active matter]**, but you appear to be referencing [description of reference]. If this is from a different client matter, please confirm the correct active matter before proceeding. Run `/ai-governance-legal:matter-workspace switch [matter name]` to switch matters."
+
+This is a structural aid — the attorney is responsible for preventing cross-matter disclosure.
+
+---
+
+## Output gate
+
+All consequential file operations (create, close/archive) require explicit user confirmation before proceeding. Switching active matter and listing matters do not require additional confirmation.
 
 ---
 
 ## Constraints
 
-- Never create, switch, or close a matter without confirming the action with the user.
-- The `close` subcommand is irreversible in the sense that files are moved — always confirm before proceeding.
-- Matter isolation is structural only. The plugin cannot prevent an attorney from referencing matter A information in matter B — it is the attorney's professional responsibility to maintain client confidentiality.
-- If the `.active-matter` file references a matter slug that does not exist (e.g., after a close), clear the file and say: "Active matter reference was stale — cleared. You are now at firm level."
-- Conflict check status is always `[ATTORNEY DECISION REQUIRED]` — the plugin cannot perform or verify conflict checks.
-- Do not include client-identifying information in skill output headers or footers that could leak across contexts.
+- Never create, close, or archive a matter workspace without explicit user confirmation.
+- Never enforce matter isolation — provide structure and flag risks, but acknowledge that enforcement is the attorney's responsibility.
+- If a matter workspace operation fails (e.g., directory cannot be created), report the error clearly and suggest manual steps.
+- Do not expose one client's matter details while working in another client's matter context — matter profiles should be read only for the active matter unless explicitly requested.
+- All operations that write files must confirm what was written and where.
+- The `.active-matter` file contains only the matter slug — no client data.
