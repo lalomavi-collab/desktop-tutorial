@@ -1,0 +1,1 @@
+name: Zoom Meeting Summary Processor\non:\n  workflow_dispatch:\n    inputs:\n      lookback_minutes:\n        description: How many minutes back to look for ended meetings\n        required: false\n        default: 120
