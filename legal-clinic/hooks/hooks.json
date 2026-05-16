@@ -1,0 +1,27 @@
+{
+  "hooks": [
+    {
+      "event": "skill:output",
+      "action": "prepend_label",
+      "label": "[AI-ASSISTED DRAFT — requires student analysis and attorney review]",
+      "applies_to": "all"
+    },
+    {
+      "event": "skill:client-intake:complete",
+      "action": "log",
+      "target": "client-comms/{case_id}/log.md",
+      "entry": "Intake completed by {student} on {date}"
+    },
+    {
+      "event": "skill:draft:output",
+      "action": "queue_if_formal_review",
+      "queue": "supervisor-review-queue/references/review-queue.yaml"
+    },
+    {
+      "event": "skill:status:output",
+      "audience": "client",
+      "action": "flag_check_professor",
+      "condition": "supervision_model == configurable_flags"
+    }
+  ]
+}

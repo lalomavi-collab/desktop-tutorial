@@ -1,0 +1,21 @@
+# Legal Clinic — Deadline Ledger
+# Managed by /legal-clinic:deadlines
+# DO NOT edit manually during active use — use /deadlines add, /deadlines update
+
+meta:
+  warning_cadence_days: [14, 7, 3, 1]
+  overdue_flag: true
+  last_updated: ""
+
+deadlines: []
+# Each entry format:
+# - case_id: "YYYY-NNN"
+#   client_alias: ""          # No identifying info — alias only
+#   matter: ""                # Brief description, no PII
+#   deadline_date: "YYYY-MM-DD"
+#   deadline_type: ""         # e.g., court filing / response / statute of limitations / admin
+#   assigned_student: ""
+#   notes: ""
+#   status: open              # open / closed / extended
+#   added_by: ""
+#   added_date: ""

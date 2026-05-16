@@ -1,6 +1,6 @@
 name: '📢 Notify Telegram on Post Published'
 on:
-  workflow_dispatch:
+    workflow_dispatch:
       inputs:
             post_title:
                     description: 'Title of the published post'
@@ -12,12 +12,12 @@ on:
                                                                 description: 'URL to the published post'
                                                                         required: false
                                                                               platform:
-                                                                                      description: 'Social media platform (Instagram, Facebook, LinkedIn, etc'
+                                                                                      description: 'Social media platform (Instagram, Facebook, LinkedIn, etc')
                                                                                               required: false
                                                                                                       default: 'Social Media'
                                                                                                       
                                                                                                       jobs:
-                                                                                                        notify-telegram:
+                                                                                                          notify-telegram:
                                                                                                             runs-on: ubuntu-latest
                                                                                                                 steps:
                                                                                                                       - name: Send Telegram Notification

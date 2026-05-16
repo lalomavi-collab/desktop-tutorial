@@ -1,0 +1,30 @@
+{
+  "name": "legal-clinic",
+  "display_name": "Claude for Law School Clinics",
+  "version": "1.0.0",
+  "description": "AI-enabled clinical legal education — intake, drafting, research, supervision, and semester handoff for law school clinics.",
+  "config_path": "~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md",
+  "skills": [
+    "cold-start-interview",
+    "build-guide",
+    "ramp",
+    "client-intake",
+    "draft",
+    "memo",
+    "research-start",
+    "status",
+    "client-letter",
+    "supervisor-review-queue",
+    "deadlines",
+    "client-comms-log",
+    "semester-handoff"
+  ],
+  "deprecated_skills": [
+    { "name": "form-generation", "redirect": "draft" },
+    { "name": "plain-language-letters", "redirect": "client-letter" }
+  ],
+  "ethical_framework": "ABA Formal Opinion 512 (2024)",
+  "output_gate": true,
+  "privilege_marker": "PRIVILEGED AND CONFIDENTIAL — ATTORNEY-CLIENT COMMUNICATION",
+  "work_product_marker": "ATTORNEY WORK PRODUCT"
+}
