@@ -117,6 +117,16 @@ export const mockAgents: Agent[] = [
     reportsTo: 'agent-social-manager',
     avatar: 'E',
   },
+  {
+    id: 'agent-research-avatar',
+    name: 'סוכן מחקר + אווטר',
+    type: 'research',
+    status: 'active',
+    description: 'מחקר יומי אוטומטי — Google Trends נדל"ן ומקרקעין, יצירת מאמר SEO, שאלות-תשובות ותסריט אווטר. מדווח ישירות לאורי מנכ"ל.',
+    tasksCompleted: 1,
+    tasksRunning: 0,
+    lastActive: 'היום 06:00',
+  },
 ];
 
 // ── Job approval queue ─────────────────────────────────────────────────────
