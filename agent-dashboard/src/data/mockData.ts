@@ -95,6 +95,16 @@ export const mockAgents: Agent[] = [
     tasksRunning: 0,
     lastActive: 'לפני 3 שעות',
   },
+  {
+    id: 'agent-research-avatar',
+    name: 'סוכן מחקר + אווטר',
+    type: 'research',
+    status: 'active',
+    description: 'מחקר יומי אוטומטי — Google Trends נדל"ן ומקרקעין, יצירת מאמר SEO, שאלות-תשובות ותסריט אווטר. מדווח ישירות לאורי מנכ"ל.',
+    tasksCompleted: 1,
+    tasksRunning: 0,
+    lastActive: 'היום 06:00',
+  },
 ];
 
 export const mockPosts: Post[] = [

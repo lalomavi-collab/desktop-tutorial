@@ -50,6 +50,13 @@ jobs:
           fi
           python scripts/daily_research_agent.py
 
+      - name: Generate CEO daily report
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/daily_ceo_report.py
+
       - name: Commit & push new content
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
