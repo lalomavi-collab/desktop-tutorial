@@ -57,6 +57,19 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scripts/daily_ceo_report.py
 
+      - name: Generate avatar video
+        if: ${{ env.HIGGSFIELD_API_KEY != '' }}
+        env:
+          HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -f "avatar-config/soul_config.json" ]; then
+            python scripts/daily_avatar_video.py
+          else
+            echo "⚠️  No soul_config.json — skipping avatar video (run avatar_train.py first)"
+          fi
+
       - name: Commit & push new content
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
