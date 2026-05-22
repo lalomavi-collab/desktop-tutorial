@@ -57,17 +57,19 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scripts/daily_ceo_report.py
 
-      - name: Generate avatar video
-        if: ${{ env.HIGGSFIELD_API_KEY != '' }}
+      - name: Generate avatar video (Synthesia)
+        if: ${{ env.SYNTHESIA_API_KEY != '' }}
         env:
-          HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
+          SYNTHESIA_API_KEY: ${{ secrets.SYNTHESIA_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          if [ -f "avatar-config/soul_config.json" ]; then
+          CFG="avatar-config/soul_config.json"
+          STATUS=$(python -c "import json; d=json.load(open('$CFG')); print(d.get('status',''))" 2>/dev/null || echo "")
+          if [ "$STATUS" = "ready" ]; then
             python scripts/daily_avatar_video.py
           else
-            echo "⚠️  No soul_config.json — skipping avatar video (run avatar_train.py first)"
+            echo "⚠️  Avatar not ready — run: python scripts/avatar_setup.py"
           fi
 
       - name: Commit & push new content

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Daily Avatar Video Generator — Higgsfield Soul 2.0
-מייצר וידאו יומי אוטומטי עם האווטר שלך על בסיס התסריט מסוכן המחקר
+Daily Avatar Video Generator — Synthesia
+מייצר וידאו יומי עם האווטר האישי שלך על בסיס תסריט מסוכן המחקר
 
-Reads: daily-research/YYYY-MM-DD/avatar_script.md
-Uses:  avatar-config/soul_config.json (trained soul_id)
-Saves: daily-research/YYYY-MM-DD/avatar_video.json (job info + URL)
+Reads:  daily-research/YYYY-MM-DD/avatar_script.md
+Config: avatar-config/soul_config.json
+Saves:  daily-research/YYYY-MM-DD/avatar_video.json
 """
 
 import os
@@ -15,30 +15,35 @@ import time
 import urllib.request
 import urllib.parse
 
+API_BASE = "https://api.synthesia.io/v2"
 OUTPUT_DIR = "daily-research"
-CONFIG_DIR = "avatar-config"
+CONFIG_PATH = "avatar-config/soul_config.json"
+MAX_WAIT_SEC = 600  # 10 minutes
 
 
-def load_soul_config() -> dict:
-    path = os.path.join(CONFIG_DIR, "soul_config.json")
-    if not os.path.exists(path):
+def load_config() -> dict:
+    if not os.path.exists(CONFIG_PATH):
         raise FileNotFoundError(
-            f"Soul config not found at {path}. Run scripts/avatar_train.py first."
+            f"Config not found at {CONFIG_PATH}. Run: python scripts/avatar_setup.py"
         )
-    with open(path) as f:
+    with open(CONFIG_PATH) as f:
         cfg = json.load(f)
     if cfg.get("status") != "ready":
-        raise RuntimeError(
-            f"Soul character not ready yet (status: {cfg.get('status')}). "
-            "Run: python scripts/avatar_train.py --status <soul_id>"
-        )
+        raise RuntimeError("Avatar not ready. Check soul_config.json status field.")
     return cfg
 
 
-def load_avatar_script(today: str) -> str:
+def get_headers() -> dict:
+    key = os.environ.get("SYNTHESIA_API_KEY", "")
+    if not key:
+        raise RuntimeError("SYNTHESIA_API_KEY env var not set")
+    return {"Authorization": key, "Content-Type": "application/json"}
+
+
+def load_script(today: str) -> str:
     path = os.path.join(OUTPUT_DIR, today, "avatar_script.md")
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Avatar script not found: {path}")
+        raise FileNotFoundError(f"Script not found: {path}")
     with open(path, encoding="utf-8") as f:
         content = f.read()
     # Strip YAML front matter
@@ -48,86 +53,93 @@ def load_avatar_script(today: str) -> str:
     return content
 
 
-def extract_prompt(script: str) -> str:
-    """Convert the talking-point script into a Higgsfield video prompt."""
-    # Take the HOOK + Problem lines as the video prompt (max ~300 chars)
-    lines = [l.strip() for l in script.split("\n") if l.strip() and not l.startswith("#")]
-    # Find the hook section
-    prompt_lines = []
-    for line in lines[:12]:
-        if "[" not in line:  # skip stage directions
-            prompt_lines.append(line)
-        if len(" ".join(prompt_lines)) > 250:
-            break
+def script_to_spoken_text(script: str) -> str:
+    """Extract clean spoken text from the talking-point script."""
+    lines = []
+    for line in script.split("\n"):
+        line = line.strip()
+        # Skip stage directions like [HOOK - 10 שניות], [הפסקה]
+        if line.startswith("[") and line.endswith("]"):
+            continue
+        # Skip markdown headers
+        if line.startswith("#"):
+            continue
+        # Skip YAML fields
+        if ":" in line and len(line.split(":")[0]) < 25:
+            continue
+        if line:
+            lines.append(line)
 
-    prompt = " ".join(prompt_lines)[:280]
-    return (
-        f"Professional real estate lawyer speaking directly to camera in an office setting. "
-        f"Confident, authoritative yet approachable tone. Israeli professional. "
-        f"Script: {prompt}"
-    )
+    text = " ".join(lines)
+    # Synthesia has a ~1500 char limit per scene
+    return text[:1400]
 
 
-def generate_video(soul_id: str, prompt: str) -> dict:
-    api_key = os.environ.get("HIGGSFIELD_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("HIGGSFIELD_API_KEY environment variable not set")
-
+def create_video(cfg: dict, spoken_text: str, today: str) -> dict:
     payload = json.dumps({
-        "model": "soul_2",
-        "prompt": prompt,
-        "soul_id": soul_id,
-        "duration": 30,
-        "aspect_ratio": "9:16",  # vertical for social media
+        "test": False,
+        "title": f"Daily Legal Update — {today}",
+        "description": f"נדל\"ן ומקרקעין — עדכון יומי {today}",
+        "visibility": "private",
+        "input": [{
+            "avatarId": cfg["avatar_id"],
+            "avatarSettings": {
+                "horizontalAlign": "center",
+                "scale": 1.0,
+                "style": "rectangular",
+                "seamless": False,
+            },
+            "backgroundId": cfg.get("background_id", "green_screen"),
+            "scriptText": spoken_text,
+            "voice": cfg.get("voice_id", "he-IL-AvriNeural"),
+        }],
     }).encode()
 
     req = urllib.request.Request(
-        "https://api.higgsfield.ai/v1/generate/video",
+        f"{API_BASE}/videos",
         data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
+        headers=get_headers(),
         method="POST",
     )
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())
 
 
-def poll_job(job_id: str, timeout: int = 300) -> dict:
-    api_key = os.environ.get("HIGGSFIELD_API_KEY", "")
+def poll_video(video_id: str) -> dict:
+    headers = get_headers()
     start = time.time()
-    while time.time() - start < timeout:
+    while time.time() - start < MAX_WAIT_SEC:
         req = urllib.request.Request(
-            f"https://api.higgsfield.ai/v1/jobs/{job_id}",
-            headers={"Authorization": f"Bearer {api_key}"},
+            f"{API_BASE}/videos/{video_id}",
+            headers=headers,
             method="GET",
         )
         with urllib.request.urlopen(req) as resp:
-            job = json.loads(resp.read())
+            video = json.loads(resp.read())
 
-        status = job.get("status", "")
-        print(f"  ⟳ Job {job_id[:8]}… status: {status}")
+        status = video.get("status", "")
+        print(f"  ⟳ Video {video_id[:8]}… status: {status}")
 
-        if status == "completed":
-            return job
+        if status == "complete":
+            return video
         if status in ("failed", "error"):
-            raise RuntimeError(f"Video generation failed: {job}")
+            raise RuntimeError(f"Video generation failed: {video}")
 
-        time.sleep(15)
+        time.sleep(20)
 
-    raise TimeoutError(f"Job {job_id} did not complete within {timeout}s")
+    raise TimeoutError(f"Video {video_id} did not complete in {MAX_WAIT_SEC}s")
 
 
-def save_result(today: str, job: dict, script: str):
+def save_result(today: str, video: dict, script_preview: str) -> dict:
     result = {
         "date": today,
-        "job_id": job.get("id"),
-        "status": job.get("status"),
-        "video_url": job.get("output_url") or job.get("url"),
-        "duration_seconds": job.get("duration"),
-        "model": "soul_2",
-        "script_preview": script[:200],
+        "provider": "synthesia",
+        "video_id": video.get("id"),
+        "status": video.get("status"),
+        "video_url": video.get("download", video.get("streamUrl", "")),
+        "share_url": video.get("shareUrl", ""),
+        "duration": video.get("duration"),
+        "script_preview": script_preview[:200],
     }
     path = os.path.join(OUTPUT_DIR, today, "avatar_video.json")
     with open(path, "w", encoding="utf-8") as f:
@@ -135,28 +147,27 @@ def save_result(today: str, job: dict, script: str):
     return result
 
 
-def notify_telegram(video_url: str, today: str):
+def notify_telegram(result: dict, today: str):
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
     if not token or not chat_id:
         return
 
+    video_url = result.get("share_url") or result.get("video_url", "")
     msg = (
-        f"🎬 *וידאו אווטר יומי — {today}*\n\n"
+        f"🎬 *וידאו אווטר יומי מוכן — {today}*\n\n"
         f"✅ הוידאו מוכן!\n"
         f"🔗 [צפה בוידאו]({video_url})\n\n"
-        f"_נוצר אוטומטית ע\"י Higgsfield Soul 2.0_"
+        f"_נוצר אוטומטית ע\"י Synthesia_"
     )
     data = urllib.parse.urlencode({
         "chat_id": chat_id,
         "text": msg,
         "parse_mode": "Markdown",
     }).encode()
-
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{token}/sendMessage",
-        data=data,
-        method="POST",
+        data=data, method="POST",
     )
     try:
         urllib.request.urlopen(req, timeout=10)
@@ -170,27 +181,25 @@ def main():
     print(f"\n🎬 Daily Avatar Video — {today}")
     print("=" * 50)
 
-    cfg = load_soul_config()
-    soul_id = cfg["soul_id"]
-    print(f"  🎭 Soul: {cfg['soul_name']} ({soul_id[:8]}…)")
+    cfg = load_config()
+    print(f"  🎭 Avatar: {cfg.get('avatar_name', cfg['avatar_id'])}")
 
-    script = load_avatar_script(today)
-    prompt = extract_prompt(script)
-    print(f"  📝 Prompt: {prompt[:80]}…")
+    script = load_script(today)
+    spoken_text = script_to_spoken_text(script)
+    print(f"  📝 Script: {spoken_text[:70]}…")
 
-    print("  ⟳ Submitting video generation job…")
-    job_resp = generate_video(soul_id, prompt)
-    job_id = job_resp.get("id") or job_resp.get("job_id")
-    print(f"  ✅ Job submitted: {job_id}")
+    print("  ⟳ Submitting to Synthesia…")
+    video_resp = create_video(cfg, spoken_text, today)
+    video_id = video_resp.get("id")
+    print(f"  ✅ Job submitted: {video_id}")
 
-    print("  ⏳ Waiting for video (up to 5 minutes)…")
-    completed_job = poll_job(job_id)
+    print("  ⏳ Waiting for render (up to 10 minutes)…")
+    completed = poll_video(video_id)
 
-    result = save_result(today, completed_job, script)
-    video_url = result["video_url"]
-    print(f"  🎉 Video ready: {video_url}")
+    result = save_result(today, completed, spoken_text)
+    print(f"  🎉 Video ready: {result.get('share_url') or result.get('video_url')}")
 
-    notify_telegram(video_url, today)
+    notify_telegram(result, today)
 
 
 if __name__ == "__main__":
