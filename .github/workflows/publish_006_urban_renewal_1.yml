@@ -3,7 +3,7 @@ name: Publish Post 006 - Urban Renewal #1
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 8 12 5 *'  # May 12, 2026 at 08:00 UTC
+    - cron: '0 8 3 6 *'  # June 3, 2026 at 08:00 UTC
 
 jobs:
   publish:
