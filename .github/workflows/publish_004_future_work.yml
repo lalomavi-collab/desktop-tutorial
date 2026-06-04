@@ -1,0 +1,42 @@
+name: "Publish Post 004 - Future of Work"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 16 6 *'  # June 16, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\nמחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\nהכישורים שישמרו עליך רלוונטי:\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ יכולת לעבוד עם AI (לא נגדו)\n✅ יצירתיות ופתרון בעיות מורכבות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#עתידהעבודה #AI #כישורים #קריירה #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\nמחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\nהכישורים שישמרו עליך רלוונטי:\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ יכולת לעבוד עם AI (לא נגדו)\n✅ יצירתיות ופתרון בעיות מורכבות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#עתידהעבודה #AI #כישורים #קריירה #LALUM"
+            }'
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "🚀 עולם העבודה 2030:\n\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ עבודה עם AI — לא נגדו\n✅ יצירתיות ופתרון בעיות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n↳ LALUM\nwww.lalum.co\n\n#עתידהעבודה #AI #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "The Future of Work in 2030 — What We Already Know 🚀\n\nMcKinsey research: 30% of jobs in 2030 don'\''t exist yet.\n\nThe skills that will keep you relevant:\n✅ Critical thinking\n✅ Emotional intelligence\n✅ Working WITH AI (not against it)\n✅ Creativity and complex problem-solving\n\nAI is the tool — you are the manager.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#FutureOfWork #AI #Skills #Career #ArtificialIntelligence #LALUM"
+            }'

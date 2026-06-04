@@ -1,0 +1,42 @@
+name: "Publish Post 003 - AI for Business"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 13 6 *'  # June 13, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n5 כלי AI שכל בעל עסק קטן צריך ב-2026:\n1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n2️⃣ Canva AI — עיצוב מהיר ומקצועי\n3️⃣ Zapier AI — אוטומציה של תהליכים\n4️⃣ Notion AI — ניהול ידע ופגישות\n5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\nמה הכלי שהכי שינה את העסק שלך? 👇\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #עסקיםקטנים #יזמות #טכנולוגיה #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n5 כלי AI שכל בעל עסק קטן צריך ב-2026:\n1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n2️⃣ Canva AI — עיצוב מהיר ומקצועי\n3️⃣ Zapier AI — אוטומציה של תהליכים\n4️⃣ Notion AI — ניהול ידע ופגישות\n5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\nמה הכלי שהכי שינה את העסק שלך? 👇\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #עסקיםקטנים #יזמות #טכנולוגיה #LALUM"
+            }'
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "💼 5 כלי AI לעסק שלך:\n\n1️⃣ ChatGPT — תוכן ומיילים\n2️⃣ Canva AI — עיצוב\n3️⃣ Zapier — אוטומציה\n4️⃣ Notion AI — ניהול\n5️⃣ Claude — אסטרטגיה\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #עסקיםקטנים #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "AI Isn'\''t Just for Big Tech — It'\''s for YOUR Business 💼\n\n5 AI tools every small business owner needs in 2026:\n1️⃣ ChatGPT — Content, emails, proposals\n2️⃣ Canva AI — Fast, professional design\n3️⃣ Zapier AI — Workflow automation\n4️⃣ Notion AI — Knowledge & meeting management\n5️⃣ Claude — Research, analysis, strategy\n\nWhich tool has made the biggest impact on your business? 👇\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #SmallBusiness #Entrepreneurship #ProductivityTools #LALUM"
+            }'

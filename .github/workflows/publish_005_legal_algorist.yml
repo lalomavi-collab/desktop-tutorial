@@ -1,0 +1,42 @@
+name: Publish Post 005 - The Legal Algorist
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 20 6 *'  # June 20, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️\n\n\"הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה\"\n\nכשאתם משתמשים ב-AI לניתוח עסקת נדל\"ן או לבניית אסטרטגיה משפטית,\nאתם לא רק \"מתייעלים\".\nאתם מאצילים סמכות לקופסה שחורה.\n\nנולד מקצוע חדש: הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי.\n\n✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה\n✅ ציות ואתיקה מוטמעים ב-Output\n✅ אחריות מלאה על כל תוצאה\n\nהאם אתם מנהיגים את המכונה, או שאתם חלק מהסטטיסטיקה שלה?\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#LegalTech #AIandLaw #האלגוריסטהמשפטי #נדלן #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️\n\n\"הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה\"\n\nכשאתם משתמשים ב-AI לניתוח עסקת נדל\"ן או לבניית אסטרטגיה משפטית,\nאתם לא רק \"מתייעלים\".\nאתם מאצילים סמכות לקופסה שחורה.\n\nנולד מקצוע חדש: הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי.\n\n✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה\n✅ ציות ואתיקה מוטמעים ב-Output\n✅ אחריות מלאה על כל תוצאה\n\nהאם אתם מנהיגים את המכונה, או שאתם חלק מהסטטיסטיקה שלה?\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#LegalTech #AIandLaw #האלגוריסטהמשפטי #נדלן #LALUM"
+            }'
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי ⚖️\n\nAI לניתוח משפטי — מי אחראי על התוצאה?\n\n✅ לוגיקה משפטית > סטטיסטיקה\n✅ ציות ואתיקה ב-Output\n✅ אחריות מלאה\n\nהאם אתם מנהיגים את המכונה?\n\n↳ LALUM\nwww.lalum.co\n\n#LegalTech #AI #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "The Legal Algorist: Are You Ready for the New Profession of 2026? ⚖️\n\n\"The danger is not that the machine will think like a human,\nbut that humans will start thinking like machines.\"\n\nWhen you use AI to analyze a real estate deal or build legal strategy,\nyou are not just optimizing.\nYou are delegating authority to a Black Box.\n\nA new profession is emerging: The Legal Algorist.\n\n✅ Legal logic prevails over statistics\n✅ Compliance and ethics embedded in every Output\n✅ Full accountability for every result\n\nAre you leading the machine — or just part of its statistics?\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#LegalTech #AIandLaw #TheLegalAlgorist #RealEstate #ProfessionalEthics #LALUM"
+            }'
