@@ -14,8 +14,10 @@ interface WorkerAgentViewProps {
 }
 
 const profilePreview = [
-  { label: 'מיקום', value: 'תל אביב, ישראל', icon: MapPin },
-  { label: 'שכר מצופה', value: '35,000 ₪', icon: DollarSign },
+  { label: 'תואר', value: 'ד"ר כלכלה + משפטים', icon: FileText },
+  { label: 'מיקום', value: 'תל אביב / פתוח לגלובלי', icon: MapPin },
+  { label: 'שכר מצופה', value: '$200K+ / ₪45K+', icon: DollarSign },
+  { label: 'תחום', value: 'AI Law · Autonomous Systems · Governance', icon: Briefcase },
   { label: 'LinkedIn', value: 'linkedin.com/in/...', icon: Link },
   { label: 'זמינות', value: '30 יום', icon: Clock },
 ];
@@ -77,7 +79,7 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
         <div className="text-right">
           <h1 className="text-white font-bold text-2xl">Worker — סוכן דרושים</h1>
           <p className="text-gray-500 text-sm mt-0.5">
-            סרק 47 משרות · מצא {qualified.length} מתאימות · ממתין לאישורך
+            סרק 63 משרות AI+Law · LinkedIn · Waymo · Tesla · ECB · OECD · ממתין לאישורך
           </p>
         </div>
       </div>
@@ -85,7 +87,7 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'נסרקו', value: '47', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { label: 'נסרקו', value: '63', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           { label: 'ציון 8+', value: String(qualified.length), icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
           { label: 'הוגשו', value: String(applied.length), icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
           { label: 'ממתין לאישור', value: String(pending.length), icon: AlertCircle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
@@ -317,7 +319,7 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
               <BarChart3 size={14} className="text-purple-400" />
             </h2>
             {[
-              { step: 'סריקת משרות', icon: Search, done: true, detail: '47 נמצאו' },
+              { step: 'סריקת משרות', icon: Search, done: true, detail: '63 נמצאו (AI+Law)' },
               { step: 'ציון AI', icon: Brain, done: true, detail: `${qualified.length} מעל 8` },
               { step: 'אישור אנושי', icon: Shield, active: pending.length > 0, detail: `${pending.length} ממתינות` },
               { step: 'Playwright', icon: MousePointerClick, done: applied.length > 0, detail: `${applied.length} הוגשו` },
