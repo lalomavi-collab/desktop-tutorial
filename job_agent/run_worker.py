@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from job_agent.resume_parser import extract_text
 from job_agent.approval_flow import LOG_FILE, _log_decision
 from job_agent.job_scorer import JobListing
+from job_agent.job_scraper import run_scrape, DEFAULT_QUERIES
 
 # ── צבעים לטרמינל ─────────────────────────────────────────────────────────
 
@@ -159,37 +160,61 @@ def ask_approval(job: JobListing) -> bool:
 
 # ── Jobs to scan ───────────────────────────────────────────────────────────
 
-def get_jobs() -> list[JobListing]:
-    return [
-        JobListing(
-            title="Head of AI Policy & Autonomous Systems Law",
-            company="Waymo (Alphabet)",
-            url="https://waymo.com/careers/",
-            description="Waymo seeks a senior legal-policy expert to lead Autonomous Vehicle regulatory and liability strategy. Own engagement with NHTSA, FTC and international regulators, draft position papers on AV decision-making liability, represent Waymo in legislative hearings, and build the legal framework governing how our AI makes life-and-death decisions. PhD in Law or Economics strongly preferred. Deep understanding of AI systems required. Executive-level role shaping global AV regulation.",
-            location="San Francisco / Remote",
-            salary="$250,000–$320,000 + RSU",
-        ),
-        JobListing(
-            title="Director of AI Law & Public Policy",
-            company="Mercedes-Benz AG",
-            url="https://mercedes-benz.com/careers/",
-            description="Mercedes-Benz seeks Director of AI Law to lead global policy strategy for autonomous vehicles. Engage with ISO 26262, UN WP.29 regulation on automated driving (UNECE), and country-specific AV legislation. Define liability protocols for Level 3–4 autonomy decisions. PhD preferred in law, economics, or public policy.",
-            location="Stuttgart, Germany / Tel Aviv (Hybrid option)",
-            salary="€150,000–€200,000",
-        ),
-        JobListing(
-            title="AI & Law Tenure-track Professor",
-            company="Hebrew University of Jerusalem",
-            url="https://huji.ac.il/careers/",
-            description="Hebrew University Faculty of Law invites applications for a tenure-track position in AI & Law. Teach algorithmic governance, AI liability, and autonomous systems regulation. Lead new interdisciplinary AI & Society research center. PhD in Law required.",
-            location="ירושלים",
-            salary="28,000–38,000 ₪",
-        ),
-    ]
+STATIC_JOBS = [
+    JobListing(
+        title="Head of AI Policy & Autonomous Systems Law",
+        company="Waymo (Alphabet)",
+        url="https://waymo.com/careers/",
+        description="Waymo seeks a senior legal-policy expert to lead Autonomous Vehicle regulatory and liability strategy. Own engagement with NHTSA, FTC and international regulators, draft position papers on AV decision-making liability, represent Waymo in legislative hearings, and build the legal framework governing how our AI makes life-and-death decisions. PhD in Law or Economics strongly preferred. Deep understanding of AI systems required. Executive-level role shaping global AV regulation.",
+        location="San Francisco / Remote",
+        salary="$250,000–$320,000 + RSU",
+    ),
+    JobListing(
+        title="Director of AI Law & Public Policy",
+        company="Mercedes-Benz AG",
+        url="https://mercedes-benz.com/careers/",
+        description="Mercedes-Benz seeks Director of AI Law to lead global policy strategy for autonomous vehicles. Engage with ISO 26262, UN WP.29 regulation on automated driving (UNECE), and country-specific AV legislation. Define liability protocols for Level 3–4 autonomy decisions. PhD preferred in law, economics, or public policy.",
+        location="Stuttgart, Germany / Tel Aviv (Hybrid option)",
+        salary="€150,000–€200,000",
+    ),
+    JobListing(
+        title="AI & Law Tenure-track Professor",
+        company="Hebrew University of Jerusalem",
+        url="https://huji.ac.il/careers/",
+        description="Hebrew University Faculty of Law invites applications for a tenure-track position in AI & Law. Teach algorithmic governance, AI liability, and autonomous systems regulation. Lead new interdisciplinary AI & Society research center. PhD in Law required.",
+        location="ירושלים",
+        salary="28,000–38,000 ₪",
+    ),
+]
+
+def get_jobs(live_scrape: bool = False, headed: bool = False) -> list[JobListing]:
+    """מחזיר משרות — סטטיות או מסריקה חיה."""
+    if not live_scrape:
+        return STATIC_JOBS
+
+    print(c("\n  סורק משרות חיות מ-LinkedIn ו-Indeed...", CYAN))
+    try:
+        jobs = run_scrape(
+            queries=DEFAULT_QUERIES,
+            sources=["linkedin", "indeed"],
+            headless=not headed,
+        )
+        print(c(f"  נמצאו {len(jobs)} משרות ייחודיות", GREEN))
+        # אם הסריקה ריקה — חזור לסטטי
+        return jobs if jobs else STATIC_JOBS
+    except Exception as e:
+        print(c(f"  שגיאה בסריקה: {e} — עובר למשרות סטטיות", AMBER))
+        return STATIC_JOBS
 
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Worker — Job Application Agent")
+    parser.add_argument("--scrape", action="store_true", help="סרוק משרות חיות מ-LinkedIn/Indeed")
+    parser.add_argument("--headed", action="store_true", help="הצג דפדפן בזמן הסריקה")
+    args = parser.parse_args()
+
     print_header()
 
     # Load profile + CV
@@ -207,7 +232,7 @@ def main():
     print(f"  CV: {len(resume_text)} תווים — {c('נקרא ✓', GREEN)}")
     print()
 
-    jobs = get_jobs()
+    jobs = get_jobs(live_scrape=args.scrape, headed=args.headed)
     print(c(f"═══ שלב 1: סריקה וציון {len(jobs)} משרות ════════════════════", BLUE))
     print()
 
@@ -262,9 +287,17 @@ def main():
 
     print()
     print(c("═══ סיום ════════════════════════════════════════════", BLUE))
-    print(c("  להרצה אמיתית עם Playwright (מהמחשב שלך):", BOLD))
-    print(f"  {GRAY}export ANTHROPIC_API_KEY=sk-ant-...{RESET}")
-    print(f"  {GRAY}python -m job_agent.main --resume job_agent/resume.docx --headed{RESET}")
+    print(c("  פקודות להרצה אמיתית על המחשב שלך:", BOLD))
+    print()
+    print(f"  {CYAN}# סריקת משרות חיות + הגשה אוטומטית:{RESET}")
+    print(f"  {GRAY}set ANTHROPIC_API_KEY=sk-ant-...{RESET}")
+    print(f"  {GRAY}python -m job_agent.main --scrape --resume job_agent/resume.docx --headed{RESET}")
+    print()
+    print(f"  {CYAN}# רק סריקה וציון (ללא הגשה):{RESET}")
+    print(f"  {GRAY}python -m job_agent.main --scrape --dry-run --headed{RESET}")
+    print()
+    print(f"  {CYAN}# סריקה עם שאילתות מותאמות:{RESET}")
+    print(f"  {GRAY}python -m job_agent.main --scrape --queries \"AI law policy,legal AI governance\" --headed{RESET}")
     print()
 
 if __name__ == "__main__":

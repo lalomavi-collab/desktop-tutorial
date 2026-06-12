@@ -27,6 +27,7 @@ from job_agent.job_scorer import JobListing, score_jobs, load_jobs_from_file
 from job_agent.field_mapper import map_fields, answer_screening_question
 from job_agent.browser_apply import run_auto_apply, detect_form_fields
 from job_agent.approval_flow import ask_approval, report_result
+from job_agent.job_scraper import run_scrape, DEFAULT_QUERIES
 
 console = Console()
 
@@ -141,7 +142,10 @@ def run_agent(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Full-Cycle Job Application Agent")
     parser.add_argument("--jobs", help="Path to JSON file with job listings")
-    parser.add_argument("--resume", help="Path to resume PDF", default="resume.pdf")
+    parser.add_argument("--scrape", action="store_true", help="Scrape real jobs from LinkedIn/Indeed")
+    parser.add_argument("--sources", default="linkedin,indeed", help="Comma-separated scrape sources (linkedin,indeed,google)")
+    parser.add_argument("--queries", help="Comma-separated search queries (overrides defaults)")
+    parser.add_argument("--resume", help="Path to resume DOCX/PDF", default="job_agent/resume.docx")
     parser.add_argument("--min-score", type=float, default=8.0, help="Minimum score to apply (default: 8.0)")
     parser.add_argument("--headed", action="store_true", help="Show browser window (default: headless)")
     parser.add_argument("--dry-run", action="store_true", help="Score and approve but don't actually apply")
@@ -157,11 +161,25 @@ def main() -> None:
     if args.demo:
         jobs = demo_jobs()
         console.print(f"[dim]Demo mode: {len(jobs)} sample jobs loaded.[/dim]\n")
+    elif args.scrape:
+        sources = [s.strip() for s in args.sources.split(",")]
+        queries = [q.strip() for q in args.queries.split(",")] if args.queries else None
+        console.print(f"[bold cyan]Scraping live jobs from: {', '.join(sources)}[/bold cyan]")
+        console.print(f"[dim]Queries: {queries or DEFAULT_QUERIES}[/dim]\n")
+        jobs = run_scrape(
+            queries=queries,
+            sources=sources,
+            headless=not args.headed,
+        )
+        console.print(f"\n[green]Found {len(jobs)} unique jobs.[/green]\n")
+        if not jobs:
+            console.print("[yellow]No jobs found. Try --headed to debug or adjust --queries.[/yellow]")
+            sys.exit(0)
     elif args.jobs:
         jobs = load_jobs_from_file(args.jobs)
         console.print(f"[dim]Loaded {len(jobs)} jobs from {args.jobs}[/dim]\n")
     else:
-        console.print("[red]Provide --jobs <file.json> or use --demo[/red]")
+        console.print("[red]Provide --scrape, --jobs <file.json>, or --demo[/red]")
         sys.exit(1)
 
     # Load resume
