@@ -1,56 +1,141 @@
 {
-  "_comment": "מלא את כל השדות לפני הפעלת הסוכן. שדות עם null ידלגו אוטומטית.",
+  "_last_updated": "2026-06-12",
+  "_note": "פרופיל מלא — מבוסס על קורות החיים של ד\"ר אברהם לאלום",
 
   "personal": {
-    "first_name": "שם פרטי",
-    "last_name": "שם משפחה",
-    "email": "your@email.com",
-    "phone": "+972-5X-XXX-XXXX",
-    "location": "תל אביב, ישראל",
-    "linkedin_url": "https://www.linkedin.com/in/your-profile",
-    "github_url": "https://github.com/your-username",
-    "portfolio_url": null,
-    "website_url": null
+    "first_name": "Avraham",
+    "preferred_name": "Avi",
+    "last_name": "Lalum",
+    "full_name": "Dr. Avraham (Avi) Lalum",
+    "email": "avraham@lalum.co",
+    "phone": "+972-52-249-0420",
+    "location": "Israel (Tel Aviv area)",
+    "linkedin_url": "https://www.linkedin.com/in/avraham-lalum",
+    "website_url": "https://www.lalum.co",
+    "orcid": "0000-0001-6094-5303",
+    "github_url": null,
+    "portfolio_url": "https://www.lalum.co"
+  },
+
+  "academic": {
+    "phd_institution": "University of Córdoba, Spain",
+    "phd_field": "Law & Economics",
+    "phd_thesis": "AI-based risk modeling and property-rights theory at the intersection of artificial intelligence, law and economics",
+    "phd_years": "2022–2026",
+    "llm_institution": "Tel Aviv University & UC Berkeley (Joint Program)",
+    "llm_years": "2013–2015",
+    "llb_institution": "Netanya Academic College",
+    "llb_years": "2001–2005",
+    "bar_admission": "Licensed Attorney & Notary — Israel Bar Association (2006); Certified Mediator",
+    "gpa": null
+  },
+
+  "expertise": [
+    "AI & Law: Artificial intelligence in legal practice and education, explainable AI, algorithmic decision-making, LegalTech",
+    "Law & Economics: Economic analysis of law, regulation, risk modeling, decision-making frameworks",
+    "Dispute Resolution: Mediation, arbitration — developer of Decision-Oriented Mediation (DOM) method",
+    "Legal Education: University teaching, curriculum design, professional training, conference keynotes",
+    "General Legal Practice: Civil and commercial law, contracts, professional ethics, comparative law"
+  ],
+
+  "experience": {
+    "current_title": "Attorney, Legal Educator & AI Law Researcher",
+    "current_org": "Lalum & Co., Law Firm + University of Córdoba (PhD)",
+    "years_total_legal": "20+",
+    "years_ai_law": "5+",
+    "law_firm": {
+      "name": "Lalum & Co., Law Firm",
+      "role": "Founder & Managing Partner",
+      "years": "2004–Present",
+      "description": "Multidisciplinary practice in civil and commercial law, contracts, regulation and dispute resolution. Expert opinions, mediation and arbitration in complex commercial and property disputes. Advises Israeli and international clients including cross-border transactions (Georgia, Cyprus, Greece, US)."
+    },
+    "public_roles": [
+      "Deputy Chair — Israel Bar Association (2015–2023): Led national professional reforms and legislation with the Ministry of Justice",
+      "Member, City Council — City of Netanya (2003–2008): Chair of the Cities Association for Environmental Quality"
+    ]
+  },
+
+  "teaching": [
+    "Lecturer — Tel Aviv University (2023–2025): AI, law and conflict resolution",
+    "Guest Lecturer — University of Córdoba & University of Seville, Spain (2023–2025): AI in legal/economic decision-making, DOM, AI behavioral analysis",
+    "Senior Lecturer — Sha'arei Mishpat, Fishman Real Estate Center, Western Galilee College",
+    "Lecturer — Netanya Academic College: Civil law, professional ethics, real estate law"
+  ],
+
+  "publications": {
+    "peer_reviewed_count": "2 Scopus/JCR + dozens of professional/academic articles",
+    "top_papers": [
+      "Lalum et al. (2025). Multi-Dimensional AI-Based Modeling of Real Estate Investment Risk: A Regulatory and Explainable Framework. Mathematics, 13(21), 3413.",
+      "Lalum et al. (2024). Synthetic Reality Mapping of Real Estate Using Deep Learning-Based Object Recognition Algorithms. SN Business & Economics (Springer)."
+    ],
+    "books": [
+      "The Decision Room: Conflict, Clarity & Change (2025)",
+      "Urban Renewal: A Practical Guide — Updated Edition (2025)",
+      "Limits of Judicial Intervention in Standard Contracts (2012)",
+      "Guide to Standard Contracts (2017)",
+      "Guidebook on National Outline Plan 38 (TAMA 38) Transactions — Three-Volume Edition (2020)"
+    ],
+    "orcid": "0000-0001-6094-5303"
   },
 
   "job_preferences": {
-    "notice_period_days": 30,
-    "notice_period_text": "30 days",
-    "expected_salary_ils": 35000,
-    "expected_salary_usd": null,
+    "target_titles": [
+      "Head of AI Policy & Autonomous Systems Law",
+      "Chief AI Ethics Officer",
+      "Senior Legal Counsel — AI & Autonomous Systems",
+      "Director of AI Law & Public Policy",
+      "AI Governance Lead",
+      "AI & Law Professor / Researcher"
+    ],
+    "target_sectors": ["Autonomous Vehicles", "Big Tech", "International Organizations", "Regulatory Bodies", "Academia"],
+    "notice_period_days": 60,
+    "notice_period_text": "60 days",
+    "expected_salary_ils": 45000,
+    "expected_salary_usd": 220000,
     "salary_negotiable": true,
-    "work_type": ["hybrid", "remote"],
-    "willing_to_relocate": false
+    "work_type": ["hybrid", "remote", "on-site"],
+    "willing_to_relocate": true,
+    "relocation_targets": ["US", "EU", "UK", "Germany", "France", "Spain"]
   },
 
   "screening_answers": {
-    "years_of_experience": "5",
-    "years_ai_experience": "3",
-    "requires_visa_sponsorship": "No",
-    "authorized_to_work": "Yes",
-    "highest_education": "Bachelor's Degree in Computer Science",
-    "management_experience": "No",
-    "start_date": "Within 30 days",
-    "cover_letter_default": "I am excited to apply for this position. My background in AI and automation aligns strongly with the requirements. I look forward to contributing to your team."
+    "years_of_experience": "20+ years in law; 5+ years specializing in AI & Law",
+    "years_ai_experience": "5",
+    "requires_visa_sponsorship": "Depends on country — Israeli citizen, may need work visa for US/EU",
+    "authorized_to_work_israel": "Yes",
+    "highest_education": "Ph.D. in Law & Economics — University of Córdoba, Spain (2022–2026)",
+    "management_experience": "Yes — Founder & Managing Partner of law firm (20 years); Deputy Chair, Israel Bar Association (8 years)",
+    "start_date": "Within 60 days",
+    "languages": "Hebrew (native), English (full professional proficiency — academic and legal writing)",
+    "bar_admission": "Yes — Licensed Attorney & Notary, Israel Bar Association (2006); Certified Mediator",
+    "phd_status": "PhD in Law & Economics, University of Córdoba (expected 2026); currently completing dissertation",
+    "publications": "2 Scopus/JCR peer-reviewed articles; 5 books; dozens of professional articles",
+    "cover_letter_default": "I am Dr. Avraham (Avi) Lalum, Attorney, Legal Educator, and AI Law Researcher with over 20 years of legal practice and a PhD in Law & Economics from the University of Córdoba. I specialize in the intersection of artificial intelligence, law, and economics — including explainable AI, algorithmic decision-making, autonomous systems liability, and AI governance frameworks. I have developed and delivered university courses and keynote lectures on AI & Law across Israel, Spain, and internationally, and have published peer-reviewed research in Scopus-indexed journals on AI-based risk modeling. I am excited to apply my unique combination of rigorous legal scholarship, deep AI understanding, and practical advocacy experience to this position."
   },
 
-  "resume_file": "resume.pdf",
+  "resume_file": "resume.docx",
+  "resume_docx": "resume.docx",
 
   "llm_field_mapping_hints": {
-    "_comment": "הסוכן ישתמש ב-LLM למפות שדות טופס למפתחות בפרופיל. הרמזים כאן הם גיבוי.",
     "first name": "personal.first_name",
     "last name": "personal.last_name",
+    "full name": "personal.full_name",
     "email": "personal.email",
     "phone": "personal.phone",
     "location": "personal.location",
     "city": "personal.location",
     "linkedin": "personal.linkedin_url",
-    "github": "personal.github_url",
-    "portfolio": "personal.portfolio_url",
-    "salary": "job_preferences.expected_salary_ils",
+    "website": "personal.website_url",
+    "portfolio": "personal.website_url",
+    "salary": "job_preferences.expected_salary_usd",
     "notice period": "job_preferences.notice_period_text",
     "years of experience": "screening_answers.years_of_experience",
+    "years ai experience": "screening_answers.years_ai_experience",
     "visa": "screening_answers.requires_visa_sponsorship",
-    "cover letter": "screening_answers.cover_letter_default"
+    "cover letter": "screening_answers.cover_letter_default",
+    "education": "academic.phd_institution",
+    "degree": "academic.phd_field",
+    "bar admission": "screening_answers.bar_admission",
+    "publications": "screening_answers.publications"
   }
 }

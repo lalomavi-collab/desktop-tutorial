@@ -1,21 +1,42 @@
 """
-מודול פרסור קורות חיים מ-PDF.
-מספק טקסט גולמי לשימוש ה-LLM ונתיב לקובץ להעלאה לטפסים.
+מודול פרסור קורות חיים — תומך ב-PDF ו-DOCX.
 """
 
 from pathlib import Path
 
 
 def extract_text(resume_path: str | Path) -> str:
-    """
-    מחלץ טקסט מ-PDF של קורות החיים.
-    מנסה pdfplumber ראשון, נופל ל-pypdf כגיבוי.
-    """
+    """מחלץ טקסט מ-PDF או DOCX."""
     path = Path(resume_path)
     if not path.exists():
         raise FileNotFoundError(f"Resume not found: {path}")
 
-    # Try pdfplumber (preserves layout better)
+    ext = path.suffix.lower()
+
+    if ext == ".docx":
+        return _extract_docx(path)
+    else:
+        return _extract_pdf(path)
+
+
+def _extract_docx(path: Path) -> str:
+    """חילוץ טקסט מ-DOCX."""
+    import zipfile
+    import xml.etree.ElementTree as ET
+    W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    with zipfile.ZipFile(path) as z:
+        with z.open("word/document.xml") as f:
+            root = ET.parse(f).getroot()
+    lines = []
+    for para in root.iter(f"{{{W}}}p"):
+        line = "".join(t.text or "" for t in para.iter(f"{{{W}}}t"))
+        if line.strip():
+            lines.append(line.strip())
+    return "\n".join(lines)
+
+
+def _extract_pdf(path: Path) -> str:
+    """חילוץ טקסט מ-PDF."""
     try:
         import pdfplumber
         with pdfplumber.open(path) as pdf:
@@ -25,26 +46,21 @@ def extract_text(resume_path: str | Path) -> str:
             return text
     except ImportError:
         pass
-
-    # Fallback: pypdf
     try:
         from pypdf import PdfReader
         reader = PdfReader(str(path))
-        pages = [page.extract_text() or "" for page in reader.pages]
-        return "\n".join(pages).strip()
+        return "\n".join(p.extract_text() or "" for p in reader.pages).strip()
     except ImportError:
-        raise ImportError(
-            "Install PDF parser: pip install pdfplumber  OR  pip install pypdf"
-        )
+        raise ImportError("pip install pdfplumber  OR  pip install pypdf")
 
 
 def get_resume_path(resume_path: str | Path) -> Path:
-    """מחזיר נתיב מאומת לקובץ ה-PDF להעלאה."""
+    """מחזיר נתיב מאומת לקובץ קורות החיים (PDF או DOCX)."""
     path = Path(resume_path)
     if not path.exists():
         raise FileNotFoundError(f"Resume file not found: {path}")
-    if path.suffix.lower() != ".pdf":
-        raise ValueError(f"Resume must be a PDF file, got: {path.suffix}")
+    if path.suffix.lower() not in (".pdf", ".docx"):
+        raise ValueError(f"Resume must be PDF or DOCX, got: {path.suffix}")
     return path.resolve()
 
 
