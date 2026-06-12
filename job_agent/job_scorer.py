@@ -45,23 +45,40 @@ def score_jobs(
     }, ensure_ascii=False)
 
     for job in jobs:
-        prompt = f"""Score this job 1-10 for this candidate. Be critical.
+        prompt = f"""You are scoring a job match for Dr. Avraham Lalum — an AI Law expert.
 
-## Candidate Profile
+CANDIDATE STRENGTHS:
+- PhD in Law & Economics (University of Córdoba, Spain, 2022-2026)
+- 20+ years legal practice (attorney, notary, mediator)
+- 5+ years specializing in AI & Law, algorithmic decision-making, autonomous systems liability
+- Lecturer at Tel Aviv University on AI, law and conflict resolution
+- Published peer-reviewed research on AI-based risk modeling (Scopus/JCR journals)
+- Deputy Chair, Israel Bar Association (2015-2023)
+- Founder & Managing Partner, law firm (20 years)
+- Expertise: AI governance, explainable AI, LegalTech, law & economics, autonomous systems
+
+CANDIDATE PREFERENCES:
 {profile_summary}
 
-## Resume (first 1500 chars)
-{resume_text[:1500]}
-
-## Job
+JOB TO SCORE:
 Title: {job.title}
 Company: {job.company}
 Location: {job.location}
 Salary: {job.salary}
 Description: {job.description[:1000]}
 
-Respond ONLY with JSON:
-{{"score": <1-10>, "reason": "<one sentence explaining the score>"}}"""
+SCORING GUIDE (1-10):
+9-10: Perfect — AI law, policy, governance, legal counsel for tech/AV companies, academia AI law
+7-8:  Good — legal roles at tech companies, policy/regulatory roles, LegalTech, law + tech hybrid
+5-6:  Moderate — general legal, compliance, or tech-adjacent roles with some AI element
+3-4:  Weak — pure software engineering, non-legal tech, or very junior roles
+1-2:  Irrelevant — no legal or AI connection
+
+Score high (8+) for: "AI policy", "legal counsel AI", "autonomous vehicles law", "AI governance",
+"head of AI law", "director legal AI", "regulatory affairs AI", "LegalTech", "law professor AI".
+
+Respond ONLY with valid JSON (no markdown):
+{{"score": <1-10>, "reason": "<one sentence max 25 words>"}}"""
 
         response = client.messages.create(
             model=model,

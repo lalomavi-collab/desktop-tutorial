@@ -48,23 +48,32 @@ def claude(prompt: str, max_words: int = 300) -> str:
 
 def score_job_cli(job: JobListing, profile: dict, resume_text: str) -> tuple[float, str]:
     """מציין משרה 1-10 דרך claude CLI."""
-    prompt = f"""You are a job scoring agent. Score this job 1-10 for this candidate. Be critical and precise.
+    target_titles = ', '.join(profile['job_preferences']['target_titles'][:4])
+    prompt = f"""Score this job 1-10 for Dr. Avraham Lalum, AI Law expert.
 
-CANDIDATE:
-Name: {profile['personal']['full_name']}
-Degree: {profile['academic']['phd_field']} PhD from {profile['academic']['phd_institution']}
-Thesis: {profile['academic']['phd_thesis']}
-Experience: {profile['experience']['years_total_legal']} years legal; {profile['experience']['years_ai_law']} years AI Law
-Also: {profile['experience']['law_firm']['description'][:200]}
-Preferred roles: {', '.join(profile['job_preferences']['target_titles'][:3])}
-Salary expectation: ${profile['job_preferences']['expected_salary_usd']:,}
+CANDIDATE STRENGTHS:
+- PhD Law & Economics, University of Córdoba (2022-2026)
+- 20+ years legal practice; 5+ years AI Law research
+- Expertise: AI governance, autonomous systems liability, explainable AI, LegalTech
+- Lecturer: Tel Aviv University, AI & Law courses
+- Published: Scopus/JCR peer-reviewed AI research
+- Deputy Chair, Israel Bar Association (2015-2023)
+- Target roles: {target_titles}
+- Open to relocation: US, EU, UK, Germany
+
+SCORING GUIDE:
+9-10 = AI law/policy/governance role, legal counsel for tech/AV, AI ethics officer, law professor AI
+7-8  = Legal role at tech company, regulatory affairs with AI, LegalTech, compliance + AI
+5-6  = General legal/compliance with some tech element
+3-4  = Pure tech engineering, non-legal, or very junior
+1-2  = Completely irrelevant
 
 JOB:
 Title: {job.title}
 Company: {job.company}
 Location: {job.location}
 Salary: {job.salary}
-Description: {job.description[:600]}
+Description: {job.description[:700]}
 
 Respond with ONLY valid JSON (no markdown):
 {{"score": <number 1-10>, "reason": "<one sentence max 20 words>"}}"""
@@ -242,14 +251,14 @@ def main():
         score, reason = score_job_cli(job, profile, resume_text)
         job.score = score
         job.score_reason = reason
-        color = GREEN if score >= 9 else AMBER if score >= 8 else RED
+        color = GREEN if score >= 9 else AMBER if score >= 7 else RED
         print(f" {c(f'{score:.1f}', color)}")
-        if score >= 8:
+        if score >= 7:
             scored.append(job)
 
     scored.sort(key=lambda j: j.score, reverse=True)
     print()
-    print(c(f"═══ שלב 2: {len(scored)} משרות עברו סף 8 — ממתין לאישורך ════", BLUE))
+    print(c(f"═══ שלב 2: {len(scored)} משרות עברו סף 7 — ממתין לאישורך ════", BLUE))
 
     for job in scored:
         print()

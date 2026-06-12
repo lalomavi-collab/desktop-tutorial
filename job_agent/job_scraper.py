@@ -18,11 +18,14 @@ from job_agent.job_scorer import JobListing
 
 # מילות חיפוש ממוקדות לפרופיל ד"ר לאלום
 DEFAULT_QUERIES = [
-    "AI law policy director",
-    "autonomous systems legal counsel",
-    "AI governance policy head",
-    "AI ethics officer law",
-    "legal AI autonomous vehicles",
+    "AI law director policy",
+    "legal counsel artificial intelligence",
+    "AI governance regulatory affairs",
+    "autonomous vehicles legal counsel",
+    "AI ethics legal officer",
+    "LegalTech counsel director",
+    "AI policy head law",
+    "legal AI technology counsel",
 ]
 
 MAX_JOBS_PER_QUERY = 5
