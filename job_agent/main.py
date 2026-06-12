@@ -142,8 +142,10 @@ def run_agent(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Full-Cycle Job Application Agent")
     parser.add_argument("--jobs", help="Path to JSON file with job listings")
-    parser.add_argument("--scrape", action="store_true", help="Scrape real jobs from LinkedIn/Indeed")
-    parser.add_argument("--sources", default="linkedin,indeed", help="Comma-separated scrape sources (linkedin,indeed,google)")
+    parser.add_argument("--scrape", action="store_true", help="Scrape real jobs from LinkedIn/Indeed/AllJobs")
+    parser.add_argument("--israel", action="store_true", default=True, help="Israel-first search (AllJobs + LinkedIn Israel + global, default: on)")
+    parser.add_argument("--no-israel", dest="israel", action="store_false", help="Disable Israel-first mode")
+    parser.add_argument("--sources", help="Override sources (alljobs,drushim,linkedin_israel,linkedin,indeed,google)")
     parser.add_argument("--queries", help="Comma-separated search queries (overrides defaults)")
     parser.add_argument("--resume", help="Path to resume DOCX/PDF", default="job_agent/resume.docx")
     parser.add_argument("--min-score", type=float, default=8.0, help="Minimum score to apply (default: 8.0)")
@@ -162,14 +164,17 @@ def main() -> None:
         jobs = demo_jobs()
         console.print(f"[dim]Demo mode: {len(jobs)} sample jobs loaded.[/dim]\n")
     elif args.scrape:
-        sources = [s.strip() for s in args.sources.split(",")]
+        sources = [s.strip() for s in args.sources.split(",")] if args.sources else None
         queries = [q.strip() for q in args.queries.split(",")] if args.queries else None
-        console.print(f"[bold cyan]Scraping live jobs from: {', '.join(sources)}[/bold cyan]")
+        israel = args.israel
+        mode_label = "Israel-first (AllJobs + LinkedIn IL + Global)" if israel else "Global (LinkedIn + Indeed)"
+        console.print(f"[bold cyan]Scraping: {mode_label}[/bold cyan]")
         console.print(f"[dim]Queries: {queries or DEFAULT_QUERIES}[/dim]\n")
         jobs = run_scrape(
             queries=queries,
             sources=sources,
             headless=not args.headed,
+            israel_focus=israel,
         )
         console.print(f"\n[green]Found {len(jobs)} unique jobs.[/green]\n")
         if not jobs:

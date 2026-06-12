@@ -17,16 +17,30 @@ from playwright.async_api import async_playwright, Page, Browser
 from job_agent.job_scorer import JobListing
 
 # מילות חיפוש ממוקדות לפרופיל ד"ר לאלום
+# מילות חיפוש ממוקדות — AI+משפט, ישראל ובינלאומי עם נוכחות ישראלית
 DEFAULT_QUERIES = [
-    "AI law director policy",
-    "legal counsel artificial intelligence",
-    "AI governance regulatory affairs",
-    "autonomous vehicles legal counsel",
-    "AI ethics legal officer",
-    "LegalTech counsel director",
-    "AI policy head law",
-    "legal AI technology counsel",
+    # ישראל ספציפי
+    "AI law legal Israel",
+    "legal tech counsel Israel remote",
+    "AI governance legal Israel",
+    # בינלאומי — רלוונטי לפרופיל
+    "AI law policy director remote",
+    "autonomous vehicles legal counsel remote",
+    "AI regulation attorney director",
+    "LegalTech head of legal",
+    "AI ethics officer legal counsel",
 ]
+
+# שאילתות בעברית לאתרים ישראליים
+HEBREW_QUERIES = [
+    "יועץ משפטי בינה מלאכותית",
+    "דירקטור משפטי טכנולוגיה",
+    "משפטן AI רגולציה",
+    "ראש מחלקה משפטית טכנולוגיה",
+]
+
+ISRAEL_LOCATIONS = ["Israel", "Tel Aviv", "ישראל"]
+GLOBAL_LOCATIONS = ["Remote", "United States", "Europe"]
 
 MAX_JOBS_PER_QUERY = 5
 
@@ -237,6 +251,125 @@ async def scrape_google_jobs(
     return jobs
 
 
+# ── AllJobs (ישראל) ────────────────────────────────────────────────────────
+
+async def scrape_alljobs(
+    page: Page,
+    query: str,
+    max_results: int = MAX_JOBS_PER_QUERY,
+) -> list[JobListing]:
+    """סורק AllJobs.co.il — האתר המוביל בישראל."""
+    url = f"https://www.alljobs.co.il/SearchResultsGuest.aspx?position={quote_plus(query)}&type=1"
+
+    jobs: list[JobListing] = []
+    try:
+        await page.goto(url, timeout=30000, wait_until="domcontentloaded")
+        await asyncio.sleep(3)
+        await _scroll_and_wait(page)
+
+        cards = await page.query_selector_all(".job-content, .single-job, [class*='job-item']")
+
+        for card in cards[:max_results]:
+            try:
+                title_el = await card.query_selector("h2, h3, .job-title, [class*='title']")
+                company_el = await card.query_selector(".company-name, [class*='company']")
+                location_el = await card.query_selector(".job-location, [class*='location'], [class*='city']")
+                link_el = await card.query_selector("a")
+
+                title = (await title_el.inner_text()).strip() if title_el else ""
+                company = (await company_el.inner_text()).strip() if company_el else ""
+                location_txt = (await location_el.inner_text()).strip() if location_el else "Israel"
+                href = await link_el.get_attribute("href") if link_el else ""
+                job_url = f"https://www.alljobs.co.il{href}" if href and href.startswith("/") else href
+
+                if not title:
+                    continue
+
+                desc_el = await card.query_selector(".job-description, [class*='desc'], p")
+                description = (await desc_el.inner_text()).strip() if desc_el else f"{title} at {company or 'Israeli company'}"
+
+                jobs.append(JobListing(
+                    title=title,
+                    company=company or "Israeli company",
+                    url=job_url or url,
+                    description=description,
+                    location=location_txt,
+                    salary="",
+                ))
+            except Exception:
+                continue
+
+    except Exception as e:
+        print(f"  [AllJobs] שגיאה בשאילתה '{query}': {e}")
+
+    return jobs
+
+
+async def scrape_drushim(
+    page: Page,
+    query: str,
+    max_results: int = MAX_JOBS_PER_QUERY,
+) -> list[JobListing]:
+    """סורק Drushim.co.il."""
+    url = f"https://www.drushim.co.il/jobs/q-{quote_plus(query)}/"
+
+    jobs: list[JobListing] = []
+    try:
+        await page.goto(url, timeout=30000, wait_until="domcontentloaded")
+        await asyncio.sleep(3)
+        await _scroll_and_wait(page)
+
+        cards = await page.query_selector_all(".job-item, article.job, [class*='job-card']")
+
+        for card in cards[:max_results]:
+            try:
+                title_el = await card.query_selector("h2, h3, .job-title")
+                company_el = await card.query_selector(".company, [class*='company']")
+                location_el = await card.query_selector(".location, [class*='location']")
+                link_el = await card.query_selector("a")
+
+                title = (await title_el.inner_text()).strip() if title_el else ""
+                company = (await company_el.inner_text()).strip() if company_el else ""
+                location_txt = (await location_el.inner_text()).strip() if location_el else "Israel"
+                href = await link_el.get_attribute("href") if link_el else ""
+                job_url = f"https://www.drushim.co.il{href}" if href and href.startswith("/") else href
+
+                if not title:
+                    continue
+
+                jobs.append(JobListing(
+                    title=title,
+                    company=company or "Israeli company",
+                    url=job_url or url,
+                    description=f"{title} at {company}. Location: {location_txt}",
+                    location=location_txt,
+                    salary="",
+                ))
+            except Exception:
+                continue
+
+    except Exception as e:
+        print(f"  [Drushim] שגיאה בשאילתה '{query}': {e}")
+
+    return jobs
+
+
+async def scrape_linkedin_israel(
+    page: Page,
+    query: str,
+    max_results: int = MAX_JOBS_PER_QUERY,
+) -> list[JobListing]:
+    """LinkedIn ממוקד ישראל — geoId=101620260."""
+    url = (
+        f"https://www.linkedin.com/jobs/search/"
+        f"?keywords={quote_plus(query)}"
+        f"&location=Israel"
+        f"&geoId=101620260"
+        f"&sortBy=R"
+    )
+    return await scrape_linkedin(page, query, location="Israel", max_results=max_results)
+
+
 # ── Main scraper ───────────────────────────────────────────────────────────
 
 async def scrape_jobs(
@@ -244,15 +377,17 @@ async def scrape_jobs(
     sources: list[str] | None = None,
     headless: bool = True,
     max_per_query: int = MAX_JOBS_PER_QUERY,
+    israel_focus: bool = True,
 ) -> list[JobListing]:
     """
     מריץ סריקה מלאה על כל המקורות והשאילתות.
+    israel_focus=True: מחפש קודם בפורטלים ישראלים + LinkedIn Israel.
     מחזיר רשימה מאוחדת ללא כפילויות.
     """
     if queries is None:
         queries = DEFAULT_QUERIES
     if sources is None:
-        sources = ["linkedin", "indeed"]
+        sources = ["alljobs", "linkedin_israel", "linkedin", "indeed"] if israel_focus else ["linkedin", "indeed"]
 
     all_jobs: list[JobListing] = []
     seen_titles: set[str] = set()
@@ -269,15 +404,38 @@ async def scrape_jobs(
                 "Chrome/120.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1280, "height": 900},
+            locale="he-IL",
         )
 
-        # דף ראשי לשימוש חוזר
         page = await context.new_page()
 
+        # שלב 1: אתרים ישראליים עם שאילתות עבריות
+        if "alljobs" in sources:
+            for q in HEBREW_QUERIES:
+                print(f"\n  AllJobs: \"{q}\"")
+                jobs = await scrape_alljobs(page, q, max_results=max_per_query)
+                print(f"    → {len(jobs)} תוצאות")
+                all_jobs.extend(jobs)
+                await asyncio.sleep(2)
+
+        if "drushim" in sources:
+            for q in HEBREW_QUERIES:
+                print(f"\n  Drushim: \"{q}\"")
+                jobs = await scrape_drushim(page, q, max_results=max_per_query)
+                print(f"    → {len(jobs)} תוצאות")
+                all_jobs.extend(jobs)
+                await asyncio.sleep(2)
+
+        # שלב 2: LinkedIn ישראל + בינלאומי
         for query in queries:
             print(f"\n  חיפוש: \"{query}\"")
 
-            if "linkedin" in sources:
+            if "linkedin_israel" in sources:
+                jobs = await scrape_linkedin_israel(page, query, max_results=max_per_query)
+                print(f"    LinkedIn Israel → {len(jobs)} תוצאות")
+                all_jobs.extend(jobs)
+
+            if "linkedin" in sources and "linkedin_israel" not in sources:
                 jobs = await scrape_linkedin(page, query, max_results=max_per_query)
                 print(f"    LinkedIn → {len(jobs)} תוצאות")
                 all_jobs.extend(jobs)
@@ -292,7 +450,7 @@ async def scrape_jobs(
                 print(f"    Google  → {len(jobs)} תוצאות")
                 all_jobs.extend(jobs)
 
-            await asyncio.sleep(2)  # pause between queries
+            await asyncio.sleep(2)
 
         await browser.close()
 
@@ -312,6 +470,7 @@ def run_scrape(
     sources: list[str] | None = None,
     headless: bool = True,
     max_per_query: int = MAX_JOBS_PER_QUERY,
+    israel_focus: bool = True,
 ) -> list[JobListing]:
     """גרסה סינכרונית להפעלה מ-CLI."""
-    return asyncio.run(scrape_jobs(queries, sources, headless, max_per_query))
+    return asyncio.run(scrape_jobs(queries, sources, headless, max_per_query, israel_focus))

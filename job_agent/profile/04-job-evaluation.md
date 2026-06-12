@@ -48,3 +48,16 @@ High: "AI law", "AI policy", "autonomous vehicles legal", "AI governance", "algo
       "regulatory affairs AI", "LegalTech", "AI ethics officer", "AI regulation"
 Medium: "legal technology", "digital law", "tech counsel", "innovation law", "data law"
 Low: "compliance", "legal director", "general counsel" (only if company is in tech/AI space)
+
+## Israel-Specific Scoring Bonus
+Add +0.5 to score for jobs that:
+- Are based in Israel (Tel Aviv, Herzliya, Beer Sheva, remote from Israel)
+- Are at Israeli tech companies (startups, scale-ups) or MNC R&D centers in Israel
+- Allow work from Israel without relocation
+
+Top Israeli companies/orgs to prioritize:
+- Autonomous vehicle: Mobileye, Innoviz, Arbe
+- AI/Tech: Monday.com, Wix, Check Point, CyberArk, Amdocs, NICE, Sapiens
+- Legal/RegTech: any legal tech startup in Israel
+- International with IL office: Microsoft R&D, Google Israel, Meta Israel, Amazon AWS Israel
+- Academia: Hebrew University, Tel Aviv University, Reichman University (IDC)
