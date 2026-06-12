@@ -95,6 +95,16 @@ export const mockAgents: Agent[] = [
     tasksRunning: 0,
     lastActive: 'לפני 3 שעות',
   },
+  {
+    id: 'agent-worker',
+    name: 'Worker — סוכן דרושים',
+    type: 'job-agent',
+    status: 'active',
+    description: 'סורק משרות, מציין ע"י AI, מגיש טפסים אוטומטית — עם אישור אנושי לפני כל פעולה.',
+    tasksCompleted: 2,
+    tasksRunning: 1,
+    lastActive: 'לפני 12 דקות',
+  },
 ];
 
 export const mockPosts: Post[] = [

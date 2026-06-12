@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { SocialMediaManager } from './components/SocialMediaManager';
+import { WorkerAgentView } from './components/WorkerAgentView';
 import { mockAgents, mockActivity } from './data/mockData';
 
-type View = 'dashboard' | 'social' | 'analytics' | 'settings';
+type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker';
 
 function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -12,11 +13,15 @@ function App() {
 
   const socialManager = mockAgents.find(a => a.type === 'social-manager')!;
 
+  const workerAgent = mockAgents.find(a => a.type === 'job-agent')!;
+
   const handleSelectAgent = (id: string) => {
     setSelectedAgentId(id);
     const agent = mockAgents.find(a => a.id === id);
     if (agent?.type === 'social-manager') {
       setActiveView('social');
+    } else if (agent?.type === 'job-agent') {
+      setActiveView('worker');
     }
   };
 
@@ -24,6 +29,8 @@ function App() {
     setActiveView(view);
     if (view === 'social') {
       setSelectedAgentId(socialManager.id);
+    } else if (view === 'worker') {
+      setSelectedAgentId(workerAgent.id);
     }
   };
 
@@ -63,6 +70,10 @@ function App() {
             </div>
             <SocialMediaManager agent={socialManager} />
           </div>
+        )}
+
+        {activeView === 'worker' && (
+          <WorkerAgentView agent={workerAgent} />
         )}
 
         {activeView === 'analytics' && (
