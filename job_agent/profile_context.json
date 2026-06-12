@@ -1,0 +1,56 @@
+{
+  "_comment": "מלא את כל השדות לפני הפעלת הסוכן. שדות עם null ידלגו אוטומטית.",
+
+  "personal": {
+    "first_name": "שם פרטי",
+    "last_name": "שם משפחה",
+    "email": "your@email.com",
+    "phone": "+972-5X-XXX-XXXX",
+    "location": "תל אביב, ישראל",
+    "linkedin_url": "https://www.linkedin.com/in/your-profile",
+    "github_url": "https://github.com/your-username",
+    "portfolio_url": null,
+    "website_url": null
+  },
+
+  "job_preferences": {
+    "notice_period_days": 30,
+    "notice_period_text": "30 days",
+    "expected_salary_ils": 35000,
+    "expected_salary_usd": null,
+    "salary_negotiable": true,
+    "work_type": ["hybrid", "remote"],
+    "willing_to_relocate": false
+  },
+
+  "screening_answers": {
+    "years_of_experience": "5",
+    "years_ai_experience": "3",
+    "requires_visa_sponsorship": "No",
+    "authorized_to_work": "Yes",
+    "highest_education": "Bachelor's Degree in Computer Science",
+    "management_experience": "No",
+    "start_date": "Within 30 days",
+    "cover_letter_default": "I am excited to apply for this position. My background in AI and automation aligns strongly with the requirements. I look forward to contributing to your team."
+  },
+
+  "resume_file": "resume.pdf",
+
+  "llm_field_mapping_hints": {
+    "_comment": "הסוכן ישתמש ב-LLM למפות שדות טופס למפתחות בפרופיל. הרמזים כאן הם גיבוי.",
+    "first name": "personal.first_name",
+    "last name": "personal.last_name",
+    "email": "personal.email",
+    "phone": "personal.phone",
+    "location": "personal.location",
+    "city": "personal.location",
+    "linkedin": "personal.linkedin_url",
+    "github": "personal.github_url",
+    "portfolio": "personal.portfolio_url",
+    "salary": "job_preferences.expected_salary_ils",
+    "notice period": "job_preferences.notice_period_text",
+    "years of experience": "screening_answers.years_of_experience",
+    "visa": "screening_answers.requires_visa_sponsorship",
+    "cover letter": "screening_answers.cover_letter_default"
+  }
+}

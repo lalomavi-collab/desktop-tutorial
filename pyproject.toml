@@ -7,10 +7,15 @@ dependencies = [
     "anthropic>=0.42.0",
     "rich>=13.0.0",
     "pyyaml>=6.0",
+    # Job Agent dependencies
+    "playwright>=1.40.0",
+    "pdfplumber>=0.10.0",
+    "pypdf>=4.0.0",
 ]
 
 [project.scripts]
 prompt-builder = "prompt_builder.cli:main"
+job-agent = "job_agent.main:main"
 
 [build-system]
 requires = ["setuptools>=75.0"]
