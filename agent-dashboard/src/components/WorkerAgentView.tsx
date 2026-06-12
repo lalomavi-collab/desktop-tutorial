@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import {
   Briefcase, Search, Brain, MousePointerClick, CheckCircle2,
-  XCircle, Clock, FileText, User, MapPin, DollarSign, Link,
+  XCircle, Clock, FileText, User, MapPin, DollarSign,
   AlertCircle, Loader2, Camera, ScrollText, ChevronRight,
   Shield, ExternalLink, Tag, Building2, Send, SkipForward,
-  Sparkles, BarChart3,
+  Sparkles, BarChart3, CalendarClock, Zap, AlertTriangle,
+  GraduationCap, BookOpen, Edit3, Upload,
 } from 'lucide-react';
 import { initialJobQueue } from '../data/mockData';
 import type { JobCandidate, JobDecision } from '../types';
@@ -13,14 +14,128 @@ interface WorkerAgentViewProps {
   onBreadcrumbCeo?: () => void;
 }
 
-const profilePreview = [
-  { label: 'תואר', value: 'ד"ר כלכלה + משפטים', icon: FileText },
-  { label: 'מיקום', value: 'תל אביב / פתוח לגלובלי', icon: MapPin },
-  { label: 'שכר מצופה', value: '$200K+ / ₪45K+', icon: DollarSign },
-  { label: 'תחום', value: 'AI Law · Autonomous Systems · Governance', icon: Briefcase },
-  { label: 'LinkedIn', value: 'linkedin.com/in/...', icon: Link },
-  { label: 'זמינות', value: '30 יום', icon: Clock },
+// ─── Profile data ──────────────────────────────────────────────────────────
+
+type FieldStatus = 'filled' | 'missing' | 'partial';
+
+interface ProfileField {
+  key: string;
+  label: string;
+  value: string;
+  status: FieldStatus;
+  required: boolean;
+  hint?: string;
+}
+
+const profileSections: { title: string; icon: typeof User; fields: ProfileField[] }[] = [
+  {
+    title: 'פרטים אישיים',
+    icon: User,
+    fields: [
+      { key: 'full_name', label: 'שם מלא', value: '', status: 'missing', required: true, hint: 'שם פרטי + משפחה' },
+      { key: 'email', label: 'אימייל', value: '', status: 'missing', required: true, hint: 'כתובת מייל מקצועית' },
+      { key: 'phone', label: 'טלפון', value: '', status: 'missing', required: true, hint: '+972-5X-XXX-XXXX' },
+      { key: 'location', label: 'מיקום', value: 'תל אביב, ישראל', status: 'filled', required: true },
+      { key: 'linkedin', label: 'LinkedIn URL', value: '', status: 'missing', required: true, hint: 'linkedin.com/in/your-profile' },
+      { key: 'website', label: 'אתר / SSRN', value: '', status: 'missing', required: false, hint: 'פרופיל מחקרי / SSRN / Academia.edu' },
+    ],
+  },
+  {
+    title: 'השכלה אקדמית',
+    icon: GraduationCap,
+    fields: [
+      { key: 'phd_institution', label: 'מוסד הדוקטורט', value: '', status: 'missing', required: true, hint: 'שם האוניברסיטה' },
+      { key: 'phd_field', label: 'תחום הדוקטורט', value: 'כלכלה ומשפטים', status: 'filled', required: true },
+      { key: 'phd_thesis', label: 'נושא הדיסרטציה', value: '', status: 'missing', required: true, hint: 'כותרת הדיסרטציה (קריטי לתפקידי policy)' },
+      { key: 'phd_year', label: 'שנת סיום', value: '', status: 'missing', required: true },
+      { key: 'llb_institution', label: 'תואר משפטים (LLB/LLM)', value: '', status: 'missing', required: true },
+      { key: 'econ_institution', label: 'תואר כלכלה', value: '', status: 'missing', required: true },
+      { key: 'bar_admission', label: 'רישיון עריכת דין', value: '', status: 'missing', required: false, hint: 'ישראל / בר-אמריקאי / EU — חשוב לתפקידי Legal Counsel' },
+    ],
+  },
+  {
+    title: 'ניסיון מקצועי',
+    icon: Briefcase,
+    fields: [
+      { key: 'current_title', label: 'תפקיד נוכחי', value: '', status: 'missing', required: true },
+      { key: 'current_org', label: 'ארגון נוכחי', value: '', status: 'missing', required: true },
+      { key: 'years_exp', label: 'שנות ניסיון', value: '', status: 'missing', required: true, hint: 'כולל דוקטורט ופוסט-דוק' },
+      { key: 'ai_exp', label: 'שנות ניסיון ב-AI', value: '', status: 'missing', required: true, hint: 'מחקר / ייעוץ / פרויקטים' },
+      { key: 'policy_exp', label: 'ניסיון רגולטורי/Policy', value: '', status: 'missing', required: false, hint: 'ממשלה, רגולטור, ועדה — חשוב למאוד' },
+      { key: 'languages', label: 'שפות', value: 'עברית (שפת אם), אנגלית (שוטפת)', status: 'partial', required: true, hint: 'הוסף גרמנית / צרפתית אם רלוונטי' },
+    ],
+  },
+  {
+    title: 'מחקר ופרסומים',
+    icon: BookOpen,
+    fields: [
+      { key: 'publications', label: 'מספר פרסומים', value: '', status: 'missing', required: true, hint: 'מאמרים peer-reviewed בכתבי עת' },
+      { key: 'top_journals', label: 'כתבי עת מובילים', value: '', status: 'missing', required: false, hint: 'Harvard LR, Yale LJ, JEEA וכו\'...' },
+      { key: 'research_focus', label: 'תחום מחקר עיקרי', value: 'AI Law · Autonomous Systems · Algorithmic Governance', status: 'filled', required: true },
+      { key: 'ssrn_profile', label: 'SSRN / Google Scholar', value: '', status: 'missing', required: false, hint: 'קישור לפרופיל ציטוטים — חיוני לתפקידי אקדמיה + policy' },
+    ],
+  },
+  {
+    title: 'העדפות ועמדה',
+    icon: MapPin,
+    fields: [
+      { key: 'target_roles', label: 'תפקידים מועדפים', value: 'AI Policy Lead, Legal Counsel AI, Chief AI Ethics Officer', status: 'filled', required: true },
+      { key: 'salary_ils', label: 'שכר מצופה (₪)', value: '45,000+ ₪', status: 'partial', required: true, hint: 'הוסף גם USD לתפקידים גלובליים' },
+      { key: 'salary_usd', label: 'שכר מצופה ($)', value: '', status: 'missing', required: true, hint: '$200,000–$280,000' },
+      { key: 'relocation', label: 'נכון להסתגל?', value: 'כן — US, EU, UK, Germany', status: 'filled', required: true },
+      { key: 'notice_period', label: 'תקופת הודעה', value: '', status: 'missing', required: true, hint: '30 / 60 / 90 ימים' },
+      { key: 'work_type', label: 'סוג עבודה', value: 'Hybrid / Remote', status: 'filled', required: true },
+    ],
+  },
+  {
+    title: 'מסמכים',
+    icon: FileText,
+    fields: [
+      { key: 'resume_pdf', label: 'קורות חיים (PDF)', value: '', status: 'missing', required: true, hint: 'העלה resume.pdf לתיקיית job_agent/' },
+      { key: 'cover_letter', label: 'מכתב כוונות ברירת מחדל', value: '', status: 'missing', required: true, hint: 'תבנית אנגלית למשרות גלובליות' },
+      { key: 'academic_cv', label: 'Academic CV (PDF)', value: '', status: 'missing', required: false, hint: 'CV אקדמי עם פרסומים — נדרש לתפקידי אקדמיה + OECD/ECB' },
+      { key: 'references', label: 'ממליצים', value: '', status: 'missing', required: false, hint: 'שמות + תפקיד + מייל של 2–3 ממליצים' },
+    ],
+  },
 ];
+
+// ─── Schedule config ────────────────────────────────────────────────────────
+
+const DAYS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו'];
+
+const defaultSchedule = [
+  { day: 0, hour: 7, label: 'ראשון 07:00', active: true },
+  { day: 2, hour: 7, label: 'שלישי 07:00', active: true },
+  { day: 4, hour: 7, label: 'חמישי 07:00', active: true },
+];
+
+const autonomyRules = [
+  {
+    condition: 'ציון ≥ 9.5 + חברה ברשימת המאושרות',
+    action: 'מגיש אוטומטית ללא שאלה',
+    icon: Zap,
+    color: 'text-green-400 bg-green-500/15 border-green-500/30',
+    badge: 'אוטומטי',
+  },
+  {
+    condition: 'ציון 8.0–9.4',
+    action: 'שולח התראה + ממתין לאישורך ב-dashboard',
+    icon: AlertCircle,
+    color: 'text-amber-400 bg-amber-500/15 border-amber-500/30',
+    badge: 'אישור נדרש',
+  },
+  {
+    condition: 'ציון < 8.0',
+    action: 'מסנן אוטומטית, מוסיף ליומן בלבד',
+    icon: XCircle,
+    color: 'text-gray-500 bg-gray-800 border-gray-700',
+    badge: 'דחיה אוטומטית',
+  },
+];
+
+const approvedCompanies = ['Waymo', 'Tesla', 'Mercedes-Benz', 'ECB', 'OECD', 'Microsoft', 'EU AI Office'];
+
+// ─── Score color ────────────────────────────────────────────────────────────
 
 const scoreColor = (s: number) =>
   s >= 9 ? 'text-green-400 bg-green-500/15 border-green-500/30'
@@ -28,22 +143,34 @@ const scoreColor = (s: number) =>
   : 'text-red-400 bg-red-500/15 border-red-500/30';
 
 const decisionStyle: Record<JobDecision, string> = {
-  pending: '',
+  pending: 'border-gray-800 bg-[#13151f]',
   approved: 'border-green-500/40 bg-green-500/5',
-  rejected: 'border-red-500/30 bg-red-500/5 opacity-60',
+  rejected: 'border-gray-700 bg-gray-900/40 opacity-60',
   applying: 'border-amber-500/40 bg-amber-500/5',
   applied: 'border-green-600/40 bg-green-600/5',
   failed: 'border-red-500/40 bg-red-500/5',
 };
 
+// ─── Tab labels ──────────────────────────────────────────────────────────────
+
+const TABS = [
+  { id: 'queue', label: 'תור משרות', icon: Briefcase },
+  { id: 'schedule', label: 'לוח זמנים', icon: CalendarClock },
+  { id: 'profile', label: 'פרופיל + קורות חיים', icon: User },
+] as const;
+type Tab = typeof TABS[number]['id'];
+
+// ─── Main component ─────────────────────────────────────────────────────────
+
 export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
+  const [activeTab, setActiveTab] = useState<Tab>('queue');
   const [jobs, setJobs] = useState<JobCandidate[]>(initialJobQueue);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [schedule, setSchedule] = useState(defaultSchedule);
 
   const decide = (id: string, decision: 'approved' | 'rejected') => {
     if (decision === 'approved') {
-      // Simulate applying
       setApplyingId(id);
       setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applying' } : j));
       setTimeout(() => {
@@ -62,15 +189,19 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
   const applied = jobs.filter(j => j.decision === 'applied');
   const lowScore = jobs.filter(j => j.score < 8);
 
+  // Profile completeness
+  const allFields = profileSections.flatMap(s => s.fields);
+  const requiredFields = allFields.filter(f => f.required);
+  const filledRequired = requiredFields.filter(f => f.status === 'filled');
+  const missingRequired = requiredFields.filter(f => f.status === 'missing');
+  const completeness = Math.round((filledRequired.length / requiredFields.length) * 100);
+
   return (
     <div className="space-y-5" dir="rtl">
-      {/* Breadcrumb + Header */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-gray-600">
-          <button
-            onClick={onBreadcrumbCeo}
-            className="hover:text-gray-400 transition-colors"
-          >
+          <button onClick={onBreadcrumbCeo} className="hover:text-gray-400 transition-colors">
             אורי מנכ"ל
           </button>
           <ChevronRight size={12} />
@@ -79,18 +210,18 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
         <div className="text-right">
           <h1 className="text-white font-bold text-2xl">Worker — סוכן דרושים</h1>
           <p className="text-gray-500 text-sm mt-0.5">
-            סרק 63 משרות AI+Law · LinkedIn · Waymo · Tesla · ECB · OECD · ממתין לאישורך
+            AI Law · Autonomous Systems · Policy · Governance · ד"ר כלכלה + משפטים
           </p>
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats bar */}
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'נסרקו', value: '63', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'ציון 8+', value: String(qualified.length), icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+          { label: 'מתאימות', value: String(qualified.length), icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
           { label: 'הוגשו', value: String(applied.length), icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
-          { label: 'ממתין לאישור', value: String(pending.length), icon: AlertCircle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { label: 'פרופיל מלא', value: `${completeness}%`, icon: User, color: completeness < 50 ? 'text-red-400' : 'text-amber-400', bg: completeness < 50 ? 'bg-red-500/10' : 'bg-amber-500/10' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-[#13151f] border border-gray-800 rounded-xl p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}>
@@ -104,200 +235,175 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
         ))}
       </div>
 
-      {/* Approval required banner */}
-      {pending.length > 0 && (
-        <div className="flex items-center justify-between p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+      {/* Profile incomplete warning */}
+      {missingRequired.length > 0 && (
+        <div className="flex items-center justify-between p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
           <button
-            onClick={() => {
-              const first = pending[0];
-              setExpandedId(first.id);
-              document.getElementById(`job-${first.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }}
-            className="flex items-center gap-2 text-amber-400 text-sm font-medium hover:text-amber-300 transition-colors"
+            onClick={() => setActiveTab('profile')}
+            className="flex items-center gap-2 text-red-400 text-sm font-medium hover:text-red-300 transition-colors"
           >
-            <span>עבור לתור האישור</span>
-            <ChevronRight size={15} />
+            <span>השלם פרופיל</span>
+            <ChevronRight size={14} />
           </button>
           <div className="flex items-center gap-3 text-right">
             <div>
-              <p className="text-amber-400 font-semibold text-sm">
-                {pending.length} משרה{pending.length > 1 ? 'ות' : ''} מחכות לאישורך
-              </p>
-              <p className="text-gray-400 text-xs">Worker לא יגיש בקשה ללא אישורך המפורש</p>
+              <p className="text-red-400 font-semibold text-sm">{missingRequired.length} שדות חובה חסרים</p>
+              <p className="text-gray-500 text-xs">Worker לא יוכל למלא טפסים ללא הפרטים האלה</p>
             </div>
-            <AlertCircle size={20} className="text-amber-400 flex-shrink-0" />
+            <AlertTriangle size={18} className="text-red-400 flex-shrink-0" />
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-5">
-        {/* Job Queue — main column */}
-        <div className="col-span-2 space-y-3">
-          <h2 className="text-white font-semibold text-sm flex items-center justify-end gap-2">
-            <span>תור המשרות ({qualified.length} מתאימות)</span>
-            <Briefcase size={15} className="text-amber-400" />
-          </h2>
+      {/* Pending approval banner */}
+      {pending.length > 0 && activeTab !== 'queue' && (
+        <div className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+          <button onClick={() => setActiveTab('queue')} className="flex items-center gap-2 text-amber-400 text-sm hover:text-amber-300 transition-colors">
+            <span>עבור לתור</span>
+            <ChevronRight size={14} />
+          </button>
+          <div className="flex items-center gap-2 text-right">
+            <p className="text-amber-400 text-sm">{pending.length} משרות ממתינות לאישורך</p>
+            <AlertCircle size={16} className="text-amber-400" />
+          </div>
+        </div>
+      )}
 
-          {qualified.map((job) => (
-            <div
-              id={`job-${job.id}`}
-              key={job.id}
-              className={`border rounded-xl transition-all ${decisionStyle[job.decision] || 'border-gray-800 bg-[#13151f]'}`}
-            >
-              {/* Card header */}
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  {/* Score badge */}
-                  <div className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg border text-center min-w-[54px] ${scoreColor(job.score)}`}>
-                    <p className="text-lg font-bold leading-none">{job.score.toFixed(1)}</p>
-                    <p className="text-xs opacity-70">/10</p>
-                  </div>
+      {/* Tabs */}
+      <div className="flex justify-end gap-1 border-b border-gray-800 pb-0">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-all ${
+              activeTab === id
+                ? 'border-amber-400 text-amber-400'
+                : 'border-transparent text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <Icon size={14} />
+            {label}
+            {id === 'queue' && pending.length > 0 && (
+              <span className="ml-1 bg-amber-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+                {pending.length}
+              </span>
+            )}
+            {id === 'profile' && missingRequired.length > 0 && (
+              <span className="ml-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
+                {missingRequired.length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
-                  {/* Info */}
-                  <div className="flex-1 text-right">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                        {/* Decision badge */}
-                        {job.decision === 'pending' && (
-                          <span className="text-xs text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                            ממתין לאישורך
-                          </span>
-                        )}
-                        {job.decision === 'applying' && (
-                          <span className="flex items-center gap-1 text-xs text-blue-400 bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded-full">
-                            <Loader2 size={10} className="animate-spin" /> מגיש...
-                          </span>
-                        )}
-                        {job.decision === 'applied' && (
-                          <span className="flex items-center gap-1 text-xs text-green-400 bg-green-500/15 border border-green-500/30 px-2 py-0.5 rounded-full">
-                            <CheckCircle2 size={10} /> הוגש
-                          </span>
-                        )}
-                        {job.decision === 'rejected' && (
-                          <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-500/15 border border-gray-700 px-2 py-0.5 rounded-full">
-                            <XCircle size={10} /> דחית
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-white font-semibold text-sm">{job.title}</h3>
-                        <div className="flex items-center justify-end gap-3 mt-1">
-                          <span className="flex items-center gap-1 text-gray-400 text-xs">
-                            <Clock size={11} />{job.scannedAt}
-                          </span>
-                          <span className="flex items-center gap-1 text-gray-400 text-xs">
-                            <DollarSign size={11} />{job.salary}
-                          </span>
-                          <span className="flex items-center gap-1 text-gray-400 text-xs">
-                            <MapPin size={11} />{job.location}
-                          </span>
-                          <span className="flex items-center gap-1 text-gray-300 text-xs font-medium">
-                            <Building2 size={11} />{job.company}
-                          </span>
+      {/* ── TAB: Job Queue ────────────────────────────────────────────────── */}
+      {activeTab === 'queue' && (
+        <div className="grid grid-cols-3 gap-5">
+          <div className="col-span-2 space-y-3">
+            <h2 className="text-white font-semibold text-sm flex items-center justify-end gap-2">
+              <span>תור המשרות ({qualified.length} מתאימות)</span>
+              <Briefcase size={15} className="text-amber-400" />
+            </h2>
+
+            {qualified.map((job) => (
+              <div id={`job-${job.id}`} key={job.id}
+                className={`border rounded-xl transition-all ${decisionStyle[job.decision]}`}>
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg border text-center min-w-[54px] ${scoreColor(job.score)}`}>
+                      <p className="text-lg font-bold leading-none">{job.score.toFixed(1)}</p>
+                      <p className="text-xs opacity-70">/10</p>
+                    </div>
+                    <div className="flex-1 text-right">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
+                          {job.decision === 'pending' && <span className="text-xs text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">ממתין לאישורך</span>}
+                          {job.decision === 'applying' && <span className="flex items-center gap-1 text-xs text-blue-400 bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded-full"><Loader2 size={10} className="animate-spin" /> מגיש...</span>}
+                          {job.decision === 'applied' && <span className="flex items-center gap-1 text-xs text-green-400 bg-green-500/15 border border-green-500/30 px-2 py-0.5 rounded-full"><CheckCircle2 size={10} /> הוגש</span>}
+                          {job.decision === 'rejected' && <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-800 border border-gray-700 px-2 py-0.5 rounded-full"><XCircle size={10} /> דחית</span>}
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold text-sm">{job.title}</h3>
+                          <div className="flex items-center justify-end gap-3 mt-1 flex-wrap">
+                            <span className="flex items-center gap-1 text-gray-300 text-xs font-medium"><Building2 size={11} />{job.company}</span>
+                            <span className="flex items-center gap-1 text-gray-400 text-xs"><MapPin size={11} />{job.location}</span>
+                            <span className="flex items-center gap-1 text-gray-400 text-xs"><DollarSign size={11} />{job.salary}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-
-                    {/* AI reason */}
-                    <div className="flex items-start justify-end gap-1.5 mt-2">
-                      <p className="text-gray-500 text-xs leading-relaxed">{job.scoreReason}</p>
-                      <Sparkles size={12} className="text-purple-400 flex-shrink-0 mt-0.5" />
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap justify-end gap-1.5 mt-2">
-                      {job.tags.map(tag => (
-                        <span key={tag} className="flex items-center gap-1 text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
-                          <Tag size={9} />{tag}
-                        </span>
-                      ))}
+                      <div className="flex items-start justify-end gap-1.5 mt-2">
+                        <p className="text-gray-500 text-xs leading-relaxed">{job.scoreReason}</p>
+                        <Sparkles size={12} className="text-purple-400 flex-shrink-0 mt-0.5" />
+                      </div>
+                      <div className="flex flex-wrap justify-end gap-1.5 mt-2">
+                        {job.tags.map(tag => (
+                          <span key={tag} className="flex items-center gap-1 text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
+                            <Tag size={9} />{tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                  <button
+                    onClick={() => setExpandedId(expandedId === job.id ? null : job.id)}
+                    className="mt-3 text-xs text-gray-600 hover:text-gray-400 transition-colors w-full text-center"
+                  >
+                    {expandedId === job.id ? '▲ סגור תיאור' : '▼ קרא תיאור מלא'}
+                  </button>
                 </div>
 
-                {/* Expand toggle */}
-                <button
-                  onClick={() => setExpandedId(expandedId === job.id ? null : job.id)}
-                  className="mt-3 text-xs text-gray-600 hover:text-gray-400 transition-colors w-full text-center"
-                >
-                  {expandedId === job.id ? '▲ סגור תיאור' : '▼ קרא תיאור מלא'}
-                </button>
+                {expandedId === job.id && (
+                  <div className="px-4 pb-3 border-t border-gray-800/60">
+                    <p className="text-gray-400 text-xs leading-relaxed mt-3 text-right">{job.description}</p>
+                    <a href={job.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 mt-2 transition-colors">
+                      <ExternalLink size={11} />פתח מודעה מקורית
+                    </a>
+                  </div>
+                )}
+
+                {job.decision === 'pending' && (
+                  <div className="flex gap-2 px-4 pb-4 pt-1">
+                    <button onClick={() => decide(job.id, 'rejected')}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-red-500/30 text-red-400 text-sm font-medium hover:bg-red-500/10 transition-all">
+                      <SkipForward size={14} />דלג
+                    </button>
+                    <button onClick={() => decide(job.id, 'approved')}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all shadow-lg shadow-green-900/30">
+                      <Send size={14} />אשר והגש
+                    </button>
+                  </div>
+                )}
+                {job.decision === 'applied' && (
+                  <div className="flex items-center justify-between px-4 pb-3 pt-1 border-t border-gray-800/40">
+                    <span className="flex items-center gap-1 text-gray-600 text-xs"><Camera size={11} />screenshot נשמר</span>
+                    <span className="text-green-400 text-xs">הוגש בהצלחה · {job.appliedAt}</span>
+                  </div>
+                )}
+                {job.decision === 'applying' && (
+                  <div className="px-4 pb-3 pt-1 border-t border-amber-500/20">
+                    <div className="flex items-center justify-end gap-2 text-amber-400 text-xs">
+                      <span>Playwright פותח דפדפן, ממלא טופס...</span>
+                      <Loader2 size={12} className="animate-spin" />
+                    </div>
+                    <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-500 rounded-full"
+                        style={{ width: applyingId === job.id ? '100%' : '0%', transition: 'width 2.8s ease-in-out' }} />
+                    </div>
+                  </div>
+                )}
               </div>
+            ))}
 
-              {/* Expanded description */}
-              {expandedId === job.id && (
-                <div className="px-4 pb-3 border-t border-gray-800/60">
-                  <p className="text-gray-400 text-xs leading-relaxed mt-3 text-right">{job.description}</p>
-                  <a
-                    href={job.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 mt-2 transition-colors"
-                  >
-                    <ExternalLink size={11} />
-                    פתח מודעה מקורית
-                  </a>
-                </div>
-              )}
-
-              {/* Action buttons — only for pending */}
-              {job.decision === 'pending' && (
-                <div className="flex gap-2 px-4 pb-4 pt-1">
-                  <button
-                    onClick={() => decide(job.id, 'rejected')}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-red-500/30 text-red-400 text-sm font-medium hover:bg-red-500/10 transition-all"
-                  >
-                    <SkipForward size={14} />
-                    דלג
-                  </button>
-                  <button
-                    onClick={() => decide(job.id, 'approved')}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all shadow-lg shadow-green-900/30"
-                  >
-                    <Send size={14} />
-                    אשר והגש
-                  </button>
-                </div>
-              )}
-
-              {/* Applied confirmation */}
-              {job.decision === 'applied' && (
-                <div className="flex items-center justify-between px-4 pb-3 pt-1 border-t border-gray-800/40">
-                  <span className="flex items-center gap-1 text-gray-600 text-xs">
-                    <Camera size={11} />
-                    screenshot נשמר
-                  </span>
-                  <span className="text-green-400 text-xs">בקשה הוגשה בהצלחה · {job.appliedAt}</span>
-                </div>
-              )}
-
-              {/* Applying spinner */}
-              {job.decision === 'applying' && (
-                <div className="px-4 pb-3 pt-1 border-t border-amber-500/20">
-                  <div className="flex items-center justify-end gap-2 text-amber-400 text-xs">
-                    <span>Playwright פותח דפדפן, ממלא טופס...</span>
-                    <Loader2 size={12} className="animate-spin" />
-                  </div>
-                  <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full animate-[grow_2.8s_ease-in-out_forwards]"
-                      style={{ width: applyingId === job.id ? '100%' : '0%', transition: 'width 2.8s ease-in-out' }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Low score jobs */}
-          {lowScore.length > 0 && (
-            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
-              <h3 className="text-gray-600 text-xs font-medium mb-3 text-right flex items-center justify-end gap-2">
-                <span>{lowScore.length} משרות נסוננו אוטומטית (ציון &lt; 8)</span>
-                <XCircle size={13} />
-              </h3>
-              <div className="space-y-1.5">
+            {lowScore.length > 0 && (
+              <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
+                <h3 className="text-gray-600 text-xs font-medium mb-3 text-right flex items-center justify-end gap-2">
+                  <span>{lowScore.length} משרות סוננו אוטומטית (ציון &lt; 8)</span>
+                  <XCircle size={13} />
+                </h3>
                 {lowScore.map(job => (
-                  <div key={job.id} className="flex items-center gap-3 text-right opacity-50">
+                  <div key={job.id} className="flex items-center gap-3 text-right opacity-40 mb-1.5">
                     <span className="text-xs text-red-400 font-mono">{job.score.toFixed(1)}</span>
                     <div className="flex-1">
                       <span className="text-gray-500 text-xs">{job.title}</span>
@@ -306,90 +412,288 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right sidebar */}
-        <div className="space-y-4">
-          {/* Pipeline */}
-          <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
-            <h2 className="text-white font-semibold text-sm mb-4 flex items-center justify-end gap-2">
-              <span>Pipeline</span>
-              <BarChart3 size={14} className="text-purple-400" />
-            </h2>
-            {[
-              { step: 'סריקת משרות', icon: Search, done: true, detail: '63 נמצאו (AI+Law)' },
-              { step: 'ציון AI', icon: Brain, done: true, detail: `${qualified.length} מעל 8` },
-              { step: 'אישור אנושי', icon: Shield, active: pending.length > 0, detail: `${pending.length} ממתינות` },
-              { step: 'Playwright', icon: MousePointerClick, done: applied.length > 0, detail: `${applied.length} הוגשו` },
-              { step: 'צילום אישור', icon: Camera, done: applied.length > 0, detail: `${applied.length} screenshots` },
-            ].map(({ step, icon: Icon, done, active, detail }) => (
-              <div key={step} className="flex items-center gap-2 mb-3 last:mb-0">
-                <div className="flex-1 text-right">
-                  <p className={`text-xs font-medium ${done ? 'text-gray-400' : active ? 'text-white' : 'text-gray-600'}`}>{step}</p>
-                  <p className="text-gray-600 text-xs">{detail}</p>
-                </div>
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  done ? 'bg-green-500/15' : active ? 'bg-amber-500/15 ring-1 ring-amber-500/30' : 'bg-gray-800'
-                }`}>
-                  {done ? <CheckCircle2 size={13} className="text-green-400" />
-                  : active ? <Loader2 size={13} className="text-amber-400 animate-spin" />
-                  : <Icon size={13} className="text-gray-600" />}
-                </div>
-              </div>
-            ))}
+            )}
           </div>
 
-          {/* Modules */}
-          <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
-            <h2 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
-              <span>מודולים</span>
-              <ScrollText size={14} className="text-green-400" />
-            </h2>
-            {[
-              { name: 'resume_parser', icon: FileText },
-              { name: 'job_scorer', icon: Brain },
-              { name: 'field_mapper', icon: ScrollText },
-              { name: 'browser_apply', icon: MousePointerClick },
-              { name: 'approval_flow', icon: Shield },
-            ].map(({ name, icon: Icon }) => (
-              <div key={name} className="flex items-center gap-2 mb-2 last:mb-0">
-                <p className="flex-1 text-right font-mono text-gray-500 text-xs">{name}.py</p>
-                <div className="w-5 h-5 rounded bg-green-500/10 flex items-center justify-center">
-                  <Icon size={11} className="text-green-400" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Profile snapshot */}
-          <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
-            <h2 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
-              <span>פרופיל מועמד</span>
-              <User size={14} className="text-amber-400" />
-            </h2>
-            <div className="space-y-2">
-              {profilePreview.map(({ label, value, icon: Icon }) => (
-                <div key={label} className="flex items-center gap-2 p-2 rounded-lg bg-[#0f1117] border border-gray-800/60">
-                  <p className="flex-1 text-right">
-                    <span className="text-gray-400 text-xs">{value}</span>
-                  </p>
-                  <p className="text-gray-600 text-xs">{label}</p>
-                  <Icon size={12} className="text-gray-600 flex-shrink-0" />
+          {/* Sidebar */}
+          <div className="space-y-4">
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
+              <h2 className="text-white font-semibold text-sm mb-4 flex items-center justify-end gap-2">
+                <span>Pipeline</span><BarChart3 size={14} className="text-purple-400" />
+              </h2>
+              {[
+                { step: 'סריקת משרות', icon: Search, done: true, detail: '63 נמצאו (AI+Law)' },
+                { step: 'ציון AI', icon: Brain, done: true, detail: `${qualified.length} מעל 8` },
+                { step: 'אישור אנושי', icon: Shield, active: pending.length > 0, detail: `${pending.length} ממתינות` },
+                { step: 'Playwright', icon: MousePointerClick, done: applied.length > 0, detail: `${applied.length} הוגשו` },
+                { step: 'Screenshot', icon: Camera, done: applied.length > 0, detail: `${applied.length} נשמרו` },
+              ].map(({ step, icon: Icon, done, active, detail }) => (
+                <div key={step} className="flex items-center gap-2 mb-3 last:mb-0">
+                  <div className="flex-1 text-right">
+                    <p className={`text-xs font-medium ${done ? 'text-gray-400' : active ? 'text-white' : 'text-gray-600'}`}>{step}</p>
+                    <p className="text-gray-600 text-xs">{detail}</p>
+                  </div>
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${done ? 'bg-green-500/15' : active ? 'bg-amber-500/15 ring-1 ring-amber-500/30' : 'bg-gray-800'}`}>
+                    {done ? <CheckCircle2 size={13} className="text-green-400" />
+                      : active ? <Loader2 size={13} className="text-amber-400 animate-spin" />
+                      : <Icon size={13} className="text-gray-600" />}
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="mt-3 p-2 bg-gray-900 rounded-lg">
-              <p className="text-green-400 font-mono text-xs leading-relaxed">
-                python -m job_agent.main<br />
-                {'  '}--jobs sample_jobs.json<br />
-                {'  '}--resume resume.pdf --headed
-              </p>
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
+              <h2 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
+                <span>מודולים</span><ScrollText size={14} className="text-green-400" />
+              </h2>
+              {[
+                { name: 'resume_parser', icon: FileText },
+                { name: 'job_scorer', icon: Brain },
+                { name: 'field_mapper', icon: ScrollText },
+                { name: 'browser_apply', icon: MousePointerClick },
+                { name: 'approval_flow', icon: Shield },
+              ].map(({ name, icon: Icon }) => (
+                <div key={name} className="flex items-center gap-2 mb-2 last:mb-0">
+                  <p className="flex-1 text-right font-mono text-gray-500 text-xs">{name}.py</p>
+                  <div className="w-5 h-5 rounded bg-green-500/10 flex items-center justify-center">
+                    <Icon size={11} className="text-green-400" />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ── TAB: Schedule ─────────────────────────────────────────────────── */}
+      {activeTab === 'schedule' && (
+        <div className="grid grid-cols-3 gap-5">
+          <div className="col-span-2 space-y-5">
+            {/* Weekly schedule */}
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-5">
+              <h2 className="text-white font-semibold text-sm mb-4 flex items-center justify-end gap-2">
+                <span>סריקה אוטומטית שבועית</span>
+                <CalendarClock size={15} className="text-blue-400" />
+              </h2>
+              <div className="grid grid-cols-6 gap-2 mb-4">
+                {DAYS.map((day, i) => {
+                  const slot = schedule.find(s => s.day === i);
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => {
+                        if (slot) {
+                          setSchedule(prev => prev.map(s => s.day === i ? { ...s, active: !s.active } : s));
+                        } else {
+                          setSchedule(prev => [...prev, { day: i, hour: 7, label: `יום ${day} 07:00`, active: true }]);
+                        }
+                      }}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${
+                        slot?.active
+                          ? 'border-blue-500/50 bg-blue-500/15 text-blue-400'
+                          : 'border-gray-800 bg-gray-900/40 text-gray-600 hover:border-gray-700'
+                      }`}
+                    >
+                      <span className="text-sm font-bold">{day}</span>
+                      {slot?.active && <span className="text-xs">07:00</span>}
+                      {slot?.active
+                        ? <CheckCircle2 size={12} />
+                        : <div className="w-3 h-3 rounded-full border border-gray-700" />
+                      }
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <span className="text-blue-400 text-xs">כל ריצה: סריקה → ציון → התראה למשרות 8+ → המתנה לאישורך</span>
+                <Clock size={14} className="text-blue-400 flex-shrink-0" />
+              </div>
+            </div>
+
+            {/* Autonomy rules */}
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-5">
+              <h2 className="text-white font-semibold text-sm mb-4 flex items-center justify-end gap-2">
+                <span>כללי אוטונומיה — מתי Worker פועל לבד</span>
+                <Zap size={15} className="text-amber-400" />
+              </h2>
+              <div className="space-y-3">
+                {autonomyRules.map(({ condition, action, icon: Icon, color, badge }) => (
+                  <div key={badge} className={`flex items-start gap-3 p-3 rounded-xl border ${color}`}>
+                    <div className="flex-1 text-right">
+                      <p className="text-white text-xs font-semibold mb-0.5">{condition}</p>
+                      <p className="text-gray-400 text-xs">{action}</p>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                      <Icon size={16} />
+                      <span className="text-xs font-semibold whitespace-nowrap">{badge}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Auto-approved companies */}
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-5">
+              <h2 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
+                <span>חברות ברשימה לאוטו-אפליי (ציון ≥ 9.5)</span>
+                <CheckCircle2 size={15} className="text-green-400" />
+              </h2>
+              <div className="flex flex-wrap justify-end gap-2">
+                {approvedCompanies.map(company => (
+                  <span key={company} className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-green-400 text-xs font-medium">
+                    <CheckCircle2 size={11} />
+                    {company}
+                  </span>
+                ))}
+                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-full text-gray-500 text-xs hover:border-gray-600 transition-colors">
+                  + הוסף חברה
+                </button>
+              </div>
+              <p className="text-gray-600 text-xs text-right mt-3">
+                בכל שאר החברות — אפילו ציון 9.8 — Worker ישלח התראה וימתין לאישורך.
+              </p>
+            </div>
+          </div>
+
+          {/* Schedule sidebar */}
+          <div className="space-y-4">
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
+              <h3 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
+                <span>ריצה הבאה</span>
+                <Clock size={14} className="text-blue-400" />
+              </h3>
+              <div className="text-center py-3">
+                <p className="text-white text-2xl font-bold">ראשון</p>
+                <p className="text-blue-400 text-lg font-semibold">07:00</p>
+                <p className="text-gray-600 text-xs mt-1">בעוד ~3 ימים</p>
+              </div>
+              <div className="mt-3 space-y-1.5">
+                {schedule.filter(s => s.active).map(s => (
+                  <div key={s.day} className="flex items-center justify-between text-xs">
+                    <span className="text-blue-400">{s.label}</span>
+                    <CheckCircle2 size={11} className="text-green-400" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-[#13151f] border border-gray-800 rounded-xl p-4">
+              <h3 className="text-white font-semibold text-sm mb-3 flex items-center justify-end gap-2">
+                <span>מקורות סריקה</span>
+                <Search size={14} className="text-purple-400" />
+              </h3>
+              {[
+                { name: 'LinkedIn Jobs', active: true },
+                { name: 'Indeed Global', active: true },
+                { name: 'EU AI Office Jobs', active: true },
+                { name: 'OECD Careers', active: true },
+                { name: 'ECB Vacancies', active: true },
+                { name: 'Academia.edu Jobs', active: false },
+              ].map(({ name, active }) => (
+                <div key={name} className="flex items-center justify-between mb-2 last:mb-0">
+                  <span className={`w-4 h-4 rounded flex items-center justify-center ${active ? 'bg-green-500/20' : 'bg-gray-800'}`}>
+                    {active ? <CheckCircle2 size={10} className="text-green-400" /> : <XCircle size={10} className="text-gray-600" />}
+                  </span>
+                  <span className={`text-xs ${active ? 'text-gray-400' : 'text-gray-700'}`}>{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB: Profile + CV ─────────────────────────────────────────────── */}
+      {activeTab === 'profile' && (
+        <div className="space-y-5">
+          {/* Completeness bar */}
+          <div className="bg-[#13151f] border border-gray-800 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-gray-500 text-xs">{filledRequired.length}/{requiredFields.length} שדות חובה מלאים</span>
+                <span className={`text-lg font-bold ${completeness < 40 ? 'text-red-400' : completeness < 70 ? 'text-amber-400' : 'text-green-400'}`}>
+                  {completeness}%
+                </span>
+              </div>
+              <p className="text-white font-semibold text-sm">שלמות הפרופיל</p>
+            </div>
+            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${completeness < 40 ? 'bg-red-500' : completeness < 70 ? 'bg-amber-500' : 'bg-green-500'}`}
+                style={{ width: `${completeness}%` }}
+              />
+            </div>
+            {missingRequired.length > 0 && (
+              <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-red-400 text-xs font-semibold mb-1 text-right">שדות חובה חסרים — Worker לא יוכל להגיש בלעדיהם:</p>
+                <div className="flex flex-wrap justify-end gap-1.5 mt-1">
+                  {missingRequired.map(f => (
+                    <span key={f.key} className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full">
+                      {f.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sections */}
+          {profileSections.map(({ title, icon: SectionIcon, fields }) => (
+            <div key={title} className="bg-[#13151f] border border-gray-800 rounded-xl p-5">
+              <h2 className="text-white font-semibold text-sm mb-4 flex items-center justify-end gap-2">
+                <span>{title}</span>
+                <SectionIcon size={15} className="text-purple-400" />
+              </h2>
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key}
+                    className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                      field.status === 'filled' ? 'border-green-500/20 bg-green-500/5'
+                      : field.status === 'partial' ? 'border-amber-500/20 bg-amber-500/5'
+                      : field.required ? 'border-red-500/20 bg-red-500/5'
+                      : 'border-gray-800 bg-gray-900/40'
+                    }`}
+                  >
+                    {/* Status icon */}
+                    <div className="flex-shrink-0">
+                      {field.status === 'filled' && <CheckCircle2 size={15} className="text-green-400" />}
+                      {field.status === 'partial' && <AlertCircle size={15} className="text-amber-400" />}
+                      {field.status === 'missing' && field.required && <XCircle size={15} className="text-red-400" />}
+                      {field.status === 'missing' && !field.required && <div className="w-3.5 h-3.5 rounded-full border border-gray-600" />}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {field.required && field.status !== 'filled' && (
+                          <span className="text-xs text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">חובה</span>
+                        )}
+                        <p className={`text-sm font-medium ${
+                          field.status === 'filled' ? 'text-white'
+                          : field.status === 'partial' ? 'text-amber-300'
+                          : field.required ? 'text-red-300' : 'text-gray-500'
+                        }`}>
+                          {field.label}
+                        </p>
+                      </div>
+                      {field.status === 'filled' || field.status === 'partial'
+                        ? <p className="text-gray-400 text-xs mt-0.5">{field.value}</p>
+                        : <p className="text-gray-600 text-xs mt-0.5 italic">{field.hint ?? 'לא מולא'}</p>
+                      }
+                    </div>
+
+                    {/* Edit button */}
+                    <button className="flex-shrink-0 w-7 h-7 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
+                      {field.key === 'resume_pdf' || field.key === 'academic_cv'
+                        ? <Upload size={12} className="text-gray-400" />
+                        : <Edit3 size={12} className="text-gray-400" />
+                      }
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
