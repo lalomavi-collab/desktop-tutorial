@@ -2,6 +2,7 @@ import { AgentCard } from './AgentCard';
 import { StatsBar } from './StatsBar';
 import { ActivityFeed } from './ActivityFeed';
 import { OrgChart } from './OrgChart';
+import { LiveActivityPanel } from './LiveActivityPanel';
 import type { Agent, ActivityItem } from '../types';
 
 interface DashboardViewProps {
@@ -49,12 +50,15 @@ export function DashboardView({ agents, activities, onSelectAgent }: DashboardVi
           </div>
         </div>
 
-        {/* Activity feed */}
-        <div>
-          <h2 className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-3 text-right">
-            פעילות אחרונה
-          </h2>
-          <ActivityFeed activities={activities} />
+        {/* Right column: live activity + feed */}
+        <div className="space-y-4">
+          <LiveActivityPanel onGoToWorker={() => onSelectAgent('agent-worker')} />
+          <div>
+            <h2 className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-3 text-right">
+              פעילות אחרונה
+            </h2>
+            <ActivityFeed activities={activities} />
+          </div>
         </div>
       </div>
     </div>
