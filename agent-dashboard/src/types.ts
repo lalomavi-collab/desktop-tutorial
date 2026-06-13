@@ -33,6 +33,30 @@ export interface Agent {
   /** Sub-agents, used by the social media manager */
   platformAgents?: PlatformAgent[];
   lastActive: string;
+  reportsTo?: string;
+  role?: string;
+  avatar?: string;
+  schedule?: string;
+}
+
+export type JobDecision = 'pending' | 'approved' | 'rejected' | 'applying' | 'applied' | 'failed';
+
+export interface JobCandidate {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  jobType: string;
+  url: string;
+  description: string;
+  tags: string[];
+  score: number;
+  scoreReason: string;
+  scannedAt: string;
+  decision: JobDecision;
+  appliedAt?: string;
+  screenshotPath?: string;
 }
 
 export interface Post {

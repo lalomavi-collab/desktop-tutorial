@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   CheckCircle2, XCircle, Send, Clock, Zap, Plus, Loader2,
-  AlertCircle, ChevronDown, ChevronUp, Sparkles, Eye, EyeOff,
+  AlertCircle, Sparkles, Eye, EyeOff,
   Calendar, RefreshCw, Trash2,
 } from 'lucide-react';
 import type { Platform, QueuedPost } from '../types';
