@@ -36,6 +36,7 @@ export interface Agent {
   reportsTo?: string;
   role?: string;
   avatar?: string;
+  schedule?: string;
 }
 
 export type JobDecision = 'pending' | 'approved' | 'rejected' | 'applying' | 'applied' | 'failed';
