@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "3 שאלות לפני שחותמים על פינוי-בינוי:\n\n01 — מה קורה אם היזם נקלע לקשיים פיננסיים?\n02 — מה מוגדר \"כוח עליון\" — ומי נושא בסיכון?\n03 — עורך הדין של היזם הוא לא עורך הדין שלך.\n\nייצוג אמיתי מתחיל לפני החתימה.\n\n↳ LALUM | ייצוג בעלי דירות\nwww.lalum.co\n\n#פינויבינוי #בעלידירות #נדלן #התחדשותעירונית #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "3 שאלות לפני שחותמים על פינוי-בינוי:\n\n01 — מה קורה אם היזם נקלע לקשיים פיננסיים?\n02 — מה מוגדר \"כוח עליון\" — ומי נושא בסיכון?\n03 — עורך הדין של היזם הוא לא עורך הדין שלך.\n\nייצוג אמיתי מתחיל לפני החתימה.\n\n↳ LALUM | ייצוג בעלי דירות\nwww.lalum.co\n\n#פינויבינוי #בעלידירות #נדלן #התחדשותעירונית #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |

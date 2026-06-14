@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n5 כלי AI שכל בעל עסק קטן צריך ב-2026:\n1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n2️⃣ Canva AI — עיצוב מהיר ומקצועי\n3️⃣ Zapier AI — אוטומציה של תהליכים\n4️⃣ Notion AI — ניהול ידע ופגישות\n5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\nמה הכלי שהכי שינה את העסק שלך? 👇\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #עסקיםקטנים #יזמות #טכנולוגיה #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "💼 AI לא רק לחברות ענק — גם לעסק שלך!\n\n5 כלי AI שכל בעל עסק קטן צריך ב-2026:\n1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר\n2️⃣ Canva AI — עיצוב מהיר ומקצועי\n3️⃣ Zapier AI — אוטומציה של תהליכים\n4️⃣ Notion AI — ניהול ידע ופגישות\n5️⃣ Claude — ניתוח, מחקר, אסטרטגיה\n\nמה הכלי שהכי שינה את העסק שלך? 👇\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #עסקיםקטנים #יזמות #טכנולוגיה #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |

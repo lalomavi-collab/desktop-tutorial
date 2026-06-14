@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |

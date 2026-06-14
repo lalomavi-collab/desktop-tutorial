@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "פינוי-בינוי נתקע?\nהבעיה לא בעירייה.\nהבעיה בקומה השנייה.\n\nמתוך עשרות עסקאות תמ\"א 38 ופינוי-בינוי שליוויתי — הדפוס אחד:\n\n✦ דייר אחד מחזיק את כולם עם הגב לקיר.\n\nלא בגלל שהוא נגד הפרויקט.\nבגלל שאף אחד לא דיבר איתו נכון.\n\n80% הסכמה נדרשת בחוק —\nאבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.\n\nהמפתח הוא לא לחץ. המפתח הוא ארכיטקטורה.\n\nאם הפרויקט שלך נתקע — כדאי שנדבר.\n\n↳ LALUM | מומחיות בהתחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #תמא38 #התחדשותעירונית #נדלן #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "פינוי-בינוי נתקע?\nהבעיה לא בעירייה.\nהבעיה בקומה השנייה.\n\nמתוך עשרות עסקאות תמ\"א 38 ופינוי-בינוי שליוויתי — הדפוס אחד:\n\n✦ דייר אחד מחזיק את כולם עם הגב לקיר.\n\nלא בגלל שהוא נגד הפרויקט.\nבגלל שאף אחד לא דיבר איתו נכון.\n\n80% הסכמה נדרשת בחוק —\nאבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.\n\nהמפתח הוא לא לחץ. המפתח הוא ארכיטקטורה.\n\nאם הפרויקט שלך נתקע — כדאי שנדבר.\n\n↳ LALUM | מומחיות בהתחדשות עירונית\nwww.lalum.co\n\n#פינויבינוי #תמא38 #התחדשותעירונית #נדלן #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |

@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\nמחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\nהכישורים שישמרו עליך רלוונטי:\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ יכולת לעבוד עם AI (לא נגדו)\n✅ יצירתיות ופתרון בעיות מורכבות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#עתידהעבודה #AI #כישורים #קריירה #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום\n\nמחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.\n\nהכישורים שישמרו עליך רלוונטי:\n✅ חשיבה ביקורתית\n✅ אינטליגנציה רגשית\n✅ יכולת לעבוד עם AI (לא נגדו)\n✅ יצירתיות ופתרון בעיות מורכבות\n\nה-AI הוא הכלי — אתה ה-מנהל.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#עתידהעבודה #AI #כישורים #קריירה #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |

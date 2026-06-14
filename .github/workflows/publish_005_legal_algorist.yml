@@ -19,11 +19,25 @@ jobs:
 
       - name: Publish to Telegram
         run: |
-          curl -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "message": "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️\n\n\"הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה\"\n\nכשאתם משתמשים ב-AI לניתוח עסקת נדל\"ן או לבניית אסטרטגיה משפטית,\nאתם לא רק \"מתייעלים\".\nאתם מאצילים סמכות לקופסה שחורה.\n\nנולד מקצוע חדש: הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי.\n\n✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה\n✅ ציות ואתיקה מוטמעים ב-Output\n✅ אחריות מלאה על כל תוצאה\n\nהאם אתם מנהיגים את המכונה, או שאתם חלק מהסטטיסטיקה שלה?\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#LegalTech #AIandLaw #האלגוריסטהמשפטי #נדלן #LALUM"
-            }'
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️\n\n\"הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה\"\n\nכשאתם משתמשים ב-AI לניתוח עסקת נדל\"ן או לבניית אסטרטגיה משפטית,\nאתם לא רק \"מתייעלים\".\nאתם מאצילים סמכות לקופסה שחורה.\n\nנולד מקצוע חדש: הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי.\n\n✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה\n✅ ציות ואתיקה מוטמעים ב-Output\n✅ אחריות מלאה על כל תוצאה\n\nהאם אתם מנהיגים את המכונה, או שאתם חלק מהסטטיסטיקה שלה?\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#LegalTech #AIandLaw #האלגוריסטהמשפטי #נדלן #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
 
       - name: Publish to Instagram
         run: |
