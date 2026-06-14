@@ -1,34 +1,31 @@
 name: '🔵 Send Facebook Test Message'
 on:
   workflow_dispatch:
-      inputs:
-            message:
-                    description: 'Message to post on Facebook'
-                            required: true
-                                    default: 'Test message from GitHub Actions'
-
-                                    jobs:
-                                      send-facebook:
-                                          runs-on: ubuntu-latest
-                                              steps:
-                                                    - uses: actions/checkout@v4
-                                                          - name: Send test message to Facebook
-                                                                  run: |
-                                                                            # Send message to Facebook Page
-                                                                                      curl -X POST "https://graph.facebook.com/v19.0/${{ secrets.FACEBOOK_PAGE_ID }}/feed" \
-                                                                                                  -d "message=${{ github.event.inputs.message }}" \
-                                                                                                              -d "access_token=${{ secrets.FACEBOOK_ACCESS_TOKEN }}" \
-                                                                                                                          -w "\n" \
-                                                                                                                                      -o response.json
-                                                                                                                                      
-                                                                                                                                                cat response.json
-                                                                                                                                                
-                                                                                                                                                          # Check if response contains an error
-                                                                                                                                                                    if grep -q "error" response.json; then
-                                                                                                                                                                                echo "Error posting to Facebook:"
-                                                                                                                                                                                            cat response.json
-                                                                                                                                                                                                        exit 1
-                                                                                                                                                                                                                  else
-                                                                                                                                                                                                                              echo "✅ Message posted successfully to Facebook"
-                                                                                                                                                                                                                                          cat response.json
-                                                                                                                                                                                                                                                    fi
+    inputs:
+      message:
+        description: 'Message to post on Facebook'
+        required: true
+        default: 'Test message from GitHub Actions'
+jobs:
+  send-facebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send test message to Facebook
+        run: |
+          # Send message to Facebook Page
+          curl -X POST "https://graph.facebook.com/v19.0/${{ secrets.FACEBOOK_PAGE_ID }}/feed" \
+          -d "message=${{ github.event.inputs.message }}" \
+          -d "access_token=${{ secrets.FACEBOOK_ACCESS_TOKEN }}" \
+          -w "\n" \
+          -o response.json
+          cat response.json
+          # Check if response contains an error
+          if grep -q "error" response.json; then
+          echo "Error posting to Facebook:"
+          cat response.json
+          exit 1
+          else
+          echo "✅ Message posted successfully to Facebook"
+          cat response.json
+          fi
