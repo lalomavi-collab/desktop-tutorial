@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { supabase } from "./lib/supabase.js";
 import { pullAll, upsertClient, upsertLog, deleteClient, deleteLog } from "./lib/sync.js";
+import { msalEnabled, outlookSignIn, outlookSignOut, getOutlookAccount, sendInvoiceEmail } from "./lib/outlook.js";
 
 /* ============================== THEME ============================== */
 const C = {
@@ -767,6 +768,8 @@ function InvoiceModal({ invoices, active, setActive, onClose, notify }) {
   const inv = invoices[active];
   const sheetRef = useRef(null);
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [mailBusy, setMailBusy] = useState(false);
+  const [outlookAccount, setOutlookAccount] = useState(() => getOutlookAccount());
   useEffect(() => {
     const h = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", h);
@@ -774,31 +777,65 @@ function InvoiceModal({ invoices, active, setActive, onClose, notify }) {
   }, [onClose]);
   const rtl = hasHeb(inv.client.name);
 
+  async function connectOutlook() {
+    const acct = await outlookSignIn();
+    if (acct) { setOutlookAccount(acct); notify && notify("מחובר לאאוטלוק: " + acct.username); }
+    else notify && notify("כניסה לאאוטלוק נכשלה", "err");
+  }
+
   // Capture the rendered invoice (browser handles Hebrew RTL) and wrap it in a PDF.
+  async function buildPDF() {
+    const jspdfMod = await import("jspdf");
+    const jsPDF = jspdfMod.jsPDF || jspdfMod.default;
+    const html2canvas = (await import("html2canvas")).default;
+    const canvas = await html2canvas(sheetRef.current, { scale: 2, backgroundColor: "#161618", useCORS: true });
+    const img = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ unit: "pt", format: "a4" });
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    pdf.setFillColor(11, 11, 12);
+    pdf.rect(0, 0, pw, ph, "F");
+    const ratio = canvas.height / canvas.width;
+    let w = pw - 48, h = w * ratio, x = 24;
+    if (h > ph - 48) { h = ph - 48; w = h / ratio; x = (pw - w) / 2; }
+    pdf.addImage(img, "PNG", x, 24, w, h);
+    return pdf;
+  }
+
   async function downloadPDF() {
     if (!sheetRef.current) return;
     setPdfBusy(true);
     try {
-      const jspdfMod = await import("jspdf");
-      const jsPDF = jspdfMod.jsPDF || jspdfMod.default;
-      const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(sheetRef.current, { scale: 2, backgroundColor: "#161618", useCORS: true });
-      const img = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({ unit: "pt", format: "a4" });
-      const pw = pdf.internal.pageSize.getWidth();
-      const ph = pdf.internal.pageSize.getHeight();
-      pdf.setFillColor(11, 11, 12);
-      pdf.rect(0, 0, pw, ph, "F");
-      const ratio = canvas.height / canvas.width;
-      let w = pw - 48, h = w * ratio, x = 24;
-      if (h > ph - 48) { h = ph - 48; w = h / ratio; x = (pw - w) / 2; }
-      pdf.addImage(img, "PNG", x, 24, w, h);
+      const pdf = await buildPDF();
       pdf.save(`${inv.number}.pdf`);
       notify && notify("PDF נשמר: " + inv.number);
     } catch {
       notify && notify("ייצוא PDF דורש בנייה מקומית (npm install jspdf html2canvas)", "err");
     } finally {
       setPdfBusy(false);
+    }
+  }
+
+  async function sendByEmail() {
+    if (!inv.client.email) return notify && notify("ללקוח זה אין כתובת מייל", "err");
+    if (!outlookAccount) return notify && notify("יש להתחבר לאאוטלוק קודם", "err");
+    setMailBusy(true);
+    try {
+      const pdf = await buildPDF();
+      // jsPDF output returns binary string — convert to base64
+      const pdfBase64 = btoa(pdf.output());
+      await sendInvoiceEmail({
+        toEmail: inv.client.email,
+        toName: inv.client.name,
+        invoiceNumber: inv.number,
+        amount: money2(inv.total),
+        pdfBase64,
+      });
+      notify && notify(`חשבונית נשלחה ל-${inv.client.email}`);
+    } catch (e) {
+      notify && notify("שליחת מייל נכשלה: " + e.message, "err");
+    } finally {
+      setMailBusy(false);
     }
   }
 
@@ -824,6 +861,22 @@ function InvoiceModal({ invoices, active, setActive, onClose, notify }) {
               style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 13px", borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: pdfBusy ? "wait" : "pointer", background: C.gold, color: C.black, border: "none" }}>
               <FileDown size={14} /> {pdfBusy ? "מייצא..." : "הורד PDF"}
             </button>
+            {msalEnabled && (
+              outlookAccount ? (
+                <button onClick={sendByEmail} disabled={mailBusy || !inv.client.email} title={inv.client.email ? "שלח חשבונית במייל" : "אין מייל ללקוח"}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 13px", borderRadius: 9, fontSize: 13, fontWeight: 700,
+                    cursor: mailBusy || !inv.client.email ? "not-allowed" : "pointer",
+                    background: inv.client.email ? C.green : C.raised,
+                    color: inv.client.email ? C.black : C.faint, border: "none", opacity: mailBusy ? 0.7 : 1 }}>
+                  <Mail size={14} /> {mailBusy ? "שולח..." : "שלח במייל"}
+                </button>
+              ) : (
+                <button onClick={connectOutlook}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 13px", borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: "pointer", background: C.raised, color: C.muted, border: `1px solid ${C.line}` }}>
+                  <Mail size={14} /> חבר אאוטלוק
+                </button>
+              )
+            )}
             <button onClick={() => window.print()} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 13px", borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: "pointer", background: C.raised, color: C.gold, border: `1px solid ${C.goldDim}` }}><Printer size={14} /> Print</button>
             <button onClick={onClose} style={{ ...iconBtn, background: C.raised, border: `1px solid ${C.line}` }}><X size={16} color={C.muted} /></button>
           </div>
