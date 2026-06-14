@@ -121,6 +121,20 @@ function parseEntry(text, clients) {
   return { hours, client, description, rate, total: +(hours * rate).toFixed(2) };
 }
 
+/* ========================= ACTIVITY TYPES ========================= */
+const ACTIVITY_TYPES = [
+  { value: "consulting", label: "ייעוץ", labelEn: "Consulting" },
+  { value: "lecture",    label: "הרצאה", labelEn: "Lecture" },
+  { value: "other",      label: "אחר",   labelEn: "Other" },
+];
+const DEFAULT_CONSULTING_RATE = 1000; // ₪/hour base rate
+
+// Detect lecture keywords in text to auto-set activity type.
+function detectActivity(text) {
+  if (/הרצ(אה|ות)|lecture|כנס|seminar|workshop|סמינ|סדנה/i.test(text)) return "lecture";
+  return "consulting";
+}
+
 /* =========================== SEED DATA ============================ */
 const SEED_CLIENTS = [
   { id: "c1", name: 'לוי נדל"ן', rate: 1200, email: "office@levi-realestate.co.il", autoBill: true },
@@ -130,8 +144,8 @@ const SEED_CLIENTS = [
 ];
 const today = () => new Date().toISOString().slice(0, 10);
 const SEED_LOGS = [
-  { id: "l1", date: today(), clientId: "c1", client: 'לוי נדל"ן', hours: 4, description: "ניסוח טיוטת הסכם קומבינציה", rate: 1200, total: 4800, status: "Pending" },
-  { id: "l2", date: today(), clientId: "c2", client: "משפחת כהן", hours: 1.5, description: "התחדשות עירונית תמא 38/1", rate: 950, total: 1425, status: "Pending" },
+  { id: "l1", date: today(), clientId: "c1", client: 'לוי נדל"ן', hours: 4, description: "ניסוח טיוטת הסכם קומבינציה", rate: 1200, total: 4800, status: "Pending", activity: "consulting" },
+  { id: "l2", date: today(), clientId: "c2", client: "משפחת כהן", hours: 1.5, description: "התחדשות עירונית תמא 38/1", rate: 950, total: 1425, status: "Pending", activity: "consulting" },
 ];
 
 /* ====================== PERSISTENCE (localStorage) ====================== */
@@ -225,6 +239,8 @@ export default function ALGO() {
   const [authEmail, setAuthEmail] = useState("");
   const [authOpen, setAuthOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [activity, setActivity] = useState("consulting");
+  const [manualRate, setManualRate] = useState("");
   const taRef = useRef(null);
   const fileRef = useRef(null);
   const syncCTimer = useRef(null);
@@ -333,7 +349,23 @@ export default function ALGO() {
 
   const flash = (msg, kind = "ok") => { setToast({ msg, kind }); setTimeout(() => setToast(null), 2600); };
 
-  const parsed = useMemo(() => (text.trim() ? parseEntry(text, clients) : null), [text, clients]);
+  const parsedBase = useMemo(() => (text.trim() ? parseEntry(text, clients) : null), [text, clients]);
+
+  // Auto-detect activity type from text when user hasn't manually changed it.
+  useEffect(() => {
+    if (text.trim()) setActivity(detectActivity(text));
+  }, [text]);
+
+  const effectiveRate = useMemo(() => {
+    if (activity === "lecture") return Number(manualRate) || 0;
+    return parsedBase ? parsedBase.rate : 0;
+  }, [activity, manualRate, parsedBase]);
+
+  const parsed = useMemo(() => {
+    if (!parsedBase) return null;
+    const rate = effectiveRate;
+    return { ...parsedBase, rate, total: +(parsedBase.hours * rate).toFixed(2) };
+  }, [parsedBase, effectiveRate]);
 
   const kpis = useMemo(() => {
     const pend = logs.filter((l) => l.status === "Pending");
@@ -350,15 +382,19 @@ export default function ALGO() {
   /* -------- log capture -------- */
   function logEntry() {
     if (!parsed || !parsed.hours) return flash("Add a duration (e.g. 2.5 hours / שעתיים)", "err");
+    if (activity === "lecture" && !Number(manualRate)) return flash("להרצאה יש להזין תעריף", "err");
     const entry = {
       id: crypto.randomUUID(), date: today(),
       clientId: parsed.client ? parsed.client.id : null,
       client: parsed.client ? parsed.client.name : "לא זוהה / Unmatched",
       hours: parsed.hours, description: parsed.description || "—",
       rate: parsed.rate, total: parsed.total, status: "Pending",
+      activity,
     };
     setLogs((p) => [entry, ...p]);
     setText("");
+    setManualRate("");
+    setActivity("consulting");
     flash(parsed.client ? `Logged ${parsed.hours}h to ${parsed.client.name}` : "Logged - client unmatched", parsed.client ? "ok" : "err");
     taRef.current && taRef.current.focus();
   }
@@ -507,11 +543,33 @@ export default function ALGO() {
             placeholder={'3.5 hours on urban renewal contract for Meridian Capital   ·   2.5 שעות עריכת הסכם קומבינציה, תיק לוי נדל"ן   ·   כהן יישוב סכסוכים 1.5 שעות דיון בוררות'}
             style={{ ...inputBase, fontSize: 15, lineHeight: 1.5, resize: "vertical", minHeight: 58 }} />
 
+          {/* activity type + manual rate (lectures) */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {ACTIVITY_TYPES.map((a) => (
+                <button key={a.value} onClick={() => setActivity(a.value)}
+                  style={{
+                    padding: "6px 13px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all .15s",
+                    background: activity === a.value ? C.goldSoft : C.raised,
+                    color: activity === a.value ? C.gold : C.muted,
+                    border: `1px solid ${activity === a.value ? C.goldDim : C.line}`,
+                  }}>{a.label}</button>
+              ))}
+            </div>
+            {activity === "lecture" && (
+              <input
+                type="number" value={manualRate} onChange={(e) => setManualRate(e.target.value)}
+                placeholder="תעריף הרצאה ₪"
+                style={{ ...inputBase, width: 160, fontFamily: MONO, direction: "ltr" }}
+              />
+            )}
+          </div>
+
           {/* live token read-out */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
             <Token label="Client" value={parsed ? (parsed.client ? parsed.client.name : "unmatched") : "—"} ok={!!(parsed && parsed.client)} warn={!!(parsed && !parsed.client)} />
             <Token label="Hours" value={parsed && parsed.hours ? parsed.hours : "—"} ok={!!(parsed && parsed.hours)} warn={!!(parsed && !parsed.hours)} />
-            <Token label="Rate" value={parsed && parsed.rate ? money0(parsed.rate) : "—"} />
+            <Token label="Rate" value={parsed && parsed.rate ? money0(parsed.rate) : activity === "lecture" ? "הזן תעריף" : "—"} warn={activity === "lecture" && !Number(manualRate)} />
             <Token label="Description" value={parsed && parsed.description ? parsed.description : "—"} grow />
             <div style={{ flex: 1 }} />
             <div style={{ textAlign: "right" }}>
@@ -554,23 +612,32 @@ export default function ALGO() {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
               <thead>
                 <tr style={{ color: C.muted, textAlign: "left" }}>
-                  {["Date", "Client", "Hours", "Description", "Rate", "Line total", "Status", ""].map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", fontWeight: 600, fontSize: 11.5, letterSpacing: ".05em", textTransform: "uppercase", borderBottom: `1px solid ${C.line}`, textAlign: i === 2 || i === 4 || i === 5 ? "right" : "left", whiteSpace: "nowrap" }}>{h}</th>
+                  {["Date", "Client", "סוג", "Hours", "Description", "Rate", "Line total", "Status", ""].map((h, i) => (
+                    <th key={i} style={{ padding: "8px 10px", fontWeight: 600, fontSize: 11.5, letterSpacing: ".05em", textTransform: "uppercase", borderBottom: `1px solid ${C.line}`, textAlign: i === 3 || i === 5 || i === 6 ? "right" : "left", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {logs.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: "26px 10px", color: C.faint, textAlign: "center" }}>No entries yet. Capture your first above.</td></tr>
+                  <tr><td colSpan={9} style={{ padding: "26px 10px", color: C.faint, textAlign: "center" }}>No entries yet. Capture your first above.</td></tr>
                 )}
                 {logs.map((l) => {
                   const unmatched = !l.clientId;
+                  const act = ACTIVITY_TYPES.find((a) => a.value === l.activity) || ACTIVITY_TYPES[0];
+                  const isLecture = l.activity === "lecture";
                   return (
                     <tr key={l.id} style={{ borderBottom: `1px solid ${C.line}` }}>
                       <td style={{ padding: "11px 10px", fontFamily: MONO, color: C.muted, whiteSpace: "nowrap" }}>{l.date}</td>
                       <td style={{ padding: "11px 10px", fontWeight: 600, color: unmatched ? C.red : C.white }} dir="auto">{l.client}</td>
+                      <td style={{ padding: "11px 10px" }}>
+                        <span style={{ fontSize: 11.5, fontWeight: 600, padding: "2px 8px", borderRadius: 6,
+                          background: isLecture ? "rgba(70,185,140,0.13)" : C.goldSoft,
+                          color: isLecture ? C.green : C.gold,
+                          border: `1px solid ${isLecture ? "rgba(70,185,140,0.35)" : "rgba(212,175,55,0.35)"}`,
+                        }}>{act.label}</span>
+                      </td>
                       <td style={{ padding: "11px 10px", fontFamily: MONO, textAlign: "right" }}>{l.hours}</td>
-                      <td style={{ padding: "11px 10px", color: C.muted, maxWidth: 320 }} dir="auto">{l.description}</td>
+                      <td style={{ padding: "11px 10px", color: C.muted, maxWidth: 280 }} dir="auto">{l.description}</td>
                       <td style={{ padding: "11px 10px", fontFamily: MONO, textAlign: "right", color: C.muted }}>{l.rate ? money0(l.rate) : "—"}</td>
                       <td style={{ padding: "11px 10px", fontFamily: MONO, textAlign: "right", fontWeight: 700, color: C.white }}>{money0(l.total)}</td>
                       <td style={{ padding: "11px 10px" }}><StatusBadge status={l.status} /></td>
