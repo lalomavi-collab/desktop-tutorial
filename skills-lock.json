@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "israeli-whatsapp-business": {
+      "source": "skills-il/communication",
+      "sourceType": "github",
+      "computedHash": "169aa109f86c7c6c049c84e7bc254fb55e1301d107b8549c37da4d6157f52195"
+    }
+  }
+}
