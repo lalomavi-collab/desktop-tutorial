@@ -80,7 +80,7 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
             attached.append(p.name)
 
     try:
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
             server.ehlo()
             server.starttls()
             server.login(smtp_user, smtp_pass)
