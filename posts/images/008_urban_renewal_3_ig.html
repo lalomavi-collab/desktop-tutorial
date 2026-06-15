@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1080px; background: #1B1B1B; overflow: hidden; font-family: 'Georgia', serif; }
+  .container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 70px; position: relative; }
+  .corner-tl { position: absolute; top: 30px; right: 30px; width: 50px; height: 50px; border-top: 2px solid #D4AF37; border-right: 2px solid #D4AF37; }
+  .corner-br { position: absolute; bottom: 30px; left: 30px; width: 50px; height: 50px; border-bottom: 2px solid #D4AF37; border-left: 2px solid #D4AF37; }
+  .label { color: #D4AF37; font-size: 13px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 44px; font-family: 'Arial', sans-serif; text-align: center; }
+  h1 { color: #FFFDD0; font-size: 46px; line-height: 1.4; text-align: center; font-weight: 400; margin-bottom: 44px; }
+  h1 span { color: #D4AF37; }
+  .items { width: 100%; display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px; }
+  .item { display: flex; align-items: flex-start; gap: 20px; padding: 18px 24px; background: rgba(212,175,55,0.06); border-right: 3px solid #D4AF37; }
+  .num { color: #D4AF37; font-size: 22px; flex-shrink: 0; font-family: 'Georgia', serif; }
+  .text { color: #FFFDD0; font-size: 18px; line-height: 1.5; opacity: 0.85; }
+  .brand { color: #D4AF37; font-size: 20px; letter-spacing: 4px; font-family: 'Arial', sans-serif; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+  <div class="label">LALUM · פינוי-בינוי</div>
+  <h1><span>3 שאלות</span> לפני<br>שחותמים.</h1>
+  <div class="items">
+    <div class="item"><div class="num">01</div><div class="text">מה קורה אם היזם נקלע לקשיים?</div></div>
+    <div class="item"><div class="num">02</div><div class="text">מי נושא בסיכון כשהלוח זמנים מתארך?</div></div>
+    <div class="item"><div class="num">03</div><div class="text">עורך הדין של היזם — לא עורך הדין שלך.</div></div>
+  </div>
+  <div class="brand">LALUM</div>
+</div>
+</body>
+</html>

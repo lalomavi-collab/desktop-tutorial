@@ -1,4 +1,4 @@
-import { Bot, Play, Pause, AlertCircle, Clock, CheckCircle2, Loader2 } from 'lucide-react';
+import { Bot, Play, Pause, AlertCircle, Clock, CheckCircle2, Loader2, CalendarClock } from 'lucide-react';
 import type { Agent } from '../types';
 
 interface AgentCardProps {
@@ -53,7 +53,15 @@ export function AgentCard({ agent, onClick }: AgentCardProps) {
             </div>
           )}
         </div>
-        <p className="text-gray-600 text-xs">{agent.lastActive}</p>
+        <div className="text-left">
+          <p className="text-gray-600 text-xs">{agent.lastActive}</p>
+          {agent.schedule && (
+            <div className="flex items-center gap-1 text-purple-400 text-xs mt-0.5">
+              <CalendarClock size={10} />
+              <span>{agent.schedule}</span>
+            </div>
+          )}
+        </div>
       </div>
     </button>
   );

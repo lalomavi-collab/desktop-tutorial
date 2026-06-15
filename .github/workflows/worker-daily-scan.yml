@@ -1,0 +1,83 @@
+name: Worker — Daily Job Scan
+
+on:
+  schedule:
+    # כל יום בשעה 09:00 שעון ישראל (06:00 UTC בקיץ / 07:00 UTC בחורף)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      min_score:
+        description: 'ציון מינימלי (ברירת מחדל: 7)'
+        required: false
+        default: '7'
+      queries:
+        description: 'שאילתות חיפוש מותאמות (אופציונלי)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run — ציון בלי הגשה (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  job-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: claude/wonderful-ritchie-5g8mje
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic playwright rich pdfplumber
+          playwright install chromium --with-deps
+
+      - name: Run Worker — Job Scan
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PYTHONUTF8: '1'
+        run: |
+          MIN_SCORE="${{ github.event.inputs.min_score || '7' }}"
+          DRY_RUN="${{ github.event.inputs.dry_run || 'false' }}"
+          QUERIES="${{ github.event.inputs.queries || '' }}"
+
+          CMD="python -m job_agent.main --scrape --resume job_agent/resume.docx --min-score $MIN_SCORE"
+
+          if [ "$DRY_RUN" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+
+          if [ -n "$QUERIES" ]; then
+            CMD="$CMD --queries \"$QUERIES\""
+          fi
+
+          echo "Running: $CMD"
+          # בסביבת CI — Human-in-the-Loop מושבת (auto-approve >=9.5 בחברות מאושרות)
+          echo "n" | $CMD || true
+
+      - name: Upload application log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-log-${{ github.run_number }}
+          path: |
+            job_agent/logs/application_log.jsonl
+            job_agent/applications/tracker.csv
+          retention-days: 90
+
+      - name: Commit updated tracker
+        if: always()
+        run: |
+          git config user.name "Worker Agent"
+          git config user.email "worker@lalum.co"
+          git add job_agent/logs/ job_agent/applications/ || true
+          git diff --staged --quiet || git commit -m "Worker daily scan — $(date '+%Y-%m-%d')"
+          git push || true

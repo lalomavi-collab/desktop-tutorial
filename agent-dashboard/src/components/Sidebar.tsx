@@ -1,12 +1,12 @@
-import { Bot, LayoutDashboard, Share2, BarChart2, Settings, Zap } from 'lucide-react';
+import { Bot, LayoutDashboard, Share2, BarChart2, Settings, Zap, Briefcase } from 'lucide-react';
 import type { Agent } from '../types';
 
 interface SidebarProps {
   agents: Agent[];
   selectedAgentId: string | null;
-  activeView: 'dashboard' | 'social' | 'analytics' | 'settings';
+  activeView: 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker';
   onSelectAgent: (id: string) => void;
-  onViewChange: (view: 'dashboard' | 'social' | 'analytics' | 'settings') => void;
+  onViewChange: (view: 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker') => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -20,6 +20,7 @@ export function Sidebar({ agents, selectedAgentId, activeView, onSelectAgent, on
   const navItems = [
     { id: 'dashboard', label: 'דשבורד', icon: LayoutDashboard },
     { id: 'social', label: 'רשתות חברתיות', icon: Share2 },
+    { id: 'worker', label: 'Worker — דרושים', icon: Briefcase },
     { id: 'analytics', label: 'אנליטיקס', icon: BarChart2 },
     { id: 'settings', label: 'הגדרות', icon: Settings },
   ] as const;
