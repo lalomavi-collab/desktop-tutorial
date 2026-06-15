@@ -1,387 +1,257 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אישור פוסטים</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #111;
-            color: #eee;
-            padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: #D4AF37;
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #888;
-            font-size: 0.85rem;
-            margin-bottom: 30px;
-        }
-
-        /* Post Card */
-        .post {
-            background: #1B1B1B;
-            border: 1px solid #333;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .post-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            border-bottom: 1px solid #282828;
-        }
-
-        .post-name {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .badges {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 600;
-        }
-
-        .b-fb { background: #1877F220; color: #5B9BF7; }
-        .b-tg { background: #0088CC20; color: #29B6F6; }
-        .b-ig { background: #E1306C20; color: #F06292; }
-        .b-li { background: #0A66C220; color: #42A5F5; }
-
-        .status {
-            padding: 3px 12px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 700;
-        }
-        .s-pending { background: #F57C0020; color: #FFB74D; }
-        .s-approved { background: #2E7D3220; color: #66BB6A; }
-        .s-sent { background: #D4AF3720; color: #D4AF37; }
-        .s-failed { background: #C6282820; color: #EF5350; }
-
-        /* Content area */
-        .post-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-        }
-        @media (max-width: 700px) {
-            .post-content { grid-template-columns: 1fr; }
-        }
-
-        .text-side {
-            padding: 16px 20px;
-        }
-
-        .text-label {
-            font-size: 0.7rem;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .text-box {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 0.82rem;
-            line-height: 1.7;
-            color: #ccc;
-            white-space: pre-wrap;
-            max-height: 350px;
-            overflow-y: auto;
-        }
-        .text-box.ltr { direction: ltr; text-align: left; }
-        .text-box::-webkit-scrollbar { width: 4px; }
-        .text-box::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
-
-        .image-side {
-            padding: 16px 20px;
-            border-right: 1px solid #222;
-            background: #0e0e0e;
-        }
-
-        .img-label {
-            font-size: 0.7rem;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .img-frame {
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #222;
-        }
-
-        .img-frame iframe {
-            width: 100%;
-            border: none;
-            display: block;
-        }
-
-        .img-size {
-            text-align: center;
-            font-size: 0.65rem;
-            color: #555;
-            margin-top: 4px;
-        }
-
-        /* Schedule info */
-        .post-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-top: 1px solid #222;
-            font-size: 0.78rem;
-            color: #666;
-        }
-
-        /* Section divider */
-        .section {
-            color: #D4AF37;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 32px 0 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #333;
-        }
-
-        /* LinkedIn separate card */
-        .en-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px dashed #333;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>LALUM — תצוגה מקדימה של פוסטים</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; color: #FFFDD0; font-family: 'Georgia', serif; padding: 40px; }
+  h1 { color: #D4AF37; font-size: 28px; letter-spacing: 3px; text-align: center; margin-bottom: 10px; font-weight: 400; }
+  .subtitle { color: #FFFDD0; opacity: 0.5; text-align: center; font-size: 14px; margin-bottom: 60px; font-family: Arial, sans-serif; letter-spacing: 2px; }
+  .campaign-title { color: #D4AF37; font-size: 16px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 1px solid rgba(212,175,55,0.3); font-family: Arial, sans-serif; }
+  .post-block { margin-bottom: 80px; }
+  .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .post-num { color: #D4AF37; font-size: 40px; opacity: 0.3; font-family: Georgia; }
+  .post-meta { font-family: Arial, sans-serif; font-size: 13px; color: #FFFDD0; opacity: 0.5; text-align: left; }
+  .images-row { display: flex; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+  .img-wrap { position: relative; }
+  .img-label { font-family: Arial, sans-serif; font-size: 11px; color: #D4AF37; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+  iframe { border: 1px solid rgba(212,175,55,0.2); display: block; }
+  .text-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+  .text-col { background: rgba(212,175,55,0.04); border: 1px solid rgba(212,175,55,0.15); padding: 24px; border-radius: 2px; }
+  .text-lang { color: #D4AF37; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; font-family: Arial, sans-serif; }
+  .text-body { color: #FFFDD0; font-size: 14px; line-height: 1.8; opacity: 0.8; white-space: pre-line; font-family: Arial, sans-serif; }
+  .platforms { display: flex; gap: 10px; margin-top: 16px; }
+  .platform { background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); color: #D4AF37; font-size: 11px; padding: 4px 12px; letter-spacing: 1px; font-family: Arial, sans-serif; }
+  .schedule { color: #D4AF37; font-size: 12px; font-family: Arial, sans-serif; opacity: 0.7; margin-top: 8px; }
+  .divider { border: none; border-top: 1px solid rgba(212,175,55,0.15); margin: 60px 0; }
+  .approval-notice { background: rgba(212,175,55,0.06); border: 1px solid #D4AF37; padding: 20px 30px; text-align: center; margin-bottom: 60px; }
+  .approval-notice p { color: #FFFDD0; font-size: 14px; font-family: Arial, sans-serif; line-height: 1.8; }
+  .approval-notice strong { color: #D4AF37; }
+</style>
 </head>
 <body>
 
-    <h1>אישור פוסטים לפני פרסום</h1>
-    <p class="subtitle">בדוק טקסט + תמונה לכל פלטפורמה. אשר כשמוכן.</p>
+<h1>LALUM · Legal Architecture</h1>
+<div class="subtitle">תצוגה מקדימה — 7 פוסטים · יוני 2026</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">001 - האלגוריסט המשפטי</div>
-    <!-- ═══════════════════════════════════════ -->
+<div class="approval-notice">
+  <p>⏳ <strong>ממתין לאישור.</strong> עיין בתוכן ובתמונות ואמור <strong>"מאושר"</strong> כדי לצאת לדרך.<br>
+  לשינויים — ציין מה לעדכן ואעדכן מיד.</p>
+</div>
 
-    <!-- Hebrew version (Facebook / Telegram / Instagram) -->
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">האלגוריסט המשפטי</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-ig">Instagram</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מוכנים למקצוע החדש של 2026? ⚖️
-
-"הסכנה אינה שהמכונה תחשוב כאדם, אלא שבן האדם יתחיל לחשוב כמו מכונה"
-
-המשפט הזה, המבוסס על מחקרי הטיית האוטומציה (Automation Bias), מעולם לא היה רלוונטי יותר לעולם המשפט והנדל"ן.
-
-מחקר ה-Moral Machine של MIT הוכיח: אין "מניעה" נייטרלית. כשמתכנת מגדיר איך רכב אוטונומי ינהג בצומת של כשל בלתי נמנע – הוא מחוקק נורמה.
-
-הדילמה הזו יושבת עכשיו על שולחן העבודה שלכם.
-
-כשאתם משתמשים ב-AI לניתוח עסקת נדל"ן או לבניית אסטרטגיה משפטית, אתם לא רק "מתייעלים". אתם מאצילים סמכות ל"קופסה שחורה" (Black Box).
-
-בעולם נבנה מקצוע חדש:
-הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי (The Legal Algorist).
-
-✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה.
-✅ כללי ציות (Compliance) ואתיקה מוטמעים בתוך ה-Output.
-✅ קיימת אחריות מלאה על התוצאה.
-
-#LegalTech #AIandLaw #האלגוריסטהמשפטי #עורכידין</div>
-            </div>
-            <div class="image-side">
-                <div class="img-label">תמונה רחבה (1200x630)</div>
-                <div class="img-frame">
-                    <iframe src="images/001_legal_algorist_he.html" height="280" scrolling="no"></iframe>
-                </div>
-                <div class="img-size">Facebook / Telegram</div>
-
-                <div style="margin-top:16px;">
-                    <div class="img-label">תמונה מרובעת (1080x1080)</div>
-                    <div class="img-frame">
-                        <iframe src="images/001_legal_algorist_ig.html" height="280" scrolling="no"></iframe>
-                    </div>
-                    <div class="img-size">Instagram</div>
-                </div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>שבת, 5 באפריל 2026 | 20:00</span>
-            <span>posts/001_legal_algorist_he.md</span>
-        </div>
+<!-- POST 006 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 006 — הבעיה בקומה השנייה</div>
+  <div class="post-header">
+    <div class="post-num">006</div>
+    <div class="post-meta">תאריך: 03.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/006_urban_renewal_1_he.html" width="600" height="315" scrolling="no"></iframe>
     </div>
-
-    <!-- English version (LinkedIn) -->
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">The Legal Algorist</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">English Text</div>
-                <div class="text-box ltr">The Legal Algorist: Are You Ready for the New Profession of 2026? ⚖️
-
-"The danger is not that the machine will think like a human, but that humans will start thinking like machines."
-
-This statement, rooted in Automation Bias research, has never been more relevant to the legal and real estate industries.
-
-MIT's Moral Machine study (published in Nature) proved a fundamental truth: there is no "neutral" prevention. When a programmer defines how an autonomous vehicle should behave at an unavoidable failure junction — they are legislating a norm.
-
-This dilemma is now sitting on YOUR desk.
-
-When you use AI to analyze a real estate transaction or build a legal strategy, you're not just "optimizing." You're delegating authority to a Black Box.
-
-A new profession is emerging worldwide: The Legal Algorist.
-
-✅ Legal logic prevails over statistics.
-✅ Compliance and ethics are embedded within the Output.
-✅ Full accountability exists for every result.
-
-The real expert dares to say: "I don't know" — and that is exactly what makes them the gatekeeper.
-
-#LegalTech #AIandLaw #TheLegalAlgorist #LawyersOfLinkedIn #FutureOfLaw</div>
-            </div>
-            <div class="image-side">
-                <div class="img-label">English Image (1200x630)</div>
-                <div class="img-frame">
-                    <iframe src="images/001_legal_algorist_en.html" height="280" scrolling="no"></iframe>
-                </div>
-                <div class="img-size">LinkedIn</div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>Saturday, April 5, 2026 | 20:00 IST</span>
-            <span>posts/001_legal_algorist_en.md</span>
-        </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/006_urban_renewal_1_en.html" width="600" height="315" scrolling="no"></iframe>
     </div>
-
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">005 - למה ה-AI שלכם לא זוכר כלום? (Telegram בלבד)</div>
-    <!-- ═══════════════════════════════════════ -->
-
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">AI Memory / Legal Algorist</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-tg">Telegram</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית (Telegram via LalumBot)</div>
-                <div class="text-box">למה ה-AI שלכם לא זוכר כלום?
-
-כמשפטנים, אנחנו חיים בתוך הררי מידע.
-פסק דין פה. חוזה שם. הערה משפטית בתיק אחר.
-ועברנו ל-AI — ונתקענו בבעיה חדשה: המערכת שוכחת.
-סגרתם את הצ'אט — ההקשר נעלם. התיק של אתמול? לא קשור לחוזה של היום.
-זה לא בזבוז זמן בלבד. זה סיכון מקצועי ממשי.
-
-אז מה הפתרון?
-
-ב-LALUM Legal Clinic, אנחנו בונים משהו אחר לגמרי: ה-Legal Algorist.
-לא עוד "לשאול שאלות" — אלא לתת ל-AI זיכרון לטווח ארוך.
-
-✅ חיבור נקודות אוטומטי — המערכת מזהה: "הסיכון בחוזה הזה זהה לתיק שניתחנו לפני חצי שנה"
-✅ ניהול סיכונים חסין — סריקה של כל הידע הקיים, הצפת סתירות ופערים משפטיים לפני שמגיעים לאולם
-✅ ידע שנשאר אצלכם — נכס דיגיטלי שמשתפר עם כל תיק חדש. לא "שיחות שנשכחות"
-
-השורה התחתונה:
-העתיד של עריכת הדין אינו "להשתמש ב-AI".
-הוא לבנות ארכיטקטורת ידע.
-זה ההבדל בין עורך דין שמחפש מידע — לבין עורך דין שמוביל בעזרת ידע. ⚖️
-
-רוצים לשמוע עוד? מוזמנים לשאול בקהילה 👇
-
-👥 https://chat.whatsapp.com/DZPsAJnN6ucCs2Zmcv44ZV
-🌐 www.lalum.co
-📱 https://www.facebook.com/profile.php?id=61573518832531
-
-שלכם, אבי ללום, עו"ד | Ph.D.c למשפטים וכלכלה</div>
-            </div>
-            <div class="image-side">
-                <div class="img-label">תמונה רחבה (1200x630)</div>
-                <div class="img-frame">
-                    <iframe src="images/005_ai_memory_he.html" height="280" scrolling="no"></iframe>
-                </div>
-                <div class="img-size">Telegram (LalumBot)</div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>מאושר — שליחה ידנית דרך workflow_dispatch</span>
-            <span>.github/workflows/send-post-005-telegram.yml</span>
-        </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/006_urban_renewal_1_ig.html" width="270" height="270" scrolling="no"></iframe>
     </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">פינוי-בינוי נתקע?
+הבעיה לא בעירייה.
+הבעיה בקומה השנייה.
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">002 - AI ויצירתיות</div>
-    <!-- ═══════════════════════════════════════ -->
+80% הסכמה נדרשת בחוק — אבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">AI ויצירתיות</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-ig">Instagram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">🎨 האם AI יכול להיות יצירתי?
+המפתח הוא לא לחץ.
+המפתח הוא ארכיטקטורה.
+
+✦ מנגנון הכרעה ברור לפני שהסכסוך מתפוצץ
+✦ כל בעלי האינטרס — חדר אחד
+✦ עסקה שזזת
+
+↳ LALUM | מומחיות בהתחדשות עירונית
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">Urban renewal projects don't stall because of bureaucracy.
+They stall because of one tenant on the second floor.
+
+80% consent required by law —
+but 20% can control everyone's timeline indefinitely.
+
+The answer isn't pressure. The answer is architecture.
+
+↳ LALUM | Urban Renewal & Real Estate Law
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
+    </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 3 ביוני 2026</div>
+</div>
+
+<hr class="divider">
+
+<!-- POST 007 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 007 — הסכם שנחתם בבהילות</div>
+  <div class="post-header">
+    <div class="post-num">007</div>
+    <div class="post-meta">תאריך: 06.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/007_urban_renewal_2_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/007_urban_renewal_2_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/007_urban_renewal_2_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">הסכם דיירים שנחתם בבהילות — מתפרק לאט.
+
+רוב היזמים מגיעים עם כוונות טובות.
+הם מכינים הצגה יפה, מבטיחים דירות גדולות יותר.
+
+ואז בא הרגע שבו עורך הדין של היזם מושיט לדיירים הסכם בן 60 עמוד.
+
+מה שעובד:
+→ מיפוי דיירים לפני כל מסמך
+→ זיהוי ה"שוער" — הדייר שכולם מקשיבים לו
+→ שקיפות שמורידה חרדה לפני שהיא עולה
+
+↳ LALUM | אדריכלות הסכמה בעסקאות התחדשות עירונית
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">An agreement signed in haste — unravels slowly.
+
+Most developers arrive with good intentions.
+They prepare a beautiful presentation.
+
+Then comes the moment their attorney hands residents a 60-page agreement.
+
+What actually works:
+→ Tenant mapping before any document
+→ Identifying the gatekeeper everyone listens to
+→ Transparency that reduces anxiety before it rises
+
+↳ LALUM | Consensus Architecture in Urban Renewal
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
+    </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 6 ביוני 2026</div>
+</div>
+
+<hr class="divider">
+
+<!-- POST 008 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 008 — 3 שאלות לפני שחותמים</div>
+  <div class="post-header">
+    <div class="post-num">008</div>
+    <div class="post-meta">תאריך: 09.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/008_urban_renewal_3_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/008_urban_renewal_3_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/008_urban_renewal_3_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">3 שאלות שכל בעל דירה חייב לשאול לפני שחותם על פינוי-בינוי:
+
+01 — מה קורה אם היזם נקלע לקשיים פיננסיים באמצע הבנייה?
+
+02 — מה מוגדר "כוח עליון" בחוזה — ומי נושא בסיכון?
+
+03 — עורך הדין של היזם הוא לא עורך הדין שלך.
+
+ייצוג אמיתי מתחיל לפני החתימה.
+לא אחריה.
+
+↳ LALUM | ייצוג בעלי דירות בעסקאות התחדשות עירונית
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">3 questions every property owner must ask before signing an urban renewal deal:
+
+01 — What happens if the developer faces financial difficulties mid-construction?
+
+02 — What qualifies as "force majeure" — and who bears the risk?
+
+03 — The developer's attorney is not your attorney.
+
+Real representation begins before the signature.
+Not after.
+
+↳ LALUM | Representing Property Owners in Urban Renewal
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
+    </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 9 ביוני 2026</div>
+</div>
+
+<hr class="divider">
+
+<!-- POST 002 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 002 — AI ויצירתיות</div>
+  <div class="post-header">
+    <div class="post-num">002</div>
+    <div class="post-meta">תאריך: 10.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/002_ai_creativity_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/002_ai_creativity_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/002_ai_creativity_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">🎨 האם AI יכול להיות יצירתי?
 
 כשמוזיקה מתולדת ע"י אלגוריתם, ציורים מוכרים במיליונים,
 ורומנים נכתבים ללא יד אנושית — עולה השאלה:
@@ -390,11 +260,13 @@ The real expert dares to say: "I don't know" — and that is exactly what makes 
 🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.
 AI מייצר — אנחנו יוצרים משמעות.
 
-#AI #יצירתיות #עתיד #בינהמלאכותית #אמנות</div>
-
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">Can AI Be Truly Creative? 🎨
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">Can AI Be Truly Creative? 🎨
 
 AI-generated music sells for millions. AI art wins competitions.
 AI writes novels. What remains uniquely human?
@@ -402,46 +274,43 @@ AI writes novels. What remains uniquely human?
 The answer: intention, emotion, and the story behind the work.
 AI produces — humans create meaning.
 
-In the AI era, our competitive edge is our humanity.
-
-#AI #Creativity #FutureOfWork #ArtificialIntelligence #HumanTouch</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>שבת, 11 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
-        </div>
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
     </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 10 ביוני 2026</div>
+</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">003 - AI לעסקים קטנים</div>
-    <!-- ═══════════════════════════════════════ -->
+<hr class="divider">
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">AI לעסקים קטנים</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">💼 AI לא רק לחברות ענק — גם לעסק שלך!
+<!-- POST 003 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 003 — AI לעסקים קטנים</div>
+  <div class="post-header">
+    <div class="post-num">003</div>
+    <div class="post-meta">תאריך: 13.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/003_ai_business_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/003_ai_business_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/003_ai_business_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">💼 AI לא רק לחברות ענק — גם לעסק שלך!
 
-5 כלי AI שכל בעל עסק קטן צריך ב-2025:
+5 כלי AI שכל בעל עסק קטן צריך ב-2026:
 1️⃣ ChatGPT — כתיבת תוכן, מיילים, הצעות מחיר
 2️⃣ Canva AI — עיצוב מהיר ומקצועי
 3️⃣ Zapier AI — אוטומציה של תהליכים
@@ -450,13 +319,15 @@ In the AI era, our competitive edge is our humanity.
 
 מה הכלי שהכי שינה את העסק שלך? 👇
 
-#AI #עסקיםקטנים #יזמות #טכנולוגיה</div>
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">AI Isn't Just for Big Tech — It's for YOUR Business 💼
 
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">AI Isn't Just for Big Tech — It's for YOUR Business 💼
-
-5 AI tools every small business owner needs in 2025:
+5 AI tools every small business owner needs in 2026:
 1️⃣ ChatGPT — Content, emails, proposals
 2️⃣ Canva AI — Fast, professional design
 3️⃣ Zapier AI — Workflow automation
@@ -465,42 +336,41 @@ In the AI era, our competitive edge is our humanity.
 
 Which tool has made the biggest impact on your business? 👇
 
-#AI #SmallBusiness #Entrepreneurship #ProductivityTools</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>שבת, 18 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
-        </div>
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
     </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 13 ביוני 2026</div>
+</div>
 
-    <!-- ═══════════════════════════════════════ -->
-    <div class="section">004 - עתיד העבודה עם AI</div>
-    <!-- ═══════════════════════════════════════ -->
+<hr class="divider">
 
-    <div class="post">
-        <div class="post-top">
-            <div>
-                <span class="post-name">עתיד העבודה עם AI</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge b-fb">Facebook</span>
-                <span class="badge b-tg">Telegram</span>
-                <span class="badge b-li">LinkedIn</span>
-                <span class="status s-approved">APPROVED</span>
-            </div>
-        </div>
-        <div class="post-content">
-            <div class="text-side">
-                <div class="text-label">טקסט בעברית</div>
-                <div class="text-box">🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום
+<!-- POST 004 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 004 — עתיד העבודה 2030</div>
+  <div class="post-header">
+    <div class="post-num">004</div>
+    <div class="post-meta">תאריך: 16.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/004_future_work_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/004_future_work_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/004_future_work_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">🚀 עולם העבודה ב-2030 — מה שאנחנו יודעים כבר היום
 
 מחקר של McKinsey: 30% ממשרות ה-2030 עוד לא קיימות.
 
@@ -512,11 +382,13 @@ Which tool has made the biggest impact on your business? 👇
 
 ה-AI הוא הכלי — אתה ה-מנהל.
 
-#עתידהעבודה #AI #כישורים #קריירה #בינהמלאכותית</div>
-
-                <div class="en-section">
-                    <div class="text-label">LinkedIn (English)</div>
-                    <div class="text-box ltr">The Future of Work in 2030 — What We Already Know 🚀
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">The Future of Work in 2030 — What We Already Know 🚀
 
 McKinsey research: 30% of jobs in 2030 don't exist yet.
 
@@ -528,21 +400,77 @@ The skills that will keep you relevant:
 
 AI is the tool — you are the manager.
 
-#FutureOfWork #AI #Skills #Career #ArtificialIntelligence</div>
-                </div>
-            </div>
-            <div class="image-side">
-                <div style="padding:60px 20px; text-align:center; color:#555;">
-                    <div style="font-size:2rem; margin-bottom:8px;">🖼️</div>
-                    <div>תמונות ייווצרו לאחר אישור</div>
-                </div>
-            </div>
-        </div>
-        <div class="post-bottom">
-            <span>שבת, 25 באפריל 2026 | 19:00</span>
-            <span>טרם נוצר קובץ</span>
-        </div>
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
     </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 16 ביוני 2026</div>
+</div>
+
+<hr class="divider">
+
+<!-- POST 005 -->
+<div class="post-block">
+  <div class="campaign-title">פוסט 005 — האלגוריסט המשפטי</div>
+  <div class="post-header">
+    <div class="post-num">005</div>
+    <div class="post-meta">תאריך: 20.06.2026</div>
+  </div>
+  <div class="images-row">
+    <div class="img-wrap">
+      <div class="img-label">Facebook / Telegram (1200×630)</div>
+      <iframe src="images/005_legal_algorist_he.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">LinkedIn (1200×630)</div>
+      <iframe src="images/005_legal_algorist_en.html" width="600" height="315" scrolling="no"></iframe>
+    </div>
+    <div class="img-wrap">
+      <div class="img-label">Instagram (1080×1080)</div>
+      <iframe src="images/005_legal_algorist_ig.html" width="270" height="270" scrolling="no"></iframe>
+    </div>
+  </div>
+  <div class="text-cols">
+    <div class="text-col">
+      <div class="text-lang">🇮🇱 עברית — Facebook / Telegram / Instagram</div>
+      <div class="text-body">הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי ⚖️
+
+כשאתם משתמשים ב-AI לניתוח עסקת נדל"ן או לבניית אסטרטגיה משפטית —
+אתם לא רק "מתייעלים".
+אתם מאצילים סמכות לקופסה שחורה.
+
+✅ הלוגיקה המשפטית גוברת על הסטטיסטיקה
+✅ ציות ואתיקה מוטמעים ב-Output
+✅ אחריות מלאה על כל תוצאה
+
+האם אתם מנהיגים את המכונה, או שאתם חלק מהסטטיסטיקה שלה?
+
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">Facebook</span><span class="platform">Telegram</span><span class="platform">Instagram</span></div>
+    </div>
+    <div class="text-col" dir="ltr">
+      <div class="text-lang">🇬🇧 English — LinkedIn</div>
+      <div class="text-body">The Legal Algorist ⚖️
+
+When you use AI to analyze a real estate deal or build legal strategy —
+you are not just optimizing.
+You are delegating authority to a Black Box.
+
+✅ Legal logic prevails over statistics
+✅ Compliance and ethics embedded in every Output
+✅ Full accountability for every result
+
+Are you leading the machine — or just part of its statistics?
+
+↳ LALUM | Legal Architecture
+www.lalum.co</div>
+      <div class="platforms"><span class="platform">LinkedIn</span></div>
+    </div>
+  </div>
+  <div class="schedule">📅 תאריך פרסום: 20 ביוני 2026</div>
+</div>
 
 </body>
 </html>

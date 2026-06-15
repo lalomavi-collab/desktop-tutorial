@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "higgsfield-mcp": {
+      "command": "npx",
+      "args": ["-y", "higgsfield-mcp"],
+      "env": {
+        "HF_API_KEY": "${HF_API_KEY}",
+        "HF_SECRET": "${HF_SECRET}"
+      }
+    },
+    "meta-mcp": {
+      "command": "npx",
+      "args": ["-y", "meta-mcp"],
+      "env": {
+        "FB_ACCESS_TOKEN": "${FB_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
