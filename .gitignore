@@ -5,3 +5,5 @@ __pycache__/
 dist/
 build/
 .env
+o365_token.txt
+drafted_contacts.json

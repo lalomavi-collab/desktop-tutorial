@@ -22,9 +22,15 @@ SENDER_EMAIL  = "lalomavi@gmail.com"   # shown in From / used for O365 mailbox
 SENDER_NAME   = "DOM Mediation"
 
 # O365 / Azure App credentials (only needed when EMAIL_BACKEND = "o365")
-O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")
-O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "")
-O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")
+# Paste the values from portal.azure.com — see README below or AZURE_SETUP.md
+O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")   # Application (client) ID
+O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "") # Client secret value
+O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")   # Directory (tenant) ID
+
+# AUTH_FLOW options:
+#   "credentials"   — app-only, no browser, needs Mail.Send application permission
+#   "authorization" — opens browser once, saves token to o365_token.txt (recommended)
+O365_AUTH_FLOW = "authorization"
 
 # Delay between draft creations to avoid hammering the COM server
 THROTTLE_SECS = 1.0
@@ -212,28 +218,60 @@ def create_draft_win32(contact: Contact, subject: str, body: str) -> None:
     mail.Save()   # Save() → goes to Drafts folder; Send() would send immediately
 
 
-def create_draft_o365(contact: Contact, subject: str, body: str,
-                      _cache: dict = {}) -> None:
+def _get_o365_account(_cache: dict = {}) -> object:
+    """Return authenticated O365 Account, authenticating once per process."""
+    from O365 import Account, FileSystemTokenBackend  # type: ignore
+
+    if "account" in _cache:
+        return _cache["account"]
+
+    token_backend = FileSystemTokenBackend(
+        token_path=".", token_filename="o365_token.txt"
+    )
+    account = Account(
+        (O365_CLIENT_ID, O365_CLIENT_SECRET),
+        auth_flow_type=O365_AUTH_FLOW,
+        tenant_id=O365_TENANT_ID,
+        token_backend=token_backend,
+    )
+
+    if not account.is_authenticated:
+        if O365_AUTH_FLOW == "authorization":
+            # Opens browser once — paste the redirect URL back in the terminal
+            log.info("Opening browser for Microsoft login…")
+            account.authenticate(
+                scopes=["https://graph.microsoft.com/Mail.Send",
+                        "https://graph.microsoft.com/Mail.ReadWrite"]
+            )
+        else:
+            account.authenticate()
+
+    _cache["account"] = account
+    return account
+
+
+def create_draft_o365(contact: Contact, subject: str, body: str) -> None:
     """Save draft via Microsoft Graph (O365 library)."""
-    from O365 import Account  # type: ignore
-
-    if "account" not in _cache:
-        account = Account(
-            (O365_CLIENT_ID, O365_CLIENT_SECRET),
-            auth_flow_type="credentials",
-            tenant_id=O365_TENANT_ID,
-        )
-        if not account.authenticate():
-            raise RuntimeError("O365 authentication failed — check credentials.")
-        _cache["account"] = account
-
-    mailbox = _cache["account"].mailbox(resource=SENDER_EMAIL)
+    account = _get_o365_account()
+    mailbox = account.mailbox(resource=SENDER_EMAIL)
     draft = mailbox.new_message()
     draft.to.add(contact.email)
     draft.subject   = subject
     draft.body      = body
     draft.body_type = "HTML"
-    draft.save_draft()   # saves to Drafts; never calls send()
+    draft.save_draft()
+
+
+def send_via_o365(contact: Contact, subject: str, body: str) -> None:
+    """Send immediately via Microsoft Graph (O365 library)."""
+    account = _get_o365_account()
+    mailbox = account.mailbox(resource=SENDER_EMAIL)
+    message = mailbox.new_message()
+    message.to.add(contact.email)
+    message.subject   = subject
+    message.body      = body
+    message.body_type = "HTML"
+    message.send()
 
 # ─────────────────────────────────────────────
 # DATA LOADING
