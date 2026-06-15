@@ -154,11 +154,39 @@ def build_email(contact: Contact) -> tuple[str, str]:
   </p>
 
   <br>
-  <p>
-    בברכה קולגיאלית,<br><br>
-    <strong>ד"ר אברהם ללום, עו"ד</strong><br>
-    מייסד, LALUM<br>
-    <a href="mailto:{SENDER_EMAIL}" style="color:#800020;">{SENDER_EMAIL}</a>
+  <p>בברכה קולגיאלית,</p>
+
+  <table style="border-collapse:collapse; font-family: Arial, sans-serif; font-size:13px; color:#1B1B1B; margin-top:8px;">
+    <tr>
+      <td style="padding-right:16px; vertical-align:top;">
+        <p style="margin:0;"><strong>Dr. Avraham Lalum, Adv.</strong></p>
+        <p style="margin:2px 0; color:#555;">Attorney | Arbitrator &amp; Mediator | Expert in Law, Economics &amp; AI</p>
+        <p style="margin:6px 0 2px 0;">Herzliya Business Park, Building G</p>
+        <p style="margin:0;">85 Medinat HaYehudim St., 3rd Floor, Herzliya Pituach 4676670, Israel</p>
+        <p style="margin:6px 0 2px 0;">
+          Office: <a href="tel:+97233104959" style="color:#800020;">+972 3-3104959</a> &nbsp;|&nbsp;
+          Cell: <a href="tel:+97252490420" style="color:#800020;">+972 52-2490420</a>
+        </p>
+        <p style="margin:2px 0;">
+          ✉️ <a href="mailto:avraham@lalum.co" style="color:#800020;">avraham@lalum.co</a> &nbsp;|&nbsp;
+          🌐 <a href="https://www.lalum.co" style="color:#800020;">www.lalum.co</a>
+        </p>
+        <p style="margin:6px 0 2px 0;">
+          📚 <a href="https://www.lalum.co/courses" style="color:#800020;">Master Course: Real Estate Transactions, AI &amp; Body Language</a>
+        </p>
+        <p style="margin:2px 0;">
+          🔬 <a href="https://www.lalum.co" style="color:#800020;">Access my latest peer-reviewed research article</a>
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <hr style="border:none; border-top:1px solid #ccc; margin: 16px 0;">
+  <p style="font-size:11px; color:#888; line-height:1.6;">
+    <em>Email Confidentiality Notice:</em><br>
+    This email and its attachments are confidential and intended solely for the named recipient(s).
+    If you are not the intended recipient, any disclosure, copying, or distribution is strictly prohibited.
+    If received in error, please notify us immediately and delete this email. Thank you.
   </p>
 
   <hr style="border:none; border-top:2px solid #D4AF37; margin: 32px 0 16px 0;">
