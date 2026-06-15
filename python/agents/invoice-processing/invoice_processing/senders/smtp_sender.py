@@ -57,6 +57,9 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
     if confirm.lower() != "true":
         return {"sent": False, "reason": "נדרש אישור מפורש — העבר confirm='true'"}
 
+    if not draft.get("attachments"):
+        return {"sent": False, "reason": "אין קבצי PDF מצורפים — הסוכן לא שולח ללא צרופות"}
+
     smtp_host = os.environ["SMTP_HOST"]
     smtp_port = int(os.environ.get("SMTP_PORT", 587))
     smtp_user = os.environ["SMTP_USER"]

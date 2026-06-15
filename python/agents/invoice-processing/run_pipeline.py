@@ -115,8 +115,11 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
     print(f"  ללא PDF: {draft['no_pdf_count']} פריטים")
     print(f"\n--- גוף ---\n{draft['body']}\n{'='*55}")
 
-    # שלב 4: שליחה (רק אם אושר)
+    # שלב 4: שליחה (רק אם אושר ויש קבצים)
     if confirm_send:
+        if draft["attachment_count"] == 0:
+            print("\n❌ לא נשלח — אין קבצי PDF מצורפים. הורד קבצים לתיקיית החודש ונסה שוב.")
+            return draft
         print("\n🚀 שולח...")
         result = send_accounting_email(draft, confirm="true")
         if result["sent"]:
