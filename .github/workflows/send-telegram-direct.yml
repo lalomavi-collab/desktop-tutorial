@@ -1,33 +1,28 @@
-name: '🟣 Direct Telegram Notification'
+name: 'Direct Telegram Notification'
 on:
   workflow_dispatch:
-      inputs:
-            message:
-                    description: 'Message to post on Telegram'
-                            required: true
-                                    default: 'Test message from GitHub Actions'
+    inputs:
+      message:
+        description: 'Message to post on Telegram'
+        required: true
+        default: 'Test message from GitHub Actions'
 
-                                    jobs:
-                                      send-telegram:
-                                          runs-on: ubuntu-latest
-                                              steps:
-                                                    - uses: actions/checkout@v4
-                                                          - name: Send to Telegram API
-                                                                  run: |
-                                                                            # Test message
-                                                                                      MESSAGE="🤖 GitHub Actions Test\n Repository: ${{ github.repo }}"
-
-                                                                                                # Send message to Telegram
-                                                                                                          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-                                                                                                                      -H "Content-Type: application/json" \
-                                                                                                                                  -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
-                                                                                                                                  
-                                                                                                                                            # Check if response contains an error
-                                                                                                                                                      if echo "$RESPONSE" | grep -q "error_code"; then
-                                                                                                                                                                  echo "Error posting to Telegram:"
-                                                                                                                                                                              echo "$RESPONSE"
-                                                                                                                                                                                          exit 1
-                                                                                                                                                                                                    else
-                                                                                                                                                                                                                echo "✅ Message posted successfully to Telegram"
-                                                                                                                                                                                                                            echo "$RESPONSE"
-                                                                                                                                                                                                                                      fi
+jobs:
+  send-telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send to Telegram API
+        run: |
+          MESSAGE="GitHub Actions Test - Repository: ${{ github.repository }}"
+          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
+          if echo "$RESPONSE" | grep -q "error_code"; then
+            echo "Error posting to Telegram:"
+            echo "$RESPONSE"
+            exit 1
+          else
+            echo "Message posted successfully to Telegram"
+            echo "$RESPONSE"
+          fi

@@ -1,50 +1,42 @@
-name: '📢 Notify Telegram on Post Published'
+name: 'Notify Telegram on Post Published'
 on:
   workflow_dispatch:
-      inputs:
-            post_title:
-                    description: 'Title of the published post'
-                            required: true
-                                  post_content:
-                                          description: 'Content or summary of the post'
-                                                  required: true
-                                                        post_link:
-                                                                description: 'URL to the published post'
-                                                                        required: false
-                                                                              platform:
-                                                                                      description: 'Social media platform (Instagram, Facebook, LinkedIn, etc'
-                                                                                              required: false
-                                                                                                      default: 'Social Media'
-                                                                                                      
-                                                                                                      jobs:
-                                                                                                        notify-telegram:
-                                                                                                            runs-on: ubuntu-latest
-                                                                                                                steps:
-                                                                                                                      - name: Send Telegram Notification
-                                                                                                                              run: |
-                                                                                                                                        # Build the message
-                                                                                                                                                  TITLE="${{ github.event.inputs.post_title }}"
-                                                                                                                                                            CONTENT="${{ github.event.inputs.post_content }}"
-                                                                                                                                                                      LINK="${{ github.event.inputs.post_link }}"
-                                                                                                                                                                                PLATFORM="${{ github.event.inputs.platform }}"
-                                                                                                                                                                                
-                                                                                                                                                                                          MESSAGE="📢 *New Post Published*%0A%0A*Title:* $TITLE%0A*Platform:* $PLATFORM%0A*Content:* $CONTENT"
-                                                                                                                                                                                          
-                                                                                                                                                                                                    if [ -n "$LINK" ]; then
-                                                                                                                                                                                                                MESSAGE="$MESSAGE%0A*Link:* $LINK"
-                                                                                                                                                                                                                          fi
-                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                    # Send message to Telegram
-                                                                                                                                                                                                                                              RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-                                                                                                                                                                                                                                                          -H "Content-Type: application/json" \
-                                                                                                                                                                                                                                                                      -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\", \"parse_mode\": \"Markdown\"}")
-                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                # Check if response contains an error
-                                                                                                                                                                                                                                                                                          if echo "$RESPONSE" | grep -q "error_code"; then
-                                                                                                                                                                                                                                                                                                      echo "Error posting to Telegram:"
-                                                                                                                                                                                                                                                                                                                  echo "$RESPONSE"
-                                                                                                                                                                                                                                                                                                                              exit 1
-                                                                                                                                                                                                                                                                                                                                        else
-                                                                                                                                                                                                                                                                                                                                                    echo "✅ Message posted successfully to Telegram"
-                                                                                                                                                                                                                                                                                                                                                                echo "$RESPONSE"
-                                                                                                                                                                                                                                                                                                                                                                          fi
+    inputs:
+      post_title:
+        description: 'Title of the published post'
+        required: true
+      post_content:
+        description: 'Content or summary of the post'
+        required: true
+      post_link:
+        description: 'URL to the published post'
+        required: false
+      platform:
+        description: 'Social media platform'
+        required: false
+        default: 'Social Media'
+
+jobs:
+  notify-telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notification
+        run: |
+          TITLE="${{ github.event.inputs.post_title }}"
+          CONTENT="${{ github.event.inputs.post_content }}"
+          LINK="${{ github.event.inputs.post_link }}"
+          PLATFORM="${{ github.event.inputs.platform }}"
+          MESSAGE="New Post Published%0ATitle: $TITLE%0APlatform: $PLATFORM%0AContent: $CONTENT"
+          if [ -n "$LINK" ]; then
+            MESSAGE="$MESSAGE%0ALink: $LINK"
+          fi
+          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\", \"parse_mode\": \"Markdown\"}")
+          if echo "$RESPONSE" | grep -q "error_code"; then
+            echo "Error posting to Telegram:"
+            echo "$RESPONSE"
+            exit 1
+          else
+            echo "Notification sent successfully"
+          fi
