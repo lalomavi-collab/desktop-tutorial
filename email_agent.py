@@ -23,9 +23,9 @@ SENDER_NAME   = "DOM Mediation"
 
 # O365 / Azure App credentials (only needed when EMAIL_BACKEND = "o365")
 # Paste the values from portal.azure.com — see README below or AZURE_SETUP.md
-O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")   # Application (client) ID
-O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "") # Client secret value
-O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")   # Directory (tenant) ID
+O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")
+O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "")
+O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")
 
 # AUTH_FLOW options:
 #   "credentials"   — app-only, no browser, needs Mail.Send application permission
