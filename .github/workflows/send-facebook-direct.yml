@@ -1,60 +1,34 @@
-name: "📄 Facebook Direct Post"
-
+name: 'Facebook Direct Post'
 on:
   workflow_dispatch:
-      inputs:
-            message:
-                    description: 'Message to post on Facebook'
-                            required: true
-                                    default: 'Hello from GitHub Actions!'
+    inputs:
+      message:
+        description: 'Message to post on Facebook'
+        required: true
+        default: 'Hello from GitHub Actions!'
 
-                                    jobs:
-                                      post-facebook:
-                                          name: "📱 Send to Facebook Page"
-                                              runs-on: ubuntu-latest
-                                                  steps:
-                                                        - uses: actions/checkout@v4
-
-                                                              - name: "📝 Post to Facebook"
-                                                                      run: |
-                                                                                # Message to post
-                                                                                          MESSAGE="${{ github.event.inputs.message }}"
-                                                                                                    
-                                                                                                              # If no input provided, use default message with GitHub info
-                                                                                                                        if [ -z "$MESSAGE" ]; then
-                                                                                                                                    MESSAGE="💀 GitHub Actions Update\n📍 Repository: ${{ github.repository }}\n🔗 Branch: ${{ github.ref_name }}\n✅ Workflow executed successfully!"
-                                                                                                                                              fi
-                                                                                                                                                        
-                                                                                                                                                                  # Facebook Graph API endpoint
-                                                                                                                                                                            FACEBOOK_PAGE_ID="${{ secrets.FACEBOOK_PAGE_ID }}"
-                                                                                                                                                                                      FACEBOOK_ACCESS_TOKEN="${{ secrets.FACEBOOK_ACCESS_TOKEN }}"
-                                                                                                                                                                                                
-                                                                                                                                                                                                          # Post message to Facebook
-                                                                                                                                                                                                                    RESPONSE=$(curl -s -X POST "https://graph.facebook.com/v19.0/${FACEBOOK_PAGE_ID}/feed" \
-                                                                                                                                                                                                                                -H "Content-Type: application/x-www-form-urlencoded" \
-                                                                                                                                                                                                                                            --data-urlencode "message=$MESSAGE" \
-                                                                                                                                                                                                                                                        --data-urlencode "access_token=$FACEBOOK_ACCESS_TOKEN")
-                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                            echo "🐐 Facebook Response: $RESPONSE"
-                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                # Check if post was successful
-                                                                                                                                                                                                                                                                                                          if echo "$RESPONSE" | grep -q '"id"'; then
-                                                                                                                                                                                                                                                                                                                      echo "✅ Message posted successfully to Facebook!"
-                                                                                                                                                                                                                                                                                                                                  POST_ID=$(echo "$RESPONSE" | grep -o '"id":"[^"]*' | sed 's/"id":"//')
-                                                                                                                                                                                                                                                                                                                                              echo "Post ID: $POST_ID"
-                                                                                                                                                                                                                                                                                                                                                          exit 0
-                                                                                                                                                                                                                                                                                                                                                                    else
-                                                                                                                                                                                                                                                                                                                                                                                echo "❌ Failed to post message to Facebook"
-                                                                                                                                                                                                                                                                                                                                                                                            echo "Response: $RESPONSE"
-                                                                                                                                                                                                                                                                                                                                                                                                        exit 1
-                                                                                                                                                                                                                                                                                                                                                                                                                  fi
-                                                                                                                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                                                                        - name: "✅ Summary"
-                                                                                                                                                                                                                                                                                                                                                                                                                                if: success()
-                                                                                                                                                                                                                                                                                                                                                                                                                                        run: |
-                                                                                                                                                                                                                                                                                                                                                                                                                                                  echo "============================================"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            echo "✅ Facebook Integration Test Successful"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      echo "============================================"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                echo "Page ID: ${{ secrets.FACEBOOK_PAGE_ID }}"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    echo "============================================"
+jobs:
+  post-facebook:
+    name: 'Send to Facebook Page'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Post to Facebook'
+        run: |
+          MESSAGE="${{ github.event.inputs.message }}"
+          if [ -z "$MESSAGE" ]; then
+            MESSAGE="GitHub Actions Update - Repository: ${{ github.repository }} - Branch: ${{ github.ref_name }}"
+          fi
+          FACEBOOK_PAGE_ID="${{ secrets.FACEBOOK_PAGE_ID }}"
+          FACEBOOK_ACCESS_TOKEN="${{ secrets.FACEBOOK_ACCESS_TOKEN }}"
+          RESPONSE=$(curl -s -X POST "https://graph.facebook.com/v19.0/${FACEBOOK_PAGE_ID}/feed" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            --data-urlencode "message=$MESSAGE" \
+            --data-urlencode "access_token=$FACEBOOK_ACCESS_TOKEN")
+          if echo "$RESPONSE" | grep -q '"id"'; then
+            echo "Message posted successfully to Facebook"
+          else
+            echo "Failed to post message to Facebook"
+            echo "Response: $RESPONSE"
+            exit 1
+          fi
