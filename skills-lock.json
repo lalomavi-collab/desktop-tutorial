@@ -4,7 +4,7 @@
     "hebrew-legal-research": {
       "source": "skills-il/security-compliance",
       "sourceType": "github",
-      "skillPath": ".claude/skills/hebrew-legal-research",
+      "skillPath": "hebrew-legal-research/SKILL.md",
       "computedHash": "0052dff56d4cb0e4c77ff3ac9ee30a535a756e16eece59657715f664f145ce31"
     },
     "higgsfield-generate": {
