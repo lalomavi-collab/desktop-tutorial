@@ -1,0 +1,12 @@
+[
+  {"id": "inv_70119", "subject": "מסמך מסוג חשבונית מס קבלה מספר 70119 שהופק עבור וסלינה בניסט", "sender": "notifications@invoice4u.co.il", "date": "2026-06-10", "source": "Outlook", "type": "income", "client": "וסלינה בניסט", "doc_number": "70119", "has_pdf": true},
+  {"id": "inv_70118", "subject": "מסמך מסוג חשבונית מס קבלה מספר 70118 שהופק עבור ווסרמן אלון", "sender": "notifications@invoice4u.co.il", "date": "2026-06-09", "source": "Outlook", "type": "income", "client": "ווסרמן אלון", "doc_number": "70118", "has_pdf": true},
+  {"id": "inv_70117", "subject": "מסמך מסוג חשבונית מס קבלה מספר 70117 שהופק עבור רחל שלום", "sender": "notifications@invoice4u.co.il", "date": "2026-06-09", "source": "Outlook", "type": "income", "client": "רחל שלום", "doc_number": "70117", "has_pdf": true},
+  {"id": "inv_70116", "subject": "מסמך מסוג חשבונית מס קבלה מספר 70116 שהופק עבור ראובן מסיקה", "sender": "notifications@invoice4u.co.il", "date": "2026-06-08", "source": "Outlook", "type": "income", "client": "ראובן מסיקה", "doc_number": "70116", "has_pdf": true},
+  {"id": "inv_90070", "subject": "מסמך מסוג חשבון עסקה מספר 90070 שהופק עבור ראובן מסיקה", "sender": "notifications@invoice4u.co.il", "date": "2026-06-08", "source": "Outlook", "type": "income", "client": "ראובן מסיקה", "doc_number": "90070", "has_pdf": true},
+  {"id": "exp_gett", "subject": "Your Saturday afternoon ride with Gett", "sender": "do-not-reply@gett.com", "date": "2026-06-13", "source": "Outlook", "type": "expense", "client": "Gett", "amount": "76.50", "currency": "ILS", "has_pdf": true},
+  {"id": "exp_uco", "subject": "Justificante pago 11-06-2026", "sender": "doctorado.titulos@uco.es", "date": "2026-06-11", "source": "Outlook", "type": "expense", "client": "UCO — אגרת דוקטורט", "has_pdf": true},
+  {"id": "exp_friedrick", "subject": "חשבונית מס קבלה 30151 מאת חיים פרידריך עו\"ד", "sender": "noreply@ezcount.co.il", "date": "2026-06-07", "source": "Outlook", "type": "expense", "client": "חיים פרידריך עו\"ד", "doc_number": "30151", "has_pdf": false},
+  {"id": "exp_anthropic", "subject": "Your receipt from Anthropic, PBC #2477-4989-3677", "sender": "invoice+statements@mail.anthropic.com", "date": "2026-06-06", "source": "Gmail", "type": "expense", "client": "Anthropic PBC", "amount": "100.00", "currency": "USD", "has_pdf": false},
+  {"id": "exp_google_ads", "subject": "Google Ads invoice for Lalum ללום", "sender": "wix-team@notifications.wix.com", "date": "2026-06-09", "source": "Outlook", "type": "expense", "client": "Google Ads / Wix", "has_pdf": false}
+]
