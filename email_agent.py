@@ -39,8 +39,8 @@ DATA_FILE = "contacts.csv"
 
 # Subject lines per category
 SUBJECT_MAP = {
-    "real estate":   "יישוב סכסוכי נדל\"ן מורכבים במהירות וביעילות — DOM גישור",
-    "urban renewal": "פתרון עיכובים בפרויקטי התחדשות עירונית — DOM גישור",
+    "real estate":   "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
+    "urban renewal": "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
 }
 
 # Category-specific paragraph (Hebrew)
@@ -88,8 +88,8 @@ class Contact:
 
 def build_salutation(contact: Contact) -> str:
     if contact.contact_person.strip():
-        return f"שלום {contact.contact_person},"
-    return "שלום שותף נכבד,"
+        return f"{contact.contact_person} יקר,"
+    return "עו\"ד יקר,"
 
 
 def build_email(contact: Contact) -> tuple[str, str]:
@@ -99,54 +99,82 @@ def build_email(contact: Contact) -> tuple[str, str]:
     blurb      = CATEGORY_BLURB.get(cat_key, "")
     salutation = build_salutation(contact)
 
-    # ══════════════════════════════════════════
-    # >>> REPLACE THIS BLOCK WITH YOUR TEXT <<<
-    # ══════════════════════════════════════════
     html_body = f"""\
 <html>
-<body dir="rtl" style="font-family: Arial, sans-serif; color: #1B1B1B; max-width: 640px; margin: auto;">
+<body dir="rtl" style="font-family: Arial, sans-serif; font-size: 15px; color: #1B1B1B; max-width: 660px; margin: auto; line-height: 1.7;">
 
   <p>{salutation}</p>
 
   <p>
-    שמי {SENDER_NAME}, ואני פונה אליך בשם <strong>DOM גישור</strong> —
-    משרד גישור בוטיק המתמחה אך ורק במגזר המשפטי והנדל"ן בישראל.
-  </p>
-
-  <p>{blurb}</p>
-
-  <p>
-    אני מאמין כי <strong>{contact.firm_name}</strong> ולקוחותיו יוכלו
-    להפיק תועלת מפתרון מהיר וחסכוני יותר מהתדיינות משפטית ממושכת.
-    התהליך שלנו חסוי לחלוטין, בר-אכיפה, ומשיג תוצאות
-    <em>מהר פי 3–6</em> ממהלכים בבית משפט.
+    רציתי לשתף אותך באופן אישי בדרך חדשה שיצאתי אליה: אחרי 20 שנה בתחום,
+    החלטתי להתרכז אך ורק במה שאני הכי אוהב ומרגיש בו סיפוק עצום –
+    לסייע לצדדים להגיע להסכמות מהירות בפרויקטים מורכבים
+    ולהביא את הניסיון שלי לידי ביטוי.
   </p>
 
   <p>
-    אשמח לשיחה קצרה של 20 דקות לבדיקת ההתאמה.
-    ניתן להשיב למייל זה או לקבוע ישירות דרך הקישור:
+    לשם כך גיבשתי מודל של <strong>גישור נדל"ן מכוון הכרעה או בוררות</strong>.
+    המטרה שלי היא לא לייצר הליכים ארוכים, אלא להפך: לסייע לרכבת שלכם לעצור
+    עצירה קטנה ממש, לפתור את החסם או הסרבנות המקומית, ולהמשיך לדהור קדימה
+    בלי להתעכב.
   </p>
 
   <p>
-    <a href="https://dom-mediation.co.il/schedule" style="
-        background:#D4AF37; color:#1B1B1B; padding:10px 20px;
-        text-decoration:none; border-radius:4px; font-weight:bold;">
-      קביעת פגישה
-    </a>
+    מדובר בהליך מובנה ומתוחם בזמן, שמטרתו לסיים מחלוקות בטווח הקצר ביותר
+    ובאופן המקצועי ביותר על בסיס ניסיון פרקטי מהשטח.
+    המנגנון כולל שימוש בכלים חדשניים שיש בהם כדי לשפר, לייעל
+    ולהביא להליכים יצירתיים ומהירים.
+  </p>
+
+  <p>
+    אשמח מאוד להפנות אותך ל<a href="https://lalum.co.il" style="color:#800020;">אתר המשרד</a>,
+    הכולל פירוט רחב יותר על שיטת גישור מכוון הכרעה ובכלל.
+  </p>
+
+  <p>
+    מצ"ב למטה סעיף קצר שאשמח מאוד אם תעביר
+    <strong>למחלקת הנדל"ן וההתחדשות העירונית</strong> אצלכם.
+    אפשר להטמיע אותו כבר בשלב ההסכמים כדי לייצר מנגנון קבוע ושוטף
+    שיחלץ כל מחלוקת עתידית בפרויקטים.
+  </p>
+
+  <p>אשמח מאוד לשמוע מה דעתך עליו.</p>
+
+  <p>
+    ניתן לדבר איתי אישית בטלפון
+    <a href="tel:0522490420" style="color:#800020;">052-2490420</a>
+    או למשרד
+    <a href="tel:0333104959" style="color:#800020;">03-3104959</a>.
   </p>
 
   <br>
-  <p>בכבוד רב,<br>
-  <strong>{SENDER_NAME}</strong><br>
-  DOM גישור<br>
-  <a href="mailto:{SENDER_EMAIL}">{SENDER_EMAIL}</a>
+  <p>
+    בברכה קולגיאלית,<br><br>
+    <strong>ד"ר אברהם ללום, עו"ד</strong><br>
+    מייסד, LALUM<br>
+    <a href="mailto:{SENDER_EMAIL}" style="color:#800020;">{SENDER_EMAIL}</a>
   </p>
 
-  <hr style="border:none; border-top:1px solid #D4AF37; margin-top:32px;">
-  <p style="font-size:11px; color:#888; direction:rtl;">
-    אתה מקבל הודעה זו משום ש-{contact.firm_name} עוסק בתחומים
-    בהם גישור עשוי לשרת את לקוחותיך. להסרה מהרשימה, השב "הסר".
+  <hr style="border:none; border-top:2px solid #D4AF37; margin: 32px 0 16px 0;">
+
+  <p style="font-size:13px; color:#444;">
+    <strong>הסעיף להטמעה — מנגנון יישוב סכסוכים (מודל DOM):</strong>
   </p>
+
+  <blockquote style="
+      border-right: 4px solid #D4AF37;
+      margin: 0;
+      padding: 12px 16px;
+      background: #FFFDD0;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.8;">
+    "כל מחלוקת או סכסוך שיתגלעו בין הצדדים בקשר עם הסכם זה, אשר לא יבואו
+    על פתרונם תוך 14 ימים, יופנו באופן מיידי להליך גישור נדל"ן ממוקד
+    ומכוון הכרעה או בוררות בפני ד"ר אברהם ללום, עו"ד (או מי מטעמו),
+    המשלב כלים חדשניים ופתרונות יצירתיים, במטרה להביא לפתרון מהיר של
+    החסם ולאפשר את המשך התקדמותו הרציפה של הפרויקט."
+  </blockquote>
 
 </body>
 </html>"""
