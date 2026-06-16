@@ -1,29 +1,28 @@
 """
-send_test.py — שולח מייל ניסיון שנראה בדיוק כמו המיילים האמיתיים
-הנמען: avraham@lalum.co
-השם והמשרד: מהרשומה הראשונה ברשימה (הרצוג פוקס נאמן)
+send_pilot.py — שולח ל-2 הראשונים ברשימה בלבד
+לבדיקה לפני שליחת כל 200.
 """
-import json, requests
+import csv, json, requests, time
+from pathlib import Path
 
-with open("o365_token.txt") as f:
+TOKEN_FILE = "o365_token.txt"
+DATA_FILE  = "contacts.csv"
+PILOT_COUNT = 2
+
+with open(TOKEN_FILE) as f:
     token = json.load(f)
-
 access_token = token["access_token"]
 
-# דוגמה אמיתית — בדיוק כמו שעורך הדין יקבל
-CONTACT_PERSON = 'עו"ד אברהם (אברמי) וול'
-FIRM_NAME      = "הרצוג פוקס נאמן"
-SENDER_NAME    = 'ד"ר אברהם ללום, עו"ד'
-SENDER_EMAIL   = "avraham@lalum.co"
-
-html_body = f"""
+def build_html(contact_person, firm_name):
+    salutation = f"{contact_person} יקר," if contact_person.strip() else 'עו"ד יקר,'
+    return f"""
 <html>
 <body dir="rtl" style="font-family: Arial, sans-serif; font-size: 15px; color: #1B1B1B; max-width: 660px; margin: auto; line-height: 1.7;">
 
-  <p>{CONTACT_PERSON} יקר,</p>
+  <p>{salutation}</p>
 
   <p>
-    אחרי למעלה מ-20 שנה של עיסוק אינטנסיבי בנדל"ן, בוררות וגישור —
+    אחרי למעלה מ-20 שנה של עיסוק אינטנסיבי בנדל"ן, בוררות וגישור -
     החלטתי להתמקד אך ורק בזה.
   </p>
 
@@ -40,7 +39,7 @@ html_body = f"""
 
   <p>
     אשמח אם תעביר את הסעיף המצורף
-    <strong>למחלקת הנדל"ן וההתחדשות העירונית</strong> אצלכם ב-<strong>{FIRM_NAME}</strong> -
+    <strong>למחלקת הנדל"ן וההתחדשות העירונית</strong> אצלכם ב-<strong>{firm_name}</strong> -
     הוא מיועד להטמעה ישירה בהסכמים.
   </p>
 
@@ -84,11 +83,7 @@ html_body = f"""
   </p>
 
   <hr style="border:none; border-top:2px solid #D4AF37; margin: 32px 0 16px 0;">
-
-  <p style="font-size:13px; color:#444;">
-    <strong>הסעיף להטמעה — מנגנון יישוב סכסוכים (מודל DOM):</strong>
-  </p>
-
+  <p style="font-size:13px; color:#444;"><strong>הסעיף להטמעה - מנגנון יישוב סכסוכים (מודל DOM):</strong></p>
   <blockquote style="border-right: 4px solid #D4AF37; margin: 0; padding: 12px 16px; background: #FFFDD0; font-size: 13px; color: #333; line-height: 1.8;">
     "כל מחלוקת או סכסוך שיתגלעו בין הצדדים בקשר עם הסכם זה, אשר לא יבואו
     על פתרונם תוך 14 ימים, יופנו באופן מיידי להליך גישור נדל"ן ממוקד
@@ -100,26 +95,37 @@ html_body = f"""
 </body>
 </html>"""
 
-email_body = {
-    "message": {
-        "subject": "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
-        "body": {"contentType": "HTML", "content": html_body},
-        "toRecipients": [{"emailAddress": {"address": "avraham@lalum.co"}}],
-    }
-}
+contacts = []
+with open(DATA_FILE, newline="", encoding="utf-8") as f:
+    for row in csv.DictReader(f):
+        contacts.append(row)
 
-resp = requests.post(
-    "https://graph.microsoft.com/v1.0/me/sendMail",
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    },
-    json=email_body,
-)
+pilot = contacts[:PILOT_COUNT]
+print(f"\nשולח ל-{PILOT_COUNT} הראשונים בלבד:\n")
 
-if resp.status_code == 202:
-    print(f"✅ מייל ניסיון נשלח ל-avraham@lalum.co")
-    print(f"   נושא: דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם")
-    print(f"   נמען מדומה: {CONTACT_PERSON} / {FIRM_NAME}")
-else:
-    print(f"❌ שגיאה: {resp.status_code} — {resp.text}")
+for i, c in enumerate(pilot, 1):
+    name   = c["Contact_Person"].strip()
+    firm   = c["Firm_Name"].strip()
+    email  = c["Email"].strip()
+    html   = build_html(name, firm)
+
+    resp = requests.post(
+        "https://graph.microsoft.com/v1.0/me/sendMail",
+        headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+        json={"message": {
+            "subject": "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
+            "body": {"contentType": "HTML", "content": html},
+            "toRecipients": [{"emailAddress": {"address": email}}],
+        }}
+    )
+
+    if resp.status_code == 202:
+        print(f"  [{i}] ✅ נשלח → {email} ({name} / {firm})")
+    else:
+        print(f"  [{i}] ❌ שגיאה → {email}: {resp.status_code} {resp.text[:100]}")
+
+    if i < PILOT_COUNT:
+        time.sleep(5)
+
+print("\nסיום. בדוק את תיבת הדואר של הנמענים.")
+print("אם יש טעות — מחק ידנית ואמור לי מה לתקן.")

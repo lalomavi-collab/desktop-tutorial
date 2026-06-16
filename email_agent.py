@@ -171,12 +171,6 @@ def build_email(contact: Contact) -> tuple[str, str]:
           ✉️ <a href="mailto:avraham@lalum.co" style="color:#800020;">avraham@lalum.co</a> &nbsp;|&nbsp;
           🌐 <a href="https://www.lalum.co" style="color:#800020;">www.lalum.co</a>
         </p>
-        <p style="margin:6px 0 2px 0;">
-          📚 <a href="https://www.lalum.co/courses" style="color:#800020;">Master Course: Real Estate Transactions, AI &amp; Body Language</a>
-        </p>
-        <p style="margin:2px 0;">
-          🔬 <a href="https://www.lalum.co" style="color:#800020;">Access my latest peer-reviewed research article</a>
-        </p>
       </td>
     </tr>
   </table>
