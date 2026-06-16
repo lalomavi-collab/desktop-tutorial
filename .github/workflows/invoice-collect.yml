@@ -1,0 +1,110 @@
+name: Invoice — Collect & Notify Accounting
+
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'חודש (ריק = החודש הנוכחי)'
+        required: false
+        default: ''
+      confirm_send:
+        description: 'שלח מייל לאחר איסוף? (true/false)'
+        required: false
+        default: 'false'
+  schedule:
+    - cron: '0 6 1 * *'   # ראשון לכל חודש בשעה 09:00 ישראל
+
+jobs:
+  collect-and-notify:
+    runs-on: ubuntu-latest
+
+    env:
+      INVOICE_BASE_FOLDER: /tmp/invoices
+      INVOICE_SUBJECT_KEYWORDS: invoice,חשבונית
+      INVOICE_ALLOWED_EXT: .pdf,.PDF
+      ACCOUNTING_DRAFT_PATH: /tmp/accounting_draft.json
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      MS_SENDER: avraham@lalum.co
+      ACCOUNTING_EMAIL: ${{ secrets.ACCOUNTING_EMAIL }}
+      ACCOUNTING_SUBJECT: סיכום חשבוניות ${{ github.event.inputs.month }}
+      IMAP1_HOST: ${{ secrets.IMAP1_HOST }}
+      IMAP1_PORT: ${{ secrets.IMAP1_PORT }}
+      IMAP1_USER: ${{ secrets.IMAP1_USER }}
+      IMAP1_PASSWORD: ${{ secrets.IMAP1_PASSWORD }}
+      IMAP2_HOST: ${{ secrets.IMAP2_HOST }}
+      IMAP2_PORT: ${{ secrets.IMAP2_PORT }}
+      IMAP2_USER: ${{ secrets.IMAP2_USER }}
+      IMAP2_PASSWORD: ${{ secrets.IMAP2_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install msal requests
+
+      - name: Create invoice folder
+        run: mkdir -p /tmp/invoices
+
+      - name: Collect from emails
+        run: |
+          cd python/agents/invoice-processing
+          python3 -c "
+          import sys, json
+          sys.path.insert(0, '.')
+          from invoice_processing.collectors.email_collector import collect_from_emails
+          result = collect_from_emails('${{ github.event.inputs.month }}')
+          print(json.dumps(result, ensure_ascii=False, indent=2))
+          with open('/tmp/email_result.json', 'w') as f:
+              json.dump(result, f, ensure_ascii=False)
+          "
+
+      - name: Collect from local folder
+        run: |
+          cd python/agents/invoice-processing
+          python3 -c "
+          import sys, json
+          sys.path.insert(0, '.')
+          from invoice_processing.collectors.folder_collector import collect_from_folder
+          result = collect_from_folder('${{ github.event.inputs.month }}')
+          print(json.dumps(result, ensure_ascii=False, indent=2))
+          with open('/tmp/folder_result.json', 'w') as f:
+              json.dump(result, f, ensure_ascii=False)
+          "
+
+      - name: Prepare accounting email draft
+        run: |
+          cd python/agents/invoice-processing
+          python3 -c "
+          import sys, json
+          sys.path.insert(0, '.')
+          email_r = json.load(open('/tmp/email_result.json'))
+          folder_r = json.load(open('/tmp/folder_result.json'))
+          all_files = list(set(email_r.get('saved_files', []) + folder_r.get('files', [])))
+          from invoice_processing.collectors.accounting_notifier import prepare_accounting_email
+          result = prepare_accounting_email(all_files)
+          print(json.dumps(result, ensure_ascii=False, indent=2))
+          "
+
+      - name: Send accounting email (only if confirmed)
+        if: ${{ github.event.inputs.confirm_send == 'true' }}
+        run: |
+          cd python/agents/invoice-processing
+          python3 -c "
+          import sys, json
+          sys.path.insert(0, '.')
+          from invoice_processing.collectors.accounting_notifier import send_accounting_email
+          result = send_accounting_email(confirm='true')
+          print(json.dumps(result, ensure_ascii=False, indent=2))
+          "
+
+      - name: Upload draft as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: accounting-draft
+          path: /tmp/accounting_draft.json
