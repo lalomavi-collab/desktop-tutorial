@@ -1,112 +1,40 @@
 """
-email_agent.py -B2B Outreach Agent for Law Firms
-Mode: Creates Outlook DRAFTS only (does not send).
-Supports: win32com.client (local Outlook desktop) or O365 (Microsoft Graph)
+email_agent.py — שולח לכל 200 המשרדים דרך Microsoft Graph API
+מדלג אוטומטית על כתובות שכבר נשלחו (idempotency).
 """
-
-import csv
-import json
-import logging
-import os
-import time
-from dataclasses import dataclass, field
+import csv, json, requests, time
 from pathlib import Path
 
-# ─────────────────────────────────────────────
-# CONFIGURATION -edit these before running
-# ─────────────────────────────────────────────
+TOKEN_FILE = "o365_token.txt"
+DATA_FILE  = "contacts.csv"
+SENT_LOG   = "sent_contacts.json"
+THROTTLE   = 7  # שניות בין מיילים
 
-DRY_RUN      = True          # True = print preview only; False = create real drafts
-EMAIL_BACKEND = "win32"      # "win32" (local Outlook) | "o365" (Microsoft Graph)
-SENDER_EMAIL  = "lalomavi@gmail.com"   # shown in From / used for O365 mailbox
-SENDER_NAME   = "DOM Mediation"
+# ─── טעינת טוקן ───────────────────────────────────────────
+if not Path(TOKEN_FILE).exists():
+    print("❌ לא נמצא o365_token.txt — הרץ קודם: python auth_device.py")
+    exit(1)
 
-# O365 / Azure App credentials (only needed when EMAIL_BACKEND = "o365")
-# Paste the values from portal.azure.com -see README below or AZURE_SETUP.md
-O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")
-O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "")
-O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")
+with open(TOKEN_FILE) as f:
+    token = json.load(f)
+access_token = token["access_token"]
 
-# AUTH_FLOW options:
-#   "credentials"   -app-only, no browser, needs Mail.Send application permission
-#   "authorization" -opens browser once, saves token to o365_token.txt (recommended)
-O365_AUTH_FLOW = "authorization"
+# ─── לוג שליחה (idempotency) ──────────────────────────────
+def load_sent():
+    if not Path(SENT_LOG).exists():
+        return set()
+    with open(SENT_LOG) as f:
+        return set(json.load(f).get("sent", []))
 
-# Delay between draft creations to avoid hammering the COM server
-THROTTLE_SECS = 1.0
+def record_sent(email, sent_set):
+    sent_set.add(email)
+    with open(SENT_LOG, "w", encoding="utf-8") as f:
+        json.dump({"sent": sorted(sent_set)}, f, ensure_ascii=False, indent=2)
 
-LOG_FILE  = "email_agent.log"
-DONE_LOG  = "drafted_contacts.json"   # idempotency: tracks already-drafted emails
-DATA_FILE = "contacts.csv"
-
-# ─────────────────────────────────────────────
-# EMAIL CONTENT -fill in before running
-# ─────────────────────────────────────────────
-
-# Subject lines per category
-SUBJECT_MAP = {
-    "real estate":   "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
-    "urban renewal": "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
-}
-
-# Category-specific paragraph (Hebrew)
-CATEGORY_BLURB = {
-    "real estate": (
-        "בעסקאות נדל\"ן מורכבות -סכסוכי מרובי-צדדים, מחלוקות בעלות, "
-        "תביעות קבלנים -הליכים משפטיים ממושכים פוגעים בערך הנכס ובאמון הלקוח. "
-        "DOM גישור מציע פתרון מובנה וסודי, המגן על לוחות הזמנים ושומר על קשרים עסקיים."
-    ),
-    "urban renewal": (
-        "פרויקטי תמ\"א 38 ופינוי-בינוי חשופים לקיפאון בין יזמים, דיירים ורשויות. "
-        "DOM גישור מתמחה בפריצת קיפאונות אלו ביעילות -"
-        "שומר על לוח הזמנים של הפרויקט ומונע פניה יקרה לבתי משפט."
-    ),
-}
-
-# ─────────────────────────────────────────────
-# LOGGING
-# ─────────────────────────────────────────────
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s  %(levelname)-8s  %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
-log = logging.getLogger("email_agent")
-
-# ─────────────────────────────────────────────
-# DATA MODEL
-# ─────────────────────────────────────────────
-
-@dataclass
-class Contact:
-    firm_name:      str
-    contact_person: str
-    email:          str
-    category:       str
-
-# ─────────────────────────────────────────────
-# PERSONALIZATION ENGINE
-# ─────────────────────────────────────────────
-
-def build_salutation(contact: Contact) -> str:
-    if contact.contact_person.strip():
-        return f"{contact.contact_person} יקר,"
-    return "עו\"ד יקר,"
-
-
-def build_email(contact: Contact) -> tuple[str, str]:
-    """Returns (subject, html_body). Replace the body template below with your text."""
-    cat_key    = contact.category.strip().lower()
-    subject    = SUBJECT_MAP.get(cat_key, "DOM גישור -פתרון סכסוכים עסקיים")
-    blurb      = CATEGORY_BLURB.get(cat_key, "")
-    salutation = build_salutation(contact)
-
-    html_body = f"""\
-<html>
+# ─── בניית HTML ───────────────────────────────────────────
+def build_html(contact_person, firm_name):
+    salutation = f"{contact_person} יקר," if contact_person.strip() else 'עו"ד יקר,'
+    return f"""<html>
 <body dir="rtl" style="font-family: Arial, sans-serif; font-size: 15px; color: #1B1B1B; max-width: 660px; margin: auto; line-height: 1.7;">
 
   <p>{salutation}</p>
@@ -130,7 +58,7 @@ def build_email(contact: Contact) -> tuple[str, str]:
 
   <p>
     אודה לך אם תעביר את <strong>סעיף התנייה המצורף</strong>
-    למחלקת הנדל"ן וההתחדשות העירונית אצלכם ב-<strong>{contact.firm_name}</strong> -
+    למחלקת הנדל"ן וההתחדשות העירונית אצלכם ב-<strong>{firm_name}</strong> -
     הוא מיועד להטמעה ישירה בהסכמים, ככלי לניהול סיכונים מראש.
   </p>
 
@@ -147,22 +75,20 @@ def build_email(contact: Contact) -> tuple[str, str]:
   <p>בברכה ובשלום,<br><strong>ד"ר ללום</strong></p>
 
   <table style="border-collapse:collapse; font-family: Arial, sans-serif; font-size:13px; color:#1B1B1B; margin-top:8px;">
-    <tr>
-      <td style="padding-right:16px; vertical-align:top;">
-        <p style="margin:0;"><strong>Dr. Avraham Lalum, Adv.</strong></p>
-        <p style="margin:2px 0; color:#555;">Attorney | Arbitrator &amp; Mediator | Expert in Law, Economics &amp; AI</p>
-        <p style="margin:6px 0 2px 0;">Herzliya Business Park, Building G</p>
-        <p style="margin:0;">85 Medinat HaYehudim St., 3rd Floor, Herzliya Pituach 4676670, Israel</p>
-        <p style="margin:6px 0 2px 0;">
-          Office: <a href="tel:+97233104959" style="color:#800020;">+972 3-3104959</a> &nbsp;|&nbsp;
-          Cell: <a href="tel:+97252490420" style="color:#800020;">+972 52-2490420</a>
-        </p>
-        <p style="margin:2px 0;">
-          ✉️ <a href="mailto:avraham@lalum.co" style="color:#800020;">avraham@lalum.co</a> &nbsp;|&nbsp;
-          🌐 <a href="https://www.lalum.co" style="color:#800020;">www.lalum.co</a>
-        </p>
-      </td>
-    </tr>
+    <tr><td style="padding-right:16px; vertical-align:top;">
+      <p style="margin:0;"><strong>Dr. Avraham Lalum, Adv.</strong></p>
+      <p style="margin:2px 0; color:#555;">Attorney | Arbitrator &amp; Mediator | Expert in Law, Economics &amp; AI</p>
+      <p style="margin:6px 0 2px 0;">Herzliya Business Park, Building G</p>
+      <p style="margin:0;">85 Medinat HaYehudim St., 3rd Floor, Herzliya Pituach 4676670, Israel</p>
+      <p style="margin:6px 0 2px 0;">
+        Office: <a href="tel:+97233104959" style="color:#800020;">+972 3-3104959</a> &nbsp;|&nbsp;
+        Cell: <a href="tel:+97252490420" style="color:#800020;">+972 52-2490420</a>
+      </p>
+      <p style="margin:2px 0;">
+        ✉️ <a href="mailto:avraham@lalum.co" style="color:#800020;">avraham@lalum.co</a> &nbsp;|&nbsp;
+        🌐 <a href="https://www.lalum.co" style="color:#800020;">www.lalum.co</a>
+      </p>
+    </td></tr>
   </table>
 
   <hr style="border:none; border-top:1px solid #ccc; margin: 16px 0;">
@@ -174,19 +100,8 @@ def build_email(contact: Contact) -> tuple[str, str]:
   </p>
 
   <hr style="border:none; border-top:2px solid #D4AF37; margin: 32px 0 16px 0;">
-
-  <p style="font-size:13px; color:#444;">
-    <strong>הסעיף להטמעה -מנגנון יישוב סכסוכים (מודל DOM):</strong>
-  </p>
-
-  <blockquote style="
-      border-right: 4px solid #D4AF37;
-      margin: 0;
-      padding: 12px 16px;
-      background: #FFFDD0;
-      font-size: 13px;
-      color: #333;
-      line-height: 1.8;">
+  <p style="font-size:13px; color:#444;"><strong>סעיף התנייה - מנגנון יישוב סכסוכים (מודל DOM):</strong></p>
+  <blockquote style="border-right: 4px solid #D4AF37; margin: 0; padding: 12px 16px; background: #FFFDD0; font-size: 13px; color: #333; line-height: 1.8;">
     "כל מחלוקת או סכסוך שיתגלעו בין הצדדים בקשר עם הסכם זה, אשר לא יבואו
     על פתרונם תוך 14 ימים, יופנו באופן מיידי להליך גישור נדל"ן ממוקד
     ומכוון הכרעה או בוררות בפני ד"ר אברהם ללום, עו"ד (או מי מטעמו),
@@ -197,174 +112,53 @@ def build_email(contact: Contact) -> tuple[str, str]:
 </body>
 </html>"""
 
-    return subject, html_body
+# ─── לולאת שליחה ──────────────────────────────────────────
+contacts = []
+with open(DATA_FILE, newline="", encoding="utf-8") as f:
+    for row in csv.DictReader(f):
+        if row.get("Email", "").strip():
+            contacts.append(row)
 
-# ─────────────────────────────────────────────
-# IDEMPOTENCY LOG
-# ─────────────────────────────────────────────
+sent_set = load_sent()
+total    = len(contacts)
+stats    = {"sent": 0, "skipped": 0, "errors": 0}
 
-def load_done_log() -> set:
-    if not Path(DONE_LOG).exists():
-        return set()
-    with open(DONE_LOG, encoding="utf-8") as f:
-        return set(json.load(f).get("drafted", []))
+print(f"\nסה\"כ {total} כתובות | כבר נשלחו: {len(sent_set)}\n")
 
+for i, c in enumerate(contacts, 1):
+    name  = c["Contact_Person"].strip()
+    firm  = c["Firm_Name"].strip()
+    email = c["Email"].strip()
 
-def record_done(email_address: str, done_set: set) -> None:
-    done_set.add(email_address)
-    with open(DONE_LOG, "w", encoding="utf-8") as f:
-        json.dump({"drafted": sorted(done_set)}, f, ensure_ascii=False, indent=2)
+    if email in sent_set:
+        print(f"  [{i:03d}/{total}] ⏭  דילוג (כבר נשלח) → {email}")
+        stats["skipped"] += 1
+        continue
 
-# ─────────────────────────────────────────────
-# DRAFT BACKENDS
-# ─────────────────────────────────────────────
+    html = build_html(name, firm)
 
-def create_draft_win32(contact: Contact, subject: str, body: str) -> None:
-    """Save draft in locally installed Outlook (Windows only)."""
-    import win32com.client  # type: ignore
-    outlook = win32com.client.Dispatch("Outlook.Application")
-    mail = outlook.CreateItem(0)   # 0 = olMailItem
-    mail.To       = contact.email
-    mail.Subject  = subject
-    mail.HTMLBody = body
-    mail.Save()   # Save() → goes to Drafts folder; Send() would send immediately
-
-
-def _get_o365_account(_cache: dict = {}) -> object:
-    """Return authenticated O365 Account, authenticating once per process."""
-    from O365 import Account, FileSystemTokenBackend  # type: ignore
-
-    if "account" in _cache:
-        return _cache["account"]
-
-    token_backend = FileSystemTokenBackend(
-        token_path=".", token_filename="o365_token.txt"
-    )
-    account = Account(
-        (O365_CLIENT_ID, O365_CLIENT_SECRET),
-        auth_flow_type=O365_AUTH_FLOW,
-        tenant_id=O365_TENANT_ID,
-        token_backend=token_backend,
+    resp = requests.post(
+        "https://graph.microsoft.com/v1.0/me/sendMail",
+        headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+        json={"message": {
+            "subject": "דרך חדשה / פתרון נקודתי לחסמים בתיקים שלכם",
+            "body": {"contentType": "HTML", "content": html},
+            "toRecipients": [{"emailAddress": {"address": email}}],
+        }}
     )
 
-    if not account.is_authenticated:
-        if O365_AUTH_FLOW == "authorization":
-            # Opens browser once -paste the redirect URL back in the terminal
-            log.info("Opening browser for Microsoft login…")
-            account.authenticate(
-                scopes=["https://graph.microsoft.com/Mail.Send",
-                        "https://graph.microsoft.com/Mail.ReadWrite"]
-            )
-        else:
-            account.authenticate()
+    if resp.status_code == 202:
+        record_sent(email, sent_set)
+        print(f"  [{i:03d}/{total}] ✅ נשלח → {email} ({name})")
+        stats["sent"] += 1
+    elif resp.status_code == 401:
+        print(f"\n❌ הטוקן פג — הרץ python auth_device.py ואז הרץ שוב.")
+        break
+    else:
+        print(f"  [{i:03d}/{total}] ❌ שגיאה → {email}: {resp.status_code}")
+        stats["errors"] += 1
 
-    _cache["account"] = account
-    return account
+    if i < total:
+        time.sleep(THROTTLE)
 
-
-def create_draft_o365(contact: Contact, subject: str, body: str) -> None:
-    """Save draft via Microsoft Graph (O365 library)."""
-    account = _get_o365_account()
-    mailbox = account.mailbox(resource=SENDER_EMAIL)
-    draft = mailbox.new_message()
-    draft.to.add(contact.email)
-    draft.subject   = subject
-    draft.body      = body
-    draft.body_type = "HTML"
-    draft.save_draft()
-
-
-def send_via_o365(contact: Contact, subject: str, body: str) -> None:
-    """Send immediately via Microsoft Graph (O365 library)."""
-    account = _get_o365_account()
-    mailbox = account.mailbox(resource=SENDER_EMAIL)
-    message = mailbox.new_message()
-    message.to.add(contact.email)
-    message.subject   = subject
-    message.body      = body
-    message.body_type = "HTML"
-    message.send()
-
-# ─────────────────────────────────────────────
-# DATA LOADING
-# ─────────────────────────────────────────────
-
-def load_contacts() -> list[Contact]:
-    if not Path(DATA_FILE).exists():
-        raise FileNotFoundError(f"{DATA_FILE} not found. Create the file first.")
-    contacts = []
-    with open(DATA_FILE, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            email = row.get("Email", "").strip()
-            if not email:
-                continue
-            contacts.append(Contact(
-                firm_name      = row.get("Firm_Name", "").strip(),
-                contact_person = row.get("Contact_Person", "").strip(),
-                email          = email,
-                category       = row.get("Category", "").strip(),
-            ))
-    return contacts
-
-# ─────────────────────────────────────────────
-# MAIN LOOP
-# ─────────────────────────────────────────────
-
-def run() -> None:
-    contacts = load_contacts()
-    done_set = load_done_log()
-
-    mode = "DRY-RUN (preview only)" if DRY_RUN else f"LIVE -creating Outlook DRAFTS via [{EMAIL_BACKEND}]"
-    log.info(f"Starting -{mode} -{len(contacts)} contacts loaded")
-
-    stats = {"drafted": 0, "skipped": 0, "errors": 0}
-
-    for i, contact in enumerate(contacts, start=1):
-        tag = f"[{i:03d}/{len(contacts)}] {contact.email}"
-
-        if contact.email in done_set:
-            log.info(f"{tag}  → SKIPPED (already drafted)")
-            stats["skipped"] += 1
-            continue
-
-        subject, body = build_email(contact)
-
-        if DRY_RUN:
-            print("\n" + "═" * 72)
-            print(f"  [{i:03d}] TO      : {contact.email}")
-            print(f"        FIRM    : {contact.firm_name}")
-            print(f"        CATEGORY: {contact.category}")
-            print(f"        SUBJECT : {subject}")
-            print(f"        SALUTE  : {build_salutation(contact)}")
-            print("        BODY    : [HTML -edit build_email() to change content]")
-            print("═" * 72)
-            stats["drafted"] += 1
-            continue
-
-        try:
-            if EMAIL_BACKEND == "win32":
-                create_draft_win32(contact, subject, body)
-            else:
-                create_draft_o365(contact, subject, body)
-
-            record_done(contact.email, done_set)
-            log.info(f"{tag}  → DRAFT SAVED ✓")
-            stats["drafted"] += 1
-
-        except Exception as exc:
-            log.error(f"{tag}  → ERROR: {exc}")
-            stats["errors"] += 1
-
-        if i < len(contacts):
-            time.sleep(THROTTLE_SECS)
-
-    log.info(
-        f"\nDone -drafted={stats['drafted']}  "
-        f"skipped={stats['skipped']}  errors={stats['errors']}"
-    )
-    if not DRY_RUN:
-        log.info("All drafts saved to Outlook Drafts folder. Review and send manually.")
-
-
-if __name__ == "__main__":
-    run()
+print(f"\n✅ סיום — נשלחו: {stats['sent']} | דולגו: {stats['skipped']} | שגיאות: {stats['errors']}")
