@@ -1,23 +1,23 @@
 Firm_Name,Contact_Person,Email,Category
 הרצוג פוקס נאמן,עו"ד אברהם (אברמי) וול,well@herzoglaw.co.il,Real Estate
-מיתר עורכי דין,עו"ד נדב אברמוביץ',NadavA@ayr.co.il,Real Estate
-גולדפרב גרוס זליגמן ושות',עו"ד אבי ארד,avi.arad@goldfarb.com,Real Estate
-פישר (FBC & Co),עו"ד אמיר חן,achen@fbclawyers.com,Real Estate
-מ. פירון ושות',עו"ד תמיר שניידרמן,tamirs@firon.co.il,Real Estate
+מיתר עורכי דין,עו"ד נדב אברמוביץ',meitar@meitar.com,Real Estate
+גולדפרב גרוס זליגמן ושות',עו"ד אבי ארד,law@goldfarb.com,Real Estate
+פישר (FBC & Co),עו"ד אמיר חן,fbc@fbclawyers.com,Real Estate
+מ. פירון ושות',עו"ד תמיר שניידרמן,info@firon.co.il,Real Estate
 גורניצקי ושות',עו"ד שלמה פישר,gny@gornitzky.com,Real Estate
 שבלת ושות',עו"ד מנחם מנחם,info@shibolet.com,Real Estate
-יגאל ארנון - תדמור לוי,עו"ד חגי שמואלי,hagais@arnon-tadmor.com,Real Estate
-עמר רייטר ז'אן שוכטוביץ (AYR),עו"ד אמיר עמר,amir.amar@ayr.co.il,Real Estate
+יגאל ארנון - תדמור לוי,עו"ד חגי שמואלי,info@arnon.co.il,Real Estate
+עמר רייטר ז'אן שוכטוביץ (AYR),עו"ד אמיר עמר,mail@ayr.co.il,Real Estate
 מאיר מזרחי ושות',עו"ד מאיר מזרחי,office@maslaw.co.il,Real Estate
 ווקסלר ברגמן ושות',עו"ד יאיר בנימיני,wb@wblaw.co.il,Real Estate
-ברנע ג'פה לנדה,עו"ד אילן בלומנפלד,info@barnea.co.il,Real Estate
+ברנע ג'פה לנדה,עו"ד אילן בלומנפלד,info@barlaw.co.il,Real Estate
 פרל כהן צדק לצר ברץ,עו"ד יאיר סלומון,israel@pearlcohen.com,Real Estate
 שניצר גוטליב סאמט ושות',עו"ד משה גוטליב,info@sgslaw.co.il,Real Estate
 המבורגר עברון ושות',מחלקת מקרקעין ותכנון,info@he-law.co.il,Real Estate
 בנימיני ושות',עו"ד רני בנימיני,office@benyamini-law.co.il,Real Estate
 ליפא מאיר ושות',עו"ד אלון יצחקי,info@lipameir.co.il,Real Estate
-ארדינסט בן נתן טולידאנו,עו"ד ג'והר קאמל,ebnt@ebntlaw.co.il,Real Estate
-טולצ'ינסקי מרציאנו כהן לויצקי,עו"ד דורון שטרן,office@tulchinsky.co.il,Real Estate
+ארדינסט בן נתן טולידאנו,עו"ד ג'והר קאמל,ebn@ebnlaw.co.il,Real Estate
+טולצ'ינסקי מרציאנו כהן לויצקי,עו"ד דורון שטרן,tel@tslaw.co.il,Real Estate
 אהרונסון שר אבולעפיה,עו"ד מנחם אבולעפיה,office@asg.co.il,Real Estate
 סלומון ליפשיץ ושות',עו"ד עמית דורון,merav@ysl-law.com,Real Estate
 שביט בר-און גלאון צין ויתקון,עו"ד חגי ויתקון,lawyers@sgl.co.il,Real Estate
@@ -25,7 +25,7 @@ Firm_Name,Contact_Person,Email,Category
 כהן וילצ'יק ושות',עו"ד אבנר וילצ'יק,cw@cwlaw.co.il,Real Estate
 איתן מהולל שדות,עו"ד רון קליינמן,info@eitanmehulal.com,Real Estate
 אורי דניאל ושות',עו"ד אורי דניאל,office@udaniel.co.il,Real Estate
-בלטר גוט אלוני ושות',עו"ד דוד גוט,bg@bgalaw.co.il,Real Estate
+בלטר גוט אלוני ושות',עו"ד דוד גוט,bgalaw@bgalaw.co.il,Real Estate
 גלעד שר קדרי ושות',עו"ד גלעד שר,office@gsher-law.com,Real Estate
 דורון טיקוצקי ושות',עו"ד רון ברנט,office@dtkgg.com,Real Estate
 צלרמאיר פילוסוף ושות',עו"ד אבי פילוסוף,info@zplaw.co.il,Real Estate
@@ -42,21 +42,21 @@ Firm_Name,Contact_Person,Email,Category
 שוב ושות',עו"ד שמואל שוב,shmuel@shuv.co.il,Urban Renewal
 ענת בירן משרד עורכי דין,עו"ד ענת בירן,anat@abiren.co.il,Urban Renewal
 קרן כהן בלחרסקי ושות',עו"ד קרן כהן בלחרסקי,keren@kcb-law.co.il,Urban Renewal
-גיא פרבמן ושות',עו"ד גיא פרבמן,guy@farbman-law.co.il,Urban Renewal
+גיא פרבמן ושות',עו"ד גיא פרבמן,office@farbman-law.com,Urban Renewal
 כץ גבע איצקוביץ (KGI),עו"ד אילן גבע,info@kgilaw.com,Urban Renewal
 אילן גלזר ושות',עו"ד אילן גלזר,glazer@glazer-law.co.il,Urban Renewal
 צבי שוב משרד עורכי דין,עו"ד צבי שוב,info@shoob-law.co.il,Urban Renewal
 רוזנברג אברמוביץ שנלר,עו"ד שמואל שנלר,office@rosch-law.com,Urban Renewal
 משרד עורכי דין מינו פיש,עו"ד גיל פיש,office@minofish.co.il,Urban Renewal
 מיכה גדרון משרד עורכי דין,עו"ד מיכה גדרון,office@gidron-law.com,Urban Renewal
-ברקמן ושות',עו"ד רוני ברקמן,info@berkman.co.il,Urban Renewal
+ברקמן ושות',עו"ד רוני ברקמן,info@bwb.co.il,Urban Renewal
 נבו קידר בלום ושות',עו"ד יאיר בלום,info@nkblaw.co.il,Urban Renewal
 יהב ושות',עו"ד דוד יהב,office@yahavlaw.co.il,Urban Renewal
 חג'ג' חן ויינשטיין,עו"ד יצחק חג'ג',office@hbw-law.com,Urban Renewal
 רולוף את יונאי,עו"ד יונאי גיא,info@ry-law.co.il,Urban Renewal
-אביב טסה משרד עורכי דין,עו"ד אביב טסה,cr@tasalaw.co.il,Urban Renewal
+אביב טסה משרד עורכי דין,עו"ד אביב טסה,office@tasalaw.co.il,Urban Renewal
 בן-ארי פיש סבן ושות',עו"ד גיל סבן,all@bf-law.co.il,Urban Renewal
-מינצר-כרמון עיני ושות',עו"ד אילן מינצר,info@mnblaw.co.il,Urban Renewal
+מינצר-כרמון עיני ושות',עו"ד אילן מינצר,office@mnblaw.co.il,Urban Renewal
 מטלון ושות',עו"ד רוני מטלון,apm@apm.law,Urban Renewal
 אלדר אדטו ושות',עו"ד אלדר אדטו,info@adatolaw.co.il,Urban Renewal
 מרקמן טומשין ושות',עו"ד ליאור מרקמן,info@mt-law.co.il,Urban Renewal
