@@ -1,5 +1,5 @@
 """
-email_agent.py — B2B Outreach Agent for Law Firms
+email_agent.py -B2B Outreach Agent for Law Firms
 Mode: Creates Outlook DRAFTS only (does not send).
 Supports: win32com.client (local Outlook desktop) or O365 (Microsoft Graph)
 """
@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 # ─────────────────────────────────────────────
-# CONFIGURATION — edit these before running
+# CONFIGURATION -edit these before running
 # ─────────────────────────────────────────────
 
 DRY_RUN      = True          # True = print preview only; False = create real drafts
@@ -22,14 +22,14 @@ SENDER_EMAIL  = "lalomavi@gmail.com"   # shown in From / used for O365 mailbox
 SENDER_NAME   = "DOM Mediation"
 
 # O365 / Azure App credentials (only needed when EMAIL_BACKEND = "o365")
-# Paste the values from portal.azure.com — see README below or AZURE_SETUP.md
+# Paste the values from portal.azure.com -see README below or AZURE_SETUP.md
 O365_CLIENT_ID     = os.environ.get("O365_CLIENT_ID", "")
 O365_CLIENT_SECRET = os.environ.get("O365_CLIENT_SECRET", "")
 O365_TENANT_ID     = os.environ.get("O365_TENANT_ID", "")
 
 # AUTH_FLOW options:
-#   "credentials"   — app-only, no browser, needs Mail.Send application permission
-#   "authorization" — opens browser once, saves token to o365_token.txt (recommended)
+#   "credentials"   -app-only, no browser, needs Mail.Send application permission
+#   "authorization" -opens browser once, saves token to o365_token.txt (recommended)
 O365_AUTH_FLOW = "authorization"
 
 # Delay between draft creations to avoid hammering the COM server
@@ -40,7 +40,7 @@ DONE_LOG  = "drafted_contacts.json"   # idempotency: tracks already-drafted emai
 DATA_FILE = "contacts.csv"
 
 # ─────────────────────────────────────────────
-# EMAIL CONTENT — fill in before running
+# EMAIL CONTENT -fill in before running
 # ─────────────────────────────────────────────
 
 # Subject lines per category
@@ -52,13 +52,13 @@ SUBJECT_MAP = {
 # Category-specific paragraph (Hebrew)
 CATEGORY_BLURB = {
     "real estate": (
-        "בעסקאות נדל\"ן מורכבות — סכסוכי מרובי-צדדים, מחלוקות בעלות, "
-        "תביעות קבלנים — הליכים משפטיים ממושכים פוגעים בערך הנכס ובאמון הלקוח. "
+        "בעסקאות נדל\"ן מורכבות -סכסוכי מרובי-צדדים, מחלוקות בעלות, "
+        "תביעות קבלנים -הליכים משפטיים ממושכים פוגעים בערך הנכס ובאמון הלקוח. "
         "DOM גישור מציע פתרון מובנה וסודי, המגן על לוחות הזמנים ושומר על קשרים עסקיים."
     ),
     "urban renewal": (
         "פרויקטי תמ\"א 38 ופינוי-בינוי חשופים לקיפאון בין יזמים, דיירים ורשויות. "
-        "DOM גישור מתמחה בפריצת קיפאונות אלו ביעילות — "
+        "DOM גישור מתמחה בפריצת קיפאונות אלו ביעילות -"
         "שומר על לוח הזמנים של הפרויקט ומונע פניה יקרה לבתי משפט."
     ),
 }
@@ -101,7 +101,7 @@ def build_salutation(contact: Contact) -> str:
 def build_email(contact: Contact) -> tuple[str, str]:
     """Returns (subject, html_body). Replace the body template below with your text."""
     cat_key    = contact.category.strip().lower()
-    subject    = SUBJECT_MAP.get(cat_key, "DOM גישור — פתרון סכסוכים עסקיים")
+    subject    = SUBJECT_MAP.get(cat_key, "DOM גישור -פתרון סכסוכים עסקיים")
     blurb      = CATEGORY_BLURB.get(cat_key, "")
     salutation = build_salutation(contact)
 
@@ -192,7 +192,7 @@ def build_email(contact: Contact) -> tuple[str, str]:
   <hr style="border:none; border-top:2px solid #D4AF37; margin: 32px 0 16px 0;">
 
   <p style="font-size:13px; color:#444;">
-    <strong>הסעיף להטמעה — מנגנון יישוב סכסוכים (מודל DOM):</strong>
+    <strong>הסעיף להטמעה -מנגנון יישוב סכסוכים (מודל DOM):</strong>
   </p>
 
   <blockquote style="
@@ -265,7 +265,7 @@ def _get_o365_account(_cache: dict = {}) -> object:
 
     if not account.is_authenticated:
         if O365_AUTH_FLOW == "authorization":
-            # Opens browser once — paste the redirect URL back in the terminal
+            # Opens browser once -paste the redirect URL back in the terminal
             log.info("Opening browser for Microsoft login…")
             account.authenticate(
                 scopes=["https://graph.microsoft.com/Mail.Send",
@@ -330,8 +330,8 @@ def run() -> None:
     contacts = load_contacts()
     done_set = load_done_log()
 
-    mode = "DRY-RUN (preview only)" if DRY_RUN else f"LIVE — creating Outlook DRAFTS via [{EMAIL_BACKEND}]"
-    log.info(f"Starting — {mode} — {len(contacts)} contacts loaded")
+    mode = "DRY-RUN (preview only)" if DRY_RUN else f"LIVE -creating Outlook DRAFTS via [{EMAIL_BACKEND}]"
+    log.info(f"Starting -{mode} -{len(contacts)} contacts loaded")
 
     stats = {"drafted": 0, "skipped": 0, "errors": 0}
 
@@ -352,7 +352,7 @@ def run() -> None:
             print(f"        CATEGORY: {contact.category}")
             print(f"        SUBJECT : {subject}")
             print(f"        SALUTE  : {build_salutation(contact)}")
-            print("        BODY    : [HTML — edit build_email() to change content]")
+            print("        BODY    : [HTML -edit build_email() to change content]")
             print("═" * 72)
             stats["drafted"] += 1
             continue
@@ -375,7 +375,7 @@ def run() -> None:
             time.sleep(THROTTLE_SECS)
 
     log.info(
-        f"\nDone — drafted={stats['drafted']}  "
+        f"\nDone -drafted={stats['drafted']}  "
         f"skipped={stats['skipped']}  errors={stats['errors']}"
     )
     if not DRY_RUN:
