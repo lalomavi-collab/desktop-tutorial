@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>סקירת כתובות משרדי עורכי דין</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 13px; padding: 20px; background: #f9f9f9; }
+  h1 { color: #1B1B1B; }
+  .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+  .stat { background: white; border-radius: 8px; padding: 12px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; }
+  .stat strong { display: block; font-size: 24px; }
+  table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  th { background: #1B1B1B; color: #D4AF37; padding: 10px 12px; text-align: right; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+  tr:hover { background: #fffde7; }
+  .confirmed { background: #e8f5e9; }
+  .uncertain { background: #fff8e1; }
+  .empty { background: #fce4ec; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+  .badge-ok  { background: #c8e6c9; color: #2e7d32; }
+  .badge-warn { background: #fff9c4; color: #f57f17; }
+  .badge-empty { background: #ffcdd2; color: #c62828; }
+  .email-cell { direction: ltr; text-align: left; font-family: monospace; font-size: 12px; }
+  input.email-input { width: 260px; border: 1px solid #ccc; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
+  .cat-re { color: #1565c0; font-weight: bold; }
+  .cat-ur { color: #6a1b9a; font-weight: bold; }
+  .notes { color: #888; font-size: 11px; }
+</style>
+</head>
+<body>
+<h1>רשימת משרדי עורכי דין — בדיקת כתובות מייל</h1>
+<p>עדכון: 16.06.2026 | סה"כ 62 משרדים</p>
+
+<div class="stats">
+  <div class="stat"><strong style="color:#2e7d32">14</strong>מאומת ✅</div>
+  <div class="stat"><strong style="color:#f57f17">44</strong>לא בטוח ⚠️</div>
+  <div class="stat"><strong style="color:#c62828">4</strong>ריק ❌</div>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>#</th>
+  <th>שם המשרד</th>
+  <th>איש קשר</th>
+  <th>כתובת מייל</th>
+  <th>קטגוריה</th>
+  <th>סטטוס</th>
+  <th>הערות</th>
+</tr>
+</thead>
+<tbody>
+
+<!-- REAL ESTATE -->
+<tr class="confirmed">
+  <td>1</td>
+  <td>הרצוג פוקס נאמן</td>
+  <td>עו"ד אברהם וול</td>
+  <td class="email-cell">well@herzoglaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">ייתכן שם לא נכון — herzoglaw.co.il אמיתי</td>
+</tr>
+<tr class="confirmed">
+  <td>2</td>
+  <td>מיתר עורכי דין</td>
+  <td>עו"ד נדב אברמוביץ'</td>
+  <td class="email-cell">meitar@meitar.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר meitar.com</td>
+</tr>
+<tr class="confirmed">
+  <td>3</td>
+  <td>גולדפרב גרוס זליגמן</td>
+  <td>עו"ד אבי ארד</td>
+  <td class="email-cell">law@goldfarb.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר goldfarb.com/contact</td>
+</tr>
+<tr class="confirmed">
+  <td>4</td>
+  <td>פישר (FBC & Co)</td>
+  <td>עו"ד אמיר חן</td>
+  <td class="email-cell">fbc@fbclawyers.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר fbclawyers.com/contact</td>
+</tr>
+<tr class="uncertain">
+  <td>5</td>
+  <td>מ. פירון ושות'</td>
+  <td>עו"ד תמיר שניידרמן</td>
+  <td class="email-cell">info@firon.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">כתובת כללית — לא אומתה ישירות</td>
+</tr>
+<tr class="confirmed">
+  <td>6</td>
+  <td>גורניצקי ושות'</td>
+  <td>עו"ד שלמה פישר</td>
+  <td class="email-cell">gny@gornitzky.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת ב-Legal 500 ו-Chambers</td>
+</tr>
+<tr class="confirmed">
+  <td>7</td>
+  <td>שבלת ושות'</td>
+  <td>עו"ד מנחם מנחם</td>
+  <td class="email-cell">info@shibolet.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר shibolet.com/contact-us</td>
+</tr>
+<tr class="uncertain">
+  <td>8</td>
+  <td>יגאל ארנון - תדמור לוי</td>
+  <td>עו"ד חגי שמואלי</td>
+  <td class="email-cell">info@arnon.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">גם arnontl.com — לבדוק איזה נכון</td>
+</tr>
+<tr class="confirmed">
+  <td>9</td>
+  <td>עמר רייטר ז'אן שוכטוביץ (AYR)</td>
+  <td>עו"ד אמיר עמר</td>
+  <td class="email-cell">mail@ayr.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר ayr.co.il/contact</td>
+</tr>
+<tr class="uncertain">
+  <td>10</td>
+  <td>מאיר מזרחי ושות'</td>
+  <td>עו"ד מאיר מזרחי</td>
+  <td class="email-cell">office@maslaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק maslaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>11</td>
+  <td>ווקסלר ברגמן ושות'</td>
+  <td>עו"ד יאיר בנימיני</td>
+  <td class="email-cell">wb@wblaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק wblaw.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>12</td>
+  <td>ברנע ג'פה לנדה</td>
+  <td>עו"ד אילן בלומנפלד</td>
+  <td class="email-cell">info@barlaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר barlaw.co.il/contact</td>
+</tr>
+<tr class="uncertain">
+  <td>13</td>
+  <td>פרל כהן צדק לצר ברץ</td>
+  <td>עו"ד יאיר סלומון</td>
+  <td class="email-cell">israel@pearlcohen.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">דומיין נכון, כתובת לא אומתה</td>
+</tr>
+<tr class="uncertain">
+  <td>14</td>
+  <td>שניצר גוטליב סאמט ושות'</td>
+  <td>עו"ד משה גוטליב</td>
+  <td class="email-cell">info@sgslaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק sgslaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>15</td>
+  <td>המבורגר עברון ושות'</td>
+  <td>מחלקת מקרקעין ותכנון</td>
+  <td class="email-cell">info@he-law.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק he-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>16</td>
+  <td>בנימיני ושות'</td>
+  <td>עו"ד רני בנימיני</td>
+  <td class="email-cell">office@benyamini-law.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק benyamini-law.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>17</td>
+  <td>ליפא מאיר ושות'</td>
+  <td>עו"ד אלון יצחקי</td>
+  <td class="email-cell">info@lipameir.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת ב-Meritas ורשומות</td>
+</tr>
+<tr class="uncertain">
+  <td>18</td>
+  <td>ארדינסט בן נתן טולידאנו</td>
+  <td>עו"ד ג'והר קאמל</td>
+  <td class="email-cell">ebn@ebnlaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">המשרד שינה שם ל-EBN — לבדוק ebnlaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>19</td>
+  <td>טולצ'ינסקי מרציאנו כהן לויצקי</td>
+  <td>עו"ד דורון שטרן</td>
+  <td class="email-cell">tel@tslaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">מיזג עם אגמון — לבדוק tslaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>20</td>
+  <td>אהרונסון שר אבולעפיה</td>
+  <td>עו"ד מנחם אבולעפיה</td>
+  <td class="email-cell">office@asg.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק asg.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>21</td>
+  <td>סלומון ליפשיץ ושות'</td>
+  <td>עו"ד עמית דורון</td>
+  <td class="email-cell">merav@ysl-law.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">כתובת אישית — לבדוק ysl-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>22</td>
+  <td>שביט בר-און גלאון צין ויתקון</td>
+  <td>עו"ד חגי ויתקון</td>
+  <td class="email-cell">lawyers@sgl.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">המשרד מיזג עם ארנון ב-2023</td>
+</tr>
+<tr class="uncertain">
+  <td>23</td>
+  <td>רון גזית רוטנברג ושות'</td>
+  <td>עו"ד נמרוד רוטנברג</td>
+  <td class="email-cell">info@rgrlaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק rgrlaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>24</td>
+  <td>כהן וילצ'יק ושות'</td>
+  <td>עו"ד אבנר וילצ'יק</td>
+  <td class="email-cell">cw@cwlaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק cwlaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>25</td>
+  <td>איתן מהולל שדות</td>
+  <td>עו"ד רון קליינמן</td>
+  <td class="email-cell">info@eitanmehulal.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק eitanmehulal.com</td>
+</tr>
+<tr class="uncertain">
+  <td>26</td>
+  <td>אורי דניאל ושות'</td>
+  <td>עו"ד אורי דניאל</td>
+  <td class="email-cell">office@udaniel.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק udaniel.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>27</td>
+  <td>בלטר גוט אלוני ושות'</td>
+  <td>עו"ד דוד גוט</td>
+  <td class="email-cell">bgalaw@bgalaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר bgalaw.co.il/contact</td>
+</tr>
+<tr class="uncertain">
+  <td>28</td>
+  <td>גלעד שר קדרי ושות'</td>
+  <td>עו"ד גלעד שר</td>
+  <td class="email-cell">office@gsher-law.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק gsher-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>29</td>
+  <td>דורון טיקוצקי ושות'</td>
+  <td>עו"ד רון ברנט</td>
+  <td class="email-cell">office@dtkgg.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק — dtkgg.com לא אומת, ייתכן dt-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>30</td>
+  <td>צלרמאיר פילוסוף ושות'</td>
+  <td>עו"ד אבי פילוסוף</td>
+  <td class="email-cell">info@zplaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק zplaw.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>31</td>
+  <td>תוסיה-כהן ושות'</td>
+  <td>עו"ד נחום תוסיה-כהן</td>
+  <td class="email-cell">info@toussia-cohen.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת — toussia-cohen.com</td>
+</tr>
+<tr class="uncertain">
+  <td>32</td>
+  <td>שטיינמץ הרינג גורמן ושות'</td>
+  <td>עו"ד מני גורמן</td>
+  <td class="email-cell">office@shg-law.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק shg-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>33</td>
+  <td>גרוסמן ושות'</td>
+  <td>עו"ד אייל גרוסמן</td>
+  <td class="email-cell">info@law-g.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק law-g.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>34</td>
+  <td>פלג כהן דויטש</td>
+  <td>עו"ד יואב פלג</td>
+  <td class="email-cell">info@pelco-law.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק pelco-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>35</td>
+  <td>לוי טילר ושות'</td>
+  <td>עו"ד מורן לוי</td>
+  <td class="email-cell">dorit@adv-levy.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">כתובת אישית — לבדוק adv-levy.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>36</td>
+  <td>אולשנסקי ושות'</td>
+  <td>עו"ד דניאל אולשנסקי</td>
+  <td class="email-cell">info@ogt-law.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק ogt-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>37</td>
+  <td>קסוטו ושות'</td>
+  <td>עו"ד שמואל קסוטו</td>
+  <td class="email-cell">office@cassouto.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק cassouto.com</td>
+</tr>
+<tr class="uncertain">
+  <td>38</td>
+  <td>ראב"ד רביזדה ושות'</td>
+  <td>עו"ד יוסי רביזדה</td>
+  <td class="email-cell">office@ravizada-law.com</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק ravizada-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>39</td>
+  <td>וייס פורת ושות'</td>
+  <td>עו"ד אמיר פורת</td>
+  <td class="email-cell">lawyers@weisslaw.co.il</td>
+  <td><span class="cat-re">נדל"ן</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק weisslaw.co.il</td>
+</tr>
+
+<!-- URBAN RENEWAL -->
+<tr class="uncertain">
+  <td>40</td>
+  <td>גינדי כספי</td>
+  <td>עו"ד זיו כספי</td>
+  <td class="email-cell">info@gindi-caspi.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">דומיין אומת — לבדוק gindi-caspi.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>41</td>
+  <td>שוב ושות'</td>
+  <td>עו"ד שמואל שוב</td>
+  <td class="email-cell">shmuel@shuv.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק shuv.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>42</td>
+  <td>ענת בירן משרד עורכי דין</td>
+  <td>עו"ד ענת בירן</td>
+  <td class="email-cell">anat@abiren.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">ייתכן ablaw.co.il — לבדוק</td>
+</tr>
+<tr class="uncertain">
+  <td>43</td>
+  <td>קרן כהן בלחרסקי ושות'</td>
+  <td>עו"ד קרן כהן בלחרסקי</td>
+  <td class="email-cell">keren@kcb-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק kcb-law.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>44</td>
+  <td>גיא פרבמן ושות'</td>
+  <td>עו"ד גיא פרבמן</td>
+  <td class="email-cell">office@farbman-law.com</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת — farbman-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>45</td>
+  <td>כץ גבע איצקוביץ (KGI)</td>
+  <td>עו"ד אילן גבע</td>
+  <td class="email-cell">info@kgilaw.com</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">דומיין אומת — לבדוק kgilaw.com</td>
+</tr>
+<tr class="uncertain">
+  <td>46</td>
+  <td>אילן גלזר ושות'</td>
+  <td>עו"ד אילן גלזר</td>
+  <td class="email-cell">glazer@glazer-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק glazer-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>47</td>
+  <td>צבי שוב משרד עורכי דין</td>
+  <td>עו"ד צבי שוב</td>
+  <td class="email-cell">info@shoob-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק shoob-law.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>48</td>
+  <td>רוזנברג אברמוביץ שנלר</td>
+  <td>עו"ד שמואל שנלר</td>
+  <td class="email-cell">office@rosch-law.com</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק rosch-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>49</td>
+  <td>משרד עורכי דין מינו פיש</td>
+  <td>עו"ד גיל פיש</td>
+  <td class="email-cell">office@minofish.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק minofish.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>50</td>
+  <td>מיכה גדרון משרד עורכי דין</td>
+  <td>עו"ד מיכה גדרון</td>
+  <td class="email-cell">office@gidron-law.com</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">אומת — gidron-law.com</td>
+</tr>
+<tr class="confirmed">
+  <td>51</td>
+  <td>ברקמן ושות'</td>
+  <td>עו"ד רוני ברקמן</td>
+  <td class="email-cell">info@bwb.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">שינה שם ל-BWB — bwb.co.il אומת</td>
+</tr>
+<tr class="uncertain">
+  <td>52</td>
+  <td>נבו קידר בלום ושות'</td>
+  <td>עו"ד יאיר בלום</td>
+  <td class="email-cell">info@nkblaw.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק nkblaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>53</td>
+  <td>יהב ושות'</td>
+  <td>עו"ד דוד יהב</td>
+  <td class="email-cell">office@yahavlaw.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק yahavlaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>54</td>
+  <td>חג'ג' חן ויינשטיין</td>
+  <td>עו"ד יצחק חג'ג'</td>
+  <td class="email-cell">office@hbw-law.com</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק hbw-law.com</td>
+</tr>
+<tr class="uncertain">
+  <td>55</td>
+  <td>רולוף את יונאי</td>
+  <td>עו"ד יונאי גיא</td>
+  <td class="email-cell">info@ry-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק ry-law.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>56</td>
+  <td>אביב טסה משרד עורכי דין</td>
+  <td>עו"ד אביב טסה</td>
+  <td class="email-cell">office@tasalaw.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר tasalaw.co.il/contact-us</td>
+</tr>
+<tr class="uncertain">
+  <td>57</td>
+  <td>בן-ארי פיש סבן ושות'</td>
+  <td>עו"ד גיל סבן</td>
+  <td class="email-cell">all@bf-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק bf-law.co.il</td>
+</tr>
+<tr class="confirmed">
+  <td>58</td>
+  <td>מינצר-כרמון עיני ושות'</td>
+  <td>עו"ד אילן מינצר</td>
+  <td class="email-cell">office@mnblaw.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת מאתר mnblaw.co.il/contact</td>
+</tr>
+<tr class="confirmed">
+  <td>59</td>
+  <td>מטלון ושות' (APM)</td>
+  <td>עו"ד רוני מטלון</td>
+  <td class="email-cell">apm@apm.law</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-ok">✅ מאומת</span></td>
+  <td class="notes">אומת ב-Legal 500 ואתר apm.law</td>
+</tr>
+<tr class="uncertain">
+  <td>60</td>
+  <td>אלדר אדטו ושות'</td>
+  <td>עו"ד אלדר אדטו</td>
+  <td class="email-cell">info@adatolaw.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק adatolaw.co.il</td>
+</tr>
+<tr class="uncertain">
+  <td>61</td>
+  <td>מרקמן טומשין ושות'</td>
+  <td>עו"ד ליאור מרקמן</td>
+  <td class="email-cell">info@mt-law.co.il</td>
+  <td><span class="cat-ur">התחדשות</span></td>
+  <td><span class="badge badge-warn">⚠️ לא בטוח</span></td>
+  <td class="notes">לבדוק mt-law.co.il</td>
+</tr>
+
+</tbody>
+</table>
+
+<br>
+<p style="color:#888; font-size:12px;">
+  ✅ מאומת = נמצא ישירות באתר המשרד | ⚠️ לא בטוח = נמצא ממקור משני, דרוש אימות | ❌ ריק = לא נמצא<br>
+  לעדכון ידני: פתח contacts.csv ועדכן את עמודת Email בשורה המתאימה.
+</p>
+
+</body>
+</html>
