@@ -1,7 +1,5 @@
 """Invoice Processing Agent — root agent definition."""
 from google.adk.agents import Agent
-from dotenv import load_dotenv
-load_dotenv()
 
 from invoice_processing.collectors.email_collector import collect_from_emails
 from invoice_processing.collectors.folder_collector import collect_from_folder
