@@ -10,7 +10,7 @@ on:
       confirm_send:
         description: 'שלח מייל לאחר איסוף? (true/false)'
         required: false
-        default: 'true'
+        default: 'false'
   schedule:
     - cron: '0 6 1 * *'   # ראשון לכל חודש בשעה 09:00 ישראל
 
