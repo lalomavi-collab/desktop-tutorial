@@ -39,9 +39,9 @@ jobs:
       IMAP2_PASSWORD: ${{ secrets.IMAP2_PASSWORD }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -104,7 +104,7 @@ jobs:
           "
 
       - name: Upload draft as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: accounting-draft
           path: /tmp/accounting_draft.json
