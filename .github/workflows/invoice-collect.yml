@@ -92,7 +92,7 @@ jobs:
           "
 
       - name: Send accounting email (only if confirmed)
-        if: ${{ github.event.inputs.confirm_send == 'true' }}
+        if: github.event.inputs.confirm_send == 'true'
         run: |
           cd python/agents/invoice-processing
           python3 -c "
