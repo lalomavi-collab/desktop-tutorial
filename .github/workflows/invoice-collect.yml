@@ -10,7 +10,7 @@ on:
       confirm_send:
         description: 'שלח מייל לאחר איסוף? (true/false)'
         required: false
-        default: 'false'
+        default: 'true'
   schedule:
     - cron: '0 6 1 * *'   # ראשון לכל חודש בשעה 09:00 ישראל
 
@@ -92,7 +92,7 @@ jobs:
           "
 
       - name: Send accounting email (only if confirmed)
-        if: ${{ github.event.inputs.confirm_send == 'true' }}
+        if: github.event.inputs.confirm_send == 'true'
         run: |
           cd python/agents/invoice-processing
           python3 -c "
