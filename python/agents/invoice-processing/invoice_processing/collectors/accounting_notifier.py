@@ -89,4 +89,4 @@ def send_accounting_email(confirm: str = "false") -> dict:
 
     if resp.status_code == 202:
         return {"status": "sent", "to": draft["to"], "attachments": len(attachments)}
-    return {"status": "error", "code": resp.status_code, "detail": resp.text[:300]}
+        return {"status": "error", "code": resp.status_code, "request_id": resp.headers.get("request-id"), "detail": resp.text[:300]}    
