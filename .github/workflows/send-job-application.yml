@@ -1,0 +1,75 @@
+name: Send Job Application Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      to_email:
+        description: 'כתובת המייל של המגייס'
+        required: true
+      subject:
+        description: 'נושא המייל'
+        required: true
+      cover_letter_file:
+        description: 'שם קובץ מכתב הכיסוי (ב-job_agent/applications/)'
+        required: true
+
+jobs:
+  send-application:
+    runs-on: ubuntu-latest
+    env:
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      MS_SENDER: avraham@lalum.co
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install msal requests
+
+      - name: Send cover letter via Outlook
+        run: |
+          python3 -c "
+          import os, msal, requests, sys
+
+          cover_file = 'job_agent/applications/${{ github.event.inputs.cover_letter_file }}'
+          body = open(cover_file, encoding='utf-8').read()
+
+          authority = f'https://login.microsoftonline.com/{os.environ[\"MS_TENANT_ID\"]}'
+          app = msal.ConfidentialClientApplication(
+              client_id=os.environ['MS_CLIENT_ID'],
+              client_credential=os.environ['MS_CLIENT_SECRET'],
+              authority=authority,
+          )
+          result = app.acquire_token_for_client(scopes=['https://graph.microsoft.com/.default'])
+          if 'access_token' not in result:
+              print('Token error:', result)
+              sys.exit(1)
+          token = result['access_token']
+
+          payload = {
+              'message': {
+                  'subject': '${{ github.event.inputs.subject }}',
+                  'body': {'contentType': 'Text', 'content': body},
+                  'toRecipients': [{'emailAddress': {'address': '${{ github.event.inputs.to_email }}'}}],
+              },
+              'saveToSentItems': 'true',
+          }
+
+          sender = os.environ['MS_SENDER']
+          resp = requests.post(
+              f'https://graph.microsoft.com/v1.0/users/{sender}/sendMail',
+              headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+              json=payload, timeout=30,
+          )
+          if resp.status_code == 202:
+              print(f'✅ Sent to ${{ github.event.inputs.to_email }}')
+          else:
+              print(f'❌ Error {resp.status_code}: {resp.text[:300]}')
+              sys.exit(1)
+          "
