@@ -1,5 +1,6 @@
 """הכנת ושליחת מייל סיכום להנהלת חשבונות דרך Microsoft Graph API (M365).
 שליחה רק עם אישור מפורש confirm='true'.
+המייל כולל מכתב פתיחה מסכם ומניעת כפילויות.
 """
 import os
 import json
@@ -29,15 +30,96 @@ def _get_token() -> str:
     return result["access_token"]
 
 
-def prepare_accounting_email(invoice_files: list, summary_text: str = "") -> dict:
-    """מכין טיוטת מייל (לא שולח) ושומר אותה לקובץ לבדיקה."""
-    body = summary_text or f"מצורפות {len(invoice_files)} חשבוניות שנאספו אוטומטית."
+def _dedupe(paths: list) -> list:
+    """מסיר כפילויות לפי שם קובץ + גודל (אותה חשבונית לא תצורף פעמיים)."""
+    seen = set()
+    unique = []
+    for path in paths:
+        p = Path(path)
+        try:
+            size = p.stat().st_size if p.exists() else -1
+        except OSError:
+            size = -1
+        key = (p.name.lower(), size)
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(path)
+    return unique
+
+
+def _build_cover_letter(income_files, expense_files, period, accountant_name=""):
+    """בונה מכתב פתיחה מסכם בעברית."""
+    greeting = f"שלום {accountant_name}," if accountant_name else "שלום רב,"
+    total = len(income_files) + len(expense_files)
+    period_txt = f" לתקופה {period}" if period else ""
+
+    def _names(files):
+        return [Path(f).name for f in files]
+
+    lines = []
+    lines.append(greeting)
+    lines.append("")
+    lines.append(
+        f"מצורף סיכום החשבוניות שנאספו אוטומטית{period_txt}."
+    )
+    lines.append("")
+    lines.append(f"סה"כ מסמכים: {total}")
+    lines.append(f"• הכנסות: {len(income_files)}")
+    lines.append(f"• הוצאות: {len(expense_files)}")
+    lines.append("")
+
+    if income_files:
+        lines.append("חשבוניות הכנסה:")
+        for i, name in enumerate(_names(income_files), 1):
+            lines.append(f"  {i}. {name}")
+        lines.append("")
+
+    if expense_files:
+        lines.append("חשבוניות הוצאה:")
+        for i, name in enumerate(_names(expense_files), 1):
+            lines.append(f"  {i}. {name}")
+        lines.append("")
+
+    lines.append(
+        "הקבצים מצורפים למייל זה. נבקש לאמת את הנתונים מול המסמכים."
+    )
+    lines.append("")
+    lines.append("תודה,")
+    lines.append("מערכת איסוף החשבוניות האוטומטית")
+    return "\n".join(lines)
+
+
+def prepare_accounting_email(
+    invoice_files: list = None,
+    summary_text: str = "",
+    income_files: list = None,
+    expense_files: list = None,
+    period: str = "",
+) -> dict:
+    """מכין טיוטת מייל (לא שולח) עם מכתב פתיחה מסכם וללא כפילויות."""
+    income_files = _dedupe(income_files or [])
+    expense_files = _dedupe(expense_files or [])
+
+    # אם לא סופק פיצול הכנסה/הוצאה — נשתמש ברשימה הכללית.
+    if not income_files and not expense_files and invoice_files:
+        expense_files = _dedupe(invoice_files)
+
+    all_files = _dedupe(income_files + expense_files)
+    accountant_name = os.environ.get("ACCOUNTING_NAME", "")
+    body = summary_text or _build_cover_letter(
+        income_files, expense_files, period, accountant_name
+    )
+
     draft = {
         "from": os.environ.get("MS_SENDER", os.environ.get("OUTLOOK_USER", "")),
         "to": os.environ.get("ACCOUNTING_EMAIL", ""),
         "subject": os.environ.get("ACCOUNTING_SUBJECT", "סיכום חשבוניות"),
         "body": body,
-        "attachments": invoice_files,
+        "attachments": all_files,
+        "income_count": len(income_files),
+        "expense_count": len(expense_files),
+        "total_count": len(all_files),
     }
     _DRAFT_PATH.write_text(json.dumps(draft, ensure_ascii=False, indent=2), encoding="utf-8")
     return {
@@ -89,4 +171,4 @@ def send_accounting_email(confirm: str = "false") -> dict:
 
     if resp.status_code == 202:
         return {"status": "sent", "to": draft["to"], "attachments": len(attachments)}
-        return {"status": "error", "code": resp.status_code, "request_id": resp.headers.get("request-id"), "detail": resp.text[:300]}    
+    return {"status": "error", "code": resp.status_code, "request_id": resp.headers.get("request-id"), "detail": resp.text[:300]}
