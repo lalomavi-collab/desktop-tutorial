@@ -3,6 +3,7 @@ import os
 import base64
 import imaplib
 import email
+from datetime import datetime, timezone
 from email.header import decode_header
 from pathlib import Path
 
@@ -12,6 +13,18 @@ import requests
 from invoice_processing.collectors.month_path import get_month_folder
 
 _GRAPH = "https://graph.microsoft.com/v1.0"
+
+
+def _month_start(month: str):
+    """מחזיר datetime של תחילת החודש (ריק = החודש הנוכחי)."""
+    now = datetime.now(timezone.utc)
+    if month and len(month) >= 7:
+        try:
+            y, m = int(month[:4]), int(month[5:7])
+            return datetime(y, m, 1, tzinfo=timezone.utc)
+        except ValueError:
+            pass
+    return datetime(now.year, now.month, 1, tzinfo=timezone.utc)
 
 
 def _get_token():
@@ -32,13 +45,17 @@ def _classify(sender, income_sender):
     return "income" if income_sender and income_sender.lower() in s else "expense"
 
 
-def _collect_graph(mailbox, dest_dir, keywords, exts, income_sender):
+def _collect_graph(mailbox, dest_dir, keywords, exts, income_sender, start_dt):
     saved = []
     token = _get_token()
     headers = {"Authorization": f"Bearer {token}"}
+    start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     url = (f"{_GRAPH}/users/{mailbox}/messages"
-           "?$filter=hasAttachments eq true&$select=id,subject,from&$top=50")
-    while url:
+           f"?$filter=hasAttachments eq true and receivedDateTime ge {start_iso}"
+           "&$select=id,subject,from&$orderby=receivedDateTime desc&$top=50")
+    pages = 0
+    while url and pages < 10:
+        pages += 1
         resp = requests.get(url, headers=headers, timeout=30)
         if resp.status_code != 200:
             saved.append({"error": resp.text[:200]})
@@ -76,13 +93,14 @@ def _decode(s):
     return "".join((t.decode(enc or "utf-8", "ignore") if isinstance(t, bytes) else t) for t, enc in parts)
 
 
-def _collect_imap(host, port, user, password, dest_dir, keywords, exts):
+def _collect_imap(host, port, user, password, dest_dir, keywords, exts, start_dt):
     saved = []
     M = imaplib.IMAP4_SSL(host, int(port))
     try:
         M.login(user, password)
         M.select("INBOX")
-        typ, data = M.search(None, "ALL")
+        since = start_dt.strftime("%d-%b-%Y")
+        typ, data = M.search(None, "SINCE", since)
         for num in data[0].split():
             typ, msg_data = M.fetch(num, "(RFC822)")
             msg = email.message_from_bytes(msg_data[0][1])
@@ -105,8 +123,9 @@ def _collect_imap(host, port, user, password, dest_dir, keywords, exts):
 
 
 def collect_from_emails(month: str = "") -> dict:
-    """אוסף חשבוניות מ-Outlook (Graph) ו-Gmail (IMAP), מסווג הכנסה/הוצאה."""
+    """אוסף חשבוניות מ-Outlook (Graph) ו-Gmail (IMAP), מסווג הכנסה/הוצאה. מתחילת החודש עד היום."""
     dest = get_month_folder(month)
+    start_dt = _month_start(month)
     keywords = [k.strip().lower() for k in os.environ.get(
         "INVOICE_SUBJECT_KEYWORDS", "invoice,חשבונית").split(",") if k.strip()]
     exts = tuple(e.strip().lower() for e in os.environ.get(
@@ -116,13 +135,13 @@ def collect_from_emails(month: str = "") -> dict:
     items = []
     mailbox = os.environ.get("MS_SENDER", "")
     if mailbox:
-        items += _collect_graph(mailbox, dest, keywords, exts, income_sender)
+        items += _collect_graph(mailbox, dest, keywords, exts, income_sender, start_dt)
 
     if os.environ.get("IMAP2_HOST"):
         items += _collect_imap(
             os.environ["IMAP2_HOST"], os.environ.get("IMAP2_PORT", "993"),
             os.environ["IMAP2_USER"], os.environ["IMAP2_PASSWORD"],
-            dest, keywords, exts,
+            dest, keywords, exts, start_dt,
         )
 
     files = [it["file"] for it in items if "file" in it]
@@ -130,6 +149,7 @@ def collect_from_emails(month: str = "") -> dict:
     expense = [it["file"] for it in items if it.get("kind") == "expense"]
     return {
         "month_folder": dest,
+        "start_date": start_dt.strftime("%Y-%m-%d"),
         "saved_files": files,
         "count": len(files),
         "income_files": income,
