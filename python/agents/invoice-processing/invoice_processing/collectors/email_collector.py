@@ -53,11 +53,12 @@ def _collect_graph(mailbox, dest_dir, keywords, exts, income_sender, start_dt):
     token = _get_token()
     headers = {"Authorization": f"Bearer {token}"}
     start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    # הערה: ללא $orderby כדי למנוע InefficientFilter מ-Graph.
     url = (f"{_GRAPH}/users/{mailbox}/messages"
            f"?$filter=hasAttachments eq true and receivedDateTime ge {start_iso}"
-           "&$select=id,subject,from&$orderby=receivedDateTime desc&$top=50")
+           "&$select=id,subject,from&$top=50")
     pages = 0
-    while url and pages < 10:
+    while url and pages < 20:
         pages += 1
         resp = requests.get(url, headers=headers, timeout=20)
         if resp.status_code != 200:
