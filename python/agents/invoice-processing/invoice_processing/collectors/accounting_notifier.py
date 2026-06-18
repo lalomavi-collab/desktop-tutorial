@@ -105,6 +105,10 @@ def prepare_accounting_email(
     if not income_files and not expense_files and invoice_files:
         expense_files = _dedupe(invoice_files)
 
+    # הסרת כפילויות בין קטגוריות: קובץ שסווג כהכנסה לא יופיע שוב כהוצאה.
+    _income_names = {Path(f).name.lower() for f in income_files}
+    expense_files = [f for f in expense_files if Path(f).name.lower() not in _income_names]
+
     all_files = _dedupe(income_files + expense_files)
     accountant_name = os.environ.get("ACCOUNTING_NAME", "")
     body = summary_text or _build_cover_letter(
