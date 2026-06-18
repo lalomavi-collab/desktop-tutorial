@@ -64,7 +64,7 @@ def _build_cover_letter(income_files, expense_files, period, accountant_name="")
         f"מצורף סיכום החשבוניות שנאספו אוטומטית{period_txt}."
     )
     lines.append("")
-    lines.append(f"סה"כ מסמכים: {total}")
+    lines.append(f'סה"כ מסמכים: {total}')
     lines.append(f"• הכנסות: {len(income_files)}")
     lines.append(f"• הוצאות: {len(expense_files)}")
     lines.append("")
