@@ -12,7 +12,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    - cron: '0 6 1 * *'   # ראשון לכל חודש בשעה 09:00 ישראל
+    - cron: '0 6 1 * *'  # ראשון לכל חודש בשעה 09:00 ישראל
 
 jobs:
   collect-and-notify:
@@ -28,6 +28,7 @@ jobs:
       MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
       MS_SENDER: avraham@lalum.co
       ACCOUNTING_EMAIL: ${{ secrets.ACCOUNTING_EMAIL }}
+      ACCOUNTING_NAME: ${{ secrets.ACCOUNTING_NAME }}
       ACCOUNTING_SUBJECT: סיכום חשבוניות ${{ github.event.inputs.month }}
       IMAP1_HOST: ${{ secrets.IMAP1_HOST }}
       IMAP1_PORT: ${{ secrets.IMAP1_PORT }}
@@ -85,9 +86,17 @@ jobs:
           sys.path.insert(0, '.')
           email_r = json.load(open('/tmp/email_result.json'))
           folder_r = json.load(open('/tmp/folder_result.json'))
-          all_files = list(set(email_r.get('saved_files', []) + folder_r.get('files', [])))
+          income = list(email_r.get('income_files', []))
+          expense = list(email_r.get('expense_files', []) + folder_r.get('files', []))
+          all_files = income + expense
+          period = email_r.get('start_date', '') or '${{ github.event.inputs.month }}'
           from invoice_processing.collectors.accounting_notifier import prepare_accounting_email
-          result = prepare_accounting_email(all_files)
+          result = prepare_accounting_email(
+              invoice_files=all_files,
+              income_files=income,
+              expense_files=expense,
+              period=period,
+          )
           print(json.dumps(result, ensure_ascii=False, indent=2))
           "
 
