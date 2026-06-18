@@ -1,4 +1,7 @@
-"""איסוף צרופות חשבוניות משתי תיבות: Outlook דרך Microsoft Graph ו-Gmail דרך IMAP."""
+"""איסוף צרופות חשבוניות משתי תיבות: Outlook דרך Microsoft Graph ו-Gmail דרך IMAP.
+
+עמידות ורציפות: כל מקור רץ בנפרד ומוגן ב-try/except; כשל במקור אחד לא עוצר את השאר.
+"""
 import os
 import base64
 import imaplib
@@ -56,10 +59,9 @@ def _collect_graph(mailbox, dest_dir, keywords, exts, income_sender, start_dt):
     pages = 0
     while url and pages < 10:
         pages += 1
-        resp = requests.get(url, headers=headers, timeout=30)
+        resp = requests.get(url, headers=headers, timeout=20)
         if resp.status_code != 200:
-            saved.append({"error": resp.text[:200]})
-            break
+            raise RuntimeError(f"Graph {resp.status_code}: {resp.text[:200]}")
         data = resp.json()
         for msg in data.get("value", []):
             subject = (msg.get("subject") or "").lower()
@@ -68,7 +70,7 @@ def _collect_graph(mailbox, dest_dir, keywords, exts, income_sender, start_dt):
             if kind == "expense" and keywords and not any(k in subject for k in keywords):
                 continue
             att_url = f"{_GRAPH}/users/{mailbox}/messages/{msg['id']}/attachments"
-            att_resp = requests.get(att_url, headers=headers, timeout=30)
+            att_resp = requests.get(att_url, headers=headers, timeout=20)
             if att_resp.status_code != 200:
                 continue
             for att in att_resp.json().get("value", []):
@@ -123,7 +125,7 @@ def _collect_imap(host, port, user, password, dest_dir, keywords, exts, start_dt
 
 
 def collect_from_emails(month: str = "") -> dict:
-    """אוסף חשבוניות מ-Outlook (Graph) ו-Gmail (IMAP), מסווג הכנסה/הוצאה. מתחילת החודש עד היום."""
+    """אוסף חשבוניות מ-Outlook (Graph) ו-Gmail (IMAP), מתחילת החודש עד היום. עמיד לכשל במקור בודד."""
     dest = get_month_folder(month)
     start_dt = _month_start(month)
     keywords = [k.strip().lower() for k in os.environ.get(
@@ -133,16 +135,24 @@ def collect_from_emails(month: str = "") -> dict:
     income_sender = os.environ.get("INCOME_SENDER", "notifications@invoice4u.co.il")
 
     items = []
+    errors = []
+
     mailbox = os.environ.get("MS_SENDER", "")
     if mailbox:
-        items += _collect_graph(mailbox, dest, keywords, exts, income_sender, start_dt)
+        try:
+            items += _collect_graph(mailbox, dest, keywords, exts, income_sender, start_dt)
+        except Exception as e:
+            errors.append({"source": "graph", "mailbox": mailbox, "error": str(e)[:300]})
 
     if os.environ.get("IMAP2_HOST"):
-        items += _collect_imap(
-            os.environ["IMAP2_HOST"], os.environ.get("IMAP2_PORT", "993"),
-            os.environ["IMAP2_USER"], os.environ["IMAP2_PASSWORD"],
-            dest, keywords, exts, start_dt,
-        )
+        try:
+            items += _collect_imap(
+                os.environ["IMAP2_HOST"], os.environ.get("IMAP2_PORT", "993"),
+                os.environ["IMAP2_USER"], os.environ["IMAP2_PASSWORD"],
+                dest, keywords, exts, start_dt,
+            )
+        except Exception as e:
+            errors.append({"source": "gmail", "mailbox": os.environ.get("IMAP2_USER", ""), "error": str(e)[:300]})
 
     files = [it["file"] for it in items if "file" in it]
     income = [it["file"] for it in items if it.get("kind") == "income"]
@@ -156,4 +166,5 @@ def collect_from_emails(month: str = "") -> dict:
         "expense_files": expense,
         "income_count": len(income),
         "expense_count": len(expense),
+        "errors": errors,
     }
