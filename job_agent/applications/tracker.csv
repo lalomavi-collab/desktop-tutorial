@@ -1,6 +1,20 @@
 date,company,title,url,score,status,cover_letter_file,notes
-2026-06-12,Waymo (Alphabet),Head of AI Policy & Autonomous Systems Law,https://waymo.com/careers/,9.0,approved,,First run — field mapping completed
-2026-06-12,Mercedes-Benz AG,Director of AI Law & Public Policy,https://mercedes-benz.com/careers/,8.0,skipped,,Salary gap and location concern
-2026-06-17,Gloat,General Counsel,https://highfivepartners.com,9.0,applied,2026-06-17_Gloat_GeneralCounsel.md
-2026-06-17,NVIDIA Israel,Senior Corporate Counsel,https://lhh.com,8.5,applied,2026-06-17_NVIDIA_SeniorCorporateCounsel.md
-2026-06-17,AllCloud,Legal Compliance Officer & DPO,https://secrettelaviv.com,8.5,applied,2026-06-17_AllCloud_DPO.md
+2026-06-12,Waymo (Alphabet),Head of AI Policy & Autonomous Systems Law,https://waymo.com/careers/,9.8,pending,,טרם הוגש — דורש אימות ישיר באתר Waymo
+2026-06-12,Tesla Legal,Senior Counsel — AI Ethics & Product Law,,9.5,pending,,טרם אומת — דורש הגשה
+2026-06-12,European Central Bank (ECB),AI Governance Lead — Financial Regulation,,9.2,pending,,טרם אומת — דורש הגשה
+2026-06-12,Mercedes-Benz AG,Director of AI Law & Public Policy,https://mercedes-benz.com/careers/,9.1,pending,,טרם אומת — דורש הגשה
+2026-06-17,Gloat,General Counsel,https://highfivepartners.com,9.0,applied,2026-06-17_Gloat_GeneralCounsel.md,הוגש דרך HighFive Partners
+2026-06-17,NVIDIA Israel,Senior Corporate Counsel,https://lhh.com,8.5,applied,2026-06-17_NVIDIA_SeniorCorporateCounsel.md,נשלח מייל מאומת ל-jobs@lhh.co.il ב-18.06.2026
+2026-06-17,AllCloud,Legal Compliance Officer & DPO,https://secrettelaviv.com,8.5,applied,2026-06-17_AllCloud_DPO.md,הוגש דרך Secret Tel Aviv Jobs
+2026-06-19,OpenAI,Counsel — AI Policy,https://openai.com/careers/counsel-ai-policy-san-francisco,9.5,applied,2026-06-19_OpenAI_CounselAIPolicy.md,מכתב כיסוי נכתב — ממתין לשליחה
+2026-06-19,Apple,Senior Legal Counsel — AI Regulation,https://jobs.apple.com/en-us/details/200625490-0836,9.3,pending,,Tier 1 — פעיל מאוקטובר 2025
+2026-06-19,Apple,Senior Legal Counsel — AI Products Content & Safety,https://jobs.apple.com/en-us/details/200660559-0836,9.0,pending,,Tier 1 — פורסם אפריל 2026
+2026-06-19,Wiz,Privacy AI and Data Protection Counsel,https://www.wiz.io/careers/job/4624101006,9.5,applied,2026-06-19_Wiz_PrivacyAI_DataProtectionCounsel.md,מכתב כיסוי נכתב — ממתין לשליחה
+2026-06-19,Wiz,Product & Data Protection Counsel,https://www.wiz.io/careers/job/4588700006,8.8,applied,2026-06-19_Wiz_Product_DataProtectionCounsel.md,מכתב כיסוי נכתב — ממתין לשליחה
+2026-06-19,Google,Head of AI and Emerging Tech Policy — Government Affairs,https://www.legal.io/jobs/5425974,9.2,pending,,Tier 2 — Washington DC
+2026-06-19,JPMorgan Chase,AI Strategy VP — AI Governance Enablement & Regulation,https://www.themuse.com/jobs/jpmorganchase/ai-strategy-vice-president-artificial-intelligence-governance-enablement-and-regulation-280a87,8.7,pending,,Tier 2
+2026-06-19,Pagaya,Legal Counsel AI / Data Protection / Privacy,https://job-boards.greenhouse.io/pagayais/jobs/7540401003,9.0,pending,,Tel Aviv — Israel-based!
+2026-06-19,Microsoft,Senior Corporate Counsel Cloud + AI,https://www.legal.io/jobs/5278062,8.8,pending,,Tier 2 — Redmond + Israel R&D presence
+2026-06-19,Meta,Director Commercial Legal AI,https://www.metacareers.com/profile/job_details/1639998280612132/,8.5,pending,,Menlo Park / New York
+2026-06-19,European Commission,Legal & Policy Officer — EU AI Office,https://artificialintelligenceact.eu/job-opportunities-european-ai-office/,8.0,pending,,Brussels — לבדוק זכאות אזרחות
+2026-06-19,GovAI,Research Fellow — Centre for Governance of AI,https://www.governance.ai/opportunities,8.5,pending,,Oxford — מסלול אקדמי-מדיניות

@@ -122,6 +122,195 @@ export const mockAgents: Agent[] = [
 // ── Job approval queue ─────────────────────────────────────────────────────
 
 export const initialJobQueue: JobCandidate[] = [
+  // ── Tier 1: Israel-eligible (הוגש / ממתין לשליחה ידנית) ──────────────────
+  {
+    id: 'job-wiz-1',
+    title: 'Privacy, AI and Data Protection Counsel',
+    company: 'Wiz (Google)',
+    location: 'Israel / Remote',
+    salary: '$207,000–$285,000',
+    jobType: 'Full-time',
+    url: 'https://www.wiz.io/careers/job/4624101006',
+    description:
+      'Wiz (acquired by Google, $32B) seeks a Privacy, AI and Data Protection Counsel to build its compliance function post-acquisition. The role reports to the Global Privacy Officer and requires deep expertise in privacy, EU AI Act, and GDPR. Responsibilities include designing educational sessions on AI regulation for engineering teams, advising on data architecture, and managing cross-jurisdictional compliance. Israel-based candidates are explicitly eligible.',
+    tags: ['Privacy', 'EU AI Act', 'GDPR', 'Israel', 'Google Acquisition', 'DPO'],
+    score: 9.5,
+    scoreReason: 'ישראל-eligible — Google acquisition, EU AI Act, DPO expertise + מכתב כיסוי מוכן',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+    toEmail: 'talent@wiz.io',
+    emailSubject: 'Application: Privacy, AI and Data Protection Counsel | Dr. Avraham Lalum, PhD',
+    coverLetter: `Dear Hiring Team,
+
+Wiz's acquisition by Google at $32 billion created something rare: a cloud security company that must simultaneously satisfy Israeli data sovereignty requirements, EU AI Act obligations, and the compliance expectations of the world's most scrutinized technology acquirer. That intersection — where cloud infrastructure meets AI regulation meets cross-jurisdictional legal complexity — is precisely where I have spent the last decade building expertise.
+
+My PhD thesis (University of Córdoba, 2026) models AI-based risk frameworks and regulatory compliance architectures, including explainable AI obligations directly relevant to the EU AI Act's transparency requirements. My 2025 Scopus-indexed publication develops a regulatory framework for explainable AI systems — the kind of foundational analysis your Global Privacy Officer needs when briefing product and engineering teams on what compliance actually demands technically. As a Lecturer at Tel Aviv University teaching AI, Law, and Conflict Resolution, I already design and deliver exactly the educational sessions on AI regulation that this role requires.
+
+Twenty-two years as Founder and Managing Partner of Lalum & Co., combined with eight years as Deputy Chair of the Israel Bar Association — where I led national legislative reforms alongside the Ministry of Justice — means I bring both practitioner depth and genuine policymaking experience.
+
+I am Israel-based, immediately available, and deeply motivated by the specific challenge Wiz faces: building a privacy and AI compliance function that can keep pace with both Google's expectations and the EU's accelerating regulatory calendar.
+
+I would welcome a conversation about how my background serves Wiz at this pivotal moment.
+
+Sincerely,
+Dr. Avraham (Avi) Lalum
+avraham@lalum.co | +972-52-249-0420 | lalum.co`,
+  },
+  {
+    id: 'job-openai-1',
+    title: 'Counsel — AI Policy',
+    company: 'OpenAI',
+    location: 'San Francisco / Washington DC (Hybrid)',
+    salary: '$248,000–$275,000',
+    jobType: 'Full-time',
+    url: 'https://openai.com/careers/counsel-ai-policy-san-francisco',
+    description:
+      'OpenAI is seeking a Counsel for AI Policy to analyze proposed AI laws and regulations, develop policy positions, and advise on legislative proposals "for which there is often little precedent." The role interacts with OpenAI\'s global affairs teams and requires a legal self-starter with deep technology policy experience. Relocation assistance offered.',
+    tags: ['AI Policy', 'Regulatory', 'OpenAI', 'Legislative', 'Global Affairs'],
+    score: 9.5,
+    scoreReason: '"Little precedent" — תיאור מדויק של מחקר הדוקטורט + 8 שנות עיצוב חקיקה בלשכת עוה"ד',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+    toEmail: 'legalrecruiting@openai.com',
+    emailSubject: 'Application: Counsel, AI Policy | Dr. Avraham Lalum, PhD',
+    coverLetter: `Dear Hiring Team,
+
+The job description notes that this role requires advising on legislative and regulatory proposals "for which there is often little precedent." That phrase captures exactly what drew me to AI law before it was a recognized field — and it describes the condition under which I have done my most consequential work.
+
+My PhD thesis (University of Córdoba, 2026) addresses AI-based risk modeling, algorithmic decision-making, and the construction of regulatory frameworks in precisely those areas where existing law provides inadequate guidance. My 2025 Scopus-indexed publication develops an explainable AI regulatory framework — not a commentary on existing rules, but an original contribution to what those rules should be.
+
+For eight years as Deputy Chair of the Israel Bar Association, I did not comment on legislation — I shaped it, working directly with the Ministry of Justice on national legal reforms. I know how to develop a policy position, present it to legislators, anticipate counter-arguments, and build durable institutional consensus.
+
+As a Lecturer at Tel Aviv University teaching AI, Law, and Conflict Resolution, I stay current with global regulatory developments not as a spectator but as someone who must explain and defend analytical positions to a room full of skeptical students and practitioners.
+
+OpenAI is building the precedents that the rest of AI law will follow. I have spent years preparing to contribute to exactly that work.
+
+I would welcome a conversation about this role.
+
+Sincerely,
+Dr. Avraham (Avi) Lalum
+avraham@lalum.co | +972-52-249-0420 | lalum.co`,
+  },
+  {
+    id: 'job-wiz-2',
+    title: 'Product & Data Protection Counsel',
+    company: 'Wiz (Google)',
+    location: 'Israel + US (Hybrid)',
+    salary: '$180,000–$240,000',
+    jobType: 'Full-time',
+    url: 'https://www.wiz.io/careers/job/4588700006',
+    description:
+      'Partners with Wiz\'s Product and R&D teams in Israel on legal, commercial, regulatory, and data protection matters. Requires experience translating compliance requirements into product design constraints. Israel-based role with US travel.',
+    tags: ['Product Law', 'Data Protection', 'R&D Partnership', 'Israel', 'Commercial'],
+    score: 8.8,
+    scoreReason: 'Israel R&D — עבודה ישירה עם הנדסה, 22 שנות תרגום רגולציה לעסקים + מכתב כיסוי מוכן',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+    toEmail: 'talent@wiz.io',
+    emailSubject: 'Application: Product & Data Protection Counsel | Dr. Avraham Lalum, PhD',
+    coverLetter: `Dear Hiring Team,
+
+The most expensive legal mistakes in product development happen when regulatory counsel arrives after design decisions are already made. The most valuable thing a Product & Data Protection Counsel can offer is the ability to sit inside the product and R&D conversation from day one — translating compliance requirements into engineering constraints before they become liability. That is the role I have played for clients across 22 years of practice, and it is the role I am ready to play for Wiz.
+
+As Founder and Managing Partner of Lalum & Co., I have spent two decades converting complex legal and regulatory obligations into commercial agreements and product governance frameworks that technical teams can actually implement. I am not a lawyer who reviews finished products — I am one who works upstream, alongside the people building them.
+
+My PhD research on AI-based risk modeling and algorithmic decision-making gives me a technical vocabulary that allows genuine collaboration with R&D teams rather than adversarial review cycles. Eight years as Deputy Chair of the Israel Bar Association, leading legislative reforms with the Ministry of Justice, means I understand exactly what regulators are trying to achieve — and how to build products that satisfy that intent, not merely its letter.
+
+Wiz's Israel R&D center needs counsel who can be a genuine partner to engineering leadership. I am Israel-based, fluent in the commercial and regulatory pressures Wiz faces post-Google acquisition, and ready to work at the speed your product teams require.
+
+Sincerely,
+Dr. Avraham (Avi) Lalum
+avraham@lalum.co | +972-52-249-0420 | lalum.co`,
+  },
+  {
+    id: 'job-pagaya-1',
+    title: 'Legal Counsel — AI / Data Protection / Privacy',
+    company: 'Pagaya',
+    location: 'Tel Aviv, Israel',
+    salary: '₪60,000–₪100,000/month',
+    jobType: 'Full-time',
+    url: 'https://job-boards.greenhouse.io/pagayais/jobs/7540401003',
+    description:
+      'Pagaya (NASDAQ-listed Israeli AI fintech) seeks a Legal Counsel covering data protection, privacy, information security, and private investment funds. Requires multi-disciplinary legal expertise in an AI-native product context. Israel-based.',
+    tags: ['Fintech', 'Privacy', 'NASDAQ', 'Tel Aviv', 'AI', 'Data Protection'],
+    score: 9.0,
+    scoreReason: 'תל אביב, AI fintech ישראלי, NASDAQ — התאמה מלאה לפרופיל + Israel-based',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+    toEmail: 'legal-recruiting@pagaya.com',
+    emailSubject: 'Application: Legal Counsel – AI / Data Protection / Privacy | Dr. Avraham Lalum, PhD',
+    coverLetter: `Dear Hiring Team,
+
+Pagaya's position at the intersection of AI-driven credit decisioning and NASDAQ-level regulatory scrutiny creates a compliance challenge that demands more than a traditional legal counsel — it requires someone who understands both the algorithmic systems producing the decisions and the legal frameworks governing them. I built my career at exactly this intersection.
+
+My PhD thesis (University of Córdoba, 2026) models AI-based risk frameworks and regulatory compliance architectures, with direct application to algorithmic credit scoring and the data governance obligations that accompany it. My 2025 Scopus-indexed publication on explainable AI regulation addresses precisely the transparency obligations that regulators are now imposing on AI-driven financial products in the US and EU.
+
+Twenty-two years as Founder and Managing Partner of Lalum & Co. gave me deep fluency in complex commercial contracts, data privacy architecture, and cross-jurisdictional compliance — across Israel, Cyprus, Greece, the US, and Spain. As Deputy Chair of the Israel Bar Association for eight years, I led national legislative reforms and developed the institutional credibility that matters when engaging regulators.
+
+Pagaya operates at the frontier of regulated AI in financial services. I would bring both the legal discipline and the AI governance expertise to protect and advance that position.
+
+I would welcome the opportunity to discuss this role.
+
+Sincerely,
+Dr. Avraham (Avi) Lalum
+avraham@lalum.co | +972-52-249-0420 | lalum.co`,
+  },
+  // ── Applied & Verified ───────────────────────────────────────────────────
+  {
+    id: 'job-nvidia-1',
+    title: 'Senior Corporate Counsel',
+    company: 'NVIDIA Israel',
+    location: 'Israel (Hybrid)',
+    salary: '$180,000–$250,000',
+    jobType: 'Full-time',
+    url: 'https://lhh.com',
+    description:
+      'NVIDIA Israel R&D center seeks Senior Corporate Counsel for complex real estate transactions, commercial contracts, and cross-border legal frameworks. PhD in Law & Economics with AI infrastructure expertise is a significant differentiator.',
+    tags: ['NVIDIA', 'Israel', 'Commercial Contracts', 'Real Estate', 'LHH'],
+    score: 8.5,
+    scoreReason: 'NVIDIA Israel R&D — ניסיון נדל"ן מסחרי + דוקטורט + AI',
+    scannedAt: '17.06.2026',
+    decision: 'applied',
+    appliedAt: '18.06.2026 — נשלח מאומת ל-jobs@lhh.co.il',
+    screenshotPath: 'screenshots/nvidia_confirmed.png',
+  },
+  {
+    id: 'job-gloat-1',
+    title: 'General Counsel',
+    company: 'Gloat',
+    location: 'Tel Aviv, Israel',
+    salary: 'לא פורסם',
+    jobType: 'Full-time',
+    url: 'https://highfivepartners.com',
+    description:
+      'Gloat\'s Agentic AI platform needs a General Counsel with deep expertise in EU AI Act compliance, data privacy architecture, and global commercial agreements. Requires leadership presence and Israeli legal authority.',
+    tags: ['GC', 'EU AI Act', 'Privacy', 'HighFive Partners', 'Israel'],
+    score: 9.0,
+    scoreReason: 'GC תפקיד ראשי ב-Gloat — EU AI Act + מנהיגות בלשכה + מחקר AI',
+    scannedAt: '17.06.2026',
+    decision: 'applied',
+    appliedAt: '17.06.2026 — הוגש דרך HighFive Partners',
+    screenshotPath: 'screenshots/gloat_applied.png',
+  },
+  {
+    id: 'job-allcloud-1',
+    title: 'Legal Compliance Officer & DPO',
+    company: 'AllCloud',
+    location: 'Israel',
+    salary: 'לא פורסם',
+    jobType: 'Full-time',
+    url: 'https://secrettelaviv.com',
+    description:
+      'AllCloud, a leading AWS and Salesforce partner, seeks a DPO to lead AI governance, GDPR enforcement, and EU AI Act compliance across cloud-native AI architecture for enterprise clients.',
+    tags: ['DPO', 'GDPR', 'AWS', 'Salesforce', 'AI Governance', 'Secret Tel Aviv'],
+    score: 8.5,
+    scoreReason: 'DPO + AI governance — EU AI Act, ענן, לקוחות enterprise',
+    scannedAt: '17.06.2026',
+    decision: 'applied',
+    appliedAt: '17.06.2026 — הוגש דרך Secret Tel Aviv Jobs',
+    screenshotPath: 'screenshots/allcloud_applied.png',
+  },
+  // ── Tier 1 Global: ממתין להגשה ──────────────────────────────────────────
   {
     id: 'job-001',
     title: 'Head of AI Policy & Autonomous Systems Law',
@@ -129,13 +318,13 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'San Francisco / Remote',
     salary: '$250,000–$320,000 + RSU',
     jobType: 'Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=AI+law+autonomous+vehicles',
+    url: 'https://waymo.com/careers/',
     description:
-      'Waymo is seeking a senior legal-policy expert to lead our Autonomous Vehicle regulatory and liability strategy. You will own our engagement with federal (NHTSA, FTC) and international regulators, draft position papers on AV decision-making liability, represent Waymo in legislative hearings, and build the legal framework governing how our AI makes life-and-death decisions. PhD in Law or Economics strongly preferred. Deep understanding of AI systems required. This role sits at the executive table and directly shapes how the world regulates self-driving cars.',
+      'Waymo is seeking a senior legal-policy expert to lead our Autonomous Vehicle regulatory and liability strategy. You will own our engagement with federal (NHTSA, FTC) and international regulators, draft position papers on AV decision-making liability, represent Waymo in legislative hearings, and build the legal framework governing how our AI makes life-and-death decisions. PhD in Law or Economics strongly preferred.',
     tags: ['AV Law', 'Regulatory', 'AI Liability', 'NHTSA', 'PhD', 'Policy'],
     score: 9.8,
-    scoreReason: 'התאמה מושלמת — ד"ר משפטים + כלכלה + AI, ממשק ישיר עם החלטות אוטונומיות ורגולציה בינ"ל, תפקיד מנהיגותי ייחודי',
-    scannedAt: 'לפני 6 דקות',
+    scoreReason: 'התאמה מושלמת — ד"ר משפטים + כלכלה + AI, רגולציה AV, תפקיד מנהיגותי ייחודי',
+    scannedAt: '12.06.2026',
     decision: 'pending',
   },
   {
@@ -145,13 +334,13 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'Austin, TX / Hybrid',
     salary: '$200,000–$270,000 + equity',
     jobType: 'Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=Tesla+AI+legal+counsel',
+    url: 'https://www.tesla.com/careers',
     description:
-      'Tesla\'s Legal team is looking for a Senior Counsel to advise on Autopilot and Full Self-Driving legal exposure, including product liability in edge cases where AI makes autonomous decisions. You will work directly with the FSD engineering team to translate legal constraints into system design requirements. You will also represent Tesla in EU AI Act compliance workstreams. A background combining law, economics, and technology is essential. Prior experience with algorithmic decision-making regulation or autonomous systems is a significant differentiator.',
+      'Tesla\'s Legal team is looking for a Senior Counsel to advise on Autopilot and Full Self-Driving legal exposure, EU AI Act compliance workstreams, and product liability for autonomous decisions.',
     tags: ['FSD', 'Product Liability', 'EU AI Act', 'Autopilot', 'LegalTech'],
     score: 9.5,
-    scoreReason: 'תפקיד ייחודי — ייעוץ משפטי ישיר לצוות FSD של טסלה, EU AI Act, חפיפה מלאה עם מחקר AI+משפטים',
-    scannedAt: 'לפני 6 דקות',
+    scoreReason: 'ייעוץ ישיר לצוות FSD, EU AI Act, חפיפה מלאה עם מחקר AI+משפטים',
+    scannedAt: '12.06.2026',
     decision: 'pending',
   },
   {
@@ -161,29 +350,45 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'Frankfurt, Germany (Relocation supported)',
     salary: '€130,000–€175,000',
     jobType: 'Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=ECB+AI+governance+legal',
+    url: 'https://www.ecb.europa.eu/careers',
     description:
-      'The ECB\'s Directorate General for Digital Innovation is hiring an AI Governance Lead to define the regulatory framework for AI use in European financial institutions. You will author binding guidelines on algorithmic credit scoring, automated trading oversight, and AI-driven systemic risk detection. PhD in Economics or Law is required. Experience with central bank operations, Basel frameworks, or EU financial regulation is highly valued. This position shapes binding policy for 20 member states.',
+      'The ECB\'s Directorate General for Digital Innovation is hiring an AI Governance Lead to define the regulatory framework for AI use in European financial institutions. PhD in Economics or Law required. Shapes binding policy for 20 member states.',
     tags: ['ECB', 'Financial Regulation', 'Algorithmic', 'Basel', 'PhD', 'Governance'],
     score: 9.2,
-    scoreReason: 'ד"ר כלכלה + משפטים — fit מושלם לפריינקפורט, רגולציה פיננסית+AI, השפעה ישירה על 20 מדינות',
-    scannedAt: 'לפני 7 דקות',
+    scoreReason: 'ד"ר כלכלה + משפטים — fit מושלם לפריינקפורט, השפעה על 20 מדינות',
+    scannedAt: '12.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-google-1',
+    title: 'Head of AI and Emerging Tech Policy — Government Affairs',
+    company: 'Google',
+    location: 'Washington, DC',
+    salary: '$200,000–$350,000',
+    jobType: 'Full-time',
+    url: 'https://www.legal.io/jobs/5425974',
+    description:
+      'Director/Head-level role leading AI and emerging tech policy at Google\'s Government Affairs division. Requires deep expertise in AI legislative/regulatory frameworks, stakeholder engagement, and policy strategy at scale.',
+    tags: ['Google', 'Government Affairs', 'AI Policy', 'DC', 'Director'],
+    score: 9.2,
+    scoreReason: 'Head-level ב-Google, policy leadership — זהה לניסיון לשכת עוה"ד ברמה לאומית',
+    scannedAt: '19.06.2026',
     decision: 'pending',
   },
   {
     id: 'job-004',
     title: 'Director of AI Law & Public Policy',
     company: 'Mercedes-Benz AG',
-    location: 'Stuttgart, Germany / Tel Aviv (Hybrid option)',
+    location: 'Stuttgart / Tel Aviv (Hybrid)',
     salary: '€150,000–€200,000',
     jobType: 'Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=Mercedes+AI+law+policy',
+    url: 'https://mercedes-benz.com/careers/',
     description:
-      'Mercedes-Benz seeks a Director of AI Law to lead our global policy strategy for autonomous and semi-autonomous vehicles. You will engage with ISO 26262, UN WP.29 regulation on automated driving (UNECE), and country-specific AV legislation. Core responsibilities include defining liability protocols for Level 3–4 autonomy decisions, managing relationships with regulators across EU, US, China, and Israel, and advising the board on AI Act compliance. Strong academic background (PhD preferred) in law, economics, or public policy. Fluency in English and German is advantageous.',
+      'Mercedes-Benz seeks a Director of AI Law to lead global policy strategy for autonomous vehicles. Engage with ISO 26262, UN WP.29, and AV legislation across EU, US, China, and Israel. Tel Aviv hybrid option available.',
     tags: ['UNECE WP.29', 'ISO 26262', 'Level 4 AV', 'EU AI Act', 'Board Advisory'],
     score: 9.1,
-    scoreReason: 'תפקיד דירקטוריון ב-Mercedes, אחריות על UN WP.29 ו-EU AI Act — רלוונטי מאוד לד"ר משפטים+כלכלה+AI',
-    scannedAt: 'לפני 7 דקות',
+    scoreReason: 'Tel Aviv Hybrid — board level, UN WP.29 + EU AI Act + ד"ר משפטים+כלכלה',
+    scannedAt: '12.06.2026',
     decision: 'pending',
   },
   {
@@ -193,13 +398,77 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'Tel Aviv / London (Hybrid)',
     salary: '$220,000–$290,000 + stock',
     jobType: 'Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=Microsoft+AI+ethics+officer',
+    url: 'https://www.legal.io/jobs/5278062',
     description:
-      'Microsoft\'s Responsible AI team is expanding in EMEA. The Chief AI Ethics Officer will set the ethical framework for AI products deployed across healthcare, legal, financial, and government verticals in Europe and the Middle East. Responsibilities include AI impact assessments, red-teaming governance policies, engaging regulators (EU AI Office, ICO, GDPR authorities), and publishing research on algorithmic fairness and accountability. A PhD combined with deep AI understanding is required. Prior policy experience with OECD, UN, or government bodies is a major asset.',
-    tags: ['Responsible AI', 'GDPR', 'AI Office EU', 'Fairness', 'PhD', 'EMEA'],
+      'Microsoft\'s Responsible AI team — EMEA expansion. Chief AI Ethics Officer sets ethical framework for AI products in healthcare, legal, financial, government verticals. PhD + deep AI understanding required.',
+    tags: ['Responsible AI', 'GDPR', 'EU AI Office', 'Fairness', 'PhD', 'EMEA', 'Tel Aviv'],
     score: 9.0,
-    scoreReason: 'Microsoft Tel Aviv, C-level בתחום אתיקת AI — ד"ר משפטים+כלכלה תחרות ישירה עם EU AI Office',
-    scannedAt: 'לפני 7 דקות',
+    scoreReason: 'Microsoft Tel Aviv, C-level אתיקת AI — Israel-based option + EMEA leadership',
+    scannedAt: '12.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-apple-1',
+    title: 'Senior Legal Counsel — AI Regulation',
+    company: 'Apple',
+    location: 'Cupertino / Ireland (EU)',
+    salary: '$207,700–$311,600',
+    jobType: 'Full-time',
+    url: 'https://jobs.apple.com/en-us/details/200625490-0836',
+    description:
+      'Apple Legal — Products & Regulatory group. 8+ years on regulatory matters covering AI laws, privacy, and digital regulations. Analyzing regulatory applicability, interacting with regulators, advising management on risk mitigation.',
+    tags: ['Apple', 'AI Regulation', 'Privacy', 'EU', 'Regulatory'],
+    score: 9.3,
+    scoreReason: '22 שנות פרקטיקה + EU AI Act + דוקטורט — Apple Legal פעיל מאוקטובר 2025',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-apple-2',
+    title: 'Senior Legal Counsel — AI Products, Content and Safety',
+    company: 'Apple',
+    location: 'Cupertino / Ireland (EU)',
+    salary: '$200,000–$290,000',
+    jobType: 'Full-time',
+    url: 'https://jobs.apple.com/en-us/details/200660559-0836',
+    description:
+      'Apple Legal Products & Regulatory — AI product safety, content law, and AI governance. Focused on product safety, content law, and AI governance within Apple Legal\'s Products & Regulatory group. Posted April 2026.',
+    tags: ['Apple', 'AI Safety', 'Content Law', 'Product Governance', 'EU'],
+    score: 9.0,
+    scoreReason: 'AI Product Safety + Governance — חפיפה מלאה עם מחקר AI+משפטים, פורסם אפריל 2026',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-jpmc-1',
+    title: 'AI Strategy VP — AI Governance, Enablement & Regulation',
+    company: 'JPMorgan Chase',
+    location: 'Jersey City, NJ / Singapore',
+    salary: '$250,000–$400,000 total comp',
+    jobType: 'Full-time',
+    url: 'https://www.themuse.com/jobs/jpmorganchase/ai-strategy-vice-president-artificial-intelligence-governance-enablement-and-regulation-280a87',
+    description:
+      'JPMorgan Chase — AI Strategy VP identifies, assesses, and mitigates AI-related risks including model risk, data privacy, fairness, and ethics. 8+ years in AI/ML governance or regulatory compliance. Hybrid legal-strategy role.',
+    tags: ['JPMorgan', 'AI Governance', 'Model Risk', 'Fairness', 'VP'],
+    score: 8.7,
+    scoreReason: 'Law & Economics PhD מדויק — רגולציה AI+פיננסים, VP-level בJPMC',
+    scannedAt: '19.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-meta-1',
+    title: 'Director, Commercial Legal AI',
+    company: 'Meta',
+    location: 'Menlo Park / New York',
+    salary: '$250,000–$350,000',
+    jobType: 'Full-time',
+    url: 'https://www.metacareers.com/profile/job_details/1639998280612132/',
+    description:
+      'Meta is building AI agents for commercial contract processes and needs a senior Director to lead legal implementation. Strong understanding of AI systems, contracting, and governance required.',
+    tags: ['Meta', 'Director', 'AI Agents', 'Commercial Law', 'Contracting'],
+    score: 8.5,
+    scoreReason: 'Director ב-Meta — AI agents + חוזים מסחריים + Law & Economics',
+    scannedAt: '19.06.2026',
     decision: 'pending',
   },
   {
@@ -209,13 +478,29 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'Paris, France / Remote',
     salary: '€110,000–€145,000',
     jobType: 'Contract (2yr renewable)',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=OECD+AI+antitrust+legal',
+    url: 'https://www.oecd.org/careers',
     description:
-      'The OECD Competition Division is seeking a Legal Researcher specializing in AI market dynamics and antitrust. You will produce binding policy recommendations on algorithmic collusion, data monopolies, and AI-driven market foreclosure affecting OECD member states. PhD in Economics or Law required. Experience in competition law, digital markets, or platform regulation is essential. Your work will directly influence legislation in 38 countries. High publication output expected.',
+      'The OECD Competition Division seeks a Legal Researcher for AI market dynamics and antitrust. Binding policy recommendations on algorithmic collusion, data monopolies affecting 38 OECD member states. PhD in Economics or Law required.',
     tags: ['Antitrust', 'OECD', 'Algorithmic Collusion', 'Competition Law', 'PhD'],
     score: 8.6,
-    scoreReason: 'ד"ר כלכלה + משפטים = fit אידיאלי, OECD Paris, השפעה רגולטורית על 38 מדינות — חוזה 2 שנה',
-    scannedAt: 'לפני 8 דקות',
+    scoreReason: 'ד"ר כלכלה + משפטים, OECD Paris, השפעה על 38 מדינות — חוזה 2 שנה',
+    scannedAt: '12.06.2026',
+    decision: 'pending',
+  },
+  {
+    id: 'job-govai-1',
+    title: 'Research Fellow — AI Governance',
+    company: 'Centre for Governance of AI (GovAI)',
+    location: 'Oxford, UK (2yr renewable)',
+    salary: '£60,000–£80,000',
+    jobType: 'Full-time Research',
+    url: 'https://www.governance.ai/opportunities',
+    description:
+      'GovAI seeks fellows with backgrounds in law, public policy, and economics who have led policy initiatives or advised decision-makers. Past fellows include lawyers, economists, and political scientists working on international AI governance.',
+    tags: ['GovAI', 'Oxford', 'Research', 'AI Policy', 'International'],
+    score: 8.5,
+    scoreReason: 'GovAI Oxford — מסלול אקדמי-מדיניות, פרסומים + לשכת עוה"ד = fit מדויק',
+    scannedAt: '19.06.2026',
     decision: 'pending',
   },
   {
@@ -225,15 +510,16 @@ export const initialJobQueue: JobCandidate[] = [
     location: 'ירושלים (קמפוס)',
     salary: '28,000–38,000 ₪ + מחקר',
     jobType: 'Academic Full-time',
-    url: 'https://www.linkedin.com/jobs/search/?keywords=Hebrew+University+AI+law+professor',
+    url: 'https://www.huji.ac.il/careers',
     description:
-      'The Hebrew University Faculty of Law invites applications for a tenure-track position in AI & Law. The successful candidate will teach courses on algorithmic governance, AI liability, and the regulation of autonomous systems. Research focus on AI decision-making, data rights, or AI ethics preferred. Active industry partnerships with tech companies are encouraged. PhD in Law required. Prior publications in leading law reviews (Harvard, Yale, Stanford, or equivalent) are a strong asset. Possibility to lead a new interdisciplinary AI & Society research center.',
+      'The Hebrew University Faculty of Law invites applications for a tenure-track position in AI & Law. Research focus on AI decision-making, data rights, or AI ethics. Possibility to lead a new interdisciplinary AI & Society research center.',
     tags: ['Academia', 'Tenure-track', 'AI Liability', 'ירושלים', 'Research Center'],
     score: 8.3,
-    scoreReason: 'האוניברסיטה העברית — משרה אקדמית tenure-track ב-AI+משפטים, ניתן לשלב עם ייעוץ תעשייתי',
-    scannedAt: 'לפני 9 דקות',
+    scoreReason: 'האוניברסיטה העברית — tenure-track ב-AI+משפטים, ניתן לשלב עם ייעוץ תעשייתי',
+    scannedAt: '12.06.2026',
     decision: 'pending',
   },
+  // ── Filtered out ─────────────────────────────────────────────────────────
   {
     id: 'job-008',
     title: 'Junior Legal Clerk — General Practice',
@@ -245,8 +531,8 @@ export const initialJobQueue: JobCandidate[] = [
     description: 'פקיד משפטי כללי. ניסיון לא נדרש. עבודה אדמיניסטרטיבית.',
     tags: ['Entry-level', 'Administrative', 'General'],
     score: 1.2,
-    scoreReason: 'ציון נמוך — entry level, שכר נמוך, לא רלוונטי לד"ר עם מחקר AI',
-    scannedAt: 'לפני 10 דקות',
+    scoreReason: 'ציון נמוך — entry level, שכר נמוך, לא רלוונטי',
+    scannedAt: '12.06.2026',
     decision: 'pending',
   },
 ];
