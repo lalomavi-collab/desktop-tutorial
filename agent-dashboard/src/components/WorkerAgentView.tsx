@@ -171,19 +171,58 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [schedule, setSchedule] = useState(defaultSchedule);
+  const [confirmJob, setConfirmJob] = useState<JobCandidate | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const decide = (id: string, decision: 'approved' | 'rejected') => {
     if (decision === 'approved') {
-      setApplyingId(id);
-      setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applying' } : j));
-      setTimeout(() => {
-        setJobs(prev => prev.map(j =>
-          j.id === id ? { ...j, decision: 'applied', appliedAt: 'עכשיו', screenshotPath: `screenshots/${id}.png` } : j
-        ));
-        setApplyingId(null);
-      }, 2800);
+      const job = jobs.find(j => j.id === id);
+      if (job?.toEmail && job?.coverLetter) {
+        setConfirmJob(job);
+      } else {
+        // No email configured — mark as approved for manual follow-up
+        setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applied', appliedAt: 'ממתין לשליחה ידנית' } : j));
+      }
     } else {
       setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'rejected' } : j));
+    }
+  };
+
+  const confirmSend = async () => {
+    if (!confirmJob) return;
+    const job = confirmJob;
+    setConfirmJob(null);
+    setSendError(null);
+    setApplyingId(job.id);
+    setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'applying' } : j));
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_email: job.toEmail,
+          subject: job.emailSubject,
+          cover_letter: job.coverLetter,
+          company: job.company,
+          title: job.title,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setJobs(prev => prev.map(j =>
+          j.id === job.id ? { ...j, decision: 'applied', appliedAt: new Date().toLocaleTimeString('he-IL') } : j
+        ));
+      } else {
+        setSendError(data.error ?? 'שגיאה לא ידועה');
+        setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Network error';
+      setSendError(msg);
+      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
+    } finally {
+      setApplyingId(null);
     }
   };
 
@@ -201,6 +240,66 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
 
   return (
     <div className="space-y-5" dir="rtl">
+
+      {/* ── Confirm Send Modal ─────────────────────────────────────────────── */}
+      {confirmJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" dir="rtl">
+          <div className="bg-[#13151f] border border-amber-500/40 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+            <div className="flex items-center justify-end gap-2 mb-4">
+              <h2 className="text-white font-bold text-lg">אישור שליחת בקשה</h2>
+              <Send size={18} className="text-amber-400" />
+            </div>
+            <div className="space-y-3 mb-5">
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">חברה</p>
+                <p className="text-white font-semibold">{confirmJob.company}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">תפקיד</p>
+                <p className="text-white">{confirmJob.title}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">נשלח אל</p>
+                <p className="text-amber-400 font-mono text-sm">{confirmJob.toEmail}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">נושא</p>
+                <p className="text-gray-300 text-sm">{confirmJob.emailSubject}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl max-h-40 overflow-y-auto">
+                <p className="text-gray-500 text-xs mb-1">תצוגה מקדימה של מכתב הכיסוי</p>
+                <p className="text-gray-400 text-xs leading-relaxed whitespace-pre-line">{confirmJob.coverLetter?.slice(0, 400)}...</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmJob(null)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-700 text-gray-400 text-sm font-medium hover:bg-gray-800 transition-all"
+              >
+                ביטול
+              </button>
+              <button
+                onClick={confirmSend}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-bold transition-all shadow-lg shadow-green-900/30"
+              >
+                <Send size={14} />
+                שלח עכשיו דרך Outlook
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Send Error Banner ──────────────────────────────────────────────── */}
+      {sendError && (
+        <div className="flex items-center justify-between p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <button onClick={() => setSendError(null)} className="text-red-400 text-xs hover:text-red-300">✕ סגור</button>
+          <div className="text-right">
+            <p className="text-red-400 font-semibold text-sm">שגיאה בשליחה</p>
+            <p className="text-gray-500 text-xs">{sendError}</p>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-gray-600">
