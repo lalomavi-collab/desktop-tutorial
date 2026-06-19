@@ -95,7 +95,7 @@ const profileSections: { title: string; icon: typeof User; fields: ProfileField[
     fields: [
       { key: 'resume_docx', label: 'קורות חיים (DOCX)', value: 'Avraham_Lalum_CV_2026_EN.docx ✓ שמור ב-job_agent/', status: 'filled', required: true },
       { key: 'cover_letter', label: 'מכתב כוונות', value: 'תבנית מובנית ב-profile_context.json ✓', status: 'filled', required: true },
-      { key: 'resume_pdf', label: 'גרסת PDF של ה-CV', value: '', status: 'missing', required: false, hint: 'המר את ה-DOCX ל-PDF לטפסים שדורשים PDF בלבד' },
+      { key: 'resume_pdf', label: 'גרסת PDF של ה-CV', value: 'resume.pdf ✓ שמור ב-job_agent/', status: 'filled', required: false },
       { key: 'academic_cv', label: 'Academic CV ארוך', value: '', status: 'missing', required: false, hint: 'גרסה מורחבת עם כל הפרסומים — נדרש ל-OECD/ECB/אקדמיה' },
       { key: 'references', label: 'ממליצים', value: '', status: 'missing', required: false, hint: '2–3 ממליצים — פרופסור מנחה, שופט, ראש לשכה' },
     ],
@@ -136,7 +136,7 @@ const autonomyRules = [
   },
 ];
 
-const approvedCompanies = ['Waymo', 'Tesla', 'Mercedes-Benz', 'ECB', 'OECD', 'Microsoft', 'EU AI Office'];
+const approvedCompanies = ['Waymo', 'Tesla', 'Mercedes-Benz', 'ECB', 'OECD', 'Microsoft', 'EU AI Office', 'OpenAI', 'Wiz', 'Apple', 'Google', 'Pagaya'];
 
 // ─── Score color ────────────────────────────────────────────────────────────
 
@@ -221,7 +221,7 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'נסרקו', value: '63', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { label: 'נסרקו', value: '19', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           { label: 'מתאימות', value: String(qualified.length), icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
           { label: 'הוגשו', value: String(applied.length), icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
           { label: 'פרופיל מלא', value: `${completeness}%`, icon: User, color: completeness < 50 ? 'text-red-400' : 'text-amber-400', bg: completeness < 50 ? 'bg-red-500/10' : 'bg-amber-500/10' },
