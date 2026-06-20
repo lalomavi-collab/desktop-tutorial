@@ -14,6 +14,11 @@
       "env": {
         "FB_ACCESS_TOKEN": "${FB_ACCESS_TOKEN}"
       }
+    },
+    "notebooklm": {
+      "command": "python",
+      "args": ["notebooklm/mcp_server.py"],
+      "description": "NotebookLM integration – enrich conversations, create marketing assets, build a second brain"
     }
   }
 }
