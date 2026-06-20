@@ -165,9 +165,26 @@ type Tab = typeof TABS[number]['id'];
 
 // ─── Main component ─────────────────────────────────────────────────────────
 
+const STORAGE_KEY = 'job-decisions-v1';
+
+function loadDecisions(): Record<string, { decision: JobCandidate['decision']; appliedAt?: string }> {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}'); } catch { return {}; }
+}
+
+function saveDecision(id: string, decision: JobCandidate['decision'], appliedAt?: string) {
+  const saved = loadDecisions();
+  saved[id] = { decision, appliedAt };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
+
+function mergeWithSaved(jobs: JobCandidate[]): JobCandidate[] {
+  const saved = loadDecisions();
+  return jobs.map(j => saved[j.id] ? { ...j, ...saved[j.id] } : j);
+}
+
 export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('queue');
-  const [jobs, setJobs] = useState<JobCandidate[]>(initialJobQueue);
+  const [jobs, setJobs] = useState<JobCandidate[]>(() => mergeWithSaved(initialJobQueue));
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [schedule, setSchedule] = useState(defaultSchedule);
@@ -181,9 +198,11 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
         setConfirmJob(job);
       } else {
         // No email configured — mark as approved for manual follow-up
+        saveDecision(id, 'applied', 'ממתין לשליחה ידנית');
         setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applied', appliedAt: 'ממתין לשליחה ידנית' } : j));
       }
     } else {
+      saveDecision(id, 'rejected');
       setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'rejected' } : j));
     }
   };
@@ -210,16 +229,20 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        const appliedAt = new Date().toLocaleTimeString('he-IL');
+        saveDecision(job.id, 'applied', appliedAt);
         setJobs(prev => prev.map(j =>
-          j.id === job.id ? { ...j, decision: 'applied', appliedAt: new Date().toLocaleTimeString('he-IL') } : j
+          j.id === job.id ? { ...j, decision: 'applied', appliedAt } : j
         ));
       } else {
         setSendError(data.error ?? 'שגיאה לא ידועה');
+        saveDecision(job.id, 'failed');
         setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Network error';
       setSendError(msg);
+      saveDecision(job.id, 'failed');
       setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
     } finally {
       setApplyingId(null);
