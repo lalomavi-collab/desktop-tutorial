@@ -210,6 +210,15 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
   const confirmSend = async () => {
     if (!confirmJob) return;
     const job = confirmJob;
+
+    // Basic email validation before sending
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!job.toEmail || !emailRegex.test(job.toEmail)) {
+      setSendError(`כתובת מייל לא תקינה: "${job.toEmail}" — בדוק לפני שליחה`);
+      setConfirmJob(null);
+      return;
+    }
+
     setConfirmJob(null);
     setSendError(null);
     setApplyingId(job.id);
