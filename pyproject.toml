@@ -13,6 +13,11 @@ dependencies = [
     "pypdf>=4.0.0",
 ]
 
+[project.optional-dependencies]
+research = [
+    "pytrends>=4.9.2",
+]
+
 [project.scripts]
 prompt-builder = "prompt_builder.cli:main"
 job-agent = "job_agent.main:main"
