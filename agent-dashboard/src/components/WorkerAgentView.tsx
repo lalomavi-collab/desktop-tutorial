@@ -290,9 +290,20 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
                 <p className="text-gray-500 text-xs mb-1">תפקיד</p>
                 <p className="text-white">{confirmJob.title}</p>
               </div>
-              <div className="p-3 bg-gray-900 rounded-xl">
-                <p className="text-gray-500 text-xs mb-1">נשלח אל</p>
-                <p className="text-amber-400 font-mono text-sm">{confirmJob.toEmail}</p>
+              <div className={`p-3 rounded-xl border ${confirmJob.emailVerified === false ? 'bg-amber-500/10 border-amber-500/30' : 'bg-gray-900 border-transparent'}`}>
+                <div className="flex items-center justify-end gap-2 mb-1">
+                  {confirmJob.emailVerified === false && (
+                    <span className="text-xs text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full">⚠️ כתובת לא מאומתת — best guess</span>
+                  )}
+                  {confirmJob.emailVerified === true && (
+                    <span className="text-xs text-green-400 bg-green-500/15 px-2 py-0.5 rounded-full">✅ כתובת מאומתת</span>
+                  )}
+                  <p className="text-gray-500 text-xs">נשלח אל</p>
+                </div>
+                <p className="text-amber-400 font-mono text-sm text-right">{confirmJob.toEmail}</p>
+                {confirmJob.emailVerified === false && (
+                  <p className="text-amber-300/70 text-xs mt-1 text-right">מומלץ לאמת את הכתובת לפני שליחה</p>
+                )}
               </div>
               <div className="p-3 bg-gray-900 rounded-xl">
                 <p className="text-gray-500 text-xs mb-1">נושא</p>
