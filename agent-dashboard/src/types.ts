@@ -58,6 +58,7 @@ export interface JobCandidate {
   appliedAt?: string;
   screenshotPath?: string;
   toEmail?: string;
+  emailVerified?: boolean;
   emailSubject?: string;
   coverLetter?: string;
 }
