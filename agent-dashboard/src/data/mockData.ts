@@ -132,7 +132,36 @@ export const mockAgents: Agent[] = [
 // ── Job approval queue ─────────────────────────────────────────────────────
 
 export const initialJobQueue: JobCandidate[] = [
-  // ── Tier 1: Israel-eligible (הוגש / ממתין לשליחה ידנית) ──────────────────
+  // ── Tier 0: Israel-based — live openings ─────────────────────────────────
+  {
+    id: 'job-tavily-1',
+    title: 'Technology Commercial Legal Counsel',
+    company: 'Tavily',
+    location: 'Tel Aviv, Israel',
+    salary: 'לא פורסם',
+    jobType: 'Full-time',
+    url: 'https://il.linkedin.com/jobs/view/legal-counsel-at-tavily-4369262482',
+    description: 'Tavily — מנוע החיפוש בזמן אמת לסוכני AI ו-RAG — מחפשת Technology Commercial Legal Counsel לצוות המשפטי בתל אביב. ניסוח חוזים מסחריים, DPAs, ציות GDPR/CCPA. חברת AI ישראלית עם משרדים ב-NYC, תל אביב ואבו דאבי.',
+    tags: ['AI', 'GDPR', 'Commercial', 'Tel Aviv', 'DPA', 'Privacy', 'LegalTech'],
+    score: 9.2,
+    scoreReason: 'חברת AI ישראלית (תל אביב), GDPR + DPAs + חוזים מסחריים — התאמה גבוהה',
+    scannedAt: '21.06.2026',
+    decision: 'pending',
+    emailVerified: false,
+    emailSubject: 'Application: Technology Commercial Legal Counsel | Dr. Avraham Lalum, PhD',
+    coverLetter: `Dear Tavily Hiring Team,
+
+Tavily sits at an unusual intersection: a real-time search infrastructure company whose primary customers are AI agents, RAG workflows, and the developers building them. The legal work that flows from that position — commercial agreements with AI-native companies, DPAs built for agentic data flows, privacy compliance across US and EU jurisdictions simultaneously — is precisely the kind of work I find most interesting and am best equipped to handle.
+
+My PhD research (University of Córdoba, 2026) on AI-based systems and regulatory frameworks gives me a technical vocabulary that most legal counsel lack: I understand what RAG actually does, why real-time web access creates specific data governance obligations, and how to draft contracts that reflect those realities rather than paper over them. My 2025 Scopus-indexed publication on explainable AI regulation addresses the transparency and accountability standards that your enterprise customers will increasingly demand in their DPAs.
+
+Twenty-two years as Founder and Managing Partner of Lalum & Co. means I have negotiated and drafted hundreds of commercial agreements under time pressure, across jurisdictions, and with counterparties ranging from startups to Fortune 500 legal teams. I am Tel Aviv-based, immediately available, and genuinely excited by what Tavily is building.
+
+Sincerely,
+Dr. Avraham (Avi) Lalum
+avraham@lalum.co | +972-52-249-0420 | lalum.co`,
+  },
+  // ── Tier 1: Israel-eligible ───────────────────────────────────────────────
   {
     id: 'job-wiz-1',
     title: 'Privacy, AI and Data Protection Counsel',
