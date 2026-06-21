@@ -1,0 +1,28 @@
+name: Daily Job Search - AI Law Israel
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  search-jobs:
+    runs-on: ubuntu-latest
+    env:
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      MS_SENDER: avraham@lalum.co
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install msal requests
+
+      - name: Search jobs and send report
+        run: python3 job_agent/daily_job_search.py
