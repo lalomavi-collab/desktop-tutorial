@@ -151,6 +151,23 @@ export interface Referral {
   provider?: { display_name: string | null } | null;
 }
 
+// Feed post (professional activity stream).
+export interface PostAuthor {
+  display_name: string | null;
+  reputation: number;
+  verification_status: VerificationStatus;
+  experience_tier: ExperienceTier | null;
+  headline: string | null;
+}
+export interface Post {
+  id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+  author?: PostAuthor | null;
+  likes?: { count: number }[];
+}
+
 export const DOMAIN_LABELS: Record<LegalDomain, string> = {
   Real_Estate_TAMA38: "תמ\"א 38",
   Real_Estate_Urban_Renewal: "התחדשות עירונית",
