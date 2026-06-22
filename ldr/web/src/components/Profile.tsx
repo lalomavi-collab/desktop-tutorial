@@ -13,6 +13,29 @@ export default function Profile({
   const [headline, setHeadline] = useState(profile.headline ?? "");
   const [savingH, setSavingH] = useState(false);
   const [endorsements, setEndorsements] = useState(0);
+  const [network, setNetwork] = useState<{ id: string; name: string | null }[]>([]);
+  const [pending, setPending] = useState<{ id: string; requester_id: string; name: string | null }[]>([]);
+
+  async function loadNetwork() {
+    const { data } = await supabase.from("ldr_connections")
+      .select("id,status,requester_id,addressee_id,req:ldr_profiles!requester_id(display_name),adr:ldr_profiles!addressee_id(display_name)");
+    const conns = (data as any[]) ?? [];
+    setNetwork(conns.filter((c) => c.status === "accepted").map((c) => {
+      const mine = c.requester_id === profile.id;
+      return { id: c.id, name: mine ? c.adr?.display_name : c.req?.display_name };
+    }));
+    setPending(conns.filter((c) => c.status === "pending" && c.addressee_id === profile.id)
+      .map((c) => ({ id: c.id, requester_id: c.requester_id, name: c.req?.display_name })));
+  }
+
+  async function acceptConn(id: string) {
+    await supabase.from("ldr_connections").update({ status: "accepted" }).eq("id", id);
+    notify("התחברתם 🤝"); loadNetwork();
+  }
+  async function declineConn(id: string) {
+    await supabase.from("ldr_connections").delete().eq("id", id);
+    loadNetwork();
+  }
 
   // verification
   const [vstatus, setVstatus] = useState<VerificationStatus>(profile.verification_status);
@@ -26,6 +49,7 @@ export default function Profile({
   useEffect(() => {
     supabase.from("ldr_endorsements").select("*", { count: "exact", head: true })
       .eq("endorsed_id", profile.id).then(({ count }) => setEndorsements(count ?? 0));
+    loadNetwork();
   }, [profile.id]);
 
   async function saveHeadline() {
@@ -98,6 +122,33 @@ export default function Profile({
           <div className="stat"><div className="n">{profile.contribution_count}</div><div className="l">תיקים</div></div>
           <div className="stat"><div className="n">{profile.prediction_count}</div><div className="l">חיזויים</div></div>
         </div>
+      </div>
+
+      {/* Network */}
+      <div className="card pad" style={{ marginTop: 16 }}>
+        <h3 style={{ marginTop: 0 }}>הרשת שלי <span className="muted" style={{ fontSize: 14 }}>({network.length} חיבורים)</span></h3>
+        {pending.length > 0 && (
+          <>
+            <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>בקשות חיבור ({pending.length})</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+              {pending.map((p) => (
+                <div key={p.id} style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <Avatar name={p.name} size={36} />
+                  <b style={{ flex: 1 }}>{p.name || "עו״ד"}</b>
+                  <button className="btn btn-gold" style={{ padding: "4px 12px" }} onClick={() => acceptConn(p.id)}>אישור</button>
+                  <button className="btn btn-ghost" style={{ padding: "4px 12px" }} onClick={() => declineConn(p.id)}>דחייה</button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {network.length === 0 ? (
+          <p className="muted" style={{ fontSize: 13 }}>עדיין אין חיבורים. התחברו לעמיתים ממסך "איתור עו״ד".</p>
+        ) : (
+          <div className="chip-select">
+            {network.map((n) => <span key={n.id} className="chip">🤝 {n.name || "עו״ד"}</span>)}
+          </div>
+        )}
       </div>
 
       {/* Practice areas */}
