@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer-room
+  namespace: ldr
+  labels:
+    app: peer-room
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: peer-room
+  template:
+    metadata:
+      labels:
+        app: peer-room
+    spec:
+      containers:
+        - name: peer-room
+          image: gcr.io/my-project/ldr-peer-room:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: ldr-config
+          env:
+            - name: LDR_PEER_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: ldr-secrets
+                  key: peer-salt
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer-room
+  namespace: ldr
+spec:
+  selector:
+    app: peer-room
+  ports:
+    - port: 8080
+      targetPort: 8080
