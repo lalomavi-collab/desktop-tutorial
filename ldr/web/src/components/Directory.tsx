@@ -29,6 +29,19 @@ export default function Directory({
   const [tier, setTier] = useState<ExperienceTier | "">("");
   const [rows, setRows] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [endorsed, setEndorsed] = useState<Set<string>>(new Set());
+
+  async function endorse(id: string) {
+    setEndorsed((prev) => new Set(prev).add(id)); // optimistic
+    const { error } = await supabase.from("ldr_endorsements")
+      .insert({ endorser_id: profile.id, endorsed_id: id });
+    if (error) {
+      setEndorsed((prev) => { const n = new Set(prev); n.delete(id); return n; });
+      notify(error.code === "23505" ? "כבר המלצת על עו״ד זה" : "שגיאה בהמלצה");
+      return;
+    }
+    notify("ההמלצה נרשמה — תרמת ל-Authority Tier של העמית 🤝");
+  }
 
   async function search() {
     setLoading(true);
@@ -134,17 +147,23 @@ export default function Directory({
                         <span key={a} className="chip">{PRACTICE_AREA_LABELS[a] ?? a}</span>
                       ))}
                     </div>
-                    <button
-                      className="btn btn-ghost"
-                      style={{ width: "100%", marginTop: 12 }}
-                      onClick={() => notify(
-                        r.demo
-                          ? "זהו פרופיל להמחשה — ערוץ ההפניות ייפתח עם עו״ד אמיתיים בשלב ה-Marketplace 🔐"
-                          : "ערוץ ההפניות המאובטח (Escrow) ייפתח בשלב ה-Marketplace 🔐"
+                    <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                      <button
+                        className="btn btn-ghost" style={{ flex: 1 }}
+                        onClick={() => notify("ערוץ ההפניות המאובטח (Escrow) נפתח ממסך ההפניות 🔐")}
+                      >
+                        ערוץ מאובטח
+                      </button>
+                      {!r.demo && (
+                        <button
+                          className="btn btn-gold" style={{ flex: 1 }}
+                          disabled={endorsed.has(r.id)}
+                          onClick={() => endorse(r.id)}
+                        >
+                          {endorsed.has(r.id) ? "✓ הומלץ" : "👍 המלצה"}
+                        </button>
                       )}
-                    >
-                      פתיחת ערוץ מאובטח
-                    </button>
+                    </div>
                   </div>
                 );
               })}

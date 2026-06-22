@@ -10,14 +10,16 @@ import Leaderboard from "./components/Leaderboard";
 import Directory from "./components/Directory";
 import Gigs from "./components/Gigs";
 import Referrals from "./components/Referrals";
+import Feed from "./components/Feed";
+import ProfilePage from "./components/Profile";
 import { rankFor } from "./lib/reputation";
 
-type Tab = "room" | "new" | "find" | "gigs" | "referrals" | "board" | "invite";
+type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "board" | "profile" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [tab, setTab] = useState<Tab>("room");
+  const [tab, setTab] = useState<Tab>("feed");
   const [toast, setToast] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -82,6 +84,10 @@ export default function App() {
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
         ) : !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("room"); }} />
+        ) : tab === "feed" ? (
+          <Feed profile={profile} notify={notify} />
+        ) : tab === "profile" ? (
+          <ProfilePage profile={profile} notify={notify} onChange={setProfile} />
         ) : tab === "room" ? (
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
@@ -122,12 +128,13 @@ function Header({
                 {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
               </span>
             )}
+            <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
-            <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
+            <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             <button onClick={onSignOut}>יציאה</button>
           </nav>
