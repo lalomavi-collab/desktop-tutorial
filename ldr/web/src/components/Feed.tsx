@@ -4,7 +4,7 @@ import { rankFor } from "../lib/reputation";
 import Avatar from "./Avatar";
 
 const POST_SELECT =
-  "*, author:ldr_profiles!author_id(display_name,reputation,verification_status,experience_tier,headline), likes:ldr_post_likes(count)";
+  "*, author:ldr_profiles!author_id(display_name,reputation,verification_status,experience_tier,headline,avatar_url), likes:ldr_post_likes(count)";
 
 function ago(iso: string): string {
   const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
@@ -74,7 +74,7 @@ export default function Feed({
 
       <div className="card pad">
         <div style={{ display: "flex", gap: 12 }}>
-          <Avatar name={profile.display_name} size={44} verified={profile.verification_status === "verified"} />
+          <Avatar name={profile.display_name} size={44} verified={profile.verification_status === "verified"} url={profile.avatar_url} />
           <textarea
             value={body} onChange={(e) => setBody(e.target.value)}
             placeholder="על מה תרצו לדבר? תובנה משפטית, שאלה לקהילה, עדכון…"
@@ -104,7 +104,7 @@ export default function Feed({
               <div key={p.id} className="card pad">
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                   <Avatar name={p.author?.display_name ?? null} size={44}
-                    verified={p.author?.verification_status === "verified"} />
+                    verified={p.author?.verification_status === "verified"} url={p.author?.avatar_url} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                       {p.author?.display_name || "עו״ד"}

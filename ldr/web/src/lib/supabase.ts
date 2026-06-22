@@ -59,6 +59,7 @@ export interface Profile {
   headline: string | null;
   license_type: LicenseType | null;
   license_no: string | null;
+  license_doc: string | null;
   verification_status: VerificationStatus;
 }
 
@@ -158,6 +159,7 @@ export interface PostAuthor {
   verification_status: VerificationStatus;
   experience_tier: ExperienceTier | null;
   headline: string | null;
+  avatar_url: string | null;
 }
 export interface Post {
   id: string;
