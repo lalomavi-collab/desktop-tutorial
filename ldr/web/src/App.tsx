@@ -96,7 +96,7 @@ function Header({
       <div className="container inner">
         <div className="brand">
           <div className="mark">Lw</div>
-          <div className="name">Lawink<small>חדר ההחלטות המשפטי</small></div>
+          <div className="name">Lawink<small>The Global Legal Grid</small></div>
         </div>
         {session && (
           <nav className="nav">

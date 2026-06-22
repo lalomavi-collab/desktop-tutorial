@@ -33,13 +33,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       <div className="auth-wrap">
         <div>
           <h1>
-            חדר ההחלטות המשפטי.<br />
-            <span className="gold">חכמת המונים של עורכי דין</span> פוגשת AI.
+            <span dir="ltr">⬛ LAWINK — The Global Legal Grid.</span><br />
+            <span className="gold" dir="ltr">Navigate the Grid. Map the Field.</span>
           </h1>
           <p className="lead">
-            תקפו אסטרטגיות, חשפו נקודות עיוורות וקבלו מדד סיכון אלגוריתמי (Risk Score) —
-            תוך שמירה על חיסיון עו"ד–לקוח מוחלט. אנונימיזציה מלאה מתבצעת אצלכם במכשיר,
-            לפני ששום מידע עוזב אותו.
+            המהפכה המבצעית של עורכי הדין: שילוב עוצמתי בין חוכמת המונים מאומתת (Peer Review)
+            לבינה מלאכותית (AI) לניהול סיכונים משפטיים-כלכליים בזמן אמת — תוך שמירה על
+            חיסיון עו"ד–לקוח מוחלט. אנונימיזציה מלאה מתבצעת אצלכם במכשיר, לפני ששום מידע עוזב אותו.
           </p>
           <div className="pill-row">
             <span className="tag">🔐 Zero-Knowledge בצד הלקוח</span>
