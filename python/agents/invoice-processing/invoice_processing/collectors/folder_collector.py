@@ -18,8 +18,8 @@ def collect_from_folder(month: str | None = None) -> dict:
     if month is None:
         month = datetime.now().strftime("%Y-%m")
 
-    base = os.environ.get("INVOICE_BASE_FOLDER", "/tmp/invoices")
-    month_folder = Path(base) / month
+    base = Path(os.environ.get("INVOICE_BASE_FOLDER", "~/Desktop/LALUM/חשבוניות")).expanduser()
+    month_folder = base / month
     month_folder.mkdir(parents=True, exist_ok=True)
 
     files = []
