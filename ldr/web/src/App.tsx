@@ -12,9 +12,10 @@ import Gigs from "./components/Gigs";
 import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
+import QA from "./components/QA";
 import { rankFor } from "./lib/reputation";
 
-type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "board" | "profile" | "invite";
+type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -98,6 +99,8 @@ export default function App() {
           <Gigs profile={profile} notify={notify} />
         ) : tab === "referrals" ? (
           <Referrals profile={profile} notify={notify} />
+        ) : tab === "qa" ? (
+          <QA profile={profile} notify={notify} />
         ) : tab === "board" ? (
           <Leaderboard profile={profile} />
         ) : (
@@ -133,6 +136,7 @@ function Header({
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
+            <button className={tab === "qa" ? "active" : ""} onClick={() => setTab("qa")}>שו״ת</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
