@@ -30,6 +30,30 @@ export default function Directory({
   const [rows, setRows] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
   const [endorsed, setEndorsed] = useState<Set<string>>(new Set());
+  const [conn, setConn] = useState<Map<string, string>>(new Map());
+
+  async function loadConn() {
+    const { data } = await supabase.from("ldr_connections").select("requester_id,addressee_id,status");
+    const m = new Map<string, string>();
+    (data ?? []).forEach((c: any) => {
+      const other = c.requester_id === profile.id ? c.addressee_id : c.requester_id;
+      m.set(other, c.status);
+    });
+    setConn(m);
+  }
+  useEffect(() => { loadConn(); }, []);
+
+  async function connect(id: string) {
+    setConn((prev) => new Map(prev).set(id, "pending")); // optimistic
+    const { error } = await supabase.from("ldr_connections")
+      .insert({ requester_id: profile.id, addressee_id: id });
+    if (error) {
+      setConn((prev) => { const n = new Map(prev); n.delete(id); return n; });
+      notify(error.code === "23505" ? "כבר קיים חיבור/בקשה" : "שגיאה בחיבור");
+      return;
+    }
+    notify("בקשת חיבור נשלחה 🤝");
+  }
 
   async function endorse(id: string) {
     setEndorsed((prev) => new Set(prev).add(id)); // optimistic
@@ -147,23 +171,26 @@ export default function Directory({
                         <span key={a} className="chip">{PRACTICE_AREA_LABELS[a] ?? a}</span>
                       ))}
                     </div>
-                    <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                      <button
-                        className="btn btn-ghost" style={{ flex: 1 }}
-                        onClick={() => notify("ערוץ ההפניות המאובטח (Escrow) נפתח ממסך ההפניות 🔐")}
-                      >
-                        ערוץ מאובטח
-                      </button>
-                      {!r.demo && (
+                    {r.demo ? (
+                      <div className="muted" style={{ fontSize: 12, marginTop: 12, textAlign: "center" }}>פרופיל להמחשה</div>
+                    ) : (
+                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                         <button
                           className="btn btn-gold" style={{ flex: 1 }}
+                          disabled={conn.has(r.id)}
+                          onClick={() => connect(r.id)}
+                        >
+                          {conn.get(r.id) === "accepted" ? "✓ מחובר" : conn.get(r.id) === "pending" ? "⏳ ממתין" : "+ התחבר"}
+                        </button>
+                        <button
+                          className="btn btn-ghost" style={{ flex: 1 }}
                           disabled={endorsed.has(r.id)}
                           onClick={() => endorse(r.id)}
                         >
                           {endorsed.has(r.id) ? "✓ הומלץ" : "👍 המלצה"}
                         </button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
