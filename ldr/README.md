@@ -1,6 +1,6 @@
-# LAWLINK — Professional Social Network for Attorneys Only
+# LAWDin — Professional Social Network for Attorneys Only
 
-> **LAWLINK** הוא שם המותג של המוצר. `LDR` (Legal Decision Room) משמש כשם-קוד פנימי
+> **LAWDin** הוא שם המותג של המוצר. `LDR` (Legal Decision Room) משמש כשם-קוד פנימי
 > וכקידומת לסכמת מסד הנתונים (`ldr_*`).
 
 פלטפורמה שיתופית לעורכי דין המשלבת **חכמת המונים מקצועית (Peer Review)** עם **בינה מלאכותית** לניהול

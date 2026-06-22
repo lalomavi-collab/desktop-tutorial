@@ -33,7 +33,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       <div className="auth-wrap">
         <div>
           <h1>
-            <span dir="ltr">⬛ LAWLINK</span><br />
+            <span dir="ltr">⬛ LAWDin</span><br />
             <span className="gold" dir="ltr">Professional Social Network for Attorneys Only</span>
           </h1>
           <p className="lead">
