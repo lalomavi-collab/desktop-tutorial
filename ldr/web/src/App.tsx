@@ -5,6 +5,7 @@ import Auth from "./components/Auth";
 import Dashboard from "./components/Dashboard";
 import NewCase from "./components/NewCase";
 import Invite from "./components/Invite";
+import Onboarding from "./components/Onboarding";
 
 type Tab = "room" | "new" | "invite";
 
@@ -74,6 +75,8 @@ export default function App() {
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+        ) : !profile.experience_tier ? (
+          <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("room"); }} />
         ) : tab === "room" ? (
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
