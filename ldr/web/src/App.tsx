@@ -118,8 +118,8 @@ function Header({
     <header className="topbar">
       <div className="container inner">
         <div className="brand">
-          <div className="mark">Lk</div>
-          <div className="name">LAWLINK<small>Professional Social Network for Attorneys Only</small></div>
+          <div className="mark">Ld</div>
+          <div className="name">LAWDin<small>Professional Social Network for Attorneys Only</small></div>
         </div>
         {session && (
           <nav className="nav">
@@ -147,7 +147,7 @@ function Header({
 function Footer() {
   return (
     <footer className="footer">
-      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWLINK
+      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWDin
     </footer>
   );
 }
