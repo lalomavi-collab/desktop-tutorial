@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ldr.legal/schemas/ldr_case.schema.json",
+  "title": "LDR Case",
+  "description": "Canonical, fully-anonymized case object. Produced client-side by client-anonymizer. No field may ever contain raw identifying information.",
+  "type": "object",
+  "required": ["case_id", "legal_domain", "economic_exposure", "risk_factors", "proposed_strategy"],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Anonymous unique identifier. Generated client-side; carries no link to the real client."
+    },
+    "legal_domain": {
+      "type": "string",
+      "enum": [
+        "Real_Estate_TAMA38",
+        "Real_Estate_Urban_Renewal",
+        "Real_Estate_Complex_Transaction",
+        "Commercial_Dispute",
+        "Litigation_General",
+        "Dispute_Oriented_Mediation"
+      ]
+    },
+    "economic_exposure": {
+      "type": "string",
+      "description": "Bucketed economic value. NEVER a raw figure — preserves zero-knowledge while keeping economic signal for the Risk Score.",
+      "enum": [
+        "under_1M",
+        "1M_to_5M",
+        "5M_to_10M",
+        "10M_to_15M",
+        "15M_to_50M",
+        "50M_to_100M",
+        "over_100M"
+      ]
+    },
+    "risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "regulatory_delay",
+          "funding_gap",
+          "title_defect",
+          "minority_holdout",
+          "permit_risk",
+          "counterparty_insolvency",
+          "valuation_dispute",
+          "contractual_ambiguity",
+          "tax_exposure",
+          "timeline_risk"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "proposed_strategy": {
+      "type": "string",
+      "description": "The lawyer's tactical outline, scrubbed of all names/identities by the client-side anonymizer.",
+      "maxLength": 8000
+    },
+    "peer_predictions": {
+      "type": "array",
+      "description": "Anonymous peer-review votes from the Decision Room.",
+      "items": {
+        "type": "object",
+        "required": ["peer_id_hash", "success_probability"],
+        "additionalProperties": false,
+        "properties": {
+          "peer_id_hash": { "type": "string", "description": "Salted hash of contributing peer; not reversible." },
+          "success_probability": { "type": "number", "minimum": 0, "maximum": 1 },
+          "alternative_strategy": { "type": "string", "maxLength": 4000 },
+          "flagged_blind_spots": { "type": "array", "items": { "type": "string" } },
+          "submitted_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "ai_insights": {
+      "type": "object",
+      "description": "Autonomous AI output. mode reflects the evolution stage: listener -> suggester -> autonomous.",
+      "additionalProperties": false,
+      "properties": {
+        "risk_score": { "type": "number", "minimum": 0, "maximum": 100, "description": "0 = negligible risk, 100 = critical." },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "mode": { "type": "string", "enum": ["listener", "suggester", "autonomous"] },
+        "recommendations": { "type": "array", "items": { "type": "string" } },
+        "model_version": { "type": "string" }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}
