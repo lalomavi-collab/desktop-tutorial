@@ -17,6 +17,7 @@ interface Entry {
   headline: string | null;
   verified: boolean;
   demo: boolean;
+  avatar_url: string | null;
 }
 
 // "Taxi-style" attorney discovery: pick criteria, every matching verified
@@ -86,12 +87,12 @@ export default function Directory({
       id: r.id, name: r.display_name, jurisdiction: r.jurisdiction,
       practice_areas: r.practice_areas ?? [], experience_tier: r.experience_tier,
       reputation: r.reputation, headline: r.headline,
-      verified: r.verification_status === "verified", demo: false,
+      verified: r.verification_status === "verified", demo: false, avatar_url: r.avatar_url,
     }));
     const demoEntries: Entry[] = ((dp as DemoAttorney[]) ?? []).map((d) => ({
       id: d.id, name: d.display_name, jurisdiction: d.jurisdiction,
       practice_areas: d.practice_areas ?? [], experience_tier: d.experience_tier,
-      reputation: d.reputation, headline: d.headline, verified: true, demo: true,
+      reputation: d.reputation, headline: d.headline, verified: true, demo: true, avatar_url: null,
     }));
 
     setRows([...realEntries, ...demoEntries].sort((a, b) => b.reputation - a.reputation));
@@ -148,7 +149,7 @@ export default function Directory({
                 return (
                   <div key={r.id} className="card pad">
                     <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <Avatar name={r.name} size={48} verified={r.verified} />
+                      <Avatar name={r.name} size={48} verified={r.verified} url={r.avatar_url} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                           <span style={{ fontWeight: 800, fontSize: 16 }}>{r.name || "עו״ד אנונימי"}</span>

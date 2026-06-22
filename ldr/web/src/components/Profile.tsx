@@ -42,9 +42,39 @@ export default function Profile({
   const [licType, setLicType] = useState<LicenseType>(profile.license_type ?? "lawyer");
   const [licNo, setLicNo] = useState(profile.license_no ?? "");
   const [vbusy, setVbusy] = useState(false);
+  const [upBusy, setUpBusy] = useState(false);
 
   const rp = rankFor(profile.reputation);
   const verified = vstatus === "verified";
+
+  async function uploadAvatar(file: File) {
+    setUpBusy(true);
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `${profile.id}/avatar_${Date.now()}.${ext}`;
+    const up = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (up.error) { setUpBusy(false); notify("שגיאה בהעלאת תמונה: " + up.error.message); return; }
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    await supabase.from("ldr_profiles").update({ avatar_url: data.publicUrl }).eq("id", profile.id);
+    setUpBusy(false);
+    onChange({ ...profile, avatar_url: data.publicUrl });
+    notify("תמונת הפרופיל עודכנה 📸");
+  }
+
+  async function uploadCert(file: File) {
+    setVbusy(true);
+    const safe = file.name.replace(/[^\w.\-]/g, "_");
+    const path = `${profile.id}/cert_${Date.now()}_${safe}`;
+    const up = await supabase.storage.from("licenses").upload(path, file, { upsert: true });
+    if (up.error) { setVbusy(false); notify("שגיאה בהעלאת תעודה: " + up.error.message); return; }
+    await supabase.from("ldr_profiles").update({
+      license_doc: path, license_type: licType,
+      license_no: licNo.trim() || profile.license_no, verification_status: "pending",
+    }).eq("id", profile.id);
+    setVbusy(false);
+    setVstatus("pending");
+    onChange({ ...profile, license_doc: path, license_type: licType, verification_status: "pending" });
+    notify("התעודה הועלתה — בבדיקת אימות 🪪");
+  }
 
   useEffect(() => {
     supabase.from("ldr_endorsements").select("*", { count: "exact", head: true })
@@ -79,7 +109,14 @@ export default function Profile({
       {/* Header card */}
       <div className="card pad">
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Avatar name={profile.display_name} size={72} verified={verified} />
+          <div style={{ textAlign: "center" }}>
+            <Avatar name={profile.display_name} size={72} verified={verified} url={profile.avatar_url} />
+            <label className="muted" style={{ fontSize: 11, cursor: "pointer", display: "block", marginTop: 4 }}>
+              {upBusy ? "מעלה…" : "שינוי תמונה"}
+              <input type="file" accept="image/*" style={{ display: "none" }}
+                onChange={(e) => e.target.files?.[0] && uploadAvatar(e.target.files[0])} />
+            </label>
+          </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ fontWeight: 800, fontSize: 20 }}>{profile.display_name || "הפרופיל שלי"}</span>
@@ -199,8 +236,18 @@ export default function Profile({
               </button>
             </div>
           )}
+          {vstatus !== "pending" && (
+            <div style={{ marginTop: 12 }}>
+              <label className="btn btn-ghost" style={{ cursor: "pointer", display: "inline-block" }}>
+                {vbusy ? "מעלה…" : "📎 העלאת סריקת תעודה"}
+                <input type="file" accept="image/*,application/pdf" style={{ display: "none" }}
+                  onChange={(e) => e.target.files?.[0] && uploadCert(e.target.files[0])} />
+              </label>
+              {profile.license_doc && <span className="muted" style={{ fontSize: 12, marginInlineStart: 8 }}>✓ תעודה הועלתה</span>}
+            </div>
+          )}
           <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-            🤖 בקרוב: העלאת סריקת תעודה + תמונה ואימות אוטומטי מבוסס-AI.
+            🔒 התעודה נשמרת באחסון פרטי ומאובטח. אימות אוטומטי מבוסס-AI בהמשך.
           </p>
         </div>
       )}

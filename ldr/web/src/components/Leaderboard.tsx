@@ -17,6 +17,7 @@ interface Row {
   verified: boolean;
   demo: boolean;
   me: boolean;
+  avatar_url: string | null;
 }
 
 export default function Leaderboard({ profile }: { profile: Profile }) {
@@ -35,11 +36,12 @@ export default function Leaderboard({ profile }: { profile: Profile }) {
         id: r.id, name: r.display_name, experience_tier: r.experience_tier,
         practice_areas: r.practice_areas ?? [], reputation: r.reputation,
         verified: r.verification_status === "verified", demo: false, me: r.id === profile.id,
+        avatar_url: r.avatar_url,
       }));
       const demo: Row[] = ((dp as DemoAttorney[]) ?? []).map((d) => ({
         id: d.id, name: d.display_name, experience_tier: d.experience_tier,
         practice_areas: d.practice_areas ?? [], reputation: d.reputation,
-        verified: true, demo: true, me: false,
+        verified: true, demo: true, me: false, avatar_url: null,
       }));
       setRows([...real, ...demo].sort((a, b) => b.reputation - a.reputation));
       setLoading(false);
@@ -74,7 +76,7 @@ export default function Leaderboard({ profile }: { profile: Profile }) {
                 <div style={{ width: 30, textAlign: "center", fontWeight: 800, fontSize: 18 }}>
                   {MEDALS[i] ?? <span className="muted">{i + 1}</span>}
                 </div>
-                <Avatar name={r.name} size={40} verified={r.verified} />
+                <Avatar name={r.name} size={40} verified={r.verified} url={r.avatar_url} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                     {r.name || "עו״ד אנונימי"}
