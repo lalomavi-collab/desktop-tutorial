@@ -1,6 +1,6 @@
-# LDR Web — חזית האפליקציה
+# Lawink — חזית האפליקציה
 
-אפליקציית React + Vite + TypeScript ל-The Legal Decision Room, מחוברת ל-Supabase
+אפליקציית React + Vite + TypeScript ל-**Lawink** (חדר ההחלטות המשפטי), מחוברת ל-Supabase
 (Auth + Postgres + RLS). עיצוב **Prestige Executive**, RTL מלא בעברית.
 
 ## הרצה מקומית
@@ -29,6 +29,9 @@ npm run dev        # http://localhost:5173
 - 🔐 **Zero-Knowledge בצד הלקוח** — `src/lib/anonymizer.ts` משחיר ישויות וממיר סכומים
   לטווחים *לפני* כל שליחה. רק `proposed_strategy` נקי נשמר.
 - 🛡️ **RLS על כל טבלה** — משתמש רואה רק: תיקים שלו, תיקי המשרד שלו, ותיקים קהילתיים.
+- 🔒 **בידוד פונקציות SECURITY DEFINER** — פונקציות העזר וה-triggers יושבות בסכמה `private`
+  שאינה נחשפת ב-REST/RPC, כך שלא ניתן לקרוא להן ישירות מה-API (אומתה ב-Supabase advisors).
+- 🪪 **כניסה ללא סיסמה** — Magic Link (OTP) בלבד, אין סיסמאות לאחסן או לדלוף.
 - 🎁 **השקה חינמית** — בשלב זה הגישה הקהילתית פתוחה ומלאה לבניית קהילה. שכבת ה-reciprocity
   (גישה תמורת תרומה) קיימת ב-DB (`contribution_count`, `reputation`) ומוכנה להפעלה בהמשך.
 
