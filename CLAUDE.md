@@ -1,5 +1,13 @@
 # Project Rules - Prompt Builder Agent
 
+## Writing Style - Dashes (PERMANENT)
+
+**Never use dashes as punctuation, in chat replies or in any generated file (docx, html, pdf, posts).**
+
+- Forbidden: em-dash `—`, en-dash `–`, and a hyphen used as a clause/sentence separator (e.g. ` - `).
+- Instead use a comma, period, colon, or parentheses.
+- Allowed: a hyphen that is an integral part of a word, term, identifier, date, URL, or email (e.g. `פינוי-בינוי`, `תמ"א`, `UTF-8`, `2026-06-22`, `test@lalum.legal`). These are not separators and stay as-is.
+
 ## Social Media Posts - Mandatory Approval Flow
 
 **CRITICAL: Never publish a post without explicit user approval.**
