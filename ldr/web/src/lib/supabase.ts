@@ -40,6 +40,8 @@ export interface LdrCase {
   created_at: string;
 }
 
+export type ExperienceTier = "junior" | "mid" | "senior";
+
 export interface Profile {
   id: string;
   display_name: string | null;
@@ -47,6 +49,8 @@ export interface Profile {
   contribution_count: number;
   prediction_count: number;
   reputation: number;
+  practice_areas: string[];
+  experience_tier: ExperienceTier | null;
 }
 
 export const DOMAIN_LABELS: Record<LegalDomain, string> = {
@@ -80,3 +84,54 @@ export const RISK_FACTOR_LABELS: Record<string, string> = {
   tax_exposure: "חשיפת מס",
   timeline_risk: "סיכון לוחות זמנים",
 };
+
+// ── Lawyer categorization ──────────────────────────────────────────────
+// Experience tiers (by years of practice).
+export const EXPERIENCE_TIERS: { key: ExperienceTier; label: string; hint: string }[] = [
+  { key: "junior", label: "ג׳וניור", hint: "0–5 שנות ותק" },
+  { key: "mid", label: "מנוסה", hint: "5–15 שנות ותק" },
+  { key: "senior", label: "בכיר", hint: "15+ שנות ותק" },
+];
+
+export const EXPERIENCE_LABELS: Record<ExperienceTier, string> = {
+  junior: "ג׳וניור (0–5)",
+  mid: "מנוסה (5–15)",
+  senior: "בכיר (15+)",
+};
+
+// Comprehensive list of legal practice areas (categories) a lawyer can select.
+export interface PracticeArea {
+  key: string;
+  label: string;
+  icon: string;
+}
+
+export const PRACTICE_AREAS: PracticeArea[] = [
+  { key: "real_estate", label: "נדל\"ן ומקרקעין", icon: "🏗️" },
+  { key: "urban_renewal", label: "התחדשות עירונית (תמ\"א 38 / פינוי-בינוי)", icon: "🏙️" },
+  { key: "planning_building", label: "תכנון ובנייה", icon: "📐" },
+  { key: "commercial", label: "מסחרי-עסקי וחוזים", icon: "🤝" },
+  { key: "corporate_vc", label: "חברות, הון-סיכון וגיוסים (Hi-Tech)", icon: "🚀" },
+  { key: "litigation", label: "ליטיגציה אזרחית-מסחרית", icon: "⚖️" },
+  { key: "labor", label: "דיני עבודה", icon: "👷" },
+  { key: "ip", label: "קניין רוחני, סימני מסחר ופטנטים", icon: "💡" },
+  { key: "privacy_cyber", label: "הגנת הפרטיות וסייבר", icon: "🔒" },
+  { key: "tax", label: "מיסים ומיסוי מקרקעין", icon: "🧾" },
+  { key: "banking_finance", label: "בנקאות, מימון ושוק ההון", icon: "🏦" },
+  { key: "family_inheritance", label: "דיני משפחה וירושה", icon: "👪" },
+  { key: "criminal", label: "פלילי וצווארון לבן", icon: "🛡️" },
+  { key: "admin_constitutional", label: "מנהלי וחוקתי / עתירות (בג\"ץ)", icon: "🏛️" },
+  { key: "regulation", label: "רגולציה ורישוי", icon: "📋" },
+  { key: "energy_infra", label: "אנרגיה ותשתיות", icon: "⚡" },
+  { key: "environment", label: "סביבה ותכנון", icon: "🌱" },
+  { key: "insurance_tort", label: "ביטוח ונזיקין", icon: "🩺" },
+  { key: "insolvency", label: "חדלות פירעון והוצאה לפועל", icon: "📉" },
+  { key: "adr", label: "בוררות וגישור (ADR / DOM)", icon: "🕊️" },
+  { key: "class_actions", label: "צרכנות ותובענות ייצוגיות", icon: "📢" },
+  { key: "health_pharma", label: "בריאות ופארמה", icon: "💊" },
+  { key: "intl_trade", label: "סחר בינלאומי, ימי ותעופה", icon: "🌍" },
+  { key: "franchising", label: "הפצה, זכיינות וייצוג מסחרי", icon: "🏷️" },
+];
+
+export const PRACTICE_AREA_LABELS: Record<string, string> =
+  Object.fromEntries(PRACTICE_AREAS.map((a) => [a.key, a.label]));

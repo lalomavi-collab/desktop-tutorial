@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase, PRACTICE_AREAS } from "../lib/supabase";
 
 export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [email, setEmail] = useState("");
@@ -33,25 +33,36 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       <div className="auth-wrap">
         <div>
           <h1>
-            חדר ההחלטות המשפטי.<br />
-            <span className="gold">חכמת המונים של עורכי דין</span> פוגשת AI.
+            <span dir="ltr">⬛ LAWINK — The Global Legal Grid.</span><br />
+            <span className="gold" dir="ltr">Navigate the Grid. Map the Field.</span>
           </h1>
           <p className="lead">
-            תקפו אסטרטגיות, חשפו נקודות עיוורות וקבלו מדד סיכון אלגוריתמי (Risk Score) —
-            תוך שמירה על חיסיון עו"ד–לקוח מוחלט. אנונימיזציה מלאה מתבצעת אצלכם במכשיר,
-            לפני ששום מידע עוזב אותו.
+            המהפכה המבצעית של עורכי הדין: שילוב עוצמתי בין חוכמת המונים מאומתת (Peer Review)
+            לבינה מלאכותית (AI) לניהול סיכונים משפטיים-כלכליים בזמן אמת — תוך שמירה על
+            חיסיון עו"ד–לקוח מוחלט. אנונימיזציה מלאה מתבצעת אצלכם במכשיר, לפני ששום מידע עוזב אותו.
           </p>
           <div className="pill-row">
             <span className="tag">🔐 Zero-Knowledge בצד הלקוח</span>
             <span className="tag">🤝 שיתוף ברמת המשרד</span>
             <span className="tag">📊 Risk Score חי</span>
-            <span className="tag">🏛️ נדל"ן · התחדשות עירונית · DOM</span>
+            <span className="tag" dir="ltr">🗺️ Navigate the Grid</span>
+          </div>
+
+          <div style={{ marginTop: 28 }}>
+            <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
+              כל תחומי המשפט על ה-Grid — מכל דרגות הוותק:
+            </div>
+            <div className="chip-select">
+              {PRACTICE_AREAS.map((a) => (
+                <span key={a.key} className="chip" title={a.label}>{a.icon} {a.label}</span>
+              ))}
+            </div>
           </div>
 
           <div className="grid cols-3" style={{ marginTop: 34 }}>
             <div className="stat"><div className="n">100%</div><div className="l">חיסיון בצד הלקוח</div></div>
             <div className="stat"><div className="n">∞</div><div className="l">חינם בתקופת ההשקה</div></div>
-            <div className="stat"><div className="n">3</div><div className="l">תחומי MVP</div></div>
+            <div className="stat"><div className="n">{PRACTICE_AREAS.length}</div><div className="l">תחומי משפט</div></div>
           </div>
         </div>
 
