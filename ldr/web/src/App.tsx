@@ -1,0 +1,120 @@
+import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
+import { supabase, type Profile } from "./lib/supabase";
+import Auth from "./components/Auth";
+import Dashboard from "./components/Dashboard";
+import NewCase from "./components/NewCase";
+import Invite from "./components/Invite";
+
+type Tab = "room" | "new" | "invite";
+
+export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [tab, setTab] = useState<Tab>("room");
+  const [toast, setToast] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  const inviteToken = new URLSearchParams(window.location.search).get("invite");
+
+  function notify(m: string) {
+    setToast(m);
+    setTimeout(() => setToast(null), 3200);
+  }
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setReady(true); });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // Load profile + accept invite once authenticated.
+  useEffect(() => {
+    if (!session) { setProfile(null); return; }
+    (async () => {
+      const { data } = await supabase.from("ldr_profiles").select("*").eq("id", session.user.id).maybeSingle();
+      setProfile(data as Profile);
+      if (inviteToken) await acceptInvite(inviteToken, session.user.id, data as Profile | null);
+    })();
+  }, [session]);
+
+  async function acceptInvite(token: string, userId: string, prof: Profile | null) {
+    const { data: inv } = await supabase.from("ldr_invites").select("*").eq("token", token).maybeSingle();
+    if (!inv) return;
+    if (inv.firm_id && prof && !prof.firm_id) {
+      await supabase.from("ldr_firm_members").insert({ firm_id: inv.firm_id, user_id: userId }).then(() => {});
+      await supabase.from("ldr_profiles").update({ firm_id: inv.firm_id }).eq("id", userId);
+    }
+    await supabase.from("ldr_invites").update({ accepted_by: userId }).eq("token", token);
+    // clean the URL
+    window.history.replaceState({}, "", window.location.pathname);
+    notify("ההזמנה התקבלה — ברוכים הבאים לחדר ההחלטות!");
+  }
+
+  if (!ready) {
+    return <div className="center" style={{ paddingTop: 120 }}><span className="spinner" /></div>;
+  }
+
+  if (!session) {
+    return (
+      <div className="app">
+        <Header session={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
+        <Auth inviteToken={inviteToken} />
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      <Header
+        session={session} tab={tab} setTab={setTab}
+        onSignOut={async () => { await supabase.auth.signOut(); }}
+      />
+      <main style={{ flex: 1, paddingBottom: 40 }}>
+        {!profile ? (
+          <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+        ) : tab === "room" ? (
+          <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
+        ) : tab === "new" ? (
+          <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : (
+          <Invite profile={profile} notify={notify} />
+        )}
+      </main>
+      <Footer />
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+function Header({
+  session, tab, setTab, onSignOut,
+}: { session: Session | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
+  return (
+    <header className="topbar">
+      <div className="container inner">
+        <div className="brand">
+          <div className="mark">LDR</div>
+          <div className="name">The Legal Decision Room<small>חדר ההחלטות המשפטי</small></div>
+        </div>
+        {session && (
+          <nav className="nav">
+            <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
+            <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
+            <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
+            <button onClick={onSignOut}>יציאה</button>
+          </nav>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="footer">
+      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · The Legal Decision Room
+    </footer>
+  );
+}
