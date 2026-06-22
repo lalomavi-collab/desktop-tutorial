@@ -65,7 +65,7 @@ export default function Directory({
 
   return (
     <div className="container" style={{ paddingTop: 26 }}>
-      <h2 style={{ margin: 0 }}>איתור עו״ד על ה-Grid</h2>
+      <h2 style={{ margin: 0 }}>איתור עו״ד ברשת</h2>
       <p className="muted">
         בחרו תחום, מדינה ודרגה — וכל עו״ד מאומת שעונה לקריטריון יופיע מיד, מדורג לפי Authority Tier.
       </p>

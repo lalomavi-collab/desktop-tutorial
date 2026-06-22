@@ -234,7 +234,7 @@ export const PRACTICE_AREAS: PracticeArea[] = [
 export const PRACTICE_AREA_LABELS: Record<string, string> =
   Object.fromEntries(PRACTICE_AREAS.map((a) => [a.key, a.label]));
 
-// Jurisdiction nodes on the Global Legal Grid (for cross-border discovery & referrals).
+// Jurisdiction nodes (for cross-border discovery & referrals).
 export interface Jurisdiction { key: string; label: string; flag: string; }
 
 export const JURISDICTIONS: Jurisdiction[] = [

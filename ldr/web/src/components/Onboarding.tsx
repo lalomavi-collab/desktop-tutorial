@@ -37,7 +37,7 @@ export default function Onboarding({
   return (
     <div className="container" style={{ paddingTop: 32, maxWidth: 860 }}>
       <div className="card pad">
-        <span className="tag" dir="ltr">⬛ LAWINK · The Global Legal Grid</span>
+        <span className="tag" dir="ltr">⬛ LAWLINK · Attorneys Only</span>
         <h2 style={{ marginBottom: 4 }}>בונים את הפרופיל שלך</h2>
         <p className="muted" style={{ marginTop: 0 }}>
           סמנו את תחומי העיסוק והוותק — כך נתאים לכם תיקים רלוונטיים ונחשב משקל

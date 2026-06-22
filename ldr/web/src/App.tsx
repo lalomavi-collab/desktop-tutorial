@@ -112,8 +112,8 @@ function Header({
     <header className="topbar">
       <div className="container inner">
         <div className="brand">
-          <div className="mark">Lw</div>
-          <div className="name">Lawink<small>The Global Legal Grid</small></div>
+          <div className="mark">Lk</div>
+          <div className="name">LAWLINK<small>Professional Social Network for Attorneys Only</small></div>
         </div>
         {session && (
           <nav className="nav">
@@ -140,7 +140,7 @@ function Header({
 function Footer() {
   return (
     <footer className="footer">
-      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · Lawink
+      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWLINK
     </footer>
   );
 }
