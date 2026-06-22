@@ -6,8 +6,10 @@ import Dashboard from "./components/Dashboard";
 import NewCase from "./components/NewCase";
 import Invite from "./components/Invite";
 import Onboarding from "./components/Onboarding";
+import Leaderboard from "./components/Leaderboard";
+import { rankFor } from "./lib/reputation";
 
-type Tab = "room" | "new" | "invite";
+type Tab = "room" | "new" | "board" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -59,7 +61,7 @@ export default function App() {
   if (!session) {
     return (
       <div className="app">
-        <Header session={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
+        <Header session={null} profile={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
         <Auth inviteToken={inviteToken} />
         <Footer />
       </div>
@@ -69,7 +71,7 @@ export default function App() {
   return (
     <div className="app">
       <Header
-        session={session} tab={tab} setTab={setTab}
+        session={session} profile={profile} tab={tab} setTab={setTab}
         onSignOut={async () => { await supabase.auth.signOut(); }}
       />
       <main style={{ flex: 1, paddingBottom: 40 }}>
@@ -81,6 +83,8 @@ export default function App() {
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : tab === "board" ? (
+          <Leaderboard profile={profile} />
         ) : (
           <Invite profile={profile} notify={notify} />
         )}
@@ -92,8 +96,9 @@ export default function App() {
 }
 
 function Header({
-  session, tab, setTab, onSignOut,
-}: { session: Session | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
+  session, profile, tab, setTab, onSignOut,
+}: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
+  const rank = profile ? rankFor(profile.reputation) : null;
   return (
     <header className="topbar">
       <div className="container inner">
@@ -103,8 +108,14 @@ function Header({
         </div>
         {session && (
           <nav className="nav">
+            {rank && (
+              <span className="tag" title={`מוניטין: ${profile!.reputation}`} style={{ marginInlineEnd: 4 }}>
+                {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
+              </span>
+            )}
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
             <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
+            <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             <button onClick={onSignOut}>יציאה</button>
           </nav>
