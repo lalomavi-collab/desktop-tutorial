@@ -9,9 +9,10 @@ import Onboarding from "./components/Onboarding";
 import Leaderboard from "./components/Leaderboard";
 import Directory from "./components/Directory";
 import Gigs from "./components/Gigs";
+import Referrals from "./components/Referrals";
 import { rankFor } from "./lib/reputation";
 
-type Tab = "room" | "new" | "find" | "gigs" | "board" | "invite";
+type Tab = "room" | "new" | "find" | "gigs" | "referrals" | "board" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -89,6 +90,8 @@ export default function App() {
           <Directory profile={profile} notify={notify} />
         ) : tab === "gigs" ? (
           <Gigs profile={profile} notify={notify} />
+        ) : tab === "referrals" ? (
+          <Referrals profile={profile} notify={notify} />
         ) : tab === "board" ? (
           <Leaderboard profile={profile} />
         ) : (
@@ -123,6 +126,7 @@ function Header({
             <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
+            <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             <button onClick={onSignOut}>יציאה</button>

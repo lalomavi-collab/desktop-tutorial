@@ -113,6 +113,44 @@ export interface Gig {
   } | null;
 }
 
+// Escrow milestone — a referral-fee tranche released on dual digital sign-off.
+export interface Milestone {
+  id: string;
+  title: string;
+  amount: number | null;
+  done: boolean;      // provider marked the work delivered
+  signed_a: boolean;  // requester (Attorney A) signed off
+  signed_b: boolean;  // provider (Attorney B) signed off
+  signed_at?: string | null;
+}
+
+export type ReferralStatus = "proposed" | "accepted" | "in_progress" | "completed" | "cancelled";
+
+export const REFERRAL_STATUS_LABELS: Record<ReferralStatus, string> = {
+  proposed: "הוצע",
+  accepted: "התקבל",
+  in_progress: "בביצוע",
+  completed: "הושלם",
+  cancelled: "בוטל",
+};
+
+export interface Referral {
+  id: string;
+  gig_id: string | null;
+  requester_id: string;
+  provider_id: string;
+  jurisdiction: string;
+  brief: string;
+  fee: number | null;
+  currency: Currency;
+  status: ReferralStatus;
+  milestones: Milestone[];
+  created_at: string;
+  updated_at: string;
+  requester?: { display_name: string | null } | null;
+  provider?: { display_name: string | null } | null;
+}
+
 export const DOMAIN_LABELS: Record<LegalDomain, string> = {
   Real_Estate_TAMA38: "תמ\"א 38",
   Real_Estate_Urban_Renewal: "התחדשות עירונית",
