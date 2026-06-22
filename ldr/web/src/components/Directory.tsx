@@ -2,9 +2,22 @@ import { useEffect, useState } from "react";
 import {
   supabase, PRACTICE_AREAS, JURISDICTIONS, EXPERIENCE_TIERS,
   PRACTICE_AREA_LABELS, JURISDICTION_LABELS, EXPERIENCE_LABELS,
-  type Profile, type ExperienceTier,
+  type Profile, type DemoAttorney, type ExperienceTier,
 } from "../lib/supabase";
 import { rankFor } from "../lib/reputation";
+import Avatar from "./Avatar";
+
+interface Entry {
+  id: string;
+  name: string | null;
+  jurisdiction: string | null;
+  practice_areas: string[];
+  experience_tier: ExperienceTier | null;
+  reputation: number;
+  headline: string | null;
+  verified: boolean;
+  demo: boolean;
+}
 
 // "Taxi-style" attorney discovery: pick criteria, every matching verified
 // attorney surfaces — ranked by Authority Tier / reputation.
@@ -14,29 +27,47 @@ export default function Directory({
   const [area, setArea] = useState<string>("");
   const [juris, setJuris] = useState<string>("");
   const [tier, setTier] = useState<ExperienceTier | "">("");
-  const [rows, setRows] = useState<Profile[]>([]);
+  const [rows, setRows] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
 
   async function search() {
     setLoading(true);
-    let q = supabase.from("ldr_profiles").select("*")
-      .not("experience_tier", "is", null)
-      .neq("id", profile.id);
-    if (area) q = q.contains("practice_areas", [area]);
-    if (juris) q = q.eq("jurisdiction", juris);
-    if (tier) q = q.eq("experience_tier", tier);
-    const { data } = await q.order("reputation", { ascending: false }).limit(50);
-    setRows((data as Profile[]) ?? []);
+
+    let real = supabase.from("ldr_profiles").select("*")
+      .not("experience_tier", "is", null).neq("id", profile.id);
+    let demo = supabase.from("ldr_demo_attorneys").select("*");
+    if (area) { real = real.contains("practice_areas", [area]); demo = demo.contains("practice_areas", [area]); }
+    if (juris) { real = real.eq("jurisdiction", juris); demo = demo.eq("jurisdiction", juris); }
+    if (tier) { real = real.eq("experience_tier", tier); demo = demo.eq("experience_tier", tier); }
+
+    const [{ data: rp }, { data: dp }] = await Promise.all([
+      real.order("reputation", { ascending: false }).limit(50),
+      demo.order("reputation", { ascending: false }).limit(50),
+    ]);
+
+    const realEntries: Entry[] = ((rp as Profile[]) ?? []).map((r) => ({
+      id: r.id, name: r.display_name, jurisdiction: r.jurisdiction,
+      practice_areas: r.practice_areas ?? [], experience_tier: r.experience_tier,
+      reputation: r.reputation, headline: r.headline,
+      verified: r.verification_status === "verified", demo: false,
+    }));
+    const demoEntries: Entry[] = ((dp as DemoAttorney[]) ?? []).map((d) => ({
+      id: d.id, name: d.display_name, jurisdiction: d.jurisdiction,
+      practice_areas: d.practice_areas ?? [], experience_tier: d.experience_tier,
+      reputation: d.reputation, headline: d.headline, verified: true, demo: true,
+    }));
+
+    setRows([...realEntries, ...demoEntries].sort((a, b) => b.reputation - a.reputation));
     setLoading(false);
   }
 
-  useEffect(() => { search(); /* initial: all verified attorneys */ }, []);
+  useEffect(() => { search(); /* initial: all matching attorneys */ }, []);
 
   return (
     <div className="container" style={{ paddingTop: 26 }}>
-      <h2 style={{ margin: 0 }}>איתור עו״ד על ה-Grid</h2>
+      <h2 style={{ margin: 0 }}>איתור עו״ד ברשת</h2>
       <p className="muted">
-        בחרו תחום, שיפוט ודרגה — וכל עו״ד מאומת שעונה לקריטריון יופיע מיד, מדורג לפי Authority Tier.
+        בחרו תחום, מדינה ודרגה — וכל עו״ד מאומת שעונה לקריטריון יופיע מיד, מדורג לפי Authority Tier.
       </p>
 
       <div className="card pad" style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr 1fr auto", alignItems: "end" }}>
@@ -48,7 +79,7 @@ export default function Directory({
           </select>
         </div>
         <div>
-          <label>תחום שיפוט</label>
+          <label>מדינה</label>
           <select value={juris} onChange={(e) => setJuris(e.target.value)}>
             <option value="">כל העולם</option>
             {JURISDICTIONS.map((j) => <option key={j.key} value={j.key}>{j.flag} {j.label}</option>)}
@@ -79,26 +110,38 @@ export default function Directory({
                 const rp = rankFor(r.reputation);
                 return (
                   <div key={r.id} className="card pad">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <span style={{ fontWeight: 800, fontSize: 16 }}>{r.display_name || "עו״ד אנונימי"}</span>
-                      <span className="gold" style={{ fontSize: 12, fontWeight: 700 }} dir="ltr">
-                        {rp.rank.icon} {rp.rank.title}
-                      </span>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <Avatar name={r.name} size={48} verified={r.verified} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                          <span style={{ fontWeight: 800, fontSize: 16 }}>{r.name || "עו״ד אנונימי"}</span>
+                          {r.verified && <span className="tag" style={{ fontSize: 11 }}>✓ מאומת</span>}
+                          {r.demo && <span className="tag" style={{ fontSize: 11, opacity: .8 }}>להמחשה</span>}
+                        </div>
+                        <div className="gold" style={{ fontSize: 12, fontWeight: 700 }} dir="ltr">
+                          {rp.rank.icon} {rp.rank.title}
+                        </div>
+                      </div>
                     </div>
-                    <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+                    {r.headline && <p className="muted" style={{ fontSize: 13, margin: "10px 0 0" }}>{r.headline}</p>}
+                    <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                       {r.jurisdiction && JURISDICTION_LABELS[r.jurisdiction]}
                       {r.experience_tier && " · " + EXPERIENCE_LABELS[r.experience_tier]}
                       {" · "}{r.reputation} מוניטין
                     </div>
-                    <div className="chip-select" style={{ marginTop: 10 }}>
-                      {(r.practice_areas ?? []).map((a) => (
+                    <div className="chip-select" style={{ marginTop: 8 }}>
+                      {r.practice_areas.map((a) => (
                         <span key={a} className="chip">{PRACTICE_AREA_LABELS[a] ?? a}</span>
                       ))}
                     </div>
                     <button
                       className="btn btn-ghost"
                       style={{ width: "100%", marginTop: 12 }}
-                      onClick={() => notify("ערוץ ההפניות המאובטח (Escrow) ייפתח בשלב ה-Marketplace 🔐")}
+                      onClick={() => notify(
+                        r.demo
+                          ? "זהו פרופיל להמחשה — ערוץ ההפניות ייפתח עם עו״ד אמיתיים בשלב ה-Marketplace 🔐"
+                          : "ערוץ ההפניות המאובטח (Escrow) ייפתח בשלב ה-Marketplace 🔐"
+                      )}
                     >
                       פתיחת ערוץ מאובטח
                     </button>

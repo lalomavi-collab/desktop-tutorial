@@ -1,6 +1,6 @@
-# Lawink — חזית האפליקציה
+# LAWLINK — חזית האפליקציה
 
-אפליקציית React + Vite + TypeScript ל-**Lawink** (חדר ההחלטות המשפטי), מחוברת ל-Supabase
+אפליקציית React + Vite + TypeScript ל-**LAWLINK** (Professional Social Network for Attorneys Only), מחוברת ל-Supabase
 (Auth + Postgres + RLS). עיצוב **Prestige Executive**, RTL מלא בעברית.
 
 ## הרצה מקומית

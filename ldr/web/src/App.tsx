@@ -8,9 +8,11 @@ import Invite from "./components/Invite";
 import Onboarding from "./components/Onboarding";
 import Leaderboard from "./components/Leaderboard";
 import Directory from "./components/Directory";
+import Gigs from "./components/Gigs";
+import Referrals from "./components/Referrals";
 import { rankFor } from "./lib/reputation";
 
-type Tab = "room" | "new" | "find" | "board" | "invite";
+type Tab = "room" | "new" | "find" | "gigs" | "referrals" | "board" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -86,6 +88,10 @@ export default function App() {
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
         ) : tab === "find" ? (
           <Directory profile={profile} notify={notify} />
+        ) : tab === "gigs" ? (
+          <Gigs profile={profile} notify={notify} />
+        ) : tab === "referrals" ? (
+          <Referrals profile={profile} notify={notify} />
         ) : tab === "board" ? (
           <Leaderboard profile={profile} />
         ) : (
@@ -106,8 +112,8 @@ function Header({
     <header className="topbar">
       <div className="container inner">
         <div className="brand">
-          <div className="mark">Lw</div>
-          <div className="name">Lawink<small>The Global Legal Grid</small></div>
+          <div className="mark">Lk</div>
+          <div className="name">LAWLINK<small>Professional Social Network for Attorneys Only</small></div>
         </div>
         {session && (
           <nav className="nav">
@@ -119,6 +125,8 @@ function Header({
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
             <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
+            <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
+            <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             <button onClick={onSignOut}>יציאה</button>
@@ -132,7 +140,7 @@ function Header({
 function Footer() {
   return (
     <footer className="footer">
-      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · Lawink
+      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWLINK
     </footer>
   );
 }

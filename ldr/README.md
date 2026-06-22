@@ -1,6 +1,6 @@
-# Lawink — חדר ההחלטות המשפטי
+# LAWLINK — Professional Social Network for Attorneys Only
 
-> **Lawink** הוא שם המותג של המוצר. `LDR` (Legal Decision Room) משמש כשם-קוד פנימי
+> **LAWLINK** הוא שם המותג של המוצר. `LDR` (Legal Decision Room) משמש כשם-קוד פנימי
 > וכקידומת לסכמת מסד הנתונים (`ldr_*`).
 
 פלטפורמה שיתופית לעורכי דין המשלבת **חכמת המונים מקצועית (Peer Review)** עם **בינה מלאכותית** לניהול

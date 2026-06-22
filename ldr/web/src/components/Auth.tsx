@@ -33,8 +33,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       <div className="auth-wrap">
         <div>
           <h1>
-            <span dir="ltr">⬛ LAWINK — The Global Legal Grid.</span><br />
-            <span className="gold" dir="ltr">Navigate the Grid. Map the Field.</span>
+            <span dir="ltr">⬛ LAWLINK</span><br />
+            <span className="gold" dir="ltr">Professional Social Network for Attorneys Only</span>
           </h1>
           <p className="lead">
             המהפכה המבצעית של עורכי הדין: שילוב עוצמתי בין חוכמת המונים מאומתת (Peer Review)
@@ -45,12 +45,12 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             <span className="tag">🔐 Zero-Knowledge בצד הלקוח</span>
             <span className="tag">🤝 שיתוף ברמת המשרד</span>
             <span className="tag">📊 Risk Score חי</span>
-            <span className="tag" dir="ltr">🗺️ Navigate the Grid</span>
+            <span className="tag">🧑‍⚖️ עו״ד מאומתים בלבד</span>
           </div>
 
           <div style={{ marginTop: 28 }}>
             <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
-              כל תחומי המשפט על ה-Grid — מכל דרגות הוותק:
+              כל תחומי המשפט ברשת — מכל דרגות הוותק:
             </div>
             <div className="chip-select">
               {PRACTICE_AREAS.map((a) => (

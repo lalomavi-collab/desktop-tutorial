@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { supabase, type Profile } from "../lib/supabase";
+import {
+  supabase, VERIFICATION_LABELS, LICENSE_LABELS,
+  type Profile, type LicenseType, type VerificationStatus,
+} from "../lib/supabase";
 import { rankFor, badgesFor } from "../lib/reputation";
+import Avatar from "./Avatar";
 
 export default function Invite({
   profile, notify,
@@ -9,6 +13,24 @@ export default function Invite({
   const [busy, setBusy] = useState(false);
   const [firmName, setFirmName] = useState("");
   const [firm, setFirm] = useState<{ id: string; name: string } | null>(null);
+
+  // Verification state.
+  const [vstatus, setVstatus] = useState<VerificationStatus>(profile.verification_status);
+  const [licType, setLicType] = useState<LicenseType>(profile.license_type ?? "lawyer");
+  const [licNo, setLicNo] = useState(profile.license_no ?? "");
+  const [vbusy, setVbusy] = useState(false);
+
+  async function submitVerification() {
+    if (!licNo.trim()) { notify("הזינו מספר רישיון/תעודה"); return; }
+    setVbusy(true);
+    const { error } = await supabase.from("ldr_profiles")
+      .update({ license_type: licType, license_no: licNo.trim(), verification_status: "pending" })
+      .eq("id", profile.id);
+    setVbusy(false);
+    if (error) { notify("שגיאה בשליחת האימות: " + error.message); return; }
+    setVstatus("pending");
+    notify("הבקשה נשלחה לאימות — המערכת תבדוק את הפרטים ✓");
+  }
 
   useEffect(() => {
     if (!profile.firm_id) return;
@@ -43,8 +65,59 @@ export default function Invite({
     setBusy(false);
   }
 
+  const verified = vstatus === "verified";
+
   return (
     <div className="container" style={{ paddingTop: 26 }}>
+      <div className="card pad" style={{ marginBottom: 18 }}>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          <Avatar name={profile.display_name} size={60} verified={verified} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{ fontWeight: 800, fontSize: 18 }}>{profile.display_name || "הפרופיל שלי"}</span>
+              <span className="tag" style={{ fontSize: 11 }}>
+                {verified ? "✓ " : ""}{VERIFICATION_LABELS[vstatus]}
+              </span>
+            </div>
+            <div className="gold" style={{ fontSize: 13, fontWeight: 700 }} dir="ltr">
+              {rankFor(profile.reputation).rank.icon} {rankFor(profile.reputation).rank.title}
+            </div>
+          </div>
+        </div>
+
+        {!verified && (
+          <>
+            <div className="divider" />
+            <h4 style={{ margin: "0 0 4px" }}>אימות מקצועי</h4>
+            <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
+              כדי לפתוח ערוצי הפניה ופעולות מאובטחות, נדרש אימות שאתם עו״ד מורשה/מתמחה.
+              {vstatus === "pending" && " הבקשה שלכם בבדיקה."}
+            </p>
+            {vstatus !== "pending" && (
+              <div style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr auto", alignItems: "end" }}>
+                <div>
+                  <label>סוג רישיון</label>
+                  <select value={licType} onChange={(e) => setLicType(e.target.value as LicenseType)}>
+                    <option value="lawyer">{LICENSE_LABELS.lawyer}</option>
+                    <option value="intern">{LICENSE_LABELS.intern}</option>
+                  </select>
+                </div>
+                <div>
+                  <label>מספר רישיון / תעודה</label>
+                  <input value={licNo} onChange={(e) => setLicNo(e.target.value)} dir="ltr" placeholder="לדוגמה 12345" />
+                </div>
+                <button className="btn btn-gold" disabled={vbusy} onClick={submitVerification}>
+                  {vbusy ? <span className="spinner" /> : "שליחה לאימות"}
+                </button>
+              </div>
+            )}
+            <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+              🤖 בקרוב: העלאת סריקת תעודה + תמונה ואימות אוטומטי מבוסס-AI.
+            </p>
+          </>
+        )}
+      </div>
+
       <h2>הזמנות ושיתוף</h2>
       <div className="grid cols-2">
         <div className="card pad">
