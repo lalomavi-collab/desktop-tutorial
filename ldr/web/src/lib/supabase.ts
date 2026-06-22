@@ -89,6 +89,30 @@ export const LICENSE_LABELS: Record<LicenseType, string> = {
 // Max practice areas a lawyer may select (kept in sync with the DB CHECK).
 export const MAX_PRACTICE_AREAS = 3;
 
+export type Currency = "EUR" | "USD" | "ILS" | "GBP";
+export const CURRENCY_SYMBOL: Record<Currency, string> = { EUR: "€", USD: "$", ILS: "₪", GBP: "£" };
+
+// A "Legal Gig" — a tactical solution an attorney offers in their jurisdiction.
+export interface Gig {
+  id: string;
+  owner_id: string;
+  jurisdiction: string;
+  practice_area: string;
+  title: string;
+  scope: string;
+  fee_min: number | null;
+  fee_max: number | null;
+  currency: Currency;
+  status: "active" | "paused";
+  created_at: string;
+  owner?: {
+    display_name: string | null;
+    reputation: number;
+    verification_status: VerificationStatus;
+    experience_tier: ExperienceTier | null;
+  } | null;
+}
+
 export const DOMAIN_LABELS: Record<LegalDomain, string> = {
   Real_Estate_TAMA38: "תמ\"א 38",
   Real_Estate_Urban_Renewal: "התחדשות עירונית",
