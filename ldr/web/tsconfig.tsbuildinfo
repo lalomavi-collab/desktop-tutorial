@@ -1,1 +1,0 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/Auth.tsx","./src/components/Dashboard.tsx","./src/components/Invite.tsx","./src/components/NewCase.tsx","./src/lib/anonymizer.ts","./src/lib/riskEngine.ts","./src/lib/supabase.ts"],"version":"5.9.3"}
