@@ -8,14 +8,15 @@ export interface Rank {
   min: number;
 }
 
-// Ascending reputation thresholds → gamified titles (Stack-Overflow style ladder).
+// Authority Tiering System — professional ladder tied to reputation
+// (insight accuracy + referrals + peer upvotes feed reputation upstream).
 export const RANKS: Rank[] = [
-  { level: 1, title: "מתלמד", icon: "🌱", min: 0 },
-  { level: 2, title: "תורם", icon: "📘", min: 50 },
-  { level: 3, title: "מנתח", icon: "📊", min: 150 },
-  { level: 4, title: "מומחה", icon: "🎯", min: 400 },
-  { level: 5, title: "סמכות", icon: "🏅", min: 900 },
-  { level: 6, title: "אורקל", icon: "🏛️", min: 2000 },
+  { level: 1, title: "Tier I · Contributor", icon: "▪", min: 0 },
+  { level: 2, title: "Tier II · Field Analyst", icon: "◆", min: 50 },
+  { level: 3, title: "Tier III · Legal Algorist", icon: "◆◆", min: 150 },
+  { level: 4, title: "Tier IV · Senior Legal Algorist", icon: "✦", min: 400 },
+  { level: 5, title: "Tier V · Grid Master", icon: "★", min: 900 },
+  { level: 6, title: "Tier VI · Global Grid Master", icon: "👑", min: 2000 },
 ];
 
 export interface RankProgress {

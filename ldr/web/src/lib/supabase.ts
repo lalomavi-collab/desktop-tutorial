@@ -51,7 +51,11 @@ export interface Profile {
   reputation: number;
   practice_areas: string[];
   experience_tier: ExperienceTier | null;
+  jurisdiction: string | null;
 }
+
+// Max practice areas a lawyer may select (kept in sync with the DB CHECK).
+export const MAX_PRACTICE_AREAS = 3;
 
 export const DOMAIN_LABELS: Record<LegalDomain, string> = {
   Real_Estate_TAMA38: "תמ\"א 38",
@@ -135,3 +139,32 @@ export const PRACTICE_AREAS: PracticeArea[] = [
 
 export const PRACTICE_AREA_LABELS: Record<string, string> =
   Object.fromEntries(PRACTICE_AREAS.map((a) => [a.key, a.label]));
+
+// Jurisdiction nodes on the Global Legal Grid (for cross-border discovery & referrals).
+export interface Jurisdiction { key: string; label: string; flag: string; }
+
+export const JURISDICTIONS: Jurisdiction[] = [
+  { key: "IL", label: "ישראל", flag: "🇮🇱" },
+  { key: "US", label: "ארה\"ב", flag: "🇺🇸" },
+  { key: "UK", label: "בריטניה", flag: "🇬🇧" },
+  { key: "DE", label: "גרמניה", flag: "🇩🇪" },
+  { key: "FR", label: "צרפת", flag: "🇫🇷" },
+  { key: "ES", label: "ספרד", flag: "🇪🇸" },
+  { key: "IT", label: "איטליה", flag: "🇮🇹" },
+  { key: "NL", label: "הולנד", flag: "🇳🇱" },
+  { key: "CH", label: "שווייץ", flag: "🇨🇭" },
+  { key: "PT", label: "פורטוגל", flag: "🇵🇹" },
+  { key: "IE", label: "אירלנד", flag: "🇮🇪" },
+  { key: "LU", label: "לוקסמבורג", flag: "🇱🇺" },
+  { key: "CY", label: "קפריסין", flag: "🇨🇾" },
+  { key: "GR", label: "יוון", flag: "🇬🇷" },
+  { key: "PL", label: "פולין", flag: "🇵🇱" },
+  { key: "AE", label: "איחוד האמירויות", flag: "🇦🇪" },
+  { key: "SG", label: "סינגפור", flag: "🇸🇬" },
+  { key: "HK", label: "הונג קונג", flag: "🇭🇰" },
+  { key: "CA", label: "קנדה", flag: "🇨🇦" },
+  { key: "AU", label: "אוסטרליה", flag: "🇦🇺" },
+];
+
+export const JURISDICTION_LABELS: Record<string, string> =
+  Object.fromEntries(JURISDICTIONS.map((j) => [j.key, `${j.flag} ${j.label}`]));

@@ -7,9 +7,10 @@ import NewCase from "./components/NewCase";
 import Invite from "./components/Invite";
 import Onboarding from "./components/Onboarding";
 import Leaderboard from "./components/Leaderboard";
+import Directory from "./components/Directory";
 import { rankFor } from "./lib/reputation";
 
-type Tab = "room" | "new" | "board" | "invite";
+type Tab = "room" | "new" | "find" | "board" | "invite";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -83,6 +84,8 @@ export default function App() {
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : tab === "find" ? (
+          <Directory profile={profile} notify={notify} />
         ) : tab === "board" ? (
           <Leaderboard profile={profile} />
         ) : (
@@ -115,6 +118,7 @@ function Header({
             )}
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
             <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
+            <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             <button onClick={onSignOut}>יציאה</button>
