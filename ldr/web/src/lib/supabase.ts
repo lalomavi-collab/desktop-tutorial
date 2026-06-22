@@ -42,6 +42,9 @@ export interface LdrCase {
 
 export type ExperienceTier = "junior" | "mid" | "senior";
 
+export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
+export type LicenseType = "lawyer" | "intern";
+
 export interface Profile {
   id: string;
   display_name: string | null;
@@ -52,7 +55,36 @@ export interface Profile {
   practice_areas: string[];
   experience_tier: ExperienceTier | null;
   jurisdiction: string | null;
+  avatar_url: string | null;
+  headline: string | null;
+  license_type: LicenseType | null;
+  license_no: string | null;
+  verification_status: VerificationStatus;
 }
+
+// Illustrative attorney profiles ("להמחשה") shown alongside real ones.
+export interface DemoAttorney {
+  id: string;
+  display_name: string;
+  jurisdiction: string;
+  practice_areas: string[];
+  experience_tier: ExperienceTier;
+  reputation: number;
+  headline: string | null;
+  is_demo: true;
+}
+
+export const VERIFICATION_LABELS: Record<VerificationStatus, string> = {
+  unverified: "לא מאומת",
+  pending: "ממתין לאימות",
+  verified: "מאומת",
+  rejected: "אימות נדחה",
+};
+
+export const LICENSE_LABELS: Record<LicenseType, string> = {
+  lawyer: "עו״ד מורשה",
+  intern: "מתמחה",
+};
 
 // Max practice areas a lawyer may select (kept in sync with the DB CHECK).
 export const MAX_PRACTICE_AREAS = 3;
