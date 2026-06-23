@@ -1,7 +1,28 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
+
+// Count-up animation for a numeric stat (animates the leading number, keeps
+// any suffix like "+" or "%"). Gives the entry a live, dynamic feel.
+function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [n, setN] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const dur = 1100;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      setN(Math.round(eased * value));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <span ref={ref}>{n}{suffix}</span>;
+}
 
 const FEATURES = [
   {
@@ -102,8 +123,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
           {/* ── Left: marketing ── */}
           <div className="animate-in">
-            <div className="tag" dir="ltr" style={{ marginBottom: 18, fontSize: 11 }}>
-              🇮🇱 PILOT · ישראל · מתרחב לעוד מדינות
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
+              <div className="tag" dir="ltr" style={{ fontSize: 11 }}>
+                🇮🇱 PILOT · ישראל · מתרחב לעוד מדינות
+              </div>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--ok)", fontWeight: 600 }}>
+                <span className="conn-dot connected" /> הרשת פעילה עכשיו
+              </span>
             </div>
 
             <h1 style={{ margin: "0 0 18px", fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.2, fontWeight: 900 }}>
@@ -135,16 +161,18 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               ))}
             </div>
 
-            {/* Stats row */}
+            {/* Stats row — live count-up on entry */}
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
               {[
-                { n: "24", l: "תחומי עיסוק" },
-                { n: "20+", l: "מדינות" },
-                { n: "0%", l: "עמלת תיווך" },
-                { n: "100%", l: "עו״ד מאומתים" },
+                { v: 24, suffix: "", l: "תחומי עיסוק" },
+                { v: 20, suffix: "+", l: "מדינות" },
+                { v: 0, suffix: "%", l: "עמלת תיווך" },
+                { v: 100, suffix: "%", l: "עו״ד מאומתים" },
               ].map((s) => (
                 <div key={s.l} style={{ textAlign: "center" }}>
-                  <div className="score-glow" style={{ fontSize: 22 }}>{s.n}</div>
+                  <div className="score-glow" style={{ fontSize: 22 }}>
+                    <CountUp value={s.v} suffix={s.suffix} />
+                  </div>
                   <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>{s.l}</div>
                 </div>
               ))}
