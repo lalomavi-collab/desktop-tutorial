@@ -184,7 +184,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             {/* Roadmap teaser */}
             <div style={{
               marginTop: 28, padding: "12px 16px", borderRadius: 10,
-              background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.18)",
+              background: "rgba(217,119,87,0.06)", border: "1px solid rgba(217,119,87,0.18)",
               fontSize: 13, color: "var(--cream-dim)", lineHeight: 1.6,
             }}>
               🚀 <b style={{ color: "var(--gold)" }}>פיילוט ישראל</b> — הצטרפו עכשיו ועצבו את הפלטפורמה.
