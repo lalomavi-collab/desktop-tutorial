@@ -22,6 +22,7 @@ export default function VerificationGate({
   profile: Profile; notify: (m: string) => void;
   onChange: (p: Profile) => void; onSignOut: () => void;
 }) {
+  const [fullName, setFullName] = useState(profile.display_name ?? "");
   const [licType, setLicType] = useState<LicenseType>(profile.license_type ?? "lawyer");
   const [licNo, setLicNo] = useState(profile.license_no ?? "");
   const [busy, setBusy] = useState(false);
@@ -48,20 +49,41 @@ export default function VerificationGate({
   }
 
   async function submitLicense() {
+    if (!fullName.trim()) { notify("הזינו שם מלא כפי שמופיע בלשכה"); return; }
     if (!licNo.trim()) { notify("הזינו מספר רישיון"); return; }
     setBusy(true);
 
-    // Submitting always sets status to "pending" — verification against the
-    // official Israel Bar Association registry happens before the badge is
-    // granted. We never auto-grant "verified" from a format check alone.
-    const { error } = await supabase.from("ldr_profiles").update({
+    // Real verification: the verify-attorney Edge Function matches name+license
+    // against the official Bar registry and is the ONLY path that can set
+    // 'verified'. We never auto-grant verified client-side.
+    const { data, error } = await supabase.functions.invoke("verify-attorney", {
+      body: {
+        full_name: fullName.trim(),
+        license_no: licNo.trim(),
+        jurisdiction: profile.jurisdiction ?? "IL",
+        license_type: licType,
+      },
+    });
+
+    if (!error && data && (data.status === "verified" || data.status === "pending")) {
+      const newStatus = data.status as "verified" | "pending";
+      setBusy(false);
+      onChange({ ...profile, license_type: licType, license_no: licNo.trim(), verification_status: newStatus });
+      notify(newStatus === "verified"
+        ? "✅ אומת מול מאגר לשכת עורכי הדין — ברוך/ה הבא/ה!"
+        : "הפרטים נשלחו לאימות מול לשכת עורכי הדין ✓");
+      return;
+    }
+
+    // Fallback (function not yet deployed / unreachable): record as pending so
+    // the trust team can review manually. Never sets verified.
+    const { error: dbErr } = await supabase.from("ldr_profiles").update({
       license_type: licType,
       license_no: licNo.trim(),
       verification_status: "pending",
     }).eq("id", profile.id);
-
     setBusy(false);
-    if (error) { notify("שגיאה: " + error.message); return; }
+    if (dbErr) { notify("שגיאה: " + dbErr.message); return; }
     onChange({ ...profile, license_type: licType, license_no: licNo.trim(), verification_status: "pending" });
     notify("הפרטים נשלחו לאימות מול לשכת עורכי הדין ✓");
   }
@@ -103,7 +125,14 @@ export default function VerificationGate({
               הפרטים נבדקים מול המאגר הרשמי לפני מתן תג "מאומת".
             </div>
 
-            <div className="grid cols-2">
+            <label>שם מלא (כפי שמופיע בלשכה)</label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="ישראל ישראלי"
+            />
+
+            <div className="grid cols-2" style={{ marginTop: 12 }}>
               <div>
                 <label>סוג רישיון</label>
                 <select value={licType} onChange={(e) => setLicType(e.target.value as LicenseType)}>
@@ -130,7 +159,7 @@ export default function VerificationGate({
             <button
               className="btn btn-gold"
               style={{ width: "100%", marginTop: 16 }}
-              disabled={busy || !licNo.trim()}
+              disabled={busy || !licNo.trim() || !fullName.trim()}
               onClick={submitLicense}
             >
               {busy ? <span className="spinner" /> : "שליחה לאימות מול הלשכה"}
