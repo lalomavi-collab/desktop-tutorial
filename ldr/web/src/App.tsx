@@ -14,8 +14,12 @@ import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
 import QA from "./components/QA";
 import { rankFor } from "./lib/reputation";
+import VerificationGate from "./components/VerificationGate";
+import AdminVerify from "./components/AdminVerify";
+import ResetPassword from "./components/ResetPassword";
+import MapView from "./components/MapView";
 
-type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -55,13 +59,24 @@ export default function App() {
       await supabase.from("ldr_profiles").update({ firm_id: inv.firm_id }).eq("id", userId);
     }
     await supabase.from("ldr_invites").update({ accepted_by: userId }).eq("token", token);
-    // clean the URL
     window.history.replaceState({}, "", window.location.pathname);
     notify("ההזמנה התקבלה — ברוכים הבאים לחדר ההחלטות!");
   }
 
   if (!ready) {
     return <div className="center" style={{ paddingTop: 120 }}><span className="spinner" /></div>;
+  }
+
+  // Password reset flow: Supabase sends users back with type=recovery
+  const urlParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+  if (urlParams.get("type") === "recovery" && session) {
+    return (
+      <div className="app">
+        <Header session={null} profile={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
+        <ResetPassword />
+        <Footer />
+      </div>
+    );
   }
 
   if (!session) {
@@ -85,6 +100,14 @@ export default function App() {
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
         ) : !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("room"); }} />
+        ) : profile.verification_status !== "verified" && !profile.is_admin ? (
+          <VerificationGate
+            profile={profile} notify={notify}
+            onChange={setProfile}
+            onSignOut={async () => { await supabase.auth.signOut(); }}
+          />
+        ) : tab === "admin" && profile.is_admin ? (
+          <AdminVerify profile={profile} notify={notify} />
         ) : tab === "feed" ? (
           <Feed profile={profile} notify={notify} />
         ) : tab === "profile" ? (
@@ -93,6 +116,8 @@ export default function App() {
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : tab === "map" ? (
+          <MapView profile={profile} notify={notify} />
         ) : tab === "find" ? (
           <Directory profile={profile} notify={notify} />
         ) : tab === "gigs" ? (
@@ -133,6 +158,7 @@ function Header({
             )}
             <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
+            <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מפה</button>
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
@@ -140,6 +166,9 @@ function Header({
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
+            {profile?.is_admin && (
+              <button className={tab === "admin" ? "active" : ""} onClick={() => setTab("admin")} style={{ color: "var(--gold)" }}>⚙ אדמין</button>
+            )}
             <button onClick={onSignOut}>יציאה</button>
           </nav>
         )}

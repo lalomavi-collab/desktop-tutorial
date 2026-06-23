@@ -40,11 +40,6 @@ export interface LdrCase {
   created_at: string;
 }
 
-export type ExperienceTier = "junior" | "mid" | "senior";
-
-export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
-export type LicenseType = "lawyer" | "intern";
-
 export interface Profile {
   id: string;
   display_name: string | null;
@@ -61,6 +56,9 @@ export interface Profile {
   license_no: string | null;
   license_doc: string | null;
   verification_status: VerificationStatus;
+  is_admin: boolean;
+  lat: number | null;
+  lng: number | null;
 }
 
 // Illustrative attorney profiles ("להמחשה") shown alongside real ones.
@@ -72,6 +70,8 @@ export interface DemoAttorney {
   experience_tier: ExperienceTier;
   reputation: number;
   headline: string | null;
+  lat: number | null;
+  lng: number | null;
   is_demo: true;
 }
 
@@ -201,83 +201,3 @@ export const RISK_FACTOR_LABELS: Record<string, string> = {
   tax_exposure: "חשיפת מס",
   timeline_risk: "סיכון לוחות זמנים",
 };
-
-// ── Lawyer categorization ──────────────────────────────────────────────
-// Experience tiers (by years of practice).
-export const EXPERIENCE_TIERS: { key: ExperienceTier; label: string; hint: string }[] = [
-  { key: "junior", label: "ג׳וניור", hint: "0–5 שנות ותק" },
-  { key: "mid", label: "מנוסה", hint: "5–15 שנות ותק" },
-  { key: "senior", label: "בכיר", hint: "15+ שנות ותק" },
-];
-
-export const EXPERIENCE_LABELS: Record<ExperienceTier, string> = {
-  junior: "ג׳וניור (0–5)",
-  mid: "מנוסה (5–15)",
-  senior: "בכיר (15+)",
-};
-
-// Comprehensive list of legal practice areas (categories) a lawyer can select.
-export interface PracticeArea {
-  key: string;
-  label: string;
-  icon: string;
-}
-
-export const PRACTICE_AREAS: PracticeArea[] = [
-  { key: "real_estate", label: "נדל\"ן ומקרקעין", icon: "🏗️" },
-  { key: "urban_renewal", label: "התחדשות עירונית (תמ\"א 38 / פינוי-בינוי)", icon: "🏙️" },
-  { key: "planning_building", label: "תכנון ובנייה", icon: "📐" },
-  { key: "commercial", label: "מסחרי-עסקי וחוזים", icon: "🤝" },
-  { key: "corporate_vc", label: "חברות, הון-סיכון וגיוסים (Hi-Tech)", icon: "🚀" },
-  { key: "litigation", label: "ליטיגציה אזרחית-מסחרית", icon: "⚖️" },
-  { key: "labor", label: "דיני עבודה", icon: "👷" },
-  { key: "ip", label: "קניין רוחני, סימני מסחר ופטנטים", icon: "💡" },
-  { key: "privacy_cyber", label: "הגנת הפרטיות וסייבר", icon: "🔒" },
-  { key: "tax", label: "מיסים ומיסוי מקרקעין", icon: "🧾" },
-  { key: "banking_finance", label: "בנקאות, מימון ושוק ההון", icon: "🏦" },
-  { key: "family_inheritance", label: "דיני משפחה וירושה", icon: "👪" },
-  { key: "criminal", label: "פלילי וצווארון לבן", icon: "🛡️" },
-  { key: "admin_constitutional", label: "מנהלי וחוקתי / עתירות (בג\"ץ)", icon: "🏛️" },
-  { key: "regulation", label: "רגולציה ורישוי", icon: "📋" },
-  { key: "energy_infra", label: "אנרגיה ותשתיות", icon: "⚡" },
-  { key: "environment", label: "סביבה ותכנון", icon: "🌱" },
-  { key: "insurance_tort", label: "ביטוח ונזיקין", icon: "🩺" },
-  { key: "insolvency", label: "חדלות פירעון והוצאה לפועל", icon: "📉" },
-  { key: "adr", label: "בוררות וגישור (ADR / DOM)", icon: "🕊️" },
-  { key: "class_actions", label: "צרכנות ותובענות ייצוגיות", icon: "📢" },
-  { key: "health_pharma", label: "בריאות ופארמה", icon: "💊" },
-  { key: "intl_trade", label: "סחר בינלאומי, ימי ותעופה", icon: "🌍" },
-  { key: "franchising", label: "הפצה, זכיינות וייצוג מסחרי", icon: "🏷️" },
-];
-
-export const PRACTICE_AREA_LABELS: Record<string, string> =
-  Object.fromEntries(PRACTICE_AREAS.map((a) => [a.key, a.label]));
-
-// Jurisdiction nodes (for cross-border discovery & referrals).
-export interface Jurisdiction { key: string; label: string; flag: string; }
-
-export const JURISDICTIONS: Jurisdiction[] = [
-  { key: "IL", label: "ישראל", flag: "🇮🇱" },
-  { key: "US", label: "ארה\"ב", flag: "🇺🇸" },
-  { key: "UK", label: "בריטניה", flag: "🇬🇧" },
-  { key: "DE", label: "גרמניה", flag: "🇩🇪" },
-  { key: "FR", label: "צרפת", flag: "🇫🇷" },
-  { key: "ES", label: "ספרד", flag: "🇪🇸" },
-  { key: "IT", label: "איטליה", flag: "🇮🇹" },
-  { key: "NL", label: "הולנד", flag: "🇳🇱" },
-  { key: "CH", label: "שווייץ", flag: "🇨🇭" },
-  { key: "PT", label: "פורטוגל", flag: "🇵🇹" },
-  { key: "IE", label: "אירלנד", flag: "🇮🇪" },
-  { key: "LU", label: "לוקסמבורג", flag: "🇱🇺" },
-  { key: "CY", label: "קפריסין", flag: "🇨🇾" },
-  { key: "GR", label: "יוון", flag: "🇬🇷" },
-  { key: "PL", label: "פולין", flag: "🇵🇱" },
-  { key: "AE", label: "איחוד האמירויות", flag: "🇦🇪" },
-  { key: "SG", label: "סינגפור", flag: "🇸🇬" },
-  { key: "HK", label: "הונג קונג", flag: "🇭🇰" },
-  { key: "CA", label: "קנדה", flag: "🇨🇦" },
-  { key: "AU", label: "אוסטרליה", flag: "🇦🇺" },
-];
-
-export const JURISDICTION_LABELS: Record<string, string> =
-  Object.fromEntries(JURISDICTIONS.map((j) => [j.key, `${j.flag} ${j.label}`]));
