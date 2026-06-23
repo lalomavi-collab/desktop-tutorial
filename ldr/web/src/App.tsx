@@ -5,13 +5,24 @@ import Auth from "./components/Auth";
 import Dashboard from "./components/Dashboard";
 import NewCase from "./components/NewCase";
 import Invite from "./components/Invite";
+import Onboarding from "./components/Onboarding";
+import Leaderboard from "./components/Leaderboard";
+import Directory from "./components/Directory";
+import Gigs from "./components/Gigs";
+import Referrals from "./components/Referrals";
+import Feed from "./components/Feed";
+import ProfilePage from "./components/Profile";
+import QA from "./components/QA";
+import { rankFor } from "./lib/reputation";
+import VerificationGate from "./components/VerificationGate";
+import AdminVerify from "./components/AdminVerify";
 
-type Tab = "room" | "new" | "invite";
+type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [tab, setTab] = useState<Tab>("room");
+  const [tab, setTab] = useState<Tab>("feed");
   const [toast, setToast] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -46,7 +57,6 @@ export default function App() {
       await supabase.from("ldr_profiles").update({ firm_id: inv.firm_id }).eq("id", userId);
     }
     await supabase.from("ldr_invites").update({ accepted_by: userId }).eq("token", token);
-    // clean the URL
     window.history.replaceState({}, "", window.location.pathname);
     notify("ההזמנה התקבלה — ברוכים הבאים לחדר ההחלטות!");
   }
@@ -58,7 +68,7 @@ export default function App() {
   if (!session) {
     return (
       <div className="app">
-        <Header session={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
+        <Header session={null} profile={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
         <Auth inviteToken={inviteToken} />
         <Footer />
       </div>
@@ -68,16 +78,40 @@ export default function App() {
   return (
     <div className="app">
       <Header
-        session={session} tab={tab} setTab={setTab}
+        session={session} profile={profile} tab={tab} setTab={setTab}
         onSignOut={async () => { await supabase.auth.signOut(); }}
       />
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+        ) : !profile.experience_tier ? (
+          <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("room"); }} />
+        ) : profile.verification_status !== "verified" && !profile.is_admin ? (
+          <VerificationGate
+            profile={profile} notify={notify}
+            onChange={setProfile}
+            onSignOut={async () => { await supabase.auth.signOut(); }}
+          />
+        ) : tab === "admin" && profile.is_admin ? (
+          <AdminVerify profile={profile} notify={notify} />
+        ) : tab === "feed" ? (
+          <Feed profile={profile} notify={notify} />
+        ) : tab === "profile" ? (
+          <ProfilePage profile={profile} notify={notify} onChange={setProfile} />
         ) : tab === "room" ? (
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : tab === "find" ? (
+          <Directory profile={profile} notify={notify} />
+        ) : tab === "gigs" ? (
+          <Gigs profile={profile} notify={notify} />
+        ) : tab === "referrals" ? (
+          <Referrals profile={profile} notify={notify} />
+        ) : tab === "qa" ? (
+          <QA profile={profile} notify={notify} />
+        ) : tab === "board" ? (
+          <Leaderboard profile={profile} />
         ) : (
           <Invite profile={profile} notify={notify} />
         )}
@@ -89,20 +123,35 @@ export default function App() {
 }
 
 function Header({
-  session, tab, setTab, onSignOut,
-}: { session: Session | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
+  session, profile, tab, setTab, onSignOut,
+}: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
+  const rank = profile ? rankFor(profile.reputation) : null;
   return (
     <header className="topbar">
       <div className="container inner">
         <div className="brand">
-          <div className="mark">Lw</div>
-          <div className="name">Lawink<small>חדר ההחלטות המשפטי</small></div>
+          <div className="mark">Ld</div>
+          <div className="name">LAWDin<small>Professional Social Network for Attorneys Only</small></div>
         </div>
         {session && (
           <nav className="nav">
+            {rank && (
+              <span className="tag" title={`מוניטין: ${profile!.reputation}`} style={{ marginInlineEnd: 4 }}>
+                {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
+              </span>
+            )}
+            <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
-            <button className={tab === "new" ? "active" : ""} onClick={() => setTab("new")}>תיק חדש</button>
+            <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
+            <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
+            <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
+            <button className={tab === "qa" ? "active" : ""} onClick={() => setTab("qa")}>שו״ת</button>
+            <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
+            <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
+            {profile?.is_admin && (
+              <button className={tab === "admin" ? "active" : ""} onClick={() => setTab("admin")} style={{ color: "var(--gold)" }}>⚙ אדמין</button>
+            )}
             <button onClick={onSignOut}>יציאה</button>
           </nav>
         )}
@@ -114,7 +163,7 @@ function Header({
 function Footer() {
   return (
     <footer className="footer">
-      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · Lawink
+      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWDin
     </footer>
   );
 }
