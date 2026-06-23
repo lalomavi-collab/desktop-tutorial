@@ -82,11 +82,10 @@ export default function App() {
   }
 
   if (!session) {
+    // Landing has its own nav/logo — no app Header here (avoids a double logo).
     return (
       <div className="app">
-        <Header session={null} profile={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
         <Auth inviteToken={inviteToken} />
-        <Footer />
       </div>
     );
   }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { LogoMark, Wordmark } from "./Logo";
 import PublicMap from "./PublicMap";
+import MembersStrip from "./MembersStrip";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
 
@@ -40,7 +41,7 @@ const FEATURES = [
   {
     icon: "🎯",
     title: "לידים והפניות — ללא עמלות",
-    body: "לקוחות פרטיים מוצאים אתכם לפי התמחות ו-Authority Tier, והפניות בין עו״ד עוברות ב-Escrow מאובטח. הכול ללא עמלת תיווך.",
+    body: "לקוחות פרטיים מוצאים אתכם לפי התמחות ו-Authority Tier, והפניות בין עו״ד עוברות ב-Escrow מאובטח. ללא עמלת הפניית תיקים.",
   },
 ];
 
@@ -135,6 +136,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           <span className="muted" style={{ fontSize: 13 }}>בסגנון Waze · לפי תחום עיסוק ומיקום</span>
         </div>
         <PublicMap />
+        <MembersStrip />
       </div>
 
       {/* ── Hero ── */}
@@ -177,7 +179,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               {[
                 { v: 24, suffix: "", l: "תחומי עיסוק" },
                 { v: 20, suffix: "+", l: "מדינות" },
-                { v: 0, suffix: "%", l: "עמלת תיווך" },
+                { v: 0, suffix: "%", l: "עמלת הפניית תיקים" },
                 { v: 100, suffix: "%", l: "עו״ד מאומתים" },
               ].map((s) => (
                 <div key={s.l} style={{ textAlign: "center" }}>
@@ -310,27 +312,6 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* ── Bottom value strip ── */}
-      <div style={{
-        position: "relative", zIndex: 2,
-        borderTop: "1px solid var(--line)",
-        padding: "28px 32px",
-        display: "flex", justifyContent: "center", gap: "clamp(16px, 4vw, 48px)",
-        flexWrap: "wrap",
-      }}>
-        {[
-          { icon: "🔐", text: "רשת סגורה — אימות רישיון מול לשכת עורכי הדין" },
-          { icon: "⚖️", text: "Authority Tier — מוניטין שנבנה בשימוש" },
-          { icon: "🗺️", text: "מפת עמיתים — ישראל ובעתיד גם חו״ל" },
-          { icon: "🤝", text: "Escrow מאובטח להפניות בינ״ל" },
-        ].map((item) => (
-          <div key={item.icon} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--cream-dim)" }}>
-            <span style={{ fontSize: 18 }}>{item.icon}</span>
-            {item.text}
-          </div>
-        ))}
       </div>
     </div>
   );
