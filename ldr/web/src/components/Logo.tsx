@@ -1,8 +1,12 @@
-// LAWDin brand mark — LinkedIn-inspired lockup: "LAWD" + an "in" tile.
-// (LAWDin, like LinkedIn, ends in "in" — so the wordmark mirrors that style.)
+// LAWDin brand mark — two-tone "LAWDIN" wordmark (3D-extruded feel).
+// Per the reference: split colour across the word, with the sides swapped —
+// "LAW" in cyan, "DIN" in cream.
 
-// The "in" tile — a rounded square in Waze cyan, used as the standalone mark
-// (favicon / avatar slot) and as the final glyph of the wordmark.
+const CYAN = "#33CCFF";
+// Subtle extruded-3D depth.
+const DEPTH = "0 1px 0 rgba(0,0,0,0.35), 0 2px 0 rgba(0,0,0,0.30), 0 4px 10px rgba(0,0,0,0.45)";
+
+// Compact mark for tight spots (auth card / favicon slot): cyan tile + dark "L".
 export function LogoMark({ size = 40, glow = true }: { size?: number; glow?: boolean }) {
   return (
     <div
@@ -18,26 +22,26 @@ export function LogoMark({ size = 40, glow = true }: { size?: number; glow?: boo
       aria-label="LAWDin"
     >
       <span style={{
-        fontWeight: 900, fontSize: size * 0.5, lineHeight: 1, color: "#0d1020",
-        fontFamily: "Heebo, system-ui, sans-serif", letterSpacing: "-0.5px",
-      }}>in</span>
+        fontWeight: 900, fontSize: size * 0.52, lineHeight: 1, color: "#0d1020",
+        letterSpacing: "-1px",
+      }}>Ld</span>
     </div>
   );
 }
 
-// Wordmark = "LAWD" + the "in" tile, reading "LAWDin".
+// Wordmark = "LAW" (cyan) + "DIN" (cream), reading "LAWDIN".
 export function Wordmark({
   size = 40, tagline = true,
 }: { size?: number; tagline?: boolean }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: size * 0.1 }} dir="ltr">
-        <span style={{
-          fontWeight: 900, fontSize: size * 0.62, letterSpacing: "-1px",
-          color: "var(--cream)", lineHeight: 1,
-        }}>LAWD</span>
-        <LogoMark size={size * 0.9} />
-      </div>
+      <span dir="ltr" style={{
+        fontWeight: 900, fontSize: size * 0.62, letterSpacing: "-1px",
+        lineHeight: 1, textShadow: DEPTH, fontFamily: "Heebo, system-ui, sans-serif",
+      }}>
+        <span style={{ color: CYAN }}>LAW</span>
+        <span style={{ color: "var(--cream)" }}>DIN</span>
+      </span>
       {tagline && (
         <small style={{ color: "var(--cream-dim)", fontWeight: 400, fontSize: 11, letterSpacing: 2 }}>
           Legal Operating System
