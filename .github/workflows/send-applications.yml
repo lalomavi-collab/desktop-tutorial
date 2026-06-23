@@ -1,0 +1,38 @@
+name: Send Job Applications
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'job_agent/trigger_send'
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    env:
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      MS_SENDER: avraham@lalum.co
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install msal requests
+
+      - name: Send applications
+        run: python3 job_agent/send_applications.py
+
+      - name: Commit sent log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add job_agent/sent_log.json || true
+          git diff --staged --quiet || git commit -m "chore: update sent_log after applications run"
+          git push || true
