@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { LogoMark, Wordmark } from "./Logo";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
 
@@ -90,19 +91,21 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--obsidian)" }}>
+    <div className="landing" style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+
+      {/* ── Animated premium backdrop ── */}
+      <div className="aurora" aria-hidden="true" />
+      <div className="grid-overlay" aria-hidden="true" />
 
       {/* ── Top nav bar ── */}
       <nav style={{
+        position: "sticky", top: 0, zIndex: 3,
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "0 32px", height: 56,
+        padding: "10px 32px", minHeight: 56,
         borderBottom: "1px solid var(--line)",
-        position: "sticky", top: 0, zIndex: 10,
-        background: "rgba(27,27,27,0.92)", backdropFilter: "blur(10px)",
+        background: "rgba(20,20,20,0.78)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
-        <span style={{ fontWeight: 900, fontSize: 20, letterSpacing: 1, color: "var(--gold)" }}>
-          LAWDin
-        </span>
+        <Wordmark size={36} tagline={false} />
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
             onClick={() => switchMode("signin")}>כניסה</button>
@@ -118,7 +121,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       )}
 
       {/* ── Hero ── */}
-      <div className="container" style={{ paddingTop: 64, paddingBottom: 48, maxWidth: 1100 }}>
+      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 64, paddingBottom: 48, maxWidth: 1100 }}>
         <div className="auth-wrap">
 
           {/* ── Left: marketing ── */}
@@ -204,7 +207,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <>
                 {mode !== "reset" && (
                   <>
-                    <div style={{ textAlign: "center", marginBottom: 18 }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 18 }}>
+                      <LogoMark size={46} />
                       <div style={{ fontSize: 13, color: "var(--cream-dim)" }}>
                         {mode === "signin" ? "שמחים לראותכם חזרה 👋" : "הצטרפו לרשת העו״ד המאומתים"}
                       </div>
@@ -300,6 +304,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
       {/* ── Bottom value strip ── */}
       <div style={{
+        position: "relative", zIndex: 2,
         borderTop: "1px solid var(--line)",
         padding: "28px 32px",
         display: "flex", justifyContent: "center", gap: "clamp(16px, 4vw, 48px)",

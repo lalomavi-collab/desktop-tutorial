@@ -18,6 +18,7 @@ import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
 import MapView from "./components/MapView";
+import { Wordmark } from "./components/Logo";
 
 type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
@@ -145,9 +146,8 @@ function Header({
   return (
     <header className="topbar">
       <div className="container inner">
-        <div className="brand">
-          <div className="mark">Ld</div>
-          <div className="name">LAWDin<small>Professional Social Network for Attorneys Only</small></div>
+        <div className="brand" onClick={() => session && setTab("feed")}>
+          <Wordmark size={40} />
         </div>
         {session && (
           <nav className="nav">
