@@ -79,7 +79,8 @@ export default function PublicMap() {
 
   return (
     <div style={{ position: "relative", borderRadius: 18, overflow: "hidden", border: "1px solid var(--line)", boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}>
-      <div ref={el} style={{ height: 380, width: "100%", background: "#0d1020" }} />
+      <div ref={el} role="application" aria-label="מפת מיקומי עורכי דין ברשת"
+        style={{ height: 380, width: "100%", background: "#0d1020" }} />
       {/* Floating Waze-style label */}
       <div style={{
         position: "absolute", top: 14, insetInlineStart: "50%", transform: "translateX(-50%)",
