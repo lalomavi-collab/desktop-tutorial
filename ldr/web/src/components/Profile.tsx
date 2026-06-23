@@ -8,8 +8,8 @@ import { rankFor, badgesFor } from "../lib/reputation";
 import Avatar from "./Avatar";
 
 export default function Profile({
-  profile, notify, onChange,
-}: { profile: ProfileT; notify: (m: string) => void; onChange: (p: ProfileT) => void }) {
+  profile, notify, onChange, onSignOut,
+}: { profile: ProfileT; notify: (m: string) => void; onChange: (p: ProfileT) => void; onSignOut?: () => void }) {
   const [headline, setHeadline] = useState(profile.headline ?? "");
   const [savingH, setSavingH] = useState(false);
   const [endorsements, setEndorsements] = useState(0);
@@ -146,6 +146,37 @@ export default function Profile({
         </div>
       </div>
 
+      {/* Profile completeness (LinkedIn-style) — drives engagement */}
+      {(() => {
+        const checks = [
+          { done: !!profile.avatar_url, label: "תמונת פרופיל" },
+          { done: !!(profile.headline && profile.headline.trim()), label: "כותרת מקצועית" },
+          { done: (profile.practice_areas ?? []).length > 0, label: "תחומי עיסוק" },
+          { done: !!profile.jurisdiction, label: "תחום שיפוט" },
+          { done: !!profile.experience_tier, label: "דרגת ותק" },
+          { done: verified, label: "אימות רישיון" },
+        ];
+        const doneN = checks.filter((c) => c.done).length;
+        const pct = Math.round((doneN / checks.length) * 100);
+        if (pct === 100) return null;
+        const missing = checks.filter((c) => !c.done);
+        return (
+          <div className="card pad" style={{ marginTop: 16, borderColor: "rgba(51,204,255,0.3)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <h3 style={{ margin: 0 }}>השלמת הפרופיל</h3>
+              <span className="score-glow" style={{ fontSize: 18 }}>{pct}%</span>
+            </div>
+            <div style={{ height: 8, borderRadius: 99, background: "var(--obsidian-3)", marginTop: 10, overflow: "hidden" }}>
+              <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg, var(--gold-soft), var(--gold))", transition: "width 1s ease" }} />
+            </div>
+            <div className="chip-select" style={{ marginTop: 12 }}>
+              {missing.map((m) => <span key={m.label} className="chip" style={{ fontSize: 12 }}>＋ {m.label}</span>)}
+            </div>
+            <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>פרופיל מלא מקבל יותר חיבורים, הפניות ולקוחות.</p>
+          </div>
+        );
+      })()}
+
       {/* Stats */}
       <div className="card pad" style={{ marginTop: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -260,6 +291,12 @@ export default function Profile({
             🔒 התעודה נשמרת באחסון פרטי ומאובטח. אימות אוטומטי מבוסס-AI בהמשך.
           </p>
         </div>
+      )}
+
+      {onSignOut && (
+        <button className="btn btn-ghost" style={{ width: "100%", marginTop: 16 }} onClick={onSignOut}>
+          יציאה מהחשבון
+        </button>
       )}
     </div>
   );

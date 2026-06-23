@@ -19,6 +19,7 @@ import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
 import MapView from "./components/MapView";
 import { Wordmark } from "./components/Logo";
+import BottomNav from "./components/BottomNav";
 
 type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
@@ -112,7 +113,8 @@ export default function App() {
         ) : tab === "feed" ? (
           <Feed profile={profile} notify={notify} />
         ) : tab === "profile" ? (
-          <ProfilePage profile={profile} notify={notify} onChange={setProfile} />
+          <ProfilePage profile={profile} notify={notify} onChange={setProfile}
+            onSignOut={async () => { await supabase.auth.signOut(); }} />
         ) : tab === "room" ? (
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
@@ -134,6 +136,10 @@ export default function App() {
         )}
       </main>
       <Footer />
+      {/* Professional mobile bottom nav — shown to onboarded, verified users */}
+      {profile && profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin) && (
+        <BottomNav tab={tab} setTab={setTab} />
+      )}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

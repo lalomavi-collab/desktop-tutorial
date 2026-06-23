@@ -536,3 +536,31 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
 /* Floating action feel for the primary CTA. */
 .btn-gold { box-shadow: 0 6px 20px rgba(51,204,255,0.30); }
 .btn-gold:hover { box-shadow: 0 10px 30px rgba(51,204,255,0.42); }
+
+/* ── Professional mobile bottom navigation (LinkedIn/FB/Meat2Me style) ── */
+.bottom-nav { display: none; }
+@media (max-width: 860px) {
+  .bottom-nav {
+    display: flex; position: fixed; inset-inline: 0; bottom: 0; z-index: 900;
+    background: rgba(22,24,36,0.96); backdrop-filter: blur(18px) saturate(160%);
+    border-top: 1px solid var(--line);
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.4);
+  }
+  .bn-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; cursor: pointer; padding: 6px 2px;
+    color: var(--cream-dim); font: inherit; border-radius: 12px;
+    transition: color .2s, background .2s, transform .12s;
+  }
+  .bn-item:active { transform: scale(0.92); }
+  .bn-icon { font-size: 20px; line-height: 1; filter: grayscale(0.4) opacity(0.8); transition: filter .2s, transform .2s; }
+  .bn-label { font-size: 10.5px; font-weight: 600; }
+  .bn-item.active { color: var(--gold); }
+  .bn-item.active .bn-icon { filter: none; transform: translateY(-1px) scale(1.08); }
+  .bn-item.active .bn-label { text-shadow: 0 0 10px rgba(51,204,255,0.5); }
+  /* Keep content clear of the bar */
+  .app > main { padding-bottom: 78px; }
+  /* The top nav's long tab list is redundant on mobile — hide it, bottom nav wins */
+  .topbar .nav { display: none; }
+}
