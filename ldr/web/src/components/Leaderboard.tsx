@@ -41,7 +41,7 @@ export default function Leaderboard({ profile }: { profile: Profile }) {
       const demo: Row[] = ((dp as DemoAttorney[]) ?? []).map((d) => ({
         id: d.id, name: d.display_name, experience_tier: d.experience_tier,
         practice_areas: d.practice_areas ?? [], reputation: d.reputation,
-        verified: true, demo: true, me: false, avatar_url: null,
+        verified: true, demo: true, me: false, avatar_url: d.avatar_url ?? null,
       }));
       setRows([...real, ...demo].sort((a, b) => b.reputation - a.reputation));
       setLoading(false);

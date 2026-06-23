@@ -97,7 +97,7 @@ export default function MapView({ profile, notify }: { profile: Profile; notify:
           .not("lat", "is", null)
           .neq("id", profile.id),
         supabase.from("ldr_demo_attorneys")
-          .select("id,display_name,lat,lng,practice_areas,jurisdiction,experience_tier,reputation,headline")
+          .select("id,display_name,lat,lng,practice_areas,jurisdiction,experience_tier,reputation,headline,avatar_url")
           .not("lat", "is", null),
       ]);
       const real: AttyEntry[] = ((rp ?? []) as any[]).map((r) => ({
@@ -110,7 +110,7 @@ export default function MapView({ profile, notify }: { profile: Profile; notify:
         id: d.id, name: d.display_name, lat: d.lat, lng: d.lng,
         practice_areas: d.practice_areas ?? [], jurisdiction: d.jurisdiction,
         experience_tier: d.experience_tier, reputation: d.reputation,
-        headline: d.headline, verified: true, demo: true, avatar_url: null,
+        headline: d.headline, verified: true, demo: true, avatar_url: d.avatar_url ?? null,
       }));
       setAttorneys([...real, ...demo]);
       setLoading(false);
