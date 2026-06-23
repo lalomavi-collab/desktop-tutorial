@@ -50,6 +50,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [name, setName] = useState("");
+  const [licNo, setLicNo] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -66,15 +67,21 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
+    if (!licNo.trim()) { setErr("יש להזין מספר רישיון עו״ד"); return; }
     if (password.length < 8) { setErr("הסיסמה חייבת להכיל לפחות 8 תווים"); return; }
     if (password !== confirm) { setErr("הסיסמאות אינן תואמות"); return; }
     setBusy(true); setErr(null);
     const { data, error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { display_name: name.trim() || undefined } },
+      options: { data: { display_name: name.trim() || undefined, license_no: licNo.trim() } },
     });
+    if (error) { setBusy(false); setErr(mapError(error.message)); return; }
+    // Persist the license number captured at entry onto the profile.
+    if (data.session && data.user) {
+      await supabase.from("ldr_profiles")
+        .update({ license_no: licNo.trim() }).eq("id", data.user.id);
+    }
     setBusy(false);
-    if (error) { setErr(mapError(error.message)); return; }
     if (data.session) return;
     setInfo("נשלח אליך אימייל אימות — לחץ על הקישור ותחזור לכאן להתחברות.");
     switchMode("signin");
@@ -151,25 +158,16 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <span style={{ color: "var(--cream-dim)" }}>הבית המקצועי שלכם.</span>
             </h1>
 
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--cream-dim)", maxWidth: 480, margin: "0 0 32px" }}>
-              LAWDin מרכזת במקום אחד את מה שהיום מפוזר בעשרות מקומות —
-              <b style={{ color: "var(--cream)" }}> ידע, חיבורים, שיתופי פעולה ולידים</b>.
-              רשת סגורה ומאומתת לעו״ד, עם הפניות ללא עמלת תיווך. פחות חיפוש, יותר עבודה.
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--cream-dim)", maxWidth: 460, margin: "0 0 26px" }}>
+              הרשת המקצועית לעורכי דין מאומתים. ידע, חיבורים והפניות — <b style={{ color: "var(--cream)" }}>ללא עמלות</b>.
             </p>
 
-            {/* Feature cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
+            {/* Concise value props — clean, professional */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 30 }}>
               {FEATURES.map((f) => (
-                <div key={f.icon} className="card" style={{
-                  display: "flex", gap: 14, padding: "14px 18px",
-                  alignItems: "flex-start",
-                  transition: "border-color .2s",
-                }}>
-                  <span style={{ fontSize: 26, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{f.title}</div>
-                    <div style={{ fontSize: 13, color: "var(--cream-dim)", lineHeight: 1.55 }}>{f.body}</div>
-                  </div>
+                <div key={f.icon} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 20, width: 28, textAlign: "center", flexShrink: 0 }}>{f.icon}</span>
+                  <span style={{ fontWeight: 600, fontSize: 15 }}>{f.title}</span>
                 </div>
               ))}
             </div>
@@ -191,14 +189,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               ))}
             </div>
 
-            {/* Roadmap teaser */}
+            {/* Roadmap teaser — concise */}
             <div style={{
-              marginTop: 28, padding: "12px 16px", borderRadius: 10,
+              marginTop: 26, padding: "10px 14px", borderRadius: 10,
               background: "rgba(51,204,255,0.06)", border: "1px solid rgba(51,204,255,0.18)",
-              fontSize: 13, color: "var(--cream-dim)", lineHeight: 1.6,
+              fontSize: 13, color: "var(--cream-dim)",
             }}>
-              🚀 <b style={{ color: "var(--gold)" }}>פיילוט ישראל</b> — הצטרפו עכשיו ועצבו את הפלטפורמה.
-              לאחר הפיילוט: הרחבה ל-EU, ארה״ב ומדינות נוספות עם רישוי משפטי.
+              🚀 <b style={{ color: "var(--gold)" }}>פיילוט ישראל</b> — בקרוב גם EU וארה״ב.
             </div>
           </div>
 
@@ -269,10 +266,14 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                     <label>שם מלא</label>
                     <input autoComplete="name"
                       value={name} onChange={(e) => setName(e.target.value)} placeholder="עו״ד ישראל ישראלי" />
+                    <label style={{ marginTop: 12 }}>מספר רישיון עו״ד</label>
+                    <input required dir="ltr" inputMode="numeric"
+                      value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
+                      placeholder="12345" />
                     <label style={{ marginTop: 12 }}>אימייל</label>
                     <input type="email" required autoComplete="username" dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
-                    <label style={{ marginTop: 12 }}>סיסמה <span className="muted">(לפחות 8 תווים)</span></label>
+                    <label style={{ marginTop: 12 }}>סיסמה <span className="muted">(8+ תווים)</span></label>
                     <input type="password" required autoComplete="new-password" dir="ltr"
                       value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
                     <label style={{ marginTop: 12 }}>אימות סיסמה</label>
@@ -283,8 +284,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                       {busy ? <span className="spinner" /> : "הרשמה — בחינם"}
                     </button>
                     <p className="muted center" style={{ fontSize: 11, marginTop: 12, lineHeight: 1.5 }}>
-                      לאחר ההרשמה תתבקש/י לאמת רישיון עו״ד.<br />
-                      כניסה מלאה לרשת נפתחת רק לאחר אימות.
+                      הרישיון מאומת מול לשכת עורכי הדין.
                     </p>
                   </form>
                 )}
