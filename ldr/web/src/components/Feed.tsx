@@ -14,6 +14,27 @@ function ago(iso: string): string {
   const d = Math.floor(h / 24); return `לפני ${d} ימים`;
 }
 
+function FeedSkeleton() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="card pad">
+          <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 14 }}>
+            <div className="skeleton" style={{ width: 44, height: 44, borderRadius: "50%", flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div className="skeleton skeleton-line short" />
+              <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+            </div>
+          </div>
+          <div className="skeleton skeleton-line" />
+          <div className="skeleton skeleton-line" style={{ marginTop: 6 }} />
+          <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Feed({
   profile, notify,
 }: { profile: Profile; notify: (m: string) => void }) {
@@ -51,7 +72,6 @@ export default function Feed({
 
   async function toggleLike(p: Post) {
     const isLiked = liked.has(p.id);
-    // optimistic
     setLiked((prev) => { const n = new Set(prev); isLiked ? n.delete(p.id) : n.add(p.id); return n; });
     setPosts((prev) => prev.map((x) => x.id === p.id
       ? { ...x, likes: [{ count: (x.likes?.[0]?.count ?? 0) + (isLiked ? -1 : 1) }] } : x));
@@ -65,66 +85,86 @@ export default function Feed({
   async function remove(p: Post) {
     await supabase.from("ldr_posts").delete().eq("id", p.id);
     setPosts((prev) => prev.filter((x) => x.id !== p.id));
+    notify("הפוסט נמחק");
   }
 
   return (
-    <div className="container" style={{ paddingTop: 26, maxWidth: 680 }}>
-      <h2 style={{ margin: 0 }}>הפיד המקצועי</h2>
-      <p className="muted">שתפו תובנות, שאלות וחדשות עם קהילת עורכי הדין.</p>
+    <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 680 }}>
+      <div className="section-header">
+        <h2>הפיד המקצועי</h2>
+      </div>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>שתפו תובנות, שאלות וחדשות עם קהילת עורכי הדין.</p>
 
-      <div className="card pad">
+      {/* Compose box */}
+      <div className="card pad" style={{ marginBottom: 18, borderColor: "rgba(212,175,55,0.22)" }}>
         <div style={{ display: "flex", gap: 12 }}>
           <Avatar name={profile.display_name} size={44} verified={profile.verification_status === "verified"} url={profile.avatar_url} />
           <textarea
             value={body} onChange={(e) => setBody(e.target.value)}
-            placeholder="על מה תרצו לדבר? תובנה משפטית, שאלה לקהילה, עדכון…"
-            style={{ flex: 1, minHeight: 70 }}
+            placeholder="על מה תרצו לדבר? תובנה משפטית, שאלה לקהילה, עדכון מקצועי…"
+            style={{ flex: 1, minHeight: 80, resize: "none" }}
+            onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) publish(); }}
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-          <button className="btn btn-gold" disabled={busy || !body.trim()} onClick={publish}>
-            {busy ? <span className="spinner" /> : "פרסום"}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+          <span className="muted" style={{ fontSize: 12 }}>Ctrl+Enter לפרסום מהיר</span>
+          <button className="btn btn-gold" disabled={busy || !body.trim()} onClick={publish}
+            style={{ padding: "9px 20px", fontSize: 14 }}>
+            {busy ? <span className="spinner" /> : "📣 פרסום"}
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="center" style={{ padding: 50 }}><span className="spinner" /></div>
+        <FeedSkeleton />
       ) : posts.length === 0 ? (
-        <div className="card pad center" style={{ marginTop: 14 }}>
+        <div className="card pad center" style={{ marginTop: 14, padding: "40px 22px" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>✍️</div>
           <p className="muted">הפיד ריק עדיין — היו הראשונים לשתף תובנה.</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
+        <div className="stagger-children" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {posts.map((p) => {
             const rp = rankFor(p.author?.reputation ?? 0);
             const count = p.likes?.[0]?.count ?? 0;
             const isLiked = liked.has(p.id);
             return (
-              <div key={p.id} className="card pad">
+              <div key={p.id} className="card pad card-interactive">
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                   <Avatar name={p.author?.display_name ?? null} size={44}
                     verified={p.author?.verification_status === "verified"} url={p.author?.avatar_url} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                       {p.author?.display_name || "עו״ד"}
-                      {p.author?.verification_status === "verified" && <span className="tag" style={{ fontSize: 10 }}>✓</span>}
+                      {p.author?.verification_status === "verified" && (
+                        <span className="tag tag-gold" style={{ fontSize: 10, padding: "2px 7px" }}>✓ מאומת</span>
+                      )}
                     </div>
-                    <div className="muted" style={{ fontSize: 12 }} dir="ltr">
-                      {rp.rank.icon} {rp.rank.title} · {ago(p.created_at)}
+                    <div className="muted" style={{ fontSize: 12, marginTop: 2, display: "flex", gap: 6, alignItems: "center" }}>
+                      <span className="rank-badge" style={{ fontSize: 10, padding: "2px 8px" }}>{rp.rank.icon} {rp.rank.title}</span>
+                      <span>·</span>
+                      <span>{ago(p.created_at)}</span>
                     </div>
                   </div>
                   {p.author_id === profile.id && (
-                    <button className="btn btn-ghost" style={{ padding: "2px 8px" }} onClick={() => remove(p)} title="מחיקה">✕</button>
+                    <button className="btn btn-danger" style={{ padding: "4px 10px", fontSize: 12, borderRadius: 8 }}
+                      onClick={() => remove(p)} title="מחיקה">✕</button>
                   )}
                 </div>
-                <p style={{ lineHeight: 1.7, marginBottom: 8, whiteSpace: "pre-wrap" }}>{p.body}</p>
-                <button
-                  className={"btn btn-ghost"} onClick={() => toggleLike(p)}
-                  style={{ color: isLiked ? "var(--gold)" : undefined }}
-                >
-                  {isLiked ? "👍 אהבתי" : "👍 אהבתי"} {count > 0 && `· ${count}`}
-                </button>
+
+                <p style={{ lineHeight: 1.75, margin: "14px 0 12px", whiteSpace: "pre-wrap", fontSize: 15 }}>{p.body}</p>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <button
+                    className={`btn-like${isLiked ? " liked" : ""}`}
+                    onClick={() => toggleLike(p)}
+                  >
+                    {isLiked ? "❤️" : "🤍"} {count > 0 ? count : ""}
+                    <span style={{ marginRight: 4, fontSize: 12 }}>
+                      {isLiked ? "אהבתי" : "אהבתי"}
+                    </span>
+                  </button>
+                </div>
               </div>
             );
           })}

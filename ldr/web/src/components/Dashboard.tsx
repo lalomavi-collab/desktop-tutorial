@@ -22,41 +22,56 @@ export default function Dashboard({
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="container" style={{ paddingTop: 26 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>חדר ההחלטות</h2>
+    <div className="container animate-in" style={{ paddingTop: 26 }}>
+      <div className="section-header">
+        <h2>⚖️ חדר ההחלטות</h2>
         <button className="btn btn-gold" onClick={onNew}>+ תיק חדש</button>
       </div>
-      <p className="muted">תיקים אנונימיים פתוחים לתיקוף — הצביעו, הציעו חלופות והציפו נקודות עיוורות.</p>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 20 }}>תיקים אנונימיים פתוחים לתיקוף — הצביעו, הציעו חלופות והציפו נקודות עיוורות.</p>
 
       {loading ? (
-        <div className="center" style={{ padding: 50 }}><span className="spinner" /></div>
+        <div className="grid cols-2">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="card pad">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton skeleton-line short" />
+                  <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+                </div>
+                <div className="skeleton" style={{ width: 56, height: 56, borderRadius: "50%", flexShrink: 0 }} />
+              </div>
+              <div className="skeleton skeleton-line" />
+              <div className="skeleton skeleton-line" style={{ marginTop: 6 }} />
+            </div>
+          ))}
+        </div>
       ) : cases.length === 0 ? (
-        <div className="card pad center">
+        <div className="card pad center" style={{ padding: "50px 22px" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⚖️</div>
           <p className="muted">אין עדיין תיקים. היו הראשונים לשתף ולפתוח את החכמה הקולקטיבית.</p>
           <button className="btn btn-gold" onClick={onNew}>שיתוף תיק ראשון</button>
         </div>
       ) : (
-        <div className="grid cols-2">
+        <div className="grid cols-2 stagger-children">
           {cases.map((c) => {
             const band = riskBand(c.ai_risk_score ?? 0);
             return (
-              <div key={c.case_id} className="card pad" style={{ cursor: "pointer" }} onClick={() => setOpen(c)}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                  <div>
+              <div key={c.case_id} className="card pad card-interactive" style={{ cursor: "pointer" }} onClick={() => setOpen(c)}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     <span className="tag">{DOMAIN_LABELS[c.legal_domain]}</span>
-                    <span className="tag" style={{ marginInlineStart: 6 }}>{EXPOSURE_LABELS[c.economic_exposure]}</span>
+                    <span className="tag">{EXPOSURE_LABELS[c.economic_exposure]}</span>
                   </div>
                   <div className={"risk-dial " + band.cls} style={{ width: 56, height: 56, ["--val" as any]: c.ai_risk_score ?? 0 }}>
                     <span className="num" style={{ fontSize: 16 }}>{Math.round(c.ai_risk_score ?? 0)}</span>
                   </div>
                 </div>
-                <p style={{ lineHeight: 1.6, maxHeight: 70, overflow: "hidden", color: "var(--cream-dim)" }}>
+                <p style={{ lineHeight: 1.6, maxHeight: 72, overflow: "hidden", color: "var(--cream-dim)", fontSize: 14, margin: "0 0 10px" }}>
                   {c.proposed_strategy}
                 </p>
                 <div className="chip-select">
                   {c.risk_factors.slice(0, 3).map((f) => (
-                    <span key={f} className="chip">{RISK_FACTOR_LABELS[f] ?? f}</span>
+                    <span key={f} className="chip" style={{ fontSize: 11 }}>{RISK_FACTOR_LABELS[f] ?? f}</span>
                   ))}
                 </div>
               </div>
@@ -103,12 +118,9 @@ function CaseDetail({
   }
 
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 40,
-      display: "grid", placeItems: "center", padding: 16,
-    }}>
-      <div className="card pad" onClick={(e) => e.stopPropagation()}
-        style={{ width: "min(680px, 96vw)", maxHeight: "90vh", overflow: "auto" }}>
+    <div onClick={onClose} className="modal-backdrop">
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}
+        style={{ maxHeight: "90vh", overflow: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0 }}>תיק אנונימי</h3>
           <button className="btn btn-ghost" onClick={onClose}>✕</button>
