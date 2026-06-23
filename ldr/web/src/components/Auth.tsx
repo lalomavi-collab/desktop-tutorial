@@ -28,21 +28,9 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 const FEATURES = [
-  {
-    icon: "📚",
-    title: "מקור ידע אחד",
-    body: "פיד מקצועי, שו״ת עם עמיתים וחדר החלטות — כל הידע המשפטי שאתם צריכים מרוכז במקום אחד, נקי וממוקד.",
-  },
-  {
-    icon: "🤝",
-    title: "חיבורים ושיתופי פעולה",
-    body: "רשת מאומתת של עו״ד לפי תחום עיסוק, ותק ומדינה. חיבור לעמיתים ושיתופי פעולה — בלי לחפש בעשרות מקומות.",
-  },
-  {
-    icon: "🎯",
-    title: "לידים והפניות — ללא עמלות",
-    body: "לקוחות פרטיים מוצאים אתכם לפי התמחות ו-Authority Tier, והפניות בין עו״ד עוברות ב-Escrow מאובטח. ללא עמלת הפניית תיקים.",
-  },
+  { icon: "📚", title: "מקור ידע אחד" },
+  { icon: "🤝", title: "חיבורים ושיתופי פעולה" },
+  { icon: "🎯", title: "לידים והפניות — ללא עמלות" },
 ];
 
 export default function Auth({ inviteToken }: { inviteToken: string | null }) {
@@ -134,7 +122,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 28, maxWidth: 1100 }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
           <h2 style={{ margin: 0, fontSize: 20 }}>🗺️ כל עורכי הדין ברשת — על המפה</h2>
-          <span className="muted" style={{ fontSize: 13 }}>בסגנון Waze · לפי תחום עיסוק ומיקום</span>
+          <span className="muted" style={{ fontSize: 13 }}>בסגנון Waze · פנים + טבעת לפי דרגת ותק</span>
         </div>
         <PublicMap />
         <MembersStrip />
@@ -161,9 +149,23 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <span style={{ color: "var(--cream-dim)" }}>הבית המקצועי שלכם.</span>
             </h1>
 
-            <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--cream-dim)", maxWidth: 460, margin: "0 0 26px" }}>
-              הרשת המקצועית לעורכי דין מאומתים. ידע, חיבורים והפניות — <b style={{ color: "var(--cream)" }}>ללא עמלות</b>.
+            <p style={{ fontSize: 16, lineHeight: 1.8, color: "var(--cream-dim)", maxWidth: 470, margin: "0 0 22px" }}>
+              הצטרפו לקהילה הסגורה של עורכי הדין בישראל. גלו עמיתים בקרבתכם
+              <b style={{ color: "var(--cream)" }}> על המפה</b>, קבלו הפניות תיקים והרחיבו את
+              הפרקטיקה — <b style={{ color: "var(--gold)" }}>בלי עמלות, בלי רעש</b>.
             </p>
+
+            {/* Enticing trust line — quick reasons to join now */}
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 26, fontSize: 13.5, fontWeight: 600 }}>
+              <span style={{ color: "var(--ok)" }}>✓ הרשמה תוך דקה</span>
+              <span style={{ color: "var(--ok)" }}>✓ חינם לחלוטין</span>
+              <span style={{ color: "var(--ok)" }}>✓ אימות מאובטח מול הלשכה</span>
+            </div>
+
+            <button className="btn btn-gold" style={{ padding: "12px 28px", fontSize: 15, marginBottom: 30 }}
+              onClick={() => switchMode("signup")}>
+              הצטרפו עכשיו — חינם →
+            </button>
 
             {/* Concise value props — clean, professional */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 30 }}>
