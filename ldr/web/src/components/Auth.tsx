@@ -55,6 +55,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   function switchMode(m: Mode) { setMode(m); setErr(null); setInfo(null); }
 
@@ -216,11 +217,17 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <>
                 {mode !== "reset" && (
                   <>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 18 }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <LogoMark size={46} />
-                      <div style={{ fontSize: 13, color: "var(--cream-dim)" }}>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>
                         {mode === "signin" ? "שמחים לראותכם חזרה 👋" : "הצטרפו לרשת העו״ד המאומתים"}
                       </div>
+                      {mode === "signup" && (
+                        <div style={{ fontSize: 13, color: "var(--cream-dim)", textAlign: "center", lineHeight: 1.6 }}>
+                          הרשמה <b style={{ color: "var(--gold)" }}>חינמית ומהירה — תוך דקה</b> אתם בפנים.<br />
+                          אימות רישיון מאובטח מול לשכת עורכי הדין. 🔒
+                        </div>
+                      )}
                     </div>
                     <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
                       <button
@@ -313,6 +320,37 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           </div>
         </div>
       </div>
+
+      {/* ── Minimal footer with About ── */}
+      <footer style={{
+        position: "relative", zIndex: 2, textAlign: "center",
+        padding: "22px 16px", borderTop: "1px solid var(--line)",
+        fontSize: 13, color: "var(--cream-dim)",
+      }}>
+        <button onClick={() => setAboutOpen(true)} style={{
+          background: "none", border: "none", color: "var(--gold)", cursor: "pointer",
+          font: "inherit", textDecoration: "underline", textUnderlineOffset: 3,
+        }}>אודות</button>
+        <span> · © {new Date().getFullYear()} LAWDin</span>
+      </footer>
+
+      {aboutOpen && (
+        <div className="modal-backdrop" onClick={() => setAboutOpen(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0 }}>אודות</h3>
+              <button className="btn btn-ghost" onClick={() => setAboutOpen(false)}>✕</button>
+            </div>
+            <p style={{ lineHeight: 1.7, marginTop: 12 }}>
+              LAWDin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות
+              ברשת סגורה ומאומתת.
+            </p>
+            <p className="muted" style={{ fontSize: 13, lineHeight: 1.7 }}>
+              נוסד ומובל על ידי <b style={{ color: "var(--cream)" }}>ד״ר אברהם ללום</b>.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
