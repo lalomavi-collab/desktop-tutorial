@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { LogoMark, Wordmark } from "./Logo";
+import PublicMap from "./PublicMap";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
 
@@ -120,8 +121,17 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         </div>
       )}
 
+      {/* ── Live map hero: every attorney's location, right on the main page ── */}
+      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 28, maxWidth: 1100 }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+          <h2 style={{ margin: 0, fontSize: 20 }}>🗺️ כל עורכי הדין ברשת — על המפה</h2>
+          <span className="muted" style={{ fontSize: 13 }}>בסגנון Waze · לפי תחום עיסוק ומיקום</span>
+        </div>
+        <PublicMap />
+      </div>
+
       {/* ── Hero ── */}
-      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 64, paddingBottom: 48, maxWidth: 1100 }}>
+      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 40, paddingBottom: 48, maxWidth: 1100 }}>
         <div className="auth-wrap">
 
           {/* ── Left: marketing ── */}
