@@ -16,6 +16,7 @@ import QA from "./components/QA";
 import { rankFor } from "./lib/reputation";
 import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
+import ResetPassword from "./components/ResetPassword";
 
 type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
@@ -63,6 +64,18 @@ export default function App() {
 
   if (!ready) {
     return <div className="center" style={{ paddingTop: 120 }}><span className="spinner" /></div>;
+  }
+
+  // Password reset flow: Supabase sends users back with type=recovery
+  const urlParams = new URLSearchParams(window.location.hash.replace("#", "?"));
+  if (urlParams.get("type") === "recovery" && session) {
+    return (
+      <div className="app">
+        <Header session={null} profile={null} tab={tab} setTab={setTab} onSignOut={() => {}} />
+        <ResetPassword />
+        <Footer />
+      </div>
+    );
   }
 
   if (!session) {

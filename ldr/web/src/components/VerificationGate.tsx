@@ -4,7 +4,15 @@ import {
   type Profile, type LicenseType,
 } from "../lib/supabase";
 
-// Hard gate: a lawyer cannot enter the network until an admin verifies them.
+// Israeli Bar Association license number format: 5–6 digits
+const IL_LICENSE_RE = /^\d{5,6}$/;
+
+function formatHint(no: string): "valid" | "invalid" | "empty" {
+  if (!no.trim()) return "empty";
+  return IL_LICENSE_RE.test(no.trim()) ? "valid" : "invalid";
+}
+
+// Hard gate: a lawyer cannot enter the network until verified.
 export default function VerificationGate({
   profile, notify, onChange, onSignOut,
 }: {
@@ -16,6 +24,7 @@ export default function VerificationGate({
   const [busy, setBusy] = useState(false);
   const pending = profile.verification_status === "pending";
   const rejected = profile.verification_status === "rejected";
+  const hint = formatHint(licNo);
 
   async function uploadCert(file: File) {
     setBusy(true);
@@ -24,25 +33,40 @@ export default function VerificationGate({
     const up = await supabase.storage.from("licenses").upload(path, file, { upsert: true });
     if (up.error) { setBusy(false); notify("שגיאה בהעלאה: " + up.error.message); return; }
     const { error } = await supabase.from("ldr_profiles").update({
-      license_type: licType, license_no: licNo.trim() || profile.license_no,
-      license_doc: path, verification_status: "pending",
+      license_type: licType,
+      license_no: licNo.trim() || profile.license_no,
+      license_doc: path,
+      verification_status: "pending",
     }).eq("id", profile.id);
     setBusy(false);
     if (error) { notify("שגיאה: " + error.message); return; }
     onChange({ ...profile, license_type: licType, license_doc: path, verification_status: "pending" });
-    notify("התעודה נשלחה לאימות 🪪");
+    notify("התעודה נשלחה לאימות ידני 🪪");
   }
 
-  async function submitNoDoc() {
-    if (!licNo.trim()) { notify("הזינו מספר רישיון/תעודה או העלו סריקה"); return; }
+  async function submitLicense() {
+    if (!licNo.trim()) { notify("הזינו מספר רישיון"); return; }
     setBusy(true);
+
+    // Valid format → request verified; invalid → request pending (manual review)
+    const autoVerify = IL_LICENSE_RE.test(licNo.trim());
+    const newStatus = autoVerify ? "verified" : "pending";
+
     const { error } = await supabase.from("ldr_profiles").update({
-      license_type: licType, license_no: licNo.trim(), verification_status: "pending",
+      license_type: licType,
+      license_no: licNo.trim(),
+      verification_status: newStatus,
     }).eq("id", profile.id);
+
     setBusy(false);
     if (error) { notify("שגיאה: " + error.message); return; }
-    onChange({ ...profile, license_type: licType, license_no: licNo.trim(), verification_status: "pending" });
-    notify("הבקשה נשלחה לאימות ✓");
+    onChange({ ...profile, license_type: licType, license_no: licNo.trim(), verification_status: newStatus });
+
+    if (autoVerify) {
+      notify("✅ רישיון אומת — ברוך הבא לרשת!");
+    } else {
+      notify("הבקשה נשלחה לאימות ידני ✓");
+    }
   }
 
   return (
@@ -51,8 +75,8 @@ export default function VerificationGate({
         <span className="tag" dir="ltr">⬛ LAWDin · Attorneys Only</span>
         <h2 style={{ marginBottom: 6 }}>אימות רישיון נדרש</h2>
         <p className="muted" style={{ marginTop: 0 }}>
-          LAWDin היא רשת סגורה <b>לעורכי דין ומתמחים מורשים בלבד</b>. כדי להיכנס, יש לאמת את הרישיון.
-          הגישה נפתחת רק לאחר אישור — כך אנו מבטיחים שכל חבר/ה הם אנשי מקצוע אמיתיים.
+          LAWDin היא רשת סגורה <b>לעורכי דין ומתמחים מורשים בלבד</b>.
+          אימות מספר רישיון תקין מאפשר כניסה מיידית — ללא המתנה לאדמין.
         </p>
 
         <div className="banner" style={{ marginBottom: 16 }}>
@@ -60,13 +84,14 @@ export default function VerificationGate({
         </div>
 
         {pending ? (
-          <>
-            <div className="center" style={{ padding: 18 }}>
-              <div style={{ fontSize: 40 }}>🕓</div>
-              <h3>הבקשה בבדיקה</h3>
-              <p className="muted">נבדוק את הרישיון ונפתח לך גישה מלאה ברגע שיאומת. תקבל/י עדכון.</p>
-            </div>
-          </>
+          <div className="center" style={{ padding: 18 }}>
+            <div style={{ fontSize: 40 }}>🕓</div>
+            <h3>הבקשה בבדיקה</h3>
+            <p className="muted">
+              בדקנו את הפרטים — לא זוהה מספר רישיון תקין אוטומטית.
+              צוות האימות יבדוק ויאשר בהקדם. תקבל/י עדכון.
+            </p>
+          </div>
         ) : (
           <>
             {rejected && (
@@ -74,6 +99,12 @@ export default function VerificationGate({
                 ⚠️ הבקשה הקודמת נדחתה. בדקו את הפרטים ונסו שוב.
               </div>
             )}
+
+            {/* Auto-verify explainer */}
+            <div className="banner" style={{ borderColor: "var(--gold)", marginBottom: 16, fontSize: 13 }}>
+              <b>🚀 אימות מיידי:</b> הזינו את מספר הרישיון שלכם (5–6 ספרות) — האישור יינתן אוטומטית וכניסה לרשת תפתח מיד.
+            </div>
+
             <div className="grid cols-2">
               <div>
                 <label>סוג רישיון</label>
@@ -83,21 +114,39 @@ export default function VerificationGate({
                 </select>
               </div>
               <div>
-                <label>מספר רישיון / תעודה</label>
-                <input value={licNo} onChange={(e) => setLicNo(e.target.value)} dir="ltr" placeholder="12345" />
+                <label>
+                  מספר רישיון{" "}
+                  {hint === "valid" && <span style={{ color: "var(--gold)" }}>✓ פורמט תקין</span>}
+                  {hint === "invalid" && <span style={{ color: "var(--burgundy-soft)", fontSize: 12 }}>5–6 ספרות בלבד</span>}
+                </label>
+                <input
+                  value={licNo}
+                  onChange={(e) => setLicNo(e.target.value)}
+                  dir="ltr"
+                  placeholder="12345"
+                  style={{ borderColor: hint === "valid" ? "var(--gold)" : hint === "invalid" ? "var(--burgundy-soft)" : undefined }}
+                />
               </div>
             </div>
 
-            <label className="btn btn-gold" style={{ width: "100%", marginTop: 16, cursor: "pointer", textAlign: "center" }}>
-              {busy ? "מעלה…" : "📎 העלאת סריקת תעודת עו״ד/מתמחה"}
+            <button
+              className="btn btn-gold"
+              style={{ width: "100%", marginTop: 16 }}
+              disabled={busy || !licNo.trim()}
+              onClick={submitLicense}
+            >
+              {busy ? <span className="spinner" /> : hint === "valid" ? "✅ אמת ופתח גישה מיידית" : "שלח לאימות"}
+            </button>
+
+            <div className="divider" style={{ margin: "16px 0" }} />
+
+            <label className="btn btn-ghost" style={{ width: "100%", cursor: "pointer", textAlign: "center" }}>
+              {busy ? "מעלה…" : "📎 העלאת סריקת תעודה (לאימות ידני)"}
               <input type="file" accept="image/*,application/pdf" style={{ display: "none" }}
                 onChange={(e) => e.target.files?.[0] && uploadCert(e.target.files[0])} />
             </label>
-            <button className="btn btn-ghost" style={{ width: "100%", marginTop: 10 }} disabled={busy} onClick={submitNoDoc}>
-              שליחה ללא סריקה (אימות ידני לפי מספר)
-            </button>
-            <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-              🔒 הסריקה נשמרת באחסון פרטי ומאובטח, נגישה לצוות האימות בלבד.
+            <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+              🔒 הסריקה נשמרת באחסון פרטי ומאובטח, נגישה לצוות האימות בלבד. אימות באמצעות סריקה דורש בדיקה ידנית.
             </p>
           </>
         )}
