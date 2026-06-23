@@ -92,7 +92,7 @@ export default function Directory({
     const demoEntries: Entry[] = ((dp as DemoAttorney[]) ?? []).map((d) => ({
       id: d.id, name: d.display_name, jurisdiction: d.jurisdiction,
       practice_areas: d.practice_areas ?? [], experience_tier: d.experience_tier,
-      reputation: d.reputation, headline: d.headline, verified: true, demo: true, avatar_url: null,
+      reputation: d.reputation, headline: d.headline, verified: true, demo: true, avatar_url: d.avatar_url ?? null,
     }));
 
     setRows([...realEntries, ...demoEntries].sort((a, b) => b.reputation - a.reputation));

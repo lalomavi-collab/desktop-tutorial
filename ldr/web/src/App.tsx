@@ -25,7 +25,7 @@ type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "referrals" | "qa
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [tab, setTab] = useState<Tab>("feed");
+  const [tab, setTab] = useState<Tab>("map");
   const [toast, setToast] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -100,7 +100,7 @@ export default function App() {
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
         ) : !profile.experience_tier ? (
-          <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("room"); }} />
+          <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("map"); }} />
         ) : profile.verification_status !== "verified" && !profile.is_admin ? (
           <VerificationGate
             profile={profile} notify={notify}

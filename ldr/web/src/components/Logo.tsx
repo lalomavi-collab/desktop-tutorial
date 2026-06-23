@@ -9,8 +9,8 @@ export function LogoMark({ size = 40, glow = true }: { size?: number; glow?: boo
         width: size, height: size,
         borderRadius: size * 0.28,
         display: "grid", placeItems: "center",
-        background: "linear-gradient(145deg, #e3a17f, #b75c3f)",
-        boxShadow: glow ? "0 4px 16px rgba(217,119,87,0.40)" : "none",
+        background: "linear-gradient(145deg, #7fdbff, #1e9fd6)",
+        boxShadow: glow ? "0 4px 16px rgba(51,204,255,0.40)" : "none",
         flexShrink: 0,
       }}
       aria-label="LAWDin"

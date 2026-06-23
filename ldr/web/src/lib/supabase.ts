@@ -77,6 +77,7 @@ export interface DemoAttorney {
   headline: string | null;
   lat: number | null;
   lng: number | null;
+  avatar_url: string | null;
   is_demo: true;
 }
 
