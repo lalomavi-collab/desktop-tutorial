@@ -36,40 +36,60 @@ export default function QA({
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="container" style={{ paddingTop: 26, maxWidth: 760 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>סיוע משפטי הדדי — שו״ת</h2>
+    <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 760 }}>
+      <div className="section-header">
+        <h2>❓ סיוע משפטי הדדי — שו״ת</h2>
         <button className="btn btn-gold" onClick={() => setView(view === "ask" ? "list" : "ask")}>
           {view === "ask" ? "← לרשימה" : "+ שאלה חדשה"}
         </button>
       </div>
-      <p className="muted">שאלו את הקהילה — וענו לעמיתים. ידע משפטי משותף, חוצה תחומים ומדינות.</p>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>שאלו את הקהילה — וענו לעמיתים. ידע משפטי משותף, חוצה תחומים ומדינות.</p>
 
       {view === "ask" ? (
         <AskForm profile={profile} notify={notify} onDone={() => { setView("list"); load(); }} />
       ) : loading ? (
-        <div className="center" style={{ padding: 50 }}><span className="spinner" /></div>
-      ) : qs.length === 0 ? (
-        <div className="card pad center">
-          <p className="muted">אין עדיין שאלות — היו הראשונים לשאול את הקהילה.</p>
-          <button className="btn btn-gold" onClick={() => setView("ask")}>שאלה ראשונה</button>
-        </div>
-      ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {qs.map((q) => (
-            <div key={q.id} className="card pad" style={{ cursor: "pointer" }} onClick={() => setOpen(q)}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                <b style={{ fontSize: 16 }}>{q.title}</b>
-                <span className="tag" style={{ fontSize: 11, whiteSpace: "nowrap" }}>{q.answers?.[0]?.count ?? 0} תשובות</span>
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="card pad">
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+                <div className="skeleton skeleton-line short" style={{ flex: 1 }} />
+                <div className="skeleton" style={{ width: 60, height: 22, borderRadius: 6, flexShrink: 0 }} />
               </div>
-              {q.body && <p className="muted" style={{ fontSize: 13, margin: "6px 0 0", maxHeight: 44, overflow: "hidden" }}>{q.body}</p>}
-              <div className="chip-select" style={{ marginTop: 8 }}>
-                {q.practice_area && <span className="chip">{PRACTICE_AREA_LABELS[q.practice_area] ?? q.practice_area}</span>}
-                {q.jurisdiction && <span className="chip">{JURISDICTION_LABELS[q.jurisdiction] ?? q.jurisdiction}</span>}
-                <span className="muted" style={{ fontSize: 12, alignSelf: "center" }}>· {q.author?.display_name || "עו״ד"}</span>
+              <div className="skeleton skeleton-line" />
+              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                <div className="skeleton" style={{ width: 70, height: 22, borderRadius: 6 }} />
+                <div className="skeleton" style={{ width: 55, height: 22, borderRadius: 6 }} />
               </div>
             </div>
           ))}
+        </div>
+      ) : qs.length === 0 ? (
+        <div className="card pad center" style={{ padding: "40px 22px" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>❓</div>
+          <p className="muted">אין עדיין שאלות — היו הראשונים לשאול את הקהילה.</p>
+          <button className="btn btn-gold" onClick={() => setView("ask")} style={{ marginTop: 12 }}>שאלה ראשונה</button>
+        </div>
+      ) : (
+        <div className="stagger-children" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {qs.map((q) => {
+            const ansCount = q.answers?.[0]?.count ?? 0;
+            return (
+              <div key={q.id} className="card pad card-interactive" style={{ cursor: "pointer" }} onClick={() => setOpen(q)}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "flex-start" }}>
+                  <b style={{ fontSize: 15, lineHeight: 1.4 }}>{q.title}</b>
+                  <span className={ansCount > 0 ? "tag tag-gold" : "tag"} style={{ fontSize: 11, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    {ansCount > 0 ? `✓ ${ansCount} תשובות` : "ללא תשובה"}
+                  </span>
+                </div>
+                {q.body && <p className="muted" style={{ fontSize: 13, margin: "6px 0 0", maxHeight: 44, overflow: "hidden", lineHeight: 1.5 }}>{q.body}</p>}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                  {q.practice_area && <span className="chip" style={{ fontSize: 11 }}>{PRACTICE_AREA_LABELS[q.practice_area] ?? q.practice_area}</span>}
+                  {q.jurisdiction && <span className="chip" style={{ fontSize: 11 }}>{JURISDICTION_LABELS[q.jurisdiction] ?? q.jurisdiction}</span>}
+                  <span className="muted" style={{ fontSize: 12 }}>· {q.author?.display_name || "עו״ד"}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -100,7 +120,8 @@ function AskForm({
   }
 
   return (
-    <div className="card pad" style={{ marginTop: 16 }}>
+    <div className="card pad animate-in" style={{ marginTop: 16 }}>
+      <h3 style={{ marginTop: 0 }}>שאלה חדשה לקהילה</h3>
       <label>כותרת השאלה</label>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="מה תרצו לשאול את הקהילה?" />
       <label>פירוט (אופציונלי)</label>
@@ -154,40 +175,40 @@ function QuestionDetail({
   }
 
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 40,
-      display: "grid", placeItems: "center", padding: 16,
-    }}>
-      <div className="card pad" onClick={(e) => e.stopPropagation()}
-        style={{ width: "min(640px, 96vw)", maxHeight: "90vh", overflow: "auto" }}>
+    <div onClick={onClose} className="modal-backdrop">
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}
+        style={{ maxHeight: "90vh", overflow: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: 10 }}>
-          <h3 style={{ margin: 0 }}>{q.title}</h3>
+          <h3 style={{ margin: 0, lineHeight: 1.4 }}>{q.title}</h3>
           <button className="btn btn-ghost" onClick={onClose}>✕</button>
         </div>
-        {q.body && <p style={{ lineHeight: 1.7 }}>{q.body}</p>}
-        <div className="chip-select">
+        {q.body && <p style={{ lineHeight: 1.7, marginTop: 10 }}>{q.body}</p>}
+        <div className="chip-select" style={{ marginTop: 8 }}>
           {q.practice_area && <span className="chip">{PRACTICE_AREA_LABELS[q.practice_area] ?? q.practice_area}</span>}
           {q.jurisdiction && <span className="chip">{JURISDICTION_LABELS[q.jurisdiction] ?? q.jurisdiction}</span>}
         </div>
 
         <div className="divider" />
-        <h4 style={{ margin: "0 0 8px" }}>{answers.length} תשובות</h4>
+        <h4 style={{ margin: "0 0 10px" }}>{answers.length} תשובות</h4>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {answers.map((a) => (
-            <div key={a.id} className="card pad" style={{ background: "var(--obsidian-3)" }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 6 }}>
+            <div key={a.id} className="card pad" style={{ background: "var(--obsidian-3)", borderRadius: 12 }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 8 }}>
                 <Avatar name={a.author?.display_name ?? null} size={32} verified={a.author?.verification_status === "verified"} />
                 <b style={{ fontSize: 13 }}>{a.author?.display_name || "עו״ד"}</b>
               </div>
-              <div style={{ lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{a.body}</div>
+              <div style={{ lineHeight: 1.75, whiteSpace: "pre-wrap", fontSize: 14 }}>{a.body}</div>
             </div>
           ))}
+          {answers.length === 0 && (
+            <p className="muted" style={{ fontSize: 13, textAlign: "center" }}>היו הראשונים לענות לשאלה זו.</p>
+          )}
         </div>
 
         <div className="divider" />
         <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="כתבו תשובה לעמית…" style={{ minHeight: 80 }} />
         <button className="btn btn-gold" style={{ width: "100%", marginTop: 10 }} disabled={busy || !body.trim()} onClick={answer}>
-          {busy ? <span className="spinner" /> : "פרסום תשובה"}
+          {busy ? <span className="spinner" /> : "🙏 פרסום תשובה"}
         </button>
       </div>
     </div>

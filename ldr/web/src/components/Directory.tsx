@@ -102,13 +102,15 @@ export default function Directory({
   useEffect(() => { search(); /* initial: all matching attorneys */ }, []);
 
   return (
-    <div className="container" style={{ paddingTop: 26 }}>
-      <h2 style={{ margin: 0 }}>איתור עו״ד ברשת</h2>
-      <p className="muted">
+    <div className="container animate-in" style={{ paddingTop: 26 }}>
+      <div className="section-header">
+        <h2>🔍 איתור עו״ד ברשת</h2>
+      </div>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>
         בחרו תחום, מדינה ודרגה — וכל עו״ד מאומת שעונה לקריטריון יופיע מיד, מדורג לפי Authority Tier.
       </p>
 
-      <div className="card pad" style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr 1fr auto", alignItems: "end" }}>
+      <div className="card pad" style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr 1fr auto", alignItems: "end", marginBottom: 18 }}>
         <div>
           <label>תחום עיסוק</label>
           <select value={area} onChange={(e) => setArea(e.target.value)}>
@@ -131,74 +133,104 @@ export default function Directory({
           </select>
         </div>
         <button className="btn btn-gold" onClick={search} disabled={loading}>
-          {loading ? <span className="spinner" /> : "איתור"}
+          {loading ? <span className="spinner" /> : "🔍 איתור"}
         </button>
       </div>
 
-      <div style={{ marginTop: 16 }}>
-        {loading ? (
-          <div className="center" style={{ padding: 40 }}><span className="spinner" /></div>
-        ) : rows.length === 0 ? (
-          <div className="card pad center"><p className="muted">לא נמצאו עו״ד התואמים לקריטריון. נסו להרחיב את הסינון.</p></div>
-        ) : (
-          <>
-            <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>{rows.length} עו״ד תואמים</div>
-            <div className="grid cols-2">
-              {rows.map((r) => {
-                const rp = rankFor(r.reputation);
-                return (
-                  <div key={r.id} className="card pad">
-                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <Avatar name={r.name} size={48} verified={r.verified} url={r.avatar_url} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                          <span style={{ fontWeight: 800, fontSize: 16 }}>{r.name || "עו״ד אנונימי"}</span>
-                          {r.verified && <span className="tag" style={{ fontSize: 11 }}>✓ מאומת</span>}
-                          {r.demo && <span className="tag" style={{ fontSize: 11, opacity: .8 }}>להמחשה</span>}
-                        </div>
-                        <div className="gold" style={{ fontSize: 12, fontWeight: 700 }} dir="ltr">
-                          {rp.rank.icon} {rp.rank.title}
-                        </div>
+      {loading ? (
+        <div className="grid cols-2">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="card pad">
+              <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                <div className="skeleton" style={{ width: 48, height: 48, borderRadius: "50%", flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton skeleton-line short" />
+                  <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+                </div>
+              </div>
+              <div className="skeleton skeleton-line" />
+              <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+              <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                <div className="skeleton" style={{ flex: 1, height: 38, borderRadius: 10 }} />
+                <div className="skeleton" style={{ flex: 1, height: 38, borderRadius: 10 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="card pad center" style={{ padding: "40px 22px" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+          <p className="muted">לא נמצאו עו״ד התואמים לקריטריון. נסו להרחיב את הסינון.</p>
+        </div>
+      ) : (
+        <>
+          <div className="muted" style={{ fontSize: 13, marginBottom: 10 }}>{rows.length} עו״ד תואמים</div>
+          <div className="grid cols-2 stagger-children">
+            {rows.map((r) => {
+              const rp = rankFor(r.reputation);
+              const connStatus = conn.get(r.id);
+              return (
+                <div key={r.id} className="card pad card-interactive">
+                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <Avatar name={r.name} size={48} verified={r.verified} url={r.avatar_url} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        <span style={{ fontWeight: 800, fontSize: 15 }}>{r.name || "עו״ד אנונימי"}</span>
+                        {r.verified && <span className="tag tag-gold" style={{ fontSize: 10 }}>✓</span>}
+                        {r.demo && <span className="tag" style={{ fontSize: 10, opacity: .7 }}>להמחשה</span>}
                       </div>
+                      <span className="rank-badge" style={{ fontSize: 10, marginTop: 4, display: "inline-flex" }}>
+                        {rp.rank.icon} {rp.rank.title}
+                      </span>
                     </div>
-                    {r.headline && <p className="muted" style={{ fontSize: 13, margin: "10px 0 0" }}>{r.headline}</p>}
-                    <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-                      {r.jurisdiction && JURISDICTION_LABELS[r.jurisdiction]}
-                      {r.experience_tier && " · " + EXPERIENCE_LABELS[r.experience_tier]}
-                      {" · "}{r.reputation} מוניטין
-                    </div>
-                    <div className="chip-select" style={{ marginTop: 8 }}>
-                      {r.practice_areas.map((a) => (
-                        <span key={a} className="chip">{PRACTICE_AREA_LABELS[a] ?? a}</span>
-                      ))}
-                    </div>
-                    {r.demo ? (
-                      <div className="muted" style={{ fontSize: 12, marginTop: 12, textAlign: "center" }}>פרופיל להמחשה</div>
-                    ) : (
-                      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                        <button
-                          className="btn btn-gold" style={{ flex: 1 }}
-                          disabled={conn.has(r.id)}
-                          onClick={() => connect(r.id)}
-                        >
-                          {conn.get(r.id) === "accepted" ? "✓ מחובר" : conn.get(r.id) === "pending" ? "⏳ ממתין" : "+ התחבר"}
-                        </button>
-                        <button
-                          className="btn btn-ghost" style={{ flex: 1 }}
-                          disabled={endorsed.has(r.id)}
-                          onClick={() => endorse(r.id)}
-                        >
-                          {endorsed.has(r.id) ? "✓ הומלץ" : "👍 המלצה"}
-                        </button>
-                      </div>
+                    {connStatus === "accepted" && (
+                      <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--ok)" }}>
+                        <span className="conn-dot connected" /> מחובר
+                      </span>
+                    )}
+                    {connStatus === "pending" && (
+                      <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--gold)" }}>
+                        <span className="conn-dot pending" /> ממתין
+                      </span>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
+                  {r.headline && <p className="muted" style={{ fontSize: 13, margin: "10px 0 0", lineHeight: 1.5 }}>{r.headline}</p>}
+                  <div className="muted" style={{ fontSize: 12, marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {r.jurisdiction && <span>{JURISDICTION_LABELS[r.jurisdiction]}</span>}
+                    {r.experience_tier && <span>· {EXPERIENCE_LABELS[r.experience_tier]}</span>}
+                    <span>· <b style={{ color: "var(--gold)" }}>{r.reputation}</b> מוניטין</span>
+                  </div>
+                  <div className="chip-select" style={{ marginTop: 8 }}>
+                    {r.practice_areas.slice(0, 3).map((a) => (
+                      <span key={a} className="chip" style={{ fontSize: 11 }}>{PRACTICE_AREA_LABELS[a] ?? a}</span>
+                    ))}
+                  </div>
+                  {r.demo ? (
+                    <div className="muted" style={{ fontSize: 12, marginTop: 12, textAlign: "center" }}>פרופיל להמחשה · לא ניתן לחיבור</div>
+                  ) : (
+                    <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                      <button
+                        className="btn btn-gold" style={{ flex: 1, padding: "9px 12px", fontSize: 13 }}
+                        disabled={!!connStatus}
+                        onClick={() => connect(r.id)}
+                      >
+                        {connStatus === "accepted" ? "✓ מחובר" : connStatus === "pending" ? "⏳ ממתין" : "🤝 התחבר"}
+                      </button>
+                      <button
+                        className="btn btn-ghost" style={{ flex: 1, padding: "9px 12px", fontSize: 13 }}
+                        disabled={endorsed.has(r.id)}
+                        onClick={() => endorse(r.id)}
+                      >
+                        {endorsed.has(r.id) ? "✓ הומלץ" : "👍 המלצה"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

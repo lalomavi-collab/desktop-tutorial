@@ -32,25 +32,36 @@ export default function Referrals({
   const incoming = rows.filter((r) => r.provider_id === profile.id);
 
   return (
-    <div className="container" style={{ paddingTop: 26 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>הפניות מאובטחות (Escrow)</h2>
+    <div className="container animate-in" style={{ paddingTop: 26 }}>
+      <div className="section-header">
+        <h2>🔐 הפניות מאובטחות (Escrow)</h2>
         <button className="btn btn-gold" onClick={() => setView(view === "new" ? "list" : "new")}>
           {view === "new" ? "← לרשימה" : "+ בקשת הפניה"}
         </button>
       </div>
-      <p className="muted">
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>
         הפנו משימה לעו״ד בתחום שיפוט אחר. דמי ההפניה מחולקים לאבני-דרך ומשוחררים רק בחתימה דיגיטלית הדדית.
       </p>
 
       {view === "new" ? (
         <NewReferral profile={profile} notify={notify} onDone={() => { setView("list"); load(); }} />
       ) : loading ? (
-        <div className="center" style={{ padding: 50 }}><span className="spinner" /></div>
+        <div className="grid cols-2">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="card pad">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <div className="skeleton skeleton-line short" />
+                <div className="skeleton" style={{ width: 60, height: 22, borderRadius: 6 }} />
+              </div>
+              <div className="skeleton skeleton-line shorter" />
+            </div>
+          ))}
+        </div>
       ) : rows.length === 0 ? (
-        <div className="card pad center">
+        <div className="card pad center" style={{ padding: "40px 22px" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🔐</div>
           <p className="muted">אין הפניות עדיין. פתחו בקשת הפניה לעו״ד בתחום שיפוט אחר.</p>
-          <button className="btn btn-gold" onClick={() => setView("new")}>בקשת הפניה ראשונה</button>
+          <button className="btn btn-gold" onClick={() => setView("new")} style={{ marginTop: 12 }}>בקשת הפניה ראשונה</button>
         </div>
       ) : (
         <div className="grid cols-2">
@@ -80,15 +91,16 @@ function ReferralColumn({
         {list.map((r) => {
           const other = r.requester_id === profile.id ? r.provider?.display_name : r.requester?.display_name;
           const released = r.milestones.filter((m) => m.signed_a && m.signed_b).length;
+          const isComplete = r.status === "completed";
           return (
-            <div key={r.id} className="card pad" style={{ cursor: "pointer" }} onClick={() => onOpen(r)}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <b>{other || "עו״ד"}</b>
-                <span className="tag" style={{ fontSize: 11 }}>{REFERRAL_STATUS_LABELS[r.status]}</span>
+            <div key={r.id} className="card pad card-interactive" style={{ cursor: "pointer", borderColor: isComplete ? "rgba(212,175,55,0.35)" : undefined }} onClick={() => onOpen(r)}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center" }}>
+                <b style={{ fontSize: 14 }}>{other || "עו״ד"}</b>
+                <span className={isComplete ? "tag tag-gold" : "tag"} style={{ fontSize: 11 }}>{REFERRAL_STATUS_LABELS[r.status]}</span>
               </div>
-              <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                 {JURISDICTION_LABELS[r.jurisdiction] ?? r.jurisdiction}
-                {r.fee != null && ` · ${CURRENCY_SYMBOL[r.currency]}${r.fee}`}
+                {r.fee != null && <span> · <b style={{ color: "var(--gold)" }}>{CURRENCY_SYMBOL[r.currency]}{r.fee}</b></span>}
                 {` · אבני-דרך ${released}/${r.milestones.length}`}
               </div>
             </div>
@@ -136,12 +148,9 @@ function ReferralDetail({
   }
 
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", zIndex: 40,
-      display: "grid", placeItems: "center", padding: 16,
-    }}>
-      <div className="card pad" onClick={(e) => e.stopPropagation()}
-        style={{ width: "min(640px, 96vw)", maxHeight: "90vh", overflow: "auto" }}>
+    <div onClick={onClose} className="modal-backdrop">
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}
+        style={{ maxHeight: "90vh", overflow: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0 }}>הפניה מאובטחת</h3>
           <button className="btn btn-ghost" onClick={onClose}>✕</button>
@@ -259,8 +268,8 @@ function NewReferral({
   }
 
   return (
-    <div className="card pad" style={{ marginTop: 16, maxWidth: 680 }}>
-      <h3 style={{ marginTop: 0 }}>בקשת הפניה חדשה</h3>
+    <div className="card pad animate-in" style={{ marginTop: 16, maxWidth: 680 }}>
+      <h3 style={{ marginTop: 0 }}>🔐 בקשת הפניה חדשה</h3>
       {providers.length === 0 ? (
         <p className="muted">אין עדיין עו״ד אחרים רשומים לבחירה. הזמינו קולגות כדי לפתוח הפניות.</p>
       ) : (
