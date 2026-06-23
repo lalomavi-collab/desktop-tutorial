@@ -51,47 +51,65 @@ export default function Leaderboard({ profile }: { profile: Profile }) {
   const myIndex = rows.findIndex((r) => r.me);
 
   return (
-    <div className="container" style={{ paddingTop: 26, maxWidth: 820 }}>
-      <h2 style={{ margin: 0 }}>לוח המובילים</h2>
-      <p className="muted">
+    <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 820 }}>
+      <div className="section-header">
+        <h2>🏆 לוח המובילים</h2>
+      </div>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 20 }}>
         ככל שתורמים יותר לחדר ההחלטות — צוברים מוניטין ועולים ב-Authority Tier. אלה התורמים המובילים בקהילה.
       </p>
 
       {loading ? (
-        <div className="center" style={{ padding: 50 }}><span className="spinner" /></div>
-      ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[1,2,3,4,5].map((i) => (
+            <div key={i} className="card" style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px" }}>
+              <div className="skeleton" style={{ width: 30, height: 30, borderRadius: "50%" }} />
+              <div className="skeleton" style={{ width: 40, height: 40, borderRadius: "50%", flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div className="skeleton skeleton-line short" />
+                <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+              </div>
+              <div className="skeleton" style={{ width: 48, height: 36, borderRadius: 8 }} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="stagger-children" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {rows.map((r, i) => {
             const rp = rankFor(r.reputation);
+            const isTop3 = i < 3;
             return (
               <div
                 key={r.id}
-                className="card"
+                className="card card-interactive"
                 style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                  borderColor: r.me ? "var(--gold)" : undefined,
-                  background: r.me ? "var(--obsidian-3)" : undefined,
+                  display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
+                  borderColor: r.me ? "var(--gold)" : isTop3 ? "rgba(212,175,55,0.25)" : undefined,
+                  background: r.me
+                    ? "linear-gradient(135deg, rgba(212,175,55,0.09), rgba(27,27,27,0.98))"
+                    : undefined,
+                  boxShadow: isTop3 ? "0 4px 20px rgba(212,175,55,0.08)" : undefined,
                 }}
               >
-                <div style={{ width: 30, textAlign: "center", fontWeight: 800, fontSize: 18 }}>
-                  {MEDALS[i] ?? <span className="muted">{i + 1}</span>}
+                <div style={{ width: 36, textAlign: "center", fontWeight: 800, fontSize: isTop3 ? 22 : 15, flexShrink: 0 }}>
+                  {MEDALS[i] ?? <span className="muted" style={{ fontSize: 13 }}>{i + 1}</span>}
                 </div>
-                <Avatar name={r.name} size={40} verified={r.verified} url={r.avatar_url} />
+                <Avatar name={r.name} size={42} verified={r.verified} url={r.avatar_url} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                     {r.name || "עו״ד אנונימי"}
-                    {r.me && <span className="gold">(אתה)</span>}
-                    {r.demo && <span className="tag" style={{ fontSize: 10, opacity: .8 }}>להמחשה</span>}
+                    {r.me && <span style={{ color: "var(--gold)", fontSize: 12 }}>(אתה)</span>}
+                    {r.demo && <span className="tag" style={{ fontSize: 10, opacity: .7 }}>להמחשה</span>}
                   </div>
-                  <div className="muted" style={{ fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} dir="ltr">
-                    {rp.rank.icon} {rp.rank.title}
-                    {r.experience_tier && " · " + EXPERIENCE_LABELS[r.experience_tier]}
-                    {r.practice_areas?.[0] && " · " + (PRACTICE_AREA_LABELS[r.practice_areas[0]] ?? r.practice_areas[0])}
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 3, flexWrap: "wrap" }}>
+                    <span className="rank-badge" style={{ fontSize: 10, padding: "2px 8px" }}>{rp.rank.icon} {rp.rank.title}</span>
+                    {r.experience_tier && <span className="muted" style={{ fontSize: 11 }}>{EXPERIENCE_LABELS[r.experience_tier]}</span>}
+                    {r.practice_areas?.[0] && <span className="muted" style={{ fontSize: 11 }}>· {PRACTICE_AREA_LABELS[r.practice_areas[0]] ?? r.practice_areas[0]}</span>}
                   </div>
                 </div>
-                <div style={{ textAlign: "center" }}>
-                  <div className="gold" style={{ fontWeight: 800, fontSize: 18 }}>{r.reputation}</div>
-                  <div className="muted" style={{ fontSize: 11 }}>מוניטין</div>
+                <div style={{ textAlign: "center", flexShrink: 0 }}>
+                  <div className="score-glow" style={{ fontSize: 20 }}>{r.reputation}</div>
+                  <div className="muted" style={{ fontSize: 10 }}>מוניטין</div>
                 </div>
               </div>
             );
@@ -100,8 +118,8 @@ export default function Leaderboard({ profile }: { profile: Profile }) {
       )}
 
       {!loading && myIndex >= 0 && (
-        <div className="banner" style={{ marginTop: 16 }}>
-          המיקום שלך: <b className="gold">#{myIndex + 1}</b> מתוך {rows.length} · המשך לתרום כדי לטפס בדירוג.
+        <div className="banner animate-in" style={{ marginTop: 16 }}>
+          המיקום שלך: <b style={{ color: "var(--gold)" }}>#{myIndex + 1}</b> מתוך {rows.length} · המשך לתרום כדי לטפס בדירוג.
         </div>
       )}
     </div>

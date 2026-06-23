@@ -105,14 +105,14 @@ export default function Profile({
   }
 
   return (
-    <div className="container" style={{ paddingTop: 26, maxWidth: 760 }}>
+    <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 760 }}>
       {/* Header card */}
-      <div className="card pad">
+      <div className="card pad" style={{ borderColor: verified ? "rgba(212,175,55,0.35)" : undefined }}>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <div style={{ textAlign: "center" }}>
             <Avatar name={profile.display_name} size={72} verified={verified} url={profile.avatar_url} />
-            <label className="muted" style={{ fontSize: 11, cursor: "pointer", display: "block", marginTop: 4 }}>
-              {upBusy ? "מעלה…" : "שינוי תמונה"}
+            <label className="muted" style={{ fontSize: 11, cursor: "pointer", display: "block", marginTop: 6, padding: "3px 8px", borderRadius: 6, border: "1px solid var(--line)", transition: "border-color .2s" }}>
+              {upBusy ? "מעלה…" : "📸 שינוי"}
               <input type="file" accept="image/*" style={{ display: "none" }}
                 onChange={(e) => e.target.files?.[0] && uploadAvatar(e.target.files[0])} />
             </label>
@@ -120,10 +120,14 @@ export default function Profile({
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ fontWeight: 800, fontSize: 20 }}>{profile.display_name || "הפרופיל שלי"}</span>
-              <span className="tag" style={{ fontSize: 11 }}>{verified ? "✓ " : ""}{VERIFICATION_LABELS[vstatus]}</span>
+              <span className={verified ? "tag tag-gold" : "tag"} style={{ fontSize: 11 }}>
+                {verified ? "✓ מאומת" : VERIFICATION_LABELS[vstatus]}
+              </span>
             </div>
-            <div className="gold" style={{ fontWeight: 700 }} dir="ltr">{rp.rank.icon} {rp.rank.title}</div>
-            <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>
+            <span className="rank-badge" style={{ fontSize: 11, marginTop: 6, display: "inline-flex" }} dir="ltr">
+              {rp.rank.icon} {rp.rank.title}
+            </span>
+            <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
               {profile.jurisdiction && JURISDICTION_LABELS[profile.jurisdiction]}
               {profile.experience_tier && " · " + EXPERIENCE_LABELS[profile.experience_tier]}
             </div>
@@ -147,14 +151,14 @@ export default function Profile({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
           <h3 style={{ margin: 0 }}>מעמד מקצועי</h3>
           <span className="muted" style={{ fontSize: 13 }}>
-            {rp.next ? `עוד ${rp.toNext} נק׳ ל${rp.next.title}` : "הדרגה הגבוהה ביותר 🏆"}
+            {rp.next ? `עוד ${rp.toNext} נק׳ ל-${rp.next.title}` : "הדרגה הגבוהה ביותר 🏆"}
           </span>
         </div>
-        <div style={{ height: 8, borderRadius: 99, background: "var(--obsidian-3)", marginTop: 8, overflow: "hidden" }}>
-          <div style={{ width: `${rp.pct}%`, height: "100%", background: "var(--gold)" }} />
+        <div style={{ height: 8, borderRadius: 99, background: "var(--obsidian-3)", marginTop: 10, overflow: "hidden" }}>
+          <div style={{ width: `${rp.pct}%`, height: "100%", background: "linear-gradient(90deg, var(--gold-dim), var(--gold))", transition: "width 1s ease" }} />
         </div>
-        <div className="grid cols-4" style={{ marginTop: 14 }}>
-          <div className="stat"><div className="n">{profile.reputation}</div><div className="l">מוניטין</div></div>
+        <div className="grid cols-4" style={{ marginTop: 16 }}>
+          <div className="stat"><div className="n score-glow">{profile.reputation}</div><div className="l">מוניטין</div></div>
           <div className="stat"><div className="n">{endorsements}</div><div className="l">המלצות</div></div>
           <div className="stat"><div className="n">{profile.contribution_count}</div><div className="l">תיקים</div></div>
           <div className="stat"><div className="n">{profile.prediction_count}</div><div className="l">חיזויים</div></div>
@@ -163,17 +167,22 @@ export default function Profile({
 
       {/* Network */}
       <div className="card pad" style={{ marginTop: 16 }}>
-        <h3 style={{ marginTop: 0 }}>הרשת שלי <span className="muted" style={{ fontSize: 14 }}>({network.length} חיבורים)</span></h3>
+        <div className="section-header" style={{ marginBottom: pending.length > 0 ? 10 : 6 }}>
+          <h3 style={{ margin: 0 }}>הרשת שלי</h3>
+          <span className="tag" style={{ fontSize: 12 }}>{network.length} חיבורים</span>
+        </div>
         {pending.length > 0 && (
           <>
-            <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>בקשות חיבור ({pending.length})</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+            <div className="muted" style={{ fontSize: 13, marginBottom: 8, color: "var(--gold)" }}>
+              🔔 {pending.length} בקשות חיבור ממתינות
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
               {pending.map((p) => (
-                <div key={p.id} style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div key={p.id} className="card" style={{ display: "flex", gap: 10, alignItems: "center", padding: "10px 14px", background: "rgba(212,175,55,0.05)", borderColor: "rgba(212,175,55,0.2)" }}>
                   <Avatar name={p.name} size={36} />
                   <b style={{ flex: 1 }}>{p.name || "עו״ד"}</b>
-                  <button className="btn btn-gold" style={{ padding: "4px 12px" }} onClick={() => acceptConn(p.id)}>אישור</button>
-                  <button className="btn btn-ghost" style={{ padding: "4px 12px" }} onClick={() => declineConn(p.id)}>דחייה</button>
+                  <button className="btn btn-gold" style={{ padding: "5px 14px", fontSize: 13 }} onClick={() => acceptConn(p.id)}>✓ אישור</button>
+                  <button className="btn btn-ghost" style={{ padding: "5px 14px", fontSize: 13 }} onClick={() => declineConn(p.id)}>✕ דחייה</button>
                 </div>
               ))}
             </div>
@@ -203,7 +212,8 @@ export default function Profile({
         <h3 style={{ marginTop: 0 }}>תגי הישג</h3>
         <div className="chip-select">
           {badgesFor(profile).map((b) => (
-            <span key={b.key} className={"chip " + (b.earned ? "on" : "")} title={b.hint} style={{ opacity: b.earned ? 1 : 0.4 }}>
+            <span key={b.key} className={"chip " + (b.earned ? "on" : "")} title={b.hint}
+              style={{ opacity: b.earned ? 1 : 0.35, transition: "opacity .2s, transform .2s", transform: b.earned ? "none" : "scale(0.95)" }}>
               {b.icon} {b.label}
             </span>
           ))}
@@ -212,11 +222,11 @@ export default function Profile({
 
       {/* Verification */}
       {!verified && (
-        <div className="card pad" style={{ marginTop: 16 }}>
-          <h3 style={{ marginTop: 0 }}>אימות מקצועי</h3>
+        <div className="card pad" style={{ marginTop: 16, borderColor: vstatus === "pending" ? "rgba(212,175,55,0.3)" : undefined }}>
+          <h3 style={{ marginTop: 0 }}>🪪 אימות מקצועי</h3>
           <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>
             רשת לעורכי דין מאומתים בלבד. אמתו שאתם עו״ד מורשה/מתמחה כדי לפתוח ערוצי הפניה.
-            {vstatus === "pending" && " הבקשה שלכם בבדיקה."}
+            {vstatus === "pending" && " הבקשה שלכם בבדיקה — תעודכנו בהמשך."}
           </p>
           {vstatus !== "pending" && (
             <div style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr auto", alignItems: "end" }}>

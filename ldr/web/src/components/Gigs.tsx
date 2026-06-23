@@ -29,14 +29,14 @@ export default function Gigs({
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="container" style={{ paddingTop: 26 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0 }}>Legal Gigs — שוק הפתרונות</h2>
+    <div className="container animate-in" style={{ paddingTop: 26 }}>
+      <div className="section-header">
+        <h2>💼 Legal Gigs — שוק הפתרונות</h2>
         <button className="btn btn-gold" onClick={() => setView(view === "create" ? "browse" : "create")}>
           {view === "create" ? "← לשוק" : "+ פרסום שירות"}
         </button>
       </div>
-      <p className="muted">
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>
         פתרונות טקטיים מקומיים שעו״ד מציעים בתחום השיפוט שלהם. דפדפו לפי מדינה — ופתחו ערוץ מאובטח לשיתוף פעולה.
       </p>
 
@@ -44,7 +44,7 @@ export default function Gigs({
         <GigBuilder profile={profile} notify={notify} onDone={() => { setView("browse"); load(); }} />
       ) : (
         <>
-          <div className="card pad" style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr auto", alignItems: "end" }}>
+          <div className="card pad" style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr auto", alignItems: "end", marginBottom: 18 }}>
             <div>
               <label>מדינה (Country Node)</label>
               <select value={juris} onChange={(e) => setJuris(e.target.value)}>
@@ -60,57 +60,79 @@ export default function Gigs({
               </select>
             </div>
             <button className="btn btn-gold" onClick={load} disabled={loading}>
-              {loading ? <span className="spinner" /> : "סינון"}
+              {loading ? <span className="spinner" /> : "🔍 סינון"}
             </button>
           </div>
 
-          <div style={{ marginTop: 16 }}>
-            {loading ? (
-              <div className="center" style={{ padding: 40 }}><span className="spinner" /></div>
-            ) : gigs.length === 0 ? (
-              <div className="card pad center">
-                <p className="muted">אין עדיין שירותים בקריטריון הזה. היו הראשונים לפרסם פתרון בתחום השיפוט שלכם.</p>
-                <button className="btn btn-gold" onClick={() => setView("create")}>פרסום שירות ראשון</button>
-              </div>
-            ) : (
-              <div className="grid cols-2">
+          {loading ? (
+            <div className="grid cols-2">
+              {[1,2,3,4].map((i) => (
+                <div key={i} className="card pad">
+                  <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                    <div className="skeleton" style={{ width: 60, height: 22, borderRadius: 6 }} />
+                    <div className="skeleton" style={{ width: 80, height: 22, borderRadius: 6 }} />
+                  </div>
+                  <div className="skeleton skeleton-line short" style={{ marginBottom: 8 }} />
+                  <div className="skeleton skeleton-line" />
+                  <div className="skeleton skeleton-line shorter" style={{ marginTop: 6 }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 14 }}>
+                    <div className="skeleton" style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="skeleton skeleton-line short" />
+                    </div>
+                    <div className="skeleton" style={{ width: 60, height: 20, borderRadius: 6 }} />
+                  </div>
+                  <div className="skeleton" style={{ height: 38, borderRadius: 10, marginTop: 12 }} />
+                </div>
+              ))}
+            </div>
+          ) : gigs.length === 0 ? (
+            <div className="card pad center" style={{ padding: "40px 22px" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>💼</div>
+              <p className="muted">אין עדיין שירותים בקריטריון הזה. היו הראשונים לפרסם פתרון בתחום השיפוט שלכם.</p>
+              <button className="btn btn-gold" onClick={() => setView("create")} style={{ marginTop: 12 }}>פרסום שירות ראשון</button>
+            </div>
+          ) : (
+            <>
+              <div className="muted" style={{ fontSize: 13, marginBottom: 10 }}>{gigs.length} שירותים פעילים</div>
+              <div className="grid cols-2 stagger-children">
                 {gigs.map((g) => {
                   const rp = rankFor(g.owner?.reputation ?? 0);
                   return (
-                    <div key={g.id} className="card pad">
+                    <div key={g.id} className="card pad card-interactive">
                       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                         <span className="tag">{JURISDICTION_LABELS[g.jurisdiction] ?? g.jurisdiction}</span>
                         <span className="tag">{PRACTICE_AREA_LABELS[g.practice_area] ?? g.practice_area}</span>
                       </div>
-                      <h3 style={{ margin: "10px 0 4px" }}>{g.title}</h3>
-                      {g.scope && <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>{g.scope}</p>}
+                      <h3 style={{ margin: "10px 0 4px", fontSize: 15 }}>{g.title}</h3>
+                      {g.scope && <p className="muted" style={{ fontSize: 13, marginTop: 0, lineHeight: 1.5, maxHeight: 60, overflow: "hidden" }}>{g.scope}</p>}
 
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                         <Avatar name={g.owner?.display_name ?? null} size={36}
                           verified={g.owner?.verification_status === "verified"} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 13, fontWeight: 700 }}>{g.owner?.display_name || "עו״ד"}</div>
-                          <div className="gold" style={{ fontSize: 11 }} dir="ltr">{rp.rank.icon} {rp.rank.title}</div>
+                          <span className="rank-badge" style={{ fontSize: 10 }} dir="ltr">{rp.rank.icon} {rp.rank.title}</span>
                         </div>
                         {(g.fee_min != null || g.fee_max != null) && (
-                          <div className="gold" style={{ fontWeight: 800, whiteSpace: "nowrap" }}>
+                          <div className="score-glow" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
                             {CURRENCY_SYMBOL[g.currency]}{g.fee_min ?? ""}{g.fee_max != null ? `–${g.fee_max}` : ""}
                           </div>
                         )}
                       </div>
 
                       <button
-                        className="btn btn-ghost" style={{ width: "100%", marginTop: 12 }}
+                        className="btn btn-gold" style={{ width: "100%", marginTop: 14, fontSize: 13 }}
                         onClick={() => notify("פתיחת ערוץ Escrow מאובטח — בקרוב במודול ההפניות 🔐")}
                       >
-                        פתיחת ערוץ מאובטח
+                        🔐 פתיחת ערוץ מאובטח
                       </button>
                     </div>
                   );
                 })}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </>
       )}
     </div>
@@ -146,7 +168,7 @@ function GigBuilder({
   }
 
   return (
-    <div className="card pad" style={{ marginTop: 16, maxWidth: 680 }}>
+    <div className="card pad animate-in" style={{ marginTop: 16, maxWidth: 680 }}>
       <h3 style={{ marginTop: 0 }}>פרסום פתרון טקטי</h3>
       <div className="grid cols-2">
         <div>
