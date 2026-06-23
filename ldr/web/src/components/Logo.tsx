@@ -1,54 +1,48 @@
-// LAWDin brand mark — a refined scales-of-justice monogram.
-// Rendered as an SVG so it stays crisp at any size and needs no image asset.
+// LAWDin brand mark — LinkedIn-inspired lockup: "LAWD" + an "in" tile.
+// (LAWDin, like LinkedIn, ends in "in" — so the wordmark mirrors that style.)
 
+// The "in" tile — a rounded square in Waze cyan, used as the standalone mark
+// (favicon / avatar slot) and as the final glyph of the wordmark.
 export function LogoMark({ size = 40, glow = true }: { size?: number; glow?: boolean }) {
   return (
     <div
       className="logo-mark"
       style={{
         width: size, height: size,
-        borderRadius: size * 0.28,
+        borderRadius: size * 0.24,
         display: "grid", placeItems: "center",
-        background: "linear-gradient(145deg, #7fdbff, #1e9fd6)",
+        background: "linear-gradient(145deg, #4dd2ff, #1e9fd6)",
         boxShadow: glow ? "0 4px 16px rgba(51,204,255,0.40)" : "none",
         flexShrink: 0,
       }}
       aria-label="LAWDin"
     >
-      <svg width={size * 0.62} height={size * 0.62} viewBox="0 0 24 24" fill="none"
-        stroke="#1B1B1B" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-        {/* central column */}
-        <path d="M12 3.4 V20" />
-        {/* base */}
-        <path d="M8.5 20 H15.5" />
-        {/* beam */}
-        <path d="M5 7 H19" />
-        {/* fulcrum knot */}
-        <circle cx="12" cy="5.4" r="1.15" fill="#1B1B1B" stroke="none" />
-        {/* left pan hangers + pan */}
-        <path d="M5 7 L3.2 11.2 H6.8 Z" fill="rgba(27,27,27,0.12)" />
-        {/* right pan hangers + pan */}
-        <path d="M19 7 L17.2 11.2 H20.8 Z" fill="rgba(27,27,27,0.12)" />
-      </svg>
+      <span style={{
+        fontWeight: 900, fontSize: size * 0.5, lineHeight: 1, color: "#0d1020",
+        fontFamily: "Heebo, system-ui, sans-serif", letterSpacing: "-0.5px",
+      }}>in</span>
     </div>
   );
 }
 
-// Wordmark = mark + "LAWDin" + optional tagline. Used in the top bar / landing.
+// Wordmark = "LAWD" + the "in" tile, reading "LAWDin".
 export function Wordmark({
   size = 40, tagline = true,
 }: { size?: number; tagline?: boolean }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <LogoMark size={size} />
-      <div className="name" style={{ lineHeight: 1.05 }}>
-        <span style={{ fontWeight: 800, letterSpacing: 0.3, fontSize: size * 0.42 }}>LAWDin</span>
-        {tagline && (
-          <small style={{ display: "block", color: "var(--cream-dim)", fontWeight: 400, fontSize: 11, letterSpacing: 2 }}>
-            Legal Operating System
-          </small>
-        )}
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: size * 0.1 }} dir="ltr">
+        <span style={{
+          fontWeight: 900, fontSize: size * 0.62, letterSpacing: "-1px",
+          color: "var(--cream)", lineHeight: 1,
+        }}>LAWD</span>
+        <LogoMark size={size * 0.9} />
       </div>
+      {tagline && (
+        <small style={{ color: "var(--cream-dim)", fontWeight: 400, fontSize: 11, letterSpacing: 2 }}>
+          Legal Operating System
+        </small>
+      )}
     </div>
   );
 }
