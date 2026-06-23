@@ -153,3 +153,12 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--g
 .chip.on { background: rgba(212,175,55,0.14); color: var(--gold); border-color: var(--gold); }
 .spinner { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--gold); border-radius: 50%; display: inline-block; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Map view ────────────────────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+/* Override Leaflet z-index to sit below our modals */
+.leaflet-pane { z-index: 400 !important; }
+.leaflet-top, .leaflet-bottom { z-index: 600 !important; }

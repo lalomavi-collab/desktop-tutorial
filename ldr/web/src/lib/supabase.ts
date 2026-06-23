@@ -57,6 +57,8 @@ export interface Profile {
   license_doc: string | null;
   verification_status: VerificationStatus;
   is_admin: boolean;
+  lat: number | null;
+  lng: number | null;
 }
 
 // Illustrative attorney profiles ("להמחשה") shown alongside real ones.
@@ -68,6 +70,8 @@ export interface DemoAttorney {
   experience_tier: ExperienceTier;
   reputation: number;
   headline: string | null;
+  lat: number | null;
+  lng: number | null;
   is_demo: true;
 }
 

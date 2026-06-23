@@ -17,8 +17,9 @@ import { rankFor } from "./lib/reputation";
 import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
+import MapView from "./components/MapView";
 
-type Tab = "feed" | "room" | "new" | "find" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -115,6 +116,8 @@ export default function App() {
           <Dashboard profile={profile} notify={notify} onNew={() => setTab("new")} />
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
+        ) : tab === "map" ? (
+          <MapView profile={profile} notify={notify} />
         ) : tab === "find" ? (
           <Directory profile={profile} notify={notify} />
         ) : tab === "gigs" ? (
@@ -155,6 +158,7 @@ function Header({
             )}
             <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
             <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
+            <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מפה</button>
             <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
