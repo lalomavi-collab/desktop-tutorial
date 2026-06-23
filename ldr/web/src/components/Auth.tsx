@@ -278,7 +278,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         flexWrap: "wrap",
       }}>
         {[
-          { icon: "🔐", text: "רשת סגורה — רק עו״ד מאומתים" },
+          { icon: "🔐", text: "רשת סגורה — אימות רישיון מול לשכת עורכי הדין" },
           { icon: "⚖️", text: "Authority Tier — מוניטין שנבנה בשימוש" },
           { icon: "🗺️", text: "מפת עמיתים — ישראל ובעתיד גם חו״ל" },
           { icon: "🤝", text: "Escrow מאובטח להפניות בינ״ל" },
