@@ -115,6 +115,12 @@ const DICT: Record<string, Record<Lang, string>> = {
   "members.title": { he: "מי כבר ברשת", en: "Who's already in the network", ru: "Кто уже в сети" },
   "members.verified": { he: "· עורכי דין", en: "· attorneys", ru: "· юристы" },
 
+  "notif.title": { he: "התראות מערכת", en: "System notifications", ru: "Уведомления" },
+  "notif.1": { he: "ברוכים הבאים ל-LAWdin 👋", en: "Welcome to LAWdin 👋", ru: "Добро пожаловать в LAWdin 👋" },
+  "notif.2": { he: "עורכי דין חדשים הצטרפו לרשת השבוע", en: "New attorneys joined the network this week", ru: "На этой неделе присоединились новые юристы" },
+  "notif.3": { he: "בקרוב: השכרת חדרים במשרד בין עמיתים", en: "Soon: peer-to-peer office room rental", ru: "Скоро: аренда кабинетов между коллегами" },
+  "notif.empty": { he: "אין התראות חדשות", en: "No new notifications", ru: "Нет новых уведомлений" },
+
   "about": { he: "אודות", en: "About", ru: "О нас" },
   "about.body": { he: "LAWDin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות ברשת סגורה ומאומתת.", en: "LAWDin is the professional operating system for attorneys — knowledge, connections and referrals in a closed, verified network.", ru: "LAWDin — профессиональная операционная система для юристов: знания, связи и передачи дел в закрытой проверенной сети." },
   "about.founder": { he: "נוסד ומובל על ידי ד״ר אברהם ללום.", en: "Founded and led by Dr. Avraham Lalum.", ru: "Основатель и руководитель — д-р Авраам Лалум." },
