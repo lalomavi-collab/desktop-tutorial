@@ -564,3 +564,13 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
   /* The top nav's long tab list is redundant on mobile — hide it, bottom nav wins */
   .topbar .nav { display: none; }
 }
+
+/* ── Material Symbols + Stitch headline font (used by the light map UI) ── */
+.ms {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal; font-style: normal; line-height: 1;
+  letter-spacing: normal; text-transform: none; white-space: nowrap;
+  display: inline-block; -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased; vertical-align: middle;
+}
+.font-headline { font-family: 'Plus Jakarta Sans', 'Heebo', sans-serif; }
