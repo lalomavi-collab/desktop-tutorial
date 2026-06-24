@@ -42,6 +42,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [confirm, setConfirm] = useState("");
   const [name, setName] = useState("");
   const [licNo, setLicNo] = useState("");
+  const [acct, setAcct] = useState<"attorney" | "client">("attorney");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -75,19 +76,20 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
-    if (!licNo.trim()) { setErr(t("err.licenseRequired")); return; }
+    if (acct === "attorney" && !licNo.trim()) { setErr(t("err.licenseRequired")); return; }
     if (password.length < 8) { setErr(t("err.passwordLen")); return; }
     if (password !== confirm) { setErr(t("err.passwordMatch")); return; }
     setBusy(true); setErr(null);
     const { data, error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { display_name: name.trim() || undefined, license_no: licNo.trim() } },
+      options: { data: { display_name: name.trim() || undefined, role: acct, license_no: acct === "attorney" ? licNo.trim() : undefined } },
     });
     if (error) { setBusy(false); setErr(mapError(error.message)); return; }
-    // Persist the license number captured at entry onto the profile.
+    // Persist account role (+ license for attorneys) onto the profile.
     if (data.session && data.user) {
       await supabase.from("ldr_profiles")
-        .update({ license_no: licNo.trim() }).eq("id", data.user.id);
+        .update({ role: acct, ...(acct === "attorney" ? { license_no: licNo.trim() } : {}) })
+        .eq("id", data.user.id);
     }
     setBusy(false);
     if (data.session) return;
@@ -305,13 +307,27 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 {/* ── Sign Up ── */}
                 {mode === "signup" && (
                   <form onSubmit={signUp}>
-                    <label>{t("auth.fullName")}</label>
+                    <label>{t("auth.accountType")}</label>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
+                      {(["attorney", "client"] as const).map((a) => (
+                        <button key={a} type="button" onClick={() => setAcct(a)}
+                          className={`btn ${acct === a ? "btn-gold" : "btn-ghost"}`}
+                          style={{ flex: 1, fontSize: 13, padding: "10px 8px" }}>
+                          {t(a === "attorney" ? "auth.attorney" : "auth.client")}
+                        </button>
+                      ))}
+                    </div>
+                    <label style={{ marginTop: 12 }}>{t("auth.fullName")}</label>
                     <input autoComplete="name"
                       value={name} onChange={(e) => setName(e.target.value)} placeholder={t("auth.namePlaceholder")} />
-                    <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
-                    <input required dir="ltr" inputMode="numeric"
-                      value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
-                      placeholder="12345" />
+                    {acct === "attorney" && (
+                      <>
+                        <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
+                        <input required dir="ltr" inputMode="numeric"
+                          value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
+                          placeholder="12345" />
+                      </>
+                    )}
                     <label style={{ marginTop: 12 }}>{t("auth.email")}</label>
                     <input type="email" required autoComplete="username" dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
@@ -325,9 +341,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
                       {busy ? <span className="spinner" /> : t("auth.signupBtn")}
                     </button>
-                    <p className="muted center" style={{ fontSize: 11, marginTop: 12, lineHeight: 1.5 }}>
-                      {t("auth.licenseNote")}
-                    </p>
+                    {acct === "attorney" && (
+                      <p className="muted center" style={{ fontSize: 11, marginTop: 12, lineHeight: 1.5 }}>
+                        {t("auth.licenseNote")}
+                      </p>
+                    )}
                   </form>
                 )}
 
