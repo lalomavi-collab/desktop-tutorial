@@ -21,19 +21,39 @@ const LEGEND = [
   { tier: "mid", key: "level.mid" },
   { tier: "junior", key: "level.junior" },
 ];
-const COUNTRY_CENTER: Record<string, [number, number, number]> = {
-  IL: [31.9, 34.9, 8], US: [39.5, -98.3, 4], UK: [54.0, -2.5, 6],
-  DE: [51.2, 10.4, 6], FR: [46.6, 2.4, 6], CA: [56.1, -106, 4],
-};
 const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "€", FR: "€", CA: "$" };
-// Rough IL region from coordinates.
-function regionOf(lat: number, lng: number): string {
-  if (lat >= 32.5) return "north";
-  if (lat <= 31.55) return "south";
-  if (lng >= 35.0 && lat <= 31.95) return "jerusalem";
-  return "center";
+// Israel-only view, grouped by city. Major cities with their centres; each pin
+// is assigned to the nearest city (within ~18 km), else "other".
+const IL_CENTER: [number, number, number] = [31.7, 34.9, 7.3];
+const IL_CITIES: { key: string; label: string; lat: number; lng: number }[] = [
+  { key: "tlv", label: "תל אביב", lat: 32.0853, lng: 34.7818 },
+  { key: "jlm", label: "ירושלים", lat: 31.7683, lng: 35.2137 },
+  { key: "haifa", label: "חיפה", lat: 32.7940, lng: 34.9896 },
+  { key: "rishon", label: "ראשון לציון", lat: 31.9730, lng: 34.7925 },
+  { key: "petah", label: "פתח תקווה", lat: 32.0840, lng: 34.8878 },
+  { key: "ramatgan", label: "רמת גן", lat: 32.0684, lng: 34.8248 },
+  { key: "herzliya", label: "הרצליה", lat: 32.1624, lng: 34.8443 },
+  { key: "netanya", label: "נתניה", lat: 32.3215, lng: 34.8532 },
+  { key: "raanana", label: "רעננה", lat: 32.1848, lng: 34.8713 },
+  { key: "kfarsaba", label: "כפר סבא", lat: 32.1750, lng: 34.9070 },
+  { key: "modiin", label: "מודיעין", lat: 31.8980, lng: 35.0104 },
+  { key: "ashdod", label: "אשדוד", lat: 31.8040, lng: 34.6550 },
+  { key: "beersheva", label: "באר שבע", lat: 31.2518, lng: 34.7913 },
+  { key: "nazareth", label: "נצרת", lat: 32.6996, lng: 35.3035 },
+  { key: "eilat", label: "אילת", lat: 29.5577, lng: 34.9519 },
+];
+function cityOf(lat: number, lng: number): string {
+  let best = "other", bestD = Infinity;
+  for (const c of IL_CITIES) {
+    const d = Math.hypot(lat - c.lat, lng - c.lng) * 111;
+    if (d < bestD) { bestD = d; best = c.key; }
+  }
+  return bestD <= 18 ? best : "other";
 }
-const REGIONS = ["all", "center", "jerusalem", "north", "south"];
+const cityCenter = (key: string): [number, number, number] | null => {
+  const c = IL_CITIES.find((x) => x.key === key);
+  return c ? [c.lat, c.lng, 12] : null;
+};
 // Map filter chips → which practice-area keys they include.
 const SPEC_FILTERS: { key: string; label: string; areas: string[] }[] = [
   { key: "commercial", label: "spec.commercial", areas: ["commercial", "corporate_vc", "banking"] },
@@ -58,8 +78,7 @@ export default function PublicMap() {
   const visiblePins = useRef<Pin[]>([]);
   const [ready, setReady] = useState(false);
   const [count, setCount] = useState(0);
-  const [country, setCountry] = useState("IL");
-  const [countries, setCountries] = useState<string[]>(["IL"]);
+  const [cityCounts, setCityCounts] = useState<Record<string, number>>({});
   const [selected, setSelected] = useState<Pin | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
@@ -67,7 +86,7 @@ export default function PublicMap() {
   const [areaFilter, setAreaFilter] = useState<string | null>(null);
   const [quickOnly, setQuickOnly] = useState(false);
   const [consultOnly, setConsultOnly] = useState(false);
-  const [region, setRegion] = useState("all");
+  const [city, setCity] = useState("all");
   const [tilted, setTilted] = useState(true);
   const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
   const { t } = useI18n();
@@ -76,30 +95,23 @@ export default function PublicMap() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.from("ldr_demo_attorneys")
-        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only")
-        .not("lat", "is", null);
+      // Show everyone active in Israel: real app users (verified attorneys and
+      // private clients that have a location) merged with the illustrative demo set.
+      const [{ data: demo }, { data: real }] = await Promise.all([
+        supabase.from("ldr_demo_attorneys")
+          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only")
+          .not("lat", "is", null),
+        supabase.from("ldr_profiles")
+          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,role,verification_status")
+          .not("lat", "is", null)
+          .or("verification_status.eq.verified,role.eq.client"),
+      ]);
       if (cancelled || !el.current || map.current) return;
 
-      // Default to the connected user's country (license / jurisdiction), then
-      // their last choice, then Israel.
-      let initial = localStorage.getItem("lawdin_country") || "IL";
-      try {
-        const { data: ures } = await supabase.auth.getUser();
-        if (ures?.user) {
-          const { data: prof } = await supabase.from("ldr_profiles")
-            .select("jurisdiction,license_country").eq("id", ures.user.id).maybeSingle();
-          const jc = (prof as any)?.license_country || (prof as any)?.jurisdiction;
-          if (jc) initial = jc;
-        }
-      } catch { /* anonymous visitor — keep default */ }
-      if (cancelled) return;
-
-      const c = COUNTRY_CENTER[initial] ?? COUNTRY_CENTER.IL;
       const m = new maplibregl.Map({
         container: el.current,
         style: MAP_STYLE,
-        center: [c[1], c[0]], zoom: c[2], pitch: 50, bearing: -14,
+        center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], pitch: 50, bearing: -14,
         attributionControl: false, dragRotate: true,
       });
       m.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "bottom-left");
@@ -107,15 +119,21 @@ export default function PublicMap() {
       m.on("click", () => setSelected(null));
       map.current = m;
 
-      allPins.current = ((data ?? []) as any[]).map((r) => ({
+      const demoPins: Pin[] = ((demo ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
         areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
         quickBook: !!r.quick_book, consultOnly: !!r.consultation_only,
       }));
-      const present = Array.from(new Set(allPins.current.map((p) => p.jurisdiction)));
-      const ordered = ["IL", "US", "UK", "DE", "FR", "CA"].filter((cc) => present.includes(cc));
-      setCountries(ordered.length ? ordered : present);
-      setCountry(initial);
+      const realPins: Pin[] = ((real ?? []) as any[]).map((r) => ({
+        id: r.id, name: r.display_name ?? "עו״ד", lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
+        areas: r.practice_areas ?? [], reputation: r.reputation ?? 0, avatar_url: r.avatar_url, tier: r.experience_tier, rate: null,
+        quickBook: false, consultOnly: false,
+      }));
+      // Israel only; real users first so they take priority over the demo set.
+      allPins.current = [...realPins, ...demoPins].filter((p) => (p.jurisdiction || "IL") === "IL");
+      const counts: Record<string, number> = {};
+      allPins.current.forEach((p) => { const k = cityOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
+      setCityCounts(counts);
       m.on("load", () => { if (!cancelled) setReady(true); });
     })();
     return () => { cancelled = true; map.current?.remove(); map.current = null; };
@@ -131,8 +149,7 @@ export default function PublicMap() {
     const q = query.trim().toLowerCase();
     const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
     const pins = allPins.current.filter((p) => {
-      if (p.jurisdiction !== country) return false;
-      if (country === "IL" && region !== "all" && regionOf(p.lat, p.lng) !== region) return false;
+      if (city !== "all" && cityOf(p.lat, p.lng) !== city) return false;
       if (quickOnly && !p.quickBook) return false;
       if (consultOnly && !p.consultOnly) return false;
       if (specAreas && !p.areas.some((a) => specAreas.includes(a))) return false;
@@ -162,14 +179,17 @@ export default function PublicMap() {
       markers.current.push(mk);
       markerEls.current[p.id] = elm;
     });
-    if (pins.length) {
+    const cc = city !== "all" ? cityCenter(city) : null;
+    if (cc) {
+      map.current.flyTo({ center: [cc[1], cc[0]], zoom: cc[2], duration: 900 });
+    } else if (pins.length) {
       const b = new maplibregl.LngLatBounds();
       pins.forEach((p) => b.extend([p.lng, p.lat]));
       map.current.fitBounds(b, { padding: 80, maxZoom: 13.5, duration: 900 });
     } else {
-      const c = COUNTRY_CENTER[country]; if (c) map.current.flyTo({ center: [c[1], c[0]], zoom: c[2], duration: 900 });
+      map.current.flyTo({ center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], duration: 900 });
     }
-  }, [country, ready, query, areaFilter, quickOnly, consultOnly, region]);
+  }, [ready, query, areaFilter, quickOnly, consultOnly, city]);
 
   // Tilt toggle — flatten ↔ 3D city view.
   useEffect(() => {
@@ -207,9 +227,13 @@ export default function PublicMap() {
           <span className="ms" style={{ position: "absolute", insetInlineStart: 14, top: "50%", transform: "translateY(-50%)", color: "#707884" }}>search</span>
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("map.search")} style={{ width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16, border: "2px solid transparent", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, outline: "none" }} />
         </div>
-        <select value={country} onChange={(e) => { setCountry(e.target.value); try { localStorage.setItem("lawdin_country", e.target.value); } catch { /* ignore */ } }} aria-label={t("map.country")}
+        <select value={city} onChange={(e) => setCity(e.target.value)} aria-label="עיר"
           style={{ height: 48, borderRadius: 16, border: "none", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, fontWeight: 600, padding: "0 12px", cursor: "pointer", color: "#1F1E1D" }}>
-          {countries.map((c) => <option key={c} value={c}>{t("c." + c)}</option>)}
+          <option value="all">כל הערים</option>
+          {IL_CITIES.filter((c) => cityCounts[c.key])
+            .sort((a, b) => (cityCounts[b.key] ?? 0) - (cityCounts[a.key] ?? 0))
+            .map((c) => <option key={c.key} value={c.key}>{c.label} ({cityCounts[c.key]})</option>)}
+          {cityCounts.other ? <option value="other">אחר ({cityCounts.other})</option> : null}
         </select>
         <button onClick={() => setFilterOpen(true)} aria-label="פילטרים" style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: (areaFilter || consultOnly) ? CLAY : "#fff", color: (areaFilter || consultOnly) ? "#fff" : "#1F1E1D", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(31,30,29,.12)", cursor: "pointer" }}>
           <span className="ms">tune</span>
@@ -300,16 +324,15 @@ export default function PublicMap() {
           <div style={{ position: "absolute", insetInline: 0, bottom: 0, zIndex: 701, background: "rgba(255,255,255,.98)", borderRadius: "24px 24px 0 0", padding: "16px 18px 22px", boxShadow: "0 -10px 40px rgba(0,0,0,.2)" }}>
             <div style={{ width: 46, height: 5, background: "#E8E5DD", borderRadius: 999, margin: "0 auto 16px" }} />
             <h2 className="font-headline" style={{ margin: "0 0 16px", fontSize: 20, color: "#1F1E1D" }}>{t("filter.title")}</h2>
-            {country === "IL" && (
-              <>
-                <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.region")}</p>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-                  {REGIONS.map((rg) => (
-                    <button key={rg} onClick={() => setRegion(rg)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: region === rg ? CLAY : "#F2F0E9", color: region === rg ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{t("reg." + rg)}</button>
-                  ))}
-                </div>
-              </>
-            )}
+            <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>עיר</p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+              <button onClick={() => setCity("all")} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: city === "all" ? CLAY : "#F2F0E9", color: city === "all" ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>כל הערים</button>
+              {IL_CITIES.filter((c) => cityCounts[c.key])
+                .sort((a, b) => (cityCounts[b.key] ?? 0) - (cityCounts[a.key] ?? 0))
+                .map((c) => (
+                  <button key={c.key} onClick={() => setCity(c.key)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: city === c.key ? CLAY : "#F2F0E9", color: city === c.key ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{c.label} ({cityCounts[c.key]})</button>
+                ))}
+            </div>
             <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.specialization")}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {[{ key: null, i: "apps", l: t("filter.all") }, ...SPEC_FILTERS.map((s) => ({ key: s.key, i: { commercial: "corporate_fare", criminal: "gavel", family: "family_restroom", realestate: "home_work" }[s.key]!, l: t(s.label) }))].map((s) => {

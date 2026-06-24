@@ -11,7 +11,6 @@ import Directory from "./components/Directory";
 import Gigs from "./components/Gigs";
 import CaseBoard from "./components/CaseBoard";
 import RoomShare from "./components/RoomShare";
-import Jobs from "./components/Jobs";
 import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
@@ -27,7 +26,7 @@ import BottomNav from "./components/BottomNav";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import NotificationsBell from "./components/NotificationsBell";
 
-type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -134,8 +133,6 @@ export default function App() {
           <CaseBoard profile={profile} notify={notify} />
         ) : tab === "rooms" ? (
           <RoomShare profile={profile} notify={notify} />
-        ) : tab === "jobs" ? (
-          <Jobs profile={profile} notify={notify} />
         ) : tab === "referrals" ? (
           <Referrals profile={profile} notify={notify} />
         ) : tab === "qa" ? (
@@ -171,7 +168,6 @@ const MORE_TABS: { tab: Tab; label: string }[] = [
   { tab: "gigs", label: "Legal Gigs" },
   { tab: "cases", label: "📩 תיקים מלקוחות" },
   { tab: "rooms", label: "🤝 שיתוף חדרים" },
-  { tab: "jobs", label: "💼 דרושים" },
   { tab: "referrals", label: "הפניות" },
   { tab: "board", label: "מובילים" },
   { tab: "invite", label: "הזמנות" },
