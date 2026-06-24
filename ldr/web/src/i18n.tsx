@@ -28,7 +28,7 @@ const DICT: Record<string, Record<Lang, string>> = {
   },
   "hero.trust1": { he: "✓ הרשמה תוך דקה", en: "✓ Sign up in a minute", ru: "✓ Регистрация за минуту" },
   "hero.trust2": { he: "✓ חינם לחלוטין", en: "✓ Completely free", ru: "✓ Полностью бесплатно" },
-  "hero.trust3": { he: "✓ אימות מאובטח מול הלשכה", en: "✓ Secure Bar verification", ru: "✓ Безопасная проверка коллегии" },
+  "hero.trust3": { he: "✓ אימות לפי מספר רישיון ושם", en: "✓ Verified by license number & name", ru: "✓ Проверка по номеру лицензии и имени" },
   "hero.cta": { he: "הצטרפו עכשיו — חינם →", en: "Join now — free →", ru: "Присоединиться — бесплатно →" },
 
   "feat.knowledge": { he: "מקור ידע אחד", en: "One source of knowledge", ru: "Единый источник знаний" },
@@ -47,7 +47,10 @@ const DICT: Record<string, Record<Lang, string>> = {
 
   "auth.signinTitle": { he: "שמחים לראותכם חזרה 👋", en: "Welcome back 👋", ru: "С возвращением 👋" },
   "auth.signupTitle": { he: "הצטרפו לרשת העו״ד המאומתים", en: "Join the verified attorney network", ru: "Присоединяйтесь к сети проверенных юристов" },
-  "auth.signupSub": { he: "הרשמה חינמית ומהירה — תוך דקה אתם בפנים. אימות רישיון מאובטח מול לשכת עורכי הדין. 🔒", en: "Free, fast signup — you're in within a minute. Secure license verification with the Bar. 🔒", ru: "Бесплатная быстрая регистрация — за минуту. Безопасная проверка лицензии в коллегии. 🔒" },
+  "auth.signupSub": { he: "הרשמה חינמית ומהירה — תוך דקה אתם בפנים. אימות מאובטח לפי מספר רישיון ושם. 🔒", en: "Free, fast signup — you're in within a minute. Secure verification by license number & name. 🔒", ru: "Бесплатная быстрая регистрация — за минуту. Безопасная проверка по номеру лицензии и имени. 🔒" },
+  "auth.licenseNote": { he: "הרישיון מאומת לפי מספר חבר ושם.", en: "License verified by membership number & name.", ru: "Лицензия проверяется по номеру и имени." },
+  "auth.google": { he: "המשך עם Google", en: "Continue with Google", ru: "Продолжить с Google" },
+  "auth.or": { he: "או", en: "or", ru: "или" },
 
   "about": { he: "אודות", en: "About", ru: "О нас" },
 };

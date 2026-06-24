@@ -58,6 +58,15 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
     if (error) setErr(mapError(error.message));
   }
 
+  async function signInGoogle() {
+    setBusy(true); setErr(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + window.location.pathname },
+    });
+    if (error) { setBusy(false); setErr(mapError(error.message)); }
+  }
+
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     if (!licNo.trim()) { setErr("יש להזין מספר רישיון עו״ד"); return; }
@@ -232,15 +241,34 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                         </div>
                       )}
                     </div>
-                    <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                       <button
                         className={`btn ${mode === "signin" ? "btn-gold" : "btn-ghost"}`}
                         style={{ flex: 1 }} onClick={() => switchMode("signin")}
-                      >כניסה</button>
+                      >{t("nav.signin")}</button>
                       <button
                         className={`btn ${mode === "signup" ? "btn-gold" : "btn-ghost"}`}
                         style={{ flex: 1 }} onClick={() => switchMode("signup")}
-                      >הרשמה חינם</button>
+                      >{t("nav.signup")}</button>
+                    </div>
+
+                    {/* Google sign-in (works once Google provider is enabled in Supabase Auth) */}
+                    <button type="button" onClick={signInGoogle} disabled={busy}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                        padding: "11px", borderRadius: 12, border: "1px solid var(--line)",
+                        background: "#fff", color: "#1f1e1d", fontWeight: 600, fontSize: 14, cursor: "pointer",
+                      }}>
+                      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.1 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.8 6.1C12.2 13.2 17.6 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.8-9.9 6.8-17.4z"/>
+                        <path fill="#FBBC05" d="M10.3 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.8-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.7l7.8-6.1z"/>
+                        <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15-5.5l-7.3-5.7c-2 1.4-4.7 2.3-7.7 2.3-6.4 0-11.8-3.7-13.7-9l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/>
+                      </svg>
+                      {t("auth.google")}
+                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 16px", color: "var(--cream-dim)", fontSize: 12 }}>
+                      <span style={{ flex: 1, height: 1, background: "var(--line)" }} /> {t("auth.or")} <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
                     </div>
                   </>
                 )}
@@ -296,7 +324,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                       {busy ? <span className="spinner" /> : "הרשמה — בחינם"}
                     </button>
                     <p className="muted center" style={{ fontSize: 11, marginTop: 12, lineHeight: 1.5 }}>
-                      הרישיון מאומת מול לשכת עורכי הדין.
+                      {t("auth.licenseNote")}
                     </p>
                   </form>
                 )}
