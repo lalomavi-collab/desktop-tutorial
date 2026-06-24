@@ -16,6 +16,7 @@ import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
 import QA from "./components/QA";
+import AnalyzerLab from "./components/AnalyzerLab";
 import { rankFor } from "./lib/reputation";
 import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
@@ -24,7 +25,7 @@ import MapView from "./components/MapView";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 
-type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -137,6 +138,8 @@ export default function App() {
           <Referrals profile={profile} notify={notify} />
         ) : tab === "qa" ? (
           <QA profile={profile} notify={notify} />
+        ) : tab === "lab" ? (
+          <AnalyzerLab profile={profile} notify={notify} />
         ) : tab === "board" ? (
           <Leaderboard profile={profile} />
         ) : (
@@ -180,6 +183,7 @@ function Header({
             <button className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}>💼 דרושים</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
             <button className={tab === "qa" ? "active" : ""} onClick={() => setTab("qa")}>שו״ת</button>
+            <button className={tab === "lab" ? "active" : ""} onClick={() => setTab("lab")}>🔬 מעבדת AI</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
             <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
