@@ -12,7 +12,7 @@ interface Question {
   answers?: { count: number }[];
 }
 interface Answer {
-  id: string; author_id: string; body: string; created_at: string;
+  id: string; author_id: string | null; body: string; created_at: string; is_ai?: boolean;
   author?: { display_name: string | null; verification_status: string } | null;
 }
 
@@ -33,7 +33,13 @@ export default function QA({
     setQs((data as Question[]) ?? []);
     setLoading(false);
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // Let the AI answer any question left unanswered for 3+ hours, then refresh.
+    supabase.functions.invoke("qa-ai-fallback").then(({ data }) => {
+      if (data?.answered) load();
+    }).catch(() => { /* best-effort */ });
+  }, []);
 
   return (
     <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 760 }}>
@@ -43,7 +49,7 @@ export default function QA({
           {view === "ask" ? "← לרשימה" : "+ שאלה חדשה"}
         </button>
       </div>
-      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>שאלו את הקהילה — וענו לעמיתים. ידע משפטי משותף, חוצה תחומים ומדינות.</p>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>שאלו את הקהילה — עו״ד בתחום עונים. 🤖 אם לא התקבל מענה תוך 3 שעות, עוזר ה-AI מציע פתרון ראשוני.</p>
 
       {view === "ask" ? (
         <AskForm profile={profile} notify={notify} onDone={() => { setView("list"); load(); }} />
@@ -192,13 +198,24 @@ function QuestionDetail({
         <h4 style={{ margin: "0 0 10px" }}>{answers.length} תשובות</h4>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {answers.map((a) => (
-            <div key={a.id} className="card pad" style={{ background: "var(--obsidian-3)", borderRadius: 12 }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 8 }}>
-                <Avatar name={a.author?.display_name ?? null} size={32} verified={a.author?.verification_status === "verified"} />
-                <b style={{ fontSize: 13 }}>{a.author?.display_name || "עו״ד"}</b>
+            a.is_ai ? (
+              <div key={a.id} className="card pad" style={{ background: "rgba(217,119,87,0.10)", border: "1px solid rgba(217,119,87,0.35)", borderRadius: 12 }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 18 }}>🤖</span>
+                  <b style={{ fontSize: 13, color: "var(--gold)" }}>עוזר ה-AI של LAWdin</b>
+                  <span className="tag" style={{ fontSize: 10 }}>מענה אוטומטי</span>
+                </div>
+                <div style={{ lineHeight: 1.75, whiteSpace: "pre-wrap", fontSize: 14 }}>{a.body}</div>
               </div>
-              <div style={{ lineHeight: 1.75, whiteSpace: "pre-wrap", fontSize: 14 }}>{a.body}</div>
-            </div>
+            ) : (
+              <div key={a.id} className="card pad" style={{ background: "var(--obsidian-3)", borderRadius: 12 }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 8 }}>
+                  <Avatar name={a.author?.display_name ?? null} size={32} verified={a.author?.verification_status === "verified"} />
+                  <b style={{ fontSize: 13 }}>{a.author?.display_name || "עו״ד"}</b>
+                </div>
+                <div style={{ lineHeight: 1.75, whiteSpace: "pre-wrap", fontSize: 14 }}>{a.body}</div>
+              </div>
+            )
           ))}
           {answers.length === 0 && (
             <p className="muted" style={{ fontSize: 13, textAlign: "center" }}>היו הראשונים לענות לשאלה זו.</p>
