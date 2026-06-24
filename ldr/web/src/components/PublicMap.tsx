@@ -20,10 +20,11 @@ const COUNTRY_CENTER: Record<string, [number, number, number]> = {
   IL: [31.9, 34.9, 8], US: [39.5, -98.3, 4], UK: [54.0, -2.5, 6],
   DE: [51.2, 10.4, 6], FR: [46.6, 2.4, 6], CA: [56.1, -106, 4],
 };
+const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "€", FR: "€", CA: "$" };
 
 interface Pin {
   id: string; name: string; lat: number; lng: number; jurisdiction: string;
-  areas: string[]; reputation: number; avatar_url: string | null; tier: string | null;
+  areas: string[]; reputation: number; avatar_url: string | null; tier: string | null; rate: number | null;
 }
 type Panel = { kind: "chat" | "schedule"; pin: Pin } | null;
 
@@ -46,7 +47,7 @@ export default function PublicMap() {
     let cancelled = false;
     (async () => {
       const { data } = await supabase.from("ldr_demo_attorneys")
-        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier")
+        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate")
         .not("lat", "is", null);
       if (cancelled || !el.current || map.current) return;
       const m = L.map(el.current, { center: [31.9, 34.9], zoom: 8, zoomControl: false, attributionControl: false, scrollWheelZoom: false });
@@ -56,7 +57,7 @@ export default function PublicMap() {
       m.on("click", () => setSelected(null));
       allPins.current = ((data ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
-        areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier,
+        areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
       }));
       const present = Array.from(new Set(allPins.current.map((p) => p.jurisdiction)));
       const ordered = ["IL", "US", "UK", "DE", "FR", "CA"].filter((c) => present.includes(c));
@@ -145,9 +146,15 @@ export default function PublicMap() {
                 <span className="ms" style={{ fontSize: 16, color: "#f59e0b", fontVariationSettings: "'FILL' 1" }}>star</span>{rating(selected.reputation)}
               </span>
             </div>
-            <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 10px" }}>
+            <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 8px" }}>
               {PRACTICE_AREA_LABELS[selected.areas?.[0]] ?? "עו״ד"} · {EXPERIENCE_LABELS[selected.tier as keyof typeof EXPERIENCE_LABELS] ?? ""}
             </p>
+            {selected.rate != null && (
+              <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, background: "#fdf3e7", color: "#b45309", padding: "3px 10px", borderRadius: 999, fontWeight: 800, fontSize: 14, marginBottom: 10 }}>
+                {CURRENCY[selected.jurisdiction] ?? "₪"}{selected.rate}
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 8 }}>
               <button style={{ flex: 1, border: "1px solid #E8E5DD", padding: "10px", borderRadius: 12, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer" }}>{t("map.viewProfile")}</button>
               <button onClick={() => setPanel({ kind: "chat", pin: selected })} style={{ flex: 1, border: "1px solid #E8E5DD", padding: "10px", borderRadius: 12, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}><span className="ms" style={{ fontSize: 17 }}>chat_bubble</span>{t("map.chat")}</button>

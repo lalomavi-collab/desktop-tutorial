@@ -41,6 +41,8 @@ const DICT: Record<string, Record<Lang, string>> = {
   "map.count": { he: "עורכי דין על המפה", en: "attorneys on the map", ru: "юристов на карте" },
   "map.viewProfile": { he: "פרופיל", en: "Profile", ru: "Профиль" },
   "map.country": { he: "מדינה", en: "Country", ru: "Страна" },
+  "map.perHour": { he: "/ שעה", en: "/ hr", ru: "/ час" },
+  "map.rate": { he: "תעריף ייעוץ", en: "Consultation rate", ru: "Ставка" },
   "map.chat": { he: "צ׳אט", en: "Chat", ru: "Чат" },
   "map.schedule": { he: "קביעת פגישה", en: "Book a meeting", ru: "Записаться" },
   "chat.with": { he: "צ׳אט עם", en: "Chat with", ru: "Чат с" },

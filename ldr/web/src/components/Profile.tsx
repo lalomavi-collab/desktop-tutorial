@@ -12,6 +12,8 @@ export default function Profile({
 }: { profile: ProfileT; notify: (m: string) => void; onChange: (p: ProfileT) => void; onSignOut?: () => void }) {
   const [headline, setHeadline] = useState(profile.headline ?? "");
   const [savingH, setSavingH] = useState(false);
+  const [rate, setRate] = useState<string>(((profile as any).hourly_rate ?? "").toString());
+  const [savingR, setSavingR] = useState(false);
   const [endorsements, setEndorsements] = useState(0);
   const [network, setNetwork] = useState<{ id: string; name: string | null }[]>([]);
   const [pending, setPending] = useState<{ id: string; requester_id: string; name: string | null }[]>([]);
@@ -91,6 +93,17 @@ export default function Profile({
     notify("הכותרת עודכנה ✓");
   }
 
+  async function saveRate() {
+    const n = parseInt(rate, 10);
+    if (!n || n <= 0) { notify("יש להזין תעריף ייעוץ לשעה"); return; }
+    setSavingR(true);
+    const { error } = await supabase.from("ldr_profiles").update({ hourly_rate: n }).eq("id", profile.id);
+    setSavingR(false);
+    if (error) { notify("שגיאה: " + error.message); return; }
+    onChange({ ...profile, hourly_rate: n } as ProfileT);
+    notify("התעריף עודכן ✓");
+  }
+
   async function submitVerification() {
     if (!licNo.trim()) { notify("הזינו מספר רישיון/תעודה"); return; }
     setVbusy(true);
@@ -144,6 +157,21 @@ export default function Profile({
             </button>
           </div>
         </div>
+
+        <div style={{ marginTop: 14 }}>
+          <label>תעריף ייעוץ לשעה (₪) <span style={{ color: "var(--burgundy-soft)" }}>*</span></label>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input type="number" min={1} inputMode="numeric" value={rate}
+              onChange={(e) => setRate(e.target.value.replace(/[^\d]/g, ""))}
+              placeholder="למשל: 450" style={{ flex: 1 }} />
+            <button className="btn btn-ghost" disabled={savingR || rate === (((profile as any).hourly_rate ?? "").toString())} onClick={saveRate}>
+              {savingR ? <span className="spinner" /> : "שמירה"}
+            </button>
+          </div>
+          <p className="muted" style={{ fontSize: 11, marginTop: 6 }}>
+            המחיר שתבקשו יוצג ללקוחות על הכרטיס שלכם במפה. שדה חובה.
+          </p>
+        </div>
       </div>
 
       {/* Profile completeness (LinkedIn-style) — drives engagement */}
@@ -152,6 +180,7 @@ export default function Profile({
           { done: !!profile.avatar_url, label: "תמונת פרופיל" },
           { done: !!(profile.headline && profile.headline.trim()), label: "כותרת מקצועית" },
           { done: (profile.practice_areas ?? []).length > 0, label: "תחומי עיסוק" },
+          { done: !!(profile as any).hourly_rate, label: "תעריף ייעוץ" },
           { done: !!profile.jurisdiction, label: "תחום שיפוט" },
           { done: !!profile.experience_tier, label: "דרגת ותק" },
           { done: verified, label: "אימות רישיון" },
