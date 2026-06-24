@@ -1,0 +1,18 @@
+{
+  "name": "LAWDin — Professional Legal Network",
+  "short_name": "LAWDin",
+  "description": "The professional network for verified attorneys: discover peers on the map, get case referrals, and grow your practice.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF9F5",
+  "theme_color": "#D97757",
+  "lang": "he",
+  "dir": "auto",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ]
+}
