@@ -85,7 +85,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
-    if (acct === "attorney" && licCountry === "IL" && !licNo.trim()) { setErr(t("err.licenseRequired")); return; }
+    if (acct === "attorney" && licCountry === "IL" && !/^\d{4,7}$/.test(licNo.trim())) { setErr(t("err.licenseRequired")); return; }
     if (acct === "attorney" && licCountry !== "IL" && !barCard) { setErr(t("err.barCardRequired")); return; }
     if (password.length < 8) { setErr(t("err.passwordLen")); return; }
     if (password !== confirm) { setErr(t("err.passwordMatch")); return; }
@@ -343,9 +343,12 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                         {licCountry === "IL" ? (
                           <>
                             <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
-                            <input required dir="ltr" inputMode="numeric"
+                            <input required dir="ltr" inputMode="numeric" maxLength={7}
                               value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
-                              placeholder="12345" />
+                              placeholder="43481" />
+                            <p className="muted" style={{ fontSize: 11, marginTop: 6, lineHeight: 1.5 }}>
+                              כל עורכי הדין בישראל חברי לשכת עורכי הדין. הזינו את מספר רישיון הלשכה (בדרך כלל 5 ספרות).
+                            </p>
                           </>
                         ) : (
                           <>
