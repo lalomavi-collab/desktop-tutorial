@@ -154,10 +154,7 @@ export default function PublicMap() {
       try {
         if (!(maplibregl as any)._rtlSet) {
           (maplibregl as any)._rtlSet = true;
-          (maplibregl.setRTLTextPlugin as any)(
-            "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
-            null, true,
-          );
+          maplibregl.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js", true);
         }
       } catch { /* plugin already registered */ }
 
@@ -191,8 +188,7 @@ export default function PublicMap() {
             if (layer.type === "symbol" && (layer.layout as any)?.["text-field"] !== undefined) {
               m.setLayoutProperty(layer.id, "text-field", [
                 "coalesce",
-                ["get", "name:he"], ["get", "name_he"],
-                ["get", "name:latin"], ["get", "name"],
+                ["get", "name:he"], ["get", "name:latin"], ["get", "name"],
               ]);
             }
           }
