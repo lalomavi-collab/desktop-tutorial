@@ -5,6 +5,7 @@ import PublicMap from "./PublicMap";
 import MembersStrip from "./MembersStrip";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationsBell from "./NotificationsBell";
+import DownloadApp from "./DownloadApp";
 import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
@@ -397,6 +398,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           </div>
         </div>
       )}
+
+      {/* ── App download (Waze-style) ── */}
+      <DownloadApp />
 
       {/* ── Minimal footer with About ── */}
       <footer style={{
