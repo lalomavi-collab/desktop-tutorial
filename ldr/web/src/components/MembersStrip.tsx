@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase, PRACTICE_AREA_LABELS } from "../lib/supabase";
+import { useI18n } from "../i18n";
 
 interface Member {
   id: string; name: string; avatar_url: string | null;
@@ -10,6 +11,7 @@ interface Member {
 // so visitors immediately see real-looking professionals already inside.
 export default function MembersStrip() {
   const [members, setMembers] = useState<Member[]>([]);
+  const { t } = useI18n();
 
   useEffect(() => {
     (async () => {
@@ -29,8 +31,8 @@ export default function MembersStrip() {
     <div style={{ marginTop: 22 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span className="conn-dot connected" />
-        <h3 style={{ margin: 0, fontSize: 16 }}>מי כבר ברשת</h3>
-        <span className="muted" style={{ fontSize: 13 }}>· עורכי דין מאומתים</span>
+        <h3 style={{ margin: 0, fontSize: 16 }}>{t("members.title")}</h3>
+        <span className="muted" style={{ fontSize: 13 }}>{t("members.verified")}</span>
       </div>
       <div className="members-scroll" style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 6 }}>
         {members.map((m) => (
