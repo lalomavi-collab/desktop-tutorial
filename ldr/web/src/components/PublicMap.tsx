@@ -32,6 +32,26 @@ const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "�
 const IL_CENTER: [number, number, number] = [31.7, 34.9, 7.3];
 // Lock the viewport to Israel (with a small margin) so only Israel is shown.
 const IL_BOUNDS: [[number, number], [number, number]] = [[33.9, 29.2], [36.1, 33.6]];
+// Simplified outline of Israel (lng,lat). Used as a hole in a world-covering
+// mask so only Israel renders — neighbouring countries and their labels are
+// hidden, keeping the map focused and free of off-topic political labels.
+const ISRAEL_OUTLINE: [number, number][] = [
+  [35.62, 33.28], [35.78, 33.23], [35.90, 32.68], [35.57, 32.38], [35.55, 31.76],
+  [35.47, 31.49], [35.40, 31.10], [35.20, 30.60], [35.00, 30.10], [34.95, 29.55],
+  [34.92, 30.40], [34.50, 30.90], [34.27, 31.22], [34.49, 31.59], [34.64, 31.85],
+  [34.75, 32.08], [34.88, 32.45], [35.00, 32.83], [35.10, 33.08], [35.30, 33.10],
+  [35.55, 33.24], [35.62, 33.28],
+];
+const IL_MASK: GeoJSON.Feature = {
+  type: "Feature", properties: {},
+  geometry: {
+    type: "Polygon",
+    coordinates: [
+      [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]],
+      ISRAEL_OUTLINE,
+    ],
+  },
+};
 const IL_CITIES: { key: string; label: string; lat: number; lng: number }[] = [
   { key: "tlv", label: "תל אביב", lat: 32.0853, lng: 34.7818 },
   { key: "jlm", label: "ירושלים", lat: 31.7683, lng: 35.2137 },
@@ -196,10 +216,15 @@ export default function PublicMap() {
       allPins.current.forEach((p) => { const k = regionOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
       setRegionCounts(counts);
       m.on("load", () => {
-        // Proper Hebrew labels: switch every text label to its Hebrew name,
-        // falling back to Latin/native when a Hebrew name is missing.
         try {
           for (const layer of m.getStyle().layers ?? []) {
+            // Hide political labels (countries, states, disputed territories) so
+            // no off-topic / inaccurate labels (e.g. neighbouring states) appear.
+            if (layer.type === "symbol" && /country|state|continent|disputed/i.test(layer.id)) {
+              m.setLayoutProperty(layer.id, "visibility", "none");
+              continue;
+            }
+            // Proper Hebrew labels, falling back to Latin/native when missing.
             if (layer.type === "symbol" && (layer.layout as any)?.["text-field"] !== undefined) {
               m.setLayoutProperty(layer.id, "text-field", [
                 "coalesce",
@@ -207,7 +232,10 @@ export default function PublicMap() {
               ]);
             }
           }
-        } catch { /* style without symbol layers — ignore */ }
+          // Mask everything outside Israel so only Israel is visible.
+          m.addSource("il-mask", { type: "geojson", data: IL_MASK });
+          m.addLayer({ id: "il-mask", type: "fill", source: "il-mask", paint: { "fill-color": "#e9ecf1", "fill-opacity": 1 } });
+        } catch { /* style without these layers — ignore */ }
         if (!cancelled) setReady(true);
       });
     })();
