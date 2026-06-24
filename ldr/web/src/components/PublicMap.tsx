@@ -211,10 +211,15 @@ export default function PublicMap() {
       const face = p.avatar_url
         ? `background-image:url('${p.avatar_url}');background-size:cover;background-position:center;`
         : `background:${ring};`;
+      // Initials fallback so a pin is never an empty box when there is no photo.
+      const initials = (p.name || "עו״ד").replace(/^ד״ר\s*/, "").trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("");
+      const faceInner = p.avatar_url ? "" : `<span class="lawpin-initials">${initials}</span>`;
       const online = i % 3 !== 2 ? `<span class="lawpin-online"></span>` : "";
       const elm = document.createElement("div");
       elm.className = "lawpin";
-      elm.innerHTML = `<div class="lawpin-face" style="${face}box-shadow:0 0 0 3px ${ring},0 6px 16px rgba(0,0,0,.28);"></div>${online}<div class="lawpin-stem"></div>`;
+      elm.setAttribute("role", "button");
+      elm.setAttribute("title", p.name);
+      elm.innerHTML = `<div class="lawpin-face" style="${face}box-shadow:0 0 0 3px ${ring},0 6px 16px rgba(0,0,0,.28);">${faceInner}</div>${online}<div class="lawpin-stem"></div><div class="lawpin-name">${p.name}</div>`;
       elm.addEventListener("click", (ev) => {
         ev.stopPropagation();
         setSelected(p); setPanel(null);
