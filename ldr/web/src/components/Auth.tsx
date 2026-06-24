@@ -135,12 +135,12 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "10px 32px", minHeight: 56,
         borderBottom: "1px solid var(--line)",
-        background: "rgba(20,20,20,0.78)", backdropFilter: "blur(18px) saturate(160%)",
+        background: "rgba(255,255,255,0.82)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
         <Wordmark size={36} tagline={false} />
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <LanguageSwitcher />
-          <NotificationsBell tone="dark" />
+          <LanguageSwitcher light />
+          <NotificationsBell tone="light" />
           <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
             onClick={() => openAuth("signin")}>{t("nav.signin")}</button>
           <button className="btn btn-gold" style={{ padding: "7px 18px", fontSize: 13 }}
