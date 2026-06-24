@@ -21,10 +21,18 @@ const COUNTRY_CENTER: Record<string, [number, number, number]> = {
   DE: [51.2, 10.4, 6], FR: [46.6, 2.4, 6], CA: [56.1, -106, 4],
 };
 const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "€", FR: "€", CA: "$" };
+// Map filter chips → which practice-area keys they include.
+const SPEC_FILTERS: { key: string; label: string; areas: string[] }[] = [
+  { key: "commercial", label: "spec.commercial", areas: ["commercial", "corporate_vc", "banking"] },
+  { key: "criminal", label: "spec.criminal", areas: ["criminal", "litigation"] },
+  { key: "family", label: "spec.family", areas: ["family", "mediation"] },
+  { key: "realestate", label: "spec.realestate", areas: ["real_estate", "urban_renewal"] },
+];
 
 interface Pin {
   id: string; name: string; lat: number; lng: number; jurisdiction: string;
   areas: string[]; reputation: number; avatar_url: string | null; tier: string | null; rate: number | null;
+  quickBook: boolean; consultOnly: boolean;
 }
 type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
@@ -40,6 +48,10 @@ export default function PublicMap() {
   const [selected, setSelected] = useState<Pin | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
+  const [query, setQuery] = useState("");
+  const [areaFilter, setAreaFilter] = useState<string | null>(null);
+  const [quickOnly, setQuickOnly] = useState(false);
+  const [consultOnly, setConsultOnly] = useState(false);
   const { t } = useI18n();
 
   // Init map + load data once.
@@ -47,7 +59,7 @@ export default function PublicMap() {
     let cancelled = false;
     (async () => {
       const { data } = await supabase.from("ldr_demo_attorneys")
-        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate")
+        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only")
         .not("lat", "is", null);
       if (cancelled || !el.current || map.current) return;
       const m = L.map(el.current, { center: [31.9, 34.9], zoom: 8, zoomControl: false, attributionControl: false, scrollWheelZoom: false });
@@ -58,6 +70,7 @@ export default function PublicMap() {
       allPins.current = ((data ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
         areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
+        quickBook: !!r.quick_book, consultOnly: !!r.consultation_only,
       }));
       const present = Array.from(new Set(allPins.current.map((p) => p.jurisdiction)));
       const ordered = ["IL", "US", "UK", "DE", "FR", "CA"].filter((c) => present.includes(c));
@@ -72,7 +85,19 @@ export default function PublicMap() {
     if (!ready || !map.current || !layer.current) return;
     layer.current.clearLayers();
     setSelected(null);
-    const pins = allPins.current.filter((p) => p.jurisdiction === country);
+    const q = query.trim().toLowerCase();
+    const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
+    const pins = allPins.current.filter((p) => {
+      if (p.jurisdiction !== country) return false;
+      if (quickOnly && !p.quickBook) return false;
+      if (consultOnly && !p.consultOnly) return false;
+      if (specAreas && !p.areas.some((a) => specAreas.includes(a))) return false;
+      if (q) {
+        const hay = (p.name + " " + p.areas.map((a) => PRACTICE_AREA_LABELS[a] ?? a).join(" ")).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
     setCount(pins.length);
     const group: L.Marker[] = [];
     pins.forEach((p, i) => {
@@ -95,7 +120,7 @@ export default function PublicMap() {
     } else {
       const c = COUNTRY_CENTER[country]; if (c) map.current.setView([c[0], c[1]], c[2]);
     }
-  }, [country, ready]);
+  }, [country, ready, query, areaFilter, quickOnly, consultOnly]);
 
   const rating = (rep: number) => (Math.min(5, 3.8 + rep / 1500)).toFixed(1);
 
@@ -107,16 +132,22 @@ export default function PublicMap() {
       <div style={{ position: "absolute", top: 14, insetInline: 14, zIndex: 600, display: "flex", gap: 8 }}>
         <div style={{ position: "relative", flex: 1 }}>
           <span className="ms" style={{ position: "absolute", insetInlineStart: 14, top: "50%", transform: "translateY(-50%)", color: "#707884" }}>search</span>
-          <input placeholder={t("map.search")} style={{ width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16, border: "2px solid transparent", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, outline: "none" }} />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("map.search")} style={{ width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16, border: "2px solid transparent", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, outline: "none" }} />
         </div>
         <select value={country} onChange={(e) => setCountry(e.target.value)} aria-label={t("map.country")}
           style={{ height: 48, borderRadius: 16, border: "none", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, fontWeight: 600, padding: "0 12px", cursor: "pointer", color: "#1F1E1D" }}>
           {countries.map((c) => <option key={c} value={c}>{t("c." + c)}</option>)}
         </select>
-        <button onClick={() => setFilterOpen(true)} aria-label="פילטרים" style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: CLAY, color: "#fff", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(31,30,29,.12)", cursor: "pointer" }}>
+        <button onClick={() => setFilterOpen(true)} aria-label="פילטרים" style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: (areaFilter || consultOnly) ? CLAY : "#fff", color: (areaFilter || consultOnly) ? "#fff" : "#1F1E1D", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(31,30,29,.12)", cursor: "pointer" }}>
           <span className="ms">tune</span>
         </button>
       </div>
+
+      {/* Quick-connect chip — fast path, especially for clients */}
+      <button onClick={() => setQuickOnly((v) => !v)}
+        style={{ position: "absolute", top: 72, insetInlineStart: 14, zIndex: 600, display: "flex", alignItems: "center", gap: 7, border: "none", borderRadius: 999, padding: "8px 14px", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, boxShadow: "0 4px 16px rgba(31,30,29,.12)", background: quickOnly ? CLAY : "rgba(255,255,255,.96)", color: quickOnly ? "#fff" : "#1F1E1D" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} /> ⚡ {t("map.quickConnect")}
+      </button>
 
       {/* Count chip */}
       <div style={{ position: "absolute", top: 74, insetInlineStart: "50%", transform: "translateX(-50%)", zIndex: 600, display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,.96)", border: "1px solid #E8E5DD", borderRadius: 999, padding: "6px 14px", boxShadow: "0 4px 16px rgba(31,30,29,.1)", fontSize: 13, fontWeight: 700, color: CLAY, whiteSpace: "nowrap" }}>
@@ -180,16 +211,23 @@ export default function PublicMap() {
           <div onClick={() => setFilterOpen(false)} style={{ position: "absolute", inset: 0, zIndex: 700, background: "rgba(0,0,0,.25)" }} />
           <div style={{ position: "absolute", insetInline: 0, bottom: 0, zIndex: 701, background: "rgba(255,255,255,.98)", borderRadius: "24px 24px 0 0", padding: "16px 18px 22px", boxShadow: "0 -10px 40px rgba(0,0,0,.2)" }}>
             <div style={{ width: 46, height: 5, background: "#E8E5DD", borderRadius: 999, margin: "0 auto 16px" }} />
-            <h2 className="font-headline" style={{ margin: "0 0 16px", fontSize: 20, color: "#1F1E1D" }}>סינון חיפוש</h2>
-            <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>תחום התמחות</p>
+            <h2 className="font-headline" style={{ margin: "0 0 16px", fontSize: 20, color: "#1F1E1D" }}>{t("filter.title")}</h2>
+            <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.specialization")}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {[{ i: "corporate_fare", l: "מסחרי" }, { i: "gavel", l: "פלילי" }, { i: "family_restroom", l: "משפחה" }, { i: "home_work", l: "נדל״ן" }].map((s, i) => (
-                <div key={s.l} style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderRadius: 16, background: "#F2F0E9", border: `2px solid ${i === 0 ? CLAY : "transparent"}`, color: i === 0 ? CLAY : "#1F1E1D", fontWeight: 600, cursor: "pointer" }}>
-                  <span className="ms">{s.i}</span>{s.l}
-                </div>
-              ))}
+              {[{ key: null, i: "apps", l: t("filter.all") }, ...SPEC_FILTERS.map((s) => ({ key: s.key, i: { commercial: "corporate_fare", criminal: "gavel", family: "family_restroom", realestate: "home_work" }[s.key]!, l: t(s.label) }))].map((s) => {
+                const on = areaFilter === s.key;
+                return (
+                  <button key={s.key ?? "all"} onClick={() => setAreaFilter(s.key)} style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderRadius: 16, background: "#F2F0E9", border: `2px solid ${on ? CLAY : "transparent"}`, color: on ? CLAY : "#1F1E1D", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 14 }}>
+                    <span className="ms">{s.i}</span>{s.l}
+                  </button>
+                );
+              })}
             </div>
-            <button onClick={() => setFilterOpen(false)} style={{ width: "100%", padding: 15, marginTop: 18, border: "none", borderRadius: 16, background: CLAY, color: "#fff", fontWeight: 700, fontSize: 16, fontFamily: "inherit", cursor: "pointer" }}>החל סינון</button>
+            <button onClick={() => setConsultOnly((v) => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: 12, padding: 14, borderRadius: 16, background: consultOnly ? "#fdf3e7" : "#F2F0E9", border: `2px solid ${consultOnly ? CLAY : "transparent"}`, color: "#1F1E1D", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 14 }}>
+              <span>{t("filter.consultation")}</span>
+              <span className="ms" style={{ color: consultOnly ? CLAY : "#bfc7d5" }}>{consultOnly ? "toggle_on" : "toggle_off"}</span>
+            </button>
+            <button onClick={() => setFilterOpen(false)} style={{ width: "100%", padding: 15, marginTop: 18, border: "none", borderRadius: 16, background: CLAY, color: "#fff", fontWeight: 700, fontSize: 16, fontFamily: "inherit", cursor: "pointer" }}>{t("filter.apply")}</button>
           </div>
         </>
       )}
