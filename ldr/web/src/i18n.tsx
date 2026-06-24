@@ -86,6 +86,13 @@ const DICT: Record<string, Record<Lang, string>> = {
   "c.FR": { he: "🇫🇷 צרפת", en: "🇫🇷 France", ru: "🇫🇷 Франция" },
   "c.CA": { he: "🇨🇦 קנדה", en: "🇨🇦 Canada", ru: "🇨🇦 Канада" },
   "map.tenure": { he: "דרגת ותק", en: "Seniority", ru: "Стаж" },
+  "map.live": { he: "פעילות חיה", en: "Live activity", ru: "Активность" },
+  "map.live.online": { he: "מחובר/ת כעת", en: "is online now", ru: "сейчас в сети" },
+  "map.live.available": { he: "זמין/ה לייעוץ", en: "is available", ru: "доступен" },
+  "map.live.replied": { he: "השיב/ה לפנייה", en: "just replied", ru: "ответил(а)" },
+  "map.live.joined": { he: "הצטרף/ה לרשת", en: "joined the network", ru: "присоединился" },
+  "map.tilt": { he: "הטיית מבט", en: "Tilt view", ru: "Наклон" },
+
   "level.senior": { he: "בכיר", en: "Senior", ru: "Старший" },
   "level.mid": { he: "מנוסה", en: "Experienced", ru: "Опытный" },
   "level.junior": { he: "מתחיל", en: "Junior", ru: "Младший" },

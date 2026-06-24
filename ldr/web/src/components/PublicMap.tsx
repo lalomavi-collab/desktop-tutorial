@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase, PRACTICE_AREA_LABELS, EXPERIENCE_LABELS } from "../lib/supabase";
 import { useI18n } from "../i18n";
 
-// ── Light, colourful map (Anthropic palette): attorney face pins with a
-// seniority ring; tap a pin → card with profile / chat / book-a-meeting.
-// Country selector filters pins by jurisdiction. ──
+// ── Live 3D vector map (MapLibre + free OpenFreeMap tiles): tilted city view
+// with real building extrusions, attorney face pins with a seniority ring,
+// and a live-activity ticker so the map feels alive. Centred on the country
+// the connected user belongs to (default Israel). Tap a pin → card with
+// profile / chat / book-a-meeting. ──
+
+// Free, key-less vector style with 3D buildings.
+const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 const CLAY = "#D97757";
 const LEVEL_COLOR: Record<string, string> = { junior: "#6E9E8E", mid: "#C99A3F", senior: "#D97757" };
@@ -46,9 +51,11 @@ type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
   const el = useRef<HTMLDivElement>(null);
-  const map = useRef<L.Map | null>(null);
-  const layer = useRef<L.LayerGroup | null>(null);
+  const map = useRef<maplibregl.Map | null>(null);
+  const markers = useRef<maplibregl.Marker[]>([]);
+  const markerEls = useRef<Record<string, HTMLElement>>({});
   const allPins = useRef<Pin[]>([]);
+  const visiblePins = useRef<Pin[]>([]);
   const [ready, setReady] = useState(false);
   const [count, setCount] = useState(0);
   const [country, setCountry] = useState("IL");
@@ -61,6 +68,8 @@ export default function PublicMap() {
   const [quickOnly, setQuickOnly] = useState(false);
   const [consultOnly, setConsultOnly] = useState(false);
   const [region, setRegion] = useState("all");
+  const [tilted, setTilted] = useState(true);
+  const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
   const { t } = useI18n();
 
   // Init map + load data once.
@@ -71,28 +80,53 @@ export default function PublicMap() {
         .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only")
         .not("lat", "is", null);
       if (cancelled || !el.current || map.current) return;
-      const m = L.map(el.current, { center: [31.9, 34.9], zoom: 8, zoomControl: false, attributionControl: false, scrollWheelZoom: false });
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 20 }).addTo(m);
-      map.current = m;
-      layer.current = L.layerGroup().addTo(m);
+
+      // Default to the connected user's country (license / jurisdiction), then
+      // their last choice, then Israel.
+      let initial = localStorage.getItem("lawdin_country") || "IL";
+      try {
+        const { data: ures } = await supabase.auth.getUser();
+        if (ures?.user) {
+          const { data: prof } = await supabase.from("ldr_profiles")
+            .select("jurisdiction,license_country").eq("id", ures.user.id).maybeSingle();
+          const jc = (prof as any)?.license_country || (prof as any)?.jurisdiction;
+          if (jc) initial = jc;
+        }
+      } catch { /* anonymous visitor — keep default */ }
+      if (cancelled) return;
+
+      const c = COUNTRY_CENTER[initial] ?? COUNTRY_CENTER.IL;
+      const m = new maplibregl.Map({
+        container: el.current,
+        style: MAP_STYLE,
+        center: [c[1], c[0]], zoom: c[2], pitch: 50, bearing: -14,
+        attributionControl: false, dragRotate: true,
+      });
+      m.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "bottom-left");
+      m.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "© OpenFreeMap © OpenMapTiles © OSM" }), "bottom-right");
       m.on("click", () => setSelected(null));
+      map.current = m;
+
       allPins.current = ((data ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
         areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
         quickBook: !!r.quick_book, consultOnly: !!r.consultation_only,
       }));
       const present = Array.from(new Set(allPins.current.map((p) => p.jurisdiction)));
-      const ordered = ["IL", "US", "UK", "DE", "FR", "CA"].filter((c) => present.includes(c));
+      const ordered = ["IL", "US", "UK", "DE", "FR", "CA"].filter((cc) => present.includes(cc));
       setCountries(ordered.length ? ordered : present);
-      setReady(true);
+      setCountry(initial);
+      m.on("load", () => { if (!cancelled) setReady(true); });
     })();
     return () => { cancelled = true; map.current?.remove(); map.current = null; };
   }, []);
 
-  // Re-render markers when country changes.
+  // Re-render markers when filters change.
   useEffect(() => {
-    if (!ready || !map.current || !layer.current) return;
-    layer.current.clearLayers();
+    if (!ready || !map.current) return;
+    markers.current.forEach((mk) => mk.remove());
+    markers.current = [];
+    markerEls.current = {};
     setSelected(null);
     const q = query.trim().toLowerCase();
     const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
@@ -108,29 +142,58 @@ export default function PublicMap() {
       }
       return true;
     });
+    visiblePins.current = pins;
     setCount(pins.length);
-    const group: L.Marker[] = [];
     pins.forEach((p, i) => {
       const ring = levelColor(p.tier);
       const face = p.avatar_url
         ? `background-image:url('${p.avatar_url}');background-size:cover;background-position:center;`
         : `background:${ring};`;
-      const online = i % 3 !== 2 ? `<div style="position:absolute;top:-2px;right:-2px;width:13px;height:13px;background:#10b981;border-radius:50%;border:2px solid #fff;"></div>` : "";
-      const icon = L.divIcon({
-        className: "",
-        html: `<div style="position:relative;"><div style="width:48px;height:48px;border-radius:50%;${face}border:4px solid #fff;box-shadow:0 0 0 3px ${ring},0 6px 16px rgba(0,0,0,.25);"></div>${online}<div style="width:13px;height:13px;background:#fff;transform:rotate(45deg);margin:-6px auto 0;box-shadow:2px 2px 4px rgba(0,0,0,.12)"></div></div>`,
-        iconSize: [48, 60], iconAnchor: [24, 56], popupAnchor: [0, -50],
+      const online = i % 3 !== 2 ? `<span class="lawpin-online"></span>` : "";
+      const elm = document.createElement("div");
+      elm.className = "lawpin";
+      elm.innerHTML = `<div class="lawpin-face" style="${face}box-shadow:0 0 0 3px ${ring},0 6px 16px rgba(0,0,0,.28);"></div>${online}<div class="lawpin-stem"></div>`;
+      elm.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        setSelected(p); setPanel(null);
+        map.current?.easeTo({ center: [p.lng, p.lat], zoom: Math.max(map.current.getZoom(), 12.5), duration: 700 });
       });
-      const mk = L.marker([p.lat, p.lng], { icon }).addTo(layer.current!);
-      mk.on("click", () => { setSelected(p); setPanel(null); });
-      group.push(mk);
+      const mk = new maplibregl.Marker({ element: elm, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map.current!);
+      markers.current.push(mk);
+      markerEls.current[p.id] = elm;
     });
-    if (group.length) {
-      map.current.fitBounds(L.featureGroup(group).getBounds().pad(0.3));
+    if (pins.length) {
+      const b = new maplibregl.LngLatBounds();
+      pins.forEach((p) => b.extend([p.lng, p.lat]));
+      map.current.fitBounds(b, { padding: 80, maxZoom: 13.5, duration: 900 });
     } else {
-      const c = COUNTRY_CENTER[country]; if (c) map.current.setView([c[0], c[1]], c[2]);
+      const c = COUNTRY_CENTER[country]; if (c) map.current.flyTo({ center: [c[1], c[0]], zoom: c[2], duration: 900 });
     }
   }, [country, ready, query, areaFilter, quickOnly, consultOnly, region]);
+
+  // Tilt toggle — flatten ↔ 3D city view.
+  useEffect(() => {
+    map.current?.easeTo({ pitch: tilted ? 50 : 0, bearing: tilted ? -14 : 0, duration: 600 });
+  }, [tilted]);
+
+  // Live-activity ticker — periodically surface a random visible attorney with
+  // a green "ping" on their pin, so the map reads as live and busy.
+  useEffect(() => {
+    if (!ready) return;
+    const VERBS = ["map.live.online", "map.live.available", "map.live.replied", "map.live.joined"];
+    let vi = 0;
+    const id = window.setInterval(() => {
+      const pool = visiblePins.current;
+      if (!pool.length) return;
+      const p = pool[(vi * 7 + 3) % pool.length];
+      vi += 1;
+      setActivity({ name: p.name, verb: t(VERBS[vi % VERBS.length]) });
+      const elm = markerEls.current[p.id];
+      if (elm) { elm.classList.add("lawpin-ping"); window.setTimeout(() => elm.classList.remove("lawpin-ping"), 2400); }
+      window.setTimeout(() => setActivity(null), 3200);
+    }, 4200);
+    return () => window.clearInterval(id);
+  }, [ready, t]);
 
   const rating = (rep: number) => (Math.min(5, 3.8 + rep / 1500)).toFixed(1);
 
@@ -144,7 +207,7 @@ export default function PublicMap() {
           <span className="ms" style={{ position: "absolute", insetInlineStart: 14, top: "50%", transform: "translateY(-50%)", color: "#707884" }}>search</span>
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("map.search")} style={{ width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16, border: "2px solid transparent", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, outline: "none" }} />
         </div>
-        <select value={country} onChange={(e) => setCountry(e.target.value)} aria-label={t("map.country")}
+        <select value={country} onChange={(e) => { setCountry(e.target.value); try { localStorage.setItem("lawdin_country", e.target.value); } catch { /* ignore */ } }} aria-label={t("map.country")}
           style={{ height: 48, borderRadius: 16, border: "none", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, fontWeight: 600, padding: "0 12px", cursor: "pointer", color: "#1F1E1D" }}>
           {countries.map((c) => <option key={c} value={c}>{t("c." + c)}</option>)}
         </select>
@@ -163,6 +226,21 @@ export default function PublicMap() {
       <div style={{ position: "absolute", top: 74, insetInlineStart: "50%", transform: "translateX(-50%)", zIndex: 600, display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,.96)", border: "1px solid #E8E5DD", borderRadius: 999, padding: "6px 14px", boxShadow: "0 4px 16px rgba(31,30,29,.1)", fontSize: 13, fontWeight: 700, color: CLAY, whiteSpace: "nowrap" }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} /> ⚖️ {count} {t("map.count")}
       </div>
+
+      {/* Tilt toggle — 3D city view ↔ flat */}
+      <button onClick={() => setTilted((v) => !v)} aria-label={t("map.tilt")} title={t("map.tilt")}
+        style={{ position: "absolute", top: 72, insetInlineEnd: 14, zIndex: 600, height: 38, padding: "0 12px", display: "flex", alignItems: "center", gap: 6, border: "none", borderRadius: 999, cursor: "pointer", fontFamily: "inherit", fontSize: 12.5, fontWeight: 700, boxShadow: "0 4px 16px rgba(31,30,29,.12)", background: tilted ? CLAY : "rgba(255,255,255,.96)", color: tilted ? "#fff" : "#1F1E1D" }}>
+        <span className="ms" style={{ fontSize: 18 }}>deployed_code</span>3D
+      </button>
+
+      {/* Live-activity ticker — makes the map feel alive */}
+      {activity && (
+        <div style={{ position: "absolute", bottom: 14, insetInlineStart: 14, zIndex: 640, display: "flex", alignItems: "center", gap: 9, background: "rgba(255,255,255,.97)", border: "1px solid #E8E5DD", borderRadius: 999, padding: "8px 14px", boxShadow: "0 8px 24px rgba(31,30,29,.16)", fontSize: 13, maxWidth: "70%", animation: "fadeUp .3s ease both" }}>
+          <span className="lawpin-online" style={{ position: "static", width: 9, height: 9 }} />
+          <span style={{ fontWeight: 700, color: "#1F1E1D", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{activity.name}</span>
+          <span style={{ color: "#6B6862", whiteSpace: "nowrap" }}>{activity.verb}</span>
+        </div>
+      )}
 
       {/* Legend */}
       <div style={{ position: "absolute", bottom: 14, insetInlineEnd: 14, zIndex: 600, background: "rgba(255,255,255,.96)", border: "1px solid #E8E5DD", borderRadius: 14, padding: "8px 12px", fontSize: 12, boxShadow: "0 4px 16px rgba(31,30,29,.1)" }}>
