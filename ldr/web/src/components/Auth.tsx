@@ -7,6 +7,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationsBell from "./NotificationsBell";
 import DownloadApp from "./DownloadApp";
 import OfficeRentals from "./OfficeRentals";
+import ServicesStrip from "./ServicesStrip";
 import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
@@ -399,6 +400,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           </div>
         </div>
       )}
+
+      {/* ── Service rubrics (incl. jobs) ── */}
+      <ServicesStrip />
 
       {/* ── Office room rental (extra service) ── */}
       <OfficeRentals />
