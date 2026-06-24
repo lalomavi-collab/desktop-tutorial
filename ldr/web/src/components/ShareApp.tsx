@@ -78,6 +78,15 @@ export default function ShareApp({ profile, onClose }: { profile: Profile | null
           </button>
         </div>
 
+        {/* QR for quick mobile sharing */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 14 }}>
+          <div style={{ background: "#fff", padding: 10, borderRadius: 14, textAlign: "center" }}>
+            <img alt="QR לשיתוף LAWDin" width={148} height={148}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=148x148&margin=0&data=${encodeURIComponent(url)}`} />
+            <div style={{ fontSize: 11, color: "#555", marginTop: 6 }}>סרקו לפתיחת LAWDin</div>
+          </div>
+        </div>
+
         <div className="divider" style={{ margin: "18px 0" }} />
 
         {/* Signature block */}

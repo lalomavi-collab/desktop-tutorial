@@ -324,18 +324,15 @@ export default function PublicMap() {
 
   return (
     <>
-    {/* Region selector card (above the map) */}
-    <div style={{ background: "rgba(255,255,255,.97)", border: "1px solid #E8E5DD", borderRadius: 22, padding: "16px 18px", marginBottom: 14, boxShadow: "0 8px 28px rgba(31,30,29,.08)", textAlign: "right" }}>
-      <h3 className="font-headline" style={{ margin: "0 0 4px", fontSize: 18, color: "#1F1E1D" }}>מפת המומחים וההתחדשות העירונית בישראל</h3>
-      <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#6B6862", lineHeight: 1.6 }}>איתור עורכי דין מומחים על גבי המפה הגיאוגרפית של ישראל, בשילוב מחשבון כדאיות ומערכת עוזר מבוססת AI.</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {REGIONS.map((r) => (
-          <button key={r.key} onClick={() => setRegion(r.key)}
-            style={{ padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: region === r.key ? "#1A1A1A" : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753" }}>
-            {r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}
-          </button>
-        ))}
-      </div>
+    {/* Region selector chips (above the map) */}
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12, alignItems: "center", justifyContent: "flex-end" }}>
+      <span style={{ fontSize: 13, fontWeight: 700, color: "#6B6862", marginInlineEnd: 4 }}>אזור:</span>
+      {REGIONS.map((r) => (
+        <button key={r.key} onClick={() => setRegion(r.key)}
+          style={{ padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: region === r.key ? "#1A1A1A" : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753" }}>
+          {r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}
+        </button>
+      ))}
     </div>
     <div style={{ position: "relative", borderRadius: 22, overflow: "hidden", border: "1px solid #E8E5DD", boxShadow: "0 12px 40px rgba(31,30,29,0.12)", height: 480, background: "#eef0ea" }}>
       <div ref={el} role="application" aria-label="מפת מיקומי עורכי דין" style={{ position: "absolute", inset: 0 }} />

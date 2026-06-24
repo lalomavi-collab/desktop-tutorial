@@ -210,6 +210,7 @@ function Header({
         </div>
         {session && isClient && (
           <nav className="nav">
+            <span className="tag" style={{ marginInlineEnd: 4 }}>👤 מצב לקוח</span>
             <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
             <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מצא עו״ד</button>
             <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 הבקשות שלי</button>
@@ -286,7 +287,10 @@ function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
 function Footer() {
   return (
     <footer className="footer">
-      🔐 חיסיון עו"ד–לקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח · LAWDin
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        <Wordmark size={30} tagline={false} />
+        <div>🔐 חיסיון עו״ד ולקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח</div>
+      </div>
     </footer>
   );
 }
