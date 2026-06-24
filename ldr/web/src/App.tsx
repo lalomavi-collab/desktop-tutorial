@@ -11,6 +11,7 @@ import Directory from "./components/Directory";
 import Gigs from "./components/Gigs";
 import CaseBoard from "./components/CaseBoard";
 import RoomShare from "./components/RoomShare";
+import Jobs from "./components/Jobs";
 import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
@@ -23,7 +24,7 @@ import MapView from "./components/MapView";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 
-type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -130,6 +131,8 @@ export default function App() {
           <CaseBoard profile={profile} notify={notify} />
         ) : tab === "rooms" ? (
           <RoomShare profile={profile} notify={notify} />
+        ) : tab === "jobs" ? (
+          <Jobs profile={profile} notify={notify} />
         ) : tab === "referrals" ? (
           <Referrals profile={profile} notify={notify} />
         ) : tab === "qa" ? (
@@ -174,6 +177,7 @@ function Header({
             <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
             <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 תיקים מלקוחות</button>
             <button className={tab === "rooms" ? "active" : ""} onClick={() => setTab("rooms")}>🤝 שיתוף חדרים</button>
+            <button className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}>💼 דרושים</button>
             <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
             <button className={tab === "qa" ? "active" : ""} onClick={() => setTab("qa")}>שו״ת</button>
             <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
