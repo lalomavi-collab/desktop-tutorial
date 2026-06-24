@@ -22,6 +22,7 @@ import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
 import PublicMap from "./components/PublicMap";
 import ClientHome from "./components/ClientHome";
+import ShareApp from "./components/ShareApp";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 import LanguageSwitcher from "./components/LanguageSwitcher";
@@ -199,8 +200,10 @@ function Header({
 }: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
   const rank = profile ? rankFor(profile.reputation) : null;
   const isClient = (profile as any)?.role === "client";
+  const [shareOpen, setShareOpen] = useState(false);
   return (
     <header className="topbar">
+      {shareOpen && <ShareApp profile={profile} onClose={() => setShareOpen(false)} />}
       <div className="container inner">
         <div className="brand" onClick={() => session && setTab("feed")}>
           <Wordmark size={40} />
@@ -213,6 +216,7 @@ function Header({
             <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             <LanguageSwitcher light />
             <NotificationsBell tone="light" />
+            <button onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
             <button onClick={onSignOut}>יציאה</button>
           </nav>
         )}
@@ -233,6 +237,7 @@ function Header({
             )}
             <LanguageSwitcher light />
             <NotificationsBell tone="light" />
+            <button onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
             <button onClick={onSignOut}>יציאה</button>
           </nav>
         )}
