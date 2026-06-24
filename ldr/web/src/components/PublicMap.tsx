@@ -116,7 +116,7 @@ const FEATURED: Pin[] = [{
   lat: 32.0809, lng: 34.7806,
   jurisdiction: "IL",
   areas: ["real_estate", "urban_renewal", "commercial"],
-  reputation: 2450, avatar_url: null, tier: "senior", rate: null,
+  reputation: 2450, avatar_url: "https://i.pravatar.cc/200?img=12", tier: "senior", rate: null,
   quickBook: true, consultOnly: false, license: "43481",
 }];
 
@@ -141,7 +141,7 @@ const IL_DEMO: Pin[] = IL_CITIES.map((c, i) => ({
   jurisdiction: "IL",
   areas: DEMO_SPECS[i % DEMO_SPECS.length],
   reputation: 1100 + (i * 97) % 1200,
-  avatar_url: null,
+  avatar_url: `https://i.pravatar.cc/160?img=${(i * 5) % 70 + 1}`,
   tier: i % 3 === 0 ? "senior" : "mid",
   rate: 450 + (i * 30) % 400,
   quickBook: i % 2 === 0,
