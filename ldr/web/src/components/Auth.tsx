@@ -137,7 +137,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         borderBottom: "1px solid var(--line)",
         background: "rgba(255,255,255,0.82)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
-        <Wordmark size={36} tagline={false} />
+        <Wordmark size={36} tagline={false} tone="light" />
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <LanguageSwitcher light />
           <NotificationsBell tone="light" />
@@ -249,7 +249,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 {mode !== "reset" && (
                   <>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                      <Wordmark size={34} />
+                      <Wordmark size={34} tone="light" />
                       <div style={{ fontSize: 14, fontWeight: 700 }}>
                         {mode === "signin" ? t("auth.signinTitle") : t("auth.signupTitle")}
                       </div>
