@@ -11,7 +11,6 @@ import Directory from "./components/Directory";
 import Gigs from "./components/Gigs";
 import CaseBoard from "./components/CaseBoard";
 import RoomShare from "./components/RoomShare";
-import Jobs from "./components/Jobs";
 import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
@@ -22,12 +21,13 @@ import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
 import PublicMap from "./components/PublicMap";
+import ClientHome from "./components/ClientHome";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import NotificationsBell from "./components/NotificationsBell";
 
-type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -48,6 +48,15 @@ export default function App() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // Private clients land on their personal-card home (not the lawyer map).
+  const clientHomed = useRef(false);
+  useEffect(() => {
+    if (profile && (profile as any).role === "client" && !clientHomed.current) {
+      clientHomed.current = true;
+      setTab("feed");
+    }
+  }, [profile]);
 
   // Load profile + accept invite once authenticated.
   useEffect(() => {
@@ -105,6 +114,17 @@ export default function App() {
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+        ) : (profile as any).role === "client" ? (
+          tab === "map" ? (
+            <PublicMap />
+          ) : tab === "cases" ? (
+            <CaseBoard profile={profile} notify={notify} />
+          ) : tab === "profile" ? (
+            <ProfilePage profile={profile} notify={notify} onChange={setProfile}
+              onSignOut={async () => { await supabase.auth.signOut(); }} />
+          ) : (
+            <ClientHome profile={profile} onNavigate={(t) => setTab(t)} />
+          )
         ) : (profile as any).role !== "client" && !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("map"); }} />
         ) : (profile as any).role !== "client" && profile.verification_status !== "verified" && !profile.is_admin ? (
@@ -134,8 +154,6 @@ export default function App() {
           <CaseBoard profile={profile} notify={notify} />
         ) : tab === "rooms" ? (
           <RoomShare profile={profile} notify={notify} />
-        ) : tab === "jobs" ? (
-          <Jobs profile={profile} notify={notify} />
         ) : tab === "referrals" ? (
           <Referrals profile={profile} notify={notify} />
         ) : tab === "qa" ? (
@@ -151,7 +169,7 @@ export default function App() {
       <Footer />
       {/* Professional mobile bottom nav — verified attorneys, admins, and clients */}
       {profile && ((profile as any).role === "client" || (profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin))) && (
-        <BottomNav tab={tab} setTab={setTab} />
+        <BottomNav tab={tab} setTab={setTab} client={(profile as any).role === "client"} />
       )}
       {toast && <div className="toast">{toast}</div>}
     </div>
@@ -171,7 +189,6 @@ const MORE_TABS: { tab: Tab; label: string }[] = [
   { tab: "gigs", label: "Legal Gigs" },
   { tab: "cases", label: "📩 תיקים מלקוחות" },
   { tab: "rooms", label: "🤝 שיתוף חדרים" },
-  { tab: "jobs", label: "💼 דרושים" },
   { tab: "referrals", label: "הפניות" },
   { tab: "board", label: "מובילים" },
   { tab: "invite", label: "הזמנות" },
@@ -181,13 +198,25 @@ function Header({
   session, profile, tab, setTab, onSignOut,
 }: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
   const rank = profile ? rankFor(profile.reputation) : null;
+  const isClient = (profile as any)?.role === "client";
   return (
     <header className="topbar">
       <div className="container inner">
         <div className="brand" onClick={() => session && setTab("feed")}>
           <Wordmark size={40} />
         </div>
-        {session && (
+        {session && isClient && (
+          <nav className="nav">
+            <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
+            <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מצא עו״ד</button>
+            <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 הבקשות שלי</button>
+            <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
+            <LanguageSwitcher light />
+            <NotificationsBell tone="light" />
+            <button onClick={onSignOut}>יציאה</button>
+          </nav>
+        )}
+        {session && !isClient && (
           <nav className="nav">
             {rank && (
               <span className="tag" title={`מוניטין: ${profile!.reputation}`} style={{ marginInlineEnd: 4 }}>

@@ -1,12 +1,11 @@
 import { useI18n } from "../i18n";
 
-// Service rubrics strip on the landing — shows what LAWdin offers (incl. jobs),
-// so visitors see the platform's services at a glance.
+// Service rubrics strip on the landing — shows what LAWdin offers, so visitors
+// see the platform's services at a glance.
 const SERVICES = [
   { icon: "🔄", t: "svc.referrals", d: "svc.referralsD" },
   { icon: "📩", t: "svc.cases", d: "svc.casesD" },
   { icon: "🤝", t: "svc.rooms", d: "svc.roomsD" },
-  { icon: "💼", t: "svc.jobs", d: "svc.jobsD" },
 ];
 
 export default function ServicesStrip() {
