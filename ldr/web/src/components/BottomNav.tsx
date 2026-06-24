@@ -14,12 +14,21 @@ const ITEMS: { tab: Tab; icon: string; label: string }[] = [
   { tab: "profile", icon: "👤", label: "פרופיל" },
 ];
 
+// Private clients get a simpler, consumer-grade tab bar.
+const CLIENT_ITEMS: { tab: Tab; icon: string; label: string }[] = [
+  { tab: "feed", icon: "🏠", label: "בית" },
+  { tab: "map", icon: "🗺", label: "מצא עו״ד" },
+  { tab: "cases", icon: "📩", label: "הבקשות שלי" },
+  { tab: "profile", icon: "👤", label: "פרופיל" },
+];
+
 export default function BottomNav({
-  tab, setTab,
-}: { tab: Tab; setTab: (t: Tab) => void }) {
+  tab, setTab, client = false,
+}: { tab: Tab; setTab: (t: Tab) => void; client?: boolean }) {
+  const items = client ? CLIENT_ITEMS : ITEMS;
   return (
     <nav className="bottom-nav" aria-label="ניווט ראשי">
-      {ITEMS.map((it) => (
+      {items.map((it) => (
         <button
           key={it.tab}
           className={`bn-item${tab === it.tab ? " active" : ""}`}
