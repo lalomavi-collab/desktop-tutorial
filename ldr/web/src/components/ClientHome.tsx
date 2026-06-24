@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { Profile } from "../lib/supabase";
 import Avatar from "./Avatar";
+import ShareApp from "./ShareApp";
 
 // ── Private-client home: a Gett-style "personal card" ───────────────────────
 // Private individuals (role === "client") get a simple, consumer-grade screen
@@ -17,6 +19,7 @@ const ACTIONS: { key: Nav; icon: string; title: string; desc: string; primary?: 
 export default function ClientHome({ profile, onNavigate }: {
   profile: Profile; onNavigate: (tab: Nav) => void;
 }) {
+  const [shareOpen, setShareOpen] = useState(false);
   const name = profile.display_name || "אורח/ת";
   return (
     <div className="container" dir="rtl" style={{ maxWidth: 560, paddingTop: 22 }}>
@@ -58,9 +61,16 @@ export default function ClientHome({ profile, onNavigate }: {
         ))}
       </div>
 
-      <p className="muted" style={{ fontSize: 12.5, textAlign: "center", marginTop: 22, lineHeight: 1.7 }}>
+      <button onClick={() => setShareOpen(true)} className="btn btn-ghost"
+        style={{ width: "100%", marginTop: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        📤 שתף את LAWDin עם חברים
+      </button>
+
+      <p className="muted" style={{ fontSize: 12.5, textAlign: "center", marginTop: 18, lineHeight: 1.7 }}>
         השירות חינמי לאנשים פרטיים. הבקשה נשלחת ישירות לעורכי דין מאומתים, ללא עמלות וללא מתווכים.
       </p>
+
+      {shareOpen && <ShareApp profile={profile} onClose={() => setShareOpen(false)} />}
     </div>
   );
 }
