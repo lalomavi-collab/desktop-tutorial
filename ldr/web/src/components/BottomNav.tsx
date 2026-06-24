@@ -3,7 +3,7 @@
 // top bar handles navigation on larger viewports.
 
 type Tab =
-  | "feed" | "room" | "new" | "find" | "map" | "gigs"
+  | "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases"
   | "referrals" | "qa" | "board" | "profile" | "invite" | "admin";
 
 const ITEMS: { tab: Tab; icon: string; label: string }[] = [
