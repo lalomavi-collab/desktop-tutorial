@@ -47,8 +47,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [memberCount, setMemberCount] = useState(40);
   const { t } = useI18n();
+
+  function openAuth(m: Mode) { setMode(m); setErr(null); setInfo(null); setAuthOpen(true); }
 
   useEffect(() => {
     supabase.from("ldr_demo_attorneys").select("id", { count: "exact", head: true })
@@ -127,9 +130,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <LanguageSwitcher />
           <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => switchMode("signin")}>{t("nav.signin")}</button>
+            onClick={() => openAuth("signin")}>{t("nav.signin")}</button>
           <button className="btn btn-gold" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => switchMode("signup")}>{t("nav.signup")}</button>
+            onClick={() => openAuth("signup")}>{t("nav.signup")}</button>
         </div>
       </nav>
 
@@ -147,9 +150,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
       {/* ── Hero ── */}
       <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 40, paddingBottom: 48, maxWidth: 1100 }}>
-        <div className="auth-wrap">
+        <div style={{ maxWidth: 640 }}>
 
-          {/* ── Left: marketing ── */}
+          {/* ── Marketing ── */}
           <div className="animate-in">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
               <div className="tag" dir="ltr" style={{ fontSize: 11 }}>
@@ -178,7 +181,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             </div>
 
             <button className="btn btn-gold" style={{ padding: "12px 28px", fontSize: 15, marginBottom: 30 }}
-              onClick={() => switchMode("signup")}>
+              onClick={() => openAuth("signup")}>
               {t("hero.cta")}
             </button>
 
@@ -219,8 +222,16 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             </div>
           </div>
 
-          {/* ── Right: auth card ── */}
-          <div className="card pad animate-in" style={{ animationDelay: "0.15s", alignSelf: "flex-start", position: "sticky", top: 72 }}>
+        </div>
+      </div>
+
+      {/* ── Auth modal (popup) — keeps the page clean ── */}
+      {authOpen && (
+        <div className="modal-backdrop" onClick={() => setAuthOpen(false)}>
+          <div className="card pad animate-in" onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(440px, 94vw)", maxHeight: "92vh", overflowY: "auto", position: "relative" }}>
+            <button onClick={() => setAuthOpen(false)} aria-label="close"
+              style={{ position: "absolute", top: 12, insetInlineEnd: 12, width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--line)", background: "transparent", color: "var(--cream)", cursor: "pointer", zIndex: 2 }}>✕</button>
             {mode === "reset_sent" ? (
               <div className="center">
                 <div style={{ fontSize: 44 }}>✉️</div>
@@ -370,7 +381,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Minimal footer with About ── */}
       <footer style={{
