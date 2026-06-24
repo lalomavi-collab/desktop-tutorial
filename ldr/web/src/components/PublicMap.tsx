@@ -2,21 +2,24 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase, PRACTICE_AREA_LABELS, EXPERIENCE_LABELS } from "../lib/supabase";
+import { useI18n } from "../i18n";
 
-// ── Stitch-style light map: every attorney's location as a face pin with a
-// seniority-level ring + online dot; tap a pin for a floating lawyer card. ──
+// ── Light map (Anthropic palette): every attorney's location as a face pin with
+// a seniority-level ring + online dot; tap a pin for a floating lawyer card. ──
+
+const CLAY = "#D97757";       // Anthropic clay (primary)
 
 const LEVEL_COLOR: Record<string, string> = {
-  junior: "#10b981",  // מתחיל
-  mid: "#0061a5",     // מנוסה
-  senior: "#f59e0b",  // בכיר
+  junior: "#6E9E8E",  // מתחיל — sage
+  mid: "#C99A3F",     // מנוסה — kraft gold
+  senior: "#D97757",  // בכיר — clay
 };
-const levelColor = (tier: string | null) => LEVEL_COLOR[tier ?? "mid"] ?? "#0061a5";
+const levelColor = (tier: string | null) => LEVEL_COLOR[tier ?? "mid"] ?? CLAY;
 
 const LEGEND = [
-  { tier: "senior", label: "בכיר" },
-  { tier: "mid", label: "מנוסה" },
-  { tier: "junior", label: "מתחיל" },
+  { tier: "senior", key: "level.senior" },
+  { tier: "mid", key: "level.mid" },
+  { tier: "junior", key: "level.junior" },
 ];
 
 const SPECIALIZATIONS = [
@@ -38,6 +41,7 @@ export default function PublicMap() {
   const [selected, setSelected] = useState<Pin | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { t } = useI18n();
 
   useEffect(() => {
     let cancelled = false;
@@ -105,7 +109,7 @@ export default function PublicMap() {
         <div style={{ position: "relative", flex: 1 }}>
           <span className="ms" style={{ position: "absolute", insetInlineStart: 14, top: "50%", transform: "translateY(-50%)", color: "#707884" }}>search</span>
           <input value={query} onChange={(e) => setQuery(e.target.value)}
-            placeholder="חיפוש עו״ד, משרד או תחום..."
+            placeholder={t("map.search")}
             style={{
               width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16,
               border: "2px solid transparent", background: "rgba(255,255,255,.96)",
@@ -113,7 +117,7 @@ export default function PublicMap() {
             }} />
         </div>
         <button onClick={() => setFilterOpen(true)} aria-label="פילטרים"
-          style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: "#0061a5", color: "#fff", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(0,29,54,.12)", cursor: "pointer" }}>
+          style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: CLAY, color: "#fff", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(0,29,54,.12)", cursor: "pointer" }}>
           <span className="ms">tune</span>
         </button>
       </div>
@@ -124,9 +128,9 @@ export default function PublicMap() {
         zIndex: 600, display: "flex", alignItems: "center", gap: 8,
         background: "rgba(255,255,255,.95)", border: "1px solid #dfe2eb",
         borderRadius: 999, padding: "6px 14px", boxShadow: "0 4px 16px rgba(0,29,54,.1)",
-        fontSize: 13, fontWeight: 700, color: "#0061a5", whiteSpace: "nowrap",
+        fontSize: 13, fontWeight: 700, color: CLAY, whiteSpace: "nowrap",
       }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} /> ⚖️ {count} עורכי דין על המפה
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} /> ⚖️ {count} {t("map.count")}
       </div>
 
       {/* Level legend */}
@@ -135,11 +139,11 @@ export default function PublicMap() {
         background: "rgba(255,255,255,.95)", border: "1px solid #bfc7d5", borderRadius: 14,
         padding: "8px 12px", fontSize: 12, boxShadow: "0 4px 16px rgba(0,29,54,.1)",
       }}>
-        <div style={{ fontWeight: 700, marginBottom: 4, color: "#3f4753" }}>דרגת ותק</div>
+        <div style={{ fontWeight: 700, marginBottom: 4, color: "#3f4753" }}>{t("map.tenure")}</div>
         {LEGEND.map((l) => (
           <div key={l.tier} style={{ display: "flex", alignItems: "center", gap: 7, color: "#3f4753", marginTop: 3 }}>
             <span style={{ width: 11, height: 11, borderRadius: "50%", background: LEVEL_COLOR[l.tier], boxShadow: `0 0 6px ${LEVEL_COLOR[l.tier]}` }} />
-            {l.label}
+            {t(l.key)}
           </div>
         ))}
       </div>
@@ -166,8 +170,8 @@ export default function PublicMap() {
               {PRACTICE_AREA_LABELS[selected.areas?.[0]] ?? "עו״ד"} · {EXPERIENCE_LABELS[selected.tier as keyof typeof EXPERIENCE_LABELS] ?? ""}
             </p>
             <div style={{ display: "flex", gap: 8 }}>
-              <button style={{ flex: 1, border: "none", padding: 11, borderRadius: 12, background: "#0061a5", color: "#fff", fontWeight: 700, fontFamily: "inherit", fontSize: 14, cursor: "pointer" }}>
-                צפייה בפרופיל
+              <button style={{ flex: 1, border: "none", padding: 11, borderRadius: 12, background: CLAY, color: "#fff", fontWeight: 700, fontFamily: "inherit", fontSize: 14, cursor: "pointer" }}>
+                {t("map.viewProfile")}
               </button>
               <button aria-label="צ׳אט" style={{ width: 44, height: 44, borderRadius: 12, border: "2px solid #bfc7d5", background: "#fff", color: "#3f4753", display: "grid", placeItems: "center", cursor: "pointer" }}>
                 <span className="ms">chat_bubble</span>
@@ -196,19 +200,19 @@ export default function PublicMap() {
             <p style={{ fontWeight: 700, fontSize: 13, color: "#5f5e5e", margin: "0 0 10px" }}>מרחק</p>
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 16 }}>
               {["עד 5 ק״מ", "10 ק״מ", "כל העיר", "ארצי"].map((d, i) => (
-                <button key={d} style={{ padding: "9px 18px", borderRadius: 999, border: "none", background: i === 0 ? "#0099ff" : "#e5e8f1", color: i === 0 ? "#fff" : "#3f4753", fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer", fontFamily: "inherit", fontSize: 14 }}>{d}</button>
+                <button key={d} style={{ padding: "9px 18px", borderRadius: 999, border: "none", background: i === 0 ? CLAY : "#f0eee6", color: i === 0 ? "#fff" : "#3f4753", fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer", fontFamily: "inherit", fontSize: 14 }}>{d}</button>
               ))}
             </div>
             <p style={{ fontWeight: 700, fontSize: 13, color: "#5f5e5e", margin: "0 0 10px" }}>תחום התמחות</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 18 }}>
               {SPECIALIZATIONS.map((s, i) => (
-                <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderRadius: 16, background: "#eaeef7", border: `2px solid ${i === 0 ? "#0061a5" : "transparent"}`, color: i === 0 ? "#0061a5" : "#171c22", fontWeight: 600, cursor: "pointer" }}>
+                <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, borderRadius: 16, background: "#eaeef7", border: `2px solid ${i === 0 ? CLAY : "transparent"}`, color: i === 0 ? CLAY : "#171c22", fontWeight: 600, cursor: "pointer" }}>
                   <span className="ms">{s.icon}</span>{s.label}
                 </div>
               ))}
             </div>
             <button onClick={() => setFilterOpen(false)}
-              style={{ width: "100%", padding: 15, border: "none", borderRadius: 16, background: "#0061a5", color: "#fff", fontWeight: 700, fontSize: 16, fontFamily: "inherit", cursor: "pointer" }}>
+              style={{ width: "100%", padding: 15, border: "none", borderRadius: 16, background: CLAY, color: "#fff", fontWeight: 700, fontSize: 16, fontFamily: "inherit", cursor: "pointer" }}>
               החל סינון
             </button>
           </div>

@@ -3,6 +3,8 @@ import { supabase } from "../lib/supabase";
 import { LogoMark, Wordmark } from "./Logo";
 import PublicMap from "./PublicMap";
 import MembersStrip from "./MembersStrip";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
 
@@ -28,9 +30,9 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 const FEATURES = [
-  { icon: "📚", title: "מקור ידע אחד" },
-  { icon: "🤝", title: "חיבורים ושיתופי פעולה" },
-  { icon: "🎯", title: "לידים והפניות — ללא עמלות" },
+  { icon: "📚", key: "feat.knowledge" },
+  { icon: "🤝", key: "feat.network" },
+  { icon: "🎯", key: "feat.leads" },
 ];
 
 export default function Auth({ inviteToken }: { inviteToken: string | null }) {
@@ -44,6 +46,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const { t } = useI18n();
 
   function switchMode(m: Mode) { setMode(m); setErr(null); setInfo(null); }
 
@@ -104,11 +107,12 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         background: "rgba(20,20,20,0.78)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
         <Wordmark size={36} tagline={false} />
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <LanguageSwitcher />
           <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => switchMode("signin")}>כניסה</button>
+            onClick={() => switchMode("signin")}>{t("nav.signin")}</button>
           <button className="btn btn-gold" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => switchMode("signup")}>הרשמה חינם</button>
+            onClick={() => switchMode("signup")}>{t("nav.signup")}</button>
         </div>
       </nav>
 
@@ -121,8 +125,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       {/* ── Live map hero: every attorney's location, right on the main page ── */}
       <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 28, maxWidth: 1100 }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 20 }}>🗺️ כל עורכי הדין ברשת — על המפה</h2>
-          <span className="muted" style={{ fontSize: 13 }}>בסגנון Waze · פנים + טבעת לפי דרגת ותק</span>
+          <h2 style={{ margin: 0, fontSize: 20 }}>{t("map.title")}</h2>
+          <span className="muted" style={{ fontSize: 13 }}>{t("map.subtitle")}</span>
         </div>
         <PublicMap />
         <MembersStrip />
@@ -136,35 +140,33 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           <div className="animate-in">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
               <div className="tag" dir="ltr" style={{ fontSize: 11 }}>
-                🇮🇱 PILOT · ישראל · מתרחב לעוד מדינות
+                {t("hero.badge")}
               </div>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--ok)", fontWeight: 600 }}>
-                <span className="conn-dot connected" /> הרשת פעילה עכשיו
+                <span className="conn-dot connected" /> {t("hero.live")}
               </span>
             </div>
 
             <h1 style={{ margin: "0 0 18px", fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.2, fontWeight: 900 }}>
-              כל מה שעו״ד צריך<br />
-              <span className="gold">במקום אחד.</span><br />
-              <span style={{ color: "var(--cream-dim)" }}>הבית המקצועי שלכם.</span>
+              {t("hero.title1")}<br />
+              <span className="gold">{t("hero.title2")}</span><br />
+              <span style={{ color: "var(--cream-dim)" }}>{t("hero.title3")}</span>
             </h1>
 
             <p style={{ fontSize: 16, lineHeight: 1.8, color: "var(--cream-dim)", maxWidth: 470, margin: "0 0 22px" }}>
-              הצטרפו לקהילה הסגורה של עורכי הדין בישראל. גלו עמיתים בקרבתכם
-              <b style={{ color: "var(--cream)" }}> על המפה</b>, קבלו הפניות תיקים והרחיבו את
-              הפרקטיקה — <b style={{ color: "var(--gold)" }}>בלי עמלות, בלי רעש</b>.
+              {t("hero.lead")}
             </p>
 
             {/* Enticing trust line — quick reasons to join now */}
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 26, fontSize: 13.5, fontWeight: 600 }}>
-              <span style={{ color: "var(--ok)" }}>✓ הרשמה תוך דקה</span>
-              <span style={{ color: "var(--ok)" }}>✓ חינם לחלוטין</span>
-              <span style={{ color: "var(--ok)" }}>✓ אימות מאובטח מול הלשכה</span>
+              <span style={{ color: "var(--ok)" }}>{t("hero.trust1")}</span>
+              <span style={{ color: "var(--ok)" }}>{t("hero.trust2")}</span>
+              <span style={{ color: "var(--ok)" }}>{t("hero.trust3")}</span>
             </div>
 
             <button className="btn btn-gold" style={{ padding: "12px 28px", fontSize: 15, marginBottom: 30 }}
               onClick={() => switchMode("signup")}>
-              הצטרפו עכשיו — חינם →
+              {t("hero.cta")}
             </button>
 
             {/* Concise value props — clean, professional */}
@@ -172,7 +174,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               {FEATURES.map((f) => (
                 <div key={f.icon} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 20, width: 28, textAlign: "center", flexShrink: 0 }}>{f.icon}</span>
-                  <span style={{ fontWeight: 600, fontSize: 15 }}>{f.title}</span>
+                  <span style={{ fontWeight: 600, fontSize: 15 }}>{t(f.key)}</span>
                 </div>
               ))}
             </div>
@@ -222,12 +224,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <LogoMark size={46} />
                       <div style={{ fontSize: 14, fontWeight: 700 }}>
-                        {mode === "signin" ? "שמחים לראותכם חזרה 👋" : "הצטרפו לרשת העו״ד המאומתים"}
+                        {mode === "signin" ? t("auth.signinTitle") : t("auth.signupTitle")}
                       </div>
                       {mode === "signup" && (
                         <div style={{ fontSize: 13, color: "var(--cream-dim)", textAlign: "center", lineHeight: 1.6 }}>
-                          הרשמה <b style={{ color: "var(--gold)" }}>חינמית ומהירה — תוך דקה</b> אתם בפנים.<br />
-                          אימות רישיון מאובטח מול לשכת עורכי הדין. 🔒
+                          {t("auth.signupSub")}
                         </div>
                       )}
                     </div>
@@ -332,7 +333,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         <button onClick={() => setAboutOpen(true)} style={{
           background: "none", border: "none", color: "var(--gold)", cursor: "pointer",
           font: "inherit", textDecoration: "underline", textUnderlineOffset: 3,
-        }}>אודות</button>
+        }}>{t("about")}</button>
         <span> · © {new Date().getFullYear()} LAWDin</span>
       </footer>
 

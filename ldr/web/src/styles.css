@@ -27,7 +27,8 @@
 html, body, #root { height: 100%; }
 body {
   margin: 0;
-  font-family: "Heebo", system-ui, sans-serif;
+  /* LinkedIn-like professional stack — Inter (Latin/Cyrillic) + Assistant (Hebrew) */
+  font-family: "Inter", "Assistant", "Heebo", system-ui, -apple-system, sans-serif;
   background:
     radial-gradient(1400px 700px at 85% -5%, rgba(51,204,255,0.10), transparent 55%),
     radial-gradient(1000px 600px at -10% 110%, rgba(255,90,95,0.22), transparent 55%),
@@ -41,7 +42,8 @@ body {
 body::-webkit-scrollbar { width: 6px; }
 body::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 99px; }
 
-h1, h2, h3, .serif { font-family: "Frank Ruhl Libre", Georgia, serif; }
+h1, h2, h3 { font-family: "Inter", "Assistant", "Heebo", system-ui, sans-serif; }
+.serif { font-family: "Frank Ruhl Libre", Georgia, serif; }
 a { color: var(--gold); text-decoration: none; transition: color .2s; }
 a:hover { color: var(--gold-soft); }
 
@@ -573,4 +575,4 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
   display: inline-block; -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased; vertical-align: middle;
 }
-.font-headline { font-family: 'Plus Jakarta Sans', 'Heebo', sans-serif; }
+.font-headline { font-family: 'Inter', 'Assistant', 'Heebo', sans-serif; }
