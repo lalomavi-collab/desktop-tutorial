@@ -34,6 +34,20 @@ interface AttyEntry {
   verified: boolean;
   demo: boolean;
   avatar_url: string | null;
+  role: string;
+}
+
+// Distinct marker for private clients (vs attorneys): neutral grey, person icon.
+function clientPinIcon(label: string): L.DivIcon {
+  return L.divIcon({
+    className: "",
+    html: `<div style="
+      width:34px;height:34px;border-radius:50% 50% 50% 4px;
+      background:#8b8a86;border:3px solid #fff;
+      box-shadow:0 2px 8px #000a; display:flex;align-items:center;justify-content:center;
+      font-size:15px;cursor:pointer;" title="${label}">👤</div>`,
+    iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -20],
+  });
 }
 
 function dist(a: AttyEntry, loc: [number, number]) {
@@ -92,8 +106,8 @@ export default function MapView({ profile, notify }: { profile: Profile; notify:
     (async () => {
       const [{ data: rp }, { data: dp }] = await Promise.all([
         supabase.from("ldr_profiles")
-          .select("id,display_name,lat,lng,practice_areas,jurisdiction,experience_tier,reputation,headline,avatar_url")
-          .eq("verification_status", "verified")
+          .select("id,display_name,lat,lng,practice_areas,jurisdiction,experience_tier,reputation,headline,avatar_url,role")
+          .or("verification_status.eq.verified,role.eq.client")
           .not("lat", "is", null)
           .neq("id", profile.id),
         supabase.from("ldr_demo_attorneys")
@@ -104,13 +118,13 @@ export default function MapView({ profile, notify }: { profile: Profile; notify:
         id: r.id, name: r.display_name, lat: r.lat, lng: r.lng,
         practice_areas: r.practice_areas ?? [], jurisdiction: r.jurisdiction,
         experience_tier: r.experience_tier, reputation: r.reputation,
-        headline: r.headline, verified: true, demo: false, avatar_url: r.avatar_url,
+        headline: r.headline, verified: true, demo: false, avatar_url: r.avatar_url, role: r.role ?? "attorney",
       }));
       const demo: AttyEntry[] = ((dp ?? []) as any[]).map((d) => ({
         id: d.id, name: d.display_name, lat: d.lat, lng: d.lng,
         practice_areas: d.practice_areas ?? [], jurisdiction: d.jurisdiction,
         experience_tier: d.experience_tier, reputation: d.reputation,
-        headline: d.headline, verified: true, demo: true, avatar_url: d.avatar_url ?? null,
+        headline: d.headline, verified: true, demo: true, avatar_url: d.avatar_url ?? null, role: "attorney",
       }));
       setAttorneys([...real, ...demo]);
       setLoading(false);
@@ -173,8 +187,9 @@ export default function MapView({ profile, notify }: { profile: Profile; notify:
 
     show.forEach((atty) => {
       const color = areaColor(atty.practice_areas);
-      const m = L.marker([atty.lat, atty.lng], { icon: pinIcon(color, atty.name ?? "") })
-        .addTo(map);
+      const m = L.marker([atty.lat, atty.lng], {
+        icon: atty.role === "client" ? clientPinIcon(atty.name ?? "") : pinIcon(color, atty.name ?? ""),
+      }).addTo(map);
       m.on("click", (e) => {
         L.DomEvent.stopPropagation(e);
         setSelected(atty);

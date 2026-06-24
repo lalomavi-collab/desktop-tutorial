@@ -99,9 +99,9 @@ export default function App() {
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
-        ) : !profile.experience_tier ? (
+        ) : (profile as any).role !== "client" && !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("map"); }} />
-        ) : profile.verification_status !== "verified" && !profile.is_admin ? (
+        ) : (profile as any).role !== "client" && profile.verification_status !== "verified" && !profile.is_admin ? (
           <VerificationGate
             profile={profile} notify={notify}
             onChange={setProfile}
@@ -135,8 +135,8 @@ export default function App() {
         )}
       </main>
       <Footer />
-      {/* Professional mobile bottom nav — shown to onboarded, verified users */}
-      {profile && profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin) && (
+      {/* Professional mobile bottom nav — verified attorneys, admins, and clients */}
+      {profile && ((profile as any).role === "client" || (profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin))) && (
         <BottomNav tab={tab} setTab={setTab} />
       )}
       {toast && <div className="toast">{toast}</div>}
