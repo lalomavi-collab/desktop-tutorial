@@ -31,9 +31,9 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 const FEATURES = [
-  { icon: "📚", key: "feat.knowledge" },
-  { icon: "🤝", key: "feat.network" },
-  { icon: "🎯", key: "feat.leads" },
+  { icon: "🔄", key: "feat.knowledge" },
+  { icon: "📩", key: "feat.network" },
+  { icon: "🤝", key: "feat.leads" },
 ];
 
 export default function Auth({ inviteToken }: { inviteToken: string | null }) {
