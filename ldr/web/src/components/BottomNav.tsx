@@ -8,10 +8,10 @@ type Tab =
 
 const ITEMS: { tab: Tab; icon: string; label: string }[] = [
   { tab: "map", icon: "🗺", label: "מפה" },
-  { tab: "feed", icon: "🏠", label: "בית" },
-  { tab: "find", icon: "🔍", label: "איתור" },
-  { tab: "referrals", icon: "🤝", label: "הפניות" },
-  { tab: "profile", icon: "👤", label: "פרופיל" },
+  { tab: "lab", icon: "⚖️", label: "מעבדת AI" },
+  { tab: "feed", icon: "✨", label: "התחבר" },
+  { tab: "cases", icon: "💼", label: "הזדמנויות" },
+  { tab: "profile", icon: "👤", label: "אזור אישי" },
 ];
 
 // Private clients get a simpler, consumer-grade tab bar.

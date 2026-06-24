@@ -14,13 +14,18 @@ import { useI18n } from "../i18n";
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 const CLAY = "#D97757";
-const LEVEL_COLOR: Record<string, string> = { junior: "#6E9E8E", mid: "#C99A3F", senior: "#D97757" };
-const levelColor = (tier: string | null) => LEVEL_COLOR[tier ?? "mid"] ?? CLAY;
-const LEGEND = [
-  { tier: "senior", key: "level.senior" },
-  { tier: "mid", key: "level.mid" },
-  { tier: "junior", key: "level.junior" },
+// Pin colour by legal specialization (matches the on-map legend).
+const SPECS: { key: string; label: string; color: string; areas: string[] }[] = [
+  { key: "realestate", label: "התחדשות עירונית", color: "#D97757", areas: ["real_estate", "urban_renewal", "planning_building"] },
+  { key: "corporate", label: "מסחרי / חברות + AI", color: "#10b981", areas: ["commercial", "corporate_vc", "banking", "banking_finance", "tax"] },
+  { key: "criminal", label: "פלילי / ליטיגציה", color: "#3b82f6", areas: ["criminal", "litigation", "admin_constitutional"] },
+  { key: "family", label: "דיני משפחה", color: "#f59e0b", areas: ["family", "family_inheritance", "mediation", "adr"] },
 ];
+const specColor = (areas: string[]): string => {
+  const a = areas?.[0];
+  for (const s of SPECS) if (s.areas.includes(a)) return s.color;
+  return CLAY;
+};
 const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "€", FR: "€", CA: "$" };
 // Israel-only view, grouped by city. Major cities with their centres; each pin
 // is assigned to the nearest city (within ~18 km), else "other".
@@ -110,6 +115,17 @@ export default function PublicMap() {
       ]);
       if (cancelled || !el.current || map.current) return;
 
+      // Render Hebrew (and other RTL scripts) correctly, not reversed.
+      try {
+        if (!(maplibregl as any)._rtlSet) {
+          (maplibregl as any)._rtlSet = true;
+          (maplibregl.setRTLTextPlugin as any)(
+            "https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js",
+            null, true,
+          );
+        }
+      } catch { /* plugin already registered */ }
+
       const m = new maplibregl.Map({
         container: el.current,
         style: MAP_STYLE,
@@ -180,7 +196,7 @@ export default function PublicMap() {
     visiblePins.current = pins;
     setCount(pins.length);
     pins.forEach((p, i) => {
-      const ring = levelColor(p.tier);
+      const ring = specColor(p.areas);
       const face = p.avatar_url
         ? `background-image:url('${p.avatar_url}');background-size:cover;background-position:center;`
         : `background:${ring};`;
@@ -284,12 +300,12 @@ export default function PublicMap() {
         </div>
       )}
 
-      {/* Legend */}
+      {/* Legend — by legal specialization */}
       <div style={{ position: "absolute", bottom: 14, insetInlineEnd: 14, zIndex: 600, background: "rgba(255,255,255,.96)", border: "1px solid #E8E5DD", borderRadius: 14, padding: "8px 12px", fontSize: 12, boxShadow: "0 4px 16px rgba(31,30,29,.1)" }}>
-        <div style={{ fontWeight: 700, marginBottom: 4, color: "#3f4753" }}>{t("map.tenure")}</div>
-        {LEGEND.map((l) => (
-          <div key={l.tier} style={{ display: "flex", alignItems: "center", gap: 7, color: "#3f4753", marginTop: 3 }}>
-            <span style={{ width: 11, height: 11, borderRadius: "50%", background: LEVEL_COLOR[l.tier], boxShadow: `0 0 6px ${LEVEL_COLOR[l.tier]}` }} />{t(l.key)}
+        <div style={{ fontWeight: 700, marginBottom: 4, color: "#3f4753" }}>סינון במפה</div>
+        {SPECS.map((s) => (
+          <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 7, color: "#3f4753", marginTop: 3 }}>
+            <span style={{ width: 11, height: 11, borderRadius: "50%", background: s.color, boxShadow: `0 0 6px ${s.color}` }} />{s.label}
           </div>
         ))}
       </div>
@@ -457,7 +473,7 @@ function SchedulePanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: 
 function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
   pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; t: (k: string) => string;
 }) {
-  const ring = levelColor(pin.tier);
+  const ring = specColor(pin.areas);
   const rating = Math.min(5, 3.8 + pin.reputation / 1500);
   const reviews = [
     { name: "★★★★★", text: t("prof.review1") },
