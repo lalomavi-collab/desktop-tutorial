@@ -4,6 +4,7 @@ import {
   type Profile,
 } from "../lib/supabase";
 import Avatar from "./Avatar";
+import { useI18n } from "../i18n";
 
 interface Question {
   id: string; author_id: string; title: string; body: string;
@@ -21,6 +22,7 @@ const Q_SELECT = "*, author:ldr_profiles!author_id(display_name,verification_sta
 export default function QA({
   profile, notify,
 }: { profile: Profile; notify: (m: string) => void }) {
+  const { t } = useI18n();
   const [qs, setQs] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "ask">("list");
@@ -49,7 +51,10 @@ export default function QA({
           {view === "ask" ? "← לרשימה" : "+ שאלה חדשה"}
         </button>
       </div>
-      <p className="muted" style={{ marginTop: -10, marginBottom: 18 }}>שאלו את הקהילה — עו״ד בתחום עונים. 🤖 אם לא התקבל מענה תוך 3 שעות, עוזר ה-AI מציע פתרון ראשוני.</p>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 12 }}>שאלו את הקהילה — עו״ד בתחום עונים. 🤖 אם לא התקבל מענה תוך 3 שעות, עוזר ה-AI מציע פתרון ראשוני.</p>
+      <div style={{ marginBottom: 18, padding: "10px 14px", borderRadius: 12, background: "rgba(192,57,43,0.08)", border: "1px solid rgba(224,122,111,0.35)", fontSize: 12, lineHeight: 1.6, color: "var(--cream-dim)" }}>
+        {t("qa.disclaimer")}
+      </div>
 
       {view === "ask" ? (
         <AskForm profile={profile} notify={notify} onDone={() => { setView("list"); load(); }} />

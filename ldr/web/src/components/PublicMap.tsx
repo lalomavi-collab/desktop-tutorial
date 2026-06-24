@@ -21,6 +21,14 @@ const COUNTRY_CENTER: Record<string, [number, number, number]> = {
   DE: [51.2, 10.4, 6], FR: [46.6, 2.4, 6], CA: [56.1, -106, 4],
 };
 const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "€", FR: "€", CA: "$" };
+// Rough IL region from coordinates.
+function regionOf(lat: number, lng: number): string {
+  if (lat >= 32.5) return "north";
+  if (lat <= 31.55) return "south";
+  if (lng >= 35.0 && lat <= 31.95) return "jerusalem";
+  return "center";
+}
+const REGIONS = ["all", "center", "jerusalem", "north", "south"];
 // Map filter chips → which practice-area keys they include.
 const SPEC_FILTERS: { key: string; label: string; areas: string[] }[] = [
   { key: "commercial", label: "spec.commercial", areas: ["commercial", "corporate_vc", "banking"] },
@@ -52,6 +60,7 @@ export default function PublicMap() {
   const [areaFilter, setAreaFilter] = useState<string | null>(null);
   const [quickOnly, setQuickOnly] = useState(false);
   const [consultOnly, setConsultOnly] = useState(false);
+  const [region, setRegion] = useState("all");
   const { t } = useI18n();
 
   // Init map + load data once.
@@ -89,6 +98,7 @@ export default function PublicMap() {
     const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
     const pins = allPins.current.filter((p) => {
       if (p.jurisdiction !== country) return false;
+      if (country === "IL" && region !== "all" && regionOf(p.lat, p.lng) !== region) return false;
       if (quickOnly && !p.quickBook) return false;
       if (consultOnly && !p.consultOnly) return false;
       if (specAreas && !p.areas.some((a) => specAreas.includes(a))) return false;
@@ -120,7 +130,7 @@ export default function PublicMap() {
     } else {
       const c = COUNTRY_CENTER[country]; if (c) map.current.setView([c[0], c[1]], c[2]);
     }
-  }, [country, ready, query, areaFilter, quickOnly, consultOnly]);
+  }, [country, ready, query, areaFilter, quickOnly, consultOnly, region]);
 
   const rating = (rep: number) => (Math.min(5, 3.8 + rep / 1500)).toFixed(1);
 
@@ -212,6 +222,16 @@ export default function PublicMap() {
           <div style={{ position: "absolute", insetInline: 0, bottom: 0, zIndex: 701, background: "rgba(255,255,255,.98)", borderRadius: "24px 24px 0 0", padding: "16px 18px 22px", boxShadow: "0 -10px 40px rgba(0,0,0,.2)" }}>
             <div style={{ width: 46, height: 5, background: "#E8E5DD", borderRadius: 999, margin: "0 auto 16px" }} />
             <h2 className="font-headline" style={{ margin: "0 0 16px", fontSize: 20, color: "#1F1E1D" }}>{t("filter.title")}</h2>
+            {country === "IL" && (
+              <>
+                <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.region")}</p>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+                  {REGIONS.map((rg) => (
+                    <button key={rg} onClick={() => setRegion(rg)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: region === rg ? CLAY : "#F2F0E9", color: region === rg ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{t("reg." + rg)}</button>
+                  ))}
+                </div>
+              </>
+            )}
             <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.specialization")}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {[{ key: null, i: "apps", l: t("filter.all") }, ...SPEC_FILTERS.map((s) => ({ key: s.key, i: { commercial: "corporate_fare", criminal: "gavel", family: "family_restroom", realestate: "home_work" }[s.key]!, l: t(s.label) }))].map((s) => {
