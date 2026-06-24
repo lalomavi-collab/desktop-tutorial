@@ -239,7 +239,15 @@ export default function PublicMap() {
 function ChatPanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: (k: string) => string }) {
   const [msgs, setMsgs] = useState<{ me: boolean; text: string }[]>([{ me: false, text: t("chat.hello") }]);
   const [text, setText] = useState("");
-  const send = () => { if (!text.trim()) return; setMsgs((m) => [...m, { me: true, text: text.trim() }]); setText(""); };
+  const send = () => {
+    if (!text.trim()) return;
+    setMsgs((m) => [...m, { me: true, text: text.trim() }]);
+    // Persist outgoing message for authenticated users (best-effort).
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) supabase.from("ldr_messages").insert({ sender_id: data.user.id, recipient_ref: pin.id, recipient_name: pin.name, body: text.trim() });
+    }).catch(() => {});
+    setText("");
+  };
   return (
     <div style={{ position: "absolute", bottom: 16, insetInline: 16, zIndex: 660, background: "#fff", borderRadius: 22, boxShadow: "0 16px 48px rgba(31,30,29,.22)", overflow: "hidden", display: "flex", flexDirection: "column", maxHeight: 360 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, borderBottom: "1px solid #E8E5DD" }}>
@@ -294,7 +302,12 @@ function SchedulePanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: 
               <button key={tm} onClick={() => setTime(tm)} disabled={day === null} style={{ padding: "8px 16px", borderRadius: 12, border: `2px solid ${time === tm ? CLAY : "#E8E5DD"}`, background: time === tm ? "#fdf3e7" : "#fff", color: day === null ? "#bbb" : "#1F1E1D", fontWeight: 600, fontSize: 14, cursor: day === null ? "not-allowed" : "pointer", fontFamily: "inherit" }}>{tm}</button>
             ))}
           </div>
-          <button disabled={day === null || !time} onClick={() => setBooked(true)} style={{ width: "100%", padding: 14, border: "none", borderRadius: 14, background: day !== null && time ? CLAY : "#E8E5DD", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: "inherit", cursor: day !== null && time ? "pointer" : "not-allowed" }}>{t("sched.confirm")}</button>
+          <button disabled={day === null || !time} onClick={() => {
+            setBooked(true);
+            supabase.auth.getUser().then(({ data }) => {
+              if (data?.user && day !== null && time) supabase.from("ldr_meetings").insert({ requester_id: data.user.id, attorney_ref: pin.id, attorney_name: pin.name, meet_date: days[day].toISOString().slice(0, 10), meet_time: time, status: "requested" });
+            }).catch(() => {});
+          }} style={{ width: "100%", padding: 14, border: "none", borderRadius: 14, background: day !== null && time ? CLAY : "#E8E5DD", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: "inherit", cursor: day !== null && time ? "pointer" : "not-allowed" }}>{t("sched.confirm")}</button>
         </>
       )}
     </div>

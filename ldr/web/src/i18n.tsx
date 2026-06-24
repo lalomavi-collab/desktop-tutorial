@@ -141,6 +141,13 @@ const DICT: Record<string, Record<Lang, string>> = {
   "dl.installed": { he: "האפליקציה מותקנת ✓", en: "App installed ✓", ru: "Установлено ✓" },
   "dl.soon": { he: "בקרוב", en: "Soon", ru: "Скоро" },
 
+  "office.title": { he: "🏢 השכרת חדרים במשרד", en: "🏢 Office room rental", ru: "🏢 Аренда кабинетов" },
+  "office.new": { he: "חדש", en: "New", ru: "Новое" },
+  "office.sub": { he: "חדר פנוי במשרד? השכירו לעמית לפי יום או שעות. צריכים מקום לפגישה? הזמינו בקליק — שירות נוסף לחברי הרשת, בלי עמלה.", en: "A free room at your office? Rent it to a colleague by day or hour. Need a place to meet? Book in a tap — a free extra service for members, no commission.", ru: "Свободный кабинет? Сдайте коллеге по дням или часам. Нужно место для встречи? Бронируйте в один тап — без комиссии." },
+  "office.perDay": { he: "/ יום", en: "/ day", ru: "/ день" },
+  "office.book": { he: "הזמנה", en: "Book", ru: "Забронировать" },
+  "office.list": { he: "+ פרסום חדר פנוי", en: "+ List a free room", ru: "+ Разместить кабинет" },
+
   "about": { he: "אודות", en: "About", ru: "О нас" },
   "about.body": { he: "LAWdin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות ברשת סגורה ומאומתת.", en: "LAWdin is the professional operating system for attorneys — knowledge, connections and referrals in a closed, verified network.", ru: "LAWdin — профессиональная операционная система для юристов: знания, связи и передачи дел в закрытой проверенной сети." },
   "about.founder": { he: "נוסד ומובל על ידי ד״ר אברהם ללום.", en: "Founded and led by Dr. Avraham Lalum.", ru: "Основатель и руководитель — д-р Авраам Лалум." },
