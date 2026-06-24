@@ -141,9 +141,9 @@ const DICT: Record<string, Record<Lang, string>> = {
   "dl.installed": { he: "האפליקציה מותקנת ✓", en: "App installed ✓", ru: "Установлено ✓" },
   "dl.soon": { he: "בקרוב", en: "Soon", ru: "Скоро" },
 
-  "office.title": { he: "🏢 השכרת חדרים במשרד", en: "🏢 Office room rental", ru: "🏢 Аренда кабинетов" },
+  "office.title": { he: "🤝 שיתוף חדרים בין עורכי דין", en: "🤝 Room sharing between attorneys", ru: "🤝 Совместная аренда кабинетов" },
   "office.new": { he: "חדש", en: "New", ru: "Новое" },
-  "office.sub": { he: "חדר פנוי במשרד? השכירו לעמית לפי יום או שעות. צריכים מקום לפגישה? הזמינו בקליק — שירות נוסף לחברי הרשת, בלי עמלה.", en: "A free room at your office? Rent it to a colleague by day or hour. Need a place to meet? Book in a tap — a free extra service for members, no commission.", ru: "Свободный кабинет? Сдайте коллеге по дням или часам. Нужно место для встречи? Бронируйте в один тап — без комиссии." },
+  "office.sub": { he: "עו״ד חבר מגדיר זמינות (לפי שעות / יומי / שבועי); עו״ד שצריך שוכר ומשלם לו ישירות — בלי עמלה ובלי מתווך.", en: "A member sets availability (hourly / daily / weekly); whoever needs it books and pays the host directly — no fee, no middleman.", ru: "Участник задаёт доступность (час / день / неделя); тот, кому нужно, бронирует и платит напрямую — без комиссии." },
   "office.perDay": { he: "/ יום", en: "/ day", ru: "/ день" },
   "office.book": { he: "הזמנה", en: "Book", ru: "Забронировать" },
   "office.list": { he: "+ פרסום חדר פנוי", en: "+ List a free room", ru: "+ Разместить кабинет" },
