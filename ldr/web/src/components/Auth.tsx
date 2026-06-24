@@ -4,6 +4,7 @@ import { Wordmark } from "./Logo";
 import PublicMap from "./PublicMap";
 import MembersStrip from "./MembersStrip";
 import LanguageSwitcher from "./LanguageSwitcher";
+import NotificationsBell from "./NotificationsBell";
 import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
@@ -129,6 +130,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         <Wordmark size={36} tagline={false} />
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <LanguageSwitcher />
+          <NotificationsBell tone="dark" />
           <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
             onClick={() => openAuth("signin")}>{t("nav.signin")}</button>
           <button className="btn btn-gold" style={{ padding: "7px 18px", fontSize: 13 }}
