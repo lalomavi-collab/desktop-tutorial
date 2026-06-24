@@ -6,6 +6,7 @@ import MembersStrip from "./MembersStrip";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationsBell from "./NotificationsBell";
 import DownloadApp from "./DownloadApp";
+import OfficeRentals from "./OfficeRentals";
 import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
@@ -398,6 +399,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           </div>
         </div>
       )}
+
+      {/* ── Office room rental (extra service) ── */}
+      <OfficeRentals />
 
       {/* ── App download (Waze-style) ── */}
       <DownloadApp />
