@@ -26,7 +26,7 @@ interface Pin {
   id: string; name: string; lat: number; lng: number; jurisdiction: string;
   areas: string[]; reputation: number; avatar_url: string | null; tier: string | null; rate: number | null;
 }
-type Panel = { kind: "chat" | "schedule"; pin: Pin } | null;
+type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
   const el = useRef<HTMLDivElement>(null);
@@ -149,14 +149,13 @@ export default function PublicMap() {
             <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 8px" }}>
               {PRACTICE_AREA_LABELS[selected.areas?.[0]] ?? "עו״ד"} · {EXPERIENCE_LABELS[selected.tier as keyof typeof EXPERIENCE_LABELS] ?? ""}
             </p>
-            {selected.rate != null && (
-              <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, background: "#fdf3e7", color: "#b45309", padding: "3px 10px", borderRadius: 999, fontWeight: 800, fontSize: 14, marginBottom: 10 }}>
-                {CURRENCY[selected.jurisdiction] ?? "₪"}{selected.rate}
-                <span style={{ fontSize: 11, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span>
-              </div>
-            )}
+            <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, background: "#fdf3e7", color: "#b45309", padding: "3px 10px", borderRadius: 999, fontWeight: 800, fontSize: 14, marginBottom: 10 }}>
+              {selected.rate != null
+                ? (<>{CURRENCY[selected.jurisdiction] ?? "₪"}{selected.rate}<span style={{ fontSize: 11, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span></>)
+                : (<span style={{ fontSize: 13 }}>{t("map.byAgreement")}</span>)}
+            </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button style={{ flex: 1, border: "1px solid #E8E5DD", padding: "10px", borderRadius: 12, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer" }}>{t("map.viewProfile")}</button>
+              <button onClick={() => setPanel({ kind: "profile", pin: selected })} style={{ flex: 1, border: "1px solid #E8E5DD", padding: "10px", borderRadius: 12, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer" }}>{t("map.viewProfile")}</button>
               <button onClick={() => setPanel({ kind: "chat", pin: selected })} style={{ flex: 1, border: "1px solid #E8E5DD", padding: "10px", borderRadius: 12, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}><span className="ms" style={{ fontSize: 17 }}>chat_bubble</span>{t("map.chat")}</button>
               <button onClick={() => setPanel({ kind: "schedule", pin: selected })} style={{ flex: 1.3, border: "none", padding: "10px", borderRadius: 12, background: CLAY, color: "#fff", fontWeight: 700, fontFamily: "inherit", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}><span className="ms" style={{ fontSize: 17 }}>event</span>{t("map.schedule")}</button>
             </div>
@@ -169,6 +168,11 @@ export default function PublicMap() {
 
       {panel?.kind === "chat" && <ChatPanel pin={panel.pin} onClose={() => setPanel(null)} t={t} />}
       {panel?.kind === "schedule" && <SchedulePanel pin={panel.pin} onClose={() => setPanel(null)} t={t} />}
+      {panel?.kind === "profile" && (
+        <ProfileCardPanel pin={panel.pin} onClose={() => setPanel(null)}
+          onChat={() => setPanel({ kind: "chat", pin: panel.pin })}
+          onSchedule={() => setPanel({ kind: "schedule", pin: panel.pin })} t={t} />
+      )}
 
       {/* Filter drawer */}
       {filterOpen && (
@@ -255,6 +259,82 @@ function SchedulePanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: 
           <button disabled={day === null || !time} onClick={() => setBooked(true)} style={{ width: "100%", padding: 14, border: "none", borderRadius: 14, background: day !== null && time ? CLAY : "#E8E5DD", color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: "inherit", cursor: day !== null && time ? "pointer" : "not-allowed" }}>{t("sched.confirm")}</button>
         </>
       )}
+    </div>
+  );
+}
+
+// ── Rich public attorney profile (broad card people can learn from) ──
+function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
+  pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; t: (k: string) => string;
+}) {
+  const ring = levelColor(pin.tier);
+  const rating = Math.min(5, 3.8 + pin.reputation / 1500);
+  const reviews = [
+    { name: "★★★★★", text: t("prof.review1") },
+    { name: "★★★★★", text: t("prof.review2") },
+  ];
+  return (
+    <div style={{ position: "absolute", inset: 0, zIndex: 680, background: "rgba(31,30,29,.35)" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{
+        position: "absolute", insetInline: 0, bottom: 0, maxHeight: "92%", overflowY: "auto",
+        background: "#fff", borderRadius: "24px 24px 0 0", boxShadow: "0 -16px 48px rgba(31,30,29,.25)",
+      }}>
+        {/* Header */}
+        <div style={{ position: "relative", padding: "22px 18px 16px", borderBottom: "1px solid #E8E5DD" }}>
+          <button onClick={onClose} aria-label="סגירה" style={{ position: "absolute", top: 14, insetInlineEnd: 14, width: 32, height: 32, borderRadius: "50%", border: "1px solid #E8E5DD", background: "#fff", cursor: "pointer", display: "grid", placeItems: "center" }}><span className="ms">close</span></button>
+          <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+            <div style={{ width: 84, height: 84, borderRadius: "50%", overflow: "hidden", border: `3px solid ${ring}`, flexShrink: 0, background: "#E8E5DD" }}>
+              {pin.avatar_url && <img src={pin.avatar_url} alt={pin.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+            </div>
+            <div>
+              <h2 className="font-headline" style={{ margin: 0, fontSize: 21, color: "#1F1E1D" }}>{pin.name}</h2>
+              <p style={{ margin: "4px 0", color: "#6B6862", fontSize: 14 }}>{EXPERIENCE_LABELS[pin.tier as keyof typeof EXPERIENCE_LABELS] ?? ""} · {(t("c." + pin.jurisdiction) || "").replace(/^[^ ]+ /, "")}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ color: "#f59e0b", letterSpacing: 1 }}>{"★".repeat(Math.round(rating))}</span>
+                <b style={{ fontSize: 14 }}>{rating.toFixed(1)}</b>
+                <span style={{ color: "#6B6862", fontSize: 13 }}>({20 + (pin.reputation % 80)})</span>
+              </div>
+            </div>
+          </div>
+          {/* Price */}
+          <div style={{ marginTop: 14, display: "inline-flex", alignItems: "baseline", gap: 4, background: "#fdf3e7", color: "#b45309", padding: "6px 14px", borderRadius: 999, fontWeight: 800, fontSize: 16 }}>
+            {pin.rate != null
+              ? (<>{CURRENCY[pin.jurisdiction] ?? "₪"}{pin.rate}<span style={{ fontSize: 12, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span></>)
+              : (<span style={{ fontSize: 14 }}>{t("map.byAgreement")}</span>)}
+          </div>
+        </div>
+
+        <div style={{ padding: "16px 18px" }}>
+          {/* About */}
+          <h3 style={{ margin: "0 0 6px", fontSize: 15 }}>{t("prof.about")}</h3>
+          <p style={{ margin: "0 0 18px", color: "#3a3a38", fontSize: 14, lineHeight: 1.7 }}>{t("prof.bio")}</p>
+
+          {/* Areas */}
+          <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>{t("prof.areas")}</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+            {(pin.areas ?? []).map((a) => (
+              <span key={a} style={{ background: "#eef4f1", color: "#3f6b5c", fontWeight: 600, fontSize: 13, padding: "5px 12px", borderRadius: 999 }}>{PRACTICE_AREA_LABELS[a] ?? a}</span>
+            ))}
+          </div>
+
+          {/* Reviews */}
+          <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>{t("prof.reviews")}</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+            {reviews.map((r, i) => (
+              <div key={i} style={{ background: "#F2F0E9", borderRadius: 14, padding: "12px 14px" }}>
+                <div style={{ color: "#f59e0b", fontSize: 13 }}>{r.name}</div>
+                <p style={{ margin: "4px 0 0", fontSize: 14, color: "#3a3a38" }}>{r.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sticky CTAs */}
+        <div style={{ position: "sticky", bottom: 0, display: "flex", gap: 10, padding: 16, background: "#fff", borderTop: "1px solid #E8E5DD" }}>
+          <button onClick={onChat} style={{ flex: 1, border: "1px solid #E8E5DD", padding: 13, borderRadius: 14, background: "#fff", color: "#1F1E1D", fontWeight: 700, fontFamily: "inherit", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><span className="ms" style={{ fontSize: 18 }}>chat_bubble</span>{t("map.chat")}</button>
+          <button onClick={onSchedule} style={{ flex: 1.4, border: "none", padding: 13, borderRadius: 14, background: CLAY, color: "#fff", fontWeight: 700, fontFamily: "inherit", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><span className="ms" style={{ fontSize: 18 }}>event</span>{t("map.schedule")}</button>
+        </div>
+      </div>
     </div>
   );
 }
