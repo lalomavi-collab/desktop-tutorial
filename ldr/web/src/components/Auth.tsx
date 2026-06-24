@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { LogoMark, Wordmark } from "./Logo";
+import { Wordmark } from "./Logo";
 import PublicMap from "./PublicMap";
 import MembersStrip from "./MembersStrip";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -46,7 +46,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [memberCount, setMemberCount] = useState(40);
   const { t } = useI18n();
+
+  useEffect(() => {
+    supabase.from("ldr_demo_attorneys").select("id", { count: "exact", head: true })
+      .then(({ count }) => { if (count) setMemberCount(count); });
+  }, []);
 
   function switchMode(m: Mode) { setMode(m); setErr(null); setInfo(null); }
 
@@ -69,9 +75,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
-    if (!licNo.trim()) { setErr("יש להזין מספר רישיון עו״ד"); return; }
-    if (password.length < 8) { setErr("הסיסמה חייבת להכיל לפחות 8 תווים"); return; }
-    if (password !== confirm) { setErr("הסיסמאות אינן תואמות"); return; }
+    if (!licNo.trim()) { setErr(t("err.licenseRequired")); return; }
+    if (password.length < 8) { setErr(t("err.passwordLen")); return; }
+    if (password !== confirm) { setErr(t("err.passwordMatch")); return; }
     setBusy(true); setErr(null);
     const { data, error } = await supabase.auth.signUp({
       email, password,
@@ -85,7 +91,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
     }
     setBusy(false);
     if (data.session) return;
-    setInfo("נשלח אליך אימייל אימות — לחץ על הקישור ותחזור לכאן להתחברות.");
+    setInfo(t("auth.emailSent"));
     switchMode("signin");
   }
 
@@ -127,7 +133,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
       {inviteToken && (
         <div className="banner" style={{ borderRadius: 0, textAlign: "center" }}>
-          🎟️ הוזמנת לחדר ההחלטות — הירשם/י כדי להצטרף מיד.
+          {t("invite.banner")}
         </div>
       )}
 
@@ -187,10 +193,10 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             {/* Stats row — live count-up on entry */}
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
               {[
-                { v: 24, suffix: "", l: "תחומי עיסוק" },
-                { v: 20, suffix: "+", l: "מדינות" },
-                { v: 0, suffix: "%", l: "עמלת הפניית תיקים" },
-                { v: 100, suffix: "%", l: "עו״ד מאומתים" },
+                { v: memberCount, suffix: "+", l: t("stats.members") },
+                { v: 24, suffix: "", l: t("stats.areas") },
+                { v: 6, suffix: "", l: t("stats.countries") },
+                { v: 0, suffix: "%", l: t("stats.fee") },
               ].map((s) => (
                 <div key={s.l} style={{ textAlign: "center" }}>
                   <div className="score-glow" style={{ fontSize: 22 }}>
@@ -207,7 +213,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               background: "rgba(51,204,255,0.06)", border: "1px solid rgba(51,204,255,0.18)",
               fontSize: 13, color: "var(--cream-dim)",
             }}>
-              🚀 <b style={{ color: "var(--gold)" }}>פיילוט ישראל</b> — בקרוב גם EU וארה״ב.
+              {t("roadmap")}
             </div>
           </div>
 
@@ -216,18 +222,18 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             {mode === "reset_sent" ? (
               <div className="center">
                 <div style={{ fontSize: 44 }}>✉️</div>
-                <h3>קישור שחזור נשלח</h3>
-                <p className="muted">בדקו את תיבת הדואר של <b>{email}</b><br />ולחצו על הקישור לאיפוס הסיסמה.</p>
+                <h3>{t("auth.resetSentTitle")}</h3>
+                <p className="muted">{t("auth.checkInbox")} <b dir="ltr">{email}</b><br />{t("auth.resetSentTail")}</p>
                 <button className="btn btn-ghost" style={{ marginTop: 10 }} onClick={() => switchMode("signin")}>
-                  חזרה לכניסה
+                  {t("auth.backToSignin")}
                 </button>
               </div>
             ) : (
               <>
                 {mode !== "reset" && (
                   <>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                      <LogoMark size={46} />
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                      <Wordmark size={34} />
                       <div style={{ fontSize: 14, fontWeight: 700 }}>
                         {mode === "signin" ? t("auth.signinTitle") : t("auth.signupTitle")}
                       </div>
@@ -278,20 +284,20 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 {/* ── Sign In ── */}
                 {mode === "signin" && (
                   <form onSubmit={signIn}>
-                    <label>אימייל</label>
+                    <label>{t("auth.email")}</label>
                     <input type="email" required autoComplete="username" dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
-                    <label style={{ marginTop: 12 }}>סיסמה</label>
+                    <label style={{ marginTop: 12 }}>{t("auth.password")}</label>
                     <input type="password" required autoComplete="current-password" dir="ltr"
                       value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
-                      {busy ? <span className="spinner" /> : "כניסה לרשת"}
+                      {busy ? <span className="spinner" /> : t("auth.enterNetwork")}
                     </button>
                     <button type="button" className="btn btn-ghost"
                       style={{ width: "100%", marginTop: 8, fontSize: 13 }}
                       onClick={() => switchMode("reset")}>
-                      שכחתי סיסמה
+                      {t("auth.forgot")}
                     </button>
                   </form>
                 )}
@@ -299,25 +305,25 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 {/* ── Sign Up ── */}
                 {mode === "signup" && (
                   <form onSubmit={signUp}>
-                    <label>שם מלא</label>
+                    <label>{t("auth.fullName")}</label>
                     <input autoComplete="name"
-                      value={name} onChange={(e) => setName(e.target.value)} placeholder="עו״ד ישראל ישראלי" />
-                    <label style={{ marginTop: 12 }}>מספר רישיון עו״ד</label>
+                      value={name} onChange={(e) => setName(e.target.value)} placeholder={t("auth.namePlaceholder")} />
+                    <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
                     <input required dir="ltr" inputMode="numeric"
                       value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
                       placeholder="12345" />
-                    <label style={{ marginTop: 12 }}>אימייל</label>
+                    <label style={{ marginTop: 12 }}>{t("auth.email")}</label>
                     <input type="email" required autoComplete="username" dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
-                    <label style={{ marginTop: 12 }}>סיסמה <span className="muted">(8+ תווים)</span></label>
+                    <label style={{ marginTop: 12 }}>{t("auth.password")} <span className="muted">{t("auth.passwordHint")}</span></label>
                     <input type="password" required autoComplete="new-password" dir="ltr"
                       value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-                    <label style={{ marginTop: 12 }}>אימות סיסמה</label>
+                    <label style={{ marginTop: 12 }}>{t("auth.confirmPassword")}</label>
                     <input type="password" required autoComplete="new-password" dir="ltr"
                       value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="••••••••" />
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
-                      {busy ? <span className="spinner" /> : "הרשמה — בחינם"}
+                      {busy ? <span className="spinner" /> : t("auth.signupBtn")}
                     </button>
                     <p className="muted center" style={{ fontSize: 11, marginTop: 12, lineHeight: 1.5 }}>
                       {t("auth.licenseNote")}
@@ -328,18 +334,18 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 {/* ── Reset password ── */}
                 {mode === "reset" && (
                   <form onSubmit={resetPassword}>
-                    <h4 style={{ marginTop: 0 }}>שחזור סיסמה</h4>
-                    <p className="muted" style={{ marginTop: -8 }}>הזינו את כתובת האימייל שלכם ונשלח קישור לאיפוס.</p>
-                    <label>אימייל</label>
+                    <h4 style={{ marginTop: 0 }}>{t("auth.resetTitle")}</h4>
+                    <p className="muted" style={{ marginTop: -8 }}>{t("auth.resetDesc")}</p>
+                    <label>{t("auth.email")}</label>
                     <input type="email" required dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
-                      {busy ? <span className="spinner" /> : "שלחו קישור שחזור"}
+                      {busy ? <span className="spinner" /> : t("auth.resetSend")}
                     </button>
                     <button type="button" className="btn btn-ghost"
                       style={{ width: "100%", marginTop: 8 }}
-                      onClick={() => switchMode("signin")}>חזרה</button>
+                      onClick={() => switchMode("signin")}>{t("auth.back")}</button>
                   </form>
                 )}
               </>
@@ -365,16 +371,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         <div className="modal-backdrop" onClick={() => setAboutOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ margin: 0 }}>אודות</h3>
+              <h3 style={{ margin: 0 }}>{t("about")}</h3>
               <button className="btn btn-ghost" onClick={() => setAboutOpen(false)}>✕</button>
             </div>
-            <p style={{ lineHeight: 1.7, marginTop: 12 }}>
-              LAWDin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות
-              ברשת סגורה ומאומתת.
-            </p>
-            <p className="muted" style={{ fontSize: 13, lineHeight: 1.7 }}>
-              נוסד ומובל על ידי <b style={{ color: "var(--cream)" }}>ד״ר אברהם ללום</b>.
-            </p>
+            <p style={{ lineHeight: 1.7, marginTop: 12 }}>{t("about.body")}</p>
+            <p className="muted" style={{ fontSize: 13, lineHeight: 1.7 }}>{t("about.founder")}</p>
           </div>
         </div>
       )}
