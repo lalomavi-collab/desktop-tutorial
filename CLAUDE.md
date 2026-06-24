@@ -1,5 +1,25 @@
 # Project Rules - Prompt Builder Agent
 
+## Writing Style - Dashes (PERMANENT)
+
+**Never use dashes as punctuation, in chat replies or in any generated file (docx, html, pdf, posts).**
+
+- Forbidden: em-dash `—`, en-dash `–`, and a hyphen used as a clause/sentence separator (e.g. ` - `).
+- Instead use a comma, period, colon, or parentheses.
+- Allowed: a hyphen that is an integral part of a word, term, identifier, date, URL, or email (e.g. `פינוי-בינוי`, `תמ"א`, `UTF-8`, `2026-06-22`, `test@lalum.legal`). These are not separators and stay as-is.
+
+## Hebrew Documents - Quality Standards (PERMANENT)
+
+**Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**
+
+- Direction: force RTL. In docx set `w:bidi` before `w:jc` on every paragraph, plus on the section (`sectPr`) and the Normal style. In html use `dir="rtl"` and `lang="he"`.
+- Alignment: headings and signatures aligned right or centered; body paragraphs justified (`both`).
+- Fonts: use a complex-script Hebrew font (Arial as a safe default, or Frank Ruhl Libre / Heebo for html). Set the `w:cs` font and `w:szCs` so Hebrew renders correctly.
+- Mixed direction: keep Latin and technical tokens (emails, URLs, code, `UTF-8`) isolated LTR inside Hebrew text.
+- Brand colors (Prestige Executive): Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`.
+- Always include a short disclaimer on sample legal documents (not legal advice, not binding).
+- Verify the output: confirm no forbidden dashes and correct RTL before delivering.
+
 ## Social Media Posts - Mandatory Approval Flow
 
 **CRITICAL: Never publish a post without explicit user approval.**
