@@ -21,7 +21,7 @@ import { rankFor } from "./lib/reputation";
 import VerificationGate from "./components/VerificationGate";
 import AdminVerify from "./components/AdminVerify";
 import ResetPassword from "./components/ResetPassword";
-import MapView from "./components/MapView";
+import PublicMap from "./components/PublicMap";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 
@@ -123,7 +123,7 @@ export default function App() {
         ) : tab === "new" ? (
           <NewCase profile={profile} notify={notify} onDone={() => setTab("room")} />
         ) : tab === "map" ? (
-          <MapView profile={profile} notify={notify} />
+          <PublicMap />
         ) : tab === "find" ? (
           <Directory profile={profile} notify={notify} />
         ) : tab === "gigs" ? (
