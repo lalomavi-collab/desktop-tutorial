@@ -61,6 +61,20 @@ const cityCenter = (key: string): [number, number, number] | null => {
   const c = IL_CITIES.find((x) => x.key === key);
   return c ? [c.lat, c.lng, 12] : null;
 };
+// Regions of Israel for the map filter card.
+const REGIONS: { key: string; label: string }[] = [
+  { key: "all", label: "כל הארץ" },
+  { key: "center", label: "תל אביב והמרכז" },
+  { key: "jerusalem", label: "ירושלים" },
+  { key: "north", label: "חיפה והצפון" },
+  { key: "south", label: "באר שבע והדרום" },
+];
+function regionOf(lat: number, lng: number): string {
+  if (lat >= 32.5) return "north";
+  if (lat <= 31.5) return "south";
+  if (lng >= 34.95 && lat <= 32.0) return "jerusalem";
+  return "center";
+}
 // Map filter chips → which practice-area keys they include.
 const SPEC_FILTERS: { key: string; label: string; areas: string[] }[] = [
   { key: "commercial", label: "spec.commercial", areas: ["commercial", "corporate_vc", "banking"] },
@@ -72,7 +86,7 @@ const SPEC_FILTERS: { key: string; label: string; areas: string[] }[] = [
 interface Pin {
   id: string; name: string; lat: number; lng: number; jurisdiction: string;
   areas: string[]; reputation: number; avatar_url: string | null; tier: string | null; rate: number | null;
-  quickBook: boolean; consultOnly: boolean;
+  quickBook: boolean; consultOnly: boolean; license?: string; demo?: boolean;
 }
 
 // Featured founder profile, always shown on the map (Bar member, Tel Aviv).
@@ -83,8 +97,23 @@ const FEATURED: Pin[] = [{
   jurisdiction: "IL",
   areas: ["real_estate", "urban_renewal", "commercial"],
   reputation: 2450, avatar_url: null, tier: "senior", rate: null,
-  quickBook: true, consultOnly: false,
+  quickBook: true, consultOnly: false, license: "43481",
 }];
+
+// Illustrative ("בטא") Israeli attorneys for the map, so it never shows foreign
+// names or fake-looking licences. Marked demo so the card flags them clearly.
+const IL_DEMO: Pin[] = [
+  { id: "d1", name: "עו״ד דנה לוי", lat: 32.0853, lng: 34.7818, jurisdiction: "IL", areas: ["real_estate", "urban_renewal"], reputation: 1980, avatar_url: null, tier: "senior", rate: 650, quickBook: true, consultOnly: false, license: "41234", demo: true },
+  { id: "d2", name: "עו״ד יוסי כהן", lat: 31.7683, lng: 35.2137, jurisdiction: "IL", areas: ["criminal", "litigation"], reputation: 1620, avatar_url: null, tier: "senior", rate: 700, quickBook: false, consultOnly: true, license: "38765", demo: true },
+  { id: "d3", name: "עו״ד שירה פרידמן", lat: 32.7940, lng: 34.9896, jurisdiction: "IL", areas: ["family", "family_inheritance"], reputation: 1410, avatar_url: null, tier: "mid", rate: 520, quickBook: true, consultOnly: false, license: "52301", demo: true },
+  { id: "d4", name: "עו״ד מיכאל אזולאי", lat: 31.2518, lng: 34.7913, jurisdiction: "IL", areas: ["commercial", "corporate_vc"], reputation: 1750, avatar_url: null, tier: "senior", rate: 800, quickBook: false, consultOnly: false, license: "29944", demo: true },
+  { id: "d5", name: "עו״ד נועה בר־און", lat: 32.3215, lng: 34.8532, jurisdiction: "IL", areas: ["real_estate", "planning_building"], reputation: 1290, avatar_url: null, tier: "mid", rate: 480, quickBook: true, consultOnly: false, license: "47812", demo: true },
+  { id: "d6", name: "עו״ד רונן שפירא", lat: 32.0684, lng: 34.8248, jurisdiction: "IL", areas: ["litigation", "admin_constitutional"], reputation: 1540, avatar_url: null, tier: "senior", rate: 720, quickBook: false, consultOnly: true, license: "33150", demo: true },
+  { id: "d7", name: "עו״ד תמר ביטון", lat: 31.8040, lng: 34.6550, jurisdiction: "IL", areas: ["family", "mediation"], reputation: 1120, avatar_url: null, tier: "mid", rate: 450, quickBook: true, consultOnly: false, license: "50122", demo: true },
+  { id: "d8", name: "עו״ד אבי מזרחי", lat: 32.1848, lng: 34.8713, jurisdiction: "IL", areas: ["commercial", "tax"], reputation: 1380, avatar_url: null, tier: "mid", rate: 560, quickBook: false, consultOnly: false, license: "26389", demo: true },
+  { id: "d9", name: "עו״ד ליאת גולן", lat: 31.8980, lng: 35.0104, jurisdiction: "IL", areas: ["urban_renewal", "real_estate"], reputation: 1660, avatar_url: null, tier: "senior", rate: 690, quickBook: true, consultOnly: false, license: "44907", demo: true },
+  { id: "d10", name: "עו״ד הילה נחמיאס", lat: 32.1624, lng: 34.8443, jurisdiction: "IL", areas: ["criminal", "litigation"], reputation: 1230, avatar_url: null, tier: "mid", rate: 500, quickBook: false, consultOnly: true, license: "31588", demo: true },
+];
 type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
@@ -96,7 +125,7 @@ export default function PublicMap() {
   const visiblePins = useRef<Pin[]>([]);
   const [ready, setReady] = useState(false);
   const [count, setCount] = useState(0);
-  const [cityCounts, setCityCounts] = useState<Record<string, number>>({});
+  const [regionCounts, setRegionCounts] = useState<Record<string, number>>({});
   const [selected, setSelected] = useState<Pin | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
@@ -104,7 +133,7 @@ export default function PublicMap() {
   const [areaFilter, setAreaFilter] = useState<string | null>(null);
   const [quickOnly, setQuickOnly] = useState(false);
   const [consultOnly, setConsultOnly] = useState(false);
-  const [city, setCity] = useState("all");
+  const [region, setRegion] = useState("all");
   const [tilted, setTilted] = useState(true);
   const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
   const { t } = useI18n();
@@ -114,16 +143,11 @@ export default function PublicMap() {
     let cancelled = false;
     (async () => {
       // Show everyone active in Israel: real app users (verified attorneys and
-      // private clients that have a location) merged with the illustrative demo set.
-      const [{ data: demo }, { data: real }] = await Promise.all([
-        supabase.from("ldr_demo_attorneys")
-          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only")
-          .not("lat", "is", null),
-        supabase.from("ldr_profiles")
-          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,role,verification_status")
-          .not("lat", "is", null)
-          .or("verification_status.eq.verified,role.eq.client"),
-      ]);
+      // private clients with a location) merged with an Israeli illustrative set.
+      const { data: real } = await supabase.from("ldr_profiles")
+        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,role,verification_status")
+        .not("lat", "is", null)
+        .or("verification_status.eq.verified,role.eq.client");
       if (cancelled || !el.current || map.current) return;
 
       // Render Hebrew (and other RTL scripts) correctly, not reversed.
@@ -149,21 +173,16 @@ export default function PublicMap() {
       m.on("click", () => setSelected(null));
       map.current = m;
 
-      const demoPins: Pin[] = ((demo ?? []) as any[]).map((r) => ({
-        id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
-        areas: r.practice_areas ?? [], reputation: r.reputation, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
-        quickBook: !!r.quick_book, consultOnly: !!r.consultation_only,
-      }));
       const realPins: Pin[] = ((real ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name ?? "עו״ד", lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
         areas: r.practice_areas ?? [], reputation: r.reputation ?? 0, avatar_url: r.avatar_url, tier: r.experience_tier, rate: null,
         quickBook: false, consultOnly: false,
       }));
-      // Israel only; real users first so they take priority over the demo set.
-      allPins.current = [...FEATURED, ...realPins, ...demoPins].filter((p) => (p.jurisdiction || "IL") === "IL");
+      // Israel only; real users first, then the featured profile and demo set.
+      allPins.current = [...FEATURED, ...realPins, ...IL_DEMO].filter((p) => (p.jurisdiction || "IL") === "IL");
       const counts: Record<string, number> = {};
-      allPins.current.forEach((p) => { const k = cityOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
-      setCityCounts(counts);
+      allPins.current.forEach((p) => { const k = regionOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
+      setRegionCounts(counts);
       m.on("load", () => {
         // Proper Hebrew labels: switch every text label to its Hebrew name,
         // falling back to Latin/native when a Hebrew name is missing.
@@ -194,7 +213,7 @@ export default function PublicMap() {
     const q = query.trim().toLowerCase();
     const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
     const pins = allPins.current.filter((p) => {
-      if (city !== "all" && cityOf(p.lat, p.lng) !== city) return false;
+      if (region !== "all" && regionOf(p.lat, p.lng) !== region) return false;
       if (quickOnly && !p.quickBook) return false;
       if (consultOnly && !p.consultOnly) return false;
       if (specAreas && !p.areas.some((a) => specAreas.includes(a))) return false;
@@ -229,17 +248,14 @@ export default function PublicMap() {
       markers.current.push(mk);
       markerEls.current[p.id] = elm;
     });
-    const cc = city !== "all" ? cityCenter(city) : null;
-    if (cc) {
-      map.current.flyTo({ center: [cc[1], cc[0]], zoom: cc[2], duration: 900 });
-    } else if (pins.length) {
+    if (pins.length) {
       const b = new maplibregl.LngLatBounds();
       pins.forEach((p) => b.extend([p.lng, p.lat]));
       map.current.fitBounds(b, { padding: 80, maxZoom: 13.5, duration: 900 });
     } else {
       map.current.flyTo({ center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], duration: 900 });
     }
-  }, [ready, query, areaFilter, quickOnly, consultOnly, city]);
+  }, [ready, query, areaFilter, quickOnly, consultOnly, region]);
 
   // Tilt toggle — flatten ↔ 3D city view.
   useEffect(() => {
@@ -268,6 +284,20 @@ export default function PublicMap() {
   const rating = (rep: number) => (Math.min(5, 3.8 + rep / 1500)).toFixed(1);
 
   return (
+    <>
+    {/* Region selector card (above the map) */}
+    <div style={{ background: "rgba(255,255,255,.97)", border: "1px solid #E8E5DD", borderRadius: 22, padding: "16px 18px", marginBottom: 14, boxShadow: "0 8px 28px rgba(31,30,29,.08)", textAlign: "right" }}>
+      <h3 className="font-headline" style={{ margin: "0 0 4px", fontSize: 18, color: "#1F1E1D" }}>מפת המומחים וההתחדשות העירונית בישראל</h3>
+      <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#6B6862", lineHeight: 1.6 }}>איתור עורכי דין מומחים על גבי המפה הגיאוגרפית של ישראל, בשילוב מחשבון כדאיות ומערכת עוזר מבוססת AI.</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {REGIONS.map((r) => (
+          <button key={r.key} onClick={() => setRegion(r.key)}
+            style={{ padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: region === r.key ? "#1A1A1A" : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753" }}>
+            {r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}
+          </button>
+        ))}
+      </div>
+    </div>
     <div style={{ position: "relative", borderRadius: 22, overflow: "hidden", border: "1px solid #E8E5DD", boxShadow: "0 12px 40px rgba(31,30,29,0.12)", height: 480, background: "#eef0ea" }}>
       <div ref={el} role="application" aria-label="מפת מיקומי עורכי דין" style={{ position: "absolute", inset: 0 }} />
 
@@ -277,14 +307,6 @@ export default function PublicMap() {
           <span className="ms" style={{ position: "absolute", insetInlineStart: 14, top: "50%", transform: "translateY(-50%)", color: "#707884" }}>search</span>
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("map.search")} style={{ width: "100%", height: 48, paddingInline: "44px 16px", borderRadius: 16, border: "2px solid transparent", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, outline: "none" }} />
         </div>
-        <select value={city} onChange={(e) => setCity(e.target.value)} aria-label="עיר"
-          style={{ height: 48, borderRadius: 16, border: "none", background: "rgba(255,255,255,.97)", boxShadow: "0 8px 24px rgba(31,30,29,.12)", fontFamily: "inherit", fontSize: 14, fontWeight: 600, padding: "0 12px", cursor: "pointer", color: "#1F1E1D" }}>
-          <option value="all">כל הערים</option>
-          {IL_CITIES.filter((c) => cityCounts[c.key])
-            .sort((a, b) => (cityCounts[b.key] ?? 0) - (cityCounts[a.key] ?? 0))
-            .map((c) => <option key={c.key} value={c.key}>{c.label} ({cityCounts[c.key]})</option>)}
-          {cityCounts.other ? <option value="other">אחר ({cityCounts.other})</option> : null}
-        </select>
         <button onClick={() => setFilterOpen(true)} aria-label="פילטרים" style={{ height: 48, width: 48, border: "none", borderRadius: 16, background: (areaFilter || consultOnly) ? CLAY : "#fff", color: (areaFilter || consultOnly) ? "#fff" : "#1F1E1D", display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(31,30,29,.12)", cursor: "pointer" }}>
           <span className="ms">tune</span>
         </button>
@@ -339,9 +361,15 @@ export default function PublicMap() {
                 <span className="ms" style={{ fontSize: 16, color: "#f59e0b", fontVariationSettings: "'FILL' 1" }}>star</span>{rating(selected.reputation)}
               </span>
             </div>
-            <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 8px" }}>
+            <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 6px" }}>
               {PRACTICE_AREA_LABELS[selected.areas?.[0]] ?? "עו״ד"} · {EXPERIENCE_LABELS[selected.tier as keyof typeof EXPERIENCE_LABELS] ?? ""}
             </p>
+            {selected.license && (
+              <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 8px", flexWrap: "wrap" }}>
+                <span style={{ fontSize: 12, color: "#6B6862" }} dir="rtl">רישיון לשכה: <span dir="ltr">{selected.license}</span></span>
+                {selected.demo && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", padding: "1px 7px", borderRadius: 999 }}>בטא · להמחשה</span>}
+              </div>
+            )}
             <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, background: "#fdf3e7", color: "#b45309", padding: "3px 10px", borderRadius: 999, fontWeight: 800, fontSize: 14, marginBottom: 10 }}>
               {selected.rate != null
                 ? (<>{CURRENCY[selected.jurisdiction] ?? "₪"}{selected.rate}<span style={{ fontSize: 11, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span></>)
@@ -374,14 +402,11 @@ export default function PublicMap() {
           <div style={{ position: "absolute", insetInline: 0, bottom: 0, zIndex: 701, background: "rgba(255,255,255,.98)", borderRadius: "24px 24px 0 0", padding: "16px 18px 22px", boxShadow: "0 -10px 40px rgba(0,0,0,.2)" }}>
             <div style={{ width: 46, height: 5, background: "#E8E5DD", borderRadius: 999, margin: "0 auto 16px" }} />
             <h2 className="font-headline" style={{ margin: "0 0 16px", fontSize: 20, color: "#1F1E1D" }}>{t("filter.title")}</h2>
-            <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>עיר</p>
+            <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>אזור</p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-              <button onClick={() => setCity("all")} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: city === "all" ? CLAY : "#F2F0E9", color: city === "all" ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>כל הערים</button>
-              {IL_CITIES.filter((c) => cityCounts[c.key])
-                .sort((a, b) => (cityCounts[b.key] ?? 0) - (cityCounts[a.key] ?? 0))
-                .map((c) => (
-                  <button key={c.key} onClick={() => setCity(c.key)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: city === c.key ? CLAY : "#F2F0E9", color: city === c.key ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{c.label} ({cityCounts[c.key]})</button>
-                ))}
+              {REGIONS.map((r) => (
+                <button key={r.key} onClick={() => setRegion(r.key)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: region === r.key ? CLAY : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}</button>
+              ))}
             </div>
             <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.specialization")}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -403,6 +428,7 @@ export default function PublicMap() {
         </>
       )}
     </div>
+    </>
   );
 }
 
