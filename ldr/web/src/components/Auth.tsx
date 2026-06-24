@@ -44,6 +44,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [name, setName] = useState("");
   const [licNo, setLicNo] = useState("");
   const [acct, setAcct] = useState<"attorney" | "client">("attorney");
+  const [licCountry, setLicCountry] = useState("IL");
+  const [barCard, setBarCard] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -80,19 +82,24 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
-    if (acct === "attorney" && !licNo.trim()) { setErr(t("err.licenseRequired")); return; }
+    if (acct === "attorney" && licCountry === "IL" && !licNo.trim()) { setErr(t("err.licenseRequired")); return; }
+    if (acct === "attorney" && licCountry !== "IL" && !barCard) { setErr(t("err.barCardRequired")); return; }
     if (password.length < 8) { setErr(t("err.passwordLen")); return; }
     if (password !== confirm) { setErr(t("err.passwordMatch")); return; }
     setBusy(true); setErr(null);
     const { data, error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { display_name: name.trim() || undefined, role: acct, license_no: acct === "attorney" ? licNo.trim() : undefined } },
+      options: { data: { display_name: name.trim() || undefined, role: acct, license_no: acct === "attorney" && licCountry === "IL" ? licNo.trim() : undefined, license_country: acct === "attorney" ? licCountry : undefined } },
     });
     if (error) { setBusy(false); setErr(mapError(error.message)); return; }
-    // Persist account role (+ license for attorneys) onto the profile.
+    // Persist role/country (+ license) and upload the Bar card (non-IL) when a session exists.
     if (data.session && data.user) {
+      if (acct === "attorney" && barCard) {
+        const ext = barCard.name.split(".").pop() || "jpg";
+        await supabase.storage.from("licenses").upload(`${data.user.id}/bar-card.${ext}`, barCard, { upsert: true });
+      }
       await supabase.from("ldr_profiles")
-        .update({ role: acct, ...(acct === "attorney" ? { license_no: licNo.trim() } : {}) })
+        .update({ role: acct, ...(acct === "attorney" ? { license_country: licCountry, ...(licCountry === "IL" ? { license_no: licNo.trim() } : {}) } : {}) })
         .eq("id", data.user.id);
     }
     setBusy(false);
@@ -213,15 +220,6 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                 </div>
               ))}
             </div>
-
-            {/* Roadmap teaser — concise */}
-            <div style={{
-              marginTop: 26, padding: "10px 14px", borderRadius: 10,
-              background: "rgba(51,204,255,0.06)", border: "1px solid rgba(51,204,255,0.18)",
-              fontSize: 13, color: "var(--cream-dim)",
-            }}>
-              {t("roadmap")}
-            </div>
           </div>
 
         </div>
@@ -335,10 +333,25 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                       value={name} onChange={(e) => setName(e.target.value)} placeholder={t("auth.namePlaceholder")} />
                     {acct === "attorney" && (
                       <>
-                        <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
-                        <input required dir="ltr" inputMode="numeric"
-                          value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
-                          placeholder="12345" />
+                        <label style={{ marginTop: 12 }}>{t("auth.licCountry")}</label>
+                        <select value={licCountry} onChange={(e) => setLicCountry(e.target.value)} dir="ltr">
+                          {["IL", "US", "UK", "DE", "FR", "CA"].map((c) => <option key={c} value={c}>{t("c." + c)}</option>)}
+                        </select>
+                        {licCountry === "IL" ? (
+                          <>
+                            <label style={{ marginTop: 12 }}>{t("auth.licenseNo")}</label>
+                            <input required dir="ltr" inputMode="numeric"
+                              value={licNo} onChange={(e) => setLicNo(e.target.value.replace(/[^\d]/g, ""))}
+                              placeholder="12345" />
+                          </>
+                        ) : (
+                          <>
+                            <label style={{ marginTop: 12 }}>{t("auth.barCard")} <span style={{ color: "var(--burgundy-soft)" }}>*</span></label>
+                            <input type="file" accept="image/*,application/pdf"
+                              onChange={(e) => setBarCard(e.target.files?.[0] ?? null)} />
+                            <p className="muted" style={{ fontSize: 11, marginTop: 6, lineHeight: 1.5 }}>{t("auth.barCardNote")}</p>
+                          </>
+                        )}
                       </>
                     )}
                     <label style={{ marginTop: 12 }}>{t("auth.email")}</label>
@@ -406,7 +419,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <button className="btn btn-ghost" onClick={() => setAboutOpen(false)}>✕</button>
             </div>
             <p style={{ lineHeight: 1.7, marginTop: 12 }}>{t("about.body")}</p>
-            <p className="muted" style={{ fontSize: 13, lineHeight: 1.7 }}>{t("about.founder")}</p>
+            <h4 style={{ margin: "16px 0 6px", color: "var(--gold)" }}>{t("about.storyTitle")}</h4>
+            <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--cream-dim)" }}>{t("about.story")}</p>
+            <p className="muted" style={{ fontSize: 13, lineHeight: 1.7, marginTop: 14, borderTop: "1px solid var(--line)", paddingTop: 12 }}>{t("about.founder")}</p>
           </div>
         </div>
       )}

@@ -99,7 +99,11 @@ const DICT: Record<string, Record<Lang, string>> = {
   "auth.client": { he: "👤 לקוח פרטי", en: "👤 Client", ru: "👤 Клиент" },
   "auth.fullName": { he: "שם מלא", en: "Full name", ru: "Полное имя" },
   "auth.namePlaceholder": { he: "עו״ד ישראל ישראלי", en: "Adv. Jane Doe", ru: "Адв. Иван Иванов" },
-  "auth.licenseNo": { he: "מספר רישיון עו״ד", en: "Bar license number", ru: "Номер лицензии адвоката" },
+  "auth.licenseNo": { he: "מספר חבר בלשכת עורכי הדין", en: "Bar membership number", ru: "Номер члена коллегии" },
+  "auth.licCountry": { he: "מדינת הרישוי", en: "Licensing country", ru: "Страна лицензии" },
+  "auth.barCard": { he: "סריקת כרטיס חבר בלשכה", en: "Scan of Bar membership card", ru: "Скан карты члена коллегии" },
+  "auth.barCardNote": { he: "במדינות מחוץ לישראל נדרשת סריקת כרטיס חבר כתנאי, למניעת התחזות.", en: "Outside Israel, a membership-card scan is required to prevent impersonation.", ru: "Вне Израиля требуется скан карты для предотвращения подделки." },
+  "err.barCardRequired": { he: "יש לצרף סריקת כרטיס חבר בלשכה", en: "Please attach a Bar membership-card scan", ru: "Приложите скан карты члена коллегии" },
   "auth.enterNetwork": { he: "כניסה לרשת", en: "Enter the network", ru: "Войти в сеть" },
   "auth.forgot": { he: "שכחתי סיסמה", en: "Forgot password", ru: "Забыли пароль" },
   "auth.signupBtn": { he: "הרשמה — בחינם", en: "Sign up — free", ru: "Регистрация — бесплатно" },
@@ -132,8 +136,10 @@ const DICT: Record<string, Record<Lang, string>> = {
   "notif.empty": { he: "אין התראות חדשות", en: "No new notifications", ru: "Нет новых уведомлений" },
 
   "about": { he: "אודות", en: "About", ru: "О нас" },
-  "about.body": { he: "LAWDin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות ברשת סגורה ומאומתת.", en: "LAWDin is the professional operating system for attorneys — knowledge, connections and referrals in a closed, verified network.", ru: "LAWDin — профессиональная операционная система для юристов: знания, связи и передачи дел в закрытой проверенной сети." },
+  "about.body": { he: "LAWdin היא מערכת ההפעלה המקצועית לעורכי דין — ידע, חיבורים והפניות ברשת סגורה ומאומתת.", en: "LAWdin is the professional operating system for attorneys — knowledge, connections and referrals in a closed, verified network.", ru: "LAWdin — профессиональная операционная система для юристов: знания, связи и передачи дел в закрытой проверенной сети." },
   "about.founder": { he: "נוסד ומובל על ידי ד״ר אברהם ללום.", en: "Founded and led by Dr. Avraham Lalum.", ru: "Основатель и руководитель — д-р Авраам Лалум." },
+  "about.storyTitle": { he: "למה הקמתי את LAWdin", en: "Why I built LAWdin", ru: "Почему я создал LAWdin" },
+  "about.story": { he: "ראיתי אדם פרטי מחפש עורך דין בקבוצת פייסבוק, ומאות עורכי דין הציפו אותו בפרטים בתגובות. הבנתי שחייבים שינוי: דרך מכובדת, מאומתת ומבוססת-מיקום שמחברת בין לקוח לעורך דין מתאים, ובין עורכי דין לעמיתים — בלי רעש ובלי עמלות. זה הכיוון שאליו התחום הולך, ו-LAWdin נבנתה כדי להוביל אותו.", en: "I watched a private individual look for a lawyer in a Facebook group, and hundreds of attorneys flooded the comments with their details. I realized something had to change: a dignified, verified, location-based way to connect a client with the right attorney, and attorneys with peers — without the noise and without fees. That's where the field is heading, and LAWdin was built to lead it.", ru: "Я видел, как человек искал юриста в группе Facebook, и сотни юристов завалили комментарии своими контактами. Я понял: нужен достойный, проверенный, основанный на геолокации способ связать клиента с нужным юристом, а юристов — с коллегами, без шума и комиссий. Туда движется отрасль — и LAWdin создан, чтобы её возглавить." },
 };
 
 type Ctx = { lang: Lang; dir: "rtl" | "ltr"; setLang: (l: Lang) => void; t: (k: string) => string };
