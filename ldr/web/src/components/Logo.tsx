@@ -1,45 +1,39 @@
-// LAWDin brand mark — a scales-of-justice tile + the "LAWDin" wordmark.
-// (Distinct from LinkedIn: the whole name is plain text beside a justice tile,
-// rather than boxing the "in".)
+// LAWDin brand mark — "LAW" + a square holding a lowercase "din" → "LAWdin".
+// Monochrome (no orange, no icon); tone adapts to the background.
 
-// Scales-of-justice tile (clay rounded square). Also the standalone mark.
-export function LogoMark({ size = 40, glow = true }: { size?: number; glow?: boolean }) {
+function tones(tone: "light" | "dark") {
+  // "dark" = for dark backgrounds (light marks); "light" = for light backgrounds.
+  return tone === "dark"
+    ? { fg: "var(--cream)", boxBg: "var(--cream)", boxFg: "#16181f" }
+    : { fg: "#1F1E1D", boxBg: "#1F1E1D", boxFg: "#ffffff" };
+}
+
+// The "din" square — also the standalone mark (favicon/avatar slot).
+export function LogoMark({ size = 40, tone = "dark" }: { size?: number; tone?: "light" | "dark" }) {
+  const c = tones(tone);
   return (
     <div
       className="logo-mark"
       style={{
-        width: size, height: size,
-        borderRadius: size * 0.24,
-        display: "grid", placeItems: "center",
-        background: "linear-gradient(145deg, #E08A6C, #BE5D3D)",
-        boxShadow: glow ? "0 4px 16px rgba(217,119,87,0.40)" : "none",
-        flexShrink: 0,
+        width: size, height: size, borderRadius: size * 0.22,
+        display: "grid", placeItems: "center", background: c.boxBg, flexShrink: 0,
       }}
-      aria-label="LAWDin"
+      aria-label="LAWdin"
     >
-      <span className="ms" style={{ fontSize: size * 0.58, color: "#fff", fontVariationSettings: "'FILL' 1" }}>balance</span>
+      <span style={{ fontWeight: 800, fontSize: size * 0.34, lineHeight: 1, color: c.boxFg, letterSpacing: "-0.5px" }}>din</span>
     </div>
   );
 }
 
-// Wordmark = scales tile + "LAWDin" (one clean wordmark, not a boxed "in").
+// Wordmark = "LAW" + the "din" square, reading "LAWdin".
 export function Wordmark({
-  size = 40, tagline = true, tone = "light",
+  size = 40, tone = "dark",
 }: { size?: number; tagline?: boolean; tone?: "light" | "dark" }) {
-  const nameColor = tone === "dark" ? "#1F1E1D" : "var(--cream)";
+  const c = tones(tone);
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <LogoMark size={size} />
-      <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-        <span dir="ltr" style={{ fontWeight: 800, fontSize: size * 0.6, letterSpacing: "-0.5px", color: nameColor }}>
-          LAWDin
-        </span>
-        {tagline && (
-          <small style={{ color: tone === "dark" ? "#6B6862" : "var(--cream-dim)", fontWeight: 400, fontSize: size * 0.26, letterSpacing: 1 }}>
-            Professional Legal Network
-          </small>
-        )}
-      </div>
+    <div dir="ltr" style={{ display: "flex", alignItems: "center", gap: size * 0.14 }}>
+      <span style={{ fontWeight: 800, fontSize: size * 0.62, letterSpacing: "-1px", color: c.fg, lineHeight: 1 }}>LAW</span>
+      <LogoMark size={size * 0.92} tone={tone} />
     </div>
   );
 }

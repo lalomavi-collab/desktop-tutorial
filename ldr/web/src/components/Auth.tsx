@@ -131,12 +131,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         </div>
       )}
 
-      {/* ── Live map hero: every attorney's location, right on the main page ── */}
-      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 28, maxWidth: 1100 }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-          <h2 style={{ margin: 0, fontSize: 20 }}>{t("map.title")}</h2>
-          <span className="muted" style={{ fontSize: 13 }}>{t("map.subtitle")}</span>
-        </div>
+      {/* ── Live map hero (Gett-style: straight to the map, no slogan) ── */}
+      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 20, maxWidth: 1100 }}>
         <PublicMap />
         <MembersStrip />
       </div>
