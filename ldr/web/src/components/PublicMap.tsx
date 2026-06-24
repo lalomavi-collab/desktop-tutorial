@@ -100,20 +100,35 @@ const FEATURED: Pin[] = [{
   quickBook: true, consultOnly: false, license: "43481",
 }];
 
-// Illustrative ("בטא") Israeli attorneys for the map, so it never shows foreign
-// names or fake-looking licences. Marked demo so the card flags them clearly.
-const IL_DEMO: Pin[] = [
-  { id: "d1", name: "עו״ד דנה לוי", lat: 32.0853, lng: 34.7818, jurisdiction: "IL", areas: ["real_estate", "urban_renewal"], reputation: 1980, avatar_url: null, tier: "senior", rate: 650, quickBook: true, consultOnly: false, license: "41234", demo: true },
-  { id: "d2", name: "עו״ד יוסי כהן", lat: 31.7683, lng: 35.2137, jurisdiction: "IL", areas: ["criminal", "litigation"], reputation: 1620, avatar_url: null, tier: "senior", rate: 700, quickBook: false, consultOnly: true, license: "38765", demo: true },
-  { id: "d3", name: "עו״ד שירה פרידמן", lat: 32.7940, lng: 34.9896, jurisdiction: "IL", areas: ["family", "family_inheritance"], reputation: 1410, avatar_url: null, tier: "mid", rate: 520, quickBook: true, consultOnly: false, license: "52301", demo: true },
-  { id: "d4", name: "עו״ד מיכאל אזולאי", lat: 31.2518, lng: 34.7913, jurisdiction: "IL", areas: ["commercial", "corporate_vc"], reputation: 1750, avatar_url: null, tier: "senior", rate: 800, quickBook: false, consultOnly: false, license: "29944", demo: true },
-  { id: "d5", name: "עו״ד נועה בר־און", lat: 32.3215, lng: 34.8532, jurisdiction: "IL", areas: ["real_estate", "planning_building"], reputation: 1290, avatar_url: null, tier: "mid", rate: 480, quickBook: true, consultOnly: false, license: "47812", demo: true },
-  { id: "d6", name: "עו״ד רונן שפירא", lat: 32.0684, lng: 34.8248, jurisdiction: "IL", areas: ["litigation", "admin_constitutional"], reputation: 1540, avatar_url: null, tier: "senior", rate: 720, quickBook: false, consultOnly: true, license: "33150", demo: true },
-  { id: "d7", name: "עו״ד תמר ביטון", lat: 31.8040, lng: 34.6550, jurisdiction: "IL", areas: ["family", "mediation"], reputation: 1120, avatar_url: null, tier: "mid", rate: 450, quickBook: true, consultOnly: false, license: "50122", demo: true },
-  { id: "d8", name: "עו״ד אבי מזרחי", lat: 32.1848, lng: 34.8713, jurisdiction: "IL", areas: ["commercial", "tax"], reputation: 1380, avatar_url: null, tier: "mid", rate: 560, quickBook: false, consultOnly: false, license: "26389", demo: true },
-  { id: "d9", name: "עו״ד ליאת גולן", lat: 31.8980, lng: 35.0104, jurisdiction: "IL", areas: ["urban_renewal", "real_estate"], reputation: 1660, avatar_url: null, tier: "senior", rate: 690, quickBook: true, consultOnly: false, license: "44907", demo: true },
-  { id: "d10", name: "עו״ד הילה נחמיאס", lat: 32.1624, lng: 34.8443, jurisdiction: "IL", areas: ["criminal", "litigation"], reputation: 1230, avatar_url: null, tier: "mid", rate: 500, quickBook: false, consultOnly: true, license: "31588", demo: true },
+// Illustrative ("בטא") Israeli attorneys, one per city, so the general map
+// shows lawyers across all cities. Hebrew names, 5-digit Bar licences, flagged
+// demo so the card marks them clearly (never looks like a real credential).
+const DEMO_NAMES = [
+  "עו״ד דנה לוי", "עו״ד יוסי כהן", "עו״ד שירה פרידמן", "עו״ד מיכאל אזולאי", "עו״ד נועה בר־און",
+  "עו״ד רונן שפירא", "עו״ד תמר ביטון", "עו״ד אבי מזרחי", "עו״ד ליאת גולן", "עו״ד הילה נחמיאס",
+  "עו״ד עומר חדד", "עו״ד מאיה ברקוביץ׳", "עו״ד איתי רוזן", "עו״ד שני אלקיים", "עו״ד גיא שלום",
 ];
+const DEMO_LIC = ["41234", "38765", "52301", "29944", "47812", "33150", "50122", "26389", "44907", "31588", "48653", "27410", "53219", "30877", "45602"];
+const DEMO_SPECS: string[][] = [
+  ["real_estate", "urban_renewal"], ["criminal", "litigation"], ["family", "family_inheritance"],
+  ["commercial", "corporate_vc"], ["litigation", "admin_constitutional"],
+];
+const IL_DEMO: Pin[] = IL_CITIES.map((c, i) => ({
+  id: "demo-" + c.key,
+  name: DEMO_NAMES[i % DEMO_NAMES.length],
+  lat: c.lat + (i % 2 ? 0.004 : -0.004),
+  lng: c.lng + (i % 2 ? -0.004 : 0.004),
+  jurisdiction: "IL",
+  areas: DEMO_SPECS[i % DEMO_SPECS.length],
+  reputation: 1100 + (i * 97) % 1200,
+  avatar_url: null,
+  tier: i % 3 === 0 ? "senior" : "mid",
+  rate: 450 + (i * 30) % 400,
+  quickBook: i % 2 === 0,
+  consultOnly: i % 3 === 1,
+  license: DEMO_LIC[i % DEMO_LIC.length],
+  demo: true,
+}));
 type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
