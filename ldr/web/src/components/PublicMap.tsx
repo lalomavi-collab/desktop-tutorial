@@ -74,6 +74,17 @@ interface Pin {
   areas: string[]; reputation: number; avatar_url: string | null; tier: string | null; rate: number | null;
   quickBook: boolean; consultOnly: boolean;
 }
+
+// Featured founder profile, always shown on the map (Bar member, Tel Aviv).
+const FEATURED: Pin[] = [{
+  id: "featured-lalum",
+  name: "ד״ר אברהם ללום, עו״ד",
+  lat: 32.0809, lng: 34.7806,
+  jurisdiction: "IL",
+  areas: ["real_estate", "urban_renewal", "commercial"],
+  reputation: 2450, avatar_url: null, tier: "senior", rate: null,
+  quickBook: true, consultOnly: false,
+}];
 type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
@@ -149,7 +160,7 @@ export default function PublicMap() {
         quickBook: false, consultOnly: false,
       }));
       // Israel only; real users first so they take priority over the demo set.
-      allPins.current = [...realPins, ...demoPins].filter((p) => (p.jurisdiction || "IL") === "IL");
+      allPins.current = [...FEATURED, ...realPins, ...demoPins].filter((p) => (p.jurisdiction || "IL") === "IL");
       const counts: Record<string, number> = {};
       allPins.current.forEach((p) => { const k = cityOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
       setCityCounts(counts);
