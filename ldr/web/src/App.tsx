@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, type Profile } from "./lib/supabase";
 import Auth from "./components/Auth";
@@ -24,6 +24,8 @@ import ResetPassword from "./components/ResetPassword";
 import PublicMap from "./components/PublicMap";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
+import LanguageSwitcher from "./components/LanguageSwitcher";
+import NotificationsBell from "./components/NotificationsBell";
 
 type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "jobs" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
@@ -156,6 +158,25 @@ export default function App() {
   );
 }
 
+// Primary tabs always visible in the desktop top bar; the rest live under "עוד".
+const PRIMARY_TABS: { tab: Tab; label: string }[] = [
+  { tab: "map", label: "🗺 מפה" },
+  { tab: "feed", label: "בית" },
+  { tab: "find", label: "איתור עו״ד" },
+  { tab: "qa", label: "שו״ת" },
+  { tab: "lab", label: "🔬 מעבדת AI" },
+];
+const MORE_TABS: { tab: Tab; label: string }[] = [
+  { tab: "room", label: "חדר ההחלטות" },
+  { tab: "gigs", label: "Legal Gigs" },
+  { tab: "cases", label: "📩 תיקים מלקוחות" },
+  { tab: "rooms", label: "🤝 שיתוף חדרים" },
+  { tab: "jobs", label: "💼 דרושים" },
+  { tab: "referrals", label: "הפניות" },
+  { tab: "board", label: "מובילים" },
+  { tab: "invite", label: "הזמנות" },
+];
+
 function Header({
   session, profile, tab, setTab, onSignOut,
 }: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
@@ -173,28 +194,58 @@ function Header({
                 {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
               </span>
             )}
-            <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
-            <button className={tab === "room" ? "active" : ""} onClick={() => setTab("room")}>חדר ההחלטות</button>
-            <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מפה</button>
-            <button className={tab === "find" ? "active" : ""} onClick={() => setTab("find")}>איתור עו״ד</button>
-            <button className={tab === "gigs" ? "active" : ""} onClick={() => setTab("gigs")}>Legal Gigs</button>
-            <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 תיקים מלקוחות</button>
-            <button className={tab === "rooms" ? "active" : ""} onClick={() => setTab("rooms")}>🤝 שיתוף חדרים</button>
-            <button className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}>💼 דרושים</button>
-            <button className={tab === "referrals" ? "active" : ""} onClick={() => setTab("referrals")}>הפניות</button>
-            <button className={tab === "qa" ? "active" : ""} onClick={() => setTab("qa")}>שו״ת</button>
-            <button className={tab === "lab" ? "active" : ""} onClick={() => setTab("lab")}>🔬 מעבדת AI</button>
-            <button className={tab === "board" ? "active" : ""} onClick={() => setTab("board")}>מובילים</button>
+            {PRIMARY_TABS.map((it) => (
+              <button key={it.tab} className={tab === it.tab ? "active" : ""} onClick={() => setTab(it.tab)}>{it.label}</button>
+            ))}
+            <MoreMenu tab={tab} setTab={setTab} />
             <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
-            <button className={tab === "invite" ? "active" : ""} onClick={() => setTab("invite")}>הזמנות</button>
             {profile?.is_admin && (
               <button className={tab === "admin" ? "active" : ""} onClick={() => setTab("admin")} style={{ color: "var(--gold)" }}>⚙ אדמין</button>
             )}
+            <LanguageSwitcher light />
+            <NotificationsBell tone="light" />
             <button onClick={onSignOut}>יציאה</button>
           </nav>
         )}
       </div>
     </header>
+  );
+}
+
+// "עוד" overflow dropdown holding the secondary tabs (keeps the bar Waze-clean).
+function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const activeHere = MORE_TABS.some((it) => it.tab === tab);
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button className={activeHere ? "active" : ""} onClick={() => setOpen((o) => !o)}>עוד ▾</button>
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", insetInlineEnd: 0, zIndex: 1000, minWidth: 190,
+          background: "#fff", border: "1px solid var(--line)", borderRadius: 14,
+          boxShadow: "0 16px 40px rgba(31,30,29,0.14)", overflow: "hidden", padding: 6,
+        }}>
+          {MORE_TABS.map((it) => (
+            <button key={it.tab}
+              onClick={() => { setTab(it.tab); setOpen(false); }}
+              style={{
+                display: "block", width: "100%", textAlign: "start", padding: "9px 12px",
+                border: "none", borderRadius: 10, cursor: "pointer", fontFamily: "inherit", fontSize: 13.5,
+                background: tab === it.tab ? "rgba(217,119,87,0.12)" : "transparent",
+                color: tab === it.tab ? "var(--gold-soft)" : "var(--cream)",
+              }}>
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
