@@ -137,7 +137,22 @@ export default function PublicMap() {
       const counts: Record<string, number> = {};
       allPins.current.forEach((p) => { const k = cityOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
       setCityCounts(counts);
-      m.on("load", () => { if (!cancelled) setReady(true); });
+      m.on("load", () => {
+        // Proper Hebrew labels: switch every text label to its Hebrew name,
+        // falling back to Latin/native when a Hebrew name is missing.
+        try {
+          for (const layer of m.getStyle().layers ?? []) {
+            if (layer.type === "symbol" && (layer.layout as any)?.["text-field"] !== undefined) {
+              m.setLayoutProperty(layer.id, "text-field", [
+                "coalesce",
+                ["get", "name:he"], ["get", "name_he"],
+                ["get", "name:latin"], ["get", "name"],
+              ]);
+            }
+          }
+        } catch { /* style without symbol layers — ignore */ }
+        if (!cancelled) setReady(true);
+      });
     })();
     return () => { cancelled = true; map.current?.remove(); map.current = null; };
   }, []);
