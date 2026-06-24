@@ -25,6 +25,8 @@ const CURRENCY: Record<string, string> = { IL: "₪", US: "$", UK: "£", DE: "�
 // Israel-only view, grouped by city. Major cities with their centres; each pin
 // is assigned to the nearest city (within ~18 km), else "other".
 const IL_CENTER: [number, number, number] = [31.7, 34.9, 7.3];
+// Lock the viewport to Israel (with a small margin) so only Israel is shown.
+const IL_BOUNDS: [[number, number], [number, number]] = [[33.9, 29.2], [36.1, 33.6]];
 const IL_CITIES: { key: string; label: string; lat: number; lng: number }[] = [
   { key: "tlv", label: "תל אביב", lat: 32.0853, lng: 34.7818 },
   { key: "jlm", label: "ירושלים", lat: 31.7683, lng: 35.2137 },
@@ -113,6 +115,7 @@ export default function PublicMap() {
         style: MAP_STYLE,
         center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], pitch: 50, bearing: -14,
         attributionControl: false, dragRotate: true,
+        maxBounds: IL_BOUNDS, minZoom: 6.6, renderWorldCopies: false,
       });
       m.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "bottom-left");
       m.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "© OpenFreeMap © OpenMapTiles © OSM" }), "bottom-right");
