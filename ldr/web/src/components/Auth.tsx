@@ -445,6 +445,14 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
           </div>
         </div>
       )}
+
+      {/* Always-visible quick join (easy connect) */}
+      {!authOpen && (
+        <button onClick={() => openAuth("signup")} aria-label="הצטרפו חינם"
+          style={{ position: "fixed", insetInlineStart: 16, bottom: 16, zIndex: 50, border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: 15, color: "#fff", padding: "13px 24px", borderRadius: 999, background: "linear-gradient(145deg, #4dd2ff, #1ba3e0)", boxShadow: "0 12px 30px rgba(27,163,224,.45)" }}>
+          הצטרפו חינם →
+        </button>
+      )}
     </div>
   );
 }
