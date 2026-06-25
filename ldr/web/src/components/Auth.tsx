@@ -8,6 +8,7 @@ import NotificationsBell from "./NotificationsBell";
 import DownloadApp from "./DownloadApp";
 import OfficeRentals from "./OfficeRentals";
 import ServicesStrip from "./ServicesStrip";
+import LandingExtras from "./LandingExtras";
 import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
@@ -137,7 +138,10 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         borderBottom: "1px solid var(--line)",
         background: "rgba(255,255,255,0.82)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
-        <Wordmark size={36} tagline={false} tone="light" />
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="LAWDin, חזרה לראש העמוד"
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}>
+          <Wordmark size={36} tagline={false} tone="light" />
+        </button>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <LanguageSwitcher light />
           <NotificationsBell tone="light" />
@@ -406,6 +410,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
       {/* ── Service rubrics (incl. jobs) ── */}
       <ServicesStrip />
+      <LandingExtras onJoin={() => openAuth("signup")} />
 
       {/* ── Office room rental (extra service) ── */}
       <OfficeRentals />
