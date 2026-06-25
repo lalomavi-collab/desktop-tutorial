@@ -275,18 +275,41 @@ export default function PublicMap() {
     setCount(pins.length);
     pins.forEach((p, i) => {
       const ring = specColor(p.areas);
-      const face = p.avatar_url
-        ? `background-image:url('${p.avatar_url}');background-size:cover;background-position:center;`
-        : `background:${ring};`;
-      // Initials fallback so a pin is never an empty box when there is no photo.
+      // Build the marker with DOM nodes (no innerHTML) so user-controlled names
+      // and avatar URLs can never inject HTML/CSS (prevents stored XSS).
       const initials = (p.name || "עו״ד").replace(/^ד״ר\s*/, "").trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("");
-      const faceInner = p.avatar_url ? "" : `<span class="lawpin-initials">${initials}</span>`;
-      const online = i % 3 !== 2 ? `<span class="lawpin-online"></span>` : "";
+      const safeUrl = p.avatar_url && /^https?:\/\//i.test(p.avatar_url) ? p.avatar_url : null;
       const elm = document.createElement("div");
       elm.className = "lawpin";
       elm.setAttribute("role", "button");
-      elm.setAttribute("title", p.name);
-      elm.innerHTML = `<div class="lawpin-face" style="${face}box-shadow:0 0 0 3px ${ring},0 6px 16px rgba(0,0,0,.28);">${faceInner}</div>${online}<div class="lawpin-stem"></div><div class="lawpin-name">${p.name}</div>`;
+      elm.title = p.name;
+      const faceEl = document.createElement("div");
+      faceEl.className = "lawpin-face";
+      faceEl.style.boxShadow = `0 0 0 3px ${ring}, 0 6px 16px rgba(0,0,0,.28)`;
+      if (safeUrl) {
+        faceEl.style.backgroundImage = `url("${safeUrl.replace(/["\\]/g, "")}")`;
+        faceEl.style.backgroundSize = "cover";
+        faceEl.style.backgroundPosition = "center";
+      } else {
+        faceEl.style.background = ring;
+        const ini = document.createElement("span");
+        ini.className = "lawpin-initials";
+        ini.textContent = initials;
+        faceEl.appendChild(ini);
+      }
+      elm.appendChild(faceEl);
+      if (i % 3 !== 2) {
+        const dot = document.createElement("span");
+        dot.className = "lawpin-online";
+        elm.appendChild(dot);
+      }
+      const stem = document.createElement("div");
+      stem.className = "lawpin-stem";
+      elm.appendChild(stem);
+      const nameEl = document.createElement("div");
+      nameEl.className = "lawpin-name";
+      nameEl.textContent = p.name;
+      elm.appendChild(nameEl);
       elm.addEventListener("click", (ev) => {
         ev.stopPropagation();
         setSelected(p); setPanel(null);

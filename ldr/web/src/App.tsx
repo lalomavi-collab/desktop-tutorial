@@ -23,6 +23,7 @@ import ResetPassword from "./components/ResetPassword";
 import PublicMap from "./components/PublicMap";
 import ClientHome from "./components/ClientHome";
 import ShareApp from "./components/ShareApp";
+import LegalModal, { type LegalSection } from "./components/Legal";
 import { Wordmark } from "./components/Logo";
 import BottomNav from "./components/BottomNav";
 import LanguageSwitcher from "./components/LanguageSwitcher";
@@ -285,12 +286,30 @@ function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
 }
 
 function Footer() {
+  const [legal, setLegal] = useState<LegalSection | null>(null);
+  const year = 2026;
+  const links: { k: LegalSection; label: string }[] = [
+    { k: "about", label: "אודות" },
+    { k: "contact", label: "צור קשר" },
+    { k: "terms", label: "תנאי שימוש" },
+    { k: "privacy", label: "מדיניות פרטיות" },
+    { k: "cookies", label: "מדיניות עוגיות" },
+  ];
   return (
     <footer className="footer">
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-        <Wordmark size={30} tagline={false} />
-        <div>🔐 חיסיון עו״ד ולקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח</div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "8px 0" }}>
+        <Wordmark size={32} tagline={false} />
+        <nav style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
+          {links.map((l) => (
+            <button key={l.k} className="link" style={{ fontSize: 13 }} onClick={() => setLegal(l.k)}>{l.label}</button>
+          ))}
+        </nav>
+        <div style={{ fontSize: 12, color: "var(--cream-dim)", textAlign: "center", lineHeight: 1.7 }}>
+          🔐 חיסיון עו״ד ולקוח נשמר באמצעות אנונימיזציה מלאה בצד הלקוח
+          <br />© {year} LAWDin · הרשת המקצועית של עורכי הדין בישראל
+        </div>
       </div>
+      {legal && <LegalModal initial={legal} onClose={() => setLegal(null)} />}
     </footer>
   );
 }
