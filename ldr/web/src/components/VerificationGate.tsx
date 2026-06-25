@@ -3,6 +3,7 @@ import {
   supabase, LICENSE_LABELS, VERIFICATION_LABELS,
   type Profile, type LicenseType,
 } from "../lib/supabase";
+import FirstRunSteps from "./FirstRunSteps";
 
 // Israeli Bar Association license number format: 5–6 digits.
 // NOTE: this is only a client-side *format* sanity-check to catch typos.
@@ -89,7 +90,9 @@ export default function VerificationGate({
   }
 
   return (
-    <div className="container" style={{ paddingTop: 40, maxWidth: 620 }}>
+    <>
+    <FirstRunSteps current="verify" />
+    <div className="container" style={{ paddingTop: 16, maxWidth: 620 }}>
       <div className="card pad">
         <span className="tag" dir="ltr">⬛ LAWDin · Attorneys Only</span>
         <h2 style={{ marginBottom: 6 }}>אימות רישיון נדרש</h2>
@@ -182,5 +185,6 @@ export default function VerificationGate({
         <button className="btn btn-ghost" style={{ width: "100%" }} onClick={onSignOut}>יציאה</button>
       </div>
     </div>
+    </>
   );
 }
