@@ -264,8 +264,8 @@ function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", insetInlineEnd: 0, zIndex: 1000, minWidth: 190,
-          background: "#fff", border: "1px solid var(--line)", borderRadius: 14,
-          boxShadow: "0 16px 40px rgba(31,30,29,0.14)", overflow: "hidden", padding: 6,
+          background: "var(--obsidian-2)", border: "1px solid var(--line)", borderRadius: 14,
+          boxShadow: "0 16px 40px rgba(0,0,0,0.45)", overflow: "hidden", padding: 6,
         }}>
           {MORE_TABS.map((it) => (
             <button key={it.tab}
@@ -273,7 +273,7 @@ function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
               style={{
                 display: "block", width: "100%", textAlign: "start", padding: "9px 12px",
                 border: "none", borderRadius: 10, cursor: "pointer", fontFamily: "inherit", fontSize: 13.5,
-                background: tab === it.tab ? "rgba(217,119,87,0.12)" : "transparent",
+                background: tab === it.tab ? "rgba(51,204,255,0.14)" : "transparent",
                 color: tab === it.tab ? "var(--gold-soft)" : "var(--cream)",
               }}>
               {it.label}
