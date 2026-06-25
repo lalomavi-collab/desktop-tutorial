@@ -3,6 +3,7 @@ import {
   supabase, PRACTICE_AREAS, EXPERIENCE_TIERS, JURISDICTIONS, MAX_PRACTICE_AREAS,
   type Profile, type ExperienceTier,
 } from "../lib/supabase";
+import FirstRunSteps from "./FirstRunSteps";
 
 export default function Onboarding({
   profile, notify, onDone,
@@ -35,7 +36,9 @@ export default function Onboarding({
   }
 
   return (
-    <div className="container" style={{ paddingTop: 32, maxWidth: 860 }}>
+    <>
+    <FirstRunSteps current="profile" />
+    <div className="container" style={{ paddingTop: 16, maxWidth: 860 }}>
       <div className="card pad">
         <span className="tag" dir="ltr">⬛ LAWDin · Attorneys Only</span>
         <h2 style={{ marginBottom: 4 }}>בונים את הפרופיל שלך</h2>
@@ -113,5 +116,6 @@ export default function Onboarding({
         )}
       </div>
     </div>
+    </>
   );
 }
