@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { supabase, PRACTICE_AREA_LABELS, EXPERIENCE_LABELS } from "../lib/supabase";
 import { useI18n } from "../i18n";
 
-// ── Live 3D vector map (MapLibre + free OpenFreeMap tiles): tilted city view
-// with real building extrusions, attorney face pins with a seniority ring,
-// and a live-activity ticker so the map feels alive. Centred on the country
-// the connected user belongs to (default Israel). Tap a pin → card with
-// profile / chat / book-a-meeting. ──
+// ── 2D raster map (Leaflet + free CartoDB tiles): Hebrew place labels are baked
+// into the tiles (server-rendered, always correct, no RTL plugin needed), no API
+// key, locked to Israel with a mask. Face pins, filters, and a live-activity
+// ticker. Tap a pin → card with profile / chat / book-a-meeting. ──
 
-// Free, key-less vector style with 3D buildings.
-const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+// Free, key-less raster tiles with local (Hebrew) labels.
+const TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
 const CLAY = "#D97757";
 // Pin colour by legal specialization (matches the on-map legend).
@@ -42,16 +41,6 @@ const ISRAEL_OUTLINE: [number, number][] = [
   [34.75, 32.08], [34.88, 32.45], [35.00, 32.83], [35.10, 33.08], [35.30, 33.10],
   [35.55, 33.24], [35.62, 33.28],
 ];
-const IL_MASK: GeoJSON.Feature = {
-  type: "Feature", properties: {},
-  geometry: {
-    type: "Polygon",
-    coordinates: [
-      [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]],
-      ISRAEL_OUTLINE,
-    ],
-  },
-};
 const IL_CITIES: { key: string; label: string; lat: number; lng: number }[] = [
   { key: "tlv", label: "תל אביב", lat: 32.0853, lng: 34.7818 },
   { key: "jlm", label: "ירושלים", lat: 31.7683, lng: 35.2137 },
@@ -153,8 +142,8 @@ type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
   const el = useRef<HTMLDivElement>(null);
-  const map = useRef<maplibregl.Map | null>(null);
-  const markers = useRef<maplibregl.Marker[]>([]);
+  const map = useRef<L.Map | null>(null);
+  const markers = useRef<L.Marker[]>([]);
   const markerEls = useRef<Record<string, HTMLElement>>({});
   const allPins = useRef<Pin[]>([]);
   const visiblePins = useRef<Pin[]>([]);
@@ -171,7 +160,6 @@ export default function PublicMap() {
   const [consultOnly, setConsultOnly] = useState(false);
   const [region, setRegion] = useState("all");
   const [city, setCity] = useState("all");
-  const [tilted, setTilted] = useState(true);
   const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
   const { t } = useI18n();
 
@@ -192,25 +180,24 @@ export default function PublicMap() {
       ]);
       if (cancelled || !el.current || map.current) return;
 
-      // Render Hebrew (and other RTL scripts) correctly, not reversed.
-      try {
-        if (!(maplibregl as any)._rtlSet) {
-          (maplibregl as any)._rtlSet = true;
-          maplibregl.setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js", true);
-        }
-      } catch { /* plugin already registered */ }
-
-      const m = new maplibregl.Map({
-        container: el.current,
-        style: MAP_STYLE,
-        center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], pitch: 50, bearing: -14,
-        attributionControl: false, dragRotate: true,
-        maxBounds: IL_BOUNDS, minZoom: 6.6, renderWorldCopies: false,
+      const m = L.map(el.current, {
+        center: [IL_CENTER[0], IL_CENTER[1]],
+        zoom: IL_CENTER[2],
+        minZoom: 7,
+        zoomControl: false,
+        attributionControl: false,
+        maxBounds: L.latLngBounds([IL_BOUNDS[0][1], IL_BOUNDS[0][0]], [IL_BOUNDS[1][1], IL_BOUNDS[1][0]]),
+        maxBoundsViscosity: 1,
       });
-      m.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: true }), "bottom-left");
-      m.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: "© OpenFreeMap © OpenMapTiles © OSM" }), "bottom-right");
+      L.tileLayer(TILE_URL, { subdomains: "abcd", maxZoom: 19, detectRetina: true, attribution: "© OpenStreetMap © CARTO" }).addTo(m);
+      L.control.zoom({ position: "bottomleft" }).addTo(m);
+      // Mask everything outside Israel so only Israel is visible (lat,lng rings).
+      const outer: [number, number][] = [[-85, -180], [-85, 180], [85, 180], [85, -180]];
+      const hole: [number, number][] = ISRAEL_OUTLINE.map(([lng, lat]) => [lat, lng]);
+      L.polygon([outer, hole], { stroke: false, fillColor: "#e9ecf1", fillOpacity: 1, interactive: false }).addTo(m);
       m.on("click", () => setSelected(null));
       map.current = m;
+      setTimeout(() => m.invalidateSize(), 0);
 
       const realPins: Pin[] = ((real ?? []) as any[]).map((r) => ({
         id: r.id, name: r.display_name ?? "עו״ד", lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
@@ -234,29 +221,7 @@ export default function PublicMap() {
       });
       setRegionCounts(counts);
       setCityCounts(cc);
-      m.on("load", () => {
-        try {
-          for (const layer of m.getStyle().layers ?? []) {
-            // Hide political labels (countries, states, disputed territories) so
-            // no off-topic / inaccurate labels (e.g. neighbouring states) appear.
-            if (layer.type === "symbol" && /country|state|continent|disputed/i.test(layer.id)) {
-              m.setLayoutProperty(layer.id, "visibility", "none");
-              continue;
-            }
-            // Proper Hebrew labels, falling back to Latin/native when missing.
-            if (layer.type === "symbol" && (layer.layout as any)?.["text-field"] !== undefined) {
-              m.setLayoutProperty(layer.id, "text-field", [
-                "coalesce",
-                ["get", "name:he"], ["get", "name:latin"], ["get", "name"],
-              ]);
-            }
-          }
-          // Mask everything outside Israel so only Israel is visible.
-          m.addSource("il-mask", { type: "geojson", data: IL_MASK });
-          m.addLayer({ id: "il-mask", type: "fill", source: "il-mask", paint: { "fill-color": "#e9ecf1", "fill-opacity": 1 } });
-        } catch { /* style without these layers — ignore */ }
-        if (!cancelled) setReady(true);
-      });
+      if (!cancelled) setReady(true);
     })();
     return () => { cancelled = true; map.current?.remove(); map.current = null; };
   }, []);
@@ -322,31 +287,24 @@ export default function PublicMap() {
       nameEl.className = "lawpin-name";
       nameEl.textContent = p.name;
       elm.appendChild(nameEl);
-      elm.addEventListener("click", (ev) => {
-        ev.stopPropagation();
+      const icon = L.divIcon({ html: elm, className: "", iconSize: [48, 72], iconAnchor: [24, 60] });
+      const mk = L.marker([p.lat, p.lng], { icon }).addTo(map.current!);
+      mk.on("click", () => {
         setSelected(p); setPanel(null);
-        map.current?.easeTo({ center: [p.lng, p.lat], zoom: Math.max(map.current.getZoom(), 12.5), duration: 700 });
+        map.current?.setView([p.lat, p.lng], Math.max(map.current.getZoom(), 12), { animate: true });
       });
-      const mk = new maplibregl.Marker({ element: elm, anchor: "bottom" }).setLngLat([p.lng, p.lat]).addTo(map.current!);
       markers.current.push(mk);
       markerEls.current[p.id] = elm;
     });
     const cc = city !== "all" ? cityCenter(city) : null;
     if (cc) {
-      map.current.flyTo({ center: [cc[1], cc[0]], zoom: cc[2], duration: 900 });
+      map.current.setView([cc[0], cc[1]], cc[2], { animate: true });
     } else if (pins.length) {
-      const b = new maplibregl.LngLatBounds();
-      pins.forEach((p) => b.extend([p.lng, p.lat]));
-      map.current.fitBounds(b, { padding: 80, maxZoom: 13.5, duration: 900 });
+      map.current.fitBounds(L.latLngBounds(pins.map((p) => [p.lat, p.lng] as [number, number])), { padding: [60, 60], maxZoom: 13 });
     } else {
-      map.current.flyTo({ center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], duration: 900 });
+      map.current.setView([IL_CENTER[0], IL_CENTER[1]], IL_CENTER[2], { animate: true });
     }
   }, [ready, query, areaFilter, quickOnly, consultOnly, region, city]);
-
-  // Tilt toggle — flatten ↔ 3D city view.
-  useEffect(() => {
-    map.current?.easeTo({ pitch: tilted ? 50 : 0, bearing: tilted ? -14 : 0, duration: 600 });
-  }, [tilted]);
 
   // Live-activity ticker — periodically surface a random visible attorney with
   // a green "ping" on their pin, so the map reads as live and busy.
@@ -412,12 +370,6 @@ export default function PublicMap() {
       <div style={{ position: "absolute", top: 74, insetInlineStart: "50%", transform: "translateX(-50%)", zIndex: 600, display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,.96)", border: "1px solid #E8E5DD", borderRadius: 999, padding: "6px 14px", boxShadow: "0 4px 16px rgba(31,30,29,.1)", fontSize: 13, fontWeight: 700, color: CLAY, whiteSpace: "nowrap" }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} /> ⚖️ {count} {t("map.count")}
       </div>
-
-      {/* Tilt toggle — 3D city view ↔ flat */}
-      <button onClick={() => setTilted((v) => !v)} aria-label={t("map.tilt")} title={t("map.tilt")}
-        style={{ position: "absolute", top: 72, insetInlineEnd: 14, zIndex: 600, height: 38, padding: "0 12px", display: "flex", alignItems: "center", gap: 6, border: "none", borderRadius: 999, cursor: "pointer", fontFamily: "inherit", fontSize: 12.5, fontWeight: 700, boxShadow: "0 4px 16px rgba(31,30,29,.12)", background: tilted ? CLAY : "rgba(255,255,255,.96)", color: tilted ? "#fff" : "#1F1E1D" }}>
-        <span className="ms" style={{ fontSize: 18 }}>deployed_code</span>3D
-      </button>
 
       {/* Live-activity ticker — makes the map feel alive */}
       {activity && (
