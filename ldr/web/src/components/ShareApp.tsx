@@ -10,15 +10,15 @@ export default function ShareApp({ profile, onClose }: { profile: Profile | null
   const [copied, setCopied] = useState<"" | "link" | "sig">("");
   const url = window.location.origin;
   const name = profile?.display_name || "עו״ד";
-  const shareText = `הצטרפו אליי ל-LAWDin, רשת עורכי הדין והבית המקצועי להתחדשות עירונית: ${url}`;
+  const shareText = `הצטרפו אליי ל-LAWDin, הרשת המקצועית של עורכי הדין בכל התחומים: ${url}`;
 
-  const sigText = `${name}\nחבר/ה ב-LAWDin · רשת עורכי הדין וההתחדשות העירונית\n${url}`;
+  const sigText = `${name}\nחבר/ה ב-LAWDin · הרשת המקצועית של עורכי הדין\n${url}`;
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
   const sigHtml =
     `<div dir="rtl" style="font-family:Arial,sans-serif;color:#1B1B1B;line-height:1.5;text-align:right">` +
     `<div style="font-weight:900;font-size:18px;letter-spacing:.5px">LAW<span style="background:#1ba3e0;color:#fff;padding:0 5px;border-radius:5px">din</span></div>` +
     `<div style="font-weight:700;margin-top:4px">${esc(name)}</div>` +
-    `<div style="color:#555;font-size:13px">חבר/ה ב-LAWDin · רשת עורכי הדין וההתחדשות העירונית</div>` +
+    `<div style="color:#555;font-size:13px">חבר/ה ב-LAWDin · הרשת המקצועית של עורכי הדין</div>` +
     `<a href="${url}" style="color:#1ba3e0;font-size:13px">${url}</a></div>`;
 
   async function shareApp() {
@@ -95,7 +95,7 @@ export default function ShareApp({ profile, onClose }: { profile: Profile | null
         <div style={{ background: "#fff", color: "#1B1B1B", borderRadius: 12, padding: 14, textAlign: "right" }}>
           <Wordmark size={30} tone="light" tagline={false} />
           <div style={{ fontWeight: 700, marginTop: 6 }}>{name}</div>
-          <div style={{ fontSize: 13, color: "#555" }}>חבר/ה ב-LAWDin · רשת עורכי הדין וההתחדשות העירונית</div>
+          <div style={{ fontSize: 13, color: "#555" }}>חבר/ה ב-LAWDin · הרשת המקצועית של עורכי הדין</div>
           <a href={url} dir="ltr" style={{ fontSize: 13, color: "#1ba3e0" }}>{url}</a>
         </div>
         <button className="btn btn-gold" style={{ width: "100%", marginTop: 12 }} onClick={copySignature}>
