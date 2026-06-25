@@ -180,11 +180,16 @@ export default function PublicMap() {
     let cancelled = false;
     (async () => {
       // Show everyone active in Israel: real app users (verified attorneys and
-      // private clients with a location) merged with an Israeli illustrative set.
-      const { data: real } = await supabase.from("ldr_profiles")
-        .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,role,verification_status")
-        .not("lat", "is", null)
-        .or("verification_status.eq.verified,role.eq.client");
+      // private clients with a location) merged with the Israeli illustrative set.
+      const [{ data: demo }, { data: real }] = await Promise.all([
+        supabase.from("ldr_demo_attorneys")
+          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,hourly_rate,quick_book,consultation_only,license_no")
+          .not("lat", "is", null),
+        supabase.from("ldr_profiles")
+          .select("id,display_name,lat,lng,jurisdiction,practice_areas,reputation,avatar_url,experience_tier,role,verification_status")
+          .not("lat", "is", null)
+          .or("verification_status.eq.verified,role.eq.client"),
+      ]);
       if (cancelled || !el.current || map.current) return;
 
       // Render Hebrew (and other RTL scripts) correctly, not reversed.
@@ -212,8 +217,15 @@ export default function PublicMap() {
         areas: r.practice_areas ?? [], reputation: r.reputation ?? 0, avatar_url: r.avatar_url, tier: r.experience_tier, rate: null,
         quickBook: false, consultOnly: false,
       }));
-      // Israel only; real users first, then the featured profile and demo set.
-      allPins.current = [...FEATURED, ...realPins, ...IL_DEMO].filter((p) => (p.jurisdiction || "IL") === "IL");
+      const demoPins: Pin[] = ((demo ?? []) as any[]).map((r) => ({
+        id: r.id, name: r.display_name, lat: r.lat, lng: r.lng, jurisdiction: r.jurisdiction ?? "IL",
+        areas: r.practice_areas ?? [], reputation: r.reputation ?? 0, avatar_url: r.avatar_url, tier: r.experience_tier, rate: r.hourly_rate ?? null,
+        quickBook: !!r.quick_book, consultOnly: !!r.consultation_only, license: r.license_no ?? undefined, demo: true,
+      }));
+      // Israel only; real users first, then featured, then the (Israeli) demo set.
+      // Fall back to the bundled Israeli set if the DB demo is unavailable.
+      const demoSource = demoPins.length ? demoPins : IL_DEMO;
+      allPins.current = [...FEATURED, ...realPins, ...demoSource].filter((p) => (p.jurisdiction || "IL") === "IL");
       const counts: Record<string, number> = {};
       const cc: Record<string, number> = {};
       allPins.current.forEach((p) => {
