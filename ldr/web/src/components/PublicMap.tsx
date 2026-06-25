@@ -109,35 +109,68 @@ const FEATURED: Pin[] = [{
   quickBook: true, consultOnly: false, license: "43481",
 }];
 
-// Illustrative ("בטא") Israeli attorneys, one per city, so the general map
-// shows lawyers across all cities. Hebrew names, 5-digit Bar licences, flagged
-// demo so the card marks them clearly (never looks like a real credential).
-const DEMO_NAMES = [
-  "עו״ד דנה לוי", "עו״ד יוסי כהן", "עו״ד שירה פרידמן", "עו״ד מיכאל אזולאי", "עו״ד נועה בר־און",
-  "עו״ד רונן שפירא", "עו״ד תמר ביטון", "עו״ד אבי מזרחי", "עו״ד ליאת גולן", "עו״ד הילה נחמיאס",
-  "עו״ד עומר חדד", "עו״ד מאיה ברקוביץ׳", "עו״ד איתי רוזן", "עו״ד שני אלקיים", "עו״ד גיא שלום",
+// Illustrative ("בטא") Israeli attorneys, dozens per city, so the general map
+// shows a full bench of lawyers across every city. Real Israeli first names
+// (women and men) with common surnames, gendered avatars, 5-digit Bar licences,
+// and a clear "להמחשה" flag so a card never looks like a real credential.
+const FEM_FIRST = [
+  "דנה", "שירה", "נועה", "תמר", "ליאת", "הילה", "מאיה", "שני", "יעל", "רוני",
+  "עדי", "מיכל", "אורית", "גלית", "סיגל", "ענת", "רותם", "אביגיל", "טל", "הדס",
+  "נטע", "ספיר", "שירן", "ליהי", "אורלי",
 ];
-const DEMO_LIC = ["41234", "38765", "52301", "29944", "47812", "33150", "50122", "26389", "44907", "31588", "48653", "27410", "53219", "30877", "45602"];
-const DEMO_SPECS: string[][] = [
-  ["real_estate", "urban_renewal"], ["criminal", "litigation"], ["family", "family_inheritance"],
-  ["commercial", "corporate_vc"], ["litigation", "admin_constitutional"],
+const MASC_FIRST = [
+  "יוסי", "מיכאל", "רונן", "אבי", "עומר", "איתי", "גיא", "דניאל", "אורי", "נדב",
+  "עידו", "אסף", "ליאור", "עמית", "תומר", "יונתן", "ניר", "אלון", "שחר", "רועי",
+  "בן", "איתמר", "יובל", "דור", "ערן",
 ];
-const IL_DEMO: Pin[] = IL_CITIES.map((c, i) => ({
-  id: "demo-" + c.key,
-  name: DEMO_NAMES[i % DEMO_NAMES.length],
-  lat: c.lat + (i % 2 ? 0.004 : -0.004),
-  lng: c.lng + (i % 2 ? -0.004 : 0.004),
-  jurisdiction: "IL",
-  areas: DEMO_SPECS[i % DEMO_SPECS.length],
-  reputation: 1100 + (i * 97) % 1200,
-  avatar_url: `https://i.pravatar.cc/160?img=${(i * 5) % 70 + 1}`,
-  tier: i % 3 === 0 ? "senior" : "mid",
-  rate: 450 + (i * 30) % 400,
-  quickBook: i % 2 === 0,
-  consultOnly: i % 3 === 1,
-  license: DEMO_LIC[i % DEMO_LIC.length],
-  demo: true,
-}));
+const SURNAMES = [
+  "לוי", "כהן", "פרידמן", "אזולאי", "מזרחי", "שפירא", "ביטון", "גולן", "נחמיאס", "חדד",
+  "רוזן", "אלקיים", "שלום", "ברקוביץ׳", "פרץ", "דהן", "אוחיון", "בר־און", "אדרי", "מלכה",
+  "אבוטבול", "סבן", "טל", "גבאי", "וקנין", "הראל", "שרון", "נחום", "עזרא", "יוספי",
+];
+const SPEC_SETS: string[][] = [
+  ["real_estate", "urban_renewal"], ["urban_renewal", "planning_building"],
+  ["criminal", "litigation"], ["litigation", "admin_constitutional"],
+  ["family_inheritance", "adr"], ["family_inheritance", "litigation"],
+  ["commercial", "corporate_vc"], ["corporate_vc", "banking_finance"],
+  ["tax", "commercial"], ["labor", "litigation"],
+];
+const PER_CITY = 18; // dozens of attorneys per city
+
+// Deterministic pseudo-random in [0,1) from an integer seed (no Math.random,
+// so the bench is stable across renders and never reshuffles under the user).
+const rnd = (n: number) => { const x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x); };
+
+const IL_DEMO: Pin[] = IL_CITIES.flatMap((c, ci) =>
+  Array.from({ length: PER_CITY }, (_, j) => {
+    const n = ci * 100 + j;
+    const female = j % 2 === 0;
+    const first = (female ? FEM_FIRST : MASC_FIRST)[(ci * 7 + j) % 25];
+    const surname = SURNAMES[(ci * 5 + j) % SURNAMES.length];
+    // Spread pins around the city centre on a small spiral (radius up to ~3.5 km).
+    const ang = rnd(n) * Math.PI * 2;
+    const rad = 0.006 + rnd(n + 1) * 0.026;
+    // pravatar serves gendered portraits: 1..60 lean male, 61..70 are a mix; pick
+    // a stable image per attorney, biasing women toward the higher band.
+    const img = female ? 49 + ((ci * 3 + j) % 21) : 1 + ((ci * 4 + j) % 48);
+    return {
+      id: `demo-${c.key}-${j}`,
+      name: `עו״ד ${first} ${surname}`,
+      lat: c.lat + Math.sin(ang) * rad,
+      lng: c.lng + Math.cos(ang) * rad,
+      jurisdiction: "IL",
+      areas: SPEC_SETS[(ci * 3 + j) % SPEC_SETS.length],
+      reputation: 700 + Math.floor(rnd(n + 2) * 2100),
+      avatar_url: `https://i.pravatar.cc/160?img=${img}`,
+      tier: rnd(n + 3) > 0.6 ? "senior" : rnd(n + 3) > 0.25 ? "mid" : "junior",
+      rate: 350 + Math.floor(rnd(n + 4) * 12) * 50,
+      quickBook: rnd(n + 5) > 0.45,
+      consultOnly: rnd(n + 6) > 0.7,
+      license: String(20000 + Math.floor(rnd(n + 7) * 39999)),
+      demo: true,
+    } as Pin;
+  })
+);
 type Panel = { kind: "chat" | "schedule" | "profile"; pin: Pin } | null;
 
 export default function PublicMap() {
@@ -210,8 +243,9 @@ export default function PublicMap() {
         quickBook: !!r.quick_book, consultOnly: !!r.consultation_only, license: r.license_no ?? undefined, demo: true,
       }));
       // Israel only; real users first, then featured, then the (Israeli) demo set.
-      // Fall back to the bundled Israeli set if the DB demo is unavailable.
-      const demoSource = demoPins.length ? demoPins : IL_DEMO;
+      // Use whichever illustrative bench is fuller: a curated DB set if it ever
+      // grows past the bundled one, otherwise the bundled dozens-per-city bench.
+      const demoSource = demoPins.length > IL_DEMO.length ? demoPins : IL_DEMO;
       allPins.current = [...FEATURED, ...realPins, ...demoSource].filter((p) => (p.jurisdiction || "IL") === "IL");
       const counts: Record<string, number> = {};
       const cc: Record<string, number> = {};

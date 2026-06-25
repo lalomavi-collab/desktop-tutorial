@@ -36,7 +36,7 @@ const PAGES = [
   { key: "02-map", label: "מפה" },
   { key: "03-find", label: "איתור" },
   { key: "04-qa", label: "שו" },
-  { key: "05-lab", label: "מעבדת AI" },
+  { key: "05-lab", label: "שאלות תשובות כללי" },
   { key: "06-room", label: "חדר ההחלטות", more: true },
   { key: "07-gigs", label: "Legal Gigs", more: true },
   { key: "08-cases", label: "תיקים מלקוחות", more: true },

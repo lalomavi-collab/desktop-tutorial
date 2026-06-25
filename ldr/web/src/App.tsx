@@ -184,7 +184,7 @@ const PRIMARY_TABS: { tab: Tab; label: string }[] = [
   { tab: "feed", label: "בית" },
   { tab: "find", label: "איתור עו״ד" },
   { tab: "qa", label: "שו״ת" },
-  { tab: "lab", label: "🔬 מעבדת AI" },
+  { tab: "lab", label: "שאלות תשובות כללי" },
 ];
 const MORE_TABS: { tab: Tab; label: string }[] = [
   { tab: "room", label: "חדר ההחלטות" },
@@ -210,38 +210,46 @@ function Header({
           <Wordmark size={40} />
         </div>
         {session && isClient && (
-          <nav className="nav">
-            <span className="tag" style={{ marginInlineEnd: 4 }}>👤 מצב לקוח</span>
-            <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
-            <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מצא עו״ד</button>
-            <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 הבקשות שלי</button>
-            <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
-            <LanguageSwitcher light />
-            <NotificationsBell tone="light" />
-            <button onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
-            <button onClick={onSignOut}>יציאה</button>
-          </nav>
+          <>
+            <nav className="nav">
+              <span className="tag" style={{ marginInlineEnd: 4 }}>👤 מצב לקוח</span>
+              <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
+              <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מצא עו״ד</button>
+              <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 הבקשות שלי</button>
+              <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
+            </nav>
+            <div className="nav-actions">
+              <LanguageSwitcher />
+              <NotificationsBell />
+              <button className="nav-util" onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
+              <button className="nav-util" onClick={onSignOut}>יציאה</button>
+            </div>
+          </>
         )}
         {session && !isClient && (
-          <nav className="nav">
-            {rank && (
-              <span className="tag" title={`מוניטין: ${profile!.reputation}`} style={{ marginInlineEnd: 4 }}>
-                {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
-              </span>
-            )}
-            {PRIMARY_TABS.map((it) => (
-              <button key={it.tab} className={tab === it.tab ? "active" : ""} onClick={() => setTab(it.tab)}>{it.label}</button>
-            ))}
-            <MoreMenu tab={tab} setTab={setTab} />
-            <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
-            {profile?.is_admin && (
-              <button className={tab === "admin" ? "active" : ""} onClick={() => setTab("admin")} style={{ color: "var(--gold)" }}>⚙ אדמין</button>
-            )}
-            <LanguageSwitcher light />
-            <NotificationsBell tone="light" />
-            <button onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
-            <button onClick={onSignOut}>יציאה</button>
-          </nav>
+          <>
+            <nav className="nav">
+              {rank && (
+                <span className="tag" title={`מוניטין: ${profile!.reputation}`} style={{ marginInlineEnd: 4 }}>
+                  {rank.rank.icon} {rank.rank.title} · {profile!.reputation}
+                </span>
+              )}
+              {PRIMARY_TABS.map((it) => (
+                <button key={it.tab} className={tab === it.tab ? "active" : ""} onClick={() => setTab(it.tab)}>{it.label}</button>
+              ))}
+              <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
+              {profile?.is_admin && (
+                <button className={tab === "admin" ? "active" : ""} onClick={() => setTab("admin")} style={{ color: "var(--gold)" }}>⚙ אדמין</button>
+              )}
+            </nav>
+            <div className="nav-actions">
+              <MoreMenu tab={tab} setTab={setTab} />
+              <LanguageSwitcher />
+              <NotificationsBell />
+              <button className="nav-util" onClick={() => setShareOpen(true)} title="שיתוף LAWDin">📤 שיתוף</button>
+              <button className="nav-util" onClick={onSignOut}>יציאה</button>
+            </div>
+          </>
         )}
       </div>
     </header>
@@ -260,7 +268,7 @@ function MoreMenu({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   }, []);
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button className={activeHere ? "active" : ""} onClick={() => setOpen((o) => !o)}>עוד ▾</button>
+      <button className={`nav-util${activeHere ? " active" : ""}`} onClick={() => setOpen((o) => !o)}>עוד ▾</button>
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", insetInlineEnd: 0, zIndex: 1000, minWidth: 190,
