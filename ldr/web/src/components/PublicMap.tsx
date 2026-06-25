@@ -161,6 +161,7 @@ export default function PublicMap() {
   const [ready, setReady] = useState(false);
   const [count, setCount] = useState(0);
   const [regionCounts, setRegionCounts] = useState<Record<string, number>>({});
+  const [cityCounts, setCityCounts] = useState<Record<string, number>>({});
   const [selected, setSelected] = useState<Pin | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
@@ -169,6 +170,7 @@ export default function PublicMap() {
   const [quickOnly, setQuickOnly] = useState(false);
   const [consultOnly, setConsultOnly] = useState(false);
   const [region, setRegion] = useState("all");
+  const [city, setCity] = useState("all");
   const [tilted, setTilted] = useState(true);
   const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
   const { t } = useI18n();
@@ -213,8 +215,13 @@ export default function PublicMap() {
       // Israel only; real users first, then the featured profile and demo set.
       allPins.current = [...FEATURED, ...realPins, ...IL_DEMO].filter((p) => (p.jurisdiction || "IL") === "IL");
       const counts: Record<string, number> = {};
-      allPins.current.forEach((p) => { const k = regionOf(p.lat, p.lng); counts[k] = (counts[k] ?? 0) + 1; });
+      const cc: Record<string, number> = {};
+      allPins.current.forEach((p) => {
+        const rk = regionOf(p.lat, p.lng); counts[rk] = (counts[rk] ?? 0) + 1;
+        const ck = cityOf(p.lat, p.lng); cc[ck] = (cc[ck] ?? 0) + 1;
+      });
       setRegionCounts(counts);
+      setCityCounts(cc);
       m.on("load", () => {
         try {
           for (const layer of m.getStyle().layers ?? []) {
@@ -252,7 +259,9 @@ export default function PublicMap() {
     const q = query.trim().toLowerCase();
     const specAreas = areaFilter ? (SPEC_FILTERS.find((s) => s.key === areaFilter)?.areas ?? []) : null;
     const pins = allPins.current.filter((p) => {
-      if (region !== "all" && regionOf(p.lat, p.lng) !== region) return false;
+      // A specific city takes precedence; otherwise filter by region.
+      if (city !== "all") { if (cityOf(p.lat, p.lng) !== city) return false; }
+      else if (region !== "all" && regionOf(p.lat, p.lng) !== region) return false;
       if (quickOnly && !p.quickBook) return false;
       if (consultOnly && !p.consultOnly) return false;
       if (specAreas && !p.areas.some((a) => specAreas.includes(a))) return false;
@@ -287,14 +296,17 @@ export default function PublicMap() {
       markers.current.push(mk);
       markerEls.current[p.id] = elm;
     });
-    if (pins.length) {
+    const cc = city !== "all" ? cityCenter(city) : null;
+    if (cc) {
+      map.current.flyTo({ center: [cc[1], cc[0]], zoom: cc[2], duration: 900 });
+    } else if (pins.length) {
       const b = new maplibregl.LngLatBounds();
       pins.forEach((p) => b.extend([p.lng, p.lat]));
       map.current.fitBounds(b, { padding: 80, maxZoom: 13.5, duration: 900 });
     } else {
       map.current.flyTo({ center: [IL_CENTER[1], IL_CENTER[0]], zoom: IL_CENTER[2], duration: 900 });
     }
-  }, [ready, query, areaFilter, quickOnly, consultOnly, region]);
+  }, [ready, query, areaFilter, quickOnly, consultOnly, region, city]);
 
   // Tilt toggle — flatten ↔ 3D city view.
   useEffect(() => {
@@ -324,15 +336,22 @@ export default function PublicMap() {
 
   return (
     <>
-    {/* Region selector chips (above the map) */}
+    {/* Region + city selectors (above the map): country → region → specific city */}
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12, alignItems: "center", justifyContent: "flex-end" }}>
       <span style={{ fontSize: 13, fontWeight: 700, color: "#6B6862", marginInlineEnd: 4 }}>אזור:</span>
       {REGIONS.map((r) => (
-        <button key={r.key} onClick={() => setRegion(r.key)}
-          style={{ padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: region === r.key ? "#1A1A1A" : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753" }}>
+        <button key={r.key} onClick={() => { setRegion(r.key); setCity("all"); }}
+          style={{ padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, background: (region === r.key && city === "all") ? "#1A1A1A" : "#F2F0E9", color: (region === r.key && city === "all") ? "#fff" : "#3f4753" }}>
           {r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}
         </button>
       ))}
+      <select value={city} onChange={(e) => setCity(e.target.value)} aria-label="עיר"
+        style={{ height: 36, borderRadius: 999, border: "none", background: city !== "all" ? "#1A1A1A" : "#F2F0E9", color: city !== "all" ? "#fff" : "#3f4753", fontFamily: "inherit", fontSize: 13, fontWeight: 700, padding: "0 14px", cursor: "pointer" }}>
+        <option value="all">עיר ספציפית…</option>
+        {IL_CITIES.filter((c) => cityCounts[c.key])
+          .sort((a, b) => (cityCounts[b.key] ?? 0) - (cityCounts[a.key] ?? 0))
+          .map((c) => <option key={c.key} value={c.key}>{c.label} ({cityCounts[c.key]})</option>)}
+      </select>
     </div>
     <div style={{ position: "relative", borderRadius: 22, overflow: "hidden", border: "1px solid #E8E5DD", boxShadow: "0 12px 40px rgba(31,30,29,0.12)", height: 480, background: "#eef0ea" }}>
       <div ref={el} role="application" aria-label="מפת מיקומי עורכי דין" style={{ position: "absolute", inset: 0 }} />
@@ -441,7 +460,7 @@ export default function PublicMap() {
             <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>אזור</p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
               {REGIONS.map((r) => (
-                <button key={r.key} onClick={() => setRegion(r.key)} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: region === r.key ? CLAY : "#F2F0E9", color: region === r.key ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}</button>
+                <button key={r.key} onClick={() => { setRegion(r.key); setCity("all"); }} style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: (region === r.key && city === "all") ? CLAY : "#F2F0E9", color: (region === r.key && city === "all") ? "#fff" : "#3f4753", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>{r.label}{regionCounts[r.key] ? ` (${regionCounts[r.key]})` : ""}</button>
               ))}
             </div>
             <p style={{ fontWeight: 700, fontSize: 13, color: "#6B6862", margin: "0 0 10px" }}>{t("filter.specialization")}</p>
