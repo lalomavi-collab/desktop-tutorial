@@ -57,7 +57,7 @@ export default function AnalyzerLab({ profile, notify }: { profile: Profile; not
   return (
     <div className="container animate-in" style={{ paddingTop: 26, maxWidth: 920 }}>
       <div className="section-header">
-        <h2>🔬 מעבדת AI משפטית</h2>
+        <h2>שאלות תשובות כללי</h2>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button className={`btn ${tab === "ai" ? "btn-gold" : "btn-ghost"}`} onClick={() => setTab("ai")}>✨ ללום AI</button>
           <button className={`btn ${tab === "analyzer" ? "btn-gold" : "btn-ghost"}`} onClick={() => setTab("analyzer")}>ניתוח סעיפים</button>
@@ -65,7 +65,7 @@ export default function AnalyzerLab({ profile, notify }: { profile: Profile; not
           <button className={`btn ${tab === "flags" ? "btn-gold" : "btn-ghost"}`} onClick={() => setTab("flags")}>🚩 דגלים אדומים</button>
         </div>
       </div>
-      <p className="muted" style={{ marginTop: -10, marginBottom: 8 }}>ניתוח אסטרטגי, אקדמי ומעשי של סעיפי חוזה בעסקאות נדל״ן והתחדשות עירונית.</p>
+      <p className="muted" style={{ marginTop: -10, marginBottom: 8 }}>מענה משפטי כללי בכל תחומי הדין: שאלות ותשובות, ניתוח סעיפים, ודגלים אדומים רגולטוריים.</p>
       <div style={{ marginBottom: 18, padding: "9px 13px", borderRadius: 10, background: "rgba(192,57,43,0.08)", border: "1px solid rgba(224,122,111,0.35)", fontSize: 11.5, lineHeight: 1.6, color: "var(--cream-dim)" }}>
         ⚠️ הניתוח מבוסס מודלי AI ואינו ייעוץ משפטי. השימוש באחריות אישית; יש לאמת מול עו״ד מורשה. אין אחריות מצד LAWdin.
       </div>
@@ -282,7 +282,7 @@ function nowTime() {
 
 function LalumAdvisor() {
   const [history, setHistory] = useState<ChatMsg[]>([
-    { sender: "ai", text: "שלום, אני ללום AI, עוזר משפטי חכם להתחדשות עירונית. כיצד אוכל לסייע?", time: nowTime() },
+    { sender: "ai", text: "שלום, אני ללום AI, עוזר משפטי כללי בכל תחומי הדין. כיצד אוכל לסייע?", time: nowTime() },
   ]);
   const [query, setQuery] = useState("");
   const [typing, setTyping] = useState(false);
@@ -307,7 +307,7 @@ function LalumAdvisor() {
     <div className="card pad" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 440 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--line)", paddingBottom: 10 }}>
         <span className="muted" style={{ fontSize: 10, fontFamily: "monospace" }}>[ LALUM_LEGAL_AI_v1 ]</span>
-        <h4 style={{ margin: 0 }}>✨ עוזר משפטי חכם להתחדשות עירונית</h4>
+        <h4 style={{ margin: 0 }}>✨ עוזר משפטי כללי</h4>
       </div>
 
       <div ref={logRef} style={{ flex: 1, maxHeight: 280, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10, paddingInlineEnd: 4 }}>

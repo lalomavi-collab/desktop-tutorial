@@ -73,7 +73,7 @@ a:hover { color: var(--gold-soft); }
 .topbar:has(+ main) { box-shadow: 0 1px 30px rgba(0,0,0,0.35); }
 .topbar .inner {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0;
+  padding: 12px 0; gap: 10px; flex-wrap: nowrap;
 }
 .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .brand .mark {
@@ -92,13 +92,34 @@ a:hover { color: var(--gold-soft); }
 .brand .name { font-weight: 700; letter-spacing: .3px; }
 .brand .name small { display: block; color: var(--cream-dim); font-weight: 400; font-size: 11px; letter-spacing: 2px; }
 
-.nav { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-.nav button {
+/* The brand stays fixed; the tab list takes the middle and scrolls if it
+   ever overflows; the utilities cluster is pinned and never wraps, so nav
+   items can never stack on top of each other. */
+.brand { flex-shrink: 0; }
+.nav {
+  display: flex; gap: 4px; align-items: center; flex-wrap: nowrap;
+  flex: 1 1 auto; min-width: 0; overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav button { flex-shrink: 0; }
+.nav-actions {
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0; flex-wrap: nowrap;
+}
+.nav button, .nav-util {
   position: relative; overflow: hidden;
   background: transparent; border: 1px solid transparent; color: var(--cream-dim);
   padding: 7px 13px; border-radius: 10px; cursor: pointer; font: inherit; font-size: 13.5px;
   transition: color .2s, background .2s, border-color .2s, transform .15s;
 }
+.nav-util { flex-shrink: 0; white-space: nowrap; }
+.nav-util:hover { color: var(--cream); background: rgba(255,255,255,0.04); }
+.nav-util.active {
+  color: var(--gold); border-color: var(--line);
+  background: rgba(51,204,255,0.07);
+}
+.nav-util:active { transform: scale(0.95); }
 .nav button::after {
   content: ""; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
   width: 0; height: 2px; background: var(--gold); border-radius: 2px;
@@ -533,9 +554,9 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
 }
 
 /* Pill nav; active = filled gold pill (Waze selected-state). */
-.nav button { border-radius: 999px; padding: 8px 14px; }
+.nav button, .nav-util { border-radius: 999px; padding: 8px 14px; }
 .nav button::after { display: none; }
-.nav button.active {
+.nav button.active, .nav-util.active {
   background: linear-gradient(145deg, #7fdbff, #1ba3e0);
   color: #181b29; border-color: transparent; text-shadow: none;
   box-shadow: 0 3px 12px rgba(51,204,255,0.35);
@@ -574,8 +595,10 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
   .bn-item.active .bn-label { text-shadow: 0 0 10px rgba(51,204,255,0.5); }
   /* Keep content clear of the bar */
   .app > main { padding-bottom: 78px; }
-  /* The top nav's long tab list is redundant on mobile — hide it, bottom nav wins */
-  .topbar .nav { display: none; }
+  /* The top tabs and utilities are redundant on mobile (the bottom nav and the
+     profile screen cover them). Hide both so the mobile bar stays just the brand. */
+  .topbar .nav,
+  .topbar .nav-actions { display: none; }
 }
 
 /* ── Material Symbols + Stitch headline font (used by the light map UI) ── */

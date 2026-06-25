@@ -8,7 +8,7 @@ type Tab =
 
 const ITEMS: { tab: Tab; icon: string; label: string }[] = [
   { tab: "map", icon: "🗺", label: "מפה" },
-  { tab: "lab", icon: "⚖️", label: "מעבדת AI" },
+  { tab: "lab", icon: "⚖️", label: "שו״ת כללי" },
   { tab: "feed", icon: "✨", label: "התחבר" },
   { tab: "cases", icon: "💼", label: "הזדמנויות" },
   { tab: "profile", icon: "👤", label: "אזור אישי" },
