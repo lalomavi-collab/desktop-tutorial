@@ -11,7 +11,7 @@ import ShareApp from "./ShareApp";
 type Nav = "map" | "cases" | "profile";
 
 const ACTIONS: { key: Nav; icon: string; title: string; desc: string; primary?: boolean }[] = [
-  { key: "map", icon: "search", title: "מצא עורך דין", desc: "חיפוש על המפה לפי עיר ותחום", primary: true },
+  { key: "map", icon: "search", title: "מצא עורך דין", desc: "לפי תחום, אזור, שפה וניסיון, ישירות על המפה", primary: true },
   { key: "cases", icon: "post_add", title: "בקשת שירות חדשה", desc: "פרסמו בקשה וקבלו הצעות מעורכי דין" },
   { key: "cases", icon: "inbox", title: "הבקשות שלי", desc: "מעקב אחרי הבקשות וההצעות שהתקבלו" },
 ];
