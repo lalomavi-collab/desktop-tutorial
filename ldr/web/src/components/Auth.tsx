@@ -58,7 +58,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [memberCount, setMemberCount] = useState(40);
   const { t } = useI18n();
 
-  function openAuth(m: Mode) { setMode(m); setErr(null); setInfo(null); setAuthOpen(true); }
+  function openAuth(m: Mode, who?: "attorney" | "client") { if (who) setAcct(who); setMode(m); setErr(null); setInfo(null); setAuthOpen(true); }
 
   useEffect(() => {
     supabase.from("ldr_demo_attorneys").select("id", { count: "exact", head: true })
@@ -196,10 +196,16 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
               <span style={{ color: "var(--ok)" }}>{t("hero.trust3")}</span>
             </div>
 
-            <button className="btn btn-gold" style={{ padding: "12px 28px", fontSize: 15, marginBottom: 30 }}
-              onClick={() => openAuth("signup")}>
-              {t("hero.cta")}
-            </button>
+            <div style={{ marginBottom: 30 }}>
+              <button className="btn btn-gold" style={{ padding: "13px 30px", fontSize: 15.5 }}
+                onClick={() => openAuth("signup", "attorney")}>
+                הצטרפו כעורך דין, בחינם →
+              </button>
+              <div style={{ marginTop: 12, fontSize: 13.5 }}>
+                <span className="muted">מחפשים עורך דין? </span>
+                <button className="link" onClick={() => openAuth("signup", "client")}>כניסת לקוחות פרטיים</button>
+              </div>
+            </div>
 
             {/* Concise value props — clean, professional */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 30 }}>
@@ -448,9 +454,9 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
       {/* Always-visible quick join (easy connect) */}
       {!authOpen && (
-        <button onClick={() => openAuth("signup")} aria-label="הצטרפו חינם"
+        <button onClick={() => openAuth("signup", "attorney")} aria-label="הצטרפו כעורך דין, חינם"
           style={{ position: "fixed", insetInlineStart: 16, bottom: 16, zIndex: 50, border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: 15, color: "#fff", padding: "13px 24px", borderRadius: 999, background: "linear-gradient(145deg, #4dd2ff, #1ba3e0)", boxShadow: "0 12px 30px rgba(27,163,224,.45)" }}>
-          הצטרפו חינם →
+          הצטרפו כעו״ד, חינם →
         </button>
       )}
     </div>
