@@ -13,10 +13,11 @@ export default function ShareApp({ profile, onClose }: { profile: Profile | null
   const shareText = `הצטרפו אליי ל-LAWDin, רשת עורכי הדין והבית המקצועי להתחדשות עירונית: ${url}`;
 
   const sigText = `${name}\nחבר/ה ב-LAWDin · רשת עורכי הדין וההתחדשות העירונית\n${url}`;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
   const sigHtml =
     `<div dir="rtl" style="font-family:Arial,sans-serif;color:#1B1B1B;line-height:1.5;text-align:right">` +
     `<div style="font-weight:900;font-size:18px;letter-spacing:.5px">LAW<span style="background:#1ba3e0;color:#fff;padding:0 5px;border-radius:5px">din</span></div>` +
-    `<div style="font-weight:700;margin-top:4px">${name}</div>` +
+    `<div style="font-weight:700;margin-top:4px">${esc(name)}</div>` +
     `<div style="color:#555;font-size:13px">חבר/ה ב-LAWDin · רשת עורכי הדין וההתחדשות העירונית</div>` +
     `<a href="${url}" style="color:#1ba3e0;font-size:13px">${url}</a></div>`;
 
