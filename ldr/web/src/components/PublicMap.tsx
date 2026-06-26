@@ -496,6 +496,7 @@ export default function PublicMap() {
       {panel?.kind === "schedule" && <SchedulePanel pin={panel.pin} onClose={() => setPanel(null)} t={t} />}
       {panel?.kind === "profile" && (
         <ProfileCardPanel pin={panel.pin} onClose={() => setPanel(null)}
+          distance={userLoc ? formatDistance(kmBetween(userLoc, { lat: panel.pin.lat, lng: panel.pin.lng })) : null}
           onChat={() => setPanel({ kind: "chat", pin: panel.pin })}
           onSchedule={() => setPanel({ kind: "schedule", pin: panel.pin })} t={t} />
       )}
@@ -617,8 +618,8 @@ function SchedulePanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: 
 }
 
 // ── Rich public attorney profile (broad card people can learn from) ──
-function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
-  pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; t: (k: string) => string;
+function ProfileCardPanel({ pin, onClose, onChat, onSchedule, distance, t }: {
+  pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; distance?: string | null; t: (k: string) => string;
 }) {
   const ring = specColor(pin.areas);
   const rating = Math.min(5, 3.8 + pin.reputation / 1500);
@@ -655,6 +656,11 @@ function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
               ? (<>{CURRENCY[pin.jurisdiction] ?? "₪"}{pin.rate}<span style={{ fontSize: 12, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span></>)
               : (<span style={{ fontSize: 14 }}>{t("map.byAgreement")}</span>)}
           </div>
+          {distance && (
+            <div style={{ marginTop: 14, marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 4, background: "#eef7ff", color: "#1d6fb8", padding: "6px 14px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+              <span className="ms" style={{ fontSize: 17 }}>near_me</span>{distance}
+            </div>
+          )}
         </div>
 
         <div style={{ padding: "16px 18px" }}>
