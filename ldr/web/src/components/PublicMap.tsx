@@ -141,6 +141,18 @@ const PER_CITY = 18; // dozens of attorneys per city
 // so the bench is stable across renders and never reshuffles under the user).
 const rnd = (n: number) => { const x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x); };
 
+// Great-circle distance in km between two points (haversine), plus a friendly
+// Hebrew label, so a card can show "distance from you" like a ride-hailing app.
+function kmBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371, toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.asin(Math.sqrt(h));
+}
+function formatDistance(km: number) {
+  return km < 1 ? `${Math.round(km * 1000)} מ׳ ממך` : `${km.toFixed(1)} ק״מ ממך`;
+}
+
 const IL_DEMO: Pin[] = IL_CITIES.flatMap((c, ci) =>
   Array.from({ length: PER_CITY }, (_, j) => {
     const n = ci * 100 + j;
@@ -194,7 +206,19 @@ export default function PublicMap() {
   const [region, setRegion] = useState("all");
   const [city, setCity] = useState("all");
   const [activity, setActivity] = useState<{ name: string; verb: string } | null>(null);
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
   const { t } = useI18n();
+
+  // Ask the client for their location once, so each card can show "distance from
+  // you", like a ride-hailing app. Silent if denied; the card just omits the line.
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
+    );
+  }, []);
 
   // Init map + load data once.
   useEffect(() => {
@@ -440,6 +464,11 @@ export default function PublicMap() {
             <p style={{ color: "#6B6862", fontSize: 13, margin: "3px 0 6px" }}>
               {PRACTICE_AREA_LABELS[selected.areas?.[0]] ?? "עו״ד"} · {EXPERIENCE_LABELS[selected.tier as keyof typeof EXPERIENCE_LABELS] ?? ""}
             </p>
+            {userLoc && (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#eef7ff", color: "#1d6fb8", padding: "2px 10px", borderRadius: 999, fontWeight: 700, fontSize: 12.5, marginBottom: 8 }}>
+                <span className="ms" style={{ fontSize: 15 }}>near_me</span>{formatDistance(kmBetween(userLoc, { lat: selected.lat, lng: selected.lng }))}
+              </div>
+            )}
             {selected.license && (
               <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 8px", flexWrap: "wrap" }}>
                 <span style={{ fontSize: 12, color: "#6B6862" }} dir="rtl">רישיון לשכה: <span dir="ltr">{selected.license}</span></span>
@@ -467,6 +496,7 @@ export default function PublicMap() {
       {panel?.kind === "schedule" && <SchedulePanel pin={panel.pin} onClose={() => setPanel(null)} t={t} />}
       {panel?.kind === "profile" && (
         <ProfileCardPanel pin={panel.pin} onClose={() => setPanel(null)}
+          distance={userLoc ? formatDistance(kmBetween(userLoc, { lat: panel.pin.lat, lng: panel.pin.lng })) : null}
           onChat={() => setPanel({ kind: "chat", pin: panel.pin })}
           onSchedule={() => setPanel({ kind: "schedule", pin: panel.pin })} t={t} />
       )}
@@ -588,8 +618,8 @@ function SchedulePanel({ pin, onClose, t }: { pin: Pin; onClose: () => void; t: 
 }
 
 // ── Rich public attorney profile (broad card people can learn from) ──
-function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
-  pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; t: (k: string) => string;
+function ProfileCardPanel({ pin, onClose, onChat, onSchedule, distance, t }: {
+  pin: Pin; onClose: () => void; onChat: () => void; onSchedule: () => void; distance?: string | null; t: (k: string) => string;
 }) {
   const ring = specColor(pin.areas);
   const rating = Math.min(5, 3.8 + pin.reputation / 1500);
@@ -626,6 +656,11 @@ function ProfileCardPanel({ pin, onClose, onChat, onSchedule, t }: {
               ? (<>{CURRENCY[pin.jurisdiction] ?? "₪"}{pin.rate}<span style={{ fontSize: 12, fontWeight: 600, color: "#6B6862" }}>{t("map.perHour")}</span></>)
               : (<span style={{ fontSize: 14 }}>{t("map.byAgreement")}</span>)}
           </div>
+          {distance && (
+            <div style={{ marginTop: 14, marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 4, background: "#eef7ff", color: "#1d6fb8", padding: "6px 14px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+              <span className="ms" style={{ fontSize: 17 }}>near_me</span>{distance}
+            </div>
+          )}
         </div>
 
         <div style={{ padding: "16px 18px" }}>
