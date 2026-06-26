@@ -81,7 +81,32 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       provider: "google",
       options: { redirectTo: window.location.origin + window.location.pathname },
     });
-    if (error) { setBusy(false); setErr(mapError(error.message)); }
+    if (error) {
+      setBusy(false);
+      setErr(/not enabled/i.test(error.message)
+        ? "התחברות עם Google תופעל בקרוב. בינתיים אפשר להיכנס עם קישור למייל או עם סיסמה."
+        : mapError(error.message));
+    }
+  }
+
+  // Passwordless sign in: email the user a one-click magic link (no password to
+  // remember). Limited to existing accounts; new users go through the structured
+  // signup flow that collects the Bar licence.
+  async function signInMagicLink() {
+    if (!email.trim()) { setErr("הזינו כתובת מייל לקבלת קישור כניסה"); return; }
+    setBusy(true); setErr(null); setInfo(null);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + window.location.pathname },
+    });
+    setBusy(false);
+    if (error) {
+      setErr(/not allowed|not found|signups/i.test(error.message)
+        ? "המייל אינו רשום עדיין. עברו ללשונית הרשמה כדי ליצור חשבון."
+        : mapError(error.message));
+      return;
+    }
+    setInfo("שלחנו קישור כניסה למייל. פתחו אותו כדי להיכנס, ללא סיסמה.");
   }
 
   async function signUp(e: React.FormEvent) {
@@ -319,6 +344,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
                       {busy ? <span className="spinner" /> : t("auth.enterNetwork")}
+                    </button>
+                    <button type="button" className="btn btn-ghost"
+                      style={{ width: "100%", marginTop: 8, fontSize: 13 }}
+                      onClick={signInMagicLink} disabled={busy}>
+                      ✉️ כניסה עם קישור למייל, ללא סיסמה
                     </button>
                     <button type="button" className="btn btn-ghost"
                       style={{ width: "100%", marginTop: 8, fontSize: 13 }}
