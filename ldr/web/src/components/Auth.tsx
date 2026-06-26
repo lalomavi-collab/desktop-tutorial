@@ -51,6 +51,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [licCountry, setLicCountry] = useState("IL");
   const [barCard, setBarCard] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -339,8 +340,16 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                     <input type="email" required autoComplete="username" dir="ltr"
                       value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@law.co.il" />
                     <label style={{ marginTop: 12 }}>{t("auth.password")}</label>
-                    <input type="password" required autoComplete="current-password" dir="ltr"
-                      value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+                    <div style={{ position: "relative" }}>
+                      <input type={showPw ? "text" : "password"} required autoComplete="current-password" dir="ltr"
+                        value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
+                        style={{ paddingInlineEnd: 42 }} />
+                      <button type="button" onClick={() => setShowPw((v) => !v)}
+                        aria-label={showPw ? "הסתר סיסמה" : "הצג סיסמה"}
+                        style={{ position: "absolute", insetInlineEnd: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--cream-dim)", display: "grid", placeItems: "center", padding: 4 }}>
+                        <span className="ms" style={{ fontSize: 20 }}>{showPw ? "visibility_off" : "visibility"}</span>
+                      </button>
+                    </div>
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
                       {busy ? <span className="spinner" /> : t("auth.enterNetwork")}
