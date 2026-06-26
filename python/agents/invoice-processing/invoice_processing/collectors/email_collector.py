@@ -93,7 +93,7 @@ def collect_from_mailbox(
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart":
                     continue
-                disposition = part.get("Content-Disposition", "")
+                disposition = part.get("Content-Disposition") or ""
                 filename = part.get_filename()
                 if filename:
                     filename = _decode_str(filename)
@@ -123,7 +123,12 @@ def collect_from_mailbox(
 
         conn.logout()
     except Exception as e:
-        collected.append({"error": str(e), "source": label, "has_attachment": False})
+        collected.append({
+            "error": str(e), "source": label, "has_attachment": False,
+            "filename": None, "path": None, "subject": f"שגיאת חיבור: {e}",
+            "sender": "", "date": "", "type": "unknown", "client": "",
+            "amount": None, "currency": None,
+        })
 
     return collected
 

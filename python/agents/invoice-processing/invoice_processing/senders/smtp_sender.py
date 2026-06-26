@@ -73,6 +73,7 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
 
     # צרף PDF-ים
     attached = []
+    missing = []
     for path_str in draft.get("attachments", []):
         p = Path(path_str)
         if p.exists():
@@ -81,6 +82,11 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
             part["Content-Disposition"] = f'attachment; filename="{p.name}"'
             msg.attach(part)
             attached.append(p.name)
+        else:
+            missing.append(p.name)
+
+    if missing:
+        return {"sent": False, "error": f"קבצים לא נמצאו בדיסק: {', '.join(missing)}"}
 
     try:
         with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
