@@ -52,6 +52,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [barCard, setBarCard] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [showPw, setShowPw] = useState(false);
+  const [needsConfirm, setNeedsConfirm] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -70,10 +71,29 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setErr(null);
+    setBusy(true); setErr(null); setNeedsConfirm(false);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) setErr(mapError(error.message));
+    if (error) {
+      if (/not confirmed/i.test(error.message)) {
+        setNeedsConfirm(true);
+        setErr("המייל לא אומת עדיין. לחצו למטה לשליחה חוזרת של מייל האימות.");
+      } else {
+        setErr(mapError(error.message));
+      }
+    }
+  }
+
+  // Resend the signup confirmation email when a login fails on an unconfirmed
+  // address, so the user is not stuck without a clear way forward.
+  async function resendConfirmation() {
+    if (!email.trim()) { setErr("הזינו כתובת מייל"); return; }
+    setBusy(true); setErr(null);
+    const { error } = await supabase.auth.resend({ type: "signup", email: email.trim() });
+    setBusy(false);
+    if (error) { setErr(mapError(error.message)); return; }
+    setNeedsConfirm(false);
+    setInfo("מייל אימות חדש נשלח. בדקו את תיבת הדואר (וגם תיקיית הספאם).");
   }
 
   async function signInGoogle() {
@@ -351,6 +371,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                       </button>
                     </div>
                     {err && <p style={{ color: "var(--burgundy-soft)", fontSize: 13, margin: "10px 0 0" }}>{err}</p>}
+                    {needsConfirm && (
+                      <button type="button" className="btn btn-ghost"
+                        style={{ width: "100%", marginTop: 10, fontSize: 13 }}
+                        onClick={resendConfirmation} disabled={busy}>
+                        ✉️ שלח שוב מייל אימות
+                      </button>
+                    )}
                     <button className="btn btn-gold" style={{ width: "100%", marginTop: 18 }} disabled={busy}>
                       {busy ? <span className="spinner" /> : t("auth.enterNetwork")}
                     </button>
