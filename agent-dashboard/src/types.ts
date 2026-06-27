@@ -57,6 +57,10 @@ export interface JobCandidate {
   decision: JobDecision;
   appliedAt?: string;
   screenshotPath?: string;
+  toEmail?: string;
+  emailVerified?: boolean;
+  emailSubject?: string;
+  coverLetter?: string;
 }
 
 export interface Post {

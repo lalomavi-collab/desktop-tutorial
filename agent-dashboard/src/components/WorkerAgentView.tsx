@@ -95,7 +95,7 @@ const profileSections: { title: string; icon: typeof User; fields: ProfileField[
     fields: [
       { key: 'resume_docx', label: 'קורות חיים (DOCX)', value: 'Avraham_Lalum_CV_2026_EN.docx ✓ שמור ב-job_agent/', status: 'filled', required: true },
       { key: 'cover_letter', label: 'מכתב כוונות', value: 'תבנית מובנית ב-profile_context.json ✓', status: 'filled', required: true },
-      { key: 'resume_pdf', label: 'גרסת PDF של ה-CV', value: '', status: 'missing', required: false, hint: 'המר את ה-DOCX ל-PDF לטפסים שדורשים PDF בלבד' },
+      { key: 'resume_pdf', label: 'גרסת PDF של ה-CV', value: 'resume.pdf ✓ שמור ב-job_agent/', status: 'filled', required: false },
       { key: 'academic_cv', label: 'Academic CV ארוך', value: '', status: 'missing', required: false, hint: 'גרסה מורחבת עם כל הפרסומים — נדרש ל-OECD/ECB/אקדמיה' },
       { key: 'references', label: 'ממליצים', value: '', status: 'missing', required: false, hint: '2–3 ממליצים — פרופסור מנחה, שופט, ראש לשכה' },
     ],
@@ -136,7 +136,7 @@ const autonomyRules = [
   },
 ];
 
-const approvedCompanies = ['Waymo', 'Tesla', 'Mercedes-Benz', 'ECB', 'OECD', 'Microsoft', 'EU AI Office'];
+const approvedCompanies = ['Waymo', 'Tesla', 'Mercedes-Benz', 'ECB', 'OECD', 'Microsoft', 'EU AI Office', 'OpenAI', 'Wiz', 'Apple', 'Google', 'Pagaya'];
 
 // ─── Score color ────────────────────────────────────────────────────────────
 
@@ -165,25 +165,96 @@ type Tab = typeof TABS[number]['id'];
 
 // ─── Main component ─────────────────────────────────────────────────────────
 
+const STORAGE_KEY = 'job-decisions-v1';
+
+function loadDecisions(): Record<string, { decision: JobCandidate['decision']; appliedAt?: string }> {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}'); } catch { return {}; }
+}
+
+function saveDecision(id: string, decision: JobCandidate['decision'], appliedAt?: string) {
+  const saved = loadDecisions();
+  saved[id] = { decision, appliedAt };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
+
+function mergeWithSaved(jobs: JobCandidate[]): JobCandidate[] {
+  const saved = loadDecisions();
+  return jobs.map(j => saved[j.id] ? { ...j, ...saved[j.id] } : j);
+}
+
 export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('queue');
-  const [jobs, setJobs] = useState<JobCandidate[]>(initialJobQueue);
+  const [jobs, setJobs] = useState<JobCandidate[]>(() => mergeWithSaved(initialJobQueue));
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [schedule, setSchedule] = useState(defaultSchedule);
+  const [confirmJob, setConfirmJob] = useState<JobCandidate | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const decide = (id: string, decision: 'approved' | 'rejected') => {
     if (decision === 'approved') {
-      setApplyingId(id);
-      setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applying' } : j));
-      setTimeout(() => {
-        setJobs(prev => prev.map(j =>
-          j.id === id ? { ...j, decision: 'applied', appliedAt: 'עכשיו', screenshotPath: `screenshots/${id}.png` } : j
-        ));
-        setApplyingId(null);
-      }, 2800);
+      const job = jobs.find(j => j.id === id);
+      if (job?.toEmail && job?.coverLetter) {
+        setConfirmJob(job);
+      } else {
+        // No email configured — mark as approved for manual follow-up
+        saveDecision(id, 'applied', 'ממתין לשליחה ידנית');
+        setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'applied', appliedAt: 'ממתין לשליחה ידנית' } : j));
+      }
     } else {
+      saveDecision(id, 'rejected');
       setJobs(prev => prev.map(j => j.id === id ? { ...j, decision: 'rejected' } : j));
+    }
+  };
+
+  const confirmSend = async () => {
+    if (!confirmJob) return;
+    const job = confirmJob;
+
+    // Basic email validation before sending
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!job.toEmail || !emailRegex.test(job.toEmail)) {
+      setSendError(`כתובת מייל לא תקינה: "${job.toEmail}" — בדוק לפני שליחה`);
+      setConfirmJob(null);
+      return;
+    }
+
+    setConfirmJob(null);
+    setSendError(null);
+    setApplyingId(job.id);
+    setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'applying' } : j));
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_email: job.toEmail,
+          subject: job.emailSubject,
+          cover_letter: job.coverLetter,
+          company: job.company,
+          title: job.title,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const appliedAt = new Date().toLocaleTimeString('he-IL');
+        saveDecision(job.id, 'applied', appliedAt);
+        setJobs(prev => prev.map(j =>
+          j.id === job.id ? { ...j, decision: 'applied', appliedAt } : j
+        ));
+      } else {
+        setSendError(data.error ?? 'שגיאה לא ידועה');
+        saveDecision(job.id, 'failed');
+        setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Network error';
+      setSendError(msg);
+      saveDecision(job.id, 'failed');
+      setJobs(prev => prev.map(j => j.id === job.id ? { ...j, decision: 'failed' } : j));
+    } finally {
+      setApplyingId(null);
     }
   };
 
@@ -201,6 +272,77 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
 
   return (
     <div className="space-y-5" dir="rtl">
+
+      {/* ── Confirm Send Modal ─────────────────────────────────────────────── */}
+      {confirmJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" dir="rtl">
+          <div className="bg-[#13151f] border border-amber-500/40 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl">
+            <div className="flex items-center justify-end gap-2 mb-4">
+              <h2 className="text-white font-bold text-lg">אישור שליחת בקשה</h2>
+              <Send size={18} className="text-amber-400" />
+            </div>
+            <div className="space-y-3 mb-5">
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">חברה</p>
+                <p className="text-white font-semibold">{confirmJob.company}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">תפקיד</p>
+                <p className="text-white">{confirmJob.title}</p>
+              </div>
+              <div className={`p-3 rounded-xl border ${confirmJob.emailVerified === false ? 'bg-amber-500/10 border-amber-500/30' : 'bg-gray-900 border-transparent'}`}>
+                <div className="flex items-center justify-end gap-2 mb-1">
+                  {confirmJob.emailVerified === false && (
+                    <span className="text-xs text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full">⚠️ כתובת לא מאומתת — best guess</span>
+                  )}
+                  {confirmJob.emailVerified === true && (
+                    <span className="text-xs text-green-400 bg-green-500/15 px-2 py-0.5 rounded-full">✅ כתובת מאומתת</span>
+                  )}
+                  <p className="text-gray-500 text-xs">נשלח אל</p>
+                </div>
+                <p className="text-amber-400 font-mono text-sm text-right">{confirmJob.toEmail}</p>
+                {confirmJob.emailVerified === false && (
+                  <p className="text-amber-300/70 text-xs mt-1 text-right">מומלץ לאמת את הכתובת לפני שליחה</p>
+                )}
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl">
+                <p className="text-gray-500 text-xs mb-1">נושא</p>
+                <p className="text-gray-300 text-sm">{confirmJob.emailSubject}</p>
+              </div>
+              <div className="p-3 bg-gray-900 rounded-xl max-h-40 overflow-y-auto">
+                <p className="text-gray-500 text-xs mb-1">תצוגה מקדימה של מכתב הכיסוי</p>
+                <p className="text-gray-400 text-xs leading-relaxed whitespace-pre-line">{confirmJob.coverLetter?.slice(0, 400)}...</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmJob(null)}
+                className="flex-1 py-2.5 rounded-xl border border-gray-700 text-gray-400 text-sm font-medium hover:bg-gray-800 transition-all"
+              >
+                ביטול
+              </button>
+              <button
+                onClick={confirmSend}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-bold transition-all shadow-lg shadow-green-900/30"
+              >
+                <Send size={14} />
+                שלח עכשיו דרך Outlook
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Send Error Banner ──────────────────────────────────────────────── */}
+      {sendError && (
+        <div className="flex items-center justify-between p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <button onClick={() => setSendError(null)} className="text-red-400 text-xs hover:text-red-300">✕ סגור</button>
+          <div className="text-right">
+            <p className="text-red-400 font-semibold text-sm">שגיאה בשליחה</p>
+            <p className="text-gray-500 text-xs">{sendError}</p>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-gray-600">
@@ -221,7 +363,7 @@ export function WorkerAgentView({ onBreadcrumbCeo }: WorkerAgentViewProps) {
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'נסרקו', value: '63', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { label: 'נסרקו', value: '19', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           { label: 'מתאימות', value: String(qualified.length), icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10' },
           { label: 'הוגשו', value: String(applied.length), icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/10' },
           { label: 'פרופיל מלא', value: `${completeness}%`, icon: User, color: completeness < 50 ? 'text-red-400' : 'text-amber-400', bg: completeness < 50 ? 'bg-red-500/10' : 'bg-amber-500/10' },

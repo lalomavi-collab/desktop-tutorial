@@ -1,0 +1,13 @@
+{
+  "name": "@ldr/client-anonymizer",
+  "version": "0.1.0",
+  "description": "Client-side zero-knowledge anonymizer for The Legal Decision Room. Runs in the browser; raw case text never leaves the device.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test"
+  },
+  "license": "UNLICENSED"
+}

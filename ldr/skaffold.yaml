@@ -1,0 +1,28 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: legal-decision-room
+build:
+  artifacts:
+    - image: gcr.io/my-project/ldr-ingestion
+      context: services/ingestion
+    - image: gcr.io/my-project/ldr-ai-core
+      context: services/ai-core
+    - image: gcr.io/my-project/ldr-peer-room
+      context: services/peer-room
+manifests:
+  rawYaml:
+    - k8s/namespace.yaml
+    - k8s/configmap.yaml
+    - k8s/postgres-statefulset.yaml
+    - k8s/ingestion-deployment.yaml
+    - k8s/ai-core-deployment.yaml
+    - k8s/peer-room-deployment.yaml
+deploy:
+  kubectl: {}
+profiles:
+  # `skaffold dev -p local` for fast inner-loop development.
+  - name: local
+    build:
+      local:
+        push: false

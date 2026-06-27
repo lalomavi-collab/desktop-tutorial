@@ -1,0 +1,124 @@
+name: Daily Job Applications Report
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 09:00 Israel time (UTC+3)
+  workflow_dispatch:
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    env:
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+      MS_SENDER: avraham@lalum.co
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install msal requests
+
+      - name: Send daily job report
+        run: |
+          python3 -c "
+          import os, csv, msal, requests, sys
+          from datetime import date
+
+          tracker = 'job_agent/applications/tracker.csv'
+          rows = []
+          with open(tracker, encoding='utf-8') as f:
+              reader = csv.DictReader(f)
+              rows = list(reader)
+
+          today = date.today().isoformat()
+          total = len(rows)
+          applied  = [r for r in rows if r.get('status') == 'applied']
+          approved = [r for r in rows if r.get('status') == 'approved']
+          pending  = [r for r in rows if r.get('status') == 'pending']
+          skipped  = [r for r in rows if r.get('status') == 'skipped']
+
+          STATUS_LABEL = {
+              'applied':  '📤 הוגש',
+              'approved': '✅ מאושר',
+              'pending':  '⏳ ממתין',
+              'skipped':  '⏭️ דולג',
+              'interview':'🗣️ ראיון',
+              'rejected': '❌ נדחה',
+              'offer':    '🎉 הצעה',
+          }
+
+          def rows_table(items):
+              if not items:
+                  return '  (אין)\n'
+              lines = []
+              for r in items:
+                  label = STATUS_LABEL.get(r.get('status',''), r.get('status',''))
+                  score = r.get('score','')
+                  score_str = f'  ציון {score}' if score else ''
+                  lines.append(f\"  • {r['company']} — {r['title']}{score_str} | {label}\")
+              return '\n'.join(lines) + '\n'
+
+          body = f'''שלום אברהם,
+
+          דוח יומי — בקשות עבודה | {today}
+          ════════════════════════════════
+
+          📊 סטטיסטיקות
+          ─────────────
+          סה\"כ בקשות במעקב : {total}
+          הוגשו             : {len(applied)}
+          מאושרות/ממתינות  : {len(approved) + len(pending)}
+          דולגו             : {len(skipped)}
+
+          📤 הוגשו
+          ────────
+          {rows_table(applied)}
+          ✅ מאושרות (ממתין לתגובה)
+          ──────────────────────────
+          {rows_table(approved)}
+          ⏳ ממתינות לשליחה
+          ──────────────────
+          {rows_table(pending)}
+
+          ════════════════════════════════
+          דוח זה נשלח אוטומטית בכל יום בשעה 09:00.
+          '''
+
+          authority = f'https://login.microsoftonline.com/{os.environ[\"MS_TENANT_ID\"]}'
+          app = msal.ConfidentialClientApplication(
+              client_id=os.environ['MS_CLIENT_ID'],
+              client_credential=os.environ['MS_CLIENT_SECRET'],
+              authority=authority,
+          )
+          result = app.acquire_token_for_client(scopes=['https://graph.microsoft.com/.default'])
+          if 'access_token' not in result:
+              print('Token error:', result)
+              sys.exit(1)
+          token = result['access_token']
+
+          sender = os.environ['MS_SENDER']
+          payload = {
+              'message': {
+                  'subject': f'דוח יומי — בקשות עבודה | {today}',
+                  'body': {'contentType': 'Text', 'content': body},
+                  'toRecipients': [{'emailAddress': {'address': sender}}],
+              },
+              'saveToSentItems': 'true',
+          }
+          resp = requests.post(
+              f'https://graph.microsoft.com/v1.0/users/{sender}/sendMail',
+              headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+              json=payload, timeout=30,
+          )
+          if resp.status_code == 202:
+              print(f'✅ Report sent to {sender}')
+          else:
+              print(f'❌ Error {resp.status_code}: {resp.text[:300]}')
+              sys.exit(1)
+          "
