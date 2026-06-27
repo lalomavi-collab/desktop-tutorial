@@ -700,3 +700,10 @@ input::placeholder, textarea::placeholder { color: rgba(207,205,176,0.4); }
 /* Soften the dark-era cyan aurora/grid so they read as a faint tint on white. */
 .landing .aurora { opacity: .30; }
 .landing .grid-overlay { opacity: .45; }
+
+/* Splash screen scroll-down cue. */
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50%       { transform: translateY(5px); opacity: 1; }
+}
+.bounce-arrow { display: inline-block; animation: bounce-down 1.8s ease-in-out infinite; }
