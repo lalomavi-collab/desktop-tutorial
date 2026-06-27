@@ -116,6 +116,8 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       setErr(/not enabled/i.test(error.message)
         ? "התחברות עם Google תופעל בקרוב. בינתיים אפשר להיכנס עם קישור למייל או עם סיסמה."
         : mapError(error.message));
+      // Open sign-in modal so the error is visible (splash screen has no error area).
+      if (!authOpen) { setAuthOpen(true); setMode("signin"); }
     }
   }
 
@@ -269,9 +271,10 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             style={{
               width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
               padding: "13px 20px", borderRadius: 16, border: "1px solid var(--line)",
-              background: "#fff", color: "#1f1e1d", fontWeight: 600, fontSize: 15, cursor: "pointer", marginBottom: 20,
+              background: "#fff", color: "#1f1e1d", fontWeight: 600, fontSize: 15, cursor: busy ? "wait" : "pointer", marginBottom: 20,
+              opacity: busy ? 0.7 : 1,
             }}>
-            <GoogleSvg />
+            {busy ? <span className="spinner" style={{ borderColor: "#ccc", borderTopColor: "#333" }} /> : <GoogleSvg />}
             {t("auth.google")}
           </button>
 
