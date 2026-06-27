@@ -60,6 +60,10 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
     if not draft.get("attachments"):
         return {"sent": False, "reason": "אין קבצי PDF מצורפים — הסוכן לא שולח ללא צרופות"}
 
+    missing_vars = [v for v in ("SMTP_HOST", "SMTP_USER", "SMTP_PASS") if not os.environ.get(v)]
+    if missing_vars:
+        return {"sent": False, "error": f"חסרים משתני .env: {', '.join(missing_vars)}"}
+
     smtp_host = os.environ["SMTP_HOST"]
     smtp_port = int(os.environ.get("SMTP_PORT", 587))
     smtp_user = os.environ["SMTP_USER"]

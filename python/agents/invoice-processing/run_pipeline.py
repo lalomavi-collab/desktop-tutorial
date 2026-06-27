@@ -51,10 +51,21 @@ def merge_items(email_items: list[dict], folder_files: list[dict]) -> list[dict]
 
     for item in result:
         fname = item.get("filename")
-        if fname and fname in folder_by_name:
-            item["path"] = folder_by_name[fname]["path"]
+        if not fname:
+            continue
+        # התאמה מדויקת לפי שם קובץ
+        if fname in folder_by_name:
+            item["path"] = folder_by_name.pop(fname)["path"]
             item["has_attachment"] = True
-            folder_by_name.pop(fname)
+        else:
+            # התאמה חלקית — מספר מסמך בתוך שם הקובץ (למשל "70119" ב-"InvoiceReceipt_70119.pdf")
+            stem = fname.replace(".pdf", "").replace(".PDF", "")
+            for folder_fname, fdata in list(folder_by_name.items()):
+                if stem in folder_fname:
+                    item["path"] = fdata["path"]
+                    item["has_attachment"] = True
+                    folder_by_name.pop(folder_fname)
+                    break
 
     # קבצים שנמצאו רק בתיקייה (לא ממייל)
     for fname, fdata in folder_by_name.items():
