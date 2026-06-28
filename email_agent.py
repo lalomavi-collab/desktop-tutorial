@@ -5,10 +5,11 @@ email_agent.py — שולח לכל 200 המשרדים דרך Microsoft Graph API
 import csv, json, requests, time
 from pathlib import Path
 
-TOKEN_FILE = "o365_token.txt"
-DATA_FILE  = "contacts.csv"
-SENT_LOG   = "sent_contacts.json"
-THROTTLE   = 7  # שניות בין מיילים
+TOKEN_FILE   = "o365_token.txt"
+DATA_FILE    = "contacts.csv"
+SENT_LOG     = "sent_contacts.json"
+VERIFY_FILE  = "email_verify_results.json"
+THROTTLE     = 7  # שניות בין מיילים
 
 # ─── טעינת טוקן ───────────────────────────────────────────
 if not Path(TOKEN_FILE).exists():
@@ -119,9 +120,17 @@ with open(DATA_FILE, newline="", encoding="utf-8") as f:
         if row.get("Email", "").strip():
             contacts.append(row)
 
+# ─── טעינת תוצאות אימות (אופציונלי) ─────────────────────────
+verified_ok = None
+if Path(VERIFY_FILE).exists():
+    with open(VERIFY_FILE, encoding="utf-8") as f:
+        verify_data = json.load(f)
+    verified_ok = {email for email, v in verify_data.items() if v["status"] == "OK"}
+    print(f"🔍 קובץ אימות נטען — {len(verified_ok)} כתובות תקינות מתוך {len(verify_data)}")
+
 sent_set = load_sent()
 total    = len(contacts)
-stats    = {"sent": 0, "skipped": 0, "errors": 0}
+stats    = {"sent": 0, "skipped": 0, "skipped_verify": 0, "errors": 0}
 
 print(f"\nסה\"כ {total} כתובות | כבר נשלחו: {len(sent_set)}\n")
 
@@ -133,6 +142,11 @@ for i, c in enumerate(contacts, 1):
     if email in sent_set:
         print(f"  [{i:03d}/{total}] ⏭  דילוג (כבר נשלח) → {email}")
         stats["skipped"] += 1
+        continue
+
+    if verified_ok is not None and email not in verified_ok:
+        print(f"  [{i:03d}/{total}] 🚫 דילוג (לא עבר אימות) → {email}")
+        stats["skipped_verify"] += 1
         continue
 
     html = build_html(name, firm)
@@ -161,4 +175,4 @@ for i, c in enumerate(contacts, 1):
     if i < total:
         time.sleep(THROTTLE)
 
-print(f"\n✅ סיום — נשלחו: {stats['sent']} | דולגו: {stats['skipped']} | שגיאות: {stats['errors']}")
+print(f"\n✅ סיום — נשלחו: {stats['sent']} | דולגו (נשלח): {stats['skipped']} | דולגו (אימות): {stats['skipped_verify']} | שגיאות: {stats['errors']}")
