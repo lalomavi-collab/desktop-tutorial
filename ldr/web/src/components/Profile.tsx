@@ -12,8 +12,8 @@ export default function Profile({
 }: { profile: ProfileT; notify: (m: string) => void; onChange: (p: ProfileT) => void; onSignOut?: () => void }) {
   const [headline, setHeadline] = useState(profile.headline ?? "");
   const [savingH, setSavingH] = useState(false);
-  const [rate, setRate] = useState<string>(((profile as any).hourly_rate ?? "").toString());
-  const [byHour, setByHour] = useState<boolean>(!!(profile as any).hourly_rate);
+  const [rate, setRate] = useState<string>((profile.hourly_rate ?? "").toString());
+  const [byHour, setByHour] = useState<boolean>(!!profile.hourly_rate);
   const [savingR, setSavingR] = useState(false);
   const [endorsements, setEndorsements] = useState(0);
   const [network, setNetwork] = useState<{ id: string; name: string | null }[]>([]);

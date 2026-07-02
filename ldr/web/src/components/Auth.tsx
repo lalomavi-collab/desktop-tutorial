@@ -13,8 +13,6 @@ import { useI18n } from "../i18n";
 
 type Mode = "signin" | "signup" | "reset" | "reset_sent";
 
-// Count-up animation for a numeric stat (animates the leading number, keeps
-// any suffix like "+" or "%"). Gives the entry a live, dynamic feel.
 function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -24,7 +22,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
     let raf = 0;
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      const eased = 1 - Math.pow(1 - p, 3);
       setN(Math.round(eased * value));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
@@ -39,6 +37,17 @@ const FEATURES = [
   { icon: "📩", key: "feat.network" },
   { icon: "🤝", key: "feat.leads" },
 ];
+
+function GoogleSvg() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.1 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.8 6.1C12.2 13.2 17.6 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.8-9.9 6.8-17.4z"/>
+      <path fill="#FBBC05" d="M10.3 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.8-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.7l7.8-6.1z"/>
+      <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15-5.5l-7.3-5.7c-2 1.4-4.7 2.3-7.7 2.3-6.4 0-11.8-3.7-13.7-9l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/>
+    </svg>
+  );
+}
 
 export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [mode, setMode] = useState<Mode>("signup");
@@ -58,9 +67,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [memberCount, setMemberCount] = useState(40);
+  const moreRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
 
   function openAuth(m: Mode, who?: "attorney" | "client") { if (who) setAcct(who); setMode(m); setErr(null); setInfo(null); setAuthOpen(true); }
+  function scrollToMore() { moreRef.current?.scrollIntoView({ behavior: "smooth" }); }
 
   useEffect(() => {
     supabase.from("ldr_demo_attorneys").select("id", { count: "exact", head: true })
@@ -84,8 +95,6 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
     }
   }
 
-  // Resend the signup confirmation email when a login fails on an unconfirmed
-  // address, so the user is not stuck without a clear way forward.
   async function resendConfirmation() {
     if (!email.trim()) { setErr("הזינו כתובת מייל"); return; }
     setBusy(true); setErr(null);
@@ -107,12 +116,11 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       setErr(/not enabled/i.test(error.message)
         ? "התחברות עם Google תופעל בקרוב. בינתיים אפשר להיכנס עם קישור למייל או עם סיסמה."
         : mapError(error.message));
+      // Open sign-in modal so the error is visible (splash screen has no error area).
+      if (!authOpen) { setAuthOpen(true); setMode("signin"); }
     }
   }
 
-  // Passwordless sign in: email the user a one-click magic link (no password to
-  // remember). Limited to existing accounts; new users go through the structured
-  // signup flow that collects the Bar licence.
   async function signInMagicLink() {
     if (!email.trim()) { setErr("הזינו כתובת מייל לקבלת קישור כניסה"); return; }
     setBusy(true); setErr(null); setInfo(null);
@@ -142,7 +150,6 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
       options: { data: { display_name: name.trim() || undefined, role: acct, license_no: acct === "attorney" && licCountry === "IL" ? licNo.trim() : undefined, license_country: acct === "attorney" ? licCountry : undefined } },
     });
     if (error) { setBusy(false); setErr(mapError(error.message)); return; }
-    // Persist role/country (+ license) and upload the Bar card (non-IL) when a session exists.
     if (data.session && data.user) {
       if (acct === "attorney" && barCard) {
         const ext = barCard.name.split(".").pop() || "jpg";
@@ -170,121 +177,123 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   }
 
   return (
-    <div className="landing" style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+    <div className="landing" style={{ minHeight: "100dvh", position: "relative", overflow: "hidden" }}>
 
-      {/* ── Animated premium backdrop ── */}
+      {/* Animated premium backdrop */}
       <div className="aurora" aria-hidden="true" />
       <div className="grid-overlay" aria-hidden="true" />
 
-      {/* ── Top nav bar ── */}
+      {/* Minimal top nav: logo + utils only, no redundant sign-in/up buttons */}
       <nav style={{
         position: "sticky", top: 0, zIndex: 3,
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "10px 32px", minHeight: 56,
+        padding: "0 24px", minHeight: 52,
         borderBottom: "1px solid var(--line)",
-        background: "rgba(255,255,255,0.82)", backdropFilter: "blur(18px) saturate(160%)",
+        background: "rgba(250,249,245,0.90)", backdropFilter: "blur(18px) saturate(160%)",
       }}>
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="LAWDin, חזרה לראש העמוד"
           style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}>
-          <Wordmark size={36} tagline={false} tone="light" />
+          <Wordmark size={30} tagline={false} tone="light" />
         </button>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <LanguageSwitcher light />
           <NotificationsBell tone="light" />
-          <button className="btn btn-ghost" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => openAuth("signin")}>{t("nav.signin")}</button>
-          <button className="btn btn-gold" style={{ padding: "7px 18px", fontSize: 13 }}
-            onClick={() => openAuth("signup")}>{t("nav.signup")}</button>
         </div>
       </nav>
 
       {inviteToken && (
-        <div className="banner" style={{ borderRadius: 0, textAlign: "center" }}>
+        <div className="banner" style={{ borderRadius: 0, textAlign: "center", position: "relative", zIndex: 4 }}>
           {t("invite.banner")}
         </div>
       )}
 
-      {/* ── Live map hero (Gett-style: straight to the map, no slogan) ── */}
-      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 20, maxWidth: 1100 }}>
-        <PublicMap />
-        <MembersStrip />
-      </div>
+      {/* === SPLASH SECTION: fills one viewport, centered like an app launcher === */}
+      <section style={{
+        minHeight: "calc(100dvh - 52px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "32px 24px 40px",
+        position: "relative",
+        zIndex: 2,
+      }}>
+        <div style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-      {/* ── Hero ── */}
-      <div className="container" style={{ position: "relative", zIndex: 2, paddingTop: 40, paddingBottom: 48, maxWidth: 1100 }}>
-        <div style={{ maxWidth: 640 }}>
+          {/* Logo: prominent, app-icon sized */}
+          <Wordmark size={56} tagline={false} tone="light" />
 
-          {/* ── Marketing ── */}
-          <div className="animate-in">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
-              <div className="tag" dir="ltr" style={{ fontSize: 11 }}>
-                {t("hero.badge")}
-              </div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--ok)", fontWeight: 600 }}>
-                <span className="conn-dot connected" /> {t("hero.live")}
-              </span>
-            </div>
+          {/* Single value proposition */}
+          <p style={{
+            fontSize: 16.5, fontWeight: 600, color: "var(--cream-dim)",
+            textAlign: "center", margin: "18px 0 24px", lineHeight: 1.55,
+          }}>
+            הרשת המשפטית הסגורה לעורכי הדין
+          </p>
 
-            <h1 style={{ margin: "0 0 18px", fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.2, fontWeight: 900 }}>
-              {t("hero.title1")}<br />
-              <span className="gold">{t("hero.title2")}</span><br />
-              <span style={{ color: "var(--cream-dim)" }}>{t("hero.title3")}</span>
-            </h1>
-
-            <p style={{ fontSize: 16, lineHeight: 1.8, color: "var(--cream-dim)", maxWidth: 470, margin: "0 0 22px" }}>
-              {t("hero.lead")}
-            </p>
-
-            {/* Enticing trust line — quick reasons to join now */}
-            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 26, fontSize: 13.5, fontWeight: 600 }}>
-              <span style={{ color: "var(--ok)" }}>{t("hero.trust1")}</span>
-              <span style={{ color: "var(--ok)" }}>{t("hero.trust2")}</span>
-              <span style={{ color: "var(--ok)" }}>{t("hero.trust3")}</span>
-            </div>
-
-            <div style={{ marginBottom: 30 }}>
-              <button className="btn btn-gold" style={{ padding: "13px 30px", fontSize: 15.5 }}
-                onClick={() => openAuth("signup", "attorney")}>
-                הצטרפו כעורך דין, בחינם →
-              </button>
-              <div style={{ marginTop: 12, fontSize: 13.5 }}>
-                <span className="muted">מחפשים עורך דין? </span>
-                <button className="link" onClick={() => openAuth("signup", "client")}>כניסת לקוחות פרטיים</button>
-              </div>
-            </div>
-
-            {/* Concise value props — clean, professional */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 30 }}>
-              {FEATURES.map((f) => (
-                <div key={f.icon} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 20, width: 28, textAlign: "center", flexShrink: 0 }}>{f.icon}</span>
-                  <span style={{ fontWeight: 600, fontSize: 15 }}>{t(f.key)}</span>
+          {/* Quick stats: most compelling numbers above the fold */}
+          <div style={{ display: "flex", gap: 28, marginBottom: 30, flexWrap: "wrap", justifyContent: "center" }}>
+            {[
+              { v: memberCount, suffix: "+", l: t("stats.members") },
+              { v: 0, suffix: "%", l: t("stats.fee") },
+              { v: 24, suffix: "", l: t("stats.areas") },
+            ].map((s) => (
+              <div key={s.l} style={{ textAlign: "center" }}>
+                <div className="score-glow" style={{ fontSize: 22, fontWeight: 800 }}>
+                  <CountUp value={s.v} suffix={s.suffix} />
                 </div>
-              ))}
-            </div>
-
-            {/* Stats row — live count-up on entry */}
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-              {[
-                { v: memberCount, suffix: "+", l: t("stats.members") },
-                { v: 24, suffix: "", l: t("stats.areas") },
-                { v: 6, suffix: "", l: t("stats.countries") },
-                { v: 0, suffix: "%", l: t("stats.fee") },
-              ].map((s) => (
-                <div key={s.l} style={{ textAlign: "center" }}>
-                  <div className="score-glow" style={{ fontSize: 22 }}>
-                    <CountUp value={s.v} suffix={s.suffix} />
-                  </div>
-                  <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>{s.l}</div>
-                </div>
-              ))}
-            </div>
+                <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>{s.l}</div>
+              </div>
+            ))}
           </div>
 
-        </div>
-      </div>
+          {/* Primary CTA */}
+          <button className="btn btn-gold" onClick={() => openAuth("signup", "attorney")}
+            style={{ width: "100%", padding: "15px 20px", fontSize: 16.5, fontWeight: 800, borderRadius: 16, marginBottom: 10 }}>
+            הצטרפו כעו״ד, חינם →
+          </button>
 
-      {/* ── Auth modal (popup) — keeps the page clean ── */}
+          {/* Secondary CTA */}
+          <button className="btn btn-ghost" onClick={() => openAuth("signin")}
+            style={{ width: "100%", padding: "14px 20px", fontSize: 16, fontWeight: 700, borderRadius: 16, marginBottom: 16 }}>
+            כניסה לחשבון קיים
+          </button>
+
+          {/* Divider */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", marginBottom: 14, color: "var(--cream-dim)", fontSize: 12 }}>
+            <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
+            {t("auth.or")}
+            <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
+          </div>
+
+          {/* Google sign-in */}
+          <button type="button" onClick={signInGoogle} disabled={busy}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              padding: "13px 20px", borderRadius: 16, border: "1px solid var(--line)",
+              background: "#fff", color: "#1f1e1d", fontWeight: 600, fontSize: 15, cursor: busy ? "wait" : "pointer", marginBottom: 20,
+              opacity: busy ? 0.7 : 1,
+            }}>
+            {busy ? <span className="spinner" style={{ borderColor: "#ccc", borderTopColor: "#333" }} /> : <GoogleSvg />}
+            {t("auth.google")}
+          </button>
+
+          {/* Client join */}
+          <div style={{ fontSize: 13, marginBottom: 28, textAlign: "center" }}>
+            <span className="muted">מחפשים עורך דין? </span>
+            <button className="link" onClick={() => openAuth("signup", "client")}>כניסת לקוחות</button>
+          </div>
+
+          {/* Scroll-down cue */}
+          <button onClick={scrollToMore}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cream-dim)", fontSize: 13, display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "6px 16px", fontFamily: "inherit" }}>
+            <span>גלו עוד על LAWDin</span>
+            <span className="bounce-arrow" style={{ fontSize: 17 }}>▼</span>
+          </button>
+        </div>
+      </section>
+
+      {/* === AUTH MODAL (popup, unchanged) === */}
       {authOpen && (
         <div className="modal-backdrop" onClick={() => setAuthOpen(false)}>
           <div className="card pad animate-in" onClick={(e) => e.stopPropagation()}
@@ -326,19 +335,13 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                       >{t("nav.signup")}</button>
                     </div>
 
-                    {/* Google sign-in (works once Google provider is enabled in Supabase Auth) */}
                     <button type="button" onClick={signInGoogle} disabled={busy}
                       style={{
                         width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                         padding: "11px", borderRadius: 12, border: "1px solid var(--line)",
                         background: "#fff", color: "#1f1e1d", fontWeight: 600, fontSize: 14, cursor: "pointer",
                       }}>
-                      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-                        <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.1 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.8 6.1C12.2 13.2 17.6 9.5 24 9.5z"/>
-                        <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.8-9.9 6.8-17.4z"/>
-                        <path fill="#FBBC05" d="M10.3 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.8-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.7l7.8-6.1z"/>
-                        <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15-5.5l-7.3-5.7c-2 1.4-4.7 2.3-7.7 2.3-6.4 0-11.8-3.7-13.7-9l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/>
-                      </svg>
+                      <GoogleSvg />
                       {t("auth.google")}
                     </button>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 16px", color: "var(--cream-dim)", fontSize: 12 }}>
@@ -353,7 +356,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                   </div>
                 )}
 
-                {/* ── Sign In ── */}
+                {/* Sign In */}
                 {mode === "signin" && (
                   <form onSubmit={signIn}>
                     <label>{t("auth.email")}</label>
@@ -394,7 +397,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                   </form>
                 )}
 
-                {/* ── Sign Up ── */}
+                {/* Sign Up */}
                 {mode === "signup" && (
                   <form onSubmit={signUp}>
                     <label>{t("auth.accountType")}</label>
@@ -457,7 +460,7 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
                   </form>
                 )}
 
-                {/* ── Reset password ── */}
+                {/* Reset password */}
                 {mode === "reset" && (
                   <form onSubmit={resetPassword}>
                     <h4 style={{ marginTop: 0 }}>{t("auth.resetTitle")}</h4>
@@ -480,17 +483,72 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
         </div>
       )}
 
-      {/* ── Service rubrics (incl. jobs) ── */}
-      <ServicesStrip />
-      <LandingExtras onJoin={() => openAuth("signup")} />
+      {/* === MARKETING / BELOW FOLD === */}
+      <div ref={moreRef} style={{ position: "relative", zIndex: 2 }}>
+        <div className="container" style={{ paddingTop: 20, paddingBottom: 20, maxWidth: 1100 }}>
+          <PublicMap />
+          <MembersStrip />
+        </div>
 
-      {/* ── Office room rental (extra service) ── */}
-      <OfficeRentals />
+        {/* Features section */}
+        <div className="container" style={{ paddingTop: 36, paddingBottom: 44, maxWidth: 700 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+            <div className="tag" dir="ltr" style={{ fontSize: 11 }}>{t("hero.badge")}</div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--ok)", fontWeight: 600 }}>
+              <span className="conn-dot connected" /> {t("hero.live")}
+            </span>
+          </div>
+          <h2 style={{ margin: "0 0 10px", fontSize: "clamp(22px, 4vw, 34px)", fontWeight: 900 }}>
+            {t("hero.title1")} <span className="gold">{t("hero.title2")}</span>
+          </h2>
+          <p style={{ fontSize: 15.5, lineHeight: 1.8, color: "var(--cream-dim)", margin: "0 0 26px", maxWidth: 500 }}>
+            {t("hero.lead")}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 26 }}>
+            {FEATURES.map((f) => (
+              <div key={f.icon} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ fontSize: 22, width: 30, flexShrink: 0, textAlign: "center" }}>{f.icon}</span>
+                <span style={{ fontWeight: 600, fontSize: 15.5 }}>{t(f.key)}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 28, fontSize: 13, fontWeight: 600 }}>
+            <span style={{ color: "var(--ok)" }}>{t("hero.trust1")}</span>
+            <span style={{ color: "var(--ok)" }}>{t("hero.trust2")}</span>
+            <span style={{ color: "var(--ok)" }}>{t("hero.trust3")}</span>
+          </div>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 32 }}>
+            {[
+              { v: memberCount, suffix: "+", l: t("stats.members") },
+              { v: 24, suffix: "", l: t("stats.areas") },
+              { v: 6, suffix: "", l: t("stats.countries") },
+              { v: 0, suffix: "%", l: t("stats.fee") },
+            ].map((s) => (
+              <div key={s.l} style={{ textAlign: "center" }}>
+                <div className="score-glow" style={{ fontSize: 22 }}>
+                  <CountUp value={s.v} suffix={s.suffix} />
+                </div>
+                <div className="muted" style={{ fontSize: 11, marginTop: 2 }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+          <button className="btn btn-gold" style={{ padding: "13px 30px", fontSize: 15.5 }}
+            onClick={() => openAuth("signup", "attorney")}>
+            הצטרפו כעורך דין, בחינם →
+          </button>
+          <div style={{ marginTop: 12, fontSize: 13.5 }}>
+            <span className="muted">מחפשים עורך דין? </span>
+            <button className="link" onClick={() => openAuth("signup", "client")}>כניסת לקוחות פרטיים</button>
+          </div>
+        </div>
 
-      {/* ── App download (Waze-style) ── */}
-      <DownloadApp />
+        <ServicesStrip />
+        <LandingExtras onJoin={() => openAuth("signup")} />
+        <OfficeRentals />
+        <DownloadApp />
+      </div>
 
-      {/* ── Minimal footer with About ── */}
+      {/* Minimal footer */}
       <footer style={{
         position: "relative", zIndex: 2, textAlign: "center",
         padding: "22px 16px", borderTop: "1px solid var(--line)",
@@ -516,14 +574,6 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
             <p className="muted" style={{ fontSize: 13, lineHeight: 1.7, marginTop: 14, borderTop: "1px solid var(--line)", paddingTop: 12 }}>{t("about.founder")}</p>
           </div>
         </div>
-      )}
-
-      {/* Always-visible quick join (easy connect) */}
-      {!authOpen && (
-        <button onClick={() => openAuth("signup", "attorney")} aria-label="הצטרפו כעורך דין, חינם"
-          style={{ position: "fixed", insetInlineStart: 16, bottom: 16, zIndex: 50, border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: 15, color: "#fff", padding: "13px 24px", borderRadius: 999, background: "linear-gradient(145deg, #4dd2ff, #1ba3e0)", boxShadow: "0 12px 30px rgba(27,163,224,.45)" }}>
-          הצטרפו כעו״ד, חינם →
-        </button>
       )}
     </div>
   );

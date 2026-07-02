@@ -45,6 +45,8 @@ export type ExperienceTier = "junior" | "mid" | "senior";
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 export type LicenseType = "lawyer" | "intern";
 
+export type ProfileRole = "attorney" | "client";
+
 export interface Profile {
   id: string;
   display_name: string | null;
@@ -64,6 +66,9 @@ export interface Profile {
   is_admin: boolean;
   lat: number | null;
   lng: number | null;
+  role: ProfileRole | null;
+  hourly_rate: number | null;
+  license_country: string | null;
 }
 
 // Illustrative attorney profiles ("להמחשה") shown alongside real ones.
