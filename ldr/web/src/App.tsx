@@ -127,9 +127,9 @@ export default function App() {
           ) : (
             <ClientHome profile={profile} onNavigate={(t) => setTab(t)} />
           )
-        ) : profile.role !== "client" && !profile.experience_tier ? (
+        ) : !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("map"); }} />
-        ) : profile.role !== "client" && profile.verification_status !== "verified" && !profile.is_admin ? (
+        ) : profile.verification_status !== "verified" && !profile.is_admin ? (
           <VerificationGate
             profile={profile} notify={notify}
             onChange={setProfile}
