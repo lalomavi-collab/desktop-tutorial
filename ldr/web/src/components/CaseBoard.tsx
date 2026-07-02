@@ -16,7 +16,7 @@ interface CaseRow {
 interface Resp { id: string; attorney_id: string; message: string | null; quoted_rate: number | null; created_at: string; attorney?: { display_name: string | null }; }
 
 export default function CaseBoard({ profile, notify }: { profile: Profile; notify: (m: string) => void }) {
-  const isClient = (profile as any).role === "client";
+  const isClient = profile.role === "client";
   const [rows, setRows] = useState<CaseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"browse" | "new" | "mine">(isClient ? "mine" : "browse");

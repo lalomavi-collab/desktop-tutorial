@@ -54,7 +54,7 @@ export default function App() {
   // Private clients land on their personal-card home (not the lawyer map).
   const clientHomed = useRef(false);
   useEffect(() => {
-    if (profile && (profile as any).role === "client" && !clientHomed.current) {
+    if (profile && profile.role === "client" && !clientHomed.current) {
       clientHomed.current = true;
       setTab("feed");
     }
@@ -116,7 +116,7 @@ export default function App() {
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
           <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
-        ) : (profile as any).role === "client" ? (
+        ) : profile.role === "client" ? (
           tab === "map" ? (
             <PublicMap />
           ) : tab === "cases" ? (
@@ -127,9 +127,9 @@ export default function App() {
           ) : (
             <ClientHome profile={profile} onNavigate={(t) => setTab(t)} />
           )
-        ) : (profile as any).role !== "client" && !profile.experience_tier ? (
+        ) : profile.role !== "client" && !profile.experience_tier ? (
           <Onboarding profile={profile} notify={notify} onDone={(p) => { setProfile(p); setTab("map"); }} />
-        ) : (profile as any).role !== "client" && profile.verification_status !== "verified" && !profile.is_admin ? (
+        ) : profile.role !== "client" && profile.verification_status !== "verified" && !profile.is_admin ? (
           <VerificationGate
             profile={profile} notify={notify}
             onChange={setProfile}
@@ -170,8 +170,8 @@ export default function App() {
       </main>
       <Footer />
       {/* Professional mobile bottom nav — verified attorneys, admins, and clients */}
-      {profile && ((profile as any).role === "client" || (profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin))) && (
-        <BottomNav tab={tab} setTab={setTab} client={(profile as any).role === "client"} />
+      {profile && (profile.role === "client" || (profile.experience_tier && (profile.verification_status === "verified" || profile.is_admin))) && (
+        <BottomNav tab={tab} setTab={setTab} client={profile.role === "client"} />
       )}
       {toast && <div className="toast">{toast}</div>}
     </div>
@@ -200,7 +200,7 @@ function Header({
   session, profile, tab, setTab, onSignOut,
 }: { session: Session | null; profile: Profile | null; tab: Tab; setTab: (t: Tab) => void; onSignOut: () => void }) {
   const rank = profile ? rankFor(profile.reputation) : null;
-  const isClient = (profile as any)?.role === "client";
+  const isClient = profile?.role === "client";
   const [shareOpen, setShareOpen] = useState(false);
   return (
     <header className="topbar">

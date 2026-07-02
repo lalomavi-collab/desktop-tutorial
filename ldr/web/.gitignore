@@ -2,6 +2,8 @@ node_modules/
 dist/
 .env
 .env.local
+.env.production
+.env.*.local
 
 # Screenshot tool artifacts (personal session token and generated images)
 screenshots/
