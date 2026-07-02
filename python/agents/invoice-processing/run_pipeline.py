@@ -26,7 +26,7 @@ def load_from_json(path: str) -> list[dict]:
     items = []
     for r in raw:
         items.append({
-            "filename": f"{r.get('doc_number', r['id'])}.pdf" if r["has_pdf"] else None,
+            "filename": f"{r.get('doc_number') or r['id']}.pdf" if r["has_pdf"] else None,
             "path": None,
             "subject": r["subject"],
             "sender": r["sender"],
@@ -58,10 +58,13 @@ def merge_items(email_items: list[dict], folder_files: list[dict]) -> list[dict]
             item["path"] = folder_by_name.pop(fname)["path"]
             item["has_attachment"] = True
         else:
-            # התאמה חלקית — מספר מסמך בתוך שם הקובץ (למשל "70119" ב-"InvoiceReceipt_70119.pdf")
-            stem = fname.replace(".pdf", "").replace(".PDF", "")
+            # התאמה חלקית — מספר מסמך או מזהה בתוך שם הקובץ, ללא תלות ברישיות
+            # למשל "70119" בתוך "InvoiceReceipt_70119.pdf", או "gett" (מ-"exp_gett") בתוך "Gett_76.50_ILS.pdf"
+            stem = fname.rsplit(".", 1)[0].lower()
+            if stem.startswith("exp_") or stem.startswith("inv_"):
+                stem = stem[4:]
             for folder_fname, fdata in list(folder_by_name.items()):
-                if stem in folder_fname:
+                if stem in folder_fname.lower():
                     item["path"] = fdata["path"]
                     item["has_attachment"] = True
                     folder_by_name.pop(folder_fname)
@@ -160,6 +163,8 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
         from invoice_processing.collectors.email_collector import collect_from_emails
         print("📨 מתחבר לתיבות המייל דרך IMAP...")
         result = collect_from_emails(month)
+        if result.get("error"):
+            print(f"⚠️  {result['error']}")
         email_items = result["items"]
 
     # שלב 3: מיזוג — מייל + תיקייה

@@ -140,6 +140,16 @@ def collect_from_emails(month: str) -> dict:
     """
     base = Path(os.environ.get("INVOICE_BASE_FOLDER", "~/Desktop/LALUM/חשבוניות")).expanduser()
 
+    required = ["IMAP1_HOST", "IMAP1_USER", "IMAP1_PASS", "IMAP2_HOST", "IMAP2_USER", "IMAP2_PASS"]
+    missing = [v for v in required if not os.environ.get(v)]
+    if missing:
+        return {
+            "month": month,
+            "total": 0,
+            "items": [],
+            "error": f"חסרים משתני .env: {', '.join(missing)}. העתק את .env.example לקובץ .env ומלא את הפרטים.",
+        }
+
     outlook_items = collect_from_mailbox(
         host=os.environ["IMAP1_HOST"],
         port=int(os.environ.get("IMAP1_PORT", 993)),
