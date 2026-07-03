@@ -2,9 +2,10 @@
 סריקת תיקיית החודש לקבצי חשבוניות קיימים.
 """
 
-import os
 from datetime import datetime
 from pathlib import Path
+
+from .base_folder import get_base_folder
 
 
 INVOICE_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".xml"}
@@ -18,7 +19,7 @@ def collect_from_folder(month: str | None = None) -> dict:
     if month is None:
         month = datetime.now().strftime("%Y-%m")
 
-    base = Path(os.environ.get("INVOICE_BASE_FOLDER", "~/Desktop/LALUM/חשבוניות")).expanduser()
+    base = get_base_folder()
     month_folder = base / month
     month_folder.mkdir(parents=True, exist_ok=True)
 

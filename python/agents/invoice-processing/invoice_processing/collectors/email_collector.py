@@ -11,6 +11,8 @@ from datetime import datetime
 from email.header import decode_header
 from pathlib import Path
 
+from .base_folder import get_base_folder
+
 
 def _decode_str(value: str) -> str:
     parts = decode_header(value)
@@ -138,7 +140,7 @@ def collect_from_emails(month: str) -> dict:
     אוסף חשבוניות משתי תיבות המייל (Outlook + Gmail).
     מוריד PDFs לתיקיית ~/Desktop/LALUM/חשבוניות/YYYY-MM/.
     """
-    base = Path(os.environ.get("INVOICE_BASE_FOLDER", "~/Desktop/LALUM/חשבוניות")).expanduser()
+    base = get_base_folder()
 
     required = ["IMAP1_HOST", "IMAP1_USER", "IMAP1_PASS", "IMAP2_HOST", "IMAP2_USER", "IMAP2_PASS"]
     missing = [v for v in required if not os.environ.get(v)]
