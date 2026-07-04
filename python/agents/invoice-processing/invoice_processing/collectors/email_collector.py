@@ -12,6 +12,7 @@ from email.header import decode_header
 from pathlib import Path
 
 from .base_folder import get_base_folder
+from .month_path import resolve_month_folder
 
 
 def _decode_str(value: str) -> str:
@@ -26,9 +27,7 @@ def _decode_str(value: str) -> str:
 
 
 def _month_folder(base: Path, month: str) -> Path:
-    folder = base / month
-    folder.mkdir(parents=True, exist_ok=True)
-    return folder
+    return resolve_month_folder(month)
 
 
 def _is_invoice_subject(subject: str) -> bool:

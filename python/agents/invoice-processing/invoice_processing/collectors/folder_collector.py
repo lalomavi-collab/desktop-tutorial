@@ -3,9 +3,8 @@
 """
 
 from datetime import datetime
-from pathlib import Path
 
-from .base_folder import get_base_folder
+from .month_path import resolve_month_folder
 
 
 INVOICE_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".xml"}
@@ -19,9 +18,7 @@ def collect_from_folder(month: str | None = None) -> dict:
     if month is None:
         month = datetime.now().strftime("%Y-%m")
 
-    base = get_base_folder()
-    month_folder = base / month
-    month_folder.mkdir(parents=True, exist_ok=True)
+    month_folder = resolve_month_folder(month)
 
     files = []
     if month_folder.exists():
