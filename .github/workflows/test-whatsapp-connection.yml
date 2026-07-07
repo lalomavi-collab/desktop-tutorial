@@ -13,7 +13,7 @@ jobs:
           MESSAGE="WhatsApp Business API Test - $(date -u '+%d/%m/%Y %H:%M UTC') - if you received this the connection works"
           RESPONSE=$(curl -s -X POST \
             "https://graph.facebook.com/v18.0/${{ secrets.FACEBOOK_PAGE_ID }}/messages" \
-            -H "Authorization: Bearer ${{ secrets.FACEBOOK_ACCESS_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.WHATSAPP_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
               \"messaging_product\": \"whatsapp\",
