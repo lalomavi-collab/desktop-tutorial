@@ -33,8 +33,35 @@ def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict
         f"<li>{f['warning']}</li>" for f in planning.get("red_flags", [])
     ) or "<li>לא אותרו דגלים אדומים במסמכים שנקלטו</li>"
 
+    # סעיף ניתוח AI (אם בוצע)
+    ai_docs = [d for d in intake.get("documents", []) if d.get("ai")]
+    ai_html = ""
+    if ai_docs:
+        rows = "".join(
+            f"<tr><td>{d['filename']}</td><td>{d['ai'].get('summary_he', '')}</td>"
+            f"<td>{(d['ai'].get('gush') or '')} / {(d['ai'].get('helka') or '')}</td></tr>"
+            for d in ai_docs
+        )
+        ai_html = f"""
+  <h2>ניתוח AI של המסמכים</h2>
+  <table>
+    <tr><th>מסמך</th><th>סיכום</th><th>גוש / חלקה</th></tr>
+    {rows}
+  </table>"""
+
     feas_html = ""
     if feasibility:
+        tax_rows = "".join(
+            f"<tr><td>{_fmt(b['from'])} עד {_fmt(b['to'])}</td>"
+            f"<td>{b['rate'] * 100:g}%</td><td>{_fmt(b['amount'])}</td></tr>"
+            for b in feasibility.get("purchase_tax_detail", [])
+        )
+        tax_detail_html = f"""
+  <h3>פירוט מדרגות מס רכישה (אומדן)</h3>
+  <table>
+    <tr><th>מדרגה (ש"ח)</th><th>שיעור</th><th>מס (ש"ח)</th></tr>
+    {tax_rows}
+  </table>""" if tax_rows else ""
         sens_rows = "".join(
             f"<tr><td>{s['value_change_pct']}%</td><td>{_fmt(s['expected_value'])}</td>"
             f"<td>{_fmt(s['net_profit'])}</td><td>{s['roi_pct']}%</td></tr>"
@@ -55,6 +82,7 @@ def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict
     <tr><td>תשואה על ההון</td><td>{feasibility['roi_pct']}%</td></tr>
     <tr><td>תשואה שנתית</td><td>{feasibility['annual_roi_pct']}%</td></tr>
   </table>
+  {tax_detail_html}
   <p class="verdict">מסקנה ראשונית: העסקה <strong>{feasibility['verdict']}</strong> (תשואה שנתית {feasibility['annual_roi_pct']}%)</p>
   <h3>ניתוח רגישות</h3>
   <table>
@@ -103,6 +131,7 @@ def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict
 
   <h2>דגלים אדומים</h2>
   <ul class="flags">{flags_html}</ul>
+  {ai_html}
   {feas_html}
 
   <p class="disclaimer">מסמך זה הופק באופן אוטומטי ככלי עזר לניתוח ראשוני בלבד.

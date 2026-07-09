@@ -119,8 +119,12 @@ def intake_folder(folder: str) -> dict:
                 text = json.dumps(raw, ensure_ascii=False)
             else:
                 text = f.read_text(encoding="utf-8", errors="replace")
-        except Exception as e:
-            error = str(e)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except BaseException as e:
+            # BaseException ולא Exception: ספריות PDF מסוימות זורקות חריגות
+            # ברמת BaseException (pyo3 panic) על קבצים פגומים
+            error = str(e) or type(e).__name__
 
         documents.append({
             "filename": f.name,

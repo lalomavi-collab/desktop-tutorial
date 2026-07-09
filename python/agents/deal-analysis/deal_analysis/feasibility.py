@@ -9,10 +9,20 @@
 from dataclasses import dataclass, field, asdict
 
 
-# מדרגות מס רכישה לדירה שאינה יחידה (2026, בקירוב, ניתן לעדכון)
-PURCHASE_TAX_INVESTOR = 0.08
-PURCHASE_TAX_INVESTOR_HIGH = 0.10
-PURCHASE_TAX_HIGH_THRESHOLD = 6_055_070
+# מדרגות מס רכישה (מבוסס על מדרגות 2025, מתעדכנות מדי שנה לפי מדד, יש לעדכן כאן)
+# דירה יחידה: (תקרת מדרגה, שיעור). None = ללא תקרה
+SINGLE_HOME_BRACKETS = [
+    (1_978_745, 0.00),
+    (2_347_040, 0.035),
+    (6_055_070, 0.05),
+    (20_183_565, 0.08),
+    (None, 0.10),
+]
+# דירה נוספת / משקיע
+INVESTOR_BRACKETS = [
+    (6_055_070, 0.08),
+    (None, 0.10),
+]
 
 # שיעור מס שבח על הרווח הריאלי
 CAPITAL_GAINS_RATE = 0.25
@@ -31,27 +41,53 @@ class DealInputs:
     monthly_rent: float = 0.0             # שכירות חודשית צפויה (לנכס מניב)
     is_single_home: bool = False          # דירה יחידה (מדרגות מס מקלות)
     purchase_tax_override: float | None = None  # מס רכישה ידני אם ידוע
+    betterment_levy: float = 0.0          # היטל השבחה צפוי (אם רלוונטי)
+
+
+def purchase_tax_brackets(price: float, is_single_home: bool) -> list[dict]:
+    """
+    מחשב מס רכישה לפי מדרגות ומחזיר פירוט לכל מדרגה:
+    [{"from": x, "to": y, "rate": r, "amount": a}, ...]
+    אומדן בלבד, לא ייעוץ מס. המדרגות מתעדכנות מדי שנה.
+    """
+    brackets = SINGLE_HOME_BRACKETS if is_single_home else INVESTOR_BRACKETS
+    detail = []
+    prev_cap = 0.0
+    for cap, rate in brackets:
+        upper = price if cap is None else min(price, cap)
+        if upper <= prev_cap:
+            break
+        taxable = upper - prev_cap
+        detail.append({
+            "from": round(prev_cap),
+            "to": round(upper),
+            "rate": rate,
+            "amount": round(taxable * rate),
+        })
+        prev_cap = upper if cap is None else cap
+        if cap is not None and price <= cap:
+            break
+    return detail
 
 
 def purchase_tax(price: float, is_single_home: bool) -> float:
-    """אומדן מס רכישה. לדירה יחידה החישוב מקל, כאן אומדן שמרני פשוט."""
-    if is_single_home:
-        # פטור עד כ-2 מיליון, כאן אומדן גס: 3.5% על החלק שמעל 2,000,000
-        taxable = max(0.0, price - 2_000_000)
-        return round(taxable * 0.035)
-    if price > PURCHASE_TAX_HIGH_THRESHOLD:
-        below = PURCHASE_TAX_HIGH_THRESHOLD * PURCHASE_TAX_INVESTOR
-        above = (price - PURCHASE_TAX_HIGH_THRESHOLD) * PURCHASE_TAX_INVESTOR_HIGH
-        return round(below + above)
-    return round(price * PURCHASE_TAX_INVESTOR)
+    """אומדן מס רכישה כולל (סכום כל המדרגות)."""
+    return sum(b["amount"] for b in purchase_tax_brackets(price, is_single_home))
 
 
 def analyze(inputs: DealInputs) -> dict:
     """מחזיר ניתוח כדאיות מלא כמילון מוכן להצגה ולדוח."""
-    tax = inputs.purchase_tax_override if inputs.purchase_tax_override is not None \
-        else purchase_tax(inputs.price, inputs.is_single_home)
+    if inputs.purchase_tax_override is not None:
+        tax = inputs.purchase_tax_override
+        tax_detail = []
+    else:
+        tax_detail = purchase_tax_brackets(inputs.price, inputs.is_single_home)
+        tax = sum(b["amount"] for b in tax_detail)
 
-    total_cost_before_finance = inputs.price + tax + inputs.renovation_cost + inputs.other_costs
+    total_cost_before_finance = (
+        inputs.price + tax + inputs.betterment_levy
+        + inputs.renovation_cost + inputs.other_costs
+    )
 
     loan_amount = max(0.0, total_cost_before_finance - inputs.equity)
     finance_cost = loan_amount * inputs.loan_rate * inputs.loan_years
@@ -86,6 +122,8 @@ def analyze(inputs: DealInputs) -> dict:
     return {
         "inputs": asdict(inputs),
         "purchase_tax": round(tax),
+        "purchase_tax_detail": tax_detail,
+        "betterment_levy": round(inputs.betterment_levy),
         "total_cost_before_finance": round(total_cost_before_finance),
         "loan_amount": round(loan_amount),
         "finance_cost": round(finance_cost),

@@ -62,11 +62,31 @@ const CHECKLIST_ITEMS: [string, string][] = [
   ['אומדן מיסוי', 'tax'],
 ];
 
+// מדרגות מס רכישה, לסנכרן עם deal_analysis/feasibility.py (מקור האמת)
+const SINGLE_HOME_BRACKETS: [number | null, number][] = [
+  [1_978_745, 0],
+  [2_347_040, 0.035],
+  [6_055_070, 0.05],
+  [20_183_565, 0.08],
+  [null, 0.1],
+];
+const INVESTOR_BRACKETS: [number | null, number][] = [
+  [6_055_070, 0.08],
+  [null, 0.1],
+];
+
 function purchaseTax(price: number, isSingleHome: boolean): number {
-  if (isSingleHome) return Math.max(0, price - 2_000_000) * 0.035;
-  const threshold = 6_055_070;
-  if (price > threshold) return threshold * 0.08 + (price - threshold) * 0.1;
-  return price * 0.08;
+  const brackets = isSingleHome ? SINGLE_HOME_BRACKETS : INVESTOR_BRACKETS;
+  let total = 0;
+  let prev = 0;
+  for (const [cap, rate] of brackets) {
+    const upper = cap === null ? price : Math.min(price, cap);
+    if (upper <= prev) break;
+    total += (upper - prev) * rate;
+    if (cap !== null && price <= cap) break;
+    prev = cap ?? prev;
+  }
+  return total;
 }
 
 function fmt(n: number): string {

@@ -34,6 +34,7 @@ def main():
     p.add_argument("--rent", type=float, default=0.0)
     p.add_argument("--single-home", action="store_true")
     p.add_argument("--out", default=None, help="נתיב קובץ הדוח (ברירת מחדל: report.html בתיקיית העסקה)")
+    p.add_argument("--no-ai", action="store_true", help="דלג על ניתוח AI גם אם יש מפתח API")
     args = p.parse_args()
 
     folder = Path(args.folder).expanduser()
@@ -51,8 +52,22 @@ def main():
         status = f"שגיאה: {d['error']}" if d.get("error") else d["category"]
         print(f"  • {d['filename']}: {status}")
 
+    # שלב 1ב: ניתוח AI (אם זמין)
+    if not args.no_ai:
+        from deal_analysis.ai_analyzer import enrich_documents
+        intake["documents"], ai_status = enrich_documents(intake["documents"])
+        print(f"\n🤖 {ai_status}")
+
     # שלב 2: סקירה תכנונית
     planning = review(intake["documents"])
+
+    # מיזוג דגלים אדומים מניתוח ה-AI (ללא כפילויות)
+    existing = {f["warning"] for f in planning["red_flags"]}
+    for d in intake["documents"]:
+        for flag in (d.get("ai") or {}).get("red_flags", []):
+            if flag not in existing:
+                planning["red_flags"].append({"keyword": "ai", "warning": flag})
+                existing.add(flag)
     print(f"\n📋 סקירה תכנונית: שלמות {planning['completeness_pct']}%")
     for f in planning["red_flags"]:
         print(f"  🚩 {f['warning']}")
