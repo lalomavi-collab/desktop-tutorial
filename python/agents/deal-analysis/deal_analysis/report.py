@@ -14,8 +14,40 @@ def _fmt(n) -> str:
         return str(n)
 
 
-def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict | None) -> str:
+def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict | None,
+                 externals: dict | None = None) -> str:
     today = datetime.now().strftime("%d.%m.%Y")
+    externals = externals or {}
+
+    # סעיף עסקאות השוואה
+    comps = externals.get("comparables")
+    comps_html = ""
+    if comps and comps.get("ok"):
+        deal_rows = "".join(
+            f"<tr><td>{d['address']}</td><td>{d['date']}</td><td>{_fmt(d['price'])}</td>"
+            f"<td>{d['area_sqm']:g}</td><td>{_fmt(d['price_per_sqm'])}</td></tr>"
+            for d in comps["deals"][:10]
+        )
+        check = externals.get("value_check")
+        check_html = f'<p class="verdict">🟡 {check["warning"]}</p>' if check else ""
+        comps_html = f"""
+  <h2>עסקאות השוואה (מידע נדל"ן ממשלתי)</h2>
+  <p>נמצאו {comps['count']} עסקאות. חציון: {_fmt(comps['median_per_sqm'])} ש"ח למ"ר
+  (טווח {_fmt(comps['min_per_sqm'])} עד {_fmt(comps['max_per_sqm'])})</p>
+  {check_html}
+  <table>
+    <tr><th>כתובת</th><th>תאריך</th><th>מחיר (ש"ח)</th><th>מ"ר</th><th>למ"ר</th></tr>
+    {deal_rows}
+  </table>"""
+
+    # סעיף מחקר תכנוני
+    research = externals.get("planning_research")
+    research_html = ""
+    if research and research.get("ok") and research.get("summary_he"):
+        text = research["summary_he"].replace("\n", "<br>")
+        research_html = f"""
+  <h2>מחקר תכנוני (חיפוש במקורות רשמיים)</h2>
+  <p>{text}</p>"""
 
     docs_rows = "".join(
         f"<tr><td>{d['filename']}</td><td>{d['category']}</td>"
@@ -132,6 +164,8 @@ def build_report(deal_name: str, intake: dict, planning: dict, feasibility: dict
   <h2>דגלים אדומים</h2>
   <ul class="flags">{flags_html}</ul>
   {ai_html}
+  {research_html}
+  {comps_html}
   {feas_html}
 
   <p class="disclaimer">מסמך זה הופק באופן אוטומטי ככלי עזר לניתוח ראשוני בלבד.

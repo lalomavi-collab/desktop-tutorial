@@ -7,5 +7,9 @@
   "loan_rate": 0.055,
   "loan_years": 2.5,
   "monthly_rent": 0,
-  "is_single_home": false
+  "is_single_home": false,
+  "area_sqm": 95,
+  "betterment_levy": 0,
+  "address": "הרצל 25 תל אביב",
+  "document_urls": []
 }

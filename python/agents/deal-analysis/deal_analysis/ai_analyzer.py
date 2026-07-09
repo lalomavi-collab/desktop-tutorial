@@ -78,6 +78,45 @@ def analyze_document(client, filename: str, text: str) -> DocAnalysis | None:
         return None
 
 
+def research_planning_status(address: str) -> dict:
+    """
+    מחקר תכנוני לכתובת עם חיפוש אינטרנט (server tool), מוגבל לאתרים רשמיים.
+    מחזיר {"ok": bool, "summary_he": str|None, "error": str|None}.
+    """
+    client = get_client()
+    if client is None:
+        return {"ok": False, "summary_he": None,
+                "error": "מחקר תכנוני לא זמין (חסר ANTHROPIC_API_KEY)"}
+    try:
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=4096,
+            thinking={"type": "adaptive"},
+            tools=[{
+                "type": "web_search_20260209",
+                "name": "web_search",
+                "max_uses": 5,
+                "allowed_domains": [
+                    "gov.il", "nadlan.gov.il", "mavat.iplan.gov.il",
+                    "govmap.gov.il", "tel-aviv.gov.il", "jerusalem.muni.il",
+                ],
+            }],
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"בדוק מידע תכנוני ציבורי עבור הנכס בכתובת: {address}. "
+                    "חפש: תכניות בניין עיר חלות, תכניות התחדשות עירונית "
+                    "(פינוי-בינוי, תמ\"א 38), זכויות בנייה והליכי תכנון פתוחים. "
+                    "סכם בעברית בקצרה עם ציון המקורות. אם לא נמצא מידע, אמור זאת."
+                ),
+            }],
+        )
+        summary = "\n".join(b.text for b in response.content if b.type == "text")
+        return {"ok": True, "summary_he": summary, "error": None}
+    except Exception as e:
+        return {"ok": False, "summary_he": None, "error": f"שגיאה במחקר תכנוני: {e}"}
+
+
 def enrich_documents(documents: list[dict]) -> tuple[list[dict], str]:
     """
     מעשיר את רשימת מסמכי ה-intake בניתוח AI.

@@ -35,12 +35,33 @@ def main():
     p.add_argument("--single-home", action="store_true")
     p.add_argument("--out", default=None, help="נתיב קובץ הדוח (ברירת מחדל: report.html בתיקיית העסקה)")
     p.add_argument("--no-ai", action="store_true", help="דלג על ניתוח AI גם אם יש מפתח API")
+    p.add_argument("--address", default=None, help="כתובת הנכס (מפעיל עסקאות השוואה ומחקר תכנוני)")
+    p.add_argument("--fetch-url", action="append", default=[],
+                   help="קישור למסמך PDF להורדה לתיקייה לפני הניתוח (ניתן מספר פעמים)")
     args = p.parse_args()
 
     folder = Path(args.folder).expanduser()
     name = args.name or folder.name
 
     print(f"\n{'='*55}\n  ניתוח עסקה: {name}\n{'='*55}")
+
+    # שלב 0: הורדת מסמכים מקישורים (מהדגל ומ-deal.json)
+    pre_params = {}
+    deal_json_path = folder / "deal.json"
+    if deal_json_path.exists():
+        pre_params = json.loads(deal_json_path.read_text(encoding="utf-8"))
+    urls = list(args.fetch_url) + pre_params.get("document_urls", [])
+    if urls:
+        from deal_analysis.sources.doc_fetch import fetch_document
+        for url in urls:
+            result = fetch_document(url, str(folder))
+            if result["ok"]:
+                print(f"⬇️  הורד: {Path(result['path']).name}" +
+                      (f" ({result['note']})" if result.get("note") else ""))
+            else:
+                print(f"⚠️  {result['error']} ({url[:60]})")
+
+    address = args.address or pre_params.get("address")
 
     # שלב 1: קליטת מסמכים
     intake = intake_folder(str(folder))
@@ -84,6 +105,41 @@ def main():
     price = args.price if args.price is not None else params.get("price")
     value = args.value if args.value is not None else params.get("expected_value")
 
+    # שלב 3ב: מקורות חיצוניים (השוואות, ריבית, מחקר תכנוני)
+    externals = {"comparables": None, "value_check": None, "planning_research": None, "boi": None}
+
+    loan_rate = args.rate if args.rate != 0.05 else params.get("loan_rate")
+    if loan_rate is None:
+        from deal_analysis.sources.interest import fetch_boi_rate
+        boi = fetch_boi_rate()
+        externals["boi"] = boi
+        if boi["ok"]:
+            loan_rate = boi["suggested_loan_rate"]
+            print(f"\n🏦 ריבית בנק ישראל: {boi['boi_rate'] * 100:.2f}%, "
+                  f"ריבית מימון משוערת: {loan_rate * 100:.2f}%")
+        else:
+            loan_rate = 0.05
+            print(f"\n⚠️  {boi['error']}, משתמש בברירת מחדל 5%")
+
+    if address:
+        from deal_analysis.sources.comparables import fetch_comparables, value_sanity_check
+        print(f"\n🏘️  מביא עסקאות השוואה לכתובת: {address}")
+        comps = fetch_comparables(address)
+        externals["comparables"] = comps
+        if comps["ok"]:
+            print(f"  {comps['count']} עסקאות, חציון {comps['median_per_sqm']:,} ש\"ח למ\"ר")
+        else:
+            print(f"  ⚠️  {comps['error']}")
+
+        if not args.no_ai:
+            from deal_analysis.ai_analyzer import research_planning_status
+            research = research_planning_status(address)
+            externals["planning_research"] = research
+            if research["ok"]:
+                print("🔎 מחקר תכנוני הושלם")
+            else:
+                print(f"⚠️  {research['error']}")
+
     feasibility = None
     if price and value:
         inputs = DealInputs(
@@ -92,7 +148,8 @@ def main():
             renovation_cost=args.renovation or params.get("renovation_cost", 0.0),
             other_costs=args.other or params.get("other_costs", 0.0),
             equity=args.equity or params.get("equity", 0.0),
-            loan_rate=args.rate if args.rate != 0.05 else params.get("loan_rate", 0.05),
+            loan_rate=loan_rate,
+            betterment_levy=params.get("betterment_levy", 0.0),
             loan_years=args.years if args.years != 2.0 else params.get("loan_years", 2.0),
             monthly_rent=args.rent or params.get("monthly_rent", 0.0),
             is_single_home=args.single_home or params.get("is_single_home", False),
@@ -102,12 +159,22 @@ def main():
         print(f"  סך השקעה:   {feasibility['total_investment']:,} ש\"ח")
         print(f"  רווח נקי:    {feasibility['net_profit']:,} ש\"ח")
         print(f"  תשואה שנתית: {feasibility['annual_roi_pct']}%")
+
+        # בדיקת סבירות שווי מול השוק
+        comps = externals.get("comparables")
+        area = params.get("area_sqm", 0.0)
+        if comps and area:
+            from deal_analysis.sources.comparables import value_sanity_check
+            check = value_sanity_check(value, area, comps)
+            externals["value_check"] = check
+            if check:
+                print(f"  🟡 {check['warning']}")
     else:
         print("\n⚠️  לא הוזנו מחיר ושווי צפוי (--price / --value או deal.json), מדלג על ניתוח כדאיות")
 
     # שלב 4: דוח
     out = Path(args.out) if args.out else folder / "report.html"
-    out.write_text(build_report(name, intake, planning, feasibility), encoding="utf-8")
+    out.write_text(build_report(name, intake, planning, feasibility, externals), encoding="utf-8")
     print(f"\n📊 הדוח נשמר: {out}\n")
 
 
