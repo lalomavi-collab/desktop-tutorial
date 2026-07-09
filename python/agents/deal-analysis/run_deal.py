@@ -20,9 +20,35 @@ from deal_analysis.feasibility import DealInputs, analyze
 from deal_analysis.report import build_report
 
 
+DEALS_BASE_DEFAULT = r"C:\Users\lalom\OneDrive\שולחן העבודה\LALUM\עסקאות"
+
+
+def pick_deal_folder() -> str | None:
+    """מצב אינטראקטיבי: מציג את תיקיות העסקאות ומבקש בחירה במספר."""
+    import os
+    base = Path(os.environ.get("DEALS_BASE_FOLDER", DEALS_BASE_DEFAULT)).expanduser()
+    if not base.is_dir():
+        print(f"תיקיית העסקאות לא נמצאה: {base}")
+        print("צור אותה ושים בתוכה תיקייה לכל עסקה, או הגדר DEALS_BASE_FOLDER.")
+        return None
+    deals = sorted([d for d in base.iterdir() if d.is_dir()],
+                   key=lambda d: d.stat().st_mtime, reverse=True)
+    if not deals:
+        print(f"אין תיקיות עסקאות בתוך: {base}")
+        return None
+    print(f"\nעסקאות בתיקייה {base}:\n")
+    for i, d in enumerate(deals, 1):
+        has_report = "📊" if (d / "report.html").exists() else "  "
+        print(f"  {i}. {has_report} {d.name}")
+    choice = input("\nמספר עסקה לניתוח (Enter לביטול): ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(deals)):
+        return None
+    return str(deals[int(choice) - 1])
+
+
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--folder", required=True, help="תיקיית מסמכי העסקה")
+    p.add_argument("--folder", default=None, help="תיקיית מסמכי העסקה (ללא: בחירה מרשימה)")
     p.add_argument("--name", default="", help="שם העסקה לדוח")
     p.add_argument("--price", type=float, default=None)
     p.add_argument("--value", type=float, default=None, help="שווי צפוי")
@@ -39,7 +65,15 @@ def main():
     p.add_argument("--address", default=None, help="כתובת הנכס (מפעיל עסקאות השוואה ומחקר תכנוני)")
     p.add_argument("--fetch-url", action="append", default=[],
                    help="קישור למסמך PDF להורדה לתיקייה לפני הניתוח (ניתן מספר פעמים)")
+    p.add_argument("--open", action="store_true", help="פתח את הדוח בדפדפן בסיום")
     args = p.parse_args()
+
+    interactive = args.folder is None
+    if interactive:
+        picked = pick_deal_folder()
+        if not picked:
+            return
+        args.folder = picked
 
     folder = Path(args.folder).expanduser()
     name = args.name or folder.name
@@ -175,6 +209,11 @@ def main():
     out = Path(args.out) if args.out else folder / "report.html"
     out.write_text(build_report(name, intake, planning, feasibility, externals), encoding="utf-8")
     print(f"\n📊 הדוח נשמר: {out}\n")
+
+    # במצב אינטראקטיבי (או עם --open) הדוח נפתח אוטומטית בדפדפן
+    if interactive or args.open:
+        import webbrowser
+        webbrowser.open(out.resolve().as_uri())
 
 
 if __name__ == "__main__":
