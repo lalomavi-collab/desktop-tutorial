@@ -3,10 +3,9 @@ import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { SocialMediaManager } from './components/SocialMediaManager';
 import { WorkerAgentView } from './components/WorkerAgentView';
-import { DealAnalysisView } from './components/DealAnalysisView';
 import { mockAgents, mockActivity } from './data/mockData';
 
-type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker' | 'deals';
+type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker';
 
 function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -80,8 +79,6 @@ function App() {
             onBreadcrumbCeo={() => handleViewChange('dashboard')}
           />
         )}
-
-        {activeView === 'deals' && <DealAnalysisView />}
 
         {activeView === 'analytics' && (
           <div className="text-right">
