@@ -1,0 +1,13 @@
+{
+  "price": 3200000,
+  "expected_value": 4600000,
+  "renovation_cost": 550000,
+  "other_costs": 96000,
+  "equity": 1500000,
+  "loan_years": 2.5,
+  "is_single_home": false,
+  "area_sqm": 110,
+  "betterment_levy": 180000,
+  "address": "בן יהודה 82 תל אביב",
+  "document_urls": []
+}
