@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "banana-service": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-banana-server/dist/index.js"]
+    }
+  }
+}
