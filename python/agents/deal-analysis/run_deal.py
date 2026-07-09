@@ -29,7 +29,8 @@ def main():
     p.add_argument("--renovation", type=float, default=0.0)
     p.add_argument("--other", type=float, default=0.0)
     p.add_argument("--equity", type=float, default=0.0)
-    p.add_argument("--rate", type=float, default=0.05)
+    p.add_argument("--rate", type=float, default=None,
+                   help="ריבית שנתית, ברירת מחדל: ריבית בנק ישראל + מרווח")
     p.add_argument("--years", type=float, default=2.0)
     p.add_argument("--rent", type=float, default=0.0)
     p.add_argument("--single-home", action="store_true")
@@ -95,11 +96,9 @@ def main():
     if planning["missing_documents"]:
         print(f"  חסרים: {', '.join(planning['missing_documents'][:5])}")
 
-    # שלב 3: פרמטרים כלכליים (deal.json ואז שורת פקודה)
-    params = {}
-    deal_json = folder / "deal.json"
-    if deal_json.exists():
-        params = json.loads(deal_json.read_text(encoding="utf-8"))
+    # שלב 3: פרמטרים כלכליים (deal.json נטען בשלב 0, שורת הפקודה גוברת)
+    params = pre_params
+    if params:
         print(f"\n💾 נטענו פרמטרים מ-deal.json")
 
     price = args.price if args.price is not None else params.get("price")
@@ -108,7 +107,7 @@ def main():
     # שלב 3ב: מקורות חיצוניים (השוואות, ריבית, מחקר תכנוני)
     externals = {"comparables": None, "value_check": None, "planning_research": None, "boi": None}
 
-    loan_rate = args.rate if args.rate != 0.05 else params.get("loan_rate")
+    loan_rate = args.rate if args.rate is not None else params.get("loan_rate")
     if loan_rate is None:
         from deal_analysis.sources.interest import fetch_boi_rate
         boi = fetch_boi_rate()
@@ -122,7 +121,7 @@ def main():
             print(f"\n⚠️  {boi['error']}, משתמש בברירת מחדל 5%")
 
     if address:
-        from deal_analysis.sources.comparables import fetch_comparables, value_sanity_check
+        from deal_analysis.sources.comparables import fetch_comparables
         print(f"\n🏘️  מביא עסקאות השוואה לכתובת: {address}")
         comps = fetch_comparables(address)
         externals["comparables"] = comps
