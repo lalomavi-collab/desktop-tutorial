@@ -56,26 +56,6 @@ Every post MUST follow this flow:
 - Commit and push
 - User merges to main and triggers
 
-## File Structure
-```
-posts/
-  001_post_name_he.md     # Hebrew text
-  001_post_name_en.md     # English text (LinkedIn)
-  preview.html            # Preview page (always updated)
-  images/
-    001_post_name_he.html  # Hebrew wide image (1200x630)
-    001_post_name_en.html  # English wide image (1200x630)
-    001_post_name_ig.html  # Instagram square (1080x1080)
-```
+## Post Details
 
-## Color Schemes
-- **Prestige Executive** (default): #1B1B1B, #D4AF37, #FFFDD0, #800020
-- **Monochromatic**: #0A0A0A, #FFFFFF, #708090, #C0C0C0
-- **Modern Professional**: #010101, #4682B4, #F4F7F6, #00FFFF
-
-## Connected Platforms
-- Facebook: ZAPIER_FACEBOOK secret
-- Telegram: ZAPIER_TELEGRAM secret
-- LinkedIn: ZAPIER_LINKEDIN secret
-- Instagram: ZAPIER_INSTAGRAM secret
-- LinkedIn gets English version, all others get Hebrew
+File structure, image sizes, color schemes, and connected platforms live in the `social-posts` skill (`.claude/skills/social-posts/SKILL.md`), loaded on demand when working on posts.
