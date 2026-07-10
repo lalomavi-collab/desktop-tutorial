@@ -37,6 +37,8 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("map");
   const [toast, setToast] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [profileError, setProfileError] = useState(false);
+  const [profileRetry, setProfileRetry] = useState(0);
 
   const inviteToken = new URLSearchParams(window.location.search).get("invite");
 
@@ -61,14 +63,30 @@ export default function App() {
   }, [profile]);
 
   // Load profile + accept invite once authenticated.
+  // Transient network failures are retried so a flaky mobile connection
+  // does not strand the user on an endless spinner after sign-in.
   useEffect(() => {
-    if (!session) { setProfile(null); return; }
+    if (!session) { setProfile(null); setProfileError(false); return; }
+    let cancelled = false;
     (async () => {
-      const { data } = await supabase.from("ldr_profiles").select("*").eq("id", session.user.id).maybeSingle();
-      setProfile(data as Profile);
-      if (inviteToken) await acceptInvite(inviteToken, session.user.id, data as Profile | null);
+      setProfileError(false);
+      let data: Profile | null = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const res = await supabase.from("ldr_profiles").select("*").eq("id", session.user.id).maybeSingle();
+        if (cancelled) return;
+        if (!res.error) {
+          data = res.data as Profile | null;
+          if (data) break;
+        }
+        if (attempt < 3) await new Promise((r) => setTimeout(r, attempt * 600));
+      }
+      if (cancelled) return;
+      if (!data) { setProfileError(true); return; }
+      setProfile(data);
+      if (inviteToken) await acceptInvite(inviteToken, session.user.id, data);
     })();
-  }, [session]);
+    return () => { cancelled = true; };
+  }, [session, profileRetry]);
 
   async function acceptInvite(token: string, userId: string, prof: Profile | null) {
     const { data: inv } = await supabase.from("ldr_invites").select("*").eq("token", token).maybeSingle();
@@ -115,7 +133,15 @@ export default function App() {
       />
       <main style={{ flex: 1, paddingBottom: 40 }}>
         {!profile ? (
-          <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+          profileError ? (
+            <div className="center" style={{ paddingTop: 80, flexDirection: "column", gap: 14, textAlign: "center", padding: "80px 24px 0" }}>
+              <p style={{ fontSize: 15, opacity: 0.8, maxWidth: 320 }}>לא הצלחנו לטעון את הפרופיל שלך. בדקו את החיבור לאינטרנט ונסו שוב.</p>
+              <button className="btn btn-gold" onClick={() => setProfileRetry((n) => n + 1)}>נסו שוב</button>
+              <button className="btn btn-ghost" onClick={async () => { await supabase.auth.signOut(); }}>התנתקות</button>
+            </div>
+          ) : (
+            <div className="center" style={{ paddingTop: 80 }}><span className="spinner" /></div>
+          )
         ) : profile.role === "client" ? (
           tab === "map" ? (
             <PublicMap />

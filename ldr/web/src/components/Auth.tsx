@@ -38,6 +38,16 @@ const FEATURES = [
   { icon: "🤝", key: "feat.leads" },
 ];
 
+// Fail fast on a stalled network so auth buttons never hang on "busy" forever.
+function withTimeout<T>(p: Promise<T>, ms = 12000): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error("network_timeout")), ms)),
+  ]);
+}
+
+const TIMEOUT_MSG = "החיבור איטי כרגע ולא הצלחנו להשלים את הפעולה. בדקו את האינטרנט ונסו שוב.";
+
 function GoogleSvg() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
@@ -83,15 +93,20 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setErr(null); setNeedsConfirm(false);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) {
-      if (/not confirmed/i.test(error.message)) {
-        setNeedsConfirm(true);
-        setErr("המייל לא אומת עדיין. לחצו למטה לשליחה חוזרת של מייל האימות.");
-      } else {
-        setErr(mapError(error.message));
+    try {
+      const { error } = await withTimeout(supabase.auth.signInWithPassword({ email, password }));
+      if (error) {
+        if (/not confirmed/i.test(error.message)) {
+          setNeedsConfirm(true);
+          setErr("המייל לא אומת עדיין. לחצו למטה לשליחה חוזרת של מייל האימות.");
+        } else {
+          setErr(mapError(error.message));
+        }
       }
+    } catch {
+      setErr(TIMEOUT_MSG);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -124,18 +139,23 @@ export default function Auth({ inviteToken }: { inviteToken: string | null }) {
   async function signInMagicLink() {
     if (!email.trim()) { setErr("הזינו כתובת מייל לקבלת קישור כניסה"); return; }
     setBusy(true); setErr(null); setInfo(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + window.location.pathname },
-    });
-    setBusy(false);
-    if (error) {
-      setErr(/not allowed|not found|signups/i.test(error.message)
-        ? "המייל אינו רשום עדיין. עברו ללשונית הרשמה כדי ליצור חשבון."
-        : mapError(error.message));
-      return;
+    try {
+      const { error } = await withTimeout(supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + window.location.pathname },
+      }));
+      if (error) {
+        setErr(/not allowed|not found|signups/i.test(error.message)
+          ? "המייל אינו רשום עדיין. עברו ללשונית הרשמה כדי ליצור חשבון."
+          : mapError(error.message));
+        return;
+      }
+      setInfo("שלחנו קישור כניסה למייל. פתחו אותו כדי להיכנס, ללא סיסמה.");
+    } catch {
+      setErr(TIMEOUT_MSG);
+    } finally {
+      setBusy(false);
     }
-    setInfo("שלחנו קישור כניסה למייל. פתחו אותו כדי להיכנס, ללא סיסמה.");
   }
 
   async function signUp(e: React.FormEvent) {
