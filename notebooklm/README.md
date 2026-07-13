@@ -26,8 +26,10 @@ bash notebooklm/setup.sh
 
 1. `list_notebooks`, רשימת כל המחברות עם מזהה וכותרת.
 2. `ask_notebook` / `enrich_from_notebook`, שאלה חופשית על מחברת.
-3. `create_marketing_asset`, יצירת נכס שיווקי: `audio`, `video`, `quiz`, `mind_map`.
+3. `create_marketing_asset`, יצירת נכס שיווקי מהמחברת: `audio` (סקירת פודקאסט), `video` (סרטון סקירה), `quiz` (חידון), `mind_map` (מפת חשיבה).
 4. `save_to_brain`, שמירת סיכום או תובנה למחברת "המוח שלי".
+
+> הפלט של `create_marketing_asset` הוא אודיו או וידאו (או חידון או מפת חשיבה), ולא קובץ שקופיות לעריכה. NotebookLM בונה סרטון סקירה מהמקורות שבמחברת, לא מצגת PowerPoint או Adobe Express.
 
 ## דוגמאות שימוש
 
@@ -44,8 +46,17 @@ bash notebooklm/setup.sh
 </div>
 
 - הראשונה מפעילה את `list_notebooks`.
-- השנייה מפעילה את `create_marketing_asset` עם `asset_type=video`.
+- השנייה מפעילה את `create_marketing_asset` עם `asset_type=video`, כלומר סרטון סקירה מהמחברת. שימו לב: זה סרטון, לא קובץ שקופיות לעריכה.
 - השלישית שומרת את המחקר היומי, ראו למטה.
+
+## מצגת שקופיות מול סקירת וידאו
+
+"מצגת" יכולה להתכוון לשני דברים שונים, ולכל אחד צינור אחר:
+
+- **סרטון סקירה מתוך המחברת** הוא הפלט של NotebookLM: `create_marketing_asset` עם `asset_type=video`, קובץ וידאו שנבנה מהמקורות שבמחברת.
+- **מצגת שקופיות לעריכה** (PowerPoint או Adobe Express) איננה פלט של NotebookLM. לבקשה כזו יש להשתמש בכישור העיצוב (צינור HTML אל Adobe Express), ולא בשרת זה.
+
+אפשר גם לשלב: לשאול את המחברת דרך `ask_notebook` כדי לאסוף תוכן, ואז לבנות ממנו מצגת שקופיות בצינור Express בנפרד.
 
 ## שמירת מחקר יומי
 
