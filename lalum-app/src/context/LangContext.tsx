@@ -1,0 +1,69 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { strings, type Dict } from "../lib/strings";
+
+export type Lang = "en" | "he";
+
+type LangValue = {
+  lang: Lang;
+  dir: "rtl" | "ltr";
+  t: Dict;
+  setLang: (l: Lang) => void;
+  toggle: () => void;
+};
+
+const LangContext = createContext<LangValue | null>(null);
+
+const STORAGE_KEY = "lalum_lang";
+// Fallback when the browser exposes no usable language hint.
+const FALLBACK_LANG: Lang = "en";
+
+// Detect the visitor's language from the browser. Hebrew browsers (modern
+// "he-*" or the legacy "iw-*" code) open in Hebrew; everyone else in English.
+function detectLang(): Lang {
+  try {
+    const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+    for (const raw of list) {
+      const l = (raw || "").toLowerCase();
+      if (l.startsWith("he") || l.startsWith("iw")) return "he";
+    }
+  } catch { /* ignore */ }
+  return FALLBACK_LANG;
+}
+
+// A saved choice always wins; otherwise fall back to browser detection.
+function initialLang(): Lang {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "en" || saved === "he") return saved;
+  } catch { /* ignore */ }
+  return detectLang();
+}
+
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>(initialLang);
+
+  useEffect(() => {
+    const dir = lang === "he" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+    document.documentElement.dir = dir;
+  }, [lang]);
+
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    try { localStorage.setItem(STORAGE_KEY, l); } catch { /* ignore */ }
+  };
+  const toggle = () => setLang(lang === "he" ? "en" : "he");
+
+  return (
+    <LangContext.Provider value={{ lang, dir: lang === "he" ? "rtl" : "ltr", t: strings[lang], setLang, toggle }}>
+      {children}
+    </LangContext.Provider>
+  );
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useLang(): LangValue {
+  const ctx = useContext(LangContext);
+  if (!ctx) throw new Error("useLang must be used within LangProvider");
+  return ctx;
+}
