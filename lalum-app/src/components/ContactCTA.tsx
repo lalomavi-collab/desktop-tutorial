@@ -14,7 +14,7 @@ export function ContactCTA({ title, body, primaryLabel = "Initiate a risk assess
         <div className="glow" />
         <h2
           className="serif"
-          style={{ position: "relative", fontSize: 46, lineHeight: 1.12, letterSpacing: "-0.015em", color: "var(--paper)", margin: "0 0 18px" }}
+          style={{ position: "relative", fontSize: "clamp(30px, 8vw, 46px)", lineHeight: 1.12, letterSpacing: "-0.015em", color: "var(--paper)", margin: "0 0 18px" }}
         >
           {title}
         </h2>
