@@ -10,7 +10,6 @@ export function Footer() {
         style={{ padding: "44px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-          <span className="brand-mark" style={{ width: 28, height: 28, fontSize: 16 }}>L</span>
           <span style={{ fontFamily: "var(--serif)", fontSize: 18 }}>LALUM</span>
         </div>
         <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>

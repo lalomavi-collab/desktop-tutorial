@@ -17,7 +17,6 @@ export function Header() {
     <header className="site-header">
       <div className="wrap header-inner">
         <Link to="/" className="brand">
-          <span className="brand-mark">L</span>
           <span className="brand-word">LALUM</span>
         </Link>
 
