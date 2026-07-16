@@ -75,6 +75,16 @@ body {
   background: var(--clay-tint);
   color: var(--clay-hover);
 }
+/* Accessibility: a clear, consistent keyboard focus ring on every interactive
+   element (WCAG 2.4.7). Only shows for keyboard users, not mouse clicks. */
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+}
+.share-btn:focus-visible,
+.tabbar-item:focus-visible {
+  outline-offset: 3px;
+}
 /* Long tokens (emails, urls) wrap instead of pushing a box wider than the app. */
 p,
 li,
@@ -184,7 +194,7 @@ html[lang="en"] .italic-clay {
   align-items: center;
   gap: 9px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 9999px;
   padding: 15px 28px;
   font-size: 16px;
   font-weight: 600;
@@ -410,6 +420,63 @@ html[lang="en"] .italic-clay {
   color: #8f3323;
 }
 
+/* ---------- FAQ accordion (smooth, accessible) ---------- */
+.faq-item {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.18s ease;
+}
+.faq-item:hover {
+  border-color: var(--clay-soft);
+}
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 26px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: start;
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.faq-chevron {
+  flex: none;
+  color: var(--clay);
+  display: inline-flex;
+  transition: transform 0.28s ease;
+}
+.faq-chevron.open {
+  transform: rotate(180deg);
+}
+/* 0fr to 1fr row animates height smoothly with no reflow jumps. */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.faq-panel.open {
+  grid-template-rows: 1fr;
+}
+.faq-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+  font-size: 16px;
+  line-height: 1.72;
+  color: var(--slate);
+  padding: 0 26px;
+}
+.faq-panel.open .faq-panel-inner {
+  padding-bottom: 24px;
+}
+
 /* ---------- dark contact panel ---------- */
 .panel-dark {
   background: var(--ink);
@@ -553,6 +620,10 @@ html[lang="en"] .italic-clay {
   .ambient-grain,
   .route-view {
     animation: none !important;
+  }
+  .faq-panel,
+  .faq-chevron {
+    transition: none !important;
   }
 }
 

@@ -26,31 +26,36 @@ export function Home() {
               <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
               <a href="#practice" className="btn btn-ghost">{t.ui.seeWhatWeDo}</a>
             </div>
-            <div style={{ marginTop: 46, display: "flex", gap: 34, flexWrap: "wrap", color: "var(--slate)", fontSize: 14 }}>
-              <span><strong style={{ color: "var(--ink)" }}>{h.statResponseStrong}</strong> {h.statResponse}</span>
-              <span><strong style={{ color: "var(--ink)" }}>{h.statYearsStrong}</strong> {h.statYears}</span>
-              <span><strong style={{ color: "var(--ink)" }}>{h.statDefensibleStrong}</strong> {h.statDefensible}</span>
-            </div>
           </div>
 
+          {/* Advisory consultation card */}
           <div style={{ position: "relative" }}>
             <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 20, padding: 30, boxShadow: "0 30px 60px -34px rgba(60,45,30,.35)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
-                <span style={{ fontFamily: "var(--serif)", fontSize: 19 }}>{h.cardTitle}</span>
-                <span style={{ fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.cardLive}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
+                <span className="serif" style={{ fontSize: 19, lineHeight: 1.25 }}>{h.cardTitle}</span>
+                <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.advisoryBadge}</span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", marginTop: 6 }}>
-                {t.data.heroRows.map((r) => (
-                  <div key={r.tag} style={{ display: "flex", alignItems: "center", gap: 15, padding: "15px 0", borderBottom: "1px solid var(--line)" }}>
-                    <span className="icon-badge" style={{ width: 36, height: 36, borderRadius: 10, flex: "none" }}><Icon name={r.icon} size={19} /></span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{r.title}</div>
-                      <div style={{ fontSize: 13, color: "var(--slate)" }}>{r.sub}</div>
-                    </div>
-                    <span style={{ fontFamily: "var(--serif)", fontSize: 13, color: "var(--clay)" }} dir="ltr">{r.tag}</span>
+              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{h.advisoryIntro}</p>
+              <div className="label" style={{ margin: "20px 0 12px" }}>{h.advisoryFormat}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                  <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryInPersonTitle}</div>
+                    <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryInPersonBody}</div>
                   </div>
-                ))}
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                  <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryVirtualTitle}</div>
+                    <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryVirtualBody}</div>
+                  </div>
+                </div>
               </div>
+              <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
+                <Icon name="calendar" size={17} /> {h.advisoryCta}
+              </Link>
             </div>
           </div>
         </div>
@@ -156,16 +161,24 @@ export function Home() {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {t.data.faqs.map((f, i) => {
             const open = faqOpen === i;
+            const pid = `faq-panel-${i}`;
+            const bid = `faq-btn-${i}`;
             return (
-              <div key={f.q} style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 14, overflow: "hidden" }}>
+              <div key={f.q} className="faq-item">
                 <button
+                  id={bid}
+                  type="button"
+                  className="faq-q"
+                  aria-expanded={open}
+                  aria-controls={pid}
                   onClick={() => setFaqOpen(open ? -1 : i)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "22px 26px", background: "transparent", border: 0, cursor: "pointer", textAlign: "start", fontSize: 17, fontWeight: 500, color: "var(--ink)" }}
                 >
-                  {f.q}
-                  <span style={{ flex: "none", color: "var(--clay)", fontSize: 22, transform: open ? "rotate(45deg)" : "rotate(0deg)", transition: "transform .2s ease" }}>+</span>
+                  <span>{f.q}</span>
+                  <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
                 </button>
-                {open && <div style={{ padding: "0 26px 24px", fontSize: 16, lineHeight: 1.72, color: "var(--slate)", maxWidth: "66ch" }}>{f.a}</div>}
+                <div id={pid} role="region" aria-labelledby={bid} className={"faq-panel" + (open ? " open" : "")}>
+                  <div className="faq-panel-inner">{f.a}</div>
+                </div>
               </div>
             );
           })}
