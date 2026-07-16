@@ -52,7 +52,7 @@ export function ChatWidget() {
   }
 
   return (
-    <div style={{ position: "fixed", bottom: 24, insetInlineEnd: 24, zIndex: 80, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14 }}>
+    <div className="chat-dock" style={{ position: "fixed", bottom: 24, insetInlineEnd: 24, zIndex: 80, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14 }}>
       {open && (
         <div style={{ width: 370, maxWidth: "calc(100vw - 32px)", height: 520, maxHeight: "calc(100vh - 120px)", background: "var(--card)", border: "1px solid var(--line)", borderRadius: 20, boxShadow: "0 30px 70px -30px rgba(60,45,30,.5)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--line)", background: "var(--ink)" }}>
