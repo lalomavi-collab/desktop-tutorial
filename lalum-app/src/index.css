@@ -456,25 +456,20 @@ html[lang="en"] .italic-clay {
 .faq-chevron.open {
   transform: rotate(180deg);
 }
-/* 0fr to 1fr row animates height smoothly with no reflow jumps. */
-.faq-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s ease;
-}
-.faq-panel.open {
-  grid-template-rows: 1fr;
-}
-.faq-panel-inner {
-  overflow: hidden;
-  min-height: 0;
+/* The answer is only in the DOM when its question is open, so nothing is
+   shown up front. A short reveal keeps it from popping in. Only one answer is
+   open at a time. */
+.faq-answer {
+  padding: 0 26px 24px;
   font-size: 16px;
   line-height: 1.72;
   color: var(--slate);
-  padding: 0 26px;
+  max-width: 66ch;
+  animation: faq-open 0.26s ease both;
 }
-.faq-panel.open .faq-panel-inner {
-  padding-bottom: 24px;
+@keyframes faq-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ---------- dark contact panel ---------- */
@@ -621,9 +616,11 @@ html[lang="en"] .italic-clay {
   .route-view {
     animation: none !important;
   }
-  .faq-panel,
   .faq-chevron {
     transition: none !important;
+  }
+  .faq-answer {
+    animation: none !important;
   }
 }
 
