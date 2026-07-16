@@ -1,6 +1,7 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Icon } from "../components/Icon";
-import { articles, type ArticleBlock } from "../lib/content";
+import { useLang } from "../context/LangContext";
+import type { ArticleBlock } from "../lib/content";
 
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
@@ -10,7 +11,7 @@ function Block({ block }: { block: ArticleBlock }) {
       return <h2 className="serif" style={{ fontSize: 28, fontWeight: 500, lineHeight: 1.25, margin: "44px 0 18px" }}>{block.text}</h2>;
     case "quote":
       return (
-        <blockquote style={{ margin: "36px 0", padding: "4px 0 4px 26px", borderInlineStart: "3px solid var(--clay)", fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 24, lineHeight: 1.5, color: "var(--clay)" }}>
+        <blockquote style={{ margin: "36px 0", padding: "4px 26px", borderInlineStart: "3px solid var(--clay)", fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 24, lineHeight: 1.5, color: "var(--clay)" }}>
           {block.text}
         </blockquote>
       );
@@ -30,53 +31,48 @@ function Block({ block }: { block: ArticleBlock }) {
 
 export function Article() {
   const { slug } = useParams();
-  const article = articles.find((a) => a.slug === slug);
+  const { t, dir } = useLang();
+  const article = t.data.articles.find((a) => a.slug === slug);
   if (!article) return <Navigate to="/insights" replace />;
 
   return (
     <>
-      {/* article header */}
       <div className="wrap" style={{ maxWidth: 760, padding: "64px 32px 0" }}>
         <Link to="/insights" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "var(--slate)" }}>
-          <span style={{ transform: "rotate(180deg)" }}><Icon name="chevron-r" size={16} /></span>
-          All articles
+          <span style={{ transform: dir === "rtl" ? "none" : "rotate(180deg)" }}><Icon name={dir === "rtl" ? "chevron-r" : "chevron-l"} size={16} /></span>
+          {t.ui.article.allArticles}
         </Link>
-        <div style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--clay)", fontWeight: 600 }}>{article.category}</div>
+        <div style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)", fontWeight: 600 }}>{article.category}</div>
         <h1 className="serif" style={{ fontSize: 46, lineHeight: 1.12, letterSpacing: "-0.01em", margin: "14px 0 20px" }}>{article.title}</h1>
         <p style={{ fontSize: 20, lineHeight: 1.55, color: "var(--slate)", fontFamily: "var(--serif)", margin: "0 0 24px" }}>{article.dek}</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--slate)", paddingBottom: 28, borderBottom: "1px solid var(--line)" }} dir="ltr">
-          <span>By Dr. Avraham Lalum</span><span style={{ color: "var(--clay)" }}>·</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--slate)", paddingBottom: 28, borderBottom: "1px solid var(--line)" }}>
+          <span>{t.ui.article.by}</span><span style={{ color: "var(--clay)" }}>·</span>
           <span>{article.date}</span><span style={{ color: "var(--clay)" }}>·</span>
           <span>{article.read}</span>
         </div>
       </div>
 
-      {/* body */}
       <article className="wrap" style={{ maxWidth: 760, padding: "36px 32px 24px" }}>
-        {article.blocks.map((b, i) => (
-          <Block key={i} block={b} />
-        ))}
+        {article.blocks.map((b, i) => <Block key={i} block={b} />)}
       </article>
 
-      {/* author seal */}
       <div className="wrap" style={{ maxWidth: 760, padding: "16px 32px 64px" }}>
         <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 14, padding: 30, display: "flex", gap: 22, alignItems: "center" }}>
           <div style={{ flex: "none", width: 72, height: 72, borderRadius: "50%", background: "var(--card)", border: "1px solid var(--clay-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontFamily: "var(--serif)", fontSize: 26, color: "var(--clay)" }}>AL</span>
+            <span style={{ fontFamily: "var(--serif)", fontSize: 26, color: "var(--clay)" }} dir="ltr">AL</span>
           </div>
           <div>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>Dr. Avraham Lalum</div>
-            <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 4 }}>Attorney &amp; Notary · Ph.D. in Law &amp; Economics · Head of AI, Lalum.</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>{t.home.founderName}</div>
+            <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 4 }}>{t.ui.article.seal}</div>
           </div>
         </div>
       </div>
 
-      {/* keep reading CTA */}
       <section className="section-line">
         <div className="wrap" style={{ maxWidth: 760, padding: "56px 32px", textAlign: "center" }}>
-          <p className="eyebrow">Keep reading</p>
-          <h2 className="serif" style={{ fontSize: 30, lineHeight: 1.2, margin: "0 0 24px" }}>Bring the same rigor to your own matters.</h2>
-          <Link to="/portal" className="btn btn-clay" style={{ display: "inline-flex" }}>Initiate a risk assessment</Link>
+          <p className="eyebrow">{t.ui.article.keepReading}</p>
+          <h2 className="serif" style={{ fontSize: 30, lineHeight: 1.2, margin: "0 0 24px" }}>{t.ui.article.keepReadingHead}</h2>
+          <Link to="/portal" className="btn btn-clay" style={{ display: "inline-flex" }}>{t.ui.initiateRisk}</Link>
         </div>
       </section>
     </>

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LangProvider } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -12,6 +13,7 @@ import { Portal } from "./pages/Portal";
 
 export default function App() {
   return (
+    <LangProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -35,5 +37,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </LangProvider>
   );
 }

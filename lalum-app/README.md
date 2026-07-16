@@ -10,6 +10,19 @@ Hanken Grotesk) is ported from the `Home-en` Claude Design source.
 - Vite 8 + TypeScript
 - Supabase (`@supabase/supabase-js`) for the client area
 
+## Languages (bilingual)
+
+The whole app is bilingual, Hebrew and English, with a language toggle in the
+header. It opens in Hebrew (RTL) by default and remembers the visitor's choice
+in `localStorage`. Switching language sets `dir` and `lang` on the document,
+swaps to Hebrew-appropriate fonts (Frank Ruhl Libre, Heebo), and keeps Latin and
+technical tokens (LALUM, Tech-Legal, EU AI Act) upright inside Hebrew text.
+
+- All copy lives in one dictionary, `src/lib/strings.ts` (`en` and `he`); `he`
+  is type-checked against `en`, so a missing key fails the build.
+- The active language comes from `src/context/LangContext.tsx` (`useLang()`).
+- To change the default language, edit `DEFAULT_LANG` in that file.
+
 ## Getting started
 
 ```bash

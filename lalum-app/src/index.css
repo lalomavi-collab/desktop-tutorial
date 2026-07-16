@@ -26,6 +26,16 @@
   --maxw: 1180px;
 }
 
+/* Hebrew swaps to complex-script fonts while keeping the clay/ivory look. */
+html[lang="he"] {
+  --sans: "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
+  --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+}
+/* Latin/technical tokens stay upright and un-spaced inside Hebrew. */
+html[lang="he"] .eyebrow {
+  letter-spacing: 0.04em;
+}
+
 *,
 *::before,
 *::after {
