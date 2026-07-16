@@ -54,3 +54,8 @@ export type Article = {
 // training pages route here so nothing points at an unconfigured address.
 export const contactEmail = "avraham@lalum.co";
 export const trainingEmail = contactEmail;
+
+// Firm phone numbers. `tel` is the dial string (E.164), `display` is the
+// reader-facing format.
+export const officePhone = { display: "03-3104959", tel: "+97233104959" };
+export const directPhone = { display: "052-2490420", tel: "+972522490420" };
