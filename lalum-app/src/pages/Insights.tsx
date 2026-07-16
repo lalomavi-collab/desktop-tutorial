@@ -13,7 +13,7 @@ export function Insights() {
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>
           <span className="pill">{ins.heroPill}</span>
-          <h1 className="serif" style={{ fontSize: 54, lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
+          <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
             {ins.heroH1a} <span className="italic-clay">{ins.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{ins.heroLede}</p>

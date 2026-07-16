@@ -58,7 +58,7 @@ export function Home() {
       <section className="section-line">
         <div className="wrap section" style={{ maxWidth: 900, textAlign: "center" }}>
           <p className="eyebrow">{h.aboutEyebrow}</p>
-          <h2 className="serif" style={{ fontSize: 40, lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
+          <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
             {h.aboutH2a} <span className="italic-clay">{h.aboutH2b}</span>
           </h2>
           <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto 18px", maxWidth: "70ch" }}>{h.aboutP1}</p>
@@ -147,7 +147,7 @@ export function Home() {
       <section id="faq" className="wrap section" style={{ maxWidth: 820 }}>
         <div style={{ textAlign: "center", margin: "0 0 32px" }}>
           <p className="eyebrow">{h.faqEyebrow}</p>
-          <h2 className="serif" style={{ fontSize: 38, lineHeight: 1.15, letterSpacing: "-0.015em" }}>
+          <h2 className="serif" style={{ fontSize: "clamp(27px, 6vw, 38px)", lineHeight: 1.15, letterSpacing: "-0.015em" }}>
             {h.faqH2a} <span className="italic-clay">{h.faqH2b}</span>
           </h2>
         </div>

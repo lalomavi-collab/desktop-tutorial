@@ -398,27 +398,79 @@ button {
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
   :root {
-    --sec: 68px;
+    --sec: 72px;
   }
   .wrap {
     padding-left: 20px;
     padding-right: 20px;
   }
   .h1 {
-    font-size: 42px;
+    font-size: 40px;
   }
   .h2 {
-    font-size: 32px;
+    font-size: 30px;
   }
+  /* Collapse every column layout, including the inline hero and founder grids. */
   .grid-2,
   .grid-3,
   .grid-4 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
-  .nav-pills {
-    display: none;
+  .hero-grid,
+  .founder-grid {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
   }
   .panel-dark {
-    padding: 48px 24px;
+    padding: 48px 22px !important;
+  }
+
+  /* Header: brand and actions on the first row, nav scrolls on its own row. */
+  .header-inner {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .nav-pills {
+    order: 3;
+    flex-basis: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-pill {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --sec: 52px;
+  }
+  .wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .h1 {
+    font-size: 33px;
+    line-height: 1.1;
+  }
+  .h2 {
+    font-size: 26px;
+  }
+  .btn {
+    padding: 13px 22px;
+    font-size: 15px;
+  }
+  .card {
+    padding: 26px !important;
+  }
+  .panel-dark {
+    padding: 38px 18px !important;
+  }
+  /* Keep the floating chat bubble from crowding thumb reach. */
+  .field {
+    font-size: 16px; /* avoids iOS zoom on focus */
   }
 }
