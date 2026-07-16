@@ -6,7 +6,7 @@
 // Deploy: supabase functions deploy lalum-assistant
 // Requires env: ANTHROPIC_API_KEY (server only).
 
-const MODEL = "claude-sonnet-5";
+const MODEL = "claude-haiku-4-5-20251001";
 
 const SYSTEM =
   "You are LALUM's AI legal assistant. LALUM is a Tech-Legal boutique serving " +
