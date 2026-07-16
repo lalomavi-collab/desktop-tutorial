@@ -3,6 +3,10 @@ import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
+import { SchedulingEmbed } from "../components/SchedulingEmbed";
+
+// When set, an embedded Calendly replaces the manual day/time picker.
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
 
 const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
@@ -60,6 +64,8 @@ export function Portal() {
       if (supabase) {
         const { error } = await supabase.from("lalum_consultation_requests").insert({ requested_day: day, requested_slot: slot, topic: topic || null });
         if (error) throw error;
+        // Best-effort confirmation email via Resend (no-op if not deployed).
+        void supabase.functions.invoke("lalum-notify", { body: { day, slot, topic } });
       } else {
         await new Promise((r) => setTimeout(r, 400));
       }
@@ -131,6 +137,18 @@ export function Portal() {
             <span className="icon-badge"><Icon name="calendar" size={22} /></span>
             <h2 className="h3" style={{ fontSize: 22 }}>{P.book.title}</h2>
           </div>
+          {CALENDLY_URL ? (
+            <div style={{ background: "var(--ink)", borderRadius: 16, padding: 14 }}>
+              <SchedulingEmbed
+                url={CALENDLY_URL}
+                prefill={{ email: user?.email ?? undefined }}
+                onScheduled={() => setBookMsg({ tone: "ok", text: P.book.okSuffix })}
+              />
+              {bookMsg && (
+                <div className={`notice ${bookMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{bookMsg.text}</div>
+              )}
+            </div>
+          ) : (
           <form onSubmit={submitBooking}>
             <div className="label">{P.book.step1}</div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 22 }}>
@@ -167,6 +185,7 @@ export function Portal() {
             </button>
             {bookMsg && <div className={`notice ${bookMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{bookMsg.text}</div>}
           </form>
+          )}
         </div>
 
         {/* VERIFICATION */}
