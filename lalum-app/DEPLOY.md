@@ -64,10 +64,23 @@ From `lalum-app/`:
 All backend objects are LALUM-owned (`lalum_*`); the app does not touch any other
 application's data.
 
-## Custom domain
+## Custom domain: lalumapp.com
+
+The app's domain is `lalumapp.com` (register it at any registrar first).
 
 1. Deploy to the chosen host and confirm the app works on its default URL.
-2. Add the new domain (or a subdomain such as `app.lalum.co`) in the host's
-   domain settings.
-3. Point DNS at the host: a `CNAME` for a subdomain, or the host's `A`/`ALIAS`
-   records for a root domain. The host issues HTTPS automatically.
+2. Add `lalumapp.com` (and `www.lalumapp.com`) in the host's domain settings.
+3. Point DNS at the host. Typical records (the host shows the exact values):
+   - Root `lalumapp.com`: an `A` / `ALIAS` / `ANAME` record to the host's target.
+   - `www.lalumapp.com`: a `CNAME` to the host's target, or a redirect to the root.
+4. HTTPS is issued automatically by the host once DNS resolves.
+
+The app is served at the domain root, so no build config changes are needed for
+this domain.
+
+## SEO
+
+`index.html` sets the canonical URL and Open Graph tags to `https://lalumapp.com/`.
+`public/robots.txt` and `public/sitemap.xml` reference the same domain and are
+served from the site root after build. If the final domain ever changes, update
+those three files.
