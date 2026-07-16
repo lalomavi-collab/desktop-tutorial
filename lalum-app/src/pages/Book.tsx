@@ -8,7 +8,7 @@ import { SchedulingEmbed } from "../components/SchedulingEmbed";
 // gets an email confirmation plus a calendar invite, and the meeting lands on
 // the connected Outlook calendar automatically. The manual request form below
 // is only a fallback for when scheduling is not yet connected.
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL;
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || "https://calendly.com/lalomavi/30min";
 // Clay / ivory palette to match the light brand (hex without '#').
 const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
 
