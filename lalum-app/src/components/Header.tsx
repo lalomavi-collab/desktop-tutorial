@@ -38,8 +38,8 @@ export function Header() {
           >
             {t.ui.otherLangName}
           </button>
-          <Link to="/book" className="btn btn-clay btn-sm">{t.ui.bookPage.navCta}</Link>
-          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm">
+          <Link to="/book" className="btn btn-clay btn-sm hide-mobile">{t.ui.bookPage.navCta}</Link>
+          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile">
             {user ? t.ui.clientPortal : t.ui.clientLogin}
           </Link>
         </div>

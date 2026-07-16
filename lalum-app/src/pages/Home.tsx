@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
+import { AmbientBackground } from "../components/AmbientBackground";
 import { useLang } from "../context/LangContext";
 
 export function Home() {
@@ -13,7 +14,8 @@ export function Home() {
     <>
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap hero-grid" style={{ padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
+        <AmbientBackground />
+        <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
           <div>
             <span className="pill">{h.heroPill}</span>
             <h1 className="h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>

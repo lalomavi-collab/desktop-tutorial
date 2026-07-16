@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
+import { AmbientBackground } from "../components/AmbientBackground";
 import { useLang } from "../context/LangContext";
 
 export function Advisory() {
@@ -11,7 +12,8 @@ export function Advisory() {
     <>
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 1000, padding: "96px 32px 80px", textAlign: "center" }}>
+        <AmbientBackground />
+        <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 1000, padding: "96px 32px 80px", textAlign: "center" }}>
           <span className="pill">{a.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(32px, 8vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "18ch" }}>
             {a.heroH1a} <span className="italic-clay">{a.heroH1b}</span>

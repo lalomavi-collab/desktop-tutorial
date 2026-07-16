@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { ChatWidget } from "./ChatWidget";
+import { BottomTabBar } from "./BottomTabBar";
 import { useLang } from "../context/LangContext";
 
 export function MarketingLayout() {
@@ -19,10 +20,14 @@ export function MarketingLayout() {
       <a href="#main" className="skip-link">{t.ui.skipToContent}</a>
       <Header />
       <main id="main">
-        <Outlet />
+        {/* Keyed by path so each navigation replays the reveal (app-like page transition). */}
+        <div key={pathname} className="route-view">
+          <Outlet />
+        </div>
       </main>
       <Footer />
       <ChatWidget />
+      <BottomTabBar />
     </>
   );
 }
