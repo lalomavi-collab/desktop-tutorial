@@ -61,6 +61,37 @@ a:hover {
   color: var(--clay-hover);
 }
 
+/* ---------- global polish ---------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+/* Nothing should ever escape the viewport horizontally. */
+html,
+body {
+  overflow-x: clip;
+}
+::selection {
+  background: var(--clay-tint);
+  color: var(--clay-hover);
+}
+/* Long tokens (emails, urls) wrap instead of pushing a box wider than the app. */
+p,
+li,
+.lede,
+.field,
+input,
+textarea,
+.notice,
+blockquote {
+  overflow-wrap: break-word;
+}
+/* Paragraphs read tighter, without lonely last-line orphans. */
+p,
+.lede {
+  text-wrap: pretty;
+}
+
 h1,
 h2,
 h3,
@@ -102,19 +133,29 @@ button {
   font-family: var(--serif);
   font-weight: 400;
 }
+/* Display headings: balanced line breaks + serif ligatures/kerning for life. */
+.h1,
+.h2,
+.h3,
+h1.serif,
+h2.serif,
+h3.serif {
+  text-wrap: balance;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
 .h1 {
   font-family: var(--serif);
   font-weight: 400;
   font-size: 60px;
   line-height: 1.06;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.021em;
 }
 .h2 {
   font-family: var(--serif);
   font-weight: 400;
   font-size: 42px;
   line-height: 1.15;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.016em;
 }
 .h3 {
   font-family: var(--serif);
@@ -123,6 +164,10 @@ button {
 .italic-clay {
   font-style: italic;
   color: var(--clay);
+}
+/* Latin display italics get a hair more air so the flourish reads. */
+html[lang="en"] .italic-clay {
+  letter-spacing: 0.004em;
 }
 .lede {
   font-size: 19px;
@@ -144,7 +189,8 @@ button {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease,
+    transform 0.16s ease, box-shadow 0.16s ease;
 }
 .btn-clay {
   background: var(--clay);
@@ -153,6 +199,12 @@ button {
 .btn-clay:hover {
   background: var(--clay-hover);
   color: var(--paper);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(139, 63, 40, 0.7);
+}
+.btn-clay:active,
+.btn-ink:active {
+  transform: translateY(0);
 }
 .btn-ink {
   background: var(--ink);
@@ -203,10 +255,12 @@ button {
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 34px;
-  transition: border-color 0.18s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover {
   border-color: var(--clay-soft);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -30px rgba(60, 45, 30, 0.5);
 }
 .icon-badge {
   width: 46px;
@@ -293,6 +347,7 @@ button {
   font-size: 14px;
   font-weight: 600;
   color: var(--slate);
+  transition: color 0.15s ease, background 0.15s ease;
 }
 .nav-pill:hover {
   color: var(--ink);
@@ -438,6 +493,18 @@ button {
     overflow-x: auto;
     justify-content: flex-start;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Soft fade on the scroll (end) edge, so partial pills read as "more here",
+       not as text spilling out of the bar. */
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+  }
+  html[dir="rtl"] .nav-pills {
+    -webkit-mask-image: linear-gradient(to left, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to left, #000 88%, transparent 100%);
+  }
+  .nav-pills::-webkit-scrollbar {
+    display: none;
   }
   .nav-pill {
     white-space: nowrap;
@@ -472,5 +539,32 @@ button {
   /* Keep the floating chat bubble from crowding thumb reach. */
   .field {
     font-size: 16px; /* avoids iOS zoom on focus */
+  }
+}
+
+/* ---------- motion: gentle content reveal ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  main#main {
+    animation: lalum-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes lalum-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+/* Respect users who ask for less motion: no lifts, no reveals. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .card:hover,
+  .btn-clay:hover {
+    transform: none;
   }
 }
