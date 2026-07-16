@@ -2,6 +2,15 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
+import { SchedulingEmbed } from "../components/SchedulingEmbed";
+
+// When a Calendly link is configured, booking is REAL and instant: the visitor
+// gets an email confirmation plus a calendar invite, and the meeting lands on
+// the connected Outlook calendar automatically. The manual request form below
+// is only a fallback for when scheduling is not yet connected.
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL;
+// Clay / ivory palette to match the light brand (hex without '#').
+const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
 
 const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
@@ -31,6 +40,22 @@ export function Book() {
   const { t, lang } = useLang();
   const B = t.ui.bookPage;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
+
+  // Real, instant scheduling via the connected calendar.
+  if (CALENDLY_URL) {
+    return (
+      <section className="wrap" style={{ maxWidth: 880, padding: "80px 32px 110px" }}>
+        <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 30px" }}>
+          <p className="eyebrow">{B.eyebrow}</p>
+          <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
+          <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitleLive}</p>
+        </div>
+        <div className="card" style={{ padding: 8 }}>
+          <SchedulingEmbed url={CALENDLY_URL} theme={CLAY_THEME} height={720} />
+        </div>
+      </section>
+    );
+  }
 
   const [day, setDay] = useState("");
   const [slot, setSlot] = useState("");
