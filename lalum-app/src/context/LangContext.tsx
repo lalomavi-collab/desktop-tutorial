@@ -14,16 +14,29 @@ type LangValue = {
 const LangContext = createContext<LangValue | null>(null);
 
 const STORAGE_KEY = "lalum_lang";
-// The firm's primary market is Israel, so the app opens in Hebrew (RTL) and
-// remembers whatever the visitor last chose.
-const DEFAULT_LANG: Lang = "he";
+// Fallback when the browser exposes no usable language hint.
+const FALLBACK_LANG: Lang = "en";
 
+// Detect the visitor's language from the browser. Hebrew browsers (modern
+// "he-*" or the legacy "iw-*" code) open in Hebrew; everyone else in English.
+function detectLang(): Lang {
+  try {
+    const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+    for (const raw of list) {
+      const l = (raw || "").toLowerCase();
+      if (l.startsWith("he") || l.startsWith("iw")) return "he";
+    }
+  } catch { /* ignore */ }
+  return FALLBACK_LANG;
+}
+
+// A saved choice always wins; otherwise fall back to browser detection.
 function initialLang(): Lang {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "en" || saved === "he") return saved;
   } catch { /* ignore */ }
-  return DEFAULT_LANG;
+  return detectLang();
 }
 
 export function LangProvider({ children }: { children: ReactNode }) {

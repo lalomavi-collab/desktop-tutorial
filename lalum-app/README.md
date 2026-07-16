@@ -13,15 +13,20 @@ Hanken Grotesk) is ported from the `Home-en` Claude Design source.
 ## Languages (bilingual)
 
 The whole app is bilingual, Hebrew and English, with a language toggle in the
-header. It opens in Hebrew (RTL) by default and remembers the visitor's choice
-in `localStorage`. Switching language sets `dir` and `lang` on the document,
-swaps to Hebrew-appropriate fonts (Frank Ruhl Libre, Heebo), and keeps Latin and
+header. Switching language sets `dir` and `lang` on the document, swaps to
+Hebrew-appropriate fonts (Frank Ruhl Libre, Heebo), and keeps Latin and
 technical tokens (LALUM, Tech-Legal, EU AI Act) upright inside Hebrew text.
+
+The opening language is resolved in this order:
+
+1. A saved choice in `localStorage` (the toggle writes it), which always wins.
+2. Otherwise, browser detection: a Hebrew browser (`he-*` or the legacy `iw-*`)
+   opens in Hebrew (RTL); everyone else opens in English.
 
 - All copy lives in one dictionary, `src/lib/strings.ts` (`en` and `he`); `he`
   is type-checked against `en`, so a missing key fails the build.
 - The active language comes from `src/context/LangContext.tsx` (`useLang()`).
-- To change the default language, edit `DEFAULT_LANG` in that file.
+- To change the no-hint fallback, edit `FALLBACK_LANG` in that file.
 
 ## Getting started
 
