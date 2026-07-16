@@ -72,7 +72,7 @@ export function Article() {
         <div className="wrap" style={{ maxWidth: 760, padding: "56px 32px", textAlign: "center" }}>
           <p className="eyebrow">{t.ui.article.keepReading}</p>
           <h2 className="serif" style={{ fontSize: 30, lineHeight: 1.2, margin: "0 0 24px" }}>{t.ui.article.keepReadingHead}</h2>
-          <Link to="/portal" className="btn btn-clay" style={{ display: "inline-flex" }}>{t.ui.initiateRisk}</Link>
+          <Link to="/book" className="btn btn-clay" style={{ display: "inline-flex" }}>{t.ui.bookPage.navCta}</Link>
         </div>
       </section>
     </>
