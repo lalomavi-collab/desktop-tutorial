@@ -50,5 +50,7 @@ export type Article = {
   blocks: ArticleBlock[];
 };
 
+// Single primary inbox for the whole app. Both marketing surfaces and the
+// training pages route here so nothing points at an unconfigured address.
 export const contactEmail = "avraham@lalum.co";
-export const trainingEmail = "training@lalum.co";
+export const trainingEmail = contactEmail;
