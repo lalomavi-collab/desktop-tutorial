@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
+import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 
 export function Home() {
@@ -134,12 +135,28 @@ export function Home() {
       {/* FOUNDER */}
       <section className="section-line">
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
-          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 48, textAlign: "center" }}>
-            <div style={{ width: 120, height: 120, margin: "0 auto 20px", borderRadius: "50%", background: "var(--card)", border: "1px solid var(--clay-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
+            {/* Firm logo (obsidian wordmark tile) */}
+            <div role="img" aria-label={h.logoAlt} style={{ height: 64, borderRadius: 12, marginBottom: 26, backgroundColor: "#0a0a0a", backgroundImage: "url(/lalum-logo.png)", backgroundSize: "130%", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(0,0,0,.15)" }} />
+            {/* Founder portrait (monogram placeholder until a headshot is supplied) */}
+            <div style={{ width: 116, height: 116, margin: "0 auto 18px", borderRadius: "50%", background: "var(--card)", border: "1px solid var(--clay-soft)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
               <span style={{ fontFamily: "var(--serif)", fontSize: 30, color: "var(--clay)" }} dir="ltr">AL</span>
             </div>
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
+            <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
+              <a href={`tel:${officePhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+                <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
+                <span style={{ color: "var(--slate)" }}>{h.founderOffice}</span>
+                <span dir="ltr" style={{ fontWeight: 600 }}>{officePhone.display}</span>
+              </a>
+              <a href={`tel:${directPhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+                <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
+                <span style={{ color: "var(--slate)" }}>{h.founderDirect}</span>
+                <span dir="ltr" style={{ fontWeight: 600 }}>{directPhone.display}</span>
+              </a>
+            </div>
           </div>
           <div>
             <p className="eyebrow">{h.storyEyebrow}</p>
