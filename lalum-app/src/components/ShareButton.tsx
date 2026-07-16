@@ -33,7 +33,7 @@ export function ShareButton() {
   return (
     <div className="share-wrap">
       <button type="button" className="share-btn" onClick={() => void share()} aria-label={s.aria} title={s.aria}>
-        <Icon name="share" size={18} />
+        <Icon name="share" size={15} />
         <span className="share-ring" aria-hidden="true" />
       </button>
       {copied && <span className="share-toast" role="status">{s.copied}</span>}
