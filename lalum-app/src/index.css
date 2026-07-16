@@ -638,6 +638,67 @@ html[lang="en"] .italic-clay {
   );
 }
 
+/* ---------- share button (round, in header) ---------- */
+.share-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.share-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--clay-soft);
+  background: var(--clay-tint);
+  color: var(--clay);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.share-btn:hover {
+  background: var(--clay);
+  color: var(--paper);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(193, 95, 60, 0.7);
+}
+.share-btn:active {
+  transform: scale(0.94);
+}
+.share-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--clay);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .share-ring {
+    animation: share-pulse 2.6s ease-out infinite;
+  }
+}
+@keyframes share-pulse {
+  0% { opacity: 0.5; transform: scale(1); }
+  70% { opacity: 0; transform: scale(1.65); }
+  100% { opacity: 0; transform: scale(1.65); }
+}
+.share-toast {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  white-space: nowrap;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  z-index: 90;
+  box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.6);
+}
+
 /* ---------- mobile app shell: bottom tab bar ---------- */
 .tabbar {
   display: none;

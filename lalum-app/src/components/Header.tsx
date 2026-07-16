@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import { ShareButton } from "./ShareButton";
 
 export function Header() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export function Header() {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <ShareButton />
           <button
             type="button"
             onClick={toggle}
