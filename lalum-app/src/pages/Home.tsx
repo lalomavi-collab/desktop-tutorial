@@ -21,7 +21,7 @@ export function Home() {
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <Link to="/portal" className="btn btn-clay">{t.ui.initiateRisk}</Link>
+              <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
               <a href="#practice" className="btn btn-ghost">{t.ui.seeWhatWeDo}</a>
             </div>
             <div style={{ marginTop: 46, display: "flex", gap: 34, flexWrap: "wrap", color: "var(--slate)", fontSize: 14 }}>

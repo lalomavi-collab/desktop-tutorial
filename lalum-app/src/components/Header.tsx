@@ -38,6 +38,7 @@ export function Header() {
           >
             {t.ui.otherLangName}
           </button>
+          <Link to="/book" className="btn btn-clay btn-sm">{t.ui.bookPage.navCta}</Link>
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm">
             {user ? t.ui.clientPortal : t.ui.clientLogin}
           </Link>

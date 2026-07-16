@@ -18,7 +18,7 @@ export function Advisory() {
           </h1>
           <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 36px" }}>{a.heroLede}</p>
           <div style={{ display: "flex", gap: 14, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link to="/portal" className="btn btn-clay">{t.ui.initiateRisk}</Link>
+            <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
             <a href="#mediation" className="btn btn-ghost">{a.heroCta2}</a>
           </div>
         </div>
@@ -110,7 +110,7 @@ export function Advisory() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/portal" className="btn btn-clay" style={{ justifyContent: "center" }}>{p.cta}</Link>
+                <Link to="/book" className="btn btn-clay" style={{ justifyContent: "center" }}>{p.cta}</Link>
               </div>
             ))}
           </div>
