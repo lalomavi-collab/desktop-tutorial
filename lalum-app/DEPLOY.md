@@ -33,6 +33,24 @@ Client-side routes such as `/insights/legal-logic` must fall back to
 Any other static host: add a rule that rewrites unknown paths to `/index.html`
 with status 200.
 
+## Cloudflare Pages (smoothest, since the domain is at Cloudflare)
+
+Because `lalumapp.com` is registered at Cloudflare, Cloudflare Pages keeps DNS
+and HTTPS in the same account.
+
+1. Cloudflare dashboard, Workers & Pages, Create, Pages, Connect to Git, and pick
+   this repository and branch.
+2. Build settings:
+   - Root directory: `lalum-app`
+   - Build command: `npm run build`
+   - Output directory: `dist`
+   - Environment variable `NODE_VERSION` = `22` (or rely on `.nvmrc`).
+3. SPA routing works out of the box via `public/_redirects`.
+4. After the first deploy: Custom domains, add `lalumapp.com` and
+   `www.lalumapp.com`. Cloudflare wires the DNS automatically.
+5. Optional live backend: add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as
+   Pages environment variables, then redeploy.
+
 ## Environment variables (optional)
 
 Without these, the app runs in a self-contained demo mode (auth and portal forms
