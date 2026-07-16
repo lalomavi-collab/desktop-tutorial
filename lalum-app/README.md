@@ -49,7 +49,7 @@ Marketing:
 - `/legal` Terms, privacy, and accessibility (linked from the footer), with a not-legal-advice disclaimer.
 
 A floating **AI assistant** (chat widget) is available site-wide. It posts the
-conversation to the `legal-assistant` Supabase Edge Function, which proxies to
+conversation to the `lalum-assistant` Supabase Edge Function, which proxies to
 the Anthropic API server-side (set `ANTHROPIC_API_KEY` as a function secret). In
 demo mode (no Supabase) it returns a canned reply pointing to booking a call.
 
@@ -71,15 +71,28 @@ Copy `.env.example` to `.env.local` and fill them in. **When they are absent the
 app runs in demo mode**: authentication and the portal forms work end to end
 against local state, so the whole app is runnable with no backend.
 
-When configured, the portal talks to the existing Supabase project:
+This app is **standalone**: its backend is defined under `lalum-app/supabase/`
+and owns all of its objects (every table is `lalum_*`). It does not depend on,
+reference, or share data with any other application.
 
-- **Booking** inserts into `public.consultation_requests`
-  (migration `supabase/migrations/0003_consultation_requests.sql`), owned by the
-  signed-in user via RLS.
-- **Attorney verification** calls the `verify-attorney` Edge Function, which
-  matches the submitted name and license against `bar_registry`
-  (migrations `0001`/`0002`). Only an exact match auto-verifies; everything else
-  is routed to manual review.
+When configured, the portal talks to LALUM's own Supabase resources:
+
+- **Booking** inserts into `public.lalum_consultation_requests`
+  (migration `supabase/migrations/0001_lalum_portal.sql`), owned by the signed-in
+  user via RLS.
+- **Attorney verification** calls the `lalum-attorney-verify` Edge Function,
+  which matches the submitted name and license against `lalum_bar_registry` and,
+  on an exact match, sets `lalum_profiles.verification_status = 'verified'`.
+  Anything else is recorded in `lalum_verification_requests` for manual review.
+
+Deploy the backend from this directory:
+
+```
+cd lalum-app
+supabase functions deploy lalum-assistant
+supabase functions deploy lalum-attorney-verify
+# apply supabase/migrations via your Supabase workflow
+```
 
 ## Notes
 

@@ -1,9 +1,9 @@
-// legal-assistant: Supabase Edge Function (Deno).
+// lalum-assistant: Supabase Edge Function (Deno) for the LALUM app.
 // Backs the LALUM site chat widget (lalum-app ChatWidget). Proxies a short
 // conversation to the Anthropic Messages API with a fixed system prompt so the
-// API key stays server-side. Returns { reply }.
+// API key stays server-side. Returns { reply }. Self-contained to LALUM.
 //
-// Deploy: supabase functions deploy legal-assistant
+// Deploy: supabase functions deploy lalum-assistant
 // Requires env: ANTHROPIC_API_KEY (server only).
 
 const MODEL = "claude-sonnet-5";
@@ -40,7 +40,6 @@ Deno.serve(async (req) => {
   let body: { messages?: Msg[] };
   try { body = await req.json(); } catch { return json(400, { code: "bad_json" }); }
 
-  // Keep only well-formed turns, and cap history to keep prompts small.
   const messages = (body.messages ?? [])
     .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
     .slice(-12)

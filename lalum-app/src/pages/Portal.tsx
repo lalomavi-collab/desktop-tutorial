@@ -58,7 +58,7 @@ export function Portal() {
     setBookMsg(null);
     try {
       if (supabase) {
-        const { error } = await supabase.from("consultation_requests").insert({ requested_day: day, requested_slot: slot, topic: topic || null });
+        const { error } = await supabase.from("lalum_consultation_requests").insert({ requested_day: day, requested_slot: slot, topic: topic || null });
         if (error) throw error;
       } else {
         await new Promise((r) => setTimeout(r, 400));
@@ -84,7 +84,7 @@ export function Portal() {
       let matchResult = "not_found";
       let verified = false;
       if (supabase) {
-        const { data, error } = await supabase.functions.invoke("verify-attorney", { body: { full_name: fullName, license_no: licenseNo, jurisdiction } });
+        const { data, error } = await supabase.functions.invoke("lalum-attorney-verify", { body: { full_name: fullName, license_no: licenseNo, jurisdiction } });
         if (error) throw error;
         matchResult = (data?.match_result as string) ?? "not_found";
         verified = Boolean(data?.verified);

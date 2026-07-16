@@ -32,7 +32,7 @@ export function ChatWidget() {
     try {
       let reply = C.demoReply;
       if (supabase) {
-        const { data, error } = await supabase.functions.invoke("legal-assistant", { body: { messages: convo } });
+        const { data, error } = await supabase.functions.invoke("lalum-assistant", { body: { messages: convo } });
         if (error) throw error;
         reply = ((data?.reply as string) || "").trim() || C.errorReply;
       }
