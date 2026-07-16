@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
-type AuthResult = { error: string | null };
+type AuthResult = { error: string | null; needsConfirmation?: boolean };
 
 type AuthValue = {
   user: User | null;
@@ -62,10 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!email || password.length < 6) return { error: "Enter an email and a password of at least 6 characters." };
       try { localStorage.setItem(DEMO_KEY, email); } catch { /* ignore */ }
       setUser(demoUser(email));
-      return { error: null };
+      return { error: null, needsConfirmation: false };
     }
-    const { error } = await supabase.auth.signUp({ email, password });
-    return { error: error?.message ?? null };
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return { error: error.message };
+    // When email confirmation is off, signUp returns a live session and the
+    // user is already signed in; otherwise they must confirm by email first.
+    return { error: null, needsConfirmation: !data.session };
   };
 
   const signOut: AuthValue["signOut"] = async () => {

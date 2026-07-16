@@ -26,7 +26,7 @@ export function Login() {
       setError(res.error);
       return;
     }
-    if (mode === "up" && !demoMode) {
+    if (mode === "up" && res.needsConfirmation) {
       setNotice(L.confirmEmail);
       setMode("in");
       return;
