@@ -21,6 +21,11 @@ export function Footer() {
           <Link to="/login" className="muted" style={{ fontSize: 14 }}>{t.ui.footerLinks.login}</Link>
         </div>
         <span className="muted" style={{ fontSize: 13 }} dir="ltr">{t.ui.copyright}</span>
+        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+          <Link to="/legal#terms" className="muted" style={{ fontSize: 13 }}>{t.ui.footerLinks.terms}</Link>
+          <Link to="/legal#privacy" className="muted" style={{ fontSize: 13 }}>{t.ui.footerLinks.privacy}</Link>
+          <Link to="/legal#accessibility" className="muted" style={{ fontSize: 13 }}>{t.ui.footerLinks.accessibility}</Link>
+        </div>
       </div>
     </footer>
   );

@@ -8,6 +8,7 @@ import { Advisory } from "./pages/Advisory";
 import { Training } from "./pages/Training";
 import { Insights } from "./pages/Insights";
 import { Article } from "./pages/Article";
+import { Legal } from "./pages/Legal";
 import { Login } from "./pages/Login";
 import { Portal } from "./pages/Portal";
 
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="training" element={<Training />} />
             <Route path="insights" element={<Insights />} />
             <Route path="insights/:slug" element={<Article />} />
+            <Route path="legal" element={<Legal />} />
             <Route path="login" element={<Login />} />
             <Route
               path="portal"

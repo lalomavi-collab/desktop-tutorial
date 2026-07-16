@@ -46,6 +46,12 @@ Marketing:
 - `/advisory` Advisory & Mediation: services, Decision-Oriented Mediation (DOM), testimonials, engagement models.
 - `/training` Training: audiences, curriculum modules, formats.
 - `/insights` Insights, and `/insights/:slug` individual articles (legal-logic, memory, defensible).
+- `/legal` Terms, privacy, and accessibility (linked from the footer), with a not-legal-advice disclaimer.
+
+A floating **AI assistant** (chat widget) is available site-wide. It posts the
+conversation to the `legal-assistant` Supabase Edge Function, which proxies to
+the Anthropic API server-side (set `ANTHROPIC_API_KEY` as a function secret). In
+demo mode (no Supabase) it returns a canned reply pointing to booking a call.
 
 Client area:
 

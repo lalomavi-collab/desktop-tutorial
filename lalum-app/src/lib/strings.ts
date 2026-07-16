@@ -14,8 +14,20 @@ const en = {
     clientPortal: "Client portal",
     seeWhatWeDo: "See what we do →",
     initiateRisk: "Initiate a risk assessment",
-    footerLinks: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights", login: "Client login" },
+    skipToContent: "Skip to content",
+    footerLinks: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights", login: "Client login", terms: "Terms", privacy: "Privacy", accessibility: "Accessibility" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · Tel Aviv",
+    chat: {
+      title: "LALUM Assistant",
+      subtitle: "General legal info, not legal advice",
+      greeting: "Hi, I'm the LALUM assistant. Ask me a general legal question about startups, IP, AI regulation, contracts, or mediation.",
+      placeholder: "Ask a legal question…",
+      send: "Send message",
+      open: "Chat with the LALUM assistant",
+      thinking: "Thinking…",
+      demoReply: "This is a demo build, so the live assistant is not connected here. For a specific question, book a call and we'll respond within one business hour. This is general information, not legal advice.",
+      errorReply: "Something went wrong reaching the assistant. Please try again in a moment, or book a call with us.",
+    },
     login: {
       eyebrow: "Client area",
       signIn: "Sign in",
@@ -161,6 +173,33 @@ const en = {
     ctaBody: "Reading is good. Applying it to your own exposure is better. Start with a Tech-Legal Diagnostics session.",
   },
 
+  legal: {
+    eyebrow: "Legal",
+    title: "Terms, privacy, and accessibility",
+    disclaimer: "This page is general information for the LALUM website and is not legal advice or a binding agreement. For advice on your situation, book a consultation.",
+    terms: {
+      title: "Terms of use",
+      body: [
+        "By using this website you agree to use it lawfully and not to rely on its content as legal advice. Nothing here creates an attorney and client relationship; that begins only with a signed engagement.",
+        "Content, brand, and materials on this site belong to LALUM and may not be copied or redistributed without permission.",
+      ],
+    },
+    privacy: {
+      title: "Privacy",
+      body: [
+        "We collect only what you send us: the details in a booking request or a message, plus the basic technical logs needed to run the site. We use them to respond to you and to operate and secure the service.",
+        "We do not sell your information. Client matters are held under attorney and client confidentiality. You can ask what we hold about you and request correction or deletion.",
+      ],
+    },
+    accessibility: {
+      title: "Accessibility",
+      body: [
+        "We want this site to be usable by everyone and build toward the WCAG 2.1 AA guidance: keyboard navigation, sufficient contrast, and a readable structure in both Hebrew and English.",
+        "Found a barrier? Tell us and we will fix it. Contact avraham@lalum.co and we will respond within one business hour.",
+      ],
+    },
+  },
+
   data: {
     heroRows: [
       { icon: "shield", title: "AI IP Protection & Licensing", sub: "Defensible IP & source-code protection", tag: "IP" },
@@ -302,8 +341,20 @@ const he: Dict = {
     clientPortal: "אזור לקוחות",
     seeWhatWeDo: "מה אנחנו עושים ←",
     initiateRisk: "לפתיחת הערכת סיכונים",
-    footerLinks: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות", login: "כניסת לקוחות" },
+    skipToContent: "דלג לתוכן",
+    footerLinks: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות", login: "כניסת לקוחות", terms: "תנאים", privacy: "פרטיות", accessibility: "נגישות" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · תל אביב",
+    chat: {
+      title: "עוזר LALUM",
+      subtitle: "מידע משפטי כללי, לא ייעוץ משפטי",
+      greeting: "היי, אני העוזר של LALUM. שאלו אותי שאלה משפטית כללית על סטארטאפים, IP, רגולציית AI, חוזים או גישור.",
+      placeholder: "שאלו שאלה משפטית…",
+      send: "שליחת הודעה",
+      open: "צ׳אט עם העוזר של LALUM",
+      thinking: "חושב…",
+      demoReply: "זו גרסת הדגמה, ולכן העוזר החי אינו מחובר כאן. לשאלה ספציפית, קבעו שיחה ונחזור אליכם בתוך שעת עסקים אחת. זהו מידע כללי, לא ייעוץ משפטי.",
+      errorReply: "משהו השתבש בפנייה לעוזר. נסו שוב עוד רגע, או קבעו אתנו שיחה.",
+    },
     login: {
       eyebrow: "אזור הלקוחות",
       signIn: "התחברות",
@@ -447,6 +498,33 @@ const he: Dict = {
     heroLede: "הטור המתמשך שלנו על מה שנדרש כדי לבנות שיקול דעת שמחזיק מעמד מול בית המשפט.",
     ctaTitle: "החילו את אותה קפדנות על העניינים שלכם",
     ctaBody: "לקרוא זה טוב. ליישם על החשיפה שלכם זה טוב יותר. התחילו בפגישת אבחון Tech-Legal.",
+  },
+
+  legal: {
+    eyebrow: "משפטי",
+    title: "תנאים, פרטיות ונגישות",
+    disclaimer: "עמוד זה הוא מידע כללי לאתר LALUM ואינו ייעוץ משפטי או הסכם מחייב. לייעוץ המותאם למצבכם, קבעו פגישת ייעוץ.",
+    terms: {
+      title: "תנאי שימוש",
+      body: [
+        "בשימוש באתר זה אתם מסכימים להשתמש בו כחוק ולא להסתמך על תוכנו כייעוץ משפטי. שום דבר כאן אינו יוצר יחסי עורך דין-לקוח; אלה מתחילים רק בהתקשרות חתומה.",
+        "התוכן, המותג והחומרים באתר שייכים ל-LALUM ואין להעתיק או להפיץ אותם ללא רשות.",
+      ],
+    },
+    privacy: {
+      title: "פרטיות",
+      body: [
+        "אנחנו אוספים רק את מה שאתם שולחים לנו: הפרטים בבקשת פגישה או בהודעה, ולוגים טכניים בסיסיים הדרושים להפעלת האתר. אנחנו משתמשים בהם כדי לחזור אליכם ולהפעיל ולאבטח את השירות.",
+        "אנחנו לא מוכרים את המידע שלכם. ענייני לקוח מוחזקים תחת חיסיון עורך דין-לקוח. תוכלו לשאול מה מוחזק אצלנו עליכם ולבקש תיקון או מחיקה.",
+      ],
+    },
+    accessibility: {
+      title: "נגישות",
+      body: [
+        "אנחנו רוצים שהאתר יהיה שמיש לכולם ופועלים לפי הנחיות WCAG 2.1 AA: ניווט במקלדת, ניגודיות מספקת, ומבנה קריא בעברית ובאנגלית.",
+        "נתקלתם בחסם? ספרו לנו ונתקן. פנו ל-avraham@lalum.co ונחזור אליכם בתוך שעת עסקים אחת.",
+      ],
+    },
   },
 
   data: {
