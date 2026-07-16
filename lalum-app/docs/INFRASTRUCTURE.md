@@ -191,8 +191,29 @@ through Resend with `From: LALUM <no-reply@lalumapp.com>`. Secrets:
 supabase secrets set RESEND_API_KEY=...
 supabase secrets set LALUM_FROM_EMAIL="LALUM <no-reply@lalumapp.com>"
 supabase secrets set LALUM_NOTIFY_TO="avraham@lalum.co"
+supabase secrets set LALUM_REPLY_TO="avraham@lalum.co"
 supabase functions deploy lalum-notify
 ```
+
+### Receiving mail
+
+The firm receives at `avraham@lalum.co` on the existing `lalum.co` domain, so
+`lalumapp.com` does not need to receive any mail. Two consequences:
+
+- Outbound mail sends `From: no-reply@lalumapp.com` with `Reply-To:
+  avraham@lalum.co`, so a client reply reaches the existing inbox. The firm
+  notification uses the client address as its `Reply-To`, so the firm can reply
+  straight back to the client. The `lalum-notify` function already does this.
+- Since `lalumapp.com` accepts no inbound mail, publish a null MX (RFC 7505) on
+  the root for hygiene. It does not conflict with the `send` subdomain records.
+
+```
+Name: @   Type: MX   Value: .   Priority: 0
+```
+
+If you would rather receive at an address on `lalumapp.com` too, enable
+Cloudflare Email Routing (which sets the root MX to Cloudflare) and forward to
+`avraham@lalum.co`; in that case drop the null MX above.
 
 ---
 
@@ -264,4 +285,5 @@ than Calendly's, so Calendly is the better fit for the dark and gold look.
 | `ANTHROPIC_API_KEY` | Edge Functions | `lalum-assistant` chat |
 | `RESEND_API_KEY` | Edge Functions | `lalum-notify` email |
 | `LALUM_FROM_EMAIL` | Edge Functions | e.g. `LALUM <no-reply@lalumapp.com>` |
-| `LALUM_NOTIFY_TO` | Edge Functions | Firm inbox for new requests |
+| `LALUM_NOTIFY_TO` | Edge Functions | Firm inbox for new requests (`avraham@lalum.co`) |
+| `LALUM_REPLY_TO` | Edge Functions | Reply-To on client mail (`avraham@lalum.co`) |

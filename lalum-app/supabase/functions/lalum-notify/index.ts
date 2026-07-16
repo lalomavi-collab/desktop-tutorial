@@ -24,11 +24,13 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-async function sendEmail(apiKey: string, from: string, to: string, subject: string, html: string) {
+async function sendEmail(apiKey: string, from: string, to: string, subject: string, html: string, replyTo?: string) {
+  const payload: Record<string, unknown> = { from, to, subject, html };
+  if (replyTo) payload.reply_to = replyTo;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({ from, to, subject, html }),
+    body: JSON.stringify(payload),
   });
   return res.ok;
 }
@@ -40,6 +42,8 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from = Deno.env.get("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>";
   const notifyTo = Deno.env.get("LALUM_NOTIFY_TO") ?? "avraham@lalum.co";
+  // Replies land in the firm's existing lalum.co inbox (lalumapp.com receives no mail).
+  const replyTo = Deno.env.get("LALUM_REPLY_TO") ?? "avraham@lalum.co";
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey || !url || !serviceKey) return json(500, { code: "not_configured" });
@@ -71,8 +75,9 @@ Deno.serve(async (req) => {
     `<p style="font-family:Arial,sans-serif;">New diagnostics request from ${esc(clientEmail)}.</p>` +
     `<p style="font-family:Arial,sans-serif;">Slot: ${day} ${slot}${topic ? ` &middot; ${topic}` : ""}</p>`;
 
-  const okClient = await sendEmail(apiKey, from, clientEmail, "Your LALUM diagnostics session", clientHtml);
-  const okFirm = await sendEmail(apiKey, from, notifyTo, "New diagnostics request", firmHtml);
+  // Client can reply to the firm; the firm can reply straight to the client.
+  const okClient = await sendEmail(apiKey, from, clientEmail, "Your LALUM diagnostics session", clientHtml, replyTo);
+  const okFirm = await sendEmail(apiKey, from, notifyTo, "New diagnostics request", firmHtml, clientEmail);
 
   if (!okClient && !okFirm) return json(502, { code: "send_failed" });
   return json(200, { sent: true, client: okClient, firm: okFirm });
