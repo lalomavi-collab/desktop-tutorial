@@ -136,8 +136,8 @@ export function Home() {
       <section className="section-line">
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
           <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
-            {/* Firm logo (obsidian wordmark tile) */}
-            <div role="img" aria-label={h.logoAlt} style={{ height: 64, borderRadius: 12, marginBottom: 26, backgroundColor: "#0a0a0a", backgroundImage: "url(/lalum-logo.png)", backgroundSize: "130%", backgroundPosition: "center", backgroundRepeat: "no-repeat", border: "1px solid rgba(0,0,0,.15)" }} />
+            {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
+            <img src="/lalum-logo.png" alt={h.logoAlt} style={{ display: "block", height: 30, width: "auto", maxWidth: "68%", margin: "0 auto 26px", opacity: 0.9 }} />
             {/* Founder portrait (monogram placeholder until a headshot is supplied) */}
             <div style={{ width: 116, height: 116, margin: "0 auto 18px", borderRadius: "50%", background: "var(--card)", border: "1px solid var(--clay-soft)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
               <span style={{ fontFamily: "var(--serif)", fontSize: 30, color: "var(--clay)" }} dir="ltr">AL</span>
@@ -193,9 +193,9 @@ export function Home() {
                   <span>{f.q}</span>
                   <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
                 </button>
-                <div id={pid} role="region" aria-labelledby={bid} className={"faq-panel" + (open ? " open" : "")}>
-                  <div className="faq-panel-inner">{f.a}</div>
-                </div>
+                {open && (
+                  <div id={pid} role="region" aria-labelledby={bid} className="faq-answer">{f.a}</div>
+                )}
               </div>
             );
           })}
