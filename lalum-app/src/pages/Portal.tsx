@@ -246,7 +246,7 @@ export function Portal() {
       setSlot("");
       setTopic("");
     } catch (err) {
-      setBookMsg({ tone: "err", text: err instanceof Error ? err.message : P.verify.results.error.detail });
+      setBookMsg({ tone: "err", text: err instanceof Error ? err.message : P.book.err });
     } finally {
       setBookBusy(false);
     }
