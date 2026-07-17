@@ -48,6 +48,17 @@ type MsgRow = {
   user_email: string | null;
 };
 
+type Milestone = {
+  id: string;
+  title: string;
+  amount: number;
+  currency: string;
+  status: string;
+  client_email: string | null;
+  hosted_url: string | null;
+  created_at: string;
+};
+
 export function Portal() {
   const { user, signOut, demoMode } = useAuth();
   const { t, lang } = useLang();
@@ -95,6 +106,16 @@ export function Portal() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [rowBusy, setRowBusy] = useState<Record<string, "draft" | "send" | undefined>>({});
 
+  const [myBills, setMyBills] = useState<Milestone[]>([]);
+  const [allBills, setAllBills] = useState<Milestone[]>([]);
+  const [payBusy, setPayBusy] = useState<string | undefined>();
+  const [billEmail, setBillEmail] = useState("");
+  const [billTitle, setBillTitle] = useState("");
+  const [billAmount, setBillAmount] = useState("");
+  const [billCurrency, setBillCurrency] = useState("ILS");
+  const [billBusy, setBillBusy] = useState(false);
+  const [billMsg, setBillMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
   const loadMessages = useCallback(async () => {
     if (!supabase || !user) return;
     const emailAdmin = (user.email ?? "").toLowerCase() === "avraham@lalum.co";
@@ -106,11 +127,66 @@ export function Portal() {
     setIsAdmin(admin);
     const own = await supabase.from("lalum_messages").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     if (own.data) setThread(own.data as MsgRow[]);
+    const mine = await supabase.from("billing_milestones").select("*").order("created_at", { ascending: false });
+    if (mine.data) setMyBills(mine.data as Milestone[]);
     if (admin) {
       const all = await supabase.from("lalum_messages").select("*").order("created_at", { ascending: false });
       if (all.data) setInbox(all.data as MsgRow[]);
+      setAllBills((mine.data as Milestone[]) ?? []);
     }
   }, [user]);
+
+  async function payMilestone(id: string) {
+    if (!supabase) return;
+    setPayBusy(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("lalum-pay-create", { body: { milestone_id: id } });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url as string;
+      else throw new Error("no_url");
+    } catch {
+      window.alert(t.ui.portal.billing.payErr);
+      setPayBusy(undefined);
+    }
+  }
+
+  async function createMilestone(e: FormEvent) {
+    e.preventDefault();
+    const B = t.ui.portal.billing;
+    if (!supabase || !billTitle.trim() || !billAmount) return;
+    setBillBusy(true);
+    setBillMsg(null);
+    try {
+      const { error } = await supabase.from("billing_milestones").insert({ client_email: billEmail || null, title: billTitle.trim(), amount: Number(billAmount), currency: billCurrency });
+      if (error) throw error;
+      setBillMsg({ tone: "ok", text: B.createdOk });
+      setBillTitle("");
+      setBillAmount("");
+      setBillEmail("");
+      await loadMessages();
+    } catch (err) {
+      setBillMsg({ tone: "err", text: err instanceof Error ? err.message : B.err });
+    } finally {
+      setBillBusy(false);
+    }
+  }
+
+  async function copyPayLink(id: string) {
+    if (!supabase) return;
+    setPayBusy(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("lalum-pay-create", { body: { milestone_id: id } });
+      if (error) throw error;
+      if (data?.url) {
+        try { await navigator.clipboard.writeText(data.url as string); } catch { window.prompt("Link", data.url as string); }
+        await loadMessages();
+      }
+    } catch {
+      window.alert(t.ui.portal.billing.payErr);
+    } finally {
+      setPayBusy(undefined);
+    }
+  }
 
   useEffect(() => {
     void loadMessages();
@@ -253,6 +329,10 @@ export function Portal() {
 
   const prettyName = (name: string) => name.replace(/^\d+-/, "");
   const prettySize = (bytes: number) => (bytes > 0 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : "");
+  const fmtMoney = (amount: number, currency: string) => {
+    const sym: Record<string, string> = { ILS: "₪", USD: "$", EUR: "€" };
+    return `${sym[currency] ?? ""}${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
 
   return (
     <section className="wrap" style={{ padding: "56px 32px 120px" }}>
@@ -321,6 +401,67 @@ export function Portal() {
         </div>
       )}
 
+      {/* ADMIN BILLING (firm only) */}
+      {isAdmin && (
+        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+            <span className="icon-badge"><Icon name="scale" size={20} /></span>
+            <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.adminTitle}</h2>
+          </div>
+          <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.billing.adminIntro}</p>
+          <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
+            <div className="grid grid-2" style={{ gap: 12 }}>
+              <div>
+                <div className="label">{P.billing.clientEmail}</div>
+                <input className="field" value={billEmail} onChange={(e) => setBillEmail(e.target.value)} placeholder={P.billing.clientEmailPh} dir="ltr" />
+              </div>
+              <div>
+                <div className="label">{P.billing.itemTitle}</div>
+                <input className="field" value={billTitle} onChange={(e) => setBillTitle(e.target.value)} placeholder={P.billing.itemTitlePh} />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
+              <div style={{ flex: 1 }}>
+                <div className="label">{P.billing.amount}</div>
+                <input className="field" value={billAmount} onChange={(e) => setBillAmount(e.target.value.replace(/[^\d.]/g, ""))} placeholder={P.billing.amountPh} dir="ltr" inputMode="decimal" />
+              </div>
+              <div style={{ width: 100 }}>
+                <select className="field" value={billCurrency} onChange={(e) => setBillCurrency(e.target.value)} dir="ltr">
+                  <option value="ILS">ILS ₪</option>
+                  <option value="USD">USD $</option>
+                  <option value="EUR">EUR €</option>
+                </select>
+              </div>
+              <button className="btn btn-clay btn-sm" disabled={billBusy || !billTitle.trim() || !billAmount} style={{ whiteSpace: "nowrap" }}>
+                {billBusy ? P.billing.creating : P.billing.create}
+              </button>
+            </div>
+          </form>
+          {billMsg && <div className={`notice ${billMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginBottom: 16 }}>{billMsg.text}</div>}
+
+          {allBills.length > 0 && (
+            <div>
+              <div className="label">{P.billing.allTitle}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+                {allBills.map((bl) => (
+                  <div key={bl.id} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
+                    <div style={{ flex: 1, minWidth: 140 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{bl.title}</div>
+                      <div className="muted" style={{ fontSize: 12 }} dir="ltr">{bl.client_email}</div>
+                    </div>
+                    <span dir="ltr" style={{ fontWeight: 700 }}>{fmtMoney(bl.amount, bl.currency)}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</span>
+                    {bl.status !== "paid" && (
+                      <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : P.billing.copyLink}</button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* CUSTOMER SERVICE MESSAGE */}
       <div className="card" style={{ padding: 34, marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
@@ -379,6 +520,40 @@ export function Portal() {
                   ) : (
                     <p className="muted" style={{ margin: 0, fontSize: 13 }}>{P.thread.awaiting}</p>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* CLIENT BILLING / PAYMENTS */}
+      {!isAdmin && myBills.length > 0 && (
+        <div className="card" style={{ padding: 34, marginBottom: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <span className="icon-badge"><Icon name="scale" size={20} /></span>
+            <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.title}</h2>
+          </div>
+          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.billing.intro}</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {myBills.map((bl) => {
+              const paid = bl.status === "paid";
+              const failed = bl.status === "failed";
+              return (
+                <div key={bl.id} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", border: "1px solid var(--line)", borderRadius: 12, padding: "14px 16px" }}>
+                  <div style={{ flex: 1, minWidth: 160 }}>
+                    <div style={{ fontWeight: 600 }}>{bl.title}</div>
+                    <div className="muted" style={{ fontSize: 12.5 }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</div>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 16 }} dir="ltr">{fmtMoney(bl.amount, bl.currency)}</div>
+                  {paid ? (
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{P.billing.statusLabels.paid} ✓</span>
+                  ) : (
+                    <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
+                      {payBusy === bl.id ? P.billing.paying : P.billing.pay}
+                    </button>
+                  )}
+                  {failed && <span style={{ fontSize: 12, color: "var(--clay)" }}>{P.billing.statusLabels.failed}</span>}
                 </div>
               );
             })}
