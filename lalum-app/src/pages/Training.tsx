@@ -21,7 +21,7 @@ export function Training() {
           </h1>
           <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 36px" }}>{tr.heroLede}</p>
           <div style={{ display: "flex", gap: 14, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href={`mailto:${trainingEmail}`} className="btn btn-clay">{tr.heroCta1}</a>
+            <a href="#course" className="btn btn-clay">{tr.heroCta1}</a>
             <a href="#curriculum" className="btn btn-ghost">{tr.heroCta2}</a>
           </div>
         </div>
