@@ -23,9 +23,9 @@ const en = {
     a11y: { open: "Accessibility menu", title: "Accessibility", textSize: "Text size", contrast: "High contrast", links: "Highlight links", readable: "Readable font", motion: "Reduce motion", reset: "Reset", statement: "Accessibility statement" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · Herzliya",
     chat: {
-      title: "LALUM Assistant",
+      title: "LEX · LALUM",
       subtitle: "General legal info, not legal advice",
-      greeting: "Hi, I'm the LALUM assistant. Ask me a general legal question about startups, IP, AI regulation, contracts, or mediation.",
+      greeting: "Hi, I'm LEX, LALUM's legal AI assistant. Ask a general legal question, or attach a contract and I'll share remarks. On startups, IP, AI regulation, contracts, or mediation.",
       placeholder: "Ask a legal question…",
       send: "Send message",
       open: "Chat with the LALUM assistant",
@@ -550,9 +550,9 @@ const he: Dict = {
     a11y: { open: "תפריט נגישות", title: "נגישות", textSize: "גודל טקסט", contrast: "ניגודיות גבוהה", links: "הדגשת קישורים", readable: "גופן קריא", motion: "הפחתת תנועה", reset: "איפוס", statement: "הצהרת נגישות" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · הרצליה",
     chat: {
-      title: "עוזר LALUM",
+      title: "LEX · LALUM",
       subtitle: "מידע משפטי כללי, לא ייעוץ משפטי",
-      greeting: "היי, אני העוזר של LALUM. שאלו אותי שאלה משפטית כללית על סטארטאפים, IP, רגולציית AI, חוזים או גישור.",
+      greeting: "היי, אני LEX, עוזר ה-AI המשפטי של LALUM. שאלו שאלה משפטית כללית, או צרפו הסכם ואחזיר הערות. בנושאי סטארטאפים, IP, רגולציית AI, חוזים או גישור.",
       placeholder: "שאלו שאלה משפטית…",
       send: "שליחת הודעה",
       open: "צ׳אט עם העוזר של LALUM",
