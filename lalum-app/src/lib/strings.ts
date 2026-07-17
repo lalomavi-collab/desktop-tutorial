@@ -17,8 +17,9 @@ const en = {
     seeWhatWeDo: "See what we do →",
     initiateRisk: "Initiate a risk assessment",
     skipToContent: "Skip to content",
-    footerLinks: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights", login: "Client login", terms: "Terms", privacy: "Privacy", accessibility: "Accessibility" },
-    footer: { explore: "Explore", client: "Client", contact: "Contact", book: "Book a call", city: "Herzliya", tagline: "Tech-Legal and strategic counsel for startups and breakthrough companies.", rights: "All rights reserved." },
+    footerLinks: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights", login: "Client login", terms: "Terms", privacy: "Privacy", accessibility: "Accessibility", security: "Security", cookies: "Cookie settings" },
+    footer: { explore: "Explore", client: "Client", contact: "Contact", book: "Book a call", city: "Herzliya", tagline: "Tech-Legal and strategic counsel for startups and breakthrough companies.", rights: "All rights reserved.", downloadTitle: "Download the app and start working, fast and professional.", downloadSub: "Scan the QR code with your phone camera to install the app.", qrAlt: "QR code to open lalumapp.com", follow: "Follow LALUM", linkedin: "LALUM on LinkedIn", facebook: "LALUM on Facebook" },
+    cookie: { title: "Cookie settings", intro: "We use only what's needed to run this site. Essential cookies keep the app working; analytics are optional and off unless you allow them.", essential: "Essential", essentialNote: "Always on. Required for the site to function (session, security, preferences).", analytics: "Analytics", analyticsNote: "Anonymous usage statistics to help us improve. Off by default.", accept: "Accept all", reject: "Reject non-essential", save: "Save choices", saved: "Your cookie choices were saved.", banner: "We use essential cookies to run the site, and optional analytics only with your consent.", manage: "Manage" },
     a11y: { open: "Accessibility menu", title: "Accessibility", textSize: "Text size", contrast: "High contrast", links: "Highlight links", readable: "Readable font", motion: "Reduce motion", reset: "Reset", statement: "Accessibility statement" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · Herzliya",
     chat: {
@@ -347,6 +348,14 @@ const en = {
         "This statement was last reviewed in July 2026.",
       ],
     },
+    security: {
+      title: "Security",
+      body: [
+        "We take the security of client information seriously. Data is transmitted over encrypted connections (HTTPS/TLS), and client records and files are stored on managed infrastructure with access controls and row-level security, so each client can reach only their own data.",
+        "Access to the client area requires authentication. Documents you share through the portal are kept in a private store that only you and the firm can open. We apply the principle of least privilege and keep administrative access limited to the firm.",
+        "No system is perfectly secure. If you believe you have found a vulnerability or a security concern, please contact us at avraham@lalum.co and we will respond promptly.",
+      ],
+    },
   },
 
   data: {
@@ -496,8 +505,9 @@ const he: Dict = {
     seeWhatWeDo: "מה אנחנו עושים ←",
     initiateRisk: "לפתיחת הערכת סיכונים",
     skipToContent: "דלג לתוכן",
-    footerLinks: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות", login: "כניסת לקוחות", terms: "תנאים", privacy: "פרטיות", accessibility: "נגישות" },
-    footer: { explore: "ניווט", client: "לקוחות", contact: "צור קשר", book: "לקביעת שיחה", city: "הרצליה", tagline: "ייעוץ Tech-Legal ואסטרטגי לסטארטאפים ולחברות פורצות דרך.", rights: "כל הזכויות שמורות." },
+    footerLinks: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות", login: "כניסת לקוחות", terms: "תנאים", privacy: "פרטיות", accessibility: "נגישות", security: "אבטחה", cookies: "הגדרות קובצי Cookie" },
+    footer: { explore: "ניווט", client: "לקוחות", contact: "צור קשר", book: "לקביעת שיחה", city: "הרצליה", tagline: "ייעוץ Tech-Legal ואסטרטגי לסטארטאפים ולחברות פורצות דרך.", rights: "כל הזכויות שמורות.", downloadTitle: "הורידו את האפליקציה והתחילו לעבוד בצורה מהירה ומקצועית.", downloadSub: "סרקו את קוד ה-QR באמצעות מצלמת הטלפון כדי להוריד את האפליקציה.", qrAlt: "קוד QR לפתיחת lalumapp.com", follow: "עקבו אחרי LALUM", linkedin: "LALUM בלינקדאין", facebook: "LALUM בפייסבוק" },
+    cookie: { title: "הגדרות קובצי Cookie", intro: "אנחנו משתמשים רק במה שנדרש להפעלת האתר. קובצי Cookie חיוניים שומרים על תפקוד האפליקציה; ניתוח נתונים הוא רשות וכבוי אלא אם אישרתם.", essential: "חיוניים", essentialNote: "תמיד פעילים. נדרשים לתפקוד האתר (התחברות, אבטחה, העדפות).", analytics: "ניתוח נתונים", analyticsNote: "סטטיסטיקת שימוש אנונימית שעוזרת לנו להשתפר. כבוי כברירת מחדל.", accept: "אישור הכול", reject: "דחיית לא-חיוניים", save: "שמירת הבחירות", saved: "בחירות ה-Cookie נשמרו.", banner: "אנחנו משתמשים בקובצי Cookie חיוניים להפעלת האתר, ובניתוח נתונים רק בהסכמתכם.", manage: "ניהול" },
     a11y: { open: "תפריט נגישות", title: "נגישות", textSize: "גודל טקסט", contrast: "ניגודיות גבוהה", links: "הדגשת קישורים", readable: "גופן קריא", motion: "הפחתת תנועה", reset: "איפוס", statement: "הצהרת נגישות" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · הרצליה",
     chat: {
@@ -824,6 +834,14 @@ const he: Dict = {
         "על אף מאמצינו, ייתכן שחלקים באתר עדיין אינם נגישים במלואם. אנו מתייחסים לכל פנייה בעדיפות וממשיכים לשפר.",
         "בקשות ופניות בנושא נגישות: אם נתקלתם בקושי, או שאתם זקוקים לתוכן בפורמט חלופי, פנו לרכז הנגישות שלנו בכתובת avraham@lalum.co. תארו את הבעיה, את העמוד, ואת הדפדפן או המכשיר שבו השתמשתם, ונחזור אליכם בתוך יום עסקים אחד.",
         "הצהרה זו נבדקה לאחרונה ביולי 2026.",
+      ],
+    },
+    security: {
+      title: "אבטחה",
+      body: [
+        "אנחנו מתייחסים ברצינות לאבטחת המידע של הלקוחות. הנתונים מועברים בחיבורים מוצפנים (HTTPS/TLS), ורשומות וקבצים של לקוחות נשמרים בתשתית מנוהלת עם בקרות גישה ואבטחה ברמת השורה, כך שכל לקוח מגיע רק לנתונים שלו.",
+        "הגישה לאזור הלקוחות מחייבת אימות. מסמכים שאתם משתפים דרך הפורטל נשמרים במאגר פרטי שרק אתם והמשרד יכולים לפתוח. אנחנו מיישמים עקרון של הרשאות מינימום ושומרים על גישת ניהול מוגבלת למשרד בלבד.",
+        "אף מערכת אינה מאובטחת לחלוטין. אם נתקלתם בפרצה או בחשש אבטחה, פנו אלינו בכתובת avraham@lalum.co ונטפל בכך במהירות.",
       ],
     },
   },

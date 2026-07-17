@@ -6,6 +6,7 @@ import { ChatWidget } from "./ChatWidget";
 import { BottomTabBar } from "./BottomTabBar";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
+import { CookieConsent } from "./CookieConsent";
 import { useLang } from "../context/LangContext";
 
 export function MarketingLayout() {
@@ -32,6 +33,7 @@ export function MarketingLayout() {
       <BottomTabBar />
       <AccessibilityMenu />
       <A11yWidget />
+      <CookieConsent />
     </>
   );
 }

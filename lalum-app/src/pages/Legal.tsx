@@ -18,6 +18,7 @@ export function Legal() {
   const sections = [
     { id: "terms", ...g.terms },
     { id: "privacy", ...g.privacy },
+    { id: "security", ...g.security },
     { id: "accessibility", ...g.accessibility },
   ];
 

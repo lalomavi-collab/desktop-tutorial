@@ -59,3 +59,10 @@ export const trainingEmail = contactEmail;
 // reader-facing format.
 export const officePhone = { display: "03-3104959", tel: "+97233104959" };
 export const directPhone = { display: "052-2490420", tel: "+972522490420" };
+
+// Firm social profiles and the public app URL (used by the download QR).
+export const socialLinks = {
+  linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
+  facebook: "https://www.facebook.com/profile.php?id=61573518832531&locale=he_IL",
+};
+export const appUrl = "https://lalumapp.com";
