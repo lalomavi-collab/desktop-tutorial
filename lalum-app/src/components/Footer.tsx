@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
-import { contactEmail, officePhone, directPhone, socialLinks, websiteDisplay, externalLinks, officeAddress } from "../lib/content";
+import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -67,7 +67,6 @@ export function Footer() {
             <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label={f.instagram} className="footer-social-link"><InstagramIcon /></a>
             <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" aria-label={f.website} className="footer-social-link"><GlobeIcon /></a>
           </div>
-          <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="footer-website" dir="ltr">{websiteDisplay}</a>
         </div>
 
         <nav className="footer-col" aria-label={f.explore}>
