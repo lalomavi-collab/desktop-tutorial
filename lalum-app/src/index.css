@@ -676,6 +676,50 @@ html[lang="en"] .italic-clay {
   }
 }
 
+/* ---------- founder portrait in the hero ---------- */
+.founder-hero {
+  position: relative;
+  display: block;
+  border-radius: 22px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--line);
+  box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
+}
+.founder-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 12%;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.founder-hero:hover img {
+  transform: scale(1.03);
+}
+.founder-hero-cap {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 46px 24px 20px;
+  background: linear-gradient(to top, rgba(10, 10, 12, 0.86), rgba(10, 10, 12, 0.15) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.founder-hero-name {
+  color: #ffffff;
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 500;
+}
+.founder-hero-cv {
+  color: #f0c9b8;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
 .a11y-dock {
   position: fixed;
