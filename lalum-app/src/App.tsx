@@ -12,12 +12,14 @@ import { Legal } from "./pages/Legal";
 import { Book } from "./pages/Book";
 import { Login } from "./pages/Login";
 import { Portal } from "./pages/Portal";
+import { CommandBar } from "./components/CommandBar";
 
 export default function App() {
   return (
     <LangProvider>
     <AuthProvider>
       <BrowserRouter>
+        <CommandBar />
         <Routes>
           <Route element={<MarketingLayout />}>
             <Route index element={<Home />} />
