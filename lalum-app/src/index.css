@@ -188,6 +188,19 @@ html[lang="en"] .italic-clay {
   color: var(--slate);
 }
 
+/* Justified body copy: both side margins stay straight and even. Headings,
+   eyebrows, labels, and buttons keep their own alignment. Last lines stay
+   ragged (normal), and we never hyphenate. */
+.lede,
+.section p:not(.eyebrow):not(.label),
+.card p:not(.label),
+article p {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
 /* ---------- buttons ---------- */
 .btn {
   display: inline-flex;
