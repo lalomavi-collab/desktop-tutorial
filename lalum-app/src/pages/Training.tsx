@@ -1,6 +1,7 @@
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
+import { CourseSignup } from "../components/CourseSignup";
 import { useLang } from "../context/LangContext";
 import { trainingEmail } from "../lib/content";
 
@@ -25,6 +26,9 @@ export function Training() {
           </div>
         </div>
       </section>
+
+      {/* COURSE REGISTRATION (dark premium) */}
+      <CourseSignup />
 
       {/* AUDIENCES */}
       <section className="section-line">
