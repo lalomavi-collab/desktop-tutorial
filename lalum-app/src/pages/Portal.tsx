@@ -37,6 +37,19 @@ function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
 type Tone = "ok" | "warn" | "err";
 type VerifyResult = { label: string; detail: string; tone: Tone };
 
+type MsgRow = {
+  id: string;
+  category: string;
+  subject: string | null;
+  body: string;
+  ai_draft: string | null;
+  reply: string | null;
+  replied_at: string | null;
+  handled: boolean;
+  created_at: string;
+  user_email: string | null;
+};
+
 export function Portal() {
   const { user, signOut, demoMode } = useAuth();
   const { t, lang } = useLang();
@@ -77,6 +90,68 @@ export function Portal() {
   useEffect(() => {
     void loadFiles();
   }, [loadFiles]);
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [thread, setThread] = useState<MsgRow[]>([]);
+  const [inbox, setInbox] = useState<MsgRow[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [rowBusy, setRowBusy] = useState<Record<string, "draft" | "send" | undefined>>({});
+
+  const loadMessages = useCallback(async () => {
+    if (!supabase || !user) return;
+    const emailAdmin = (user.email ?? "").toLowerCase() === "avraham@lalum.co";
+    let admin = emailAdmin;
+    if (!emailAdmin) {
+      const { data } = await supabase.from("lalum_profiles").select("is_admin").eq("id", user.id).maybeSingle();
+      admin = Boolean(data?.is_admin);
+    }
+    setIsAdmin(admin);
+    const own = await supabase.from("lalum_messages").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    if (own.data) setThread(own.data as MsgRow[]);
+    if (admin) {
+      const all = await supabase.from("lalum_messages").select("*").order("created_at", { ascending: false });
+      if (all.data) setInbox(all.data as MsgRow[]);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    void loadMessages();
+  }, [loadMessages]);
+
+  async function draftReply(id: string) {
+    if (!supabase) return;
+    setRowBusy((b) => ({ ...b, [id]: "draft" }));
+    try {
+      const { data, error } = await supabase.functions.invoke("lalum-draft-reply", { body: { message_id: id } });
+      if (error) throw error;
+      setDrafts((d) => ({ ...d, [id]: (data?.draft as string) ?? "" }));
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "Draft failed");
+    } finally {
+      setRowBusy((b) => ({ ...b, [id]: undefined }));
+    }
+  }
+
+  async function sendReply(id: string, fallback: string) {
+    if (!supabase) return;
+    const text = (drafts[id] ?? fallback).trim();
+    if (!text) return;
+    setRowBusy((b) => ({ ...b, [id]: "send" }));
+    try {
+      const { error } = await supabase.functions.invoke("lalum-send-reply", { body: { message_id: id, reply: text } });
+      if (error) throw error;
+      setDrafts((d) => {
+        const n = { ...d };
+        delete n[id];
+        return n;
+      });
+      await loadMessages();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "Send failed");
+    } finally {
+      setRowBusy((b) => ({ ...b, [id]: undefined }));
+    }
+  }
 
   const [fullName, setFullName] = useState("");
   const [licenseNo, setLicenseNo] = useState("");
@@ -119,12 +194,13 @@ export function Portal() {
       if (supabase) {
         const { error } = await supabase
           .from("lalum_messages")
-          .insert({ user_id: user?.id, category: msgCat, subject: msgSubject || null, body: msgBody });
+          .insert({ user_id: user?.id, user_email: user?.email, category: msgCat, subject: msgSubject || null, body: msgBody });
         if (error) throw error;
         const { error: fnError } = await supabase.functions.invoke("lalum-message", {
           body: { category: msgCat, subject: msgSubject, body: msgBody },
         });
         if (fnError) throw fnError;
+        await loadMessages();
       } else {
         await new Promise((r) => setTimeout(r, 400));
       }
@@ -236,6 +312,55 @@ export function Portal() {
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
 
+      {/* ADMIN INBOX (firm only) */}
+      {isAdmin && (
+        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <span className="icon-badge"><Icon name="gavel" size={20} /></span>
+            <h2 className="h3" style={{ fontSize: 22 }}>{P.inbox.title}</h2>
+          </div>
+          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.inbox.intro}</p>
+          {inbox.length === 0 ? (
+            <p className="muted" style={{ fontSize: 14 }}>{P.inbox.none}</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {inbox.map((m) => {
+                const catLabel = M.categories[m.category as keyof typeof M.categories] ?? m.category;
+                const busy = rowBusy[m.id];
+                return (
+                  <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+                      {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
+                      {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
+                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{m.user_email}</span>
+                    </div>
+                    {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
+                    <p style={{ margin: "0 0 14px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
+                    <textarea
+                      className="field"
+                      rows={4}
+                      value={drafts[m.id] ?? m.ai_draft ?? m.reply ?? ""}
+                      onChange={(e) => setDrafts((d) => ({ ...d, [m.id]: e.target.value }))}
+                      placeholder={P.inbox.replyPlaceholder}
+                      style={{ resize: "vertical", marginBottom: 12 }}
+                    />
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <button type="button" onClick={() => draftReply(m.id)} className="btn btn-ghost btn-sm" disabled={!!busy}>
+                        <Icon name="spark" size={16} /> {busy === "draft" ? P.inbox.drafting : P.inbox.draftAi}
+                      </button>
+                      <button type="button" onClick={() => sendReply(m.id, m.ai_draft ?? "")} className="btn btn-clay btn-sm" disabled={!!busy}>
+                        <Icon name="send" size={15} /> {busy === "send" ? P.inbox.sending : P.inbox.send}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* CUSTOMER SERVICE MESSAGE */}
       <div className="card" style={{ padding: 34, marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
@@ -270,6 +395,36 @@ export function Portal() {
         {msgResult && <div className={`notice ${msgResult.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{msgResult.text}</div>}
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
       </div>
+
+      {/* CLIENT CONVERSATION THREAD */}
+      {!isAdmin && thread.length > 0 && (
+        <div className="card" style={{ padding: 34, marginBottom: 28 }}>
+          <h2 className="h3" style={{ fontSize: 20, marginBottom: 18 }}>{P.thread.title}</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {thread.map((m) => {
+              const catLabel = M.categories[m.category as keyof typeof M.categories] ?? m.category;
+              return (
+                <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+                    <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{new Date(m.created_at).toLocaleDateString(lang === "he" ? "he-IL" : "en-US")}</span>
+                  </div>
+                  {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
+                  <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
+                  {m.reply ? (
+                    <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 14, marginTop: 12 }}>
+                      <div className="label" style={{ color: "var(--clay)" }}>{P.thread.replyLabel}</div>
+                      <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.reply}</p>
+                    </div>
+                  ) : (
+                    <p className="muted" style={{ margin: 0, fontSize: 13 }}>{P.thread.awaiting}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* FILE TRANSFER */}
       <div className="card" style={{ padding: 34, marginBottom: 28 }}>
