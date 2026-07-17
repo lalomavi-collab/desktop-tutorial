@@ -23,7 +23,6 @@ export function ContactCTA({ title, body, primaryLabel = "Initiate a risk assess
         </p>
         <div style={{ position: "relative", display: "flex", gap: 14, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
           <a href={`mailto:${email}`} className="btn btn-clay">{primaryLabel}</a>
-          <a href={`mailto:${email}`} style={{ color: "#E4C7B7", fontSize: 15 }} dir="ltr">{email}</a>
         </div>
       </div>
     </section>

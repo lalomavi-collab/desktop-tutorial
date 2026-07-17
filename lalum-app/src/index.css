@@ -26,10 +26,19 @@
   --maxw: 1180px;
 }
 
-/* Hebrew swaps to complex-script fonts while keeping the clay/ivory look. */
+/* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
+   Assistant is a modern, crisp Hebrew sans; Heebo and the system Hebrew faces
+   are fallbacks. Slightly more line-height so Hebrew descenders never clip. */
 html[lang="he"] {
-  --sans: "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
+  --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
   --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+}
+html[lang="he"] body {
+  line-height: 1.65;
+  letter-spacing: 0;
+}
+html[lang="he"] .btn {
+  line-height: 1.2;
 }
 /* Latin/technical tokens stay upright and un-spaced inside Hebrew. */
 html[lang="he"] .eyebrow {
@@ -1137,6 +1146,24 @@ html.a11y-reduce-motion *::after {
   color: var(--clay);
   border-color: var(--clay);
   transform: translateY(-1px);
+}
+.footer-website {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--slate);
+}
+.footer-website:hover {
+  color: var(--clay);
+}
+.footer-address {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--slate);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.5;
 }
 
 /* Cookie consent */

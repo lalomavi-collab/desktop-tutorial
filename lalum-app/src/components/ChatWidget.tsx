@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
+import { extractText } from "../lib/extractText";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
 export function ChatWidget() {
   const { t } = useLang();
@@ -11,7 +12,26 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: "assistant", content: C.greeting }]);
+  const [attachment, setAttachment] = useState<{ name: string; text: string } | null>(null);
+  const [extracting, setExtracting] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setExtracting(true);
+    try {
+      const text = await extractText(file);
+      if (!text.trim()) throw new Error("empty");
+      setAttachment({ name: file.name, text });
+    } catch {
+      setMsgs((m) => [...m, { role: "assistant", content: C.fileErr }]);
+    } finally {
+      setExtracting(false);
+    }
+  }
 
   // Reset the seeded greeting when the language changes (only if untouched).
   useEffect(() => {
@@ -24,10 +44,18 @@ export function ChatWidget() {
 
   async function send() {
     const text = input.trim();
-    if (!text || loading) return;
-    const convo: Msg[] = [...msgs.filter((_, i) => i !== 0), { role: "user", content: text }];
-    setMsgs((m) => [...m, { role: "user", content: text }]);
+    if ((!text && !attachment) || loading) return;
+    // What the user sees in their bubble vs what the model receives (the model
+    // gets the full contract text; the bubble stays clean).
+    const displayText = text || (attachment ? `📎 ${attachment.name}` : "");
+    const modelText = attachment
+      ? `${C.reviewPrefix} (${attachment.name}):\n\n${attachment.text}\n\n${text || C.reviewAsk}`
+      : text;
+    const priorForModel = msgs.filter((_, i) => i !== 0).map((m) => ({ role: m.role, content: m.content }));
+    const convo = [...priorForModel, { role: "user" as const, content: modelText }];
+    setMsgs((m) => [...m, { role: "user", content: displayText, file: attachment?.name }]);
     setInput("");
+    setAttachment(null);
     setLoading(true);
     try {
       let reply = C.demoReply;
@@ -79,18 +107,43 @@ export function ChatWidget() {
             )}
           </div>
 
-          <div style={{ borderTop: "1px solid var(--line)", padding: 14, display: "flex", gap: 10, alignItems: "flex-end" }}>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={onKey}
-              placeholder={C.placeholder}
-              rows={1}
-              style={{ flex: 1, padding: "11px 13px", border: "1px solid var(--line-strong)", borderRadius: 11, fontFamily: "var(--sans)", fontSize: 14, background: "var(--paper)", color: "var(--ink)", resize: "none", lineHeight: 1.5, maxHeight: 90 }}
-            />
-            <button onClick={() => void send()} aria-label={C.send} disabled={loading || !input.trim()} className="btn-clay" style={{ flex: "none", width: 44, height: 44, border: 0, borderRadius: 11, color: "var(--paper)", cursor: "pointer", fontSize: 18, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-              ↑
-            </button>
+          <div style={{ borderTop: "1px solid var(--line)", padding: 14 }}>
+            {(attachment || extracting) && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, fontSize: 12.5, color: "var(--slate)", background: "var(--ivory)", border: "1px solid var(--line)", borderRadius: 10, padding: "7px 11px" }}>
+                <span aria-hidden="true">📎</span>
+                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} dir="auto">{extracting ? C.attaching : attachment?.name}</span>
+                {attachment && !extracting && (
+                  <button type="button" onClick={() => setAttachment(null)} aria-label={C.remove} style={{ border: 0, background: "none", cursor: "pointer", color: "var(--clay)", fontSize: 14 }}>×</button>
+                )}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+              <input ref={fileRef} type="file" accept=".pdf,.docx" onChange={onFile} style={{ display: "none" }} />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                aria-label={C.attach}
+                title={C.attach}
+                disabled={extracting || loading}
+                style={{ flex: "none", width: 44, height: 44, border: "1px solid var(--line-strong)", borderRadius: 11, background: "var(--paper)", color: "var(--slate)", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+              </button>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKey}
+                placeholder={C.placeholder}
+                rows={1}
+                style={{ flex: 1, padding: "11px 13px", border: "1px solid var(--line-strong)", borderRadius: 11, fontFamily: "var(--sans)", fontSize: 14, background: "var(--paper)", color: "var(--ink)", resize: "none", lineHeight: 1.5, maxHeight: 90 }}
+              />
+              <button onClick={() => void send()} aria-label={C.send} disabled={loading || extracting || (!input.trim() && !attachment)} className="btn-clay" style={{ flex: "none", width: 44, height: 44, border: 0, borderRadius: 11, color: "var(--paper)", cursor: "pointer", fontSize: 18, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                ↑
+              </button>
+            </div>
+            <p style={{ margin: "10px 2px 0", fontSize: 10.5, lineHeight: 1.5, color: "var(--slate)" }}>{C.disclaimer}</p>
           </div>
         </div>
       )}

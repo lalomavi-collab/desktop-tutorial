@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
-import { contactEmail, officePhone, directPhone, socialLinks } from "../lib/content";
+import { contactEmail, officePhone, directPhone, socialLinks, websiteDisplay, externalLinks, officeAddress } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -19,10 +19,30 @@ function FacebookIcon() {
   );
 }
 
+function InstagramIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function GlobeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20" />
+    </svg>
+  );
+}
+
 export function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const f = t.ui.footer;
   const L = t.ui.footerLinks;
+  const addr = officeAddress[lang];
 
   return (
     <footer className="site-footer">
@@ -44,7 +64,10 @@ export function Footer() {
           <div className="footer-social" aria-label={f.follow}>
             <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label={f.linkedin} className="footer-social-link"><LinkedInIcon /></a>
             <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={f.facebook} className="footer-social-link"><FacebookIcon /></a>
+            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label={f.instagram} className="footer-social-link"><InstagramIcon /></a>
+            <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" aria-label={f.website} className="footer-social-link"><GlobeIcon /></a>
           </div>
+          <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="footer-website" dir="ltr">{websiteDisplay}</a>
         </div>
 
         <nav className="footer-col" aria-label={f.explore}>
@@ -53,6 +76,8 @@ export function Footer() {
           <Link to="/advisory">{L.advisory}</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
+          <a href={externalLinks.qa} target="_blank" rel="noopener noreferrer">{L.qa}</a>
+          <a href={externalLinks.articles} target="_blank" rel="noopener noreferrer">{L.articles}</a>
         </nav>
 
         <nav className="footer-col" aria-label={f.client}>
@@ -66,7 +91,9 @@ export function Footer() {
           <a href={`mailto:${contactEmail}`} dir="ltr">{contactEmail}</a>
           <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
           <a href={`tel:${directPhone.tel}`} dir="ltr">{directPhone.display}</a>
-          <span className="footer-city">{f.city}</span>
+          <address className="footer-address">
+            {addr.map((line, i) => <span key={i}>{line}</span>)}
+          </address>
         </div>
       </div>
 

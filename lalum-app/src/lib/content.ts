@@ -64,5 +64,21 @@ export const directPhone = { display: "052-2490420", tel: "+972522490420" };
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
   facebook: "https://www.facebook.com/profile.php?id=61573518832531&locale=he_IL",
+  instagram: "https://www.instagram.com/",
+  website: "https://www.lalum.co",
 };
+export const websiteDisplay = "www.lalum.co";
 export const appUrl = "https://lalumapp.com";
+
+// External pages on the firm website.
+export const externalLinks = {
+  qa: "https://www.lalum.co/q-a",
+  articles: "https://www.lalum.co/articles",
+};
+
+// Office address (Herzliya Pituach). `full` is a single-line form for maps/travel.
+export const officeAddress = {
+  en: ["Herzliya Business Park, Building G", "85 Medinat HaYehudim St., 3rd Floor", "Herzliya Pituach 4676670, Israel"],
+  he: ["פארק עסקים הרצליה, בניין G", "רחוב מדינת היהודים 85, קומה 3", "הרצליה פיתוח 4676670"],
+  full: "85 Medinat HaYehudim St, Herzliya Pituach 4676670, Israel",
+};
