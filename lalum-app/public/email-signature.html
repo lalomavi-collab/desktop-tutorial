@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LALUM email signature</title>
+<style>
+  body { margin: 0; background: #f5f1e8; color: #1a1815; font-family: Arial, Helvetica, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 22px 80px; }
+  h1 { font-size: 24px; margin: 0 0 6px; }
+  p.sub { color: #55514a; margin: 0 0 32px; font-size: 15px; line-height: 1.6; }
+  h2 { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: #a8482a; margin: 34px 0 12px; }
+  .card { background: #fff; border: 1px solid #e3dccd; border-radius: 14px; padding: 26px; }
+  textarea { width: 100%; box-sizing: border-box; height: 150px; border: 1px solid #d3c9b5; border-radius: 10px; padding: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: #1a1815; background: #fbf9f3; }
+  button { margin-top: 12px; background: #a8482a; color: #fff; border: 0; border-radius: 9999px; padding: 12px 22px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  button:hover { background: #8c3b20; }
+  .ok { margin-inline-start: 12px; color: #2c6444; font-weight: 600; font-size: 14px; }
+  .steps { color: #55514a; font-size: 14px; line-height: 1.7; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>LALUM email signature</h1>
+    <p class="sub">A clickable LALUM logo that opens the app. Copy the block below and paste it into your email signature (Gmail, Outlook), a profile, or a website.</p>
+
+    <h2>Preview</h2>
+    <div class="card">
+      <div id="sig">
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,Helvetica,sans-serif;color:#1a1815;">
+          <tr>
+            <td style="vertical-align:middle;padding-inline-end:18px;">
+              <a href="https://lalumapp.com" target="_blank" style="text-decoration:none;">
+                <img src="https://lalumapp.com/icon-192.png" alt="LALUM" width="60" height="60" style="display:block;border-radius:14px;" />
+              </a>
+            </td>
+            <td style="vertical-align:middle;border-inline-start:2px solid #a8482a;padding-inline-start:18px;">
+              <div style="font-size:16px;font-weight:bold;color:#1a1815;">Dr. Avraham Lalum</div>
+              <div style="font-size:13px;color:#55514a;padding:2px 0 6px;">Attorney &amp; Notary · LALUM</div>
+              <div style="font-size:13px;line-height:1.7;">
+                <a href="https://lalumapp.com" target="_blank" style="color:#a8482a;font-weight:bold;text-decoration:none;">lalumapp.com</a>
+                &nbsp;·&nbsp;
+                <a href="mailto:avraham@lalum.co" style="color:#55514a;text-decoration:none;">avraham@lalum.co</a><br />
+                <span style="color:#55514a;">03-3104959 &nbsp;·&nbsp; 052-2490420</span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <h2>Copy the code</h2>
+    <div class="card">
+      <textarea id="code" readonly></textarea>
+      <div>
+        <button type="button" id="copy">Copy signature</button>
+        <span class="ok" id="ok" style="display:none;">Copied</span>
+      </div>
+    </div>
+
+    <h2>How to use</h2>
+    <p class="steps">
+      Gmail: Settings, then See all settings, then General, then Signature, paste, Save.<br />
+      Outlook: Settings, then Mail, then Compose and reply, then Signature, paste, Save.<br />
+      The logo links to lalumapp.com, so anyone who clicks it lands in the app.
+    </p>
+  </div>
+
+  <script>
+    var sig = document.getElementById('sig').innerHTML.trim();
+    document.getElementById('code').value = sig;
+    document.getElementById('copy').addEventListener('click', function () {
+      var ta = document.getElementById('code');
+      ta.select();
+      try { navigator.clipboard.writeText(ta.value); } catch (e) { document.execCommand('copy'); }
+      var ok = document.getElementById('ok'); ok.style.display = 'inline';
+      setTimeout(function () { ok.style.display = 'none'; }, 1800);
+    });
+  </script>
+</body>
+</html>
