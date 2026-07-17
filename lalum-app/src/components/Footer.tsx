@@ -97,7 +97,10 @@ export function Footer() {
       </div>
 
       <div className="wrap footer-bottom">
-        <span className="muted" style={{ fontSize: 13 }} dir="ltr">© 2026 LALUM · {f.city} · {f.rights}</span>
+        <span className="muted footer-copy" style={{ fontSize: 13 }}>
+          <span dir="ltr">© 2026 LALUM</span>
+          <span>{f.city} · {f.rights}</span>
+        </span>
         <div className="footer-legal">
           <Link to="/legal#terms">{L.terms}</Link>
           <Link to="/legal#privacy">{L.privacy}</Link>

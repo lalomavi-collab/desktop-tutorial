@@ -55,7 +55,7 @@ export function CourseSignup() {
       <span className="course-glow" aria-hidden="true" />
       <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 980, padding: "88px 32px" }}>
         <div style={{ textAlign: "center" }}>
-          <span className="course-eyebrow" dir="ltr">{c.eyebrow}</span>
+          <span className="course-eyebrow">{c.eyebrow}</span>
           <h2 className="course-title serif">{c.title}</h2>
           <span className="course-rule" aria-hidden="true" />
           <p className="course-sub">{c.subtitle}</p>
