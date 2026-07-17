@@ -154,6 +154,9 @@ export function Home() {
                 <span dir="ltr" style={{ fontWeight: 600 }}>{directPhone.display}</span>
               </a>
             </div>
+            <a href="/cv.html" target="_blank" rel="noopener" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
+              <Icon name="file" size={16} /> {h.founderCv}
+            </a>
           </div>
           <div>
             <p className="eyebrow">{h.storyEyebrow}</p>
