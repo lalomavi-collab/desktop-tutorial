@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
@@ -55,6 +55,28 @@ export function Portal() {
   const [msgBody, setMsgBody] = useState("");
   const [msgBusy, setMsgBusy] = useState(false);
   const [msgResult, setMsgResult] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
+  const [files, setFiles] = useState<{ name: string; path: string; size: number }[]>([]);
+  const [fileBusy, setFileBusy] = useState(false);
+  const [fileMsg, setFileMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
+  const loadFiles = useCallback(async () => {
+    if (!supabase || !user) return;
+    const { data } = await supabase.storage
+      .from("client-files")
+      .list(user.id, { sortBy: { column: "created_at", order: "desc" } });
+    if (data) {
+      setFiles(
+        data
+          .filter((o) => o.id)
+          .map((o) => ({ name: o.name, path: `${user.id}/${o.name}`, size: (o.metadata?.size as number) ?? 0 })),
+      );
+    }
+  }, [user]);
+
+  useEffect(() => {
+    void loadFiles();
+  }, [loadFiles]);
 
   const [fullName, setFullName] = useState("");
   const [licenseNo, setLicenseNo] = useState("");
@@ -116,6 +138,53 @@ export function Portal() {
       setMsgBusy(false);
     }
   }
+
+  async function onUpload(e: ChangeEvent<HTMLInputElement>) {
+    const F = P.files;
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      setFileMsg({ tone: "err", text: F.tooBig });
+      e.target.value = "";
+      return;
+    }
+    setFileBusy(true);
+    setFileMsg(null);
+    try {
+      if (supabase && user) {
+        const safe = file.name.replace(/[^\w.-]+/g, "_");
+        const path = `${user.id}/${Date.now()}-${safe}`;
+        const { error } = await supabase.storage.from("client-files").upload(path, file, { upsert: false });
+        if (error) throw error;
+        void supabase.functions.invoke("lalum-file-notify", { body: { path, name: file.name, size: file.size } });
+        await loadFiles();
+      } else {
+        await new Promise((r) => setTimeout(r, 400));
+      }
+      setFileMsg({ tone: "ok", text: F.ok });
+    } catch (err) {
+      setFileMsg({ tone: "err", text: err instanceof Error ? err.message : F.err });
+    } finally {
+      setFileBusy(false);
+      e.target.value = "";
+    }
+  }
+
+  async function downloadFile(path: string) {
+    if (!supabase) return;
+    const { data } = await supabase.storage.from("client-files").createSignedUrl(path, 60);
+    if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
+  }
+
+  async function removeFile(path: string) {
+    if (!supabase) return;
+    if (!window.confirm(P.files.confirmRemove)) return;
+    await supabase.storage.from("client-files").remove([path]);
+    await loadFiles();
+  }
+
+  const prettyName = (name: string) => name.replace(/^\d+-/, "");
+  const prettySize = (bytes: number) => (bytes > 0 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : "");
 
   async function submitVerify(e: FormEvent) {
     e.preventDefault();
@@ -200,6 +269,41 @@ export function Portal() {
         </form>
         {msgResult && <div className={`notice ${msgResult.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{msgResult.text}</div>}
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
+      </div>
+
+      {/* FILE TRANSFER */}
+      <div className="card" style={{ padding: 34, marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+          <span className="icon-badge"><Icon name="folder" size={20} /></span>
+          <h2 className="h3" style={{ fontSize: 22 }}>{P.files.title}</h2>
+        </div>
+        <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.files.intro}</p>
+
+        <label className="btn btn-clay btn-sm" style={{ cursor: fileBusy ? "default" : "pointer", opacity: fileBusy ? 0.7 : 1 }}>
+          <Icon name="plus" size={16} /> {fileBusy ? P.files.uploading : P.files.choose}
+          <input type="file" onChange={onUpload} disabled={fileBusy} style={{ display: "none" }} />
+        </label>
+        <p className="muted" style={{ fontSize: 12.5, margin: "10px 0 0" }}>{P.files.hint}</p>
+        {fileMsg && <div className={`notice ${fileMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{fileMsg.text}</div>}
+
+        <div style={{ marginTop: 22 }}>
+          <div className="label">{P.files.yourFiles}</div>
+          {files.length === 0 ? (
+            <p className="muted" style={{ fontSize: 14, margin: "8px 0 0" }}>{P.files.none}</p>
+          ) : (
+            <ul style={{ listStyle: "none", padding: 0, margin: "8px 0 0", display: "flex", flexDirection: "column", gap: 8 }}>
+              {files.map((f) => (
+                <li key={f.path} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", padding: "10px 14px", border: "1px solid var(--line)", borderRadius: 12, background: "var(--card)" }}>
+                  <Icon name="file" size={18} />
+                  <span style={{ flex: 1, minWidth: 120, wordBreak: "break-word", fontSize: 14 }} dir="auto">{prettyName(f.name)}</span>
+                  {prettySize(f.size) && <span className="muted" style={{ fontSize: 12 }} dir="ltr">{prettySize(f.size)}</span>}
+                  <button type="button" onClick={() => downloadFile(f.path)} className="btn btn-ghost btn-sm">{P.files.download}</button>
+                  <button type="button" onClick={() => removeFile(f.path)} className="btn btn-ghost btn-sm" style={{ color: "var(--clay)" }}>{P.files.remove}</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-2" style={{ alignItems: "start" }}>
