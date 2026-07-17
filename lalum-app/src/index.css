@@ -201,6 +201,19 @@ article p {
   hyphens: none;
 }
 
+/* Scheduling console: agenda beside the task sidebar, stacked on narrow screens. */
+.sched-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .sched-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- buttons ---------- */
 .btn {
   display: inline-flex;

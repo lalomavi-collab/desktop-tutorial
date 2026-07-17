@@ -4,6 +4,7 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
+import { SchedulingConsole } from "../components/SchedulingConsole";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -311,6 +312,9 @@ export function Portal() {
       </div>
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
+
+      {/* FIRM SCHEDULING CONSOLE (firm only) */}
+      {isAdmin && <SchedulingConsole />}
 
       {/* ADMIN INBOX (firm only) */}
       {isAdmin && (
