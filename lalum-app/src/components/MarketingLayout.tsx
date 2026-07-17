@@ -5,6 +5,7 @@ import { Footer } from "./Footer";
 import { ChatWidget } from "./ChatWidget";
 import { BottomTabBar } from "./BottomTabBar";
 import { A11yWidget } from "./A11yWidget";
+import { AccessibilityMenu } from "./AccessibilityMenu";
 import { useLang } from "../context/LangContext";
 
 export function MarketingLayout() {
@@ -29,6 +30,7 @@ export function MarketingLayout() {
       <Footer />
       <ChatWidget />
       <BottomTabBar />
+      <AccessibilityMenu />
       <A11yWidget />
     </>
   );

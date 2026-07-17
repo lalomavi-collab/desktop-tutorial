@@ -19,6 +19,7 @@ const en = {
     skipToContent: "Skip to content",
     footerLinks: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights", login: "Client login", terms: "Terms", privacy: "Privacy", accessibility: "Accessibility" },
     footer: { explore: "Explore", client: "Client", contact: "Contact", book: "Book a call", city: "Tel Aviv", tagline: "Tech-Legal and strategic counsel for startups and breakthrough companies.", rights: "All rights reserved." },
+    a11y: { open: "Accessibility menu", title: "Accessibility", textSize: "Text size", contrast: "High contrast", links: "Highlight links", readable: "Readable font", motion: "Reduce motion", reset: "Reset", statement: "Accessibility statement" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · Tel Aviv",
     chat: {
       title: "LALUM Assistant",
@@ -413,6 +414,7 @@ const he: Dict = {
     skipToContent: "דלג לתוכן",
     footerLinks: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות", login: "כניסת לקוחות", terms: "תנאים", privacy: "פרטיות", accessibility: "נגישות" },
     footer: { explore: "ניווט", client: "לקוחות", contact: "צור קשר", book: "לקביעת שיחה", city: "תל אביב", tagline: "ייעוץ Tech-Legal ואסטרטגי לסטארטאפים ולחברות פורצות דרך.", rights: "כל הזכויות שמורות." },
+    a11y: { open: "תפריט נגישות", title: "נגישות", textSize: "גודל טקסט", contrast: "ניגודיות גבוהה", links: "הדגשת קישורים", readable: "גופן קריא", motion: "הפחתת תנועה", reset: "איפוס", statement: "הצהרת נגישות" },
     copyright: "© 2026 LALUM · " + "avraham@lalum.co" + " · תל אביב",
     chat: {
       title: "עוזר LALUM",

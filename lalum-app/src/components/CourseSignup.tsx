@@ -51,7 +51,7 @@ export function CourseSignup() {
   }
 
   return (
-    <section className="course-dark">
+    <section className="course-dark" id="course" style={{ scrollMarginTop: 76 }}>
       <span className="course-glow" aria-hidden="true" />
       <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 980, padding: "88px 32px" }}>
         <div style={{ textAlign: "center" }}>

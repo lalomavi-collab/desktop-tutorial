@@ -9,9 +9,9 @@
   --card: #ffffff;
   --ink: #1a1815;
   --slate: #55514a;
-  --clay: #c15f3c;
-  --clay-hover: #a44b2c;
-  --clay-bright: #d06b45;
+  --clay: #a8482a;
+  --clay-hover: #8c3b20;
+  --clay-bright: #c15f3c;
   --clay-soft: #e4c7b7;
   --clay-tint: #f3e7de;
   --line: #e3dccd;
@@ -673,6 +673,213 @@ html[lang="en"] .italic-clay {
 @media (max-width: 560px) {
   .course-card {
     padding: 26px 20px;
+  }
+}
+
+/* ---------- accessibility menu (bottom-inline-start) ---------- */
+.a11y-dock {
+  position: fixed;
+  bottom: 24px;
+  inset-inline-start: 24px;
+  z-index: 85;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.a11y-fab {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.a11y-fab:hover {
+  transform: translateY(-2px);
+  background: #000;
+}
+.a11y-panel {
+  width: 282px;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.45);
+  padding: 14px;
+}
+.a11y-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 4px 4px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.a11y-panel-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.a11y-x {
+  background: transparent;
+  border: 0;
+  color: var(--slate);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+}
+.a11y-x:hover {
+  color: var(--ink);
+  background: var(--ivory);
+}
+.a11y-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px;
+}
+.a11y-steps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.a11y-steps button {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+.a11y-steps button:hover {
+  border-color: var(--clay);
+}
+.a11y-step-val {
+  font-size: 12px;
+  color: var(--slate);
+  min-width: 40px;
+  text-align: center;
+}
+.a11y-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 4px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  font-family: var(--sans);
+  text-align: start;
+}
+.a11y-knob {
+  flex: none;
+  width: 38px;
+  height: 22px;
+  border-radius: 9999px;
+  background: var(--line-strong);
+  position: relative;
+  transition: background 0.15s ease;
+}
+.a11y-knob::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: inset-inline-start 0.15s ease;
+}
+.a11y-toggle.on .a11y-knob {
+  background: var(--clay);
+}
+.a11y-toggle.on .a11y-knob::after {
+  inset-inline-start: 19px;
+}
+.a11y-panel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  margin-top: 2px;
+  border-top: 1px solid var(--line);
+}
+.a11y-reset {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.a11y-reset:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+.a11y-statement {
+  font-size: 13px;
+  color: var(--clay);
+  font-weight: 600;
+}
+/* Settings applied across the document. */
+html.a11y-contrast {
+  --slate: #171512;
+  --paper: #ffffff;
+  --ivory: #ffffff;
+  --card: #ffffff;
+  --line: #9a9483;
+  --line-strong: #6d685c;
+}
+html.a11y-contrast p,
+html.a11y-contrast .lede {
+  color: #171512 !important;
+}
+html.a11y-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+}
+html.a11y-readable,
+html.a11y-readable * {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+  letter-spacing: 0 !important;
+}
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (max-width: 900px) {
+  .a11y-dock {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    inset-inline-start: 16px;
+  }
+  .a11y-fab {
+    width: 46px;
+    height: 46px;
+  }
+  .a11y-panel {
+    width: min(282px, calc(100vw - 32px));
   }
 }
 
