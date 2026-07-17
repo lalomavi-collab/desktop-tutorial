@@ -30,35 +30,46 @@ export function Home() {
             </div>
           </div>
 
-          {/* Advisory consultation card */}
-          <div style={{ position: "relative" }}>
-            <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 20, padding: 30, boxShadow: "0 30px 60px -34px rgba(60,45,30,.35)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
-                <span className="serif" style={{ fontSize: 19, lineHeight: 1.25 }}>{h.cardTitle}</span>
-                <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.advisoryBadge}</span>
-              </div>
-              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{h.advisoryIntro}</p>
-              <div className="label" style={{ margin: "20px 0 12px" }}>{h.advisoryFormat}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                  <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryInPersonTitle}</div>
-                    <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryInPersonBody}</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                  <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryVirtualTitle}</div>
-                    <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryVirtualBody}</div>
-                  </div>
-                </div>
-              </div>
-              <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
-                <Icon name="calendar" size={17} /> {h.advisoryCta}
-              </Link>
+          {/* Founder portrait, clickable, opens the full CV */}
+          <a href="/cv.html" target="_blank" rel="noopener" className="founder-hero" aria-label={h.founderCv}>
+            <img src="/founder.jpg" alt={h.founderName} />
+            <span className="founder-hero-cap">
+              <span className="founder-hero-name">{h.founderName}</span>
+              <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
+            </span>
+          </a>
+        </div>
+      </section>
+
+      {/* ADVISORY CONSULTATION (moved below the hero) */}
+      <section className="section-line">
+        <div className="wrap" style={{ maxWidth: 720, padding: "64px 32px" }}>
+          <div className="card" style={{ padding: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
+              <span className="serif" style={{ fontSize: 20, lineHeight: 1.25 }}>{h.cardTitle}</span>
+              <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.advisoryBadge}</span>
             </div>
+            <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{h.advisoryIntro}</p>
+            <div className="label" style={{ margin: "20px 0 12px" }}>{h.advisoryFormat}</div>
+            <div className="grid grid-2" style={{ gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryInPersonTitle}</div>
+                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryInPersonBody}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryVirtualTitle}</div>
+                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryVirtualBody}</div>
+                </div>
+              </div>
+            </div>
+            <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
+              <Icon name="calendar" size={17} /> {h.advisoryCta}
+            </Link>
           </div>
         </div>
       </section>
