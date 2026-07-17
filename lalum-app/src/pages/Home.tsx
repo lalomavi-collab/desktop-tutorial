@@ -10,6 +10,7 @@ export function Home() {
   const { t } = useLang();
   const h = t.home;
   const [faqOpen, setFaqOpen] = useState<number>(-1);
+  const [faqShown, setFaqShown] = useState(false);
 
   return (
     <>
@@ -137,11 +138,7 @@ export function Home() {
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
           <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
-            <img src="/lalum-logo.png" alt={h.logoAlt} style={{ display: "block", height: 30, width: "auto", maxWidth: "68%", margin: "0 auto 26px", opacity: 0.9 }} />
-            {/* Founder portrait (monogram placeholder until a headshot is supplied) */}
-            <div style={{ width: 116, height: 116, margin: "0 auto 18px", borderRadius: "50%", background: "var(--card)", border: "1px solid var(--clay-soft)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-              <span style={{ fontFamily: "var(--serif)", fontSize: 30, color: "var(--clay)" }} dir="ltr">AL</span>
-            </div>
+            <img src="/lalum-logo.png" alt={h.logoAlt} style={{ display: "block", height: 34, width: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
@@ -167,15 +164,20 @@ export function Home() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* FAQ (two levels: the section header reveals the questions; each question reveals its answer) */}
       <section id="faq" className="wrap section" style={{ maxWidth: 820 }}>
-        <div style={{ textAlign: "center", margin: "0 0 32px" }}>
-          <p className="eyebrow">{h.faqEyebrow}</p>
-          <h2 className="serif" style={{ fontSize: "clamp(27px, 6vw, 38px)", lineHeight: 1.15, letterSpacing: "-0.015em" }}>
+        <button type="button" className="faq-section-toggle" aria-expanded={faqShown} aria-controls="faq-list" onClick={() => setFaqShown((v) => !v)}>
+          <p className="eyebrow" style={{ margin: "0 0 12px" }}>{h.faqEyebrow}</p>
+          <h2 className="serif" style={{ fontSize: "clamp(27px, 6vw, 38px)", lineHeight: 1.15, letterSpacing: "-0.015em", margin: 0 }}>
             {h.faqH2a} <span className="italic-clay">{h.faqH2b}</span>
           </h2>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <span className="faq-section-hint">
+            <span>{faqShown ? h.faqHide : h.faqShow}</span>
+            <span className={"faq-chevron" + (faqShown ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
+          </span>
+        </button>
+        {faqShown && (
+        <div id="faq-list" className="faq-list" style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 28 }}>
           {t.data.faqs.map((f, i) => {
             const open = faqOpen === i;
             const pid = `faq-panel-${i}`;
@@ -200,6 +202,7 @@ export function Home() {
             );
           })}
         </div>
+        )}
       </section>
 
       <ContactCTA title={h.ctaTitle} body={h.ctaBody} primaryLabel={t.ui.initiateRisk} />
