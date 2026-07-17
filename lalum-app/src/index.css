@@ -196,14 +196,29 @@ html[lang="en"] .italic-clay {
 /* Justified body copy: both side margins stay straight and even. Headings,
    eyebrows, labels, and buttons keep their own alignment. Last lines stay
    ragged (normal), and we never hyphenate. */
+/* Justify only the wide reading columns, where both side margins line up
+   cleanly. Narrow card bodies are NOT justified: at a short measure justify
+   opens ugly gaps between words, so they keep natural start alignment. */
 .lede,
 .section p:not(.eyebrow):not(.label),
-.card p:not(.label),
 article p {
   text-align: justify;
   text-justify: inter-word;
-  -webkit-hyphens: none;
-  hyphens: none;
+  /* Hyphenate so justified lines break long words instead of stretching the
+     spaces. English (lang=en) hyphenates; Hebrew has no browser hyphenation
+     dictionary, so it is unaffected. */
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+/* Card bodies sit inside `.section`, so the rule above would justify them too.
+   At a card's short measure justify opens ugly gaps, so force them back to
+   clean start alignment (matching specificity, declared later to win). */
+.section .card p:not(.label),
+.card p:not(.label) {
+  text-align: start;
+  -webkit-hyphens: manual;
+  hyphens: manual;
 }
 
 /* Scheduling console: agenda beside the task sidebar, stacked on narrow screens. */
