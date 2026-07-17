@@ -692,18 +692,20 @@ html[lang="en"] .italic-clay {
   height: 52px;
   border-radius: 50%;
   border: 0;
-  background: var(--ink);
-  color: var(--paper);
+  /* Standard accessibility blue so it reads clearly as the accessibility
+     control, not a brand or logo button. */
+  background: #1a5fd0;
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 30px -8px rgba(26, 95, 208, 0.55);
   transition: transform 0.15s ease, background 0.15s ease;
 }
 .a11y-fab:hover {
   transform: translateY(-2px);
-  background: #000;
+  background: #1750b6;
 }
 .a11y-panel {
   width: 282px;
