@@ -35,9 +35,6 @@ function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
   return out;
 }
 
-type Tone = "ok" | "warn" | "err";
-type VerifyResult = { label: string; detail: string; tone: Tone };
-
 type MsgRow = {
   id: string;
   category: string;
@@ -154,12 +151,6 @@ export function Portal() {
     }
   }
 
-  const [fullName, setFullName] = useState("");
-  const [licenseNo, setLicenseNo] = useState("");
-  const [jurisdiction, setJurisdiction] = useState("IL");
-  const [verifyBusy, setVerifyBusy] = useState(false);
-  const [verifyRes, setVerifyRes] = useState<VerifyResult | null>(null);
-
   async function submitBooking(e: FormEvent) {
     e.preventDefault();
     if (!day || !slot) return;
@@ -262,41 +253,6 @@ export function Portal() {
 
   const prettyName = (name: string) => name.replace(/^\d+-/, "");
   const prettySize = (bytes: number) => (bytes > 0 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : "");
-
-  async function submitVerify(e: FormEvent) {
-    e.preventDefault();
-    if (!fullName || !licenseNo) return;
-    setVerifyBusy(true);
-    setVerifyRes(null);
-    const R = P.verify.results;
-    try {
-      let matchResult = "not_found";
-      let verified = false;
-      if (supabase) {
-        const { data, error } = await supabase.functions.invoke("lalum-attorney-verify", { body: { full_name: fullName, license_no: licenseNo, jurisdiction } });
-        if (error) throw error;
-        matchResult = (data?.match_result as string) ?? "not_found";
-        verified = Boolean(data?.verified);
-      } else {
-        await new Promise((r) => setTimeout(r, 500));
-        if (/^\d{4,}$/.test(licenseNo.trim()) && fullName.trim().length > 2) {
-          matchResult = "auto_matched";
-          verified = true;
-        }
-      }
-      if (verified || matchResult === "auto_matched" || matchResult === "manual_approved") setVerifyRes({ ...R.verified, tone: "ok" });
-      else if (matchResult === "name_mismatch") setVerifyRes({ ...R.nameMismatch, tone: "warn" });
-      else if (matchResult === "suspended") setVerifyRes({ ...R.suspended, tone: "warn" });
-      else if (matchResult === "not_found") setVerifyRes({ ...R.notFound, tone: "err" });
-      else setVerifyRes({ ...R.pending, tone: "warn" });
-    } catch (err) {
-      setVerifyRes({ label: R.error.label, detail: err instanceof Error ? err.message : R.error.detail, tone: "err" });
-    } finally {
-      setVerifyBusy(false);
-    }
-  }
-
-  const noticeClass = (tone: Tone) => (tone === "ok" ? "notice-ok" : tone === "warn" ? "notice-warn" : "notice-err");
 
   return (
     <section className="wrap" style={{ padding: "56px 32px 120px" }}>
@@ -465,7 +421,7 @@ export function Portal() {
         </div>
       </div>
 
-      <div className="grid grid-2" style={{ alignItems: "start" }}>
+      <div>
         {/* BOOKING */}
         <div className="card" style={{ padding: 34 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
@@ -521,44 +477,6 @@ export function Portal() {
             {bookMsg && <div className={`notice ${bookMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{bookMsg.text}</div>}
           </form>
           )}
-        </div>
-
-        {/* VERIFICATION */}
-        <div className="card" style={{ padding: 34 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-            <span className="icon-badge"><Icon name="shield" size={22} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>{P.verify.title}</h2>
-          </div>
-          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.verify.intro}</p>
-          <form onSubmit={submitVerify} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div>
-              <div className="label">{P.verify.fullName}</div>
-              <input className="field" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={P.verify.fullNamePlaceholder} />
-            </div>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 2 }}>
-                <div className="label">{P.verify.license}</div>
-                <input className="field" value={licenseNo} onChange={(e) => setLicenseNo(e.target.value)} placeholder={P.verify.licensePlaceholder} dir="ltr" />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="label">{P.verify.bar}</div>
-                <select className="field" value={jurisdiction} onChange={(e) => setJurisdiction(e.target.value)}>
-                  <option value="IL">IL</option>
-                  <option value="US">US</option>
-                  <option value="EU">EU</option>
-                </select>
-              </div>
-            </div>
-            <button className="btn btn-ink" style={{ justifyContent: "center", marginTop: 4 }} disabled={!fullName || !licenseNo || verifyBusy}>
-              {verifyBusy ? P.verify.checking : P.verify.submit}
-            </button>
-          </form>
-          {verifyRes && (
-            <div className={`notice ${noticeClass(verifyRes.tone)}`} style={{ marginTop: 16 }}>
-              <strong>{verifyRes.label}.</strong> {verifyRes.detail}
-            </div>
-          )}
-          {demoMode && <p className="muted" style={{ fontSize: 12, margin: "12px 0 0" }}>{P.verify.demoTip}</p>}
         </div>
       </div>
     </section>
