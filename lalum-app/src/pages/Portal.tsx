@@ -41,6 +41,7 @@ export function Portal() {
   const { user, signOut, demoMode } = useAuth();
   const { t, lang } = useLang();
   const P = t.ui.portal;
+  const M = P.messages;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
 
   const [day, setDay] = useState("");
@@ -48,6 +49,12 @@ export function Portal() {
   const [topic, setTopic] = useState("");
   const [bookBusy, setBookBusy] = useState(false);
   const [bookMsg, setBookMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
+  const [msgCat, setMsgCat] = useState("general");
+  const [msgSubject, setMsgSubject] = useState("");
+  const [msgBody, setMsgBody] = useState("");
+  const [msgBusy, setMsgBusy] = useState(false);
+  const [msgResult, setMsgResult] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   const [fullName, setFullName] = useState("");
   const [licenseNo, setLicenseNo] = useState("");
@@ -77,6 +84,36 @@ export function Portal() {
       setBookMsg({ tone: "err", text: err instanceof Error ? err.message : P.verify.results.error.detail });
     } finally {
       setBookBusy(false);
+    }
+  }
+
+  async function submitMessage(e: FormEvent) {
+    e.preventDefault();
+    const M = P.messages;
+    if (!msgBody.trim()) return;
+    setMsgBusy(true);
+    setMsgResult(null);
+    try {
+      if (supabase) {
+        const { error } = await supabase
+          .from("lalum_messages")
+          .insert({ user_id: user?.id, category: msgCat, subject: msgSubject || null, body: msgBody });
+        if (error) throw error;
+        const { error: fnError } = await supabase.functions.invoke("lalum-message", {
+          body: { category: msgCat, subject: msgSubject, body: msgBody },
+        });
+        if (fnError) throw fnError;
+      } else {
+        await new Promise((r) => setTimeout(r, 400));
+      }
+      setMsgResult({ tone: "ok", text: M.ok });
+      setMsgSubject("");
+      setMsgBody("");
+      setMsgCat("general");
+    } catch (err) {
+      setMsgResult({ tone: "err", text: err instanceof Error ? err.message : M.err });
+    } finally {
+      setMsgBusy(false);
     }
   }
 
@@ -129,6 +166,41 @@ export function Portal() {
       </div>
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
+
+      {/* CUSTOMER SERVICE MESSAGE */}
+      <div className="card" style={{ padding: 34, marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+          <span className="icon-badge"><Icon name="send" size={20} /></span>
+          <h2 className="h3" style={{ fontSize: 22 }}>{M.title}</h2>
+        </div>
+        <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{M.intro}</p>
+        <form onSubmit={submitMessage} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="grid grid-2" style={{ gap: 14 }}>
+            <div>
+              <div className="label">{M.category}</div>
+              <select className="field" value={msgCat} onChange={(e) => { setMsgCat(e.target.value); setMsgResult(null); }}>
+                <option value="general">{M.categories.general}</option>
+                <option value="booking">{M.categories.booking}</option>
+                <option value="documents">{M.categories.documents}</option>
+                <option value="billing">{M.categories.billing}</option>
+              </select>
+            </div>
+            <div>
+              <div className="label">{M.subject}</div>
+              <input className="field" value={msgSubject} onChange={(e) => setMsgSubject(e.target.value)} placeholder={M.subjectPlaceholder} />
+            </div>
+          </div>
+          <div>
+            <div className="label">{M.body}</div>
+            <textarea className="field" rows={4} value={msgBody} onChange={(e) => setMsgBody(e.target.value)} placeholder={M.bodyPlaceholder} style={{ resize: "vertical" }} />
+          </div>
+          <button className="btn btn-clay" style={{ alignSelf: "flex-start", justifyContent: "center" }} disabled={!msgBody.trim() || msgBusy}>
+            {msgBusy ? M.sending : M.submit}
+          </button>
+        </form>
+        {msgResult && <div className={`notice ${msgResult.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{msgResult.text}</div>}
+        <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
+      </div>
 
       <div className="grid grid-2" style={{ alignItems: "start" }}>
         {/* BOOKING */}
