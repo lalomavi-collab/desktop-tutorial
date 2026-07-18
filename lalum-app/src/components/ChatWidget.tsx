@@ -5,6 +5,10 @@ import { extractText } from "../lib/extractText";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
+// Other components (e.g. the quick-start guide) can open the chat by dispatching
+// this event on window.
+export const OPEN_CHAT_EVENT = "lalum:open-chat";
+
 export function ChatWidget() {
   const { t } = useLang();
   const C = t.ui.chat;
@@ -41,6 +45,13 @@ export function ChatWidget() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [msgs, loading, open]);
+
+  // Let other components open the chat.
+  useEffect(() => {
+    const openChat = () => setOpen(true);
+    window.addEventListener(OPEN_CHAT_EVENT, openChat);
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, openChat);
+  }, []);
 
   async function send() {
     const text = input.trim();
