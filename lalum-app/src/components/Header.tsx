@@ -2,6 +2,8 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
+import { Icon } from "./Icon";
+import { OPEN_GUIDE_EVENT } from "./UserGuide";
 
 export function Header() {
   const { user } = useAuth();
@@ -30,6 +32,15 @@ export function Header() {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            type="button"
+            className="btn btn-sm guide-trigger"
+            onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
+            aria-label={t.ui.guide.open}
+          >
+            <Icon name="book" size={16} />
+            <span className="guide-trigger-label">{t.ui.guide.open}</span>
+          </button>
           <ShareButton />
           <button
             type="button"
