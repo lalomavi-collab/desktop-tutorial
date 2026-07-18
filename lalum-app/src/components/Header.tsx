@@ -31,10 +31,10 @@ export function Header() {
           ))}
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="header-tools">
           <button
             type="button"
-            className="guide-fab"
+            className="tb-btn tb-btn-accent guide-fab"
             onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
             aria-label={t.ui.guide.open}
             title={t.ui.guide.open}
@@ -46,11 +46,11 @@ export function Header() {
           <button
             type="button"
             onClick={toggle}
-            className="btn btn-sm"
-            style={{ background: "var(--card)", border: "1px solid var(--line)", color: "var(--ink)", fontWeight: 600 }}
+            className="tb-btn tb-lang"
             aria-label="Switch language"
+            title={t.ui.otherLangName}
           >
-            {t.ui.otherLangName}
+            {t.ui.otherLangShort}
           </button>
           <Link to="/book" className="btn btn-clay btn-sm hide-mobile">{t.ui.bookPage.navCta}</Link>
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile">

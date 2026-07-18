@@ -5,6 +5,9 @@ import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
+// Imported so Vite emits a content-hashed filename: swapping the photo always
+// busts any browser or CDN cache instead of serving a stale /founder.jpg.
+import founderPhoto from "../assets/founder.jpg";
 
 export function Home() {
   const { t } = useLang();
@@ -32,7 +35,7 @@ export function Home() {
 
           {/* Founder portrait, clickable, opens the full CV */}
           <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            <img src="/founder.jpg" alt={h.founderName} />
+            <img src={founderPhoto} alt={h.founderName} />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
