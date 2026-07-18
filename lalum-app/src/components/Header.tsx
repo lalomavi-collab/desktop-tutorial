@@ -34,12 +34,13 @@ export function Header() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             type="button"
-            className="btn btn-sm guide-trigger"
+            className="guide-fab"
             onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
             aria-label={t.ui.guide.open}
+            title={t.ui.guide.open}
           >
-            <Icon name="book" size={16} />
-            <span className="guide-trigger-label">{t.ui.guide.open}</span>
+            <Icon name="compass" size={18} />
+            <span className="guide-fab-ring" aria-hidden="true" />
           </button>
           <ShareButton />
           <button

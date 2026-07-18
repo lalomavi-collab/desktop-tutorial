@@ -1669,23 +1669,53 @@ html.a11y-reduce-motion *::after {
 }
 
 /* ---------- Quick-start guide ---------- */
-.guide-trigger {
+/* Round, attention-drawing trigger (styled like the share button but clay-filled
+   so it stands out on entry). It pulses gently to invite a first click. */
+.guide-fab {
+  position: relative;
+  flex: none;
+  width: var(--ctrl-h, 40px);
+  height: var(--ctrl-h, 40px);
+  border-radius: 50%;
+  border: 1px solid var(--clay);
+  background: var(--clay);
+  color: #fff;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: var(--clay-tint);
-  border: 1px solid var(--clay-soft);
-  color: var(--clay);
-  font-weight: 700;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -8px rgba(168, 72, 42, 0.7);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
-.guide-trigger:hover {
-  background: var(--clay);
-  border-color: var(--clay);
-  color: #fff;
+.guide-fab:hover {
+  background: var(--clay-hover);
+  border-color: var(--clay-hover);
+  transform: translateY(-1px);
 }
-@media (max-width: 420px) {
-  /* Keep the label on the smallest screens but tighten it. */
-  .guide-trigger { gap: 5px; padding-inline: 12px; }
+.guide-fab:active {
+  transform: scale(0.92);
+}
+.guide-fab-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--clay);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* Expanding ring, plus a soft glow on the button itself, to catch the eye. */
+  .guide-fab-ring { animation: guide-ring 2.6s ease-out infinite; }
+  .guide-fab { animation: guide-glow 2.6s ease-in-out infinite; }
+}
+@keyframes guide-ring {
+  0% { opacity: 0.55; transform: scale(1); }
+  70% { opacity: 0; transform: scale(1.7); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+@keyframes guide-glow {
+  0%, 100% { box-shadow: 0 6px 16px -8px rgba(168, 72, 42, 0.7); }
+  50% { box-shadow: 0 0 0 4px rgba(168, 72, 42, 0.16), 0 8px 20px -8px rgba(168, 72, 42, 0.85); }
 }
 
 .guide-overlay {
