@@ -3,6 +3,7 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
+import { MarketingConsent } from "../components/MarketingConsent";
 
 // When a Calendly link is configured, booking is REAL and instant: the visitor
 // gets an email confirmation plus a calendar invite, and the meeting lands on
@@ -63,6 +64,7 @@ export function Book() {
   const [email, setEmail] = useState("");
   const [topic, setTopic] = useState("");
   const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   async function submit(e: FormEvent) {
@@ -75,13 +77,13 @@ export function Book() {
     setMsg(null);
     try {
       if (supabase) {
-        const { error } = await supabase.functions.invoke("lalum-book", { body: { full_name: name, email, day, slot, topic } });
+        const { error } = await supabase.functions.invoke("lalum-book", { body: { full_name: name, email, day, slot, topic, marketing_consent: consent } });
         if (error) throw error;
       } else {
         await new Promise((r) => setTimeout(r, 400));
       }
       setMsg({ tone: "ok", text: B.ok });
-      setDay(""); setSlot(""); setName(""); setEmail(""); setTopic("");
+      setDay(""); setSlot(""); setName(""); setEmail(""); setTopic(""); setConsent(false);
     } catch {
       setMsg({ tone: "err", text: B.err });
     } finally {
@@ -138,7 +140,9 @@ export function Book() {
           </div>
 
           <div className="label">{B.topic}</div>
-          <textarea className="field" rows={3} value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={B.topicPlaceholder} style={{ resize: "vertical", marginBottom: 18 }} />
+          <textarea className="field" rows={3} value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={B.topicPlaceholder} style={{ resize: "vertical", marginBottom: 16 }} />
+
+          <MarketingConsent checked={consent} onChange={setConsent} />
 
           <button className="btn btn-clay" style={{ width: "100%", justifyContent: "center" }} disabled={busy}>
             <Icon name="calendar" size={18} /> {busy ? B.sending : B.submit}
