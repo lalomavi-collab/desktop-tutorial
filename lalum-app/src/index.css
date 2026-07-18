@@ -1061,6 +1061,17 @@ html.a11y-reduce-motion *::after {
   padding: 22px 32px;
   border-top: 1px solid var(--line);
 }
+.footer-copy {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.footer-copy > span:first-child::after {
+  content: "·";
+  margin-inline-start: 8px;
+  color: var(--line-strong);
+}
 .footer-legal {
   display: flex;
   gap: 20px;
@@ -1225,29 +1236,99 @@ html.a11y-reduce-motion *::after {
   color: var(--clay);
   font-weight: 700;
 }
-@media (max-width: 620px) {
-  .footer-download {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
 @media (max-width: 900px) {
   .footer-inner {
     grid-template-columns: 1fr 1fr;
-    gap: 30px 24px;
-    padding: 44px 20px 30px;
+    gap: 26px 24px;
+    padding: 40px 20px 26px;
   }
   .footer-brand {
     grid-column: 1 / -1;
     max-width: none;
   }
 }
+/* App-like compact footer on phones: keep columns side by side instead of a
+   tall single stack, tighten spacing, and shrink the download band. */
 @media (max-width: 560px) {
+  .footer-download {
+    gap: 14px;
+    padding: 18px 20px;
+    align-items: center;
+  }
+  .footer-download-text {
+    flex: 1;
+  }
+  .footer-download-title {
+    font-size: 15.5px;
+    line-height: 1.35;
+    margin-bottom: 3px;
+  }
+  .footer-download-sub {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .footer-qr {
+    padding: 7px;
+    border-radius: 12px;
+  }
+  .footer-qr img {
+    width: 76px;
+    height: 76px;
+  }
   .footer-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 18px;
+    padding: 26px 20px 22px;
+  }
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .footer-logo {
+    height: 22px;
+    align-self: flex-start;
+    margin-bottom: 4px;
+  }
+  .footer-tagline {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .footer-social {
+    margin-top: 10px;
+  }
+  .footer-social-link {
+    width: 34px;
+    height: 34px;
+  }
+  .footer-col {
+    gap: 9px;
+  }
+  .footer-col a {
+    font-size: 13.5px;
+  }
+  .footer-head {
+    margin-bottom: 0;
+    font-size: 11px;
+  }
+  /* Contact spans both columns so the address lines never wrap awkwardly. */
+  .footer-col:last-child {
+    grid-column: 1 / -1;
+  }
+  .footer-address {
+    font-size: 12.5px;
   }
   .footer-bottom {
-    padding: 20px;
+    padding: 16px 20px;
+    gap: 10px;
+  }
+  .footer-legal {
+    gap: 12px 16px;
+  }
+  .footer-legal a,
+  .footer-legal-btn {
+    font-size: 12.5px;
   }
 }
 
@@ -1576,9 +1657,10 @@ html.a11y-reduce-motion *::after {
     color: var(--clay);
     background: var(--clay-tint);
   }
-  /* Keep the footer (last scrollable content) clear of the fixed bar. */
+  /* Keep the footer (last scrollable content) clear of the fixed tab bar and
+     the floating chat / accessibility buttons that sit just above it. */
   .site-footer {
-    padding-bottom: 78px;
+    padding-bottom: 168px;
   }
   /* Lift the floating chat bubble above the tab bar. */
   .chat-dock {
