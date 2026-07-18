@@ -1918,3 +1918,28 @@ html.a11y-reduce-motion *::after {
   /* Clear the fixed tab bar and stack above the LEX chat bubble. */
   .wa-fab { bottom: calc(164px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ---------- Marketing consent (opt-in checkbox) ---------- */
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 2px 0 16px;
+  cursor: pointer;
+}
+.consent input {
+  margin-top: 2px;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--clay);
+  cursor: pointer;
+}
+.consent-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--slate);
+}
+.consent-text a { color: var(--clay); text-decoration: underline; }
+.consent-dark .consent-text { color: rgba(245, 241, 232, 0.72); }
+.consent-dark .consent-text a { color: var(--clay-soft); }

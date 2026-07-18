@@ -3,6 +3,7 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { contactEmail } from "../lib/content";
 import { Icon } from "./Icon";
+import { MarketingConsent } from "./MarketingConsent";
 
 const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
@@ -18,6 +19,7 @@ export function CourseSignup() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
+  const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
@@ -34,11 +36,11 @@ export function CourseSignup() {
     // ever lost and no backend is required.
     try {
       const res = supabase
-        ? await supabase.functions.invoke("lalum-lead", { body: { audience, full_name: name, email, phone, note, source: "course" } })
+        ? await supabase.functions.invoke("lalum-lead", { body: { audience, full_name: name, email, phone, note, source: "course", marketing_consent: consent } })
         : { error: new Error("no-backend") };
       if (res.error) throw res.error;
       setMsg({ tone: "ok", text: c.ok });
-      setName(""); setEmail(""); setPhone(""); setNote("");
+      setName(""); setEmail(""); setPhone(""); setNote(""); setConsent(false);
     } catch {
       const subject = `Course registration (${audience})`;
       const body = `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nAudience: ${audience}\nNote: ${note}`;
@@ -92,6 +94,8 @@ export function CourseSignup() {
               <div className="course-label">{c.note}</div>
               <textarea className="course-field" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder={c.notePlaceholder} style={{ resize: "vertical" }} />
             </div>
+
+            <MarketingConsent dark checked={consent} onChange={setConsent} />
 
             <button className="course-submit" disabled={busy}>
               <Icon name="send" size={17} /> {busy ? c.sending : c.submit}
