@@ -9,6 +9,7 @@ const en = {
   ui: {
     langName: "English",
     otherLangName: "עברית",
+    otherLangShort: "עב",
     nav: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights" },
     tabs: { home: "Home", advisory: "Advisory", training: "Training", book: "Book", client: "Client" },
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
@@ -533,6 +534,7 @@ const he: Dict = {
   ui: {
     langName: "עברית",
     otherLangName: "English",
+    otherLangShort: "EN",
     nav: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות" },
     tabs: { home: "בית", advisory: "ייעוץ", training: "הדרכה", book: "פגישה", client: "לקוחות" },
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
