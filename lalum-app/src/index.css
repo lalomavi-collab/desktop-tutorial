@@ -1889,3 +1889,32 @@ html.a11y-reduce-motion *::after {
   padding: 10px 12px;
   margin: 16px 0 0;
 }
+
+/* ---------- WhatsApp quick-chat button ---------- */
+/* Sits just above the LEX chat bubble at the bottom-end of the screen. */
+.wa-fab {
+  position: fixed;
+  bottom: 98px;
+  inset-inline-end: 24px;
+  z-index: 79;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px -8px rgba(37, 211, 102, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.wa-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px -8px rgba(37, 211, 102, 0.72);
+  color: #fff;
+}
+.wa-fab:active { transform: scale(0.94); }
+@media (max-width: 900px) {
+  /* Clear the fixed tab bar and stack above the LEX chat bubble. */
+  .wa-fab { bottom: calc(164px + env(safe-area-inset-bottom, 0px)); }
+}

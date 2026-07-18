@@ -60,6 +60,9 @@ export const trainingEmail = contactEmail;
 export const officePhone = { display: "03-3104959", tel: "+97233104959" };
 export const directPhone = { display: "052-2490420", tel: "+972522490420" };
 
+// Business WhatsApp (international format without the plus, for wa.me links).
+export const whatsappNumber = "972522490420";
+
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
