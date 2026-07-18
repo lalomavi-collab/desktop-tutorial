@@ -13,6 +13,7 @@ const en = {
     nav: { home: "Home", advisory: "Advisory & Mediation", training: "Training", insights: "Insights" },
     tabs: { home: "Home", advisory: "Advisory", training: "Training", book: "Book", client: "Client" },
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
+    whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
     guide: {
       open: "Guide",
       title: "Quick start guide",
@@ -538,6 +539,7 @@ const he: Dict = {
     nav: { home: "בית", advisory: "ייעוץ וגישור", training: "הדרכה", insights: "תובנות" },
     tabs: { home: "בית", advisory: "ייעוץ", training: "הדרכה", book: "פגישה", client: "לקוחות" },
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
+    whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
     guide: {
       open: "מדריך",
       title: "מדריך שימוש מהיר",

@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { ChatWidget } from "./ChatWidget";
+import { WhatsAppButton } from "./WhatsAppButton";
 import { BottomTabBar } from "./BottomTabBar";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
@@ -30,6 +31,7 @@ export function MarketingLayout() {
         </div>
       </main>
       <Footer />
+      <WhatsAppButton />
       <ChatWidget />
       <BottomTabBar />
       <AccessibilityMenu />
