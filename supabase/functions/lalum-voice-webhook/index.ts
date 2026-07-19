@@ -9,11 +9,20 @@
 // header instead.
 //
 // Env (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are injected automatically):
-//   ANTHROPIC_API_KEY, ANTHROPIC_MODEL, STANDARD_HOURLY_RATE, BILLING_VAT_RATE,
-//   BILLING_CURRENCY, BILLING_INCREMENT_MINUTES, VOICE_WEBHOOK_SECRET
+//   LLM_PROVIDER ("anthropic" default, or "openai")
+//   OPENAI_API_KEY, OPENAI_MODEL (default gpt-4o-mini)
+//   ANTHROPIC_API_KEY, ANTHROPIC_MODEL
+//   STANDARD_HOURLY_RATE, BILLING_VAT_RATE, BILLING_CURRENCY,
+//   BILLING_INCREMENT_MINUTES, VOICE_WEBHOOK_SECRET
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+// LLM provider for post-call analysis: "anthropic" (default) or "openai".
+// The analysis is one small call per completed call, so cost is negligible
+// either way; set LLM_PROVIDER=openai + OPENAI_API_KEY to run it on gpt-4o-mini.
+const LLM_PROVIDER = (Deno.env.get("LLM_PROVIDER") ?? "anthropic").toLowerCase();
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") ?? "";
+const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 const ANTHROPIC_MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-3-5-sonnet-latest";
 const HOURLY_RATE = Number(Deno.env.get("STANDARD_HOURLY_RATE") ?? "1000");
@@ -139,10 +148,53 @@ const SYSTEM_PROMPT =
   "record_call_analysis. Judge is_billable strictly: true only when substantive " +
   "professional or legal advice was actually discussed. Keep the summary under 100 words.";
 
+function validateExtraction(e: any): Extraction {
+  if (!e || !e.client_intent || !e.summary || !e.suggested_task ||
+      typeof e.is_billable !== "boolean") {
+    throw new Error("invalid extraction payload");
+  }
+  return e as Extraction;
+}
+
+const USER_MSG = (t: string) => `Analyse this completed call transcript:\n\n${t}`;
+
 async function extract(transcript: string): Promise<Extraction> {
   if (!transcript.trim()) throw new Error("empty transcript");
-  if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not set");
+  return LLM_PROVIDER === "anthropic"
+    ? extractAnthropic(transcript)
+    : extractOpenAI(transcript);
+}
 
+async function extractOpenAI(transcript: string): Promise<Extraction> {
+  if (!OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not set");
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: USER_MSG(transcript) },
+      ],
+      tools: [{
+        type: "function",
+        function: { name: TOOL.name, description: TOOL.description, parameters: TOOL.input_schema },
+      }],
+      tool_choice: { type: "function", function: { name: TOOL.name } },
+    }),
+  });
+  if (!resp.ok) throw new Error(`OpenAI HTTP ${resp.status}: ${await resp.text()}`);
+  const data = await resp.json();
+  const tc = data.choices?.[0]?.message?.tool_calls?.[0];
+  if (!tc?.function?.arguments) throw new Error("no tool call in OpenAI response");
+  return validateExtraction(JSON.parse(tc.function.arguments));
+}
+
+async function extractAnthropic(transcript: string): Promise<Extraction> {
+  if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not set");
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -156,19 +208,14 @@ async function extract(transcript: string): Promise<Extraction> {
       system: SYSTEM_PROMPT,
       tools: [TOOL],
       tool_choice: { type: "tool", name: "record_call_analysis" },
-      messages: [{ role: "user", content: `Analyse this completed call transcript:\n\n${transcript}` }],
+      messages: [{ role: "user", content: USER_MSG(transcript) }],
     }),
   });
   if (!resp.ok) throw new Error(`Claude HTTP ${resp.status}: ${await resp.text()}`);
-
   const data = await resp.json();
   const block = (data.content ?? []).find((b: any) => b.type === "tool_use");
   if (!block) throw new Error("no tool call in Claude response");
-  const e = block.input as Extraction;
-  if (!e.client_intent || !e.summary || !e.suggested_task || typeof e.is_billable !== "boolean") {
-    throw new Error("invalid extraction payload");
-  }
-  return e;
+  return validateExtraction(block.input);
 }
 
 // ── Supabase RPC ─────────────────────────────────────────────────────────────
@@ -252,7 +299,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     // Resiliency: store the raw call for a later retry instead of failing.
-    const reason = String(err?.message ?? err);
+    const reason = String((err as any)?.message ?? err);
     const result = await ingest({
       ...baseArgs(call),
       p_summary: null,
