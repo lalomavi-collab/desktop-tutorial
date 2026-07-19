@@ -1892,3 +1892,12 @@ html.a11y-reduce-motion *::after {
 .consent-text a { color: var(--clay); text-decoration: underline; }
 .consent-dark .consent-text { color: rgba(245, 241, 232, 0.72); }
 .consent-dark .consent-text a { color: var(--clay-soft); }
+
+/* Chat voice input: pulse the mic while recording. */
+@media (prefers-reduced-motion: no-preference) {
+  .mic-live { animation: mic-pulse 1.3s ease-in-out infinite; }
+}
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 72, 42, 0.45); }
+  50% { box-shadow: 0 0 0 5px rgba(168, 72, 42, 0); }
+}
