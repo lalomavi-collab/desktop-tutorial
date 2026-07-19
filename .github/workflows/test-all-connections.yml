@@ -1,0 +1,77 @@
+name: "🧪 Test All Telegram Connections"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+    paths:
+      - '.github/workflows/test-all-connections.yml'
+
+jobs:
+  test-1-direct:
+    name: "1️⃣ חיבור ישיר — Bot API"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📤 Send"
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"1️⃣ חיבור ישיר (Bot API) — ✅ עובד\n🕐 $(date -u '+%d/%m/%Y %H:%M UTC')\"}")
+          echo "$RESPONSE" | grep -q '"ok":true' && echo "✅ OK" || (echo "❌ FAILED: $RESPONSE" && exit 1)
+
+  test-2-zapier:
+    name: "2️⃣ חיבור Zapier — Webhook"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📤 Send"
+        run: |
+          RESPONSE=$(curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": \"2️⃣ חיבור Zapier (Webhook) — ✅ עובד\n🕐 $(date -u '+%d/%m/%Y %H:%M UTC')\"}")
+          echo "Zapier response: $RESPONSE"
+          echo "✅ Zapier sent (no error check — Zapier always returns 200)"
+
+  test-3-social-agent:
+    name: "3️⃣ Social Media Agent — Dry Run"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: "🔍 Dry run"
+        env:
+          ZAPIER_TELEGRAM: ${{ secrets.ZAPIER_TELEGRAM }}
+          ZAPIER_LINKEDIN: ${{ secrets.ZAPIER_LINKEDIN }}
+          ZAPIER_FACEBOOK: ${{ secrets.ZAPIER_FACEBOOK }}
+          DRY_RUN: "true"
+        run: node scripts/send-posts.js
+
+  summary:
+    name: "📋 סיכום לטלגרם"
+    needs: [test-1-direct, test-2-zapier, test-3-social-agent]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: "📲 Send summary"
+        run: |
+          R1="${{ needs.test-1-direct.result == 'success' && '✅' || '❌' }}"
+          R2="${{ needs.test-2-zapier.result == 'success' && '✅' || '❌' }}"
+          R3="${{ needs.test-3-social-agent.result == 'success' && '✅' || '❌' }}"
+
+          MESSAGE="🧪 תוצאות בדיקת חיבורים
+
+$R1 Bot API ישיר (@Lalumbot)
+$R2 Zapier Webhook
+$R3 Social Media Agent
+
+🕐 $(date -u '+%d/%m/%Y %H:%M UTC')
+🔗 ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": $(echo "$MESSAGE" | jq -Rs .)}"

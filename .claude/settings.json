@@ -1,0 +1,19 @@
+{
+  "sandbox": {
+    "network": {
+      "allowedDomains": ["hooks.zapier.com"]
+    }
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/desktop-tutorial/scripts/notify-telegram.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

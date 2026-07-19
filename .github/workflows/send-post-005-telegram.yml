@@ -31,3 +31,15 @@ jobs:
           echo "File: posts/005_ai_memory_he.md"
           echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           echo "============================================"
+
+      - name: "🔔 Notify via Telegram"
+        if: always()
+        run: |
+          STATUS="${{ job.status == 'success' && '✅ הצליח' || '❌ נכשל' }}"
+          MESSAGE="$STATUS — פוסט 005: למה ה-AI שלכם לא זוכר כלום?
+יעד: טלגרם בלבד
+זמן: $(date -u '+%d/%m/%Y %H:%M UTC')
+Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
