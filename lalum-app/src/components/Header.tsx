@@ -4,6 +4,7 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
+import { whatsappNumber, telegramUrl } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
@@ -34,14 +35,33 @@ export function Header() {
         <div className="header-tools">
           <button
             type="button"
-            className="tb-btn tb-btn-accent guide-fab"
+            className="tb-btn"
             onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
             aria-label={t.ui.guide.open}
             title={t.ui.guide.open}
           >
             <Icon name="compass" size={18} />
-            <span className="guide-fab-ring" aria-hidden="true" />
           </button>
+          <a
+            className="tb-btn"
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.ui.whatsapp.aria}
+            title={t.ui.whatsapp.aria}
+          >
+            <Icon name="whatsapp" size={19} />
+          </a>
+          <a
+            className="tb-btn tb-tg"
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.ui.telegram.aria}
+            title={t.ui.telegram.aria}
+          >
+            <Icon name="telegram" size={18} />
+          </a>
           <ShareButton />
           <button
             type="button"

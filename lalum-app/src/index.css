@@ -1705,40 +1705,18 @@ html.a11y-reduce-motion *::after {
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-/* Clay accent for the guide button: the toolbar's primary invitation. */
-.tb-btn-accent {
-  background: var(--clay);
-  border-color: var(--clay);
-  color: #fff;
-  box-shadow: 0 6px 16px -8px rgba(168, 72, 42, 0.7);
-}
-.tb-btn-accent:hover {
-  background: var(--clay-hover);
-  border-color: var(--clay-hover);
-  color: #fff;
-}
-/* Guide pulse: subtle, contained within the button footprint so it never looks
-   larger than the neighbouring controls. Disabled under reduced motion. */
-.guide-fab-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid var(--clay);
-  opacity: 0;
-  pointer-events: none;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .guide-fab-ring { animation: guide-ring 2.8s ease-out infinite; }
-  .guide-fab { animation: guide-glow 2.8s ease-in-out infinite; }
-}
-@keyframes guide-ring {
-  0% { opacity: 0.5; transform: scale(1); }
-  60% { opacity: 0; transform: scale(1.32); }
-  100% { opacity: 0; transform: scale(1.32); }
-}
-@keyframes guide-glow {
-  0%, 100% { box-shadow: 0 6px 16px -8px rgba(168, 72, 42, 0.7); }
-  50% { box-shadow: 0 0 0 3px rgba(168, 72, 42, 0.14), 0 8px 20px -8px rgba(168, 72, 42, 0.8); }
+/* All toolbar controls share one uniform, neutral round style (.tb-btn), so the
+   header reads as a single consistent set that matches the app's palette. Only
+   the Telegram plane icon needs a small nudge to look optically centred. */
+.tb-tg svg { margin-inline-end: 2px; }
+/* Fit five round controls plus the brand on small phones. */
+@media (max-width: 480px) {
+  .header-tools { gap: 7px; }
+  .header-tools .tb-btn,
+  .header-tools .share-btn {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 .guide-overlay {
@@ -1890,35 +1868,6 @@ html.a11y-reduce-motion *::after {
   margin: 16px 0 0;
 }
 
-/* ---------- WhatsApp quick-chat button ---------- */
-/* Sits just above the LEX chat bubble at the bottom-end of the screen. */
-.wa-fab {
-  position: fixed;
-  bottom: 98px;
-  inset-inline-end: 24px;
-  z-index: 79;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #25D366;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 30px -8px rgba(37, 211, 102, 0.55);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.wa-fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 34px -8px rgba(37, 211, 102, 0.72);
-  color: #fff;
-}
-.wa-fab:active { transform: scale(0.94); }
-@media (max-width: 900px) {
-  /* Clear the fixed tab bar and stack above the LEX chat bubble. */
-  .wa-fab { bottom: calc(164px + env(safe-area-inset-bottom, 0px)); }
-}
-
 /* ---------- Marketing consent (opt-in checkbox) ---------- */
 .consent {
   display: flex;
@@ -1943,31 +1892,3 @@ html.a11y-reduce-motion *::after {
 .consent-text a { color: var(--clay); text-decoration: underline; }
 .consent-dark .consent-text { color: rgba(245, 241, 232, 0.72); }
 .consent-dark .consent-text a { color: var(--clay-soft); }
-
-/* ---------- Telegram quick-chat button (stacked above WhatsApp) ---------- */
-.tg-fab {
-  position: fixed;
-  bottom: 172px;
-  inset-inline-end: 24px;
-  z-index: 79;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #229ed9;
-  color: #fff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 30px -8px rgba(34, 158, 217, 0.55);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.tg-fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 34px -8px rgba(34, 158, 217, 0.72);
-  color: #fff;
-}
-.tg-fab:active { transform: scale(0.94); }
-.tg-fab svg { margin-inline-end: 2px; }
-@media (max-width: 900px) {
-  .tg-fab { bottom: calc(238px + env(safe-area-inset-bottom, 0px)); }
-}
