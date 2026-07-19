@@ -1,13 +1,23 @@
-name: Test Telegram - Good Night Message
-on: [push, workflow_dispatch]
+name: "🔌 Test Telegram Connection"
+
+on:
+  workflow_dispatch:
+
 jobs:
-  test:
-      runs-on: ubuntu-latest
-          steps:
-                - run: |
-                          BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
-                                    CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
-                                              MESSAGE="Good night - Lilah tov (\u05dc\u05d9\u05dc\u05d4 \u05d8\u05d5\u05d1)"
-                                                        curl -s -X POST https://api.telegram.org/bot${BOT_TOKEN}/sendMessage \
-                                                                    -H 'Content-Type: application/json' \
-                                                                                -d '{"chat_id":"'"${CHAT_ID}"'","text":"'"${MESSAGE}"'"}'
+  test-telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📤 Send test message"
+        run: |
+          MESSAGE="🔌 בדיקת חיבור: $(date -u '+%d/%m/%Y %H:%M UTC'). אם קיבלת זאת הכל עובד ✅"
+          RESPONSE=$(curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
+          echo "Response: $RESPONSE"
+          if echo "$RESPONSE" | grep -q '"ok":true'; then
+            echo "SUCCESS: Telegram message sent"
+          else
+            echo "FAILED: check TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets"
+            exit 1
+          fi

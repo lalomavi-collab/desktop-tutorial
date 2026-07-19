@@ -24,8 +24,19 @@ def telegram(method, payload=None):
         url, data=data,
         headers={"Content-Type": "application/json"} if data else {}
     )
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")
+        if e.code == 401:
+            raise SystemExit(
+                "ERROR: Telegram returned 401 Unauthorized. "
+                "The TELEGRAM_BOT_TOKEN secret is invalid or was revoked. "
+                "Get the current token from @BotFather (/mybots) and update "
+                f"the repo secret. API response: {body}"
+            )
+        raise SystemExit(f"ERROR: Telegram API {method} failed ({e.code}): {body}")
 
 
 def send(text):
