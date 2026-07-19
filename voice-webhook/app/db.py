@@ -61,6 +61,9 @@ class SupabaseRepository:
         due_days_offset: Optional[int],
         billed_hours: Optional[float],
         hourly_rate: Optional[float],
+        net_amount: Optional[float],
+        vat_rate: Optional[float],
+        vat_amount: Optional[float],
         amount: Optional[float],
         currency: str,
     ) -> dict[str, Any]:
@@ -85,6 +88,9 @@ class SupabaseRepository:
             "p_due_days_offset": due_days_offset,
             "p_billed_hours": billed_hours,
             "p_hourly_rate": hourly_rate,
+            "p_net_amount": net_amount,
+            "p_vat_rate": vat_rate,
+            "p_vat_amount": vat_amount,
             "p_amount": amount,
             "p_currency": currency,
         }

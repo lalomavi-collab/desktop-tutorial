@@ -29,9 +29,11 @@ def test_billable_call_routes_task_and_billing(make_client, billable_extraction)
     body = resp.json()
     assert body["processed"] is True
     assert body["is_billable"] is True
-    # 905s -> two 15-min blocks -> 0.5h * 900 = 450.
+    # 905s -> two 15-min blocks -> 0.5h * 1000 = 500 net, +18% VAT = 590 gross.
     assert body["billed_hours"] == 0.5
-    assert body["amount"] == 450.0
+    assert body["net_amount"] == 500.0
+    assert body["vat_amount"] == 90.0
+    assert body["amount"] == 590.0
     assert body["client_id"] == "contact-456"
 
     # The transcript was analysed and one transactional ingest was performed.
@@ -46,8 +48,10 @@ def test_billable_call_routes_task_and_billing(make_client, billable_extraction)
     assert sent["task_priority"] == "High"
     assert sent["due_days_offset"] == 2
     assert sent["billed_hours"] == 0.5
-    assert sent["amount"] == 450.0
-    assert sent["hourly_rate"] == 900.0
+    assert sent["net_amount"] == 500.0
+    assert sent["vat_amount"] == 90.0
+    assert sent["amount"] == 590.0
+    assert sent["hourly_rate"] == 1000.0
 
 
 def test_non_billable_call_has_no_billing(make_client, non_billable_extraction):

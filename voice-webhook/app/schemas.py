@@ -73,5 +73,7 @@ class IngestResult(BaseModel):
     created_lead: Optional[bool] = None
     is_billable: Optional[bool] = None
     billed_hours: Optional[float] = None
-    amount: Optional[float] = None
+    net_amount: Optional[float] = None
+    vat_amount: Optional[float] = None
+    amount: Optional[float] = None  # gross total (net + VAT)
     detail: Optional[str] = None

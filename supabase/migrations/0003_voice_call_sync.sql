@@ -55,14 +55,19 @@ create table if not exists public.lalum_crm_tasks (
 );
 
 -- ── Billing ledger (one per billable call) ────────────────────────────────────
+-- amount is the gross total (net + VAT). Israeli legal fees carry VAT, so we
+-- keep the net fee, the VAT rate and amount, and the gross separately.
 create table if not exists public.lalum_billing_ledgers (
   id              uuid primary key default gen_random_uuid(),
   call_id         uuid not null unique references public.lalum_calls_meta(id) on delete cascade,
   client_id       uuid references public.lalum_contacts(id) on delete set null,
   duration_seconds int not null,
   billed_hours    numeric(6,2) not null,
-  hourly_rate     numeric(10,2) not null,
-  amount          numeric(12,2) not null,
+  hourly_rate     numeric(10,2) not null,          -- net rate per hour
+  net_amount      numeric(12,2) not null default 0,
+  vat_rate        numeric(5,4) not null default 0, -- e.g. 0.18
+  vat_amount      numeric(12,2) not null default 0,
+  amount          numeric(12,2) not null,          -- gross total (net + VAT)
   currency        text not null default 'ILS',
   created_at      timestamptz not null default now()
 );
@@ -96,6 +101,9 @@ create or replace function public.lalum_ingest_call(
   p_due_days_offset  int,
   p_billed_hours     numeric,
   p_hourly_rate      numeric,
+  p_net_amount       numeric,
+  p_vat_rate         numeric,
+  p_vat_amount       numeric,
   p_amount           numeric,
   p_currency         text
 ) returns jsonb
@@ -160,15 +168,20 @@ begin
     if coalesce(p_is_billable, false) and coalesce(p_billed_hours, 0) > 0 then
       insert into public.lalum_billing_ledgers (
         call_id, client_id, duration_seconds, billed_hours, hourly_rate,
-        amount, currency
+        net_amount, vat_rate, vat_amount, amount, currency
       ) values (
         v_call_id, v_client_id, coalesce(p_duration_seconds, 0),
-        p_billed_hours, p_hourly_rate, p_amount, coalesce(p_currency, 'ILS')
+        p_billed_hours, p_hourly_rate, coalesce(p_net_amount, 0),
+        coalesce(p_vat_rate, 0), coalesce(p_vat_amount, 0), p_amount,
+        coalesce(p_currency, 'ILS')
       )
       on conflict (call_id) do update set
         duration_seconds = excluded.duration_seconds,
         billed_hours     = excluded.billed_hours,
         hourly_rate      = excluded.hourly_rate,
+        net_amount       = excluded.net_amount,
+        vat_rate         = excluded.vat_rate,
+        vat_amount       = excluded.vat_amount,
         amount           = excluded.amount,
         currency         = excluded.currency;
     end if;
@@ -185,5 +198,5 @@ $$;
 -- Lock the function down: only the service role may execute it.
 revoke all on function public.lalum_ingest_call(
   text, text, int, text, text, text, boolean, boolean, text, text, text,
-  int, numeric, numeric, numeric, text
+  int, numeric, numeric, numeric, numeric, numeric, numeric, text
 ) from public, anon, authenticated;

@@ -38,10 +38,12 @@ class Settings(BaseSettings):
     )
 
     # ── Billing ───────────────────────────────────────────────────────────
-    # Standard hourly rate applied to billable calls.
+    # Standard NET hourly rate (before VAT) applied to billable calls.
     standard_hourly_rate: float = Field(
-        default=900.0, alias="STANDARD_HOURLY_RATE"
+        default=1000.0, alias="STANDARD_HOURLY_RATE"
     )
+    # VAT rate added on top of the net fee (Israel: 18%).
+    billing_vat_rate: float = Field(default=0.18, alias="BILLING_VAT_RATE")
     billing_currency: str = Field(default="ILS", alias="BILLING_CURRENCY")
     # Round call time up to this increment (minutes) before billing.
     billing_increment_minutes: int = Field(

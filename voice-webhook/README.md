@@ -75,15 +75,16 @@ Apply it with the SQL in
 
 ## Billing rule
 
-Round call duration **up** to the nearest 15-minute block, then price at
-`STANDARD_HOURLY_RATE`.
+Round call duration **up** to the nearest 15-minute block, price at the net
+`STANDARD_HOURLY_RATE` (1,000 ILS), then add `BILLING_VAT_RATE` (18%). The
+ledger stores net, VAT, and the gross total charged to the client.
 
-| Duration | Billed hours |
-| -------- | ------------ |
-| 10 s     | 0.25         |
-| 900 s    | 0.25         |
-| 905 s    | 0.50         |
-| 3600 s   | 1.00         |
+| Duration | Billed hours | Net (₪) | VAT 18% (₪) | Gross (₪) |
+| -------- | ------------ | ------- | ----------- | --------- |
+| 10 s     | 0.25         | 250     | 45          | 295       |
+| 900 s    | 0.25         | 250     | 45          | 295       |
+| 905 s    | 0.50         | 500     | 90          | 590       |
+| 3600 s   | 1.00         | 1000    | 180         | 1180      |
 
 A duration of 0 bills nothing.
 

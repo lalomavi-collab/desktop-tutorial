@@ -81,7 +81,8 @@ def _non_billable_extraction() -> CallExtraction:
 @pytest.fixture
 def settings() -> Settings:
     return Settings(
-        STANDARD_HOURLY_RATE=900.0,
+        STANDARD_HOURLY_RATE=1000.0,
+        BILLING_VAT_RATE=0.18,
         BILLING_CURRENCY="ILS",
         BILLING_INCREMENT_MINUTES=15,
     )

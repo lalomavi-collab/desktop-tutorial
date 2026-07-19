@@ -40,8 +40,11 @@ def billable_hours(duration_seconds: int, increment_minutes: int = 15) -> float:
 class BillingLine:
     duration_seconds: int
     billed_hours: float
-    hourly_rate: float
-    amount: float
+    hourly_rate: float       # net rate per hour, before VAT
+    net_amount: float        # hours * hourly_rate
+    vat_rate: float          # e.g. 0.18 for 18%
+    vat_amount: float        # net_amount * vat_rate
+    amount: float            # gross total charged (net + VAT)
     currency: str
 
 
@@ -49,16 +52,29 @@ def build_billing_line(
     duration_seconds: int,
     hourly_rate: float,
     *,
+    vat_rate: float = 0.0,
     increment_minutes: int = 15,
     currency: str = "ILS",
 ) -> BillingLine:
-    """Compute a full billing line (hours + monetary amount) for a call."""
+    """Compute a full billing line for a call: hours, net, VAT, and gross.
+
+    ``hourly_rate`` is the net (pre-VAT) rate. In Israel legal fees carry VAT,
+    so the client is charged the gross ``amount`` while ``net_amount`` is the
+    firm's fee and ``vat_amount`` is remitted to the tax authority.
+    """
+    if vat_rate < 0:
+        raise ValueError("vat_rate must not be negative")
     hours = billable_hours(duration_seconds, increment_minutes)
-    amount = round(hours * hourly_rate, 2)
+    net_amount = round(hours * hourly_rate, 2)
+    vat_amount = round(net_amount * vat_rate, 2)
+    gross_amount = round(net_amount + vat_amount, 2)
     return BillingLine(
         duration_seconds=duration_seconds,
         billed_hours=hours,
         hourly_rate=hourly_rate,
-        amount=amount,
+        net_amount=net_amount,
+        vat_rate=vat_rate,
+        vat_amount=vat_amount,
+        amount=gross_amount,
         currency=currency,
     )

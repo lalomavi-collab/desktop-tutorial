@@ -44,23 +44,58 @@ def test_custom_increment_of_six_minutes():
 
 
 def test_build_billing_line_multiplies_by_rate():
-    line = build_billing_line(905, 900.0)
+    line = build_billing_line(905, 1000.0)
     assert line.billed_hours == 0.5
-    assert line.amount == 450.0          # 0.5h * 900
-    assert line.hourly_rate == 900.0
+    assert line.net_amount == 500.0      # 0.5h * 1000
+    assert line.vat_amount == 0.0        # no VAT rate passed
+    assert line.amount == 500.0          # gross == net when VAT is 0
+    assert line.hourly_rate == 1000.0
     assert line.currency == "ILS"
 
 
+def test_build_billing_line_adds_vat():
+    # LALUM rate: 1000 net + 18% VAT.
+    line = build_billing_line(905, 1000.0, vat_rate=0.18)
+    assert line.billed_hours == 0.5
+    assert line.net_amount == 500.0      # 0.5h * 1000
+    assert line.vat_rate == 0.18
+    assert line.vat_amount == 90.0       # 500 * 0.18
+    assert line.amount == 590.0          # gross = net + VAT
+
+
+def test_vat_on_a_full_hour():
+    line = build_billing_line(3600, 1000.0, vat_rate=0.18)
+    assert line.billed_hours == 1.0
+    assert line.net_amount == 1000.0
+    assert line.vat_amount == 180.0
+    assert line.amount == 1180.0
+
+
+def test_vat_on_quarter_hour():
+    line = build_billing_line(10, 1000.0, vat_rate=0.18)
+    assert line.net_amount == 250.0
+    assert line.vat_amount == 45.0
+    assert line.amount == 295.0
+
+
 def test_build_billing_line_zero_duration_is_free():
-    line = build_billing_line(0, 900.0)
+    line = build_billing_line(0, 1000.0, vat_rate=0.18)
     assert line.billed_hours == 0.0
+    assert line.net_amount == 0.0
+    assert line.vat_amount == 0.0
     assert line.amount == 0.0
+
+
+def test_negative_vat_is_rejected():
+    with pytest.raises(ValueError):
+        build_billing_line(100, 1000.0, vat_rate=-0.1)
 
 
 def test_amount_has_no_float_noise():
     # 0.75 * 1333.33 must round cleanly to 2 decimals.
-    line = build_billing_line(1801, 1333.33)
+    line = build_billing_line(1801, 1333.33, vat_rate=0.18)
     assert line.billed_hours == 0.75
-    assert line.amount == round(0.75 * 1333.33, 2)
-    # Sanity: amount is a finite 2-decimal number.
+    assert line.net_amount == round(0.75 * 1333.33, 2)
+    assert line.amount == round(line.net_amount + line.vat_amount, 2)
+    # Sanity: amounts are finite 2-decimal numbers.
     assert math.isfinite(line.amount)

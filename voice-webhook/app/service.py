@@ -46,18 +46,25 @@ async def _store_processed(
     settings: Settings,
 ) -> IngestResult:
     billed_hours = None
-    amount = None
     hourly_rate = None
+    net_amount = None
+    vat_rate = None
+    vat_amount = None
+    amount = None
     if extraction.is_billable:
         line = build_billing_line(
             webhook.duration_seconds,
             settings.standard_hourly_rate,
+            vat_rate=settings.billing_vat_rate,
             increment_minutes=settings.billing_increment_minutes,
             currency=settings.billing_currency,
         )
         billed_hours = line.billed_hours
-        amount = line.amount
         hourly_rate = line.hourly_rate
+        net_amount = line.net_amount
+        vat_rate = line.vat_rate
+        vat_amount = line.vat_amount
+        amount = line.amount
 
     result = await repo.ingest_call(
         call_sid=webhook.call_sid,
@@ -74,6 +81,9 @@ async def _store_processed(
         due_days_offset=extraction.suggested_task.due_days_offset,
         billed_hours=billed_hours,
         hourly_rate=hourly_rate,
+        net_amount=net_amount,
+        vat_rate=vat_rate,
+        vat_amount=vat_amount,
         amount=amount,
         currency=settings.billing_currency,
     )
@@ -87,6 +97,8 @@ async def _store_processed(
         created_lead=result.get("created_lead"),
         is_billable=extraction.is_billable,
         billed_hours=billed_hours,
+        net_amount=net_amount,
+        vat_amount=vat_amount,
         amount=amount,
     )
 
@@ -113,6 +125,9 @@ async def _store_unprocessed(
         due_days_offset=None,
         billed_hours=None,
         hourly_rate=None,
+        net_amount=None,
+        vat_rate=None,
+        vat_amount=None,
         amount=None,
         currency=settings.billing_currency,
     )
