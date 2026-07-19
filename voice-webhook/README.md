@@ -25,8 +25,17 @@ Voice AI agent  ──POST /webhook/livekit/ended──▶  FastAPI
 | Method | Path                       | Purpose                                        |
 | ------ | -------------------------- | ---------------------------------------------- |
 | GET    | `/health`                  | Liveness probe                                 |
-| POST   | `/webhook/livekit/ended`   | Ingest a completed call                        |
+| POST   | `/webhook/livekit/ended`   | Ingest a completed call (native payload)       |
+| POST   | `/webhook/vapi`            | Ingest a Vapi end-of-call report               |
+| POST   | `/webhook/retell`          | Ingest a Retell call_ended webhook             |
 | POST   | `/internal/retry?limit=50` | Reprocess calls stored with `is_processed=false` |
+
+`/webhook/vapi` and `/webhook/retell` accept the hosted platform's own payload
+shape and translate it (see `app/adapters.py`) into the same internal flow. They
+ignore non-terminal events (mid-call status updates) with a 200. Set
+`VOICE_WEBHOOK_SECRET` to require the platform to authenticate via the
+`x-vapi-secret` / `x-webhook-secret` header. Agent setup lives in `agent/`
+(`lalum_voice_agent.he.md`, `vapi_assistant.json`, `routing_setup.he.md`).
 
 ### `POST /webhook/livekit/ended`
 

@@ -53,6 +53,11 @@ class Settings(BaseSettings):
     # ── HTTP ──────────────────────────────────────────────────────────────
     http_timeout_seconds: float = Field(default=15.0, alias="HTTP_TIMEOUT_SECONDS")
 
+    # Optional shared secret for the platform webhooks. When set, an inbound
+    # Vapi/Retell webhook must present it in the x-vapi-secret or
+    # x-webhook-secret header, otherwise the request is rejected.
+    voice_webhook_secret: str = Field(default="", alias="VOICE_WEBHOOK_SECRET")
+
 
 @lru_cache
 def get_settings() -> Settings:

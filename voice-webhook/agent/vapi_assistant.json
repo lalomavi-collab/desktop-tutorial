@@ -1,0 +1,32 @@
+{
+  "_comment": "Ready-to-adapt Vapi assistant config for LALUM. Replace the placeholders in ANGLE BRACKETS. Paste the full text of lalum_voice_agent.he.md as the system message content. Pick a Hebrew-capable voice and transcriber (test the Hebrew quality first).",
+  "name": "LALUM",
+  "firstMessage": "שלום, הגעתם ל-LALUM, מדבר העוזר הדיגיטלי. לשיפור השירות השיחה עשויה להיות מוקלטת. איך אפשר לעזור?",
+  "model": {
+    "provider": "anthropic",
+    "model": "claude-3-5-sonnet-20241022",
+    "temperature": 0.3,
+    "messages": [
+      {
+        "role": "system",
+        "content": "<<הדבק כאן את כל התוכן של lalum_voice_agent.he.md>>"
+      }
+    ]
+  },
+  "transcriber": {
+    "provider": "<<ספק STT עם עברית, למשל azure או deepgram>>",
+    "language": "he"
+  },
+  "voice": {
+    "provider": "<<ספק TTS עם עברית, למשל azure או 11labs>>",
+    "voiceId": "<<מזהה קול בעברית>>"
+  },
+  "server": {
+    "url": "https://<<host>>/webhook/vapi",
+    "secret": "<<VOICE_WEBHOOK_SECRET>>"
+  },
+  "serverMessages": ["end-of-call-report"],
+  "endCallPhrases": ["להתראות", "תודה שפנית ל-LALUM"],
+  "silenceTimeoutSeconds": 30,
+  "maxDurationSeconds": 1800
+}
