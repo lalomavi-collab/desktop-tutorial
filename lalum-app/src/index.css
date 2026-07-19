@@ -1451,8 +1451,12 @@ html.a11y-reduce-motion *::after {
   }
   .ambient-blob,
   .ambient-grain,
+  .ambient-sweep,
   .route-view {
     animation: none !important;
+  }
+  .ambient-sweep {
+    opacity: 0.5;
   }
   .faq-chevron {
     transition: none !important;
@@ -1519,6 +1523,28 @@ html.a11y-reduce-motion *::after {
 @keyframes ambient-drift-3 {
   from { transform: translate3d(0, 0, 0) scale(1); }
   to { transform: translate3d(-4vw, -6vh, 0) scale(1.16); }
+}
+/* A slow diagonal shimmer of warm gold light passing across the hero, like sun
+   moving through a room. Pure gradient, GPU-cheap, adds visible life. */
+.ambient-sweep {
+  position: absolute;
+  inset: -30%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(212, 175, 55, 0.14) 47%,
+    rgba(245, 241, 232, 0.22) 50%,
+    rgba(212, 175, 55, 0.14) 53%,
+    transparent 62%
+  );
+  will-change: transform, opacity;
+  animation: ambient-sweep 19s ease-in-out infinite;
+}
+@keyframes ambient-sweep {
+  0% { transform: translate3d(-22%, -14%, 0); opacity: 0; }
+  35% { opacity: 1; }
+  65% { opacity: 1; }
+  100% { transform: translate3d(22%, 14%, 0); opacity: 0; }
 }
 .ambient-grain {
   position: absolute;
