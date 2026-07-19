@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Senior AI Engineer",
+    "company": "TechVision AI",
+    "url": "https://example.com/apply/senior-ai",
+    "description": "We are looking for a Senior AI Engineer with 5+ years experience in NLP, LLMs, RAG systems, and Python. You will design and deploy production ML pipelines. Remote-friendly, great benefits. Salary: 35,000-45,000 ILS/month.",
+    "location": "Tel Aviv, Israel (Remote)",
+    "salary": "35,000–45,000 ILS"
+  },
+  {
+    "title": "Junior Data Analyst",
+    "company": "DataCo",
+    "url": "https://example.com/apply/junior-analyst",
+    "description": "Entry level data analyst. Excel, basic SQL. No prior experience needed.",
+    "location": "Haifa, Israel",
+    "salary": "11,000 ILS"
+  },
+  {
+    "title": "Machine Learning Lead",
+    "company": "FinAI Ltd",
+    "url": "https://example.com/apply/ml-lead",
+    "description": "Lead a team of 4 ML engineers building fraud detection and credit risk scoring models. PyTorch, Python 3.10+, strong communication. Hybrid Tel Aviv. 5+ years required.",
+    "location": "Tel Aviv, Israel (Hybrid)",
+    "salary": "Competitive"
+  },
+  {
+    "title": "AI Product Manager",
+    "company": "ScaleUp",
+    "url": "https://example.com/apply/ai-pm",
+    "description": "Drive AI product roadmap, work with LLM engineering teams, define metrics. 3+ years PM, some technical background. Equity + salary.",
+    "location": "Tel Aviv, Israel",
+    "salary": "25,000–35,000 ILS"
+  }
+]

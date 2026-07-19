@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldr-config
+  namespace: ldr
+data:
+  AI_CORE_URL: "http://ai-core:8080"
+  PEER_ROOM_URL: "http://peer-room:8080"
+  # AI evolution stage: listener -> suggester -> autonomous
+  LDR_AI_MODE: "listener"

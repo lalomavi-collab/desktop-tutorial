@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; background: #1B1B1B; font-family: 'Georgia', serif; overflow: hidden; }
+  .container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .bg-accent { position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: #D4AF37; }
+  .bg-accent-bottom { position: absolute; bottom: 0; right: 0; width: 100%; height: 3px; background: linear-gradient(to left, #D4AF37, transparent); }
+  .content { padding: 60px 80px; max-width: 1100px; }
+  .label { color: #D4AF37; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 32px; font-family: 'Arial', sans-serif; }
+  h1 { color: #FFFDD0; font-size: 46px; line-height: 1.3; font-weight: 400; margin-bottom: 28px; }
+  h1 span { color: #D4AF37; }
+  .body { color: #FFFDD0; font-size: 20px; line-height: 1.7; opacity: 0.85; margin-bottom: 36px; }
+  .divider { width: 60px; height: 1px; background: #D4AF37; margin-bottom: 28px; }
+  .footer { display: flex; align-items: center; justify-content: space-between; }
+  .brand { color: #D4AF37; font-size: 18px; letter-spacing: 2px; font-family: 'Arial', sans-serif; }
+  .url { color: #FFFDD0; font-size: 15px; opacity: 0.6; font-family: 'Arial', sans-serif; }
+  .corner-ornament { position: absolute; bottom: 40px; left: 40px; width: 80px; height: 80px; border-left: 1px solid #D4AF37; border-bottom: 1px solid #D4AF37; opacity: 0.3; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="bg-accent"></div>
+  <div class="bg-accent-bottom"></div>
+  <div class="corner-ornament"></div>
+  <div class="content">
+    <div class="label">התחדשות עירונית · LALUM</div>
+    <h1>פינוי-בינוי נתקע?<br>הבעיה לא בעירייה —<br><span>הבעיה בקומה השנייה.</span></h1>
+    <div class="divider"></div>
+    <div class="body">80% הסכמה נדרשת בחוק.<br>אבל 20% ממשיכים לשלוט בלוח הזמנים של כולם.<br>המפתח הוא לא לחץ — המפתח הוא <strong>ארכיטקטורה.</strong></div>
+    <div class="footer">
+      <div class="brand">LALUM</div>
+      <div class="url">www.lalum.co</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

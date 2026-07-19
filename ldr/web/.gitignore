@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Screenshot tool artifacts (personal session token and generated images)
+screenshots/
+scripts/.auth-state.json
+
+# Capacitor native projects (generated locally via "npm run cap:ios" / "npm run cap:android")
+ios/
+android/

@@ -1,37 +1,28 @@
-name: "🟣 Direct Telegram Message"
-
+name: 'Direct Telegram Notification'
 on:
   workflow_dispatch:
     inputs:
       message:
-        description: "Message to send to Telegram"
+        description: 'Message to post on Telegram'
         required: true
-        default: "Test message from GitHub Actions"
+        default: 'Test message from GitHub Actions'
 
 jobs:
   send-telegram:
-    name: "📲 Send to Telegram"
     runs-on: ubuntu-latest
     steps:
-      - name: "📤 Send message"
+      - uses: actions/checkout@v4
+      - name: Send to Telegram API
         run: |
-          MESSAGE="${{ inputs.message }}"
-          RESPONSE=$(curl -s -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+          MESSAGE="GitHub Actions Test - Repository: ${{ github.repository }}"
+          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -H "Content-Type: application/json" \
             -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\"}")
-
-          echo "Response: $RESPONSE"
-
-          if echo "$RESPONSE" | grep -q '"ok":true'; then
-            echo "✅ Sent successfully"
-          else
-            echo "❌ Failed to send"
+          if echo "$RESPONSE" | grep -q "error_code"; then
+            echo "Error posting to Telegram:"
+            echo "$RESPONSE"
             exit 1
+          else
+            echo "Message posted successfully to Telegram"
+            echo "$RESPONSE"
           fi
-
-      - name: "🔔 Summary"
-        if: always()
-        run: |
-          echo "Status: ${{ job.status }}"
-          echo "Time: $(date -u '+%d/%m/%Y %H:%M UTC')"

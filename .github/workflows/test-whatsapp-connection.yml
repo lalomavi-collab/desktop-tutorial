@@ -1,4 +1,4 @@
-name: "📱 Test WhatsApp Connection"
+name: "Test WhatsApp Connection"
 
 on:
   workflow_dispatch:
@@ -8,12 +8,11 @@ jobs:
     name: "Send WhatsApp Test Message"
     runs-on: ubuntu-latest
     steps:
-      - name: "📤 Send test message via WhatsApp Business API"
+      - name: "Send test message via WhatsApp Business API"
         run: |
-          MESSAGE="WhatsApp Business API Test - $(date -u '+%d/%m/%Y %H:%M UTC') - אם קיבלת זאת החיבור עובד"
-
+          MESSAGE="WhatsApp Business API Test - $(date -u '+%d/%m/%Y %H:%M UTC') - if you received this the connection works"
           RESPONSE=$(curl -s -X POST \
-            "https://graph.facebook.com/v18.0/${{ secrets.WHATSAPP_PHONE_ID }}/messages" \
+            "https://graph.facebook.com/v18.0/${{ secrets.FACEBOOK_PAGE_ID }}/messages" \
             -H "Authorization: Bearer ${{ secrets.WHATSAPP_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
@@ -24,9 +23,7 @@ jobs:
                 \"body\": \"$MESSAGE\"
               }
             }")
-
           echo "Response: $RESPONSE"
-
           if echo "$RESPONSE" | grep -q '"messages"'; then
             echo "SUCCESS: WhatsApp message sent"
           else

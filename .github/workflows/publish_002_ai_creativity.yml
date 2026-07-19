@@ -1,0 +1,56 @@
+name: "Publish Post 002 - AI & Creativity"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 10 6 *'  # June 10, 2026 at 08:00 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to Facebook
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_FACEBOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message": "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #LALUM"
+            }'
+
+      - name: Publish to Telegram
+        run: |
+          python3 - <<'PYEOF'
+          import urllib.request, json
+          token = "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+          text = "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #LALUM"
+          text = text.replace('\\n', '\n')
+          data = json.dumps({"chat_id": chat_id, "text": text}).encode('utf-8')
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              resp = urllib.request.urlopen(req)
+              print("Sent to Telegram:", resp.read().decode())
+          except Exception as e:
+              print("Error:", e)
+              raise
+          PYEOF
+
+      - name: Publish to Instagram
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_INSTAGRAM }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "caption": "🎨 האם AI יכול להיות יצירתי?\n\nכשמוזיקה מתולדת ע\"י אלגוריתם, ציורים מוכרים במיליונים,\nורומנים נכתבים ללא יד אנושית — עולה השאלה:\nמה נשאר ייחודי לנו?\n\n🔑 התשובה: הכוונה, הרגש, והסיפור שמאחורי היצירה.\nAI מייצר — אנחנו יוצרים משמעות.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #יצירתיות #עתיד #בינהמלאכותית #LALUM"
+            }'
+
+      - name: Publish to LinkedIn
+        run: |
+          curl -X POST "${{ secrets.ZAPIER_LINKEDIN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "Can AI Be Truly Creative? 🎨\n\nAI-generated music sells for millions. AI art wins competitions.\nAI writes novels. What remains uniquely human?\n\nThe answer: intention, emotion, and the story behind the work.\nAI produces — humans create meaning.\n\nIn the AI era, our competitive edge is our humanity.\n\n↳ LALUM | Legal Architecture\nwww.lalum.co\n\n#AI #Creativity #FutureOfWork #ArtificialIntelligence #HumanTouch #LALUM"
+            }'

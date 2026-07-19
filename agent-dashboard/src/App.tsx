@@ -2,29 +2,34 @@ import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { SocialMediaManager } from './components/SocialMediaManager';
+import { WorkerAgentView } from './components/WorkerAgentView';
+import { DealAnalysisView } from './components/DealAnalysisView';
 import { mockAgents, mockActivity } from './data/mockData';
 
-type View = 'dashboard' | 'social' | 'analytics' | 'settings';
+type View = 'dashboard' | 'social' | 'analytics' | 'settings' | 'worker' | 'deals';
 
 function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
   const socialManager = mockAgents.find(a => a.type === 'social-manager')!;
+  const workerAgent = mockAgents.find(a => a.type === 'job-agent')!;
+  const ceoAgent = mockAgents.find(a => a.type === 'ceo')!;
 
   const handleSelectAgent = (id: string) => {
     setSelectedAgentId(id);
     const agent = mockAgents.find(a => a.id === id);
-    if (agent?.type === 'social-manager') {
-      setActiveView('social');
-    }
+    if (agent?.type === 'social-manager') setActiveView('social');
+    else if (agent?.type === 'job-agent') setActiveView('worker');
+    else if (agent?.type === 'ceo') setActiveView('dashboard');
+    else setActiveView('dashboard');
   };
 
   const handleViewChange = (view: View) => {
     setActiveView(view);
-    if (view === 'social') {
-      setSelectedAgentId(socialManager.id);
-    }
+    if (view === 'social') setSelectedAgentId(socialManager.id);
+    else if (view === 'worker') setSelectedAgentId(workerAgent.id);
+    else if (view === 'dashboard') setSelectedAgentId(ceoAgent.id);
   };
 
   return (
@@ -51,7 +56,12 @@ function App() {
             <div className="mb-5 text-right">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-600 text-xs">
-                  <span>אורי מנכ"ל</span>
+                  <button
+                    onClick={() => handleViewChange('dashboard')}
+                    className="hover:text-gray-400 transition-colors"
+                  >
+                    אורי מנכ"ל
+                  </button>
                   <span>›</span>
                   <span className="text-purple-400">עידית מנהלת השיווק</span>
                 </div>
@@ -64,6 +74,14 @@ function App() {
             <SocialMediaManager agent={socialManager} />
           </div>
         )}
+
+        {activeView === 'worker' && (
+          <WorkerAgentView
+            onBreadcrumbCeo={() => handleViewChange('dashboard')}
+          />
+        )}
+
+        {activeView === 'deals' && <DealAnalysisView />}
 
         {activeView === 'analytics' && (
           <div className="text-right">

@@ -1,58 +1,42 @@
-name: "📢 Notify Telegram on Post Published"
-
+name: 'Notify Telegram on Post Published'
 on:
   workflow_dispatch:
     inputs:
       post_title:
-        description: "Title of the published post"
+        description: 'Title of the published post'
         required: true
       post_content:
-        description: "Content or summary of the post"
+        description: 'Content or summary of the post'
         required: true
       post_link:
-        description: "URL to the published post (optional)"
+        description: 'URL to the published post'
         required: false
       platform:
-        description: "Social media platform"
+        description: 'Social media platform'
         required: false
-        default: "Social Media"
+        default: 'Social Media'
 
 jobs:
   notify-telegram:
-    name: "📲 Send Telegram Notification"
     runs-on: ubuntu-latest
     steps:
-      - name: "📤 Send notification"
+      - name: Send Telegram Notification
         run: |
-          TITLE="${{ inputs.post_title }}"
-          CONTENT="${{ inputs.post_content }}"
-          LINK="${{ inputs.post_link }}"
-          PLATFORM="${{ inputs.platform }}"
-
-          MESSAGE="📢 פוסט חדש פורסם!
-
-כותרת: $TITLE
-פלטפורמה: $PLATFORM
-תוכן: $CONTENT"
-
+          TITLE="${{ github.event.inputs.post_title }}"
+          CONTENT="${{ github.event.inputs.post_content }}"
+          LINK="${{ github.event.inputs.post_link }}"
+          PLATFORM="${{ github.event.inputs.platform }}"
+          MESSAGE="New Post Published%0ATitle: $TITLE%0APlatform: $PLATFORM%0AContent: $CONTENT"
           if [ -n "$LINK" ]; then
-            MESSAGE="$MESSAGE
-קישור: $LINK"
+            MESSAGE="$MESSAGE%0ALink: $LINK"
           fi
-
-          MESSAGE="$MESSAGE
-זמן: $(date -u '+%d/%m/%Y %H:%M UTC')"
-
-          RESPONSE=$(curl -s -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+          RESPONSE=$(curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": $(echo "$MESSAGE" | jq -Rs .)}")
-
-          echo "Response: $RESPONSE"
-
-          if echo "$RESPONSE" | grep -q '"ok":true'; then
-            echo "✅ Notification sent successfully"
-          else
-            echo "❌ Failed to send notification"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"$MESSAGE\", \"parse_mode\": \"Markdown\"}")
+          if echo "$RESPONSE" | grep -q "error_code"; then
+            echo "Error posting to Telegram:"
+            echo "$RESPONSE"
             exit 1
+          else
+            echo "Notification sent successfully"
           fi
