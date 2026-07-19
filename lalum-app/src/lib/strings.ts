@@ -14,6 +14,7 @@ const en = {
     tabs: { home: "Home", advisory: "Advisory", training: "Training", book: "Book", client: "Client" },
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
+    telegram: { aria: "Chat with us on Telegram" },
     consent: {
       pre: "I agree to receive marketing material and updates from LALUM by WhatsApp, email, SMS, phone, and similar, and I accept the ",
       terms: "Terms",
@@ -547,6 +548,7 @@ const he: Dict = {
     tabs: { home: "בית", advisory: "ייעוץ", training: "הדרכה", book: "פגישה", client: "לקוחות" },
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
+    telegram: { aria: "צ'אט מהיר בטלגרם" },
     consent: {
       pre: "אני מאשר/ת קבלת חומר שיווקי ומידע מ-LALUM בווטסאפ, בדוא\"ל, ב-SMS, טלפונית וכיוצ\"ב, ומסכים/ה ל",
       terms: "תקנון",

@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { ChatWidget } from "./ChatWidget";
 import { WhatsAppButton } from "./WhatsAppButton";
+import { TelegramButton } from "./TelegramButton";
 import { BottomTabBar } from "./BottomTabBar";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
@@ -31,6 +32,7 @@ export function MarketingLayout() {
         </div>
       </main>
       <Footer />
+      <TelegramButton />
       <WhatsAppButton />
       <ChatWidget />
       <BottomTabBar />
