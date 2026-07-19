@@ -63,6 +63,9 @@ export const directPhone = { display: "052-2490420", tel: "+972522490420" };
 // Business WhatsApp (international format without the plus, for wa.me links).
 export const whatsappNumber = "972522490420";
 
+// Public Telegram contact (t.me link).
+export const telegramUrl = "https://t.me/Lalumbot";
+
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",

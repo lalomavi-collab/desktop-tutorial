@@ -1943,3 +1943,31 @@ html.a11y-reduce-motion *::after {
 .consent-text a { color: var(--clay); text-decoration: underline; }
 .consent-dark .consent-text { color: rgba(245, 241, 232, 0.72); }
 .consent-dark .consent-text a { color: var(--clay-soft); }
+
+/* ---------- Telegram quick-chat button (stacked above WhatsApp) ---------- */
+.tg-fab {
+  position: fixed;
+  bottom: 172px;
+  inset-inline-end: 24px;
+  z-index: 79;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #229ed9;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px -8px rgba(34, 158, 217, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tg-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px -8px rgba(34, 158, 217, 0.72);
+  color: #fff;
+}
+.tg-fab:active { transform: scale(0.94); }
+.tg-fab svg { margin-inline-end: 2px; }
+@media (max-width: 900px) {
+  .tg-fab { bottom: calc(238px + env(safe-area-inset-bottom, 0px)); }
+}
