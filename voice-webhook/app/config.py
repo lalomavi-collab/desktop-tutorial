@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     # ── Anthropic / Claude ────────────────────────────────────────────────
     anthropic_api_key: str = Field(default="", alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(
-        default="claude-3-5-sonnet-latest", alias="ANTHROPIC_MODEL"
+        default="claude-haiku-4-5-20251001", alias="ANTHROPIC_MODEL"
     )
     anthropic_max_tokens: int = Field(default=1024, alias="ANTHROPIC_MAX_TOKENS")
     anthropic_timeout_seconds: float = Field(

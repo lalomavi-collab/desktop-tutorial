@@ -24,7 +24,7 @@ const LLM_PROVIDER = (Deno.env.get("LLM_PROVIDER") ?? "anthropic").toLowerCase()
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") ?? "";
 const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini";
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
-const ANTHROPIC_MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-3-5-sonnet-latest";
+const ANTHROPIC_MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-haiku-4-5-20251001";
 const HOURLY_RATE = Number(Deno.env.get("STANDARD_HOURLY_RATE") ?? "1000");
 const VAT_RATE = Number(Deno.env.get("BILLING_VAT_RATE") ?? "0.18");
 const CURRENCY = Deno.env.get("BILLING_CURRENCY") ?? "ILS";
@@ -149,10 +149,20 @@ const SYSTEM_PROMPT =
   "professional or legal advice was actually discussed. Keep the summary under 100 words.";
 
 function validateExtraction(e: any): Extraction {
-  if (!e || !e.client_intent || !e.summary || !e.suggested_task ||
-      typeof e.is_billable !== "boolean") {
+  if (!e || !e.client_intent || !e.summary || typeof e.is_billable !== "boolean") {
     throw new Error("invalid extraction payload");
   }
+  // Normalize the task: models occasionally return it partial. Fill safe
+  // defaults instead of failing the whole call, and never leave undefined
+  // (JSON.stringify drops undefined keys, breaking the RPC signature).
+  const t = e.suggested_task ?? {};
+  e.suggested_task = {
+    title: typeof t.title === "string" && t.title.trim() ? t.title : "מעקב שיחה נכנסת",
+    priority: ["High", "Medium", "Low"].includes(t.priority) ? t.priority : "Medium",
+    due_days_offset: Number.isFinite(Number(t.due_days_offset))
+      ? Math.min(365, Math.max(0, Math.round(Number(t.due_days_offset))))
+      : 3,
+  };
   return e as Extraction;
 }
 
