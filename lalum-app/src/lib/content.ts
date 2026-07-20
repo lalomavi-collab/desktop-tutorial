@@ -56,8 +56,9 @@ export const contactEmail = "avraham@lalum.co";
 export const trainingEmail = contactEmail;
 
 // Firm phone numbers. `tel` is the dial string (E.164), `display` is the
-// reader-facing format.
-export const officePhone = { display: "03-3104959", tel: "+97233104959" };
+// reader-facing format. The office line is the AI answering number: calls to
+// it are answered by the LALUM voice assistant and logged to the portal.
+export const officePhone = { display: "03-3751235", tel: "+97233751235" };
 export const directPhone = { display: "052-2490420", tel: "+972522490420" };
 
 // Business WhatsApp (international format without the plus, for wa.me links).
