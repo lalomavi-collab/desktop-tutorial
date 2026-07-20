@@ -104,12 +104,15 @@ def process_command(text):
     if cmd == "/help":
         return (
             "🤖 *פקודות זמינות:*\n\n"
-            "/ping — בדיקה שהבוט פעיל\n"
-            "/status — סטטוס ריצות אחרונות\n"
-            "/test\_telegram — בדיקת חיבור טלגרם\n"
-            "/test\_whatsapp — בדיקת חיבור וואטסאפ\n"
-            "/post 001 — פרסום פוסט לפי מספר\n"
-            "/help — רשימה זו"
+            "/ping: בדיקה שהבוט פעיל\n"
+            "/status: סטטוס ריצות אחרונות\n"
+            "/task תיאור: יצירת משימה חדשה\n"
+            "/tasks: רשימת משימות פתוחות\n"
+            "/done 12: סגירת משימה מספר 12\n"
+            "/test\_telegram: בדיקת חיבור טלגרם\n"
+            "/test\_whatsapp: בדיקת חיבור וואטסאפ\n"
+            "/post 001: פרסום פוסט לפי מספר\n"
+            "/help: רשימה זו"
         )
 
     if cmd == "/ping":
@@ -133,6 +136,31 @@ def process_command(text):
         post_num = args[0].zfill(3)
         ok = trigger_workflow(f"scheduled-post-{post_num}.yml")
         return f"📤 פוסט {post_num} הופעל" if ok else f"❌ לא נמצא workflow לפוסט {post_num}"
+
+    if cmd == "/task":
+        if not args:
+            return "שימוש: /task תיאור המשימה"
+        title = " ".join(args)
+        result = gh("/issues", "POST", {"title": title, "labels": ["task", "from-telegram"]})
+        num = result.get("number") if isinstance(result, dict) else None
+        return f"📝 משימה #{num} נוצרה: {title}" if num else "❌ שגיאה ביצירת המשימה"
+
+    if cmd == "/tasks":
+        result = gh("/issues?state=open&labels=task&per_page=10")
+        if not isinstance(result, list):
+            return "❌ שגיאה בשליפת משימות"
+        if not result:
+            return "🎉 אין משימות פתוחות"
+        lines = [f"#{i['number']}: {i['title']}" for i in result]
+        return "📋 *משימות פתוחות:*\n" + "\n".join(lines)
+
+    if cmd == "/done":
+        if not args or not args[0].lstrip("#").isdigit():
+            return "שימוש: /done 12"
+        num = args[0].lstrip("#")
+        result = gh(f"/issues/{num}", "PATCH", {"state": "closed"})
+        closed = isinstance(result, dict) and result.get("number")
+        return f"✅ משימה #{num} נסגרה" if closed else f"❌ לא הצלחתי לסגור משימה #{num}"
 
     return None
 
