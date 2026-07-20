@@ -7,8 +7,9 @@ State (last update ID) is stored as a GitHub Actions Variable.
 
 import json
 import os
-import urllib.request
 import urllib.error
+import urllib.parse
+import urllib.request
 
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = str(os.environ["TELEGRAM_CHAT_ID"])
@@ -164,31 +165,68 @@ def process_command(text):
         return f"✅ משימה #{num} נסגרה" if closed else f"❌ לא הצלחתי לסגור משימה #{num}"
 
     if cmd == "/mail":
-        webhook = os.environ.get("ZAPIER_OUTLOOK_SEND", "")
-        if not webhook:
-            return (
-                "❌ שליחת מייל עדיין לא מוגדרת. "
-                "יש ליצור Zap של Catch Hook עם Outlook Send Email "
-                "ולשמור את כתובת ה-webhook כ-secret בשם ZAPIER_OUTLOOK_SEND"
-            )
         fields = [p.strip() for p in " ".join(args).split("|")]
         if len(fields) < 3 or not fields[0] or "@" not in fields[0]:
             return "שימוש: /mail כתובת | נושא | תוכן ההודעה"
         to, subject = fields[0], fields[1]
         body = " | ".join(fields[2:])
-        payload = json.dumps({"to": to, "subject": subject, "body": body}).encode()
-        req = urllib.request.Request(
-            webhook, data=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        try:
-            with urllib.request.urlopen(req) as r:
-                r.read()
-            return f"📧 המייל אל {to} נשלח דרך Outlook"
-        except urllib.error.HTTPError as e:
-            return f"❌ שליחת המייל נכשלה (שגיאה {e.code})"
+        return send_outlook_mail(to, subject, body)
 
     return None
+
+
+def send_outlook_mail(to, subject, body):
+    """שולח מייל ישירות דרך Microsoft Graph API (בלי Zapier)"""
+    tenant = os.environ.get("MS_TENANT_ID", "")
+    client_id = os.environ.get("MS_CLIENT_ID", "")
+    client_secret = os.environ.get("MS_CLIENT_SECRET", "")
+    sender = os.environ.get("MS_SENDER_EMAIL", "")
+    if not all([tenant, client_id, client_secret, sender]):
+        return (
+            "❌ החיבור הישיר ל-Outlook עדיין לא מוגדר. "
+            "נדרשים 4 secrets: MS_TENANT_ID, MS_CLIENT_ID, "
+            "MS_CLIENT_SECRET, MS_SENDER_EMAIL"
+        )
+
+    token_req = urllib.request.Request(
+        f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token",
+        data=urllib.parse.urlencode({
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "scope": "https://graph.microsoft.com/.default",
+            "grant_type": "client_credentials",
+        }).encode(),
+    )
+    try:
+        with urllib.request.urlopen(token_req) as r:
+            access_token = json.loads(r.read())["access_token"]
+    except urllib.error.HTTPError as e:
+        return f"❌ אימות מול Microsoft נכשל (שגיאה {e.code}). בדוק את MS_CLIENT_ID / MS_CLIENT_SECRET / MS_TENANT_ID"
+
+    mail_req = urllib.request.Request(
+        f"https://graph.microsoft.com/v1.0/users/{urllib.parse.quote(sender)}/sendMail",
+        data=json.dumps({
+            "message": {
+                "subject": subject,
+                "body": {"contentType": "Text", "content": body},
+                "toRecipients": [{"emailAddress": {"address": to}}],
+            },
+            "saveToSentItems": True,
+        }).encode(),
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(mail_req) as r:
+            r.read()
+        return f"📧 המייל אל {to} נשלח מ-{sender}"
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")[:200]
+        if e.code == 403:
+            return "❌ אין הרשאת Mail.Send. יש להוסיף את ההרשאה ב-Azure ולאשר Admin Consent"
+        return f"❌ שליחת המייל נכשלה (שגיאה {e.code}): {detail}"
 
 
 def main():
