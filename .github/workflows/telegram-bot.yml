@@ -2,12 +2,13 @@ name: "🤖 Telegram Bot"
 
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
   actions: write
   contents: read
+  issues: write
 
 jobs:
   listen:

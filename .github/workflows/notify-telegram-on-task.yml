@@ -1,0 +1,65 @@
+name: "📝 Notify Telegram on Task Activity"
+
+on:
+  issues:
+    types: [opened, closed, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📤 Send task notification"
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          python3 - <<'EOF'
+          import json
+          import os
+          import urllib.request
+
+          event = os.environ["EVENT_NAME"]
+          action = os.environ["EVENT_ACTION"]
+          number = os.environ["ISSUE_NUMBER"]
+          title = os.environ["ISSUE_TITLE"]
+          url = os.environ["ISSUE_URL"]
+          actor = os.environ["ACTOR"]
+          comment = os.environ.get("COMMENT_BODY", "")
+
+          if event == "issue_comment":
+              snippet = comment[:300]
+              text = f"💬 תגובה חדשה במשימה #{number}: {title}\n\n{snippet}\n\nמאת: {actor}\n{url}"
+          elif action == "opened":
+              text = f"📝 משימה חדשה #{number}: {title}\n\nנוצרה על ידי: {actor}\n{url}"
+          elif action == "closed":
+              text = f"✅ משימה #{number} הושלמה: {title}\n\nנסגרה על ידי: {actor}"
+          elif action == "reopened":
+              text = f"🔄 משימה #{number} נפתחה מחדש: {title}\n{url}"
+          else:
+              text = f"ℹ️ עדכון במשימה #{number}: {title}\n{url}"
+
+          payload = json.dumps({
+              "chat_id": os.environ["CHAT_ID"],
+              "text": text,
+          }).encode()
+
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{os.environ['BOT_TOKEN']}/sendMessage",
+              data=payload,
+              headers={"Content-Type": "application/json"},
+          )
+          with urllib.request.urlopen(req) as r:
+              result = json.loads(r.read())
+          if not result.get("ok"):
+              raise SystemExit(f"Telegram send failed: {result}")
+          print("Notification sent")
+          EOF
