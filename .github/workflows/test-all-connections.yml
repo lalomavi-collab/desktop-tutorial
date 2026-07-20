@@ -62,14 +62,15 @@ jobs:
           R2="${{ needs.test-2-zapier.result == 'success' && '✅' || '❌' }}"
           R3="${{ needs.test-3-social-agent.result == 'success' && '✅' || '❌' }}"
 
-          MESSAGE="🧪 תוצאות בדיקת חיבורים
-
-$R1 Bot API ישיר (@Lalumbot)
-$R2 Zapier Webhook
-$R3 Social Media Agent
-
-🕐 $(date -u '+%d/%m/%Y %H:%M UTC')
-🔗 ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MESSAGE=$(printf '%s\n' \
+            "🧪 תוצאות בדיקת חיבורים" \
+            "" \
+            "$R1 Bot API ישיר (@Lalumbot)" \
+            "$R2 Zapier Webhook" \
+            "$R3 Social Media Agent" \
+            "" \
+            "🕐 $(date -u '+%d/%m/%Y %H:%M UTC')" \
+            "🔗 ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}")
 
           curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \

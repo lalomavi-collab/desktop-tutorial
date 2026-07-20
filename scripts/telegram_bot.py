@@ -109,6 +109,7 @@ def process_command(text):
             "/task תיאור: יצירת משימה חדשה\n"
             "/tasks: רשימת משימות פתוחות\n"
             "/done 12: סגירת משימה מספר 12\n"
+            "/mail כתובת | נושא | תוכן: שליחת מייל מ-Outlook\n"
             "/test\_telegram: בדיקת חיבור טלגרם\n"
             "/test\_whatsapp: בדיקת חיבור וואטסאפ\n"
             "/post 001: פרסום פוסט לפי מספר\n"
@@ -161,6 +162,31 @@ def process_command(text):
         result = gh(f"/issues/{num}", "PATCH", {"state": "closed"})
         closed = isinstance(result, dict) and result.get("number")
         return f"✅ משימה #{num} נסגרה" if closed else f"❌ לא הצלחתי לסגור משימה #{num}"
+
+    if cmd == "/mail":
+        webhook = os.environ.get("ZAPIER_OUTLOOK_SEND", "")
+        if not webhook:
+            return (
+                "❌ שליחת מייל עדיין לא מוגדרת. "
+                "יש ליצור Zap של Catch Hook עם Outlook Send Email "
+                "ולשמור את כתובת ה-webhook כ-secret בשם ZAPIER_OUTLOOK_SEND"
+            )
+        fields = [p.strip() for p in " ".join(args).split("|")]
+        if len(fields) < 3 or not fields[0] or "@" not in fields[0]:
+            return "שימוש: /mail כתובת | נושא | תוכן ההודעה"
+        to, subject = fields[0], fields[1]
+        body = " | ".join(fields[2:])
+        payload = json.dumps({"to": to, "subject": subject, "body": body}).encode()
+        req = urllib.request.Request(
+            webhook, data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req) as r:
+                r.read()
+            return f"📧 המייל אל {to} נשלח דרך Outlook"
+        except urllib.error.HTTPError as e:
+            return f"❌ שליחת המייל נכשלה (שגיאה {e.code})"
 
     return None
 
