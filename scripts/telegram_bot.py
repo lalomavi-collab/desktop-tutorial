@@ -7,9 +7,11 @@ State (last update ID) is stored as a GitHub Actions Variable.
 
 import json
 import os
+import smtplib
 import urllib.error
 import urllib.parse
 import urllib.request
+from email.mime.text import MIMEText
 
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = str(os.environ["TELEGRAM_CHAT_ID"])
@@ -170,9 +172,45 @@ def process_command(text):
             return "שימוש: /mail כתובת | נושא | תוכן ההודעה"
         to, subject = fields[0], fields[1]
         body = " | ".join(fields[2:])
-        return send_outlook_mail(to, subject, body)
+        return send_mail(to, subject, body)
 
     return None
+
+
+def send_mail(to, subject, body):
+    """שולח מייל בערוץ הזמין: Gmail (פשוט) או Microsoft Graph (עסקי)"""
+    if os.environ.get("GMAIL_ADDRESS") and os.environ.get("GMAIL_APP_PASSWORD"):
+        return send_gmail(to, subject, body)
+    if os.environ.get("MS_CLIENT_ID"):
+        return send_outlook_mail(to, subject, body)
+    return (
+        "❌ שליחת מייל עדיין לא מוגדרת. הדרך הפשוטה: "
+        "הוסף 2 secrets בשם GMAIL_ADDRESS ו-GMAIL_APP_PASSWORD "
+        "(סיסמת אפליקציה מ-myaccount.google.com/apppasswords)"
+    )
+
+
+def send_gmail(to, subject, body):
+    """שולח מייל דרך Gmail SMTP עם App Password (בלי Zapier ובלי Azure)"""
+    addr = os.environ["GMAIL_ADDRESS"]
+    pwd = os.environ["GMAIL_APP_PASSWORD"].replace(" ", "")
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = subject
+    msg["From"] = addr
+    msg["To"] = to
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as server:
+            server.login(addr, pwd)
+            server.sendmail(addr, [to], msg.as_string())
+        return f"📧 המייל אל {to} נשלח מ-{addr}"
+    except smtplib.SMTPAuthenticationError:
+        return (
+            "❌ Gmail דחה את ההתחברות. ודא ש-GMAIL_APP_PASSWORD הוא "
+            "סיסמת אפליקציה (16 תווים) ולא הסיסמה הרגילה, "
+            "ושאימות דו שלבי מופעל בחשבון"
+        )
+    except (smtplib.SMTPException, OSError) as e:
+        return f"❌ שליחת המייל נכשלה: {e}"
 
 
 def send_outlook_mail(to, subject, body):
