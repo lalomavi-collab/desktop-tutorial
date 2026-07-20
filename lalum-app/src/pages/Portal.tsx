@@ -119,6 +119,8 @@ export function Portal() {
   const [thread, setThread] = useState<MsgRow[]>([]);
   const [inbox, setInbox] = useState<MsgRow[]>([]);
   const [calls, setCalls] = useState<CallRow[]>([]);
+  const [chargingId, setChargingId] = useState<string | undefined>();
+  const [chargedIds, setChargedIds] = useState<Set<string>>(new Set());
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [rowBusy, setRowBusy] = useState<Record<string, "draft" | "send" | undefined>>({});
 
@@ -159,6 +161,30 @@ export function Portal() {
       if (callRes.data) setCalls(callRes.data as unknown as CallRow[]);
     }
   }, [user]);
+
+  // One-click: turn a billable call into a payment request, reusing the amount
+  // the voice billing already computed (gross, VAT included).
+  async function chargeForCall(c: CallRow) {
+    const bill = c.lalum_billing_ledgers?.[0];
+    if (!supabase || !bill || chargingId) return;
+    setChargingId(c.id);
+    try {
+      const title = `${t.ui.portal.calls.chargeTitle} · ${c.caller_phone}`;
+      const { error } = await supabase.from("billing_milestones").insert({
+        title,
+        amount: bill.amount,
+        currency: bill.currency,
+        client_email: null,
+      });
+      if (error) throw error;
+      setChargedIds((s) => new Set(s).add(c.id));
+      await loadMessages();
+    } catch {
+      window.alert(t.ui.portal.billing.err);
+    } finally {
+      setChargingId(undefined);
+    }
+  }
 
   async function payMilestone(id: string) {
     if (!supabase) return;
@@ -402,7 +428,7 @@ export function Portal() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
                       {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
                       {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
-                      {c.is_billable && bill && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}: {bill.amount} {bill.currency}</span>}
+                      {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
                       <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{c.caller_phone}</span>
                     </div>
                     {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
@@ -412,6 +438,17 @@ export function Portal() {
                         <span>{task.title}</span>
                         <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
                         {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
+                      </div>
+                    )}
+                    {c.is_billable && bill && (
+                      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
+                        {chargedIds.has(c.id) ? (
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
+                        ) : (
+                          <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
+                            <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
