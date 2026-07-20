@@ -22,4 +22,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZAPIER_OUTLOOK_SEND: ${{ secrets.ZAPIER_OUTLOOK_SEND }}
         run: python3 scripts/telegram_bot.py
