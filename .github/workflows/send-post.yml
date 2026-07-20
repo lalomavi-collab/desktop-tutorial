@@ -68,10 +68,11 @@ jobs:
         if: always()
         run: |
           STATUS="${{ job.status == 'success' && '\u2705 \u05d4\u05e6\u05dc\u05d9\u05d7' || '\u274c \u05e0\u05db\u05e9\u05dc' }}"
-          MESSAGE="$STATUS \u2014 \u05e9\u05dc\u05d9\u05d7\u05ea \u05e4\u05d5\u05e1\u05d8 \u05d9\u05d3\u05e0\u05d9\u05ea
-\u05e4\u05dc\u05d8\u05e4\u05d5\u05e8\u05de\u05d4: ${{ inputs.platform }}
-\u05d6\u05de\u05df: $(date -u '+%d/%m/%Y %H:%M UTC')
-Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MESSAGE=$(printf '%s\n' \
+            "$STATUS \u05e9\u05dc\u05d9\u05d7\u05ea \u05e4\u05d5\u05e1\u05d8 \u05d9\u05d3\u05e0\u05d9\u05ea" \
+            "\u05e4\u05dc\u05d8\u05e4\u05d5\u05e8\u05de\u05d4: ${{ inputs.platform }}" \
+            "\u05d6\u05de\u05df: $(date -u '+%d/%m/%Y %H:%M UTC')" \
+            "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}")
           curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
             -H "Content-Type: application/json" \
             -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"

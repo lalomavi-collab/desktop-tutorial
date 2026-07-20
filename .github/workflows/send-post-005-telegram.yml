@@ -36,10 +36,11 @@ jobs:
         if: always()
         run: |
           STATUS="${{ job.status == 'success' && '✅ הצליח' || '❌ נכשל' }}"
-          MESSAGE="$STATUS — פוסט 005: למה ה-AI שלכם לא זוכר כלום?
-יעד: טלגרם בלבד
-זמן: $(date -u '+%d/%m/%Y %H:%M UTC')
-Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MESSAGE=$(printf '%s\n' \
+            "$STATUS פוסט 005: למה ה-AI שלכם לא זוכר כלום?" \
+            "יעד: טלגרם בלבד" \
+            "זמן: $(date -u '+%d/%m/%Y %H:%M UTC')" \
+            "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}")
           curl -s -X POST "${{ secrets.ZAPIER_TELEGRAM }}" \
             -H "Content-Type: application/json" \
             -d "{\"message\": $(echo "$MESSAGE" | jq -Rs .)}"
