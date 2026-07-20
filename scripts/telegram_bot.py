@@ -178,16 +178,34 @@ def process_command(text):
 
 
 def send_mail(to, subject, body):
-    """שולח מייל בערוץ הזמין: Gmail (פשוט) או Microsoft Graph (עסקי)"""
+    """שולח מייל בערוץ הזמין: Gmail, Microsoft Graph, או Zapier webhook"""
     if os.environ.get("GMAIL_ADDRESS") and os.environ.get("GMAIL_APP_PASSWORD"):
         return send_gmail(to, subject, body)
     if os.environ.get("MS_CLIENT_ID"):
         return send_outlook_mail(to, subject, body)
+    if os.environ.get("ZAPIER_OUTLOOK_SEND"):
+        return send_via_zapier(to, subject, body)
     return (
-        "❌ שליחת מייל עדיין לא מוגדרת. הדרך הפשוטה: "
-        "הוסף 2 secrets בשם GMAIL_ADDRESS ו-GMAIL_APP_PASSWORD "
-        "(סיסמת אפליקציה מ-myaccount.google.com/apppasswords)"
+        "❌ שליחת מייל עדיין לא מוגדרת. אפשרויות: "
+        "secret בשם ZAPIER_OUTLOOK_SEND (webhook של Zapier), "
+        "או GMAIL_ADDRESS + GMAIL_APP_PASSWORD (סיסמת אפליקציה של Google)"
     )
+
+
+def send_via_zapier(to, subject, body):
+    """שולח מייל דרך Zapier webhook שמחובר ל-Outlook Send Email"""
+    webhook = os.environ["ZAPIER_OUTLOOK_SEND"]
+    req = urllib.request.Request(
+        webhook,
+        data=json.dumps({"to": to, "subject": subject, "body": body}).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            r.read()
+        return f"📧 המייל אל {to} נשלח דרך Outlook (Zapier)"
+    except urllib.error.HTTPError as e:
+        return f"❌ שליחת המייל נכשלה (שגיאה {e.code})"
 
 
 def send_gmail(to, subject, body):
