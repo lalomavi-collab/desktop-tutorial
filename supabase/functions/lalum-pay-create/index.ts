@@ -19,6 +19,14 @@ const CORS: Record<string, string> = {
 const json = (status: number, data: unknown) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, "content-type": "application/json" } });
 
+// Never let the Invoice4U API key survive into logs or the database. Invoice4U
+// echoes the whole request (key included) in its response, so redact it.
+const redact = (s: string, key?: string) => {
+  let out = s.replace(/"Invoice4UUserApiKey":"[^"]*"/g, '"Invoice4UUserApiKey":"[REDACTED]"');
+  if (key) out = out.split(key).join("[REDACTED]");
+  return out;
+};
+
 async function isAdmin(admin: ReturnType<typeof createClient>, userId: string, email: string | undefined) {
   if (email && email.toLowerCase() === "avraham@lalum.co") return true;
   const { data } = await admin.from("lalum_profiles").select("is_admin").eq("id", userId).maybeSingle();
@@ -29,7 +37,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
-  const apiKey = Deno.env.get("INVOICE4U_API_KEY");
+  // Trim: a trailing space or newline pasted into the secret would corrupt auth.
+  const apiKey = Deno.env.get("INVOICE4U_API_KEY")?.trim();
   const clearingCompany = Number(Deno.env.get("INVOICE4U_CLEARING_COMPANY") ?? "7");
   const env = (Deno.env.get("INVOICE4U_ENV") ?? "qa").toLowerCase();
   const appUrl = Deno.env.get("LALUM_APP_URL") ?? "https://lalumapp.com";
@@ -61,7 +70,6 @@ Deno.serve(async (req) => {
   const base = env.startsWith("prod")
     ? "https://api.invoice4u.co.il/Services/ApiService.svc"
     : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
-  // Invoice4U uses "NIS" for shekels.
   const currency = String(m.currency ?? "ILS").toUpperCase() === "ILS" ? "NIS" : String(m.currency);
 
   const request = {
@@ -86,20 +94,30 @@ Deno.serve(async (req) => {
     DocLanguage: "he",
   };
 
+  // Diagnostic snapshot of the request config (never includes the API key).
+  const cfg = `env=${env} company=${clearingCompany} sum=${Number(m.amount)} cur=${currency}`;
+
   try {
     const res = await fetch(`${base}/ProcessApiRequestV2`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ request }),
     });
-    const raw = await res.json().catch(() => ({}));
-    // WCF REST sometimes wraps the payload in `d`.
-    const data = (raw && typeof raw === "object" && "d" in raw ? (raw as Record<string, unknown>).d : raw) as Record<string, unknown>;
+    const rawText = await res.text();
+    let raw: unknown = {};
+    try { raw = JSON.parse(rawText); } catch { raw = {}; }
+    const data = (raw && typeof raw === "object" && "d" in (raw as Record<string, unknown>) ? (raw as Record<string, unknown>).d : raw) as Record<string, unknown>;
     const errors = (data?.Errors as unknown[]) ?? [];
     const link = (data?.ClearingRedirectUrl as string) ?? "";
     const paymentId = (data?.PaymentId as string) ?? null;
     if (!res.ok || (Array.isArray(errors) && errors.length > 0) || !link) {
-      console.log("INVOICE4U_ERR " + res.status + " " + JSON.stringify(data).slice(0, 500));
+      const detailText = redact(`HTTP ${res.status} | ${cfg} | ${rawText}`, apiKey).slice(0, 2000);
+      console.log("INVOICE4U_ERR " + detailText);
+      await admin.from("billing_milestones").update({
+        status: "failed",
+        last_error: detailText,
+        updated_at: new Date().toISOString(),
+      }).eq("id", id);
       const first = Array.isArray(errors) && errors.length ? errors[0] : null;
       return json(502, { code: "invoice4u_error", status: res.status, detail: first });
     }
@@ -108,11 +126,18 @@ Deno.serve(async (req) => {
       payment_intent_id: paymentId,
       hosted_url: link,
       provider: "invoice4u",
+      last_error: null,
       updated_at: new Date().toISOString(),
     }).eq("id", id);
     return json(200, { url: link, payment_id: paymentId });
   } catch (e) {
-    console.log("FETCHERR " + String(e).slice(0, 200));
+    const detailText = redact(`FETCHERR | ${cfg} | ${String(e)}`, apiKey).slice(0, 2000);
+    console.log(detailText);
+    await admin.from("billing_milestones").update({
+      status: "failed",
+      last_error: detailText,
+      updated_at: new Date().toISOString(),
+    }).eq("id", id);
     return json(502, { code: "fetch_failed" });
   }
 });
