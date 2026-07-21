@@ -1052,6 +1052,49 @@ html.a11y-reduce-motion *::after {
   font-size: 13px;
   color: var(--slate);
 }
+.footer-pay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+  padding: 18px 32px;
+  border-top: 1px solid var(--line);
+}
+.footer-pay-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted, #6b6b6b);
+}
+.footer-pay-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #1b1b1b;
+  white-space: nowrap;
+}
+.pay-badge-dark { background: #1b1b1b; color: #fff; border-color: #1b1b1b; }
+.pay-badge-light { background: #fff; color: #3c4043; }
+.pay-badge-bit { background: #1b1b1b; color: #fff; border-color: #1b1b1b; font-weight: 800; letter-spacing: 0.2px; }
+.pay-badge-card { color: #1b1b1b; }
+
 .footer-bottom {
   display: flex;
   align-items: center;

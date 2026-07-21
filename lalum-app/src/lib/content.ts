@@ -67,8 +67,23 @@ export const whatsappNumber = "972522490420";
 // Public Telegram contact (t.me link).
 export const telegramUrl = "https://t.me/Lalumbot";
 
-// Firm accounting dashboard (Invoice4U). Admin-only quick link in the header.
+// Firm accounting dashboard (Invoice4U). Surfaced only inside the admin-only
+// Portal billing area, and only while payments are switched on below.
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
+
+// Switch for the in-app clearing/payments feature. When true, clients can pay a
+// milestone from their portal: the app hands off to the Invoice4U secure hosted
+// page, which presents Google Pay, Apple Pay, Bit, and card. This never exposes
+// the firm's Invoice4U account, only a single-amount checkout for that payment.
+// Kept off until the Invoice4U clearing terminal is live, so no Pay buttons show
+// on the site while a charge would fail. Flip to true once clearing is verified.
+export const paymentsEnabled = false;
+
+// Separate, stricter switch for the deep link into the firm's private Invoice4U
+// dashboard (the admin's own systems). Kept off so no path to those systems is
+// surfaced anywhere in the app, even while client payments are on. Turn on only
+// if the firm deliberately wants a dashboard shortcut inside the admin portal.
+export const accountingDashboardEnabled = false;
 
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
