@@ -80,9 +80,11 @@ export function Header() {
           >
             {t.ui.otherLangShort}
           </button>
-          <Link to="/book" className="btn btn-clay btn-sm hide-mobile">{t.ui.bookPage.navCta}</Link>
-          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile">
-            {user ? t.ui.clientPortal : t.ui.clientLogin}
+          <Link to="/book" className="btn btn-clay btn-sm hide-mobile" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <Icon name="calendar" size={16} /> {t.ui.bookPage.navCta}
+          </Link>
+          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <Icon name="user" size={16} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
           </Link>
         </div>
       </div>
