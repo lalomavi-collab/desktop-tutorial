@@ -1236,6 +1236,19 @@ html.a11y-reduce-motion *::after {
   color: var(--clay);
   font-weight: 700;
 }
+.privacy-update-modal {
+  width: min(560px, 94vw);
+}
+.privacy-update-link {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--clay);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.privacy-update-link:hover {
+  color: var(--ink);
+}
 @media (max-width: 900px) {
   .footer-inner {
     grid-template-columns: 1fr 1fr;
