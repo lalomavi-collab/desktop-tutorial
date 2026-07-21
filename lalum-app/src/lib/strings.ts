@@ -22,6 +22,15 @@ const en = {
       privacy: "Privacy Policy",
       post: ". You can opt out at any time.",
     },
+    privacyUpdate: {
+      aria: "Privacy Policy update",
+      title: "Privacy Policy update",
+      body: "Dear clients, we are informing you that our Privacy Policy has been updated in line with Amendment 13 to the Protection of Privacy Law, 5741-1981. Please review the updated Privacy Policy to learn what information we collect, how it is used, what your rights are, and more. The policy is available at the link below:",
+      linkText: "Read the updated Privacy Policy",
+      ack: "I confirm that I have read the updated Privacy Policy",
+      confirm: "Confirm",
+      later: "Later",
+    },
     guide: {
       open: "Guide",
       title: "Quick start guide",
@@ -374,8 +383,9 @@ const en = {
     privacy: {
       title: "Privacy",
       body: [
+        "This Privacy Policy was updated in July 2026 in line with Amendment 13 to the Protection of Privacy Law, 5741-1981.",
         "We collect only what you send us: the details in a booking request or a message, plus the basic technical logs needed to run the site. We use them to respond to you and to operate and secure the service.",
-        "We do not sell your information. Client matters are held under attorney and client confidentiality. You can ask what we hold about you and request correction or deletion.",
+        "We do not sell your information. Client matters are held under attorney and client confidentiality. Under the amended law you have the right to know what personal information we hold about you, to access it, and to ask us to correct or delete it. To exercise these rights, contact us at avraham@lalum.co.",
       ],
     },
     accessibility: {
@@ -558,6 +568,15 @@ const he: Dict = {
       mid: " ול",
       privacy: "מדיניות הפרטיות",
       post: ". ניתן להסיר את עצמכם בכל עת.",
+    },
+    privacyUpdate: {
+      aria: "עדכון מדיניות הפרטיות",
+      title: "עדכון מדיניות הפרטיות",
+      body: "לקוחות יקרים, אנו מיידעים אתכם כי מדיניות הפרטיות שלנו עודכנה בהתאם להוראות תיקון 13 לחוק הגנת הפרטיות, התשמ\"א-1981. אנו מבקשים שתעיינו במדיניות הפרטיות המעודכנת, על מנת ללמוד איזה מידע אנו אוספים, מה השימוש שנעשה בו, מהן הזכויות שלכם ועוד. המדיניות זמינה בלחיצה בקישור הבא:",
+      linkText: "למדיניות הפרטיות המעודכנת",
+      ack: "אני מאשר/ת שקראתי את מדיניות הפרטיות המעודכנת",
+      confirm: "אישור",
+      later: "מאוחר יותר",
     },
     guide: {
       open: "מדריך",
@@ -911,8 +930,9 @@ const he: Dict = {
     privacy: {
       title: "פרטיות",
       body: [
+        "מדיניות פרטיות זו עודכנה ביולי 2026 בהתאם לתיקון 13 לחוק הגנת הפרטיות, התשמ\"א-1981.",
         "אנחנו אוספים רק את מה שאתם שולחים לנו: הפרטים בבקשת פגישה או בהודעה, ולוגים טכניים בסיסיים הדרושים להפעלת האתר. אנחנו משתמשים בהם כדי לחזור אליכם ולהפעיל ולאבטח את השירות.",
-        "אנחנו לא מוכרים את המידע שלכם. ענייני לקוח מוחזקים תחת חיסיון עורך דין-לקוח. תוכלו לשאול מה מוחזק אצלנו עליכם ולבקש תיקון או מחיקה.",
+        "אנחנו לא מוכרים את המידע שלכם. ענייני לקוח מוחזקים תחת חיסיון עורך דין ולקוח. על פי החוק המעודכן, יש לכם זכות לדעת איזה מידע אישי מוחזק אצלנו עליכם, לעיין בו, ולבקש לתקן או למחוק אותו. למימוש הזכויות, פנו אלינו בכתובת avraham@lalum.co.",
       ],
     },
     accessibility: {
