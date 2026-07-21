@@ -16,6 +16,7 @@ const en = {
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
     telegram: { aria: "Chat with us on Telegram" },
     botCall: { aria: "Call the AI assistant" },
+    accounting: { aria: "Accounting (Invoice4U)" },
     consent: {
       pre: "I agree to receive marketing material and updates from LALUM by WhatsApp, email, SMS, phone, and similar, and I accept the ",
       terms: "Terms",
@@ -586,6 +587,7 @@ const he: Dict = {
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
     telegram: { aria: "צ'אט מהיר בטלגרם" },
     botCall: { aria: "שיחה עם העוזר הדיגיטלי" },
+    accounting: { aria: "הנהלת חשבונות (Invoice4U)" },
     consent: {
       pre: "אני מאשר/ת קבלת חומר שיווקי ומידע מ-LALUM בווטסאפ, בדוא\"ל, ב-SMS, טלפונית וכיוצ\"ב, ומסכים/ה ל",
       terms: "תקנון",

@@ -67,6 +67,9 @@ export const whatsappNumber = "972522490420";
 // Public Telegram contact (t.me link).
 export const telegramUrl = "https://t.me/Lalumbot";
 
+// Firm accounting dashboard (Invoice4U). Admin-only quick link in the header.
+export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
+
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
