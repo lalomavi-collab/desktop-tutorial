@@ -11,6 +11,7 @@ const TABS = [
   { to: "/", end: true, icon: "home", key: "home" },
   { to: "/advisory", end: false, icon: "gavel", key: "advisory" },
   { to: "/training", end: false, icon: "brain", key: "training" },
+  { to: "/knowledge", end: false, icon: "book", key: "knowledge" },
   { to: "/book", end: false, icon: "calendar", key: "book" },
 ] as const;
 

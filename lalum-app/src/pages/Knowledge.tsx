@@ -36,9 +36,18 @@ export function Knowledge() {
   const { t } = useLang();
   const k = t.knowledge;
 
-  const links: { icon: string; title: string; body: string; cta: string; href: string }[] = [
-    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa },
-    { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: externalLinks.articles },
+  // Each card keeps the same layout for uniformity, with a distinct but
+  // harmonious warm accent so the hub reads as one family, gently varied.
+  const badge = (accent: string, tint: string): CSSProperties => ({
+    width: 44, height: 44, borderRadius: 13, display: "inline-flex",
+    alignItems: "center", justifyContent: "center", background: tint, color: accent,
+  });
+  const cta = (accent: string): CSSProperties => ({ ...ctaRow, color: accent });
+  const accented = (accent: string): CSSProperties => ({ ...cardStyle, borderTop: `3px solid ${accent}` });
+
+  const links = [
+    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, accent: "#a8482a", tint: "#f3e7de" },
+    { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: externalLinks.articles, accent: "#9a7328", tint: "#f1e9d6" },
   ];
 
   return (
@@ -58,18 +67,18 @@ export function Knowledge() {
       <section className="wrap" style={{ paddingBottom: 24 }}>
         <div className="grid grid-3">
           {links.map((c) => (
-            <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer" style={cardStyle}>
-              <span className="icon-badge"><Icon name={c.icon} size={20} /></span>
+            <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer" style={accented(c.accent)}>
+              <span style={badge(c.accent, c.tint)}><Icon name={c.icon} size={20} /></span>
               <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h3>
               <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{c.body}</p>
-              <span style={ctaRow}>{c.cta} <Icon name="chevron-l" size={15} /></span>
+              <span style={cta(c.accent)}>{c.cta} <Icon name="chevron-l" size={15} /></span>
             </a>
           ))}
-          <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))} style={cardStyle}>
-            <span className="icon-badge"><Icon name="compass" size={20} /></span>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))} style={accented("#8a3f45")}>
+            <span style={badge("#8a3f45", "#f3e4e4")}><Icon name="compass" size={20} /></span>
             <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h3>
             <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{k.guidesBody}</p>
-            <span style={ctaRow}>{k.guidesCta} <Icon name="chevron-l" size={15} /></span>
+            <span style={cta("#8a3f45")}>{k.guidesCta} <Icon name="chevron-l" size={15} /></span>
           </button>
         </div>
         <p className="muted" style={{ textAlign: "center", marginTop: 22, fontSize: 13 }}>{k.note}</p>
