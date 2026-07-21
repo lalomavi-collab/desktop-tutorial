@@ -15,6 +15,7 @@ export function Header() {
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/insights", label: t.ui.nav.insights, end: false },
+    { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
   ];
 
   return (
