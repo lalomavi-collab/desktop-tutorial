@@ -47,8 +47,17 @@ def send(text):
 
 
 def send_to(chat_id, text):
-    """שולח הודעה ל-chat כלשהו (לקוח), בלי Markdown כדי לא לשבור טקסט חופשי"""
-    telegram("sendMessage", {"chat_id": chat_id, "text": text})
+    """שולח הודעה ל-chat כלשהו (לקוח). מחזיר True/False בלי להפיל את הריצה."""
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    data = json.dumps({"chat_id": chat_id, "text": text}).encode()
+    req = urllib.request.Request(
+        url, data=data, headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            return json.loads(r.read()).get("ok", False)
+    except (urllib.error.HTTPError, urllib.error.URLError):
+        return False
 
 
 RECEPTIONIST_PROMPT = (
@@ -162,6 +171,7 @@ def process_command(text):
             "/task תיאור: יצירת משימה חדשה\n"
             "/tasks: רשימת משימות פתוחות\n"
             "/done 12: סגירת משימה מספר 12\n"
+            "/reply מזהה טקסט: מענה אישי ללקוח\n"
             "/mail כתובת | נושא | תוכן: שליחת מייל מ-Outlook\n"
             "/test\_telegram: בדיקת חיבור טלגרם\n"
             "/test\_whatsapp: בדיקת חיבור וואטסאפ\n"
@@ -215,6 +225,18 @@ def process_command(text):
         result = gh(f"/issues/{num}", "PATCH", {"state": "closed"})
         closed = isinstance(result, dict) and result.get("number")
         return f"✅ משימה #{num} נסגרה" if closed else f"❌ לא הצלחתי לסגור משימה #{num}"
+
+    if cmd == "/reply":
+        if len(args) < 2 or not args[0].lstrip("-").isdigit():
+            return (
+                "שימוש: /reply <מזהה הצ'אט> <ההודעה>\n"
+                "מזהה הצ'אט מופיע בהתראה '📨 פנייה חדשה מלקוח'"
+            )
+        target = args[0]
+        message = " ".join(args[1:])
+        if send_to(target, message):
+            return f"✅ התשובה נשלחה ל-{target}"
+        return f"❌ שליחה ל-{target} נכשלה. ודא שהמזהה נכון ושהלקוח כתב לבוט קודם"
 
     if cmd == "/mail":
         fields = [p.strip() for p in " ".join(args).split("|")]
@@ -372,7 +394,8 @@ def main():
                 "📨 פנייה חדשה מלקוח\n"
                 f"מאת: {name} (chat {chat_id})\n\n"
                 f"הלקוח: {text}\n"
-                f"הבוט ענה: {reply}"
+                f"הבוט ענה: {reply}\n\n"
+                f"למענה אישי: /reply {chat_id} ההודעה שלך"
             )
 
     if new_last_id > last_id:
