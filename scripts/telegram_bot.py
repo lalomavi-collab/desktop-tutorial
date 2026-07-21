@@ -7,8 +7,11 @@ State (last update ID) is stored as a GitHub Actions Variable.
 
 import json
 import os
-import urllib.request
+import smtplib
 import urllib.error
+import urllib.parse
+import urllib.request
+from email.mime.text import MIMEText
 
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_ID = str(os.environ["TELEGRAM_CHAT_ID"])
@@ -41,6 +44,56 @@ def telegram(method, payload=None):
 
 def send(text):
     telegram("sendMessage", {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"})
+
+
+def send_to(chat_id, text):
+    """שולח הודעה ל-chat כלשהו (לקוח), בלי Markdown כדי לא לשבור טקסט חופשי"""
+    telegram("sendMessage", {"chat_id": chat_id, "text": text})
+
+
+RECEPTIONIST_PROMPT = (
+    "אתה פקיד הקבלה הווירטואלי של LALUM, משרד עורכי דין (עו\"ד לалו מави). "
+    "אתה עונה ללקוחות ופונים שכותבים למשרד בטלגרם.\n"
+    "הכללים שלך:\n"
+    "- כתוב בעברית, בטון חם, מקצועי ומכבד.\n"
+    "- אתה פקיד קבלה, לא עורך דין. אל תיתן ייעוץ משפטי ואל תתחייב בשם המשרד.\n"
+    "- המטרה: לקבל בברכה, להבין בקצרה מה הפונה צריך, ולאסוף שם מלא, נושא הפנייה וטלפון לחזרה.\n"
+    "- הבהר שעורך דין מהמשרד יחזור אליו בהקדם, בלי הבטחות לגבי תוצאות או מועדים מדויקים.\n"
+    "- שמור על תשובה קצרה, שתיים עד ארבע שורות.\n"
+    "- אל תשתמש במקפים כסימני פיסוק. השתמש בפסיק, נקודה או סוגריים."
+)
+
+FALLBACK_REPLY = (
+    "שלום, קיבלנו את פנייתך. עורך דין מהמשרד יחזור אליך בהקדם. "
+    "אנא השאר שם מלא וטלפון לחזרה."
+)
+
+
+def ai_reply(user_text):
+    """מנסח תשובה טבעית בעברית דרך Anthropic. נופל לתשובת ברירת מחדל אם אין מפתח."""
+    key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        return FALLBACK_REPLY
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=json.dumps({
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 400,
+            "system": RECEPTIONIST_PROMPT,
+            "messages": [{"role": "user", "content": user_text}],
+        }).encode(),
+        headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            data = json.loads(r.read())
+        return data.get("content", [{}])[0].get("text", "").strip() or FALLBACK_REPLY
+    except (urllib.error.HTTPError, urllib.error.URLError, KeyError, IndexError):
+        return FALLBACK_REPLY
 
 
 def gh(path, method="GET", body=None):
@@ -164,31 +217,122 @@ def process_command(text):
         return f"✅ משימה #{num} נסגרה" if closed else f"❌ לא הצלחתי לסגור משימה #{num}"
 
     if cmd == "/mail":
-        webhook = os.environ.get("ZAPIER_OUTLOOK_SEND", "")
-        if not webhook:
-            return (
-                "❌ שליחת מייל עדיין לא מוגדרת. "
-                "יש ליצור Zap של Catch Hook עם Outlook Send Email "
-                "ולשמור את כתובת ה-webhook כ-secret בשם ZAPIER_OUTLOOK_SEND"
-            )
         fields = [p.strip() for p in " ".join(args).split("|")]
         if len(fields) < 3 or not fields[0] or "@" not in fields[0]:
             return "שימוש: /mail כתובת | נושא | תוכן ההודעה"
         to, subject = fields[0], fields[1]
         body = " | ".join(fields[2:])
-        payload = json.dumps({"to": to, "subject": subject, "body": body}).encode()
-        req = urllib.request.Request(
-            webhook, data=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        try:
-            with urllib.request.urlopen(req) as r:
-                r.read()
-            return f"📧 המייל אל {to} נשלח דרך Outlook"
-        except urllib.error.HTTPError as e:
-            return f"❌ שליחת המייל נכשלה (שגיאה {e.code})"
+        return send_mail(to, subject, body)
 
     return None
+
+
+def send_mail(to, subject, body):
+    """שולח מייל בערוץ הזמין: Gmail, Microsoft Graph, או Zapier webhook"""
+    if os.environ.get("GMAIL_ADDRESS") and os.environ.get("GMAIL_APP_PASSWORD"):
+        return send_gmail(to, subject, body)
+    if os.environ.get("MS_CLIENT_ID"):
+        return send_outlook_mail(to, subject, body)
+    if os.environ.get("ZAPIER_OUTLOOK_SEND"):
+        return send_via_zapier(to, subject, body)
+    return (
+        "❌ שליחת מייל עדיין לא מוגדרת. אפשרויות: "
+        "secret בשם ZAPIER_OUTLOOK_SEND (webhook של Zapier), "
+        "או GMAIL_ADDRESS + GMAIL_APP_PASSWORD (סיסמת אפליקציה של Google)"
+    )
+
+
+def send_via_zapier(to, subject, body):
+    """שולח מייל דרך Zapier webhook שמחובר ל-Outlook Send Email"""
+    webhook = os.environ["ZAPIER_OUTLOOK_SEND"]
+    req = urllib.request.Request(
+        webhook,
+        data=json.dumps({"to": to, "subject": subject, "body": body}).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            r.read()
+        return f"📧 המייל אל {to} נשלח דרך Outlook (Zapier)"
+    except urllib.error.HTTPError as e:
+        return f"❌ שליחת המייל נכשלה (שגיאה {e.code})"
+
+
+def send_gmail(to, subject, body):
+    """שולח מייל דרך Gmail SMTP עם App Password (בלי Zapier ובלי Azure)"""
+    addr = os.environ["GMAIL_ADDRESS"]
+    pwd = os.environ["GMAIL_APP_PASSWORD"].replace(" ", "")
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = subject
+    msg["From"] = addr
+    msg["To"] = to
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as server:
+            server.login(addr, pwd)
+            server.sendmail(addr, [to], msg.as_string())
+        return f"📧 המייל אל {to} נשלח מ-{addr}"
+    except smtplib.SMTPAuthenticationError:
+        return (
+            "❌ Gmail דחה את ההתחברות. ודא ש-GMAIL_APP_PASSWORD הוא "
+            "סיסמת אפליקציה (16 תווים) ולא הסיסמה הרגילה, "
+            "ושאימות דו שלבי מופעל בחשבון"
+        )
+    except (smtplib.SMTPException, OSError) as e:
+        return f"❌ שליחת המייל נכשלה: {e}"
+
+
+def send_outlook_mail(to, subject, body):
+    """שולח מייל ישירות דרך Microsoft Graph API (בלי Zapier)"""
+    tenant = os.environ.get("MS_TENANT_ID", "")
+    client_id = os.environ.get("MS_CLIENT_ID", "")
+    client_secret = os.environ.get("MS_CLIENT_SECRET", "")
+    sender = os.environ.get("MS_SENDER_EMAIL", "")
+    if not all([tenant, client_id, client_secret, sender]):
+        return (
+            "❌ החיבור הישיר ל-Outlook עדיין לא מוגדר. "
+            "נדרשים 4 secrets: MS_TENANT_ID, MS_CLIENT_ID, "
+            "MS_CLIENT_SECRET, MS_SENDER_EMAIL"
+        )
+
+    token_req = urllib.request.Request(
+        f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token",
+        data=urllib.parse.urlencode({
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "scope": "https://graph.microsoft.com/.default",
+            "grant_type": "client_credentials",
+        }).encode(),
+    )
+    try:
+        with urllib.request.urlopen(token_req) as r:
+            access_token = json.loads(r.read())["access_token"]
+    except urllib.error.HTTPError as e:
+        return f"❌ אימות מול Microsoft נכשל (שגיאה {e.code}). בדוק את MS_CLIENT_ID / MS_CLIENT_SECRET / MS_TENANT_ID"
+
+    mail_req = urllib.request.Request(
+        f"https://graph.microsoft.com/v1.0/users/{urllib.parse.quote(sender)}/sendMail",
+        data=json.dumps({
+            "message": {
+                "subject": subject,
+                "body": {"contentType": "Text", "content": body},
+                "toRecipients": [{"emailAddress": {"address": to}}],
+            },
+            "saveToSentItems": True,
+        }).encode(),
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(mail_req) as r:
+            r.read()
+        return f"📧 המייל אל {to} נשלח מ-{sender}"
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")[:200]
+        if e.code == 403:
+            return "❌ אין הרשאת Mail.Send. יש להוסיף את ההרשאה ב-Azure ולאשר Admin Consent"
+        return f"❌ שליחת המייל נכשלה (שגיאה {e.code}): {detail}"
 
 
 def main():
@@ -207,14 +351,29 @@ def main():
         msg = update.get("message", {})
         chat_id = str(msg.get("chat", {}).get("id", ""))
         text = msg.get("text", "")
-
-        if chat_id != CHAT_ID:
+        if not text:
             continue
 
-        if text.startswith("/"):
-            response = process_command(text)
-            if response:
-                send(response)
+        if chat_id == CHAT_ID:
+            # הבעלים: פקודות בלבד
+            if text.startswith("/"):
+                response = process_command(text)
+                if response:
+                    send(response)
+        else:
+            # פונה חיצוני (לקוח): מענה AI + עותק לבעלים
+            frm = msg.get("from", {})
+            name = " ".join(
+                p for p in [frm.get("first_name"), frm.get("last_name")] if p
+            ) or "לא ידוע"
+            reply = ai_reply(text)
+            send_to(chat_id, reply)
+            send(
+                "📨 פנייה חדשה מלקוח\n"
+                f"מאת: {name} (chat {chat_id})\n\n"
+                f"הלקוח: {text}\n"
+                f"הבוט ענה: {reply}"
+            )
 
     if new_last_id > last_id:
         set_last_id(new_last_id)
