@@ -203,6 +203,8 @@ const en = {
         allTitle: "All milestones",
         copyLink: "Copy pay link",
         copied: "Copied",
+        invoiceLink: "Invoice4U",
+        invoiceAria: "Open the Invoice4U billing portal (opens in a new tab)",
       },
     },
     article: {
@@ -769,6 +771,8 @@ const he: Dict = {
         allTitle: "כל אבני הדרך",
         copyLink: "העתקת קישור תשלום",
         copied: "הועתק",
+        invoiceLink: "Invoice4U",
+        invoiceAria: "פתיחת פורטל החשבוניות Invoice4U (נפתח בלשונית חדשה)",
       },
     },
     article: {
