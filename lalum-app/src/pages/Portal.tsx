@@ -128,6 +128,8 @@ export function Portal() {
   const [allBills, setAllBills] = useState<Milestone[]>([]);
   const [payBusy, setPayBusy] = useState<string | undefined>();
   const [billEmail, setBillEmail] = useState("");
+  const [billName, setBillName] = useState("");
+  const [billPhone, setBillPhone] = useState("");
   const [billTitle, setBillTitle] = useState("");
   const [billAmount, setBillAmount] = useState("");
   const [billCurrency, setBillCurrency] = useState("ILS");
@@ -175,6 +177,9 @@ export function Portal() {
         amount: bill.amount,
         currency: bill.currency,
         client_email: null,
+        // The caller's real number, so an Invoice4U payment page can be issued.
+        client_phone: c.caller_phone,
+        client_name: t.ui.portal.calls.chargeTitle,
       });
       if (error) throw error;
       setChargedIds((s) => new Set(s).add(c.id));
@@ -207,12 +212,14 @@ export function Portal() {
     setBillBusy(true);
     setBillMsg(null);
     try {
-      const { error } = await supabase.from("billing_milestones").insert({ client_email: billEmail || null, title: billTitle.trim(), amount: Number(billAmount), currency: billCurrency });
+      const { error } = await supabase.from("billing_milestones").insert({ client_email: billEmail || null, client_name: billName || null, client_phone: billPhone || null, title: billTitle.trim(), amount: Number(billAmount), currency: billCurrency });
       if (error) throw error;
       setBillMsg({ tone: "ok", text: B.createdOk });
       setBillTitle("");
       setBillAmount("");
       setBillEmail("");
+      setBillName("");
+      setBillPhone("");
       await loadMessages();
     } catch (err) {
       setBillMsg({ tone: "err", text: err instanceof Error ? err.message : B.err });
@@ -525,6 +532,16 @@ export function Portal() {
               <div>
                 <div className="label">{P.billing.itemTitle}</div>
                 <input className="field" value={billTitle} onChange={(e) => setBillTitle(e.target.value)} placeholder={P.billing.itemTitlePh} />
+              </div>
+            </div>
+            <div className="grid grid-2" style={{ gap: 12 }}>
+              <div>
+                <div className="label">{P.billing.clientName}</div>
+                <input className="field" value={billName} onChange={(e) => setBillName(e.target.value)} placeholder={P.billing.clientNamePh} />
+              </div>
+              <div>
+                <div className="label">{P.billing.clientPhone}</div>
+                <input className="field" value={billPhone} onChange={(e) => setBillPhone(e.target.value)} placeholder={P.billing.clientPhonePh} dir="ltr" inputMode="tel" />
               </div>
             </div>
             <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>

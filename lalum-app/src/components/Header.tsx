@@ -1,14 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import { supabase } from "../lib/supabase";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
-import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
+import { whatsappNumber, telegramUrl, officePhone, accountingUrl } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
   const { t, toggle } = useLang();
+
+  // The accounting quick-link is firm-only, so we resolve admin status here.
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (!user) { setIsAdmin(false); return; }
+    if ((user.email ?? "").toLowerCase() === "avraham@lalum.co") { setIsAdmin(true); return; }
+    if (!supabase) { setIsAdmin(false); return; }
+    supabase.from("lalum_profiles").select("is_admin").eq("id", user.id).maybeSingle()
+      .then(({ data }: { data: { is_admin?: boolean } | null }) => { if (active) setIsAdmin(Boolean(data?.is_admin)); });
+    return () => { active = false; };
+  }, [user]);
 
   const nav = [
     { to: "/", label: t.ui.nav.home, end: true },
@@ -80,6 +94,18 @@ export function Header() {
           >
             {t.ui.otherLangShort}
           </button>
+          {isAdmin && (
+            <a
+              className="tb-btn"
+              href={accountingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t.ui.accounting.aria}
+              title={t.ui.accounting.aria}
+            >
+              <Icon name="file" size={18} />
+            </a>
+          )}
           <Link to="/book" className="btn btn-clay btn-sm hide-mobile">{t.ui.bookPage.navCta}</Link>
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile">
             {user ? t.ui.clientPortal : t.ui.clientLogin}
