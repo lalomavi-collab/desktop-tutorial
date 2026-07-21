@@ -46,6 +46,56 @@ def send(text):
     telegram("sendMessage", {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"})
 
 
+def send_to(chat_id, text):
+    """שולח הודעה ל-chat כלשהו (לקוח), בלי Markdown כדי לא לשבור טקסט חופשי"""
+    telegram("sendMessage", {"chat_id": chat_id, "text": text})
+
+
+RECEPTIONIST_PROMPT = (
+    "אתה פקיד הקבלה הווירטואלי של LALUM, משרד עורכי דין (עו\"ד לалו מави). "
+    "אתה עונה ללקוחות ופונים שכותבים למשרד בטלגרם.\n"
+    "הכללים שלך:\n"
+    "- כתוב בעברית, בטון חם, מקצועי ומכבד.\n"
+    "- אתה פקיד קבלה, לא עורך דין. אל תיתן ייעוץ משפטי ואל תתחייב בשם המשרד.\n"
+    "- המטרה: לקבל בברכה, להבין בקצרה מה הפונה צריך, ולאסוף שם מלא, נושא הפנייה וטלפון לחזרה.\n"
+    "- הבהר שעורך דין מהמשרד יחזור אליו בהקדם, בלי הבטחות לגבי תוצאות או מועדים מדויקים.\n"
+    "- שמור על תשובה קצרה, שתיים עד ארבע שורות.\n"
+    "- אל תשתמש במקפים כסימני פיסוק. השתמש בפסיק, נקודה או סוגריים."
+)
+
+FALLBACK_REPLY = (
+    "שלום, קיבלנו את פנייתך. עורך דין מהמשרד יחזור אליך בהקדם. "
+    "אנא השאר שם מלא וטלפון לחזרה."
+)
+
+
+def ai_reply(user_text):
+    """מנסח תשובה טבעית בעברית דרך Anthropic. נופל לתשובת ברירת מחדל אם אין מפתח."""
+    key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not key:
+        return FALLBACK_REPLY
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=json.dumps({
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 400,
+            "system": RECEPTIONIST_PROMPT,
+            "messages": [{"role": "user", "content": user_text}],
+        }).encode(),
+        headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            data = json.loads(r.read())
+        return data.get("content", [{}])[0].get("text", "").strip() or FALLBACK_REPLY
+    except (urllib.error.HTTPError, urllib.error.URLError, KeyError, IndexError):
+        return FALLBACK_REPLY
+
+
 def gh(path, method="GET", body=None):
     url = f"https://api.github.com/repos/{REPO}{path}"
     data = json.dumps(body).encode() if body else None
@@ -301,14 +351,29 @@ def main():
         msg = update.get("message", {})
         chat_id = str(msg.get("chat", {}).get("id", ""))
         text = msg.get("text", "")
-
-        if chat_id != CHAT_ID:
+        if not text:
             continue
 
-        if text.startswith("/"):
-            response = process_command(text)
-            if response:
-                send(response)
+        if chat_id == CHAT_ID:
+            # הבעלים: פקודות בלבד
+            if text.startswith("/"):
+                response = process_command(text)
+                if response:
+                    send(response)
+        else:
+            # פונה חיצוני (לקוח): מענה AI + עותק לבעלים
+            frm = msg.get("from", {})
+            name = " ".join(
+                p for p in [frm.get("first_name"), frm.get("last_name")] if p
+            ) or "לא ידוע"
+            reply = ai_reply(text)
+            send_to(chat_id, reply)
+            send(
+                "📨 פנייה חדשה מלקוח\n"
+                f"מאת: {name} (chat {chat_id})\n\n"
+                f"הלקוח: {text}\n"
+                f"הבוט ענה: {reply}"
+            )
 
     if new_last_id > last_id:
         set_last_id(new_last_id)
