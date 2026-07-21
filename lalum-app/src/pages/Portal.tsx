@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
-import { accountingUrl, paymentsEnabled } from "../lib/content";
+import { accountingUrl, paymentsEnabled, accountingDashboardEnabled } from "../lib/content";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -522,15 +522,17 @@ export function Portal() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
             <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.adminTitle}</h2>
-            <a
-              className="btn btn-ghost btn-sm"
-              href={accountingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ marginInlineStart: "auto", whiteSpace: "nowrap" }}
-            >
-              <Icon name="file" size={15} /> {P.billing.dashboard}
-            </a>
+            {accountingDashboardEnabled && (
+              <a
+                className="btn btn-ghost btn-sm"
+                href={accountingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ marginInlineStart: "auto", whiteSpace: "nowrap" }}
+              >
+                <Icon name="file" size={15} /> {P.billing.dashboard}
+              </a>
+            )}
           </div>
           <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.billing.adminIntro}</p>
           <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
@@ -683,9 +685,12 @@ export function Portal() {
                   {paid ? (
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{P.billing.statusLabels.paid} ✓</span>
                   ) : (
-                    <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
-                      {payBusy === bl.id ? P.billing.paying : P.billing.pay}
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+                      <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
+                        {payBusy === bl.id ? P.billing.paying : P.billing.pay}
+                      </button>
+                      <span className="muted" style={{ fontSize: 11 }} dir="ltr">{P.billing.walletHint}</span>
+                    </div>
                   )}
                   {failed && <span style={{ fontSize: 12, color: "var(--clay)" }}>{P.billing.statusLabels.failed}</span>}
                 </div>
