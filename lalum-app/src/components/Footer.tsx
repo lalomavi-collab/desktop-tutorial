@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
-import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress } from "../lib/content";
+import { Icon } from "./Icon";
+import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress, paymentsEnabled } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -98,6 +99,20 @@ export function Footer() {
           </address>
         </div>
       </div>
+
+      {paymentsEnabled && (
+        <div className="wrap footer-pay" aria-label={f.paySecure}>
+          <span className="footer-pay-label">
+            <Icon name="shield" size={15} /> {f.paySecure}
+          </span>
+          <span className="footer-pay-badges" aria-hidden="true">
+            <span className="pay-badge pay-badge-dark">&#63743;&nbsp;Pay</span>
+            <span className="pay-badge pay-badge-light">G&nbsp;Pay</span>
+            <span className="pay-badge pay-badge-bit">bit</span>
+            <span className="pay-badge pay-badge-card"><Icon name="file" size={13} /> {lang === "he" ? "אשראי" : "Card"}</span>
+          </span>
+        </div>
+      )}
 
       <div className="wrap footer-bottom">
         <span className="muted footer-copy" style={{ fontSize: 13 }}>
