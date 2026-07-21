@@ -75,7 +75,9 @@ export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboa
 // milestone from their portal: the app hands off to the Invoice4U secure hosted
 // page, which presents Google Pay, Apple Pay, Bit, and card. This never exposes
 // the firm's Invoice4U account, only a single-amount checkout for that payment.
-export const paymentsEnabled = true;
+// Kept off until the Invoice4U clearing terminal is live, so no Pay buttons show
+// on the site while a charge would fail. Flip to true once clearing is verified.
+export const paymentsEnabled = false;
 
 // Separate, stricter switch for the deep link into the firm's private Invoice4U
 // dashboard (the admin's own systems). Kept off so no path to those systems is
