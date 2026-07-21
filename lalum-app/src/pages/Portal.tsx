@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
-import { accountingUrl } from "../lib/content";
+import { accountingUrl, paymentsEnabled } from "../lib/content";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -448,7 +448,7 @@ export function Portal() {
                         {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
                       </div>
                     )}
-                    {c.is_billable && bill && (
+                    {paymentsEnabled && c.is_billable && bill && (
                       <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
                         {chargedIds.has(c.id) ? (
                           <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
@@ -517,7 +517,7 @@ export function Portal() {
       )}
 
       {/* ADMIN BILLING (firm only) */}
-      {isAdmin && (
+      {isAdmin && paymentsEnabled && (
         <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
@@ -662,7 +662,7 @@ export function Portal() {
       )}
 
       {/* CLIENT BILLING / PAYMENTS */}
-      {!isAdmin && myBills.length > 0 && (
+      {!isAdmin && paymentsEnabled && myBills.length > 0 && (
         <div className="card" style={{ padding: 34, marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>

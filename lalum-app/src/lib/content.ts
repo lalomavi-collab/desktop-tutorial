@@ -67,8 +67,15 @@ export const whatsappNumber = "972522490420";
 // Public Telegram contact (t.me link).
 export const telegramUrl = "https://t.me/Lalumbot";
 
-// Firm accounting dashboard (Invoice4U). Admin-only quick link in the header.
+// Firm accounting dashboard (Invoice4U). Surfaced only inside the admin-only
+// Portal billing area, and only while payments are switched on below.
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
+
+// Master switch for the in-app clearing/payments feature. While this is false
+// the app exposes no path to the Invoice4U systems at all: no client Pay
+// buttons, no admin billing form, no "copy pay link", and no dashboard link.
+// Flip to true to resume the Invoice4U clearing flow later.
+export const paymentsEnabled = false;
 
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
