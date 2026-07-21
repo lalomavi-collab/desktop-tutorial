@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
+import { accountingUrl } from "../lib/content";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -521,6 +522,15 @@ export function Portal() {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
             <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.adminTitle}</h2>
+            <a
+              className="btn btn-ghost btn-sm"
+              href={accountingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginInlineStart: "auto", whiteSpace: "nowrap" }}
+            >
+              <Icon name="file" size={15} /> {P.billing.dashboard}
+            </a>
           </div>
           <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.billing.adminIntro}</p>
           <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
