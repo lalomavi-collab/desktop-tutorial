@@ -4,7 +4,7 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
-import { whatsappNumber, telegramUrl } from "../lib/content";
+import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
@@ -42,6 +42,14 @@ export function Header() {
           >
             <Icon name="compass" size={18} />
           </button>
+          <a
+            className="tb-btn tb-bot"
+            href={`tel:${officePhone.tel}`}
+            aria-label={t.ui.botCall.aria}
+            title={t.ui.botCall.aria}
+          >
+            <Icon name="headset" size={19} />
+          </a>
           <a
             className="tb-btn"
             href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}

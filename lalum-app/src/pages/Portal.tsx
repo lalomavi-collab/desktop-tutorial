@@ -59,11 +59,26 @@ type Milestone = {
   created_at: string;
 };
 
+type CallRow = {
+  id: string;
+  caller_phone: string;
+  duration_seconds: number;
+  client_intent: string | null;
+  is_billable: boolean;
+  is_processed: boolean;
+  summary: string | null;
+  created_at: string;
+  // PostgREST embeds one-to-many relations as arrays.
+  lalum_crm_tasks: { title: string; priority: string; due_date: string; status: string }[] | null;
+  lalum_billing_ledgers: { amount: number; currency: string; billed_hours: number }[] | null;
+};
+
 export function Portal() {
   const { user, signOut, demoMode } = useAuth();
   const { t, lang } = useLang();
   const P = t.ui.portal;
   const M = P.messages;
+  const C = P.calls;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
 
   const [day, setDay] = useState("");
@@ -103,6 +118,9 @@ export function Portal() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [thread, setThread] = useState<MsgRow[]>([]);
   const [inbox, setInbox] = useState<MsgRow[]>([]);
+  const [calls, setCalls] = useState<CallRow[]>([]);
+  const [chargingId, setChargingId] = useState<string | undefined>();
+  const [chargedIds, setChargedIds] = useState<Set<string>>(new Set());
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [rowBusy, setRowBusy] = useState<Record<string, "draft" | "send" | undefined>>({});
 
@@ -133,8 +151,40 @@ export function Portal() {
       const all = await supabase.from("lalum_messages").select("*").order("created_at", { ascending: false });
       if (all.data) setInbox(all.data as MsgRow[]);
       setAllBills((mine.data as Milestone[]) ?? []);
+      const callRes = await supabase
+        .from("lalum_calls_meta")
+        .select(
+          "id, caller_phone, duration_seconds, client_intent, is_billable, is_processed, summary, created_at, lalum_crm_tasks(title, priority, due_date, status), lalum_billing_ledgers(amount, currency, billed_hours)"
+        )
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (callRes.data) setCalls(callRes.data as unknown as CallRow[]);
     }
   }, [user]);
+
+  // One-click: turn a billable call into a payment request, reusing the amount
+  // the voice billing already computed (gross, VAT included).
+  async function chargeForCall(c: CallRow) {
+    const bill = c.lalum_billing_ledgers?.[0];
+    if (!supabase || !bill || chargingId) return;
+    setChargingId(c.id);
+    try {
+      const title = `${t.ui.portal.calls.chargeTitle} · ${c.caller_phone}`;
+      const { error } = await supabase.from("billing_milestones").insert({
+        title,
+        amount: bill.amount,
+        currency: bill.currency,
+        client_email: null,
+      });
+      if (error) throw error;
+      setChargedIds((s) => new Set(s).add(c.id));
+      await loadMessages();
+    } catch {
+      window.alert(t.ui.portal.billing.err);
+    } finally {
+      setChargingId(undefined);
+    }
+  }
 
   async function payMilestone(id: string) {
     if (!supabase) return;
@@ -351,6 +401,63 @@ export function Portal() {
 
       {/* FIRM SCHEDULING CONSOLE (firm only) */}
       {isAdmin && <SchedulingConsole />}
+
+      {/* INCOMING AI CALLS (firm only) */}
+      {isAdmin && (
+        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <span className="icon-badge"><Icon name="phone" size={20} /></span>
+            <h2 className="h3" style={{ fontSize: 22 }}>{C.title}</h2>
+          </div>
+          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{C.intro}</p>
+          {calls.length === 0 ? (
+            <p className="muted" style={{ fontSize: 14 }}>{C.none}</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {calls.map((c) => {
+                const task = c.lalum_crm_tasks?.[0];
+                const bill = c.lalum_billing_ledgers?.[0];
+                const intent = c.client_intent
+                  ? (C.intents[c.client_intent as keyof typeof C.intents] ?? c.client_intent)
+                  : null;
+                const dueDays = task
+                  ? Math.max(0, Math.round((new Date(task.due_date).getTime() - Date.now()) / 86400000))
+                  : null;
+                return (
+                  <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+                      {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
+                      {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
+                      {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
+                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{c.caller_phone}</span>
+                    </div>
+                    {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
+                    {task && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13.5, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
+                        <span style={{ fontWeight: 700, color: "var(--clay)" }}>{C.task}:</span>
+                        <span>{task.title}</span>
+                        <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
+                        {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
+                      </div>
+                    )}
+                    {c.is_billable && bill && (
+                      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
+                        {chargedIds.has(c.id) ? (
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
+                        ) : (
+                          <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
+                            <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ADMIN INBOX (firm only) */}
       {isAdmin && (

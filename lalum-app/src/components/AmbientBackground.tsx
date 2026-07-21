@@ -9,6 +9,7 @@ export function AmbientBackground() {
       <span className="ambient-blob ambient-b1" />
       <span className="ambient-blob ambient-b2" />
       <span className="ambient-blob ambient-b3" />
+      <span className="ambient-sweep" />
       <span className="ambient-grain" />
       <span className="ambient-scrim" />
     </div>

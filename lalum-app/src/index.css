@@ -1451,8 +1451,12 @@ html.a11y-reduce-motion *::after {
   }
   .ambient-blob,
   .ambient-grain,
+  .ambient-sweep,
   .route-view {
     animation: none !important;
+  }
+  .ambient-sweep {
+    opacity: 0.5;
   }
   .faq-chevron {
     transition: none !important;
@@ -1519,6 +1523,28 @@ html.a11y-reduce-motion *::after {
 @keyframes ambient-drift-3 {
   from { transform: translate3d(0, 0, 0) scale(1); }
   to { transform: translate3d(-4vw, -6vh, 0) scale(1.16); }
+}
+/* A slow diagonal shimmer of warm gold light passing across the hero, like sun
+   moving through a room. Pure gradient, GPU-cheap, adds visible life. */
+.ambient-sweep {
+  position: absolute;
+  inset: -30%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(212, 175, 55, 0.14) 47%,
+    rgba(245, 241, 232, 0.22) 50%,
+    rgba(212, 175, 55, 0.14) 53%,
+    transparent 62%
+  );
+  will-change: transform, opacity;
+  animation: ambient-sweep 19s ease-in-out infinite;
+}
+@keyframes ambient-sweep {
+  0% { transform: translate3d(-22%, -14%, 0); opacity: 0; }
+  35% { opacity: 1; }
+  65% { opacity: 1; }
+  100% { transform: translate3d(22%, 14%, 0); opacity: 0; }
 }
 .ambient-grain {
   position: absolute;
@@ -1700,6 +1726,18 @@ html.a11y-reduce-motion *::after {
   box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
 }
 .tb-btn:active { transform: scale(0.92); }
+/* The assistant-call button is the primary quick-contact action, so it carries
+   the clay accent by default (like a WhatsApp bubble) instead of the neutral fill. */
+.tb-btn.tb-bot {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: var(--paper);
+}
+.tb-btn.tb-bot:hover {
+  filter: brightness(1.06);
+  color: var(--paper);
+}
+.tabbar-bot { color: var(--clay); }
 .tb-lang {
   font-size: 13.5px;
   font-weight: 700;
@@ -1709,13 +1747,21 @@ html.a11y-reduce-motion *::after {
    header reads as a single consistent set that matches the app's palette. Only
    the Telegram plane icon needs a small nudge to look optically centred. */
 .tb-tg svg { margin-inline-end: 2px; }
-/* Fit five round controls plus the brand on small phones. */
+/* Fit six round controls plus the brand on small phones. */
 @media (max-width: 480px) {
-  .header-tools { gap: 7px; }
+  .header-tools { gap: 6px; }
   .header-tools .tb-btn,
   .header-tools .share-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+  }
+}
+@media (max-width: 360px) {
+  .header-tools { gap: 5px; }
+  .header-tools .tb-btn,
+  .header-tools .share-btn {
+    width: 31px;
+    height: 31px;
   }
 }
 

@@ -166,6 +166,7 @@ export function Home() {
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderDirect}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{directPhone.display}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.urgentOnly}</span>
               </a>
             </div>
             <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>

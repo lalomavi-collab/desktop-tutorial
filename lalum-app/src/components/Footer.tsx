@@ -89,7 +89,10 @@ export function Footer() {
           <div className="footer-head">{f.contact}</div>
           <a href={`mailto:${contactEmail}`} dir="ltr">{contactEmail}</a>
           <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
-          <a href={`tel:${directPhone.tel}`} dir="ltr">{directPhone.display}</a>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <a href={`tel:${directPhone.tel}`} dir="ltr">{directPhone.display}</a>
+            <span className="muted" style={{ fontSize: 11 }}>{t.ui.urgentOnly}</span>
+          </span>
           <address className="footer-address">
             {addr.map((line, i) => <span key={i}>{line}</span>)}
           </address>
