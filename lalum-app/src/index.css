@@ -411,6 +411,14 @@ article p {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+.integrations-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
 .icon-badge {
   width: 46px;
   height: 46px;
