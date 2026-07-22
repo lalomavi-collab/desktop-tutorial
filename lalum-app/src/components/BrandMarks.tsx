@@ -2,7 +2,30 @@
 // with (nominative "works with" use): meeting tools on the Book page and
 // payment wallets in the billing/footer. Simplified, recognisable, no external
 // assets so they stay crisp and load instantly.
+import { Icon } from "./Icon";
+
 type P = { size?: number };
+
+// Coloured badge wrapping a glyph from the icon sheet, for the recognisable
+// contact brands (WhatsApp green, Telegram blue).
+function GlyphBadge({ size, bg, icon }: { size: number; bg: string; icon: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{ display: "inline-flex", width: size, height: size, borderRadius: size * 0.28, background: bg, color: "#fff", alignItems: "center", justifyContent: "center" }}
+    >
+      <Icon name={icon} size={Math.round(size * 0.62)} />
+    </span>
+  );
+}
+
+export function WhatsAppMark({ size = 24 }: P) {
+  return <GlyphBadge size={size} bg="#25D366" icon="whatsapp" />;
+}
+
+export function TelegramMark({ size = 24 }: P) {
+  return <GlyphBadge size={size} bg="#229ED9" icon="telegram" />;
+}
 
 export function ZoomMark({ size = 22 }: P) {
   return (
@@ -46,9 +69,13 @@ export function ApplePayMark({ size = 22 }: P) {
   return (
     <span
       aria-hidden="true"
-      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#000", color: "#fff", fontFamily: "-apple-system, Arial, sans-serif", fontSize: h * 0.6, fontWeight: 600, lineHeight: 1, gap: 3 }}
+      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#000", color: "#fff", fontFamily: "-apple-system, Arial, sans-serif", fontSize: h * 0.6, fontWeight: 600, lineHeight: 1, gap: 4 }}
     >
-      <span style={{ fontSize: h * 0.72 }}>&#63743;</span>
+      {/* Drawn apple so it renders on every platform (the glyph is Apple-only). */}
+      <svg width={h * 0.6} height={h * 0.6} viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+        <path d="M17.05 12.9c-.03-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.75 2.28-1.6 2.78-.41 6.89 1.15 9.15.76 1.1 1.67 2.34 2.86 2.29 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.42-3.65z" />
+        <path d="M14.77 6.15c.64-.77 1.07-1.85.95-2.92-.92.04-2.03.61-2.69 1.38-.59.68-1.11 1.78-.97 2.83 1.03.08 2.07-.52 2.71-1.29z" />
+      </svg>
       <span>Pay</span>
     </span>
   );

@@ -1,5 +1,6 @@
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
+import { ZoomMark, WhatsAppMark, TelegramMark, ApplePayMark, GPayMark, BitMark } from "./BrandMarks";
 
 // A colourful capabilities band: one glance shows everything the app does, which
 // makes it read as full and alive. Icons pair by position with the localized
@@ -33,6 +34,19 @@ export function Capabilities() {
             </div>
           );
         })}
+      </div>
+
+      {/* Works-with: recognisable brand logos add colour and show integrations. */}
+      <div style={{ textAlign: "center", marginTop: 46 }}>
+        <p className="eyebrow">{h.integrationsEyebrow}</p>
+        <div className="integrations-row">
+          <ZoomMark size={30} />
+          <WhatsAppMark size={30} />
+          <TelegramMark size={30} />
+          <ApplePayMark size={26} />
+          <GPayMark size={26} />
+          <BitMark size={26} />
+        </div>
       </div>
     </section>
   );
