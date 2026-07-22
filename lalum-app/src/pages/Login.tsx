@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import { REMEMBER_KEY } from "../lib/supabase";
 
 export function Login() {
   const { signIn, signUp, demoMode } = useAuth();
@@ -11,6 +12,7 @@ export function Login() {
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -20,6 +22,8 @@ export function Login() {
     setError(null);
     setNotice(null);
     setBusy(true);
+    // Record the choice before auth so the session lands in the right store.
+    try { localStorage.setItem(REMEMBER_KEY, remember ? "1" : "0"); } catch { /* ignore */ }
     const res = mode === "in" ? await signIn(email, password) : await signUp(email, password);
     setBusy(false);
     if (res.error) {
@@ -54,8 +58,13 @@ export function Login() {
           </div>
           <div>
             <div className="label">{L.password}</div>
-            <input className="field" type="password" autoComplete={mode === "in" ? "current-password" : "new-password"} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder={L.passwordPlaceholder} dir="ltr" />
+            <input className="field" type="password" autoComplete={mode === "in" ? "current-password" : "new-password"} required minLength={mode === "up" ? 8 : undefined} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={L.passwordPlaceholder} dir="ltr" />
+            {mode === "up" && <p className="muted" style={{ fontSize: 12.5, margin: "6px 0 0" }}>{L.passwordHint}</p>}
           </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 9, fontSize: 14, color: "var(--slate)", cursor: "pointer" }}>
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} style={{ width: 16, height: 16, accentColor: "var(--clay)" }} />
+            {L.rememberMe}
+          </label>
           <button className="btn btn-clay" style={{ justifyContent: "center", marginTop: 4 }} disabled={busy}>
             {busy ? L.pleaseWait : mode === "in" ? L.signIn : L.createAccount}
           </button>
