@@ -24,7 +24,7 @@ export function HomeAcademy() {
         </div>
 
         <Link to="/training#programs" className="home-academy-grid" aria-label={a.cta}>
-          {courses.map((c, i) => (
+          {courses.slice(0, 4).map((c, i) => (
             <span key={c.id} className="ha-thumb">
               <img src={c.image} alt="" loading="lazy" />
               <span className="ha-thumb-label">{a.cats[i]}</span>

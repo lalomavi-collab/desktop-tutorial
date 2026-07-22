@@ -322,7 +322,7 @@ const en = {
     academy: {
       eyebrow: "LALUM Academy",
       title: "Executive AI training, built for your organization",
-      body: "Four flagship In-House programs: an AI tools stack, the compliance boundary of allowed vs forbidden, and a hands-on capstone tailored to your work.",
+      body: "In-House programs for every sector: an AI tools stack, the compliance boundary of allowed vs forbidden, and a hands-on capstone tailored to your work.",
       meta: "6 sessions · 24 academic hours · 10 to 20 participants · In-House",
       cta: "Explore LALUM Academy",
       cats: ["Real estate & urban renewal", "Corporate governance & contracts", "Litigation & dispute resolution", "Hi-Tech & regulatory engineering"],
@@ -961,7 +961,7 @@ const he: Dict = {
     academy: {
       eyebrow: "LALUM Academy",
       title: "הכשרות AI בכירות, מותאמות לארגון שלכם",
-      body: "ארבע תוכניות דגל פנים-ארגוניות: סטאק כלי AI, גבולות המותר והאסור, ופרויקט גמר מעשי המותאם לעבודה שלכם.",
+      body: "תוכניות דגל פנים-ארגוניות לכל תעשייה: סטאק כלי AI, גבולות המותר והאסור, ופרויקט גמר מעשי המותאם לעבודה שלכם.",
       meta: "6 מפגשים · 24 שעות אקדמיות · 10 עד 20 משתתפים · In-House",
       cta: "לתוכניות LALUM Academy",
       cats: ["נדל\"ן והתחדשות עירונית", "ממשל תאגידי וחוזים", "ליטיגציה ויישוב סכסוכים", "הייטק והנדסה רגולטורית"],
