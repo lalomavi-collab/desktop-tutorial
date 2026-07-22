@@ -78,7 +78,7 @@ export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboa
 // base booking link, so the page keeps working until all four are provided.
 export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
 export const meetingTypes = [
-  { key: "zoom", icon: "video", url: "https://calendly.com/lalomavi/zoom" },
+  { key: "zoom", icon: "video", url: "" },
   { key: "meet", icon: "video", url: "https://calendly.com/lalomavi/google-meet" },
   { key: "phone", icon: "phone", url: "" },
   { key: "inperson", icon: "pin", url: "https://calendly.com/lalomavi/in-person" },
