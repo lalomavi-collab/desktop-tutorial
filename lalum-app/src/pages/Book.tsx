@@ -76,8 +76,17 @@ export function Book() {
           })}
         </div>
 
-        <div className="card" style={{ padding: 8 }}>
-          <SchedulingEmbed key={active.key} url={activeUrl} theme={CLAY_THEME} height={720} />
+        <div className="book-frame">
+          <div className="book-frame-head">
+            <span className="book-frame-secure"><Icon name="shield" size={15} /> {B.secureNote}</span>
+            <span className="book-frame-logos">
+              <ZoomMark size={20} />
+              <span className="book-frame-cal"><Icon name="calendar" size={14} /> Calendly</span>
+            </span>
+          </div>
+          <div style={{ padding: 8 }}>
+            <SchedulingEmbed key={active.key} url={activeUrl} theme={CLAY_THEME} height={720} />
+          </div>
         </div>
       </section>
     );
