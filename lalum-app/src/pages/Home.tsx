@@ -4,6 +4,7 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
+import { Capabilities } from "../components/Capabilities";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -90,6 +91,9 @@ export function Home() {
           <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto", maxWidth: "70ch" }}>{h.aboutP2}</p>
         </div>
       </section>
+
+      {/* CAPABILITIES */}
+      <Capabilities />
 
       {/* PRACTICE */}
       <section id="practice" className="wrap section">
