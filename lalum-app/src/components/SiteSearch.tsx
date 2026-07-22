@@ -4,11 +4,55 @@ import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { externalLinks } from "../lib/content";
 
-type Hit = { title: string; sub: string; to?: string; href?: string };
+type Hit = { title: string; sub: string; to?: string; href?: string; keywords?: string };
+
+// Normalise a string for tolerant matching: lowercase, strip Hebrew niqqud and
+// punctuation, and fold Hebrew final letters to their base form so a query like
+// "תשלום" also matches text that ends a word with "ם". Latin diacritics are
+// folded too. The result is a clean, space-separated token stream.
+function norm(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[֑-ׇ]/g, "") // Hebrew niqqud / cantillation
+    .replace(/[̀-ͯ]/g, "") // Latin combining marks
+    .replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" }[c] as string))
+    .replace(/["'`׳״.,;:!?()\[\]{}<>\/\\|_+=~@#$%^&*־–—-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Bilingual synonym groups. If a query token belongs to a group, every other
+// term in the group is also treated as matching, so "לשלם" finds the payment
+// area and "meeting" finds booking. Kept small and practical.
+const SYNONYMS: string[][] = [
+  ["תשלום", "לשלם", "לשלמ", "תשלומים", "סליקה", "חשבונית", "חשבוניות", "כספים", "אשראי", "pay", "payment", "invoice", "billing", "checkout", "bit", "google pay", "apple pay"],
+  ["פגישה", "פגישות", "תיאום", "לתאם", "יעוץ", "התייעצות", "שיחה", "זום", "טימס", "טלפון", "פרונטלי", "meeting", "book", "booking", "call", "consult", "consultation", "zoom", "teams", "phone", "schedule", "calendar"],
+  ["נדלן", "נדל", "התחדשות", "עירונית", "תמא", "פינוי", "בינוי", "מקרקעין", "דיירים", "יזם", "קבלן", "real estate", "urban renewal", "tama", "property"],
+  ["בינה", "מלאכותית", "ai", "אלגוריתם", "מודל", "artificial intelligence", "machine learning"],
+  ["גישור", "בוררות", "יישוב", "סכסוך", "mediation", "arbitration", "dispute"],
+  ["מסמכים", "קבצים", "תיקייה", "העלאה", "documents", "files", "upload", "portal", "לקוחות", "client"],
+  ["הדרכה", "קורס", "סדנה", "הרצאה", "training", "course", "workshop", "lecture"],
+  ["מאמר", "מאמרים", "תובנות", "בלוג", "מדריך", "מדריכים", "ידע", "insight", "insights", "article", "guide", "knowledge", "faq", "שאלות"],
+];
+
+function expand(tokens: string[]): string[] {
+  const out = new Set(tokens);
+  for (const tok of tokens) {
+    for (const group of SYNONYMS) {
+      if (group.some((g) => norm(g) === tok || norm(g).startsWith(tok) || tok.startsWith(norm(g)))) {
+        for (const g of group) out.add(norm(g));
+      }
+    }
+  }
+  return [...out].filter(Boolean);
+}
 
 // A lightweight, client-side site search over the whole app: pages, articles,
 // advisory areas, and the knowledge links. Built from the current-language
-// dictionary so it stays in sync with the content and needs no backend.
+// dictionary so it stays in sync with the content and needs no backend. The
+// matching is tolerant (niqqud, final letters, synonyms) and ranked so the most
+// relevant destination surfaces first.
 export function SiteSearch() {
   const { t } = useLang();
   const navigate = useNavigate();
@@ -18,25 +62,47 @@ export function SiteSearch() {
   const index = useMemo<Hit[]>(() => {
     const nav = t.ui.nav;
     const items: Hit[] = [
-      { title: nav.home, sub: t.ui.seeWhatWeDo, to: "/" },
-      { title: nav.advisory, sub: t.advisory.heroLede, to: "/advisory" },
-      { title: nav.training, sub: t.training.heroLede, to: "/training" },
-      { title: nav.insights, sub: t.insights.heroLede, to: "/insights" },
-      { title: nav.knowledge, sub: t.knowledge.sub, to: "/knowledge" },
-      { title: t.ui.bookPage.navCta, sub: t.ui.bookPage.subtitleLive, to: "/book" },
-      { title: t.ui.clientLogin, sub: "", to: "/login" },
+      { title: nav.home, sub: t.ui.seeWhatWeDo, to: "/", keywords: "home ראשי בית start" },
+      { title: nav.advisory, sub: t.advisory.heroLede, to: "/advisory", keywords: "נדלן התחדשות עירונית תמא גישור בינה מלאכותית ai mediation real estate advisory" },
+      { title: nav.training, sub: t.training.heroLede, to: "/training", keywords: "קורס סדנה הרצאה הדרכה training course" },
+      { title: nav.insights, sub: t.insights.heroLede, to: "/insights", keywords: "מאמרים תובנות בלוג articles insights" },
+      { title: nav.knowledge, sub: t.knowledge.sub, to: "/knowledge", keywords: "ידע מדריכים שאלות ותשובות faq knowledge guides q&a" },
+      { title: t.ui.bookPage.navCta, sub: t.ui.bookPage.subtitleLive, to: "/book", keywords: "פגישה תיאום שיחה זום טימס טלפון פרונטלי meeting book call zoom teams phone" },
+      { title: t.ui.clientLogin, sub: t.ui.footer.client, to: "/login", keywords: "כניסה התחברות פורטל מסמכים תשלום לשלם client login portal documents pay payment" },
     ];
-    for (const a of t.data.articles) items.push({ title: a.title, sub: a.dek, to: `/insights/${a.slug}` });
-    for (const s of t.data.advisoryServices) items.push({ title: s.title, sub: s.body, to: "/advisory" });
-    items.push({ title: t.ui.footerLinks.qa, sub: "", href: externalLinks.qa });
-    items.push({ title: t.ui.footerLinks.articles, sub: "", href: externalLinks.articles });
+    for (const a of t.data.articles) items.push({ title: a.title, sub: a.dek, to: `/insights/${a.slug}`, keywords: `${a.category} מאמר article` });
+    for (const s of t.data.advisoryServices) items.push({ title: s.title, sub: s.body, to: "/advisory", keywords: "ייעוץ advisory" });
+    items.push({ title: t.ui.footerLinks.qa, sub: t.knowledge.sub, href: externalLinks.qa, keywords: "שאלות ותשובות faq q&a knowledge" });
+    items.push({ title: t.ui.footerLinks.articles, sub: t.insights.heroLede, href: externalLinks.articles, keywords: "מאמרים articles" });
     return items;
   }, [t]);
 
   const results = useMemo<Hit[]>(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return [];
-    return index.filter((it) => (it.title + " " + it.sub).toLowerCase().includes(s)).slice(0, 8);
+    const raw = norm(q);
+    if (!raw) return [];
+    const scored: { hit: Hit; score: number }[] = [];
+    for (const it of index) {
+      const title = norm(it.title);
+      const sub = norm(it.sub);
+      const keys = norm(it.keywords ?? "");
+      const hay = `${title} ${sub} ${keys}`;
+      // Every token from the *original* query must be represented (AND), with
+      // synonyms allowed to satisfy a token. Score rewards title/prefix hits.
+      let ok = true;
+      let score = 0;
+      for (const base of raw.split(" ")) {
+        const variants = expand([base]);
+        const matched = variants.some((v) => hay.includes(v));
+        if (!matched) { ok = false; break; }
+        if (title.includes(base)) score += title.startsWith(base) ? 12 : 8;
+        else if (sub.includes(base)) score += 4;
+        else if (keys.includes(base)) score += 3;
+        else score += 1; // matched only via a synonym
+      }
+      if (ok) scored.push({ hit: it, score });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 8).map((s) => s.hit);
   }, [q, index]);
 
   function go(hit?: Hit) {
