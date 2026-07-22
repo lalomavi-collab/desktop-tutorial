@@ -79,7 +79,7 @@ export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboa
 export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
 export const meetingTypes = [
   { key: "zoom", icon: "video", url: "" },
-  { key: "meet", icon: "video", url: "" },
+  { key: "meet", icon: "video", url: "https://calendly.com/lalomavi/google-meet" },
   { key: "phone", icon: "phone", url: "" },
   { key: "inperson", icon: "pin", url: "" },
 ] as const;
