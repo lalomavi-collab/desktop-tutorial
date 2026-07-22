@@ -93,11 +93,11 @@ export type MeetingKey = (typeof meetingTypes)[number]["key"];
 // on the site while a charge would fail. Flip to true once clearing is verified.
 export const paymentsEnabled = false;
 
-// Separate, stricter switch for the deep link into the firm's private Invoice4U
-// dashboard (the admin's own systems). Kept off so no path to those systems is
-// surfaced anywhere in the app, even while client payments are on. Turn on only
-// if the firm deliberately wants a dashboard shortcut inside the admin portal.
-export const accountingDashboardEnabled = false;
+// Deep link into the firm's private Invoice4U dashboard (full accounting:
+// up-to-date status, income, expenses, and reports). Surfaced ONLY inside the
+// admin-only billing card in the Portal, so clients never see or reach it, they
+// can only pay their own bills. On because the firm wants accounting at hand.
+export const accountingDashboardEnabled = true;
 
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
