@@ -761,16 +761,17 @@ export function Portal() {
       {/* ADMIN BILLING (firm only) */}
       {isAdmin && (
         <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", rowGap: 10, marginBottom: 8 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.adminTitle}</h2>
+            <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.billing.adminTitle}</h2>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{P.billing.adminOnly}</span>
             {accountingDashboardEnabled && (
               <a
                 className="btn btn-ghost btn-sm"
                 href={accountingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ marginInlineStart: "auto", whiteSpace: "nowrap" }}
+                style={{ marginInlineStart: "auto" }}
               >
                 <Icon name="file" size={15} /> {P.billing.dashboard}
               </a>
