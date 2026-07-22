@@ -395,6 +395,57 @@ a.card:hover .card-go {
   border-top-color: #8a3f45;
 }
 
+/* Admin "at a glance" strip: four headline counters across the top of the desk. */
+.admin-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+.admin-stat.hot {
+  border-color: var(--clay);
+  background: var(--clay-tint);
+}
+.admin-stat-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.admin-stat.hot .admin-stat-badge {
+  background: var(--clay);
+  color: var(--paper);
+}
+.admin-stat-value {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+.admin-stat-label {
+  font-size: 13px;
+  color: var(--slate);
+  font-weight: 600;
+}
+@media (max-width: 620px) {
+  .admin-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* Capabilities band: colourful icon tiles that show the app's full scope. */
 .caps-grid {
   display: grid;

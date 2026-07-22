@@ -145,6 +145,13 @@ export function Portal() {
   const [zipBusy, setZipBusy] = useState<string | undefined>();
   const [openClient, setOpenClient] = useState<string | undefined>();
 
+  // Admin inbox: grouped into a folder per client, with a search box and a
+  // "needs reply" filter so a long list stays easy to work through.
+  const [inboxQuery, setInboxQuery] = useState("");
+  const [inboxUnhandledOnly, setInboxUnhandledOnly] = useState(false);
+  const [openInboxClient, setOpenInboxClient] = useState<string | undefined>();
+  const [openCaller, setOpenCaller] = useState<string | undefined>();
+
   const loadAdminDocs = useCallback(async () => {
     if (!supabase) return;
     setDocsState("loading");
@@ -447,6 +454,127 @@ export function Portal() {
     const sym: Record<string, string> = { ILS: "₪", USD: "$", EUR: "€" };
     return `${sym[currency] ?? ""}${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
+  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { day: "numeric", month: "short" });
+
+  // Admin inbox grouped into a folder per client, with search + "needs reply"
+  // filtering, most-urgent client first.
+  const inboxGroups = useMemo(() => {
+    const q = inboxQuery.trim().toLowerCase();
+    const map = new Map<string, MsgRow[]>();
+    for (const m of inbox) {
+      const key = (m.user_email || "").toLowerCase() || "__none__";
+      const arr = map.get(key) ?? [];
+      arr.push(m);
+      map.set(key, arr);
+    }
+    let groups = [...map.entries()].map(([key, msgs]) => ({ key, email: key === "__none__" ? "" : key, msgs }));
+    if (q) {
+      groups = groups
+        .map((g) => ({ ...g, msgs: g.msgs.filter((m) => `${m.user_email ?? ""} ${m.subject ?? ""} ${m.body}`.toLowerCase().includes(q)) }))
+        .filter((g) => g.msgs.length > 0);
+    }
+    if (inboxUnhandledOnly) {
+      groups = groups.map((g) => ({ ...g, msgs: g.msgs.filter((m) => !m.handled) })).filter((g) => g.msgs.length > 0);
+    }
+    const withCounts = groups.map((g) => ({ ...g, unhandled: g.msgs.filter((m) => !m.handled).length }));
+    withCounts.sort((a, b) => (b.unhandled > 0 ? 1 : 0) - (a.unhandled > 0 ? 1 : 0) || (b.msgs[0]?.created_at ?? "").localeCompare(a.msgs[0]?.created_at ?? ""));
+    return withCounts;
+  }, [inbox, inboxQuery, inboxUnhandledOnly]);
+
+  // Calls grouped into a folder per caller, most-recent-with-open-work first.
+  const callGroups = useMemo(() => {
+    const map = new Map<string, CallRow[]>();
+    for (const c of calls) {
+      const key = c.caller_phone || "—";
+      const arr = map.get(key) ?? [];
+      arr.push(c);
+      map.set(key, arr);
+    }
+    const groups = [...map.entries()].map(([phone, rows]) => ({ phone, rows, unprocessed: rows.filter((r) => !r.is_processed).length }));
+    groups.sort((a, b) => (b.unprocessed > 0 ? 1 : 0) - (a.unprocessed > 0 ? 1 : 0) || (b.rows[0]?.created_at ?? "").localeCompare(a.rows[0]?.created_at ?? ""));
+    return groups;
+  }, [calls]);
+
+  // Headline counts for the admin "at a glance" strip.
+  const overview = useMemo(() => ({
+    needReply: inbox.filter((m) => !m.handled).length,
+    callsToProcess: calls.filter((c) => !c.is_processed).length,
+    unpaid: allBills.filter((b) => b.status !== "paid").length,
+    clientCount: new Set(inbox.map((m) => (m.user_email || "").toLowerCase()).filter(Boolean)).size,
+  }), [inbox, calls, allBills]);
+
+  // One call card, reused inside each caller folder.
+  function renderCallCard(c: CallRow) {
+    const task = c.lalum_crm_tasks?.[0];
+    const bill = c.lalum_billing_ledgers?.[0];
+    const intent = c.client_intent ? (C.intents[c.client_intent as keyof typeof C.intents] ?? c.client_intent) : null;
+    const dueDays = task ? Math.max(0, Math.round((new Date(task.due_date).getTime() - Date.now()) / 86400000)) : null;
+    return (
+      <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
+          {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
+          {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
+          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(c.created_at)}</span>
+        </div>
+        {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
+        {task && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13.5, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
+            <span style={{ fontWeight: 700, color: "var(--clay)" }}>{C.task}:</span>
+            <span>{task.title}</span>
+            <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
+            {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
+          </div>
+        )}
+        {paymentsEnabled && c.is_billable && bill && (
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
+            {chargedIds.has(c.id) ? (
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
+            ) : (
+              <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
+                <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // One client message with its AI-draft reply controls, reused inside each
+  // client folder in the admin inbox.
+  function renderInboxMessage(m: MsgRow) {
+    const catLabel = M.categories[m.category as keyof typeof M.categories] ?? m.category;
+    const busy = rowBusy[m.id];
+    return (
+      <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+          {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
+          {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
+          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(m.created_at)}</span>
+        </div>
+        {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
+        <p style={{ margin: "0 0 14px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
+        <textarea
+          className="field"
+          rows={4}
+          value={drafts[m.id] ?? m.ai_draft ?? m.reply ?? ""}
+          onChange={(e) => setDrafts((d) => ({ ...d, [m.id]: e.target.value }))}
+          placeholder={P.inbox.replyPlaceholder}
+          style={{ resize: "vertical", marginBottom: 12 }}
+        />
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button type="button" onClick={() => draftReply(m.id)} className="btn btn-ghost btn-sm" disabled={!!busy}>
+            <Icon name="spark" size={16} /> {busy === "draft" ? P.inbox.drafting : P.inbox.draftAi}
+          </button>
+          <button type="button" onClick={() => sendReply(m.id, m.ai_draft ?? "")} className="btn btn-clay btn-sm" disabled={!!busy}>
+            <Icon name="send" size={15} /> {busy === "send" ? P.inbox.sending : P.inbox.send}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="wrap" style={{ padding: "56px 32px 120px" }}>
@@ -462,6 +590,24 @@ export function Portal() {
       </div>
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
+
+      {/* ADMIN AT A GLANCE (firm only): headline counts across the whole desk. */}
+      {isAdmin && (
+        <div className="admin-overview" style={{ marginBottom: 28 }}>
+          {[
+            { icon: "gavel", label: P.overview.needReply, value: overview.needReply, hot: overview.needReply > 0 },
+            { icon: "phone", label: P.overview.calls, value: overview.callsToProcess, hot: overview.callsToProcess > 0 },
+            { icon: "scale", label: P.overview.unpaid, value: overview.unpaid, hot: overview.unpaid > 0 },
+            { icon: "folder", label: P.overview.clients, value: overview.clientCount, hot: false },
+          ].map((s) => (
+            <div key={s.label} className={"admin-stat" + (s.hot ? " hot" : "")}>
+              <span className="admin-stat-badge"><Icon name={s.icon} size={18} /></span>
+              <span className="admin-stat-value">{s.value}</span>
+              <span className="admin-stat-label">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* FIRM SCHEDULING CONSOLE (firm only) */}
       {isAdmin && <SchedulingConsole />}
@@ -530,42 +676,22 @@ export function Portal() {
           {calls.length === 0 ? (
             <p className="muted" style={{ fontSize: 14 }}>{C.none}</p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {calls.map((c) => {
-                const task = c.lalum_crm_tasks?.[0];
-                const bill = c.lalum_billing_ledgers?.[0];
-                const intent = c.client_intent
-                  ? (C.intents[c.client_intent as keyof typeof C.intents] ?? c.client_intent)
-                  : null;
-                const dueDays = task
-                  ? Math.max(0, Math.round((new Date(task.due_date).getTime() - Date.now()) / 86400000))
-                  : null;
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {callGroups.map((g) => {
+                const open = openCaller === g.phone;
                 return (
-                  <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                      {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
-                      {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
-                      {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
-                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{c.caller_phone}</span>
-                    </div>
-                    {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
-                    {task && (
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13.5, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
-                        <span style={{ fontWeight: 700, color: "var(--clay)" }}>{C.task}:</span>
-                        <span>{task.title}</span>
-                        <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
-                        {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
-                      </div>
-                    )}
-                    {paymentsEnabled && c.is_billable && bill && (
-                      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
-                        {chargedIds.has(c.id) ? (
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
-                        ) : (
-                          <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
-                            <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
-                          </button>
-                        )}
+                  <div key={g.phone} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden" }}>
+                    <button type="button" onClick={() => setOpenCaller(open ? undefined : g.phone)}
+                      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
+                      <Icon name="phone" size={17} />
+                      <span dir="ltr" style={{ fontWeight: 600 }}>{g.phone}</span>
+                      {g.unprocessed > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unprocessed} {C.toProcess}</span>}
+                      <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.rows.length} {C.callsWord}</span>
+                      <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
+                    </button>
+                    {open && (
+                      <div style={{ borderTop: "1px solid var(--line)", padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
+                        {g.rows.map((c) => renderCallCard(c))}
                       </div>
                     )}
                   </div>
@@ -587,40 +713,47 @@ export function Portal() {
           {inbox.length === 0 ? (
             <p className="muted" style={{ fontSize: 14 }}>{P.inbox.none}</p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {inbox.map((m) => {
-                const catLabel = M.categories[m.category as keyof typeof M.categories] ?? m.category;
-                const busy = rowBusy[m.id];
-                return (
-                  <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
-                      {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
-                      {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
-                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{m.user_email}</span>
-                    </div>
-                    {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
-                    <p style={{ margin: "0 0 14px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
-                    <textarea
-                      className="field"
-                      rows={4}
-                      value={drafts[m.id] ?? m.ai_draft ?? m.reply ?? ""}
-                      onChange={(e) => setDrafts((d) => ({ ...d, [m.id]: e.target.value }))}
-                      placeholder={P.inbox.replyPlaceholder}
-                      style={{ resize: "vertical", marginBottom: 12 }}
-                    />
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      <button type="button" onClick={() => draftReply(m.id)} className="btn btn-ghost btn-sm" disabled={!!busy}>
-                        <Icon name="spark" size={16} /> {busy === "draft" ? P.inbox.drafting : P.inbox.draftAi}
-                      </button>
-                      <button type="button" onClick={() => sendReply(m.id, m.ai_draft ?? "")} className="btn btn-clay btn-sm" disabled={!!busy}>
-                        <Icon name="send" size={15} /> {busy === "send" ? P.inbox.sending : P.inbox.send}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 16 }}>
+                <div style={{ flex: 1, minWidth: 200, display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--line-strong)", borderRadius: 9999, padding: "9px 14px", background: "var(--card)" }}>
+                  <Icon name="search" size={16} />
+                  <input value={inboxQuery} onChange={(e) => setInboxQuery(e.target.value)} placeholder={P.inbox.searchPh}
+                    style={{ border: "none", outline: "none", background: "transparent", flex: 1, font: "inherit", fontSize: 14, color: "var(--ink)", minWidth: 0 }} />
+                </div>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13.5, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  <input type="checkbox" checked={inboxUnhandledOnly} onChange={(e) => setInboxUnhandledOnly(e.target.checked)} />
+                  {P.inbox.unhandledOnly}
+                </label>
+                <span className="muted" style={{ fontSize: 12.5 }}>{inboxGroups.length} {P.inbox.clients}</span>
+              </div>
+              {inboxGroups.length === 0 ? (
+                <p className="muted" style={{ fontSize: 14 }}>{P.inbox.noneFiltered}</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {inboxGroups.map((g) => {
+                    const open = openInboxClient === g.key;
+                    const label = g.email || P.inbox.noEmail;
+                    return (
+                      <div key={g.key} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden" }}>
+                        <button type="button" onClick={() => setOpenInboxClient(open ? undefined : g.key)}
+                          style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
+                          <Icon name="user" size={17} />
+                          <span dir="ltr" style={{ fontWeight: 600, wordBreak: "break-all" }}>{label}</span>
+                          {g.unhandled > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unhandled} {P.inbox.newBadge}</span>}
+                          <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.msgs.length} {P.inbox.msgsWord}</span>
+                          <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
+                        </button>
+                        {open && (
+                          <div style={{ borderTop: "1px solid var(--line)", padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
+                            {g.msgs.map((m) => renderInboxMessage(m))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
