@@ -71,6 +71,20 @@ export const telegramUrl = "https://t.me/Lalumbot";
 // Portal billing area, and only while payments are switched on below.
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
 
+// Meeting formats offered on the Book page. Each maps to a Calendly event type
+// that is already wired in Calendly to the right conferencing (Zoom / Google
+// Meet) or location (phone / in-person) and to the firm calendar. Fill each
+// `url` with the matching Calendly event link; any left blank falls back to the
+// base booking link, so the page keeps working until all four are provided.
+export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
+export const meetingTypes = [
+  { key: "zoom", icon: "video", url: "" },
+  { key: "meet", icon: "video", url: "" },
+  { key: "phone", icon: "phone", url: "" },
+  { key: "inperson", icon: "pin", url: "" },
+] as const;
+export type MeetingKey = (typeof meetingTypes)[number]["key"];
+
 // Switch for the in-app clearing/payments feature. When true, clients can pay a
 // milestone from their portal: the app hands off to the Invoice4U secure hosted
 // page, which presents Google Pay, Apple Pay, Bit, and card. This never exposes
