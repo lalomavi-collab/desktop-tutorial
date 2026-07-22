@@ -626,7 +626,7 @@ export function Portal() {
       )}
 
       {/* ADMIN BILLING (firm only) */}
-      {isAdmin && paymentsEnabled && (
+      {isAdmin && (
         <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
