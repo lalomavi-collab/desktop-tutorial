@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
+import { SiteSearch } from "../components/SiteSearch";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -31,6 +32,7 @@ export function Home() {
               <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
               <a href="#practice" className="btn btn-ghost">{t.ui.seeWhatWeDo}</a>
             </div>
+            <SiteSearch />
           </div>
 
           {/* Founder portrait, clickable, opens the full CV */}
