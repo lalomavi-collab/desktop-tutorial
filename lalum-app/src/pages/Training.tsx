@@ -1,13 +1,34 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { CourseSignup } from "../components/CourseSignup";
+import { CourseCatalog } from "../components/CourseCatalog";
 import { useLang } from "../context/LangContext";
 import { trainingEmail } from "../lib/content";
+
+// Warm accents and icons cycled across the delivery-format cards so the section
+// reads with colour and variety instead of flat centred text.
+const FMT_ACCENTS = [
+  { c: "#a8482a", t: "#f3e7de" },
+  { c: "#9a7328", t: "#f1e9d6" },
+  { c: "#8a3f45", t: "#f3e4e4" },
+];
+const FMT_ICONS = ["gavel", "brain", "spark"];
 
 export function Training() {
   const { t } = useLang();
   const tr = t.training;
+  const location = useLocation();
+
+  // When arriving with a #hash (e.g. the home "Explore Academy" CTA links to
+  // /training#programs), scroll that section into view after the page renders.
+  useEffect(() => {
+    if (!location.hash) return;
+    const el = document.querySelector(location.hash);
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }, [location.hash]);
 
   return (
     <>
@@ -29,6 +50,9 @@ export function Training() {
 
       {/* COURSE REGISTRATION (dark premium) */}
       <CourseSignup />
+
+      {/* LALUM ACADEMY: flagship executive programs */}
+      <CourseCatalog />
 
       {/* AUDIENCES */}
       <section className="section-line">
@@ -82,13 +106,21 @@ export function Training() {
             <h2 className="serif" style={{ fontSize: 40, lineHeight: 1.18, letterSpacing: "-0.015em" }}>{tr.formatsH2}</h2>
           </div>
           <div className="grid grid-3">
-            {t.data.formats.map((f) => (
-              <div key={f.title} style={{ textAlign: "center", padding: 8 }}>
-                <div style={{ fontFamily: "var(--serif)", fontSize: 20, color: "var(--clay)", marginBottom: 6 }}>{f.meta}</div>
-                <h3 className="h3" style={{ fontSize: 22, margin: "0 0 8px" }}>{f.title}</h3>
-                <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "0 auto", maxWidth: "34ch" }}>{f.body}</p>
-              </div>
-            ))}
+            {t.data.formats.map((f, i) => {
+              const acc = FMT_ACCENTS[i % FMT_ACCENTS.length];
+              return (
+                <div key={f.title} className="card" style={{ textAlign: "center", borderTop: `3px solid ${acc.c}` }}>
+                  <div style={{ marginBottom: 14 }}>
+                    <span className="icon-badge" style={{ background: acc.t, color: acc.c, width: 52, height: 52, borderRadius: 14 }}>
+                      <Icon name={FMT_ICONS[i % FMT_ICONS.length]} size={26} />
+                    </span>
+                  </div>
+                  <div style={{ fontFamily: "var(--serif)", fontSize: 20, color: acc.c, marginBottom: 6 }}>{f.meta}</div>
+                  <h3 className="h3" style={{ fontSize: 22, margin: "0 0 8px" }}>{f.title}</h3>
+                  <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "0 auto", maxWidth: "34ch" }}>{f.body}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
+import { HomeAcademy } from "../components/HomeAcademy";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -95,6 +96,9 @@ export function Home() {
       {/* CAPABILITIES */}
       <Capabilities />
 
+      {/* LALUM ACADEMY promo band */}
+      <HomeAcademy />
+
       {/* PRACTICE */}
       <section id="practice" className="wrap section">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
@@ -103,12 +107,13 @@ export function Home() {
         </div>
         <div className="grid grid-3">
           {t.data.pillars.map((p) => (
-            <div key={p.title} className="card">
+            <Link key={p.title} to="/advisory" className="card" aria-label={p.title}>
               <span className="icon-badge"><Icon name={p.icon} size={23} /></span>
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)", margin: "20px 0 6px" }}>{p.tag}</div>
               <h3 className="h3" style={{ fontSize: 23, margin: "0 0 12px", lineHeight: 1.25 }}>{p.title}</h3>
               <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{p.body}</p>
-            </div>
+              <span className="card-go">{h.pillarsGo} &rarr;</span>
+            </Link>
           ))}
         </div>
       </section>
