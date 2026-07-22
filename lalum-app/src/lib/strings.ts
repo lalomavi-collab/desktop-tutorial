@@ -224,7 +224,7 @@ const en = {
         allTitle: "All milestones",
         copyLink: "Copy pay link",
         copied: "Copied",
-        dashboard: "Invoice4U dashboard",
+        dashboard: "Accounting & reports (Invoice4U)",
       },
     },
     article: {
@@ -832,7 +832,7 @@ const he: Dict = {
         allTitle: "כל אבני הדרך",
         copyLink: "העתקת קישור תשלום",
         copied: "הועתק",
-        dashboard: "לוח הנהלת חשבונות Invoice4U",
+        dashboard: "הנהלת חשבונות ודוחות (Invoice4U)",
       },
     },
     article: {
