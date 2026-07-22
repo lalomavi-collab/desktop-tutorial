@@ -4,12 +4,13 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { MarketingConsent } from "../components/MarketingConsent";
+import { meetingTypes, bookingBaseUrl, type MeetingKey } from "../lib/content";
 
 // When a Calendly link is configured, booking is REAL and instant: the visitor
 // gets an email confirmation plus a calendar invite, and the meeting lands on
 // the connected Outlook calendar automatically. The manual request form below
 // is only a fallback for when scheduling is not yet connected.
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || "https://calendly.com/lalomavi/30min";
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || bookingBaseUrl;
 // Clay / ivory palette to match the light brand (hex without '#').
 const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
 
@@ -41,18 +42,41 @@ export function Book() {
   const { t, lang } = useLang();
   const B = t.ui.bookPage;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
+  const [method, setMethod] = useState<MeetingKey>(meetingTypes[0].key);
 
   // Real, instant scheduling via the connected calendar.
   if (CALENDLY_URL) {
+    const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
+    const activeUrl = active.url || CALENDLY_URL;
     return (
       <section className="wrap" style={{ maxWidth: 880, padding: "80px 32px 110px" }}>
-        <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 30px" }}>
+        <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 26px" }}>
           <p className="eyebrow">{B.eyebrow}</p>
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitleLive}</p>
         </div>
+
+        {/* Meeting format: each choice loads the matching Calendly event, which
+            is wired to the right conferencing/location and to the calendar. */}
+        <div style={{ textAlign: "center", marginBottom: 12 }}>
+          <span className="label">{B.meetingLabel}</span>
+        </div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginBottom: 22 }}>
+          {meetingTypes.map((m) => {
+            const on = m.key === method;
+            return (
+              <button type="button" key={m.key} onClick={() => setMethod(m.key)} aria-pressed={on}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 18px", borderRadius: 9999,
+                  border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)",
+                  color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 14.5, fontWeight: 600 }}>
+                <Icon name={m.icon} size={16} /> {B.methods[m.key]}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="card" style={{ padding: 8 }}>
-          <SchedulingEmbed url={CALENDLY_URL} theme={CLAY_THEME} height={720} />
+          <SchedulingEmbed key={active.key} url={activeUrl} theme={CLAY_THEME} height={720} />
         </div>
       </section>
     );
