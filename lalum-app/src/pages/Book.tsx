@@ -5,6 +5,7 @@ import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, type MeetingKey } from "../lib/content";
+import { ZoomMark, MeetMark } from "../components/BrandMarks";
 
 // When a Calendly link is configured, booking is REAL and instant: the visitor
 // gets an email confirmation plus a calendar invite, and the meeting lands on
@@ -69,7 +70,7 @@ export function Book() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 18px", borderRadius: 9999,
                   border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)",
                   color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 14.5, fontWeight: 600 }}>
-                <Icon name={m.icon} size={16} /> {B.methods[m.key]}
+                {m.key === "zoom" ? <ZoomMark size={18} /> : m.key === "meet" ? <MeetMark size={18} /> : <Icon name={m.icon} size={16} />} {B.methods[m.key]}
               </button>
             );
           })}
