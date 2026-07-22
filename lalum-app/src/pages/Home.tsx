@@ -5,6 +5,7 @@ import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
+import { HomeAcademy } from "../components/HomeAcademy";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -94,6 +95,9 @@ export function Home() {
 
       {/* CAPABILITIES */}
       <Capabilities />
+
+      {/* LALUM ACADEMY promo band */}
+      <HomeAcademy />
 
       {/* PRACTICE */}
       <section id="practice" className="wrap section">

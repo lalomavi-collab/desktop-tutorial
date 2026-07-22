@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
@@ -9,6 +11,15 @@ import { trainingEmail } from "../lib/content";
 export function Training() {
   const { t } = useLang();
   const tr = t.training;
+  const location = useLocation();
+
+  // When arriving with a #hash (e.g. the home "Explore Academy" CTA links to
+  // /training#programs), scroll that section into view after the page renders.
+  useEffect(() => {
+    if (!location.hash) return;
+    const el = document.querySelector(location.hash);
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }, [location.hash]);
 
   return (
     <>
