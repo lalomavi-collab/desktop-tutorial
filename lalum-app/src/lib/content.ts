@@ -72,15 +72,14 @@ export const telegramUrl = "https://t.me/Lalumbot";
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
 
 // Meeting formats offered on the Book page. Each maps to a Calendly event type
-// that is already wired in Calendly to the right conferencing (Zoom / Google
-// Meet) or location (phone / in-person) and to the firm calendar. Fill each
-// `url` with the matching Calendly event link; any left blank falls back to the
-// base booking link, so the page keeps working until all four are provided.
+// wired in Calendly to the right conferencing (Zoom) or location (phone /
+// in-person) and to the firm's Outlook calendar. Google Meet is intentionally
+// omitted: it needs a connected Google calendar, and the firm runs on Outlook,
+// so Zoom is the video option. A blank `url` falls back to the base link.
 export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
 export const meetingTypes = [
-  { key: "zoom", icon: "video", url: "" },
-  { key: "meet", icon: "video", url: "https://calendly.com/lalomavi/google-meet" },
-  { key: "phone", icon: "phone", url: "" },
+  { key: "zoom", icon: "video", url: "https://calendly.com/lalomavi/zoom" },
+  { key: "phone", icon: "phone", url: "https://calendly.com/lalomavi/phone" },
   { key: "inperson", icon: "pin", url: "https://calendly.com/lalomavi/in-person" },
 ] as const;
 export type MeetingKey = (typeof meetingTypes)[number]["key"];
