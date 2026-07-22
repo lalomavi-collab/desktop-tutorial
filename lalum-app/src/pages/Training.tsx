@@ -2,6 +2,7 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { CourseSignup } from "../components/CourseSignup";
+import { CourseCatalog } from "../components/CourseCatalog";
 import { useLang } from "../context/LangContext";
 import { trainingEmail } from "../lib/content";
 
@@ -29,6 +30,9 @@ export function Training() {
 
       {/* COURSE REGISTRATION (dark premium) */}
       <CourseSignup />
+
+      {/* LALUM ACADEMY: flagship executive programs */}
+      <CourseCatalog />
 
       {/* AUDIENCES */}
       <section className="section-line">
