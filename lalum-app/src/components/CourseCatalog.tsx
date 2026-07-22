@@ -19,7 +19,7 @@ export function CourseCatalog() {
           <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>LALUM Academy</p>
           <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות הדרכה בכירות לארגון</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
-            ארבע תוכניות דגל, בהעברה פנים-ארגונית בבית העסק, המשלבות סטאק כלי AI, גבולות מותר ואסור, ופרויקט גמר מעשי המותאם לפעילות שלכם.
+            תוכניות דגל למגוון רחב של תעשיות, בהעברה פנים-ארגונית בבית העסק, המשלבות סטאק כלי AI, גבולות מותר ואסור, ופרויקט גמר מעשי המותאם לפעילות שלכם.
           </p>
         </div>
 
