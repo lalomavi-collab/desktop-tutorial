@@ -39,6 +39,19 @@ export function ZoomMark({ size = 22 }: P) {
   );
 }
 
+export function TeamsMark({ size = 22 }: P) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <rect width="48" height="48" rx="11" fill="#5B5FC7" />
+      <circle cx="32.5" cy="16" r="4.3" fill="#fff" />
+      <rect x="27" y="22" width="12" height="11" rx="3" fill="#fff" />
+      <rect x="10" y="16" width="18" height="16" rx="3" fill="#fff" />
+      <rect x="13" y="20" width="12" height="3" rx="1.2" fill="#5B5FC7" />
+      <rect x="17.5" y="20" width="3" height="9" rx="1.2" fill="#5B5FC7" />
+    </svg>
+  );
+}
+
 export function MeetMark({ size = 22 }: P) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
