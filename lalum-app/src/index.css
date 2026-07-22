@@ -419,6 +419,47 @@ article p {
   flex-wrap: wrap;
   margin-top: 16px;
 }
+
+/* Upgraded scheduling window: a framed card with a secure-booking header. */
+.book-frame {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--clay);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: 0 34px 66px -44px rgba(60, 45, 30, 0.55);
+}
+.book-frame-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--clay-tint), var(--card));
+}
+.book-frame-secure {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate);
+}
+.book-frame-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.book-frame-cal {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #006bff;
+}
 .icon-badge {
   width: 46px;
   height: 46px;
