@@ -141,6 +141,7 @@ export function Portal() {
   // Bank-transfer (Bank Leumi) declaration by the client.
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferRef, setTransferRef] = useState("");
+  const [transferFile, setTransferFile] = useState<File | null>(null);
   const [transferBusy, setTransferBusy] = useState(false);
   const [transferMsg, setTransferMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
@@ -326,9 +327,27 @@ export function Portal() {
     setTransferMsg(null);
     try {
       const ref = transferRef.trim();
+      // If the client attached a payment confirmation (screenshot or PDF),
+      // upload it to their file folder first so it reaches the admin both as a
+      // file and referenced inside the inbox message.
+      let receiptName = "";
+      if (transferFile) {
+        if (transferFile.size > 25 * 1024 * 1024) {
+          setTransferMsg({ tone: "err", text: P.files.tooBig });
+          setTransferBusy(false);
+          return;
+        }
+        const safe = transferFile.name.replace(/[^\w.-]+/g, "_");
+        const path = `${user.id}/${Date.now()}-payment-${safe}`;
+        const { error: upErr } = await supabase.storage.from("client-files").upload(path, transferFile, { upsert: false });
+        if (upErr) throw upErr;
+        void supabase.functions.invoke("lalum-file-notify", { body: { path, name: transferFile.name, size: transferFile.size } });
+        receiptName = transferFile.name;
+      }
       const body =
         `הלקוח מאשר שביצע העברה בנקאית ל${bankTransfer.bankName} (חשבון ${bankTransfer.account}).` +
-        (ref ? `\nעבור: ${ref}` : "");
+        (ref ? `\nעבור: ${ref}` : "") +
+        (receiptName ? `\nצורף אישור תשלום: ${receiptName}` : "");
       const { error } = await supabase
         .from("lalum_messages")
         .insert({ user_id: user.id, user_email: user.email, category: "bank_transfer", subject: "אישור העברה בנקאית", body });
@@ -336,6 +355,8 @@ export function Portal() {
       void supabase.functions.invoke("lalum-message", { body: { category: "bank_transfer", subject: "אישור העברה בנקאית", body } });
       setTransferMsg({ tone: "ok", text: T.ok });
       setTransferRef("");
+      setTransferFile(null);
+      await loadFiles();
       await loadMessages();
     } catch {
       setTransferMsg({ tone: "err", text: T.err });
@@ -1018,6 +1039,15 @@ export function Portal() {
               <p className="muted" style={{ fontSize: 12.5, margin: "0 0 12px" }}>{P.transfer.note}</p>
               <div className="label">{P.transfer.refLabel}</div>
               <input className="field" value={transferRef} onChange={(e) => setTransferRef(e.target.value)} placeholder={P.transfer.refPh} style={{ marginBottom: 14 }} />
+              <div className="label">{P.transfer.receipt}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
+                  <Icon name="plus" size={15} /> {P.transfer.receipt}
+                  <input type="file" accept="image/*,.pdf" style={{ display: "none" }} onChange={(e) => setTransferFile(e.target.files?.[0] ?? null)} />
+                </label>
+                {transferFile && <span style={{ fontSize: 13, fontWeight: 600 }} dir="ltr">{transferFile.name}</span>}
+              </div>
+              <p className="muted" style={{ fontSize: 12, margin: "0 0 14px" }}>{P.transfer.receiptHint}</p>
               <button type="button" className="btn btn-clay" disabled={transferBusy} onClick={declareBankTransfer} style={{ justifyContent: "center" }}>
                 <Icon name="check" size={17} /> {transferBusy ? P.transfer.confirming : P.transfer.confirm}
               </button>
