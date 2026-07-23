@@ -94,6 +94,19 @@ export function ApplePayMark({ size = 22 }: P) {
   );
 }
 
+export function LeumiMark({ size = 22 }: P) {
+  const h = size;
+  return (
+    <span
+      aria-hidden="true"
+      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 11px", borderRadius: 6, background: "#002d72", color: "#fff", fontFamily: "Arial, sans-serif", fontSize: h * 0.56, fontWeight: 800, lineHeight: 1, letterSpacing: 0.2, gap: 6 }}
+    >
+      <span style={{ width: h * 0.42, height: h * 0.42, borderRadius: "50%", border: `2px solid #fff`, display: "inline-block", flex: "none" }} />
+      בנק לאומי
+    </span>
+  );
+}
+
 export function BitMark({ size = 22 }: P) {
   const h = size;
   return (
