@@ -5,7 +5,8 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
-import { accountingUrl, paymentsEnabled, accountingDashboardEnabled } from "../lib/content";
+import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer } from "../lib/content";
+import { LeumiMark } from "../components/BrandMarks";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -136,6 +137,12 @@ export function Portal() {
   const [billCurrency, setBillCurrency] = useState("ILS");
   const [billBusy, setBillBusy] = useState(false);
   const [billMsg, setBillMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
+  // Bank-transfer (Bank Leumi) declaration by the client.
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferRef, setTransferRef] = useState("");
+  const [transferBusy, setTransferBusy] = useState(false);
+  const [transferMsg, setTransferMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   // Admin-only, firm-wide view of every client's uploaded documents.
   type AdminFile = { name: string; raw_name: string; path: string; size: number; created_at: string | null; url: string };
@@ -306,6 +313,34 @@ export function Portal() {
       window.alert(t.ui.portal.billing.payErr);
     } finally {
       setPayBusy(undefined);
+    }
+  }
+
+  // Client declares that a bank transfer to Bank Leumi was made. This does not
+  // move money; it records the client's confirmation into the admin inbox so
+  // the firm can match and verify the incoming transfer.
+  async function declareBankTransfer() {
+    if (!supabase || !user) return;
+    const T = P.transfer;
+    setTransferBusy(true);
+    setTransferMsg(null);
+    try {
+      const ref = transferRef.trim();
+      const body =
+        `הלקוח מאשר שביצע העברה בנקאית ל${bankTransfer.bankName} (חשבון ${bankTransfer.account}).` +
+        (ref ? `\nעבור: ${ref}` : "");
+      const { error } = await supabase
+        .from("lalum_messages")
+        .insert({ user_id: user.id, user_email: user.email, category: "bank_transfer", subject: "אישור העברה בנקאית", body });
+      if (error) throw error;
+      void supabase.functions.invoke("lalum-message", { body: { category: "bank_transfer", subject: "אישור העברה בנקאית", body } });
+      setTransferMsg({ tone: "ok", text: T.ok });
+      setTransferRef("");
+      await loadMessages();
+    } catch {
+      setTransferMsg({ tone: "err", text: T.err });
+    } finally {
+      setTransferBusy(false);
     }
   }
 
@@ -940,6 +975,45 @@ export function Portal() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* CLIENT BANK TRANSFER (Bank Leumi) */}
+      {!isAdmin && bankTransfer.enabled && bankTransfer.account && (
+        <div className="card" style={{ padding: 34, marginBottom: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
+            <LeumiMark size={26} />
+            <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.transfer.title}</h2>
+          </div>
+          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 18px" }}>{P.transfer.intro}</p>
+          {!transferOpen ? (
+            <button type="button" className="btn btn-clay" onClick={() => setTransferOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <LeumiMark size={18} /> {P.transfer.show}
+            </button>
+          ) : (
+            <>
+              <div style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 16, marginBottom: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { k: P.transfer.bank, v: `${bankTransfer.bankName} (${bankTransfer.bankCode})` },
+                  { k: P.transfer.branch, v: bankTransfer.branch },
+                  { k: P.transfer.account, v: bankTransfer.account },
+                  { k: P.transfer.holder, v: bankTransfer.holder },
+                ].filter((r) => r.v).map((r) => (
+                  <div key={r.k} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15 }}>
+                    <span className="muted">{r.k}</span>
+                    <span style={{ fontWeight: 600 }} dir="ltr">{r.v}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="muted" style={{ fontSize: 12.5, margin: "0 0 12px" }}>{P.transfer.note}</p>
+              <div className="label">{P.transfer.refLabel}</div>
+              <input className="field" value={transferRef} onChange={(e) => setTransferRef(e.target.value)} placeholder={P.transfer.refPh} style={{ marginBottom: 14 }} />
+              <button type="button" className="btn btn-clay" disabled={transferBusy} onClick={declareBankTransfer} style={{ justifyContent: "center" }}>
+                <Icon name="check" size={17} /> {transferBusy ? P.transfer.confirming : P.transfer.confirm}
+              </button>
+              {transferMsg && <div className={`notice ${transferMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 14 }}>{transferMsg.text}</div>}
+            </>
+          )}
         </div>
       )}
 

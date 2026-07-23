@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
-import { ApplePayMark, GPayMark, BitMark } from "./BrandMarks";
-import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress, paymentsEnabled } from "../lib/content";
+import { GPayMark, LeumiMark } from "./BrandMarks";
+import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress, paymentsEnabled, bankTransfer } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -102,16 +102,14 @@ export function Footer() {
         </div>
       </div>
 
-      {paymentsEnabled && (
+      {(paymentsEnabled || bankTransfer.enabled) && (
         <div className="wrap footer-pay" aria-label={f.paySecure}>
           <span className="footer-pay-label">
             <Icon name="shield" size={15} /> {f.paySecure}
           </span>
           <span className="footer-pay-badges">
-            <ApplePayMark size={24} />
-            <GPayMark size={24} />
-            <BitMark size={24} />
-            <span className="pay-badge pay-badge-card"><Icon name="file" size={13} /> {lang === "he" ? "אשראי" : "Card"}</span>
+            {paymentsEnabled && <GPayMark size={24} />}
+            {bankTransfer.enabled && <LeumiMark size={22} />}
           </span>
         </div>
       )}

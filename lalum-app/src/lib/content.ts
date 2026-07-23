@@ -99,6 +99,20 @@ export const paymentsEnabled = false;
 // can only pay their own bills. On because the firm wants accounting at hand.
 export const accountingDashboardEnabled = true;
 
+// Direct bank transfer (Bank Leumi) as a preferred manual payment option. The
+// client taps the Leumi logo, sees the firm's account details, makes the
+// transfer, and confirms in the app; the confirmation lands in the admin inbox.
+// This is independent of the Invoice4U clearing, so it can go live on its own.
+// Fill in the account details and set `enabled` to true to show it to clients.
+export const bankTransfer = {
+  enabled: false,
+  bankName: "בנק לאומי",
+  bankCode: "10",
+  branch: "", // מספר סניף
+  account: "", // מספר חשבון
+  holder: "", // שם בעל החשבון
+};
+
 // Firm social profiles and the public app URL (used by the download QR).
 export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
