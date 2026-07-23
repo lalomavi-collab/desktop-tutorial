@@ -49,8 +49,8 @@ export function Knowledge() {
   // Articles now live in the app (the Insights page), so that card navigates
   // internally. Q&A still links out to the firm site until it is migrated too.
   const links = [
-    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, to: undefined as string | undefined, accent: "#a8482a", tint: "#f3e7de" },
     { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
+    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, to: undefined as string | undefined, accent: "#a8482a", tint: "#f3e7de" },
   ];
 
   return (
