@@ -377,6 +377,11 @@ def main():
 
     if new_last_id > last_id:
         set_last_id(new_last_id)
+        # Confirm these updates on Telegram's side as well. getUpdates with a
+        # higher offset permanently clears everything up to new_last_id, so the
+        # next run cannot re-fetch and re-send them even if the GitHub variable
+        # write above did not persist (which was causing duplicate messages).
+        telegram("getUpdates", {"offset": new_last_id + 1, "timeout": 0, "limit": 1})
 
 
 if __name__ == "__main__":

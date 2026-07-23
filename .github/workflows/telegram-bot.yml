@@ -5,6 +5,12 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
+# Never let two poller runs overlap: overlapping runs can each fetch the same
+# Telegram updates before either confirms them, causing duplicate replies.
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false
+
 permissions:
   actions: write
   contents: read
