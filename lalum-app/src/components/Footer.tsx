@@ -110,7 +110,11 @@ export function Footer() {
           <span className="footer-pay-badges">
             {(bankTransfer.enabled || paymentsComingSoon) && (
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <LeumiMark size={22} />
+                {bankTransfer.enabled ? (
+                  <Link to="/login" aria-label={f.paySecure} style={{ display: "inline-flex" }}><LeumiMark size={22} /></Link>
+                ) : (
+                  <LeumiMark size={22} />
+                )}
                 {!bankTransfer.enabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
               </span>
             )}

@@ -662,6 +662,55 @@ a.card:hover .card-go {
   }
 }
 
+/* Bank Leumi payment button: navy brand button with a tidy emblem. */
+.leumi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #00305b;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 13px 22px;
+  border-radius: 9999px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.leumi-btn:hover {
+  transform: translateY(-1px);
+  background: #003c73;
+  box-shadow: 0 12px 26px -14px rgba(0, 48, 91, 0.7);
+}
+.leumi-btn:focus-visible {
+  outline: 2px solid #00305b;
+  outline-offset: 3px;
+}
+.leumi-emblem {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.leumi-emblem-bar {
+  width: 4px;
+  height: 12px;
+  background: #00305b;
+  border-radius: 1px;
+}
+.leumi-btn-name {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.leumi-btn-sep {
+  opacity: 0.55;
+}
+
 /* Admin "at a glance" strip: four headline counters across the top of the desk. */
 .admin-overview {
   display: grid;
