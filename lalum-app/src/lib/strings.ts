@@ -267,6 +267,7 @@ const en = {
       seal: "Attorney & Notary · Ph.D. in Law & Economics · Head of AI, Lalum.",
       keepReading: "Keep reading",
       keepReadingHead: "Bring the same rigor to your own matters.",
+      read: "Read",
     },
     bookPage: {
       navCta: "Request an Assessment",
@@ -987,6 +988,7 @@ const he: Dict = {
       seal: "עורך דין ונוטריון · Ph.D. במשפט וכלכלה · ראש מחלקת ה-AI, ללום.",
       keepReading: "המשך קריאה",
       keepReadingHead: "החילו את אותה קפדנות על העניינים שלכם.",
+      read: "לקריאה",
     },
     bookPage: {
       navCta: "לבקשת הערכה",
