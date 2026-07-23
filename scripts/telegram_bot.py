@@ -343,45 +343,53 @@ def main():
     if not updates:
         return
 
-    new_last_id = last_id
+    new_last_id = max(u["update_id"] for u in updates)
+
+    # Mark every fetched update as processed BEFORE handling it, so it can never
+    # be fetched and re-sent again, even if the handling below fails or the job
+    # is cancelled mid-run. This is what stops the duplicate Telegram messages.
+    # We both persist the offset (GitHub variable) and confirm it on Telegram's
+    # side (getUpdates with a higher offset permanently clears earlier updates),
+    # so a single failure of either mechanism cannot cause re-sends.
+    set_last_id(new_last_id)
+    telegram("getUpdates", {"offset": new_last_id + 1, "timeout": 0, "limit": 1})
+
     for update in updates:
-        uid = update["update_id"]
-        new_last_id = max(new_last_id, uid)
+        try:
+            msg = update.get("message", {})
+            chat_id = str(msg.get("chat", {}).get("id", ""))
+            text = msg.get("text", "")
+            if not text:
+                continue
 
-        msg = update.get("message", {})
-        chat_id = str(msg.get("chat", {}).get("id", ""))
-        text = msg.get("text", "")
-        if not text:
+            if chat_id == CHAT_ID:
+                # הבעלים: פקודות בלבד
+                if text.startswith("/"):
+                    response = process_command(text)
+                    if response:
+                        send(response)
+            else:
+                # פונה חיצוני (לקוח): מענה AI + עותק לבעלים
+                frm = msg.get("from", {})
+                name = " ".join(
+                    p for p in [frm.get("first_name"), frm.get("last_name")] if p
+                ) or "לא ידוע"
+                reply = ai_reply(text)
+                send_to(chat_id, reply)
+                # Send the owner copy WITHOUT Markdown: client text can contain
+                # characters that break Telegram Markdown parsing, which would
+                # raise and abort the run.
+                send_to(
+                    CHAT_ID,
+                    "📨 פנייה חדשה מלקוח\n"
+                    f"מאת: {name} (chat {chat_id})\n\n"
+                    f"הלקוח: {text}\n"
+                    f"הבוט ענה: {reply}"
+                )
+        except Exception:
+            # A single bad update must never abort the run: that would leave the
+            # offset unadvanced and cause everything to be re-sent next time.
             continue
-
-        if chat_id == CHAT_ID:
-            # הבעלים: פקודות בלבד
-            if text.startswith("/"):
-                response = process_command(text)
-                if response:
-                    send(response)
-        else:
-            # פונה חיצוני (לקוח): מענה AI + עותק לבעלים
-            frm = msg.get("from", {})
-            name = " ".join(
-                p for p in [frm.get("first_name"), frm.get("last_name")] if p
-            ) or "לא ידוע"
-            reply = ai_reply(text)
-            send_to(chat_id, reply)
-            send(
-                "📨 פנייה חדשה מלקוח\n"
-                f"מאת: {name} (chat {chat_id})\n\n"
-                f"הלקוח: {text}\n"
-                f"הבוט ענה: {reply}"
-            )
-
-    if new_last_id > last_id:
-        set_last_id(new_last_id)
-        # Confirm these updates on Telegram's side as well. getUpdates with a
-        # higher offset permanently clears everything up to new_last_id, so the
-        # next run cannot re-fetch and re-send them even if the GitHub variable
-        # write above did not persist (which was causing duplicate messages).
-        telegram("getUpdates", {"offset": new_last_id + 1, "timeout": 0, "limit": 1})
 
 
 if __name__ == "__main__":
