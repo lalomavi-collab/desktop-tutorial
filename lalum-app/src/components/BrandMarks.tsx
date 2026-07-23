@@ -94,14 +94,18 @@ export function ApplePayMark({ size = 22 }: P) {
   );
 }
 
+// Bank Leumi mark: a tidy navy badge with a small white emblem tile and the
+// bank name. Recognisable and clean, no external asset.
 export function LeumiMark({ size = 22 }: P) {
   const h = size;
   return (
     <span
       aria-hidden="true"
-      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 11px", borderRadius: 6, background: "#002d72", color: "#fff", fontFamily: "Arial, sans-serif", fontSize: h * 0.56, fontWeight: 800, lineHeight: 1, letterSpacing: 0.2, gap: 6 }}
+      style={{ display: "inline-flex", alignItems: "center", height: h, padding: `0 ${h * 0.5}px`, borderRadius: h * 0.32, background: "#00305b", color: "#fff", fontFamily: '"Heebo", Arial, sans-serif', fontSize: h * 0.5, fontWeight: 800, lineHeight: 1, letterSpacing: 0.2, gap: h * 0.34 }}
     >
-      <span style={{ width: h * 0.42, height: h * 0.42, borderRadius: "50%", border: `2px solid #fff`, display: "inline-block", flex: "none" }} />
+      <span style={{ width: h * 0.5, height: h * 0.5, borderRadius: h * 0.14, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", flex: "none" }}>
+        <span style={{ width: h * 0.16, height: h * 0.28, background: "#00305b", borderRadius: 1 }} />
+      </span>
       בנק לאומי
     </span>
   );

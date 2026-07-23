@@ -979,7 +979,7 @@ export function Portal() {
       )}
 
       {/* CLIENT BANK TRANSFER (Bank Leumi) */}
-      {!isAdmin && (bankTransfer.enabled ? bankTransfer.account : paymentsComingSoon) && (
+      {(bankTransfer.enabled ? bankTransfer.account : paymentsComingSoon) && (
         <div className="card" style={{ padding: 34, marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
             <LeumiMark size={26} />
@@ -992,8 +992,11 @@ export function Portal() {
           {!(bankTransfer.enabled && bankTransfer.account) ? (
             <p className="muted" style={{ fontSize: 14 }}>{t.ui.comingSoon}.</p>
           ) : !transferOpen ? (
-            <button type="button" className="btn btn-clay" onClick={() => setTransferOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-              <LeumiMark size={18} /> {P.transfer.show}
+            <button type="button" className="leumi-btn" onClick={() => setTransferOpen(true)} aria-label={`${bankTransfer.bankName} ${P.transfer.show}`}>
+              <span className="leumi-emblem"><span className="leumi-emblem-bar" /></span>
+              <span className="leumi-btn-name">בנק לאומי</span>
+              <span className="leumi-btn-sep">·</span>
+              <span>{P.transfer.show}</span>
             </button>
           ) : (
             <>
