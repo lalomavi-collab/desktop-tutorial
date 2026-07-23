@@ -473,7 +473,7 @@ const en = {
     guidesTitle: "Guides",
     guidesBody: "Short how-to guides for using the app and the client portal.",
     guidesCta: "Open guide",
-    note: "The content is shown from our website for now. It will move fully into the app soon.",
+    note: "Articles now open inside the app. Q&A is shown from our website for now, and will move into the app soon.",
   },
 
   legal: {
@@ -1193,7 +1193,7 @@ const he: Dict = {
     guidesTitle: "מדריכים",
     guidesBody: "מדריכים קצרים לשימוש באפליקציה ובפורטל הלקוחות.",
     guidesCta: "לפתיחת המדריך",
-    note: "התוכן מוצג בינתיים מהאתר שלנו. בקרוב יעלה במלואו לאפליקציה.",
+    note: "המאמרים נפתחים כעת בתוך האפליקציה. שאלות ותשובות מוצגות בינתיים מהאתר שלנו, ויעברו לאפליקציה בקרוב.",
   },
 
   legal: {

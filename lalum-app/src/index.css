@@ -2529,12 +2529,23 @@ html.a11y-reduce-motion *::after {
   text-transform: uppercase;
   color: var(--clay);
 }
-.guide-more a {
+.guide-more a,
+.guide-more-link {
   font-size: 13.5px;
   color: var(--slate);
   font-weight: 600;
 }
-.guide-more a:hover { color: var(--clay); }
+/* The articles entry navigates in-app, so it is a button styled to match the
+   sibling links exactly. */
+.guide-more-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+.guide-more a:hover,
+.guide-more-link:hover { color: var(--clay); }
 .guide-note {
   font-size: 11.5px;
   line-height: 1.5;

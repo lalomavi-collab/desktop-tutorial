@@ -73,7 +73,6 @@ export function SiteSearch() {
     for (const a of t.data.articles) items.push({ title: a.title, sub: a.dek, to: `/insights/${a.slug}`, keywords: `${a.category} מאמר article` });
     for (const s of t.data.advisoryServices) items.push({ title: s.title, sub: s.body, to: "/advisory", keywords: "ייעוץ advisory" });
     items.push({ title: t.ui.footerLinks.qa, sub: t.knowledge.sub, href: externalLinks.qa, keywords: "שאלות ותשובות faq q&a knowledge" });
-    items.push({ title: t.ui.footerLinks.articles, sub: t.insights.heroLede, href: externalLinks.articles, keywords: "מאמרים articles" });
     return items;
   }, [t]);
 
