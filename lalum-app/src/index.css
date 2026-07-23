@@ -1994,6 +1994,16 @@ html.a11y-reduce-motion *::after {
   .nav-pills {
     display: none;
   }
+  /* On a narrow (app) width, justified copy opens whitespace rivers and reads
+     like a dense website. Let text flow naturally from the start edge instead,
+     so the app feels lighter. Desktop keeps its clean justified columns. */
+  .lede,
+  .section p:not(.eyebrow):not(.label),
+  article p {
+    text-align: start;
+    -webkit-hyphens: manual;
+    hyphens: manual;
+  }
 }
 
 @media (max-width: 560px) {
@@ -2020,6 +2030,13 @@ html.a11y-reduce-motion *::after {
   }
   .panel-dark {
     padding: 38px 18px !important;
+  }
+  /* Tighten the hero on phones so it feels like an app screen, not a long
+     scrolling website header. */
+  .hero-grid {
+    padding-top: 40px !important;
+    padding-bottom: 44px !important;
+    gap: 26px !important;
   }
   /* Keep the floating chat bubble from crowding thumb reach. */
   .field {
