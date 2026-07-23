@@ -3,6 +3,19 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { useLang } from "../context/LangContext";
 
+// A warm, brand-cohesive palette. Each article card takes the next accent so
+// the grid reads as one family, gently varied, rather than a flat wall of
+// identical clay cards. Pairs are {accent, tint} tuned to sit on the paper.
+const PALETTE = [
+  { accent: "#a8482a", tint: "#f6e6de" }, // clay
+  { accent: "#9a7328", tint: "#f3ecd6" }, // ochre / gold
+  { accent: "#8a3f45", tint: "#f3e3e4" }, // wine
+  { accent: "#3f6f68", tint: "#e1ede9" }, // teal
+  { accent: "#5a4f9a", tint: "#e8e5f3" }, // indigo
+  { accent: "#41663f", tint: "#e5eede" }, // forest
+  { accent: "#3a5a7a", tint: "#e2e9f1" }, // slate blue
+];
+
 export function Insights() {
   const { t } = useLang();
   const ins = t.insights;
@@ -23,21 +36,27 @@ export function Insights() {
       {/* GRID */}
       <section className="wrap" style={{ paddingBottom: "var(--sec)" }}>
         <div className="grid grid-3">
-          {t.data.articles.map((art) => (
-            <Link key={art.slug} to={`/insights/${art.slug}`} style={{ display: "flex", flexDirection: "column", background: "var(--card)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", color: "inherit" }}>
-              <div style={{ height: 150, position: "relative", background: "var(--clay-tint)", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                <span style={{ color: "var(--clay)" }}><Icon name={art.icon} size={40} /></span>
-                <span style={{ position: "absolute", top: 14, insetInlineEnd: 14, fontSize: 11, color: "var(--clay)", background: "var(--paper)", border: "1px solid var(--clay-soft)", padding: "4px 12px", borderRadius: 9999 }}>{art.category}</span>
-              </div>
-              <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
-                <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, lineHeight: 1.35, margin: "0 0 10px" }}>{art.title}</h3>
-                <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "0 0 20px", flex: 1 }}>{art.dek}</p>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: "var(--slate)" }}>
-                  <span>{art.date}</span><span style={{ color: "var(--clay)" }}>·</span><span>{art.read}</span>
+          {t.data.articles.map((art, i) => {
+            const p = PALETTE[i % PALETTE.length];
+            return (
+              <Link key={art.slug} to={`/insights/${art.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}` }}>
+                <div className="article-card-head" style={{ background: `linear-gradient(140deg, ${p.tint} 0%, var(--card) 100%)` }}>
+                  <span className="article-card-icon" style={{ color: p.accent, borderColor: p.tint }}>
+                    <Icon name={art.icon} size={30} />
+                  </span>
+                  <span className="article-card-cat" style={{ color: p.accent, borderColor: p.accent }}>{art.category}</span>
                 </div>
-              </div>
-            </Link>
-          ))}
+                <div className="article-card-body">
+                  <h3 className="serif article-card-title">{art.title}</h3>
+                  <p className="article-card-dek">{art.dek}</p>
+                  <div className="article-card-meta">
+                    <span>{art.date}</span><span style={{ color: p.accent }}>·</span><span>{art.read}</span>
+                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} &rarr;</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

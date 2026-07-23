@@ -1278,6 +1278,93 @@ a.caps-item:focus-visible .caps-go {
   }
 }
 
+/* ---------- article cards (Articles page) ---------- */
+/* Each card carries its own accent (set inline) for a colourful, cohesive
+   grid, with a soft lift on hover so the page feels alive and tactile. */
+.article-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  color: inherit;
+  box-shadow: 0 1px 2px rgba(27, 27, 27, 0.04);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 34px rgba(27, 27, 27, 0.12);
+  }
+  .article-card:hover .article-card-icon {
+    transform: scale(1.06) rotate(-2deg);
+  }
+}
+.article-card-head {
+  position: relative;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--line);
+}
+.article-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(27, 27, 27, 0.08);
+  transition: transform 0.22s ease;
+}
+.article-card-cat {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--card);
+  border: 1px solid;
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+.article-card-body {
+  padding: 22px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.article-card-title {
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 10px;
+}
+.article-card-dek {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--slate);
+  margin: 0 0 20px;
+  flex: 1;
+}
+.article-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--slate);
+}
+.article-card-go {
+  margin-inline-start: auto;
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
 /* ---------- founder portrait in the hero ---------- */
 .founder-hero {
   position: relative;
