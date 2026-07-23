@@ -1003,6 +1003,8 @@ export function Portal() {
                   { k: P.transfer.branch, v: bankTransfer.branch },
                   { k: P.transfer.account, v: bankTransfer.account },
                   { k: P.transfer.holder, v: bankTransfer.holder },
+                  { k: "IBAN", v: bankTransfer.iban },
+                  { k: "SWIFT", v: bankTransfer.swift },
                 ].filter((r) => r.v).map((r) => (
                   <div key={r.k} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 15 }}>
                     <span className="muted">{r.k}</span>

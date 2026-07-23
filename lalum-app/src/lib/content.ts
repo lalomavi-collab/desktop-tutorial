@@ -109,12 +109,14 @@ export const accountingDashboardEnabled = true;
 export const paymentsComingSoon = true;
 
 export const bankTransfer = {
-  enabled: false,
+  enabled: true,
   bankName: "בנק לאומי",
   bankCode: "10",
-  branch: "", // מספר סניף
-  account: "", // מספר חשבון
-  holder: "", // שם בעל החשבון
+  branch: "855",
+  account: "41220/82",
+  holder: "AVRAHAM AVI LALUM",
+  iban: "IL600108550000004122082",
+  swift: "LUMIILITXXX",
 };
 
 // Firm social profiles and the public app URL (used by the download QR).
