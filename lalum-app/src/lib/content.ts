@@ -104,6 +104,10 @@ export const accountingDashboardEnabled = true;
 // transfer, and confirms in the app; the confirmation lands in the admin inbox.
 // This is independent of the Invoice4U clearing, so it can go live on its own.
 // Fill in the account details and set `enabled` to true to show it to clients.
+// Show the payment options now with a "coming soon" label, before clearing and
+// the bank details are live. Set to false to hide them entirely until ready.
+export const paymentsComingSoon = true;
+
 export const bankTransfer = {
   enabled: false,
   bankName: "בנק לאומי",

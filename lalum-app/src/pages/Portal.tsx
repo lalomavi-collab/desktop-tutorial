@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
-import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer } from "../lib/content";
+import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark } from "../components/BrandMarks";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
@@ -979,14 +979,19 @@ export function Portal() {
       )}
 
       {/* CLIENT BANK TRANSFER (Bank Leumi) */}
-      {!isAdmin && bankTransfer.enabled && bankTransfer.account && (
+      {!isAdmin && (bankTransfer.enabled ? bankTransfer.account : paymentsComingSoon) && (
         <div className="card" style={{ padding: 34, marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
             <LeumiMark size={26} />
             <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.transfer.title}</h2>
+            {!(bankTransfer.enabled && bankTransfer.account) && (
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{t.ui.comingSoon}</span>
+            )}
           </div>
           <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 18px" }}>{P.transfer.intro}</p>
-          {!transferOpen ? (
+          {!(bankTransfer.enabled && bankTransfer.account) ? (
+            <p className="muted" style={{ fontSize: 14 }}>{t.ui.comingSoon}.</p>
+          ) : !transferOpen ? (
             <button type="button" className="btn btn-clay" onClick={() => setTransferOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <LeumiMark size={18} /> {P.transfer.show}
             </button>
