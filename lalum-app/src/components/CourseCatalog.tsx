@@ -17,7 +17,7 @@ export function CourseCatalog() {
       <div className="wrap section">
         <div style={{ textAlign: "center", maxWidth: "62ch", margin: "0 auto 46px" }}>
           <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>LALUM Academy</p>
-          <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות הדרכה בכירות לארגון</h2>
+          <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות הדרכה מתקדמות לארגון</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
             תוכניות דגל למגוון רחב של תעשיות, בהעברה פנים-ארגונית בבית העסק, המשלבות סטאק כלי AI, גבולות מותר ואסור, ופרויקט גמר מעשי המותאם לפעילות שלכם.
           </p>
