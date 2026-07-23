@@ -108,10 +108,17 @@ export function Footer() {
             <Icon name="shield" size={15} /> {f.paySecure}
           </span>
           <span className="footer-pay-badges">
-            {(paymentsEnabled || paymentsComingSoon) && <GPayMark size={24} />}
-            {(bankTransfer.enabled || paymentsComingSoon) && <LeumiMark size={22} />}
-            {!paymentsEnabled && !bankTransfer.enabled && (
-              <span className="pay-badge" style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{t.ui.comingSoon}</span>
+            {(bankTransfer.enabled || paymentsComingSoon) && (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <LeumiMark size={22} />
+                {!bankTransfer.enabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
+              </span>
+            )}
+            {(paymentsEnabled || paymentsComingSoon) && (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <GPayMark size={24} />
+                {!paymentsEnabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
+              </span>
             )}
           </span>
         </div>
