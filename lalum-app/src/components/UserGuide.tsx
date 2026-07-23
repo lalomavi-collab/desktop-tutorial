@@ -75,7 +75,7 @@ export function UserGuide() {
         <div className="guide-more">
           <span className="guide-more-title">{g.moreTitle}</span>
           <a href={externalLinks.qa} target="_blank" rel="noopener noreferrer">{g.qa}</a>
-          <a href={externalLinks.articles} target="_blank" rel="noopener noreferrer">{g.articles}</a>
+          <button type="button" className="guide-more-link" onClick={() => go("/insights")}>{g.articles}</button>
           <a href={appUrl} target="_blank" rel="noopener noreferrer">{g.download}</a>
         </div>
 

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { useLang } from "../context/LangContext";
@@ -45,9 +46,11 @@ export function Knowledge() {
   const cta = (accent: string): CSSProperties => ({ ...ctaRow, color: accent });
   const accented = (accent: string): CSSProperties => ({ ...cardStyle, borderTop: `3px solid ${accent}` });
 
+  // Articles now live in the app (the Insights page), so that card navigates
+  // internally. Q&A still links out to the firm site until it is migrated too.
   const links = [
-    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, accent: "#a8482a", tint: "#f3e7de" },
-    { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: externalLinks.articles, accent: "#9a7328", tint: "#f1e9d6" },
+    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, to: undefined as string | undefined, accent: "#a8482a", tint: "#f3e7de" },
+    { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
   ];
 
   return (
@@ -66,14 +69,21 @@ export function Knowledge() {
       {/* HUB CARDS */}
       <section className="wrap" style={{ paddingBottom: 24 }}>
         <div className="grid grid-3">
-          {links.map((c) => (
-            <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer" style={accented(c.accent)}>
-              <span style={badge(c.accent, c.tint)}><Icon name={c.icon} size={20} /></span>
-              <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h3>
-              <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{c.body}</p>
-              <span style={cta(c.accent)}>{c.cta} <Icon name="chevron-l" size={15} /></span>
-            </a>
-          ))}
+          {links.map((c) => {
+            const inner = (
+              <>
+                <span style={badge(c.accent, c.tint)}><Icon name={c.icon} size={20} /></span>
+                <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h3>
+                <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{c.body}</p>
+                <span style={cta(c.accent)}>{c.cta} <Icon name="chevron-l" size={15} /></span>
+              </>
+            );
+            return c.to ? (
+              <Link key={c.title} to={c.to} style={accented(c.accent)}>{inner}</Link>
+            ) : (
+              <a key={c.title} href={c.href} target="_blank" rel="noopener noreferrer" style={accented(c.accent)}>{inner}</a>
+            );
+          })}
           <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))} style={accented("#8a3f45")}>
             <span style={badge("#8a3f45", "#f3e4e4")}><Icon name="compass" size={20} /></span>
             <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h3>

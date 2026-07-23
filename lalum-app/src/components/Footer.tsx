@@ -79,7 +79,6 @@ export function Footer() {
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
           <a href={externalLinks.qa} target="_blank" rel="noopener noreferrer">{L.qa}</a>
-          <a href={externalLinks.articles} target="_blank" rel="noopener noreferrer">{L.articles}</a>
         </nav>
 
         <nav className="footer-col" aria-label={f.client}>
