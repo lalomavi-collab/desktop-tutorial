@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
-import { ZoomMark, WhatsAppMark, TelegramMark, ApplePayMark, GPayMark, BitMark } from "./BrandMarks";
+import { ZoomMark, TeamsMark, MeetMark, WhatsAppMark, TelegramMark, GPayMark, LeumiMark } from "./BrandMarks";
 import { whatsappNumber, officePhone } from "../lib/content";
 
 // A colourful capabilities band: one glance shows everything the app does, which
@@ -80,11 +80,12 @@ export function Capabilities() {
         <p className="eyebrow">{h.integrationsEyebrow}</p>
         <div className="integrations-row">
           <ZoomMark size={30} />
+          <TeamsMark size={30} />
+          <MeetMark size={30} />
           <WhatsAppMark size={30} />
           <TelegramMark size={30} />
-          <ApplePayMark size={26} />
           <GPayMark size={26} />
-          <BitMark size={26} />
+          <LeumiMark size={26} />
         </div>
       </div>
     </section>
