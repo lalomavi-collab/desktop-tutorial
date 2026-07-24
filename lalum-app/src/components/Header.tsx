@@ -82,9 +82,9 @@ export function Header() {
           >
             {t.ui.otherLangShort}
           </button>
-          <Link to="/book" className="btn btn-clay btn-sm header-cta hide-mobile" aria-label={t.ui.bookPage.navCta} title={t.ui.bookPage.navCta}>
-            <Icon name="calendar" size={16} /> <span className="header-cta-label">{t.ui.bookPage.navCta}</span>
-          </Link>
+          {/* The assessment CTA lives in the page body (hero, advisory card,
+              closing CTA), not the top bar, so the header stays uncluttered.
+              Only the client login/portal button remains here. */}
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm header-cta hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
