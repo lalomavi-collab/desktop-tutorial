@@ -46,9 +46,11 @@ export function Knowledge() {
   const cta = (accent: string): CSSProperties => ({ ...ctaRow, color: accent });
   const accented = (accent: string): CSSProperties => ({ ...cardStyle, borderTop: `3px solid ${accent}` });
 
-  // Articles now live in the app (the Insights page), so that card navigates
-  // internally. Q&A still links out to the firm site until it is migrated too.
+  // The knowledge hub gathers every learning source in one place: courses,
+  // articles, and Q&A. Courses and articles live in the app (internal nav);
+  // Q&A still links out to the firm site until it is migrated too.
   const links = [
+    { icon: "brain", title: k.coursesTitle, body: k.coursesBody, cta: k.coursesCta, href: undefined as string | undefined, to: "/training", accent: "#5a4f9a", tint: "#e8e5f3" },
     { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
     { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, to: undefined as string | undefined, accent: "#a8482a", tint: "#f3e7de" },
   ];

@@ -10,11 +10,12 @@ export function Header() {
   const { user } = useAuth();
   const { t, toggle } = useLang();
 
+  // Articles, Q&A and guides now live under the single Knowledge hub, so the top
+  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub.
   const nav = [
     { to: "/", label: t.ui.nav.home, end: true },
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
-    { to: "/insights", label: t.ui.nav.insights, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
   ];
 
