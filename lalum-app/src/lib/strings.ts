@@ -453,10 +453,10 @@ const en = {
   },
 
   insights: {
-    heroPill: "Articles",
-    heroH1a: "On AI governance,",
-    heroH1b: "regulation, and defensible judgment.",
-    heroLede: "In-depth articles on EU AI Act conformity, algorithmic risk, and governance that holds up in front of a court.",
+    heroPill: "The Algorist Notes",
+    heroH1a: "On legal reasoning,",
+    heroH1b: "machine memory, and defensibility.",
+    heroLede: "Our continuing notes on what it takes to build judgment that holds up in front of a court.",
     ctaTitle: "Bring the same rigor to your matters",
     ctaBody: "Reading is good. Applying it to your own exposure is better. Start with a Tech-Legal Diagnostics session.",
   },
@@ -1174,10 +1174,10 @@ const he: Dict = {
   },
 
   insights: {
-    heroPill: "מאמרים",
-    heroH1a: "על ממשל AI, רגולציה,",
-    heroH1b: "ושיקול דעת בר-הגנה.",
-    heroLede: "מאמרים מעמיקים על עמידה ב-EU AI Act, סיכון אלגוריתמי, וממשל שמחזיק מעמד מול בית המשפט.",
+    heroPill: "פתקי האלגוריסט",
+    heroH1a: "על חשיבה משפטית,",
+    heroH1b: "זיכרון של מכונה, והגנתיות.",
+    heroLede: "הטור המתמשך שלנו על מה שנדרש כדי לבנות שיקול דעת שמחזיק מעמד מול בית המשפט.",
     ctaTitle: "החילו את אותה קפדנות על העניינים שלכם",
     ctaBody: "לקרוא זה טוב. ליישם על החשיפה שלכם זה טוב יותר. התחילו בפגישת אבחון Tech-Legal.",
   },
