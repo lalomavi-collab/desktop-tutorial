@@ -13,15 +13,20 @@ import urllib.parse
 import urllib.request
 from email.mime.text import MIMEText
 
-BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+# @Lalumbot: הבוט הפנימי לניהול (פקודות, התראות אליך)
+MGMT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+# @AAAETBot: הבוט החיצוני מול לקוחות. אם לא מוגדר, המערכת רצה בבוט אחד.
+CLIENT_TOKEN = os.environ.get("CLIENT_BOT_TOKEN", "")
 CHAT_ID = str(os.environ["TELEGRAM_CHAT_ID"])
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 REPO = "lalomavi-collab/desktop-tutorial"
-VAR_NAME = "TELEGRAM_LAST_UPDATE_ID"
+MGMT_VAR = "TELEGRAM_LAST_UPDATE_ID"
+CLIENT_VAR = "CLIENT_LAST_UPDATE_ID"
 
 
-def telegram(method, payload=None):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
+def telegram(method, payload=None, token=None):
+    token = token or MGMT_TOKEN
+    url = f"https://api.telegram.org/bot{token}/{method}"
     data = json.dumps(payload).encode() if payload else None
     req = urllib.request.Request(
         url, data=data,
@@ -34,21 +39,22 @@ def telegram(method, payload=None):
         body = e.read().decode(errors="replace")
         if e.code == 401:
             raise SystemExit(
-                "ERROR: Telegram returned 401 Unauthorized. "
-                "The TELEGRAM_BOT_TOKEN secret is invalid or was revoked. "
-                "Get the current token from @BotFather (/mybots) and update "
-                f"the repo secret. API response: {body}"
+                "ERROR: Telegram returned 401 Unauthorized. A bot token is "
+                "invalid or was revoked. Check TELEGRAM_BOT_TOKEN and "
+                f"CLIENT_BOT_TOKEN. API response: {body}"
             )
         raise SystemExit(f"ERROR: Telegram API {method} failed ({e.code}): {body}")
 
 
 def send(text):
+    """שולח לך (הבעלים) דרך הבוט הפנימי @Lalumbot."""
     telegram("sendMessage", {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"})
 
 
-def send_to(chat_id, text):
-    """שולח הודעה ל-chat כלשהו (לקוח). מחזיר True/False בלי להפיל את הריצה."""
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+def send_to(chat_id, text, token=None):
+    """שולח הודעה ל-chat כלשהו דרך בוט נבחר. מחזיר True/False בלי להפיל את הריצה."""
+    token = token or MGMT_TOKEN
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = json.dumps({"chat_id": chat_id, "text": text}).encode()
     req = urllib.request.Request(
         url, data=data, headers={"Content-Type": "application/json"}
@@ -122,20 +128,20 @@ def gh(path, method="GET", body=None):
         return {"_error": e.code}
 
 
-def get_last_id():
-    result = gh(f"/actions/variables/{VAR_NAME}")
+def get_last_id(var_name):
+    result = gh(f"/actions/variables/{var_name}")
     try:
         return int(result.get("value", 0))
     except (TypeError, ValueError):
         return 0
 
 
-def set_last_id(update_id):
-    result = gh(f"/actions/variables/{VAR_NAME}", "PATCH",
-                {"name": VAR_NAME, "value": str(update_id)})
+def set_last_id(var_name, update_id):
+    result = gh(f"/actions/variables/{var_name}", "PATCH",
+                {"name": var_name, "value": str(update_id)})
     if result.get("_error") == 404:
         gh("/actions/variables", "POST",
-           {"name": VAR_NAME, "value": str(update_id)})
+           {"name": var_name, "value": str(update_id)})
 
 
 def trigger_workflow(workflow_file, ref="main"):
@@ -234,7 +240,9 @@ def process_command(text):
             )
         target = args[0]
         message = " ".join(args[1:])
-        if send_to(target, message):
+        # התשובה יוצאת דרך הבוט החיצוני (@AAAETBot) אם מוגדר, אחרת דרך הפנימי
+        reply_token = CLIENT_TOKEN or MGMT_TOKEN
+        if send_to(target, message, token=reply_token):
             return f"✅ התשובה נשלחה ל-{target}"
         return f"❌ שליחה ל-{target} נכשלה. ודא שהמזהה נכון ושהלקוח כתב לבוט קודם"
 
@@ -357,49 +365,76 @@ def send_outlook_mail(to, subject, body):
         return f"❌ שליחת המייל נכשלה (שגיאה {e.code}): {detail}"
 
 
-def main():
-    last_id = get_last_id()
-    result = telegram("getUpdates", {"offset": last_id + 1, "timeout": 0, "limit": 20})
+def poll(token, var_name):
+    """מושך עדכונים חדשים מבוט מסוים ומחזיר את רשימת ההודעות."""
+    last_id = get_last_id(var_name)
+    result = telegram(
+        "getUpdates",
+        {"offset": last_id + 1, "timeout": 0, "limit": 20},
+        token=token,
+    )
     updates = result.get("result", [])
-
-    if not updates:
-        return
-
     new_last_id = last_id
+    messages = []
     for update in updates:
-        uid = update["update_id"]
-        new_last_id = max(new_last_id, uid)
-
+        new_last_id = max(new_last_id, update["update_id"])
         msg = update.get("message", {})
-        chat_id = str(msg.get("chat", {}).get("id", ""))
-        text = msg.get("text", "")
-        if not text:
-            continue
-
-        if chat_id == CHAT_ID:
-            # הבעלים: פקודות בלבד
-            if text.startswith("/"):
-                response = process_command(text)
-                if response:
-                    send(response)
-        else:
-            # פונה חיצוני (לקוח): מענה AI + עותק לבעלים
-            frm = msg.get("from", {})
-            name = " ".join(
-                p for p in [frm.get("first_name"), frm.get("last_name")] if p
-            ) or "לא ידוע"
-            reply = ai_reply(text)
-            send_to(chat_id, reply)
-            send(
-                "📨 פנייה חדשה מלקוח\n"
-                f"מאת: {name} (chat {chat_id})\n\n"
-                f"הלקוח: {text}\n"
-                f"הבוט ענה: {reply}\n\n"
-                f"למענה אישי: /reply {chat_id} ההודעה שלך"
-            )
-
+        if msg.get("text"):
+            messages.append(msg)
     if new_last_id > last_id:
-        set_last_id(new_last_id)
+        set_last_id(var_name, new_last_id)
+    return messages
+
+
+def handle_owner(msg):
+    """הבעלים בבוט הפנימי: פקודות בלבד."""
+    text = msg["text"]
+    if text.startswith("/"):
+        response = process_command(text)
+        if response:
+            send(response)
+
+
+def handle_client(msg):
+    """פונה חיצוני: מענה AI + עותק אליך עם פקודת /reply מוכנה."""
+    chat_id = str(msg.get("chat", {}).get("id", ""))
+    text = msg["text"]
+    frm = msg.get("from", {})
+    name = " ".join(
+        p for p in [frm.get("first_name"), frm.get("last_name")] if p
+    ) or "לא ידוע"
+    client_token = CLIENT_TOKEN or MGMT_TOKEN
+    reply = ai_reply(text)
+    send_to(chat_id, reply, token=client_token)
+    send(
+        "📨 פנייה חדשה מלקוח\n"
+        f"מאת: {name} (chat {chat_id})\n\n"
+        f"הלקוח: {text}\n"
+        f"הבוט ענה: {reply}\n\n"
+        f"למענה אישי: /reply {chat_id} ההודעה שלך"
+    )
+
+
+def main():
+    # הבוט הפנימי @Lalumbot: הבעלים שולח פקודות. פונים זרים מטופלים רק
+    # אם אין בוט לקוחות נפרד (מצב בוט אחד).
+    for msg in poll(MGMT_TOKEN, MGMT_VAR):
+        chat_id = str(msg.get("chat", {}).get("id", ""))
+        if chat_id == CHAT_ID:
+            handle_owner(msg)
+        elif not CLIENT_TOKEN:
+            handle_client(msg)
+        # אם יש בוט לקוחות נפרד, מתעלמים מזרים בבוט הפנימי
+
+    # הבוט החיצוני @AAAETBot: כל הודעה היא מלקוח.
+    if CLIENT_TOKEN:
+        for msg in poll(CLIENT_TOKEN, CLIENT_VAR):
+            chat_id = str(msg.get("chat", {}).get("id", ""))
+            if chat_id == CHAT_ID:
+                # גם אתה יכול לבדוק את בוט הלקוחות; פקודות עדיין עובדות
+                handle_owner(msg)
+            else:
+                handle_client(msg)
 
 
 if __name__ == "__main__":
