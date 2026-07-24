@@ -333,10 +333,10 @@ const en = {
   },
 
   home: {
-    heroPill: "EU AI Act · AI Governance",
-    heroH1a: "Algorithmic defense",
-    heroH1b: "for your business in the AI era.",
-    heroLede: "Not another memo, and not another AI tool. Signed EU AI Act conformity and algorithmic audits that hold up in court and in the boardroom.",
+    heroPill: "Led by a Doctor of Law and Economics and an AI expert",
+    heroH1a: "The intelligence may be artificial.",
+    heroH1b: "The liability is entirely yours.",
+    heroLede: "When your algorithm makes decisive calls, a black box is no longer an acceptable excuse. The Lalumapp platform bridges code and law: certified, ex-ante legal opinions that accompany your systems from day one. We deliver airtight coverage for the board and signed EU AI Act conformity, without compromising business efficiency.",
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
     caps: ["AI voice intake", "Video meetings", "Smart scheduling", "Secure payments", "Client documents", "WhatsApp & Telegram", "Knowledge & guides", "Site-wide search"],
@@ -1061,10 +1061,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "EU AI Act · ממשל AI",
-    heroH1a: "הגנה אלגוריתמית",
-    heroH1b: "לעסק שלכם בעידן ה-AI.",
-    heroLede: "לא עוד חוות דעת, ולא עוד כלי AI. עמידה חתומה ב-EU AI Act וביקורות אלגוריתמיות שעומדות בבית משפט ובחדר הדירקטוריון.",
+    heroPill: "בהובלת ד״ר למשפטים וכלכלה ומומחה AI",
+    heroH1a: "הבינה אולי מלאכותית.",
+    heroH1b: "האחריות היא לגמרי שלכם.",
+    heroLede: "כשהאלגוריתם שלכם מקבל החלטות גורליות, ״קופסה שחורה״ היא כבר לא תירוץ קביל. פלטפורמת Lalumapp מספקת את הגשר שבין קוד למשפט: חוות דעת מוסמכות ומלאות מראש (Ex-ante) המלוות את פיתוח המערכות שלכם מהיום הראשון. אנו מבטיחים כיסוי הרמטי לדירקטוריון ועמידה חתומה בדרישות ה-EU AI Act, מבלי לפגוע ביעילות העסקית.",
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",
     caps: ["בוט קולי חכם", "פגישות וידאו", "תיאום פגישות", "תשלום מאובטח", "מסמכי לקוחות", "וואטסאפ וטלגרם", "ידע ומדריכים", "חיפוש באתר"],
