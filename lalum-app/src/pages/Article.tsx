@@ -2,6 +2,25 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
+import { blogPosts } from "../lib/blogPosts";
+
+// Imported blog posts arrive as one plain-text run. Split it into readable
+// paragraphs by grouping sentences, so the in-app page reads like an article
+// rather than a wall of text.
+function toParagraphs(body: string): string[] {
+  const sentences = body.split(/(?<=[.!?])\s+/);
+  const paras: string[] = [];
+  let cur: string[] = [];
+  for (const s of sentences) {
+    cur.push(s);
+    if (cur.join(" ").length > 300) {
+      paras.push(cur.join(" "));
+      cur = [];
+    }
+  }
+  if (cur.length) paras.push(cur.join(" "));
+  return paras;
+}
 
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
@@ -33,7 +52,12 @@ export function Article() {
   const { slug } = useParams();
   const { t, dir } = useLang();
   const article = t.data.articles.find((a) => a.slug === slug);
-  if (!article) return <Navigate to="/insights" replace />;
+  const post = article ? undefined : blogPosts.find((b) => b.slug === slug);
+  if (!article && !post) return <Navigate to="/insights" replace />;
+
+  const view = article
+    ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
+    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toParagraphs(post!.body).map((text) => ({ type: "p", text }) as ArticleBlock) };
 
   return (
     <>
@@ -42,18 +66,23 @@ export function Article() {
           <span style={{ transform: dir === "rtl" ? "none" : "rotate(180deg)" }}><Icon name={dir === "rtl" ? "chevron-r" : "chevron-l"} size={16} /></span>
           {t.ui.article.allArticles}
         </Link>
-        <div style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)", fontWeight: 600 }}>{article.category}</div>
-        <h1 className="serif" style={{ fontSize: 46, lineHeight: 1.12, letterSpacing: "-0.01em", margin: "14px 0 20px" }}>{article.title}</h1>
-        <p style={{ fontSize: 20, lineHeight: 1.55, color: "var(--slate)", fontFamily: "var(--serif)", margin: "0 0 24px" }}>{article.dek}</p>
+        <div style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)", fontWeight: 600 }}>{view.category}</div>
+        <h1 className="serif" style={{ fontSize: 46, lineHeight: 1.12, letterSpacing: "-0.01em", margin: "14px 0 20px" }}>{view.title}</h1>
+        <p style={{ fontSize: 20, lineHeight: 1.55, color: "var(--slate)", fontFamily: "var(--serif)", margin: "0 0 24px" }}>{view.dek}</p>
         <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--slate)", paddingBottom: 28, borderBottom: "1px solid var(--line)" }}>
           <span>{t.ui.article.by}</span><span style={{ color: "var(--clay)" }}>·</span>
-          <span>{article.date}</span><span style={{ color: "var(--clay)" }}>·</span>
-          <span>{article.read}</span>
+          <span>{view.date}</span>{view.read ? <><span style={{ color: "var(--clay)" }}>·</span><span>{view.read}</span></> : null}
         </div>
       </div>
 
+      {view.cover && (
+        <div className="wrap" style={{ maxWidth: 760, padding: "28px 32px 0" }}>
+          <img src={view.cover} alt="" style={{ width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--line)", display: "block" }} />
+        </div>
+      )}
+
       <article className="wrap" style={{ maxWidth: 760, padding: "36px 32px 24px" }}>
-        {article.blocks.map((b, i) => <Block key={i} block={b} />)}
+        {view.blocks.map((b, i) => <Block key={i} block={b} />)}
       </article>
 
       <div className="wrap" style={{ maxWidth: 760, padding: "16px 32px 64px" }}>
