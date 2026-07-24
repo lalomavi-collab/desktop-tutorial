@@ -1,5 +1,5 @@
 import type {
-  Row, Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
+  Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
 } from "./content";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
@@ -541,12 +541,6 @@ const en = {
   },
 
   data: {
-    heroRows: [
-      { icon: "shield", title: "AI IP Protection & Licensing", sub: "Defensible IP & source-code protection", tag: "IP" },
-      { icon: "settings", title: "Startup Scale & Contract Governance", sub: "Founder agreements, tech contracts & startup counsel", tag: "LEGAL" },
-      { icon: "scale", title: "AI Regulation & Compliance", sub: "EU AI Act compliance & algorithmic risk", tag: "REG" },
-      { icon: "gavel", title: "Mediation & Executive Advisory (DOM)", sub: "Strategic advisory & mediation for AI, corporate, and regulatory disputes", tag: "DOM" },
-    ] as Row[],
     pillars: [
       { icon: "scale", tag: "EU AI Act", title: "AI Regulation & EU AI Act Conformity", body: "Risk classification, GPAI obligations, and technical documentation, mapped into an orderly conformity matrix. For tech exporters and for M&A and VC due diligence, ahead of the August 2026 High-Risk deadline." },
       { icon: "brain", tag: "Risk Governance", title: "AI Liability & Risk Governance", body: "For boards, executives, and CPAs: a conformity index and exposure matrix that price your algorithmic liability early, before a regulator or a claimant does." },
@@ -1278,12 +1272,6 @@ const he: Dict = {
   },
 
   data: {
-    heroRows: [
-      { icon: "shield", title: "הגנת IP ורישוי ל-AI", sub: "הגנה בת-הגנה על IP ועל קוד המקור", tag: "IP" },
-      { icon: "settings", title: "צמיחת סטארטאפ וממשל חוזים", sub: "הסכמי מייסדים, חוזי טכנולוגיה וליווי סטארטאפים", tag: "LEGAL" },
-      { icon: "scale", title: "רגולציה וציות ל-AI", sub: "ציות ל-EU AI Act וסיכון אלגוריתמי", tag: "REG" },
-      { icon: "gavel", title: "גישור וייעוץ ניהולי (DOM)", sub: "ייעוץ אסטרטגי וגישור לסכסוכי AI, תאגידים ורגולציה", tag: "DOM" },
-    ],
     pillars: [
       { icon: "scale", tag: "EU AI Act", title: "רגולציית AI ותאימות EU AI Act", body: "סיווג סיכון, חובות GPAI ותיעוד טכני, ממופים למטריצת תאימות מסודרת. ליצואני טכנולוגיה ולבדיקות נאותות ב-M&A וב-VC, לקראת מועד ה-High-Risk באוגוסט 2026." },
       { icon: "brain", tag: "ממשל סיכונים", title: "אחריות וממשל סיכונים", body: "לדירקטוריון, להנהלה ולרואי חשבון: מדד תאימות ומטריצת חשיפה שמתמחרים את האחריות האלגוריתמית מראש, לפני הרגולטור או התובע." },
