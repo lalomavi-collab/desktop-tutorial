@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
+import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { extractText } from "../lib/extractText";
 
@@ -15,6 +17,7 @@ const ttsOK = typeof window !== "undefined" && "speechSynthesis" in window;
 
 export function ChatWidget() {
   const { t, lang } = useLang();
+  const { user } = useAuth();
   const C = t.ui.chat;
   const speechLang = lang === "he" ? "he-IL" : "en-US";
   const [open, setOpen] = useState(false);
@@ -165,6 +168,21 @@ export function ChatWidget() {
             )}
           </div>
 
+          {!user ? (
+            /* The assistant runs a paid model, so it is reserved for signed-in
+               clients. Signed-out visitors see a friendly sign-in prompt. */
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 28, gap: 14 }}>
+              <span style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--clay-tint)", color: "var(--clay)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+              </span>
+              <div style={{ fontFamily: "var(--serif)", fontSize: 19 }}>{C.lockedTitle}</div>
+              <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--slate)", margin: 0, maxWidth: "30ch" }}>{C.lockedBody}</p>
+              <Link to="/login" onClick={() => setOpen(false)} className="btn btn-clay btn-sm" style={{ justifyContent: "center" }}>{C.lockedCta}</Link>
+            </div>
+          ) : (
+          <>
           <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: 18, display: "flex", flexDirection: "column", gap: 10 }}>
             {msgs.map((m, i) => {
               const you = m.role === "user";
@@ -234,6 +252,8 @@ export function ChatWidget() {
             </div>
             <p style={{ margin: "10px 2px 0", fontSize: 10.5, lineHeight: 1.5, color: "var(--slate)" }}>{C.disclaimer}</p>
           </div>
+          </>
+          )}
         </div>
       )}
 

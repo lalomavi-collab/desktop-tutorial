@@ -39,7 +39,7 @@ export function Insights() {
           {t.data.articles.map((art, i) => {
             const p = PALETTE[i % PALETTE.length];
             return (
-              <Link key={art.slug} to={`/insights/${art.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}` }}>
+              <Link key={art.slug} to={`/insights/${art.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}`, animationDelay: `${i * 60}ms` }}>
                 <div className="article-card-head" style={{ background: `linear-gradient(140deg, ${p.tint} 0%, var(--card) 100%)` }}>
                   <span className="article-card-icon" style={{ color: p.accent, borderColor: p.tint }}>
                     <Icon name={art.icon} size={30} />
