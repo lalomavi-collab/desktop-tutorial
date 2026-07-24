@@ -10,7 +10,7 @@ const en = {
     langName: "English",
     otherLangName: "עברית",
     otherLangShort: "עב",
-    nav: { home: "Home", advisory: "Advisory & Mediation", training: "Courses & Training", insights: "Articles", knowledge: "Knowledge" },
+    nav: { home: "Home", advisory: "Advisory", training: "Courses", insights: "Articles", knowledge: "Knowledge" },
     tabs: { home: "Home", advisory: "Advisory", training: "Courses", book: "Book", client: "Client", assistant: "Assistant", knowledge: "Knowledge" },
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
@@ -330,9 +330,9 @@ const en = {
   },
 
   home: {
-    heroPill: "EU AI Act · Algorithmic Defense",
-    heroH1a: "EU AI Act conformity,",
-    heroH1b: "signed and defensible.",
+    heroPill: "EU AI Act · AI Governance",
+    heroH1a: "Algorithmic defense",
+    heroH1b: "for your business in the AI era.",
     heroLede: "Not another memo, and not another AI tool. Signed EU AI Act conformity and algorithmic audits that hold up in court and in the boardroom.",
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
@@ -731,7 +731,7 @@ const he: Dict = {
     langName: "עברית",
     otherLangName: "English",
     otherLangShort: "EN",
-    nav: { home: "בית", advisory: "ייעוץ וגישור", training: "קורסים והשתלמויות", insights: "מאמרים", knowledge: "ידע" },
+    nav: { home: "בית", advisory: "ייעוץ", training: "קורסים", insights: "מאמרים", knowledge: "ידע" },
     tabs: { home: "בית", advisory: "ייעוץ", training: "קורסים", book: "פגישה", client: "לקוחות", assistant: "עוזר", knowledge: "ידע" },
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
@@ -1051,9 +1051,9 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "EU AI Act · הגנה אלגוריתמית",
-    heroH1a: "עמידה ב-EU AI Act,",
-    heroH1b: "חתומה ובת-הגנה.",
+    heroPill: "EU AI Act · ממשל AI",
+    heroH1a: "הגנה אלגוריתמית",
+    heroH1b: "לעסק שלכם בעידן ה-AI.",
     heroLede: "לא עוד חוות דעת, ולא עוד כלי AI. עמידה חתומה ב-EU AI Act וביקורות אלגוריתמיות שעומדות בבית משפט ובחדר הדירקטוריון.",
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",

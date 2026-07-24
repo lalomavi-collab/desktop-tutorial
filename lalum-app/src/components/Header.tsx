@@ -36,7 +36,7 @@ export function Header() {
         <div className="header-tools">
           <button
             type="button"
-            className="tb-btn"
+            className="tb-btn hdr-secondary"
             onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
             aria-label={t.ui.guide.open}
             title={t.ui.guide.open}
@@ -81,11 +81,11 @@ export function Header() {
           >
             {t.ui.otherLangShort}
           </button>
-          <Link to="/book" className="btn btn-clay btn-sm hide-mobile" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
-            <Icon name="calendar" size={16} /> {t.ui.bookPage.navCta}
+          <Link to="/book" className="btn btn-clay btn-sm header-cta hide-mobile" aria-label={t.ui.bookPage.navCta} title={t.ui.bookPage.navCta}>
+            <Icon name="calendar" size={16} /> <span className="header-cta-label">{t.ui.bookPage.navCta}</span>
           </Link>
-          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm hide-mobile" style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
-            <Icon name="user" size={16} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
+          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm header-cta hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
+            <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
         </div>
       </div>
