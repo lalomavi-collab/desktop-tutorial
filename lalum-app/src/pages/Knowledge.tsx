@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { useLang } from "../context/LangContext";
-import { externalLinks } from "../lib/content";
 import { OPEN_GUIDE_EVENT } from "../components/UserGuide";
 
 // Central knowledge hub. For now Q&A and Articles link out to the firm site
@@ -47,12 +46,11 @@ export function Knowledge() {
   const accented = (accent: string): CSSProperties => ({ ...cardStyle, borderTop: `3px solid ${accent}` });
 
   // The knowledge hub gathers every learning source in one place: courses,
-  // articles, and Q&A. Courses and articles live in the app (internal nav);
-  // Q&A still links out to the firm site until it is migrated too.
+  // articles, and Q&A. All now live inside the app.
   const links = [
     { icon: "brain", title: k.coursesTitle, body: k.coursesBody, cta: k.coursesCta, href: undefined as string | undefined, to: "/training", accent: "#5a4f9a", tint: "#e8e5f3" },
     { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
-    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: externalLinks.qa, to: undefined as string | undefined, accent: "#a8482a", tint: "#f3e7de" },
+    { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: undefined as string | undefined, to: "/faq", accent: "#a8482a", tint: "#f3e7de" },
   ];
 
   return (

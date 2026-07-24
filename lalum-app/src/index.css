@@ -1119,6 +1119,28 @@ a.caps-item:focus-visible .caps-go {
   animation: faq-open 0.3s ease both;
 }
 
+/* Category header on the Q&A page: a labelled divider with a count chip. */
+.faq-cat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.faq-cat-badge {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.faq-cat-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--clay);
+  background: var(--clay-tint);
+  border: 1px solid var(--clay-soft);
+  border-radius: 9999px;
+  padding: 2px 10px;
+}
+
 /* ---------- FAQ accordion (smooth, accessible) ---------- */
 .faq-item {
   background: var(--card);

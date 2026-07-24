@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
-import { externalLinks } from "../lib/content";
 
 type Hit = { title: string; sub: string; to?: string; href?: string; keywords?: string };
 
@@ -72,7 +71,7 @@ export function SiteSearch() {
     ];
     for (const a of t.data.articles) items.push({ title: a.title, sub: a.dek, to: `/insights/${a.slug}`, keywords: `${a.category} מאמר article` });
     for (const s of t.data.advisoryServices) items.push({ title: s.title, sub: s.body, to: "/advisory", keywords: "ייעוץ advisory" });
-    items.push({ title: t.ui.footerLinks.qa, sub: t.knowledge.sub, href: externalLinks.qa, keywords: "שאלות ותשובות faq q&a knowledge" });
+    items.push({ title: t.ui.footerLinks.qa, sub: t.faqPage.lede, to: "/faq", keywords: "שאלות ותשובות faq q&a knowledge" });
     return items;
   }, [t]);
 
