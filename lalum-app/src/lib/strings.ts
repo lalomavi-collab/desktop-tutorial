@@ -333,10 +333,10 @@ const en = {
   },
 
   home: {
-    heroPill: "EU AI Act · AI Governance",
-    heroH1a: "The intelligence may be artificial.",
-    heroH1b: "The liability is entirely yours.",
-    heroLede: "When your algorithm makes decisive calls, a black box is not an acceptable excuse. We accompany your systems with certified, ex-ante legal opinions, structure orderly EU AI Act conformity, and give the board a clear basis for its decisions, without slowing the business.",
+    heroPill: "PRECISION LEGAL INTELLIGENCE & RISK GOVERNANCE",
+    heroH1a: "Fewer human errors.",
+    heroH1b: "Sharp control of every case.",
+    heroLede: "The advanced system that combines algorithmic legal and economic analysis with workday automation. It audits risk, streamlines contract drafting, and manages the most complex cases at enterprise level.",
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
     caps: ["AI voice intake", "Video meetings", "Smart scheduling", "Secure payments", "Client documents", "WhatsApp & Telegram", "Knowledge & guides", "Site-wide search"],
@@ -1069,10 +1069,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "EU AI Act · ממשל AI",
-    heroH1a: "הבינה אולי מלאכותית.",
-    heroH1b: "האחריות היא לגמרי שלכם.",
-    heroLede: "כשהאלגוריתם מקבל החלטות גורליות, ״קופסה שחורה״ אינה תירוץ קביל. אנחנו מלווים את פיתוח המערכות שלכם בחוות דעת מוסמכות מראש (Ex-ante), בונים עמידה מסודרת בדרישות ה-EU AI Act, ומספקים לדירקטוריון בסיס החלטה ברור, בלי לפגוע במהירות העסקית.",
+    heroPill: "PRECISION LEGAL INTELLIGENCE & RISK GOVERNANCE",
+    heroH1a: "פחות טעויות אנוש.",
+    heroH1b: "שליטה חדה בכל תיק.",
+    heroLede: "המערכת המתקדמת המשלבת ניתוח משפטי-כלכלי אלגוריתמי עם אוטומציה של ימי עבודה. מבקרת סיכונים, מייעלת ניסוח חוזים, ומנהלת תיקים מורכבים ברמת Enterprise.",
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",
     caps: ["בוט קולי חכם", "פגישות וידאו", "תיאום פגישות", "תשלום מאובטח", "מסמכי לקוחות", "וואטסאפ וטלגרם", "ידע ומדריכים", "חיפוש באתר"],
