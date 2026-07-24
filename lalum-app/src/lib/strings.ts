@@ -333,7 +333,7 @@ const en = {
   },
 
   home: {
-    heroPill: "Led by a Doctor of Law and Economics and an AI expert",
+    heroPill: "EU AI Act · AI Governance",
     heroH1a: "The intelligence may be artificial.",
     heroH1b: "The liability is entirely yours.",
     heroLede: "When your algorithm makes decisive calls, a black box is no longer an acceptable excuse. The Lalumapp platform bridges code and law: certified, ex-ante legal opinions that accompany your systems from day one. We deliver airtight coverage for the board and signed EU AI Act conformity, without compromising business efficiency.",
@@ -1061,7 +1061,7 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "בהובלת ד״ר למשפטים וכלכלה ומומחה AI",
+    heroPill: "EU AI Act · ממשל AI",
     heroH1a: "הבינה אולי מלאכותית.",
     heroH1b: "האחריות היא לגמרי שלכם.",
     heroLede: "כשהאלגוריתם שלכם מקבל החלטות גורליות, ״קופסה שחורה״ היא כבר לא תירוץ קביל. פלטפורמת Lalumapp מספקת את הגשר שבין קוד למשפט: חוות דעת מוסמכות ומלאות מראש (Ex-ante) המלוות את פיתוח המערכות שלכם מהיום הראשון. אנו מבטיחים כיסוי הרמטי לדירקטוריון ועמידה חתומה בדרישות ה-EU AI Act, מבלי לפגוע ביעילות העסקית.",
