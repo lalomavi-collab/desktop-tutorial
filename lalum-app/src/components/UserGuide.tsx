@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { OPEN_CHAT_EVENT } from "./ChatWidget";
-import { externalLinks, appUrl } from "../lib/content";
+import { appUrl } from "../lib/content";
 
 // Any component can open the quick-start guide by dispatching this event.
 export const OPEN_GUIDE_EVENT = "lalum:open-guide";
@@ -74,7 +74,7 @@ export function UserGuide() {
 
         <div className="guide-more">
           <span className="guide-more-title">{g.moreTitle}</span>
-          <a href={externalLinks.qa} target="_blank" rel="noopener noreferrer">{g.qa}</a>
+          <button type="button" className="guide-more-link" onClick={() => go("/faq")}>{g.qa}</button>
           <button type="button" className="guide-more-link" onClick={() => go("/insights")}>{g.articles}</button>
           <a href={appUrl} target="_blank" rel="noopener noreferrer">{g.download}</a>
         </div>

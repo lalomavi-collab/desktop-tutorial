@@ -8,6 +8,7 @@ import { Advisory } from "./pages/Advisory";
 import { Training } from "./pages/Training";
 import { Insights } from "./pages/Insights";
 import { Knowledge } from "./pages/Knowledge";
+import { Faq } from "./pages/Faq";
 import { Article } from "./pages/Article";
 import { Legal } from "./pages/Legal";
 import { Book } from "./pages/Book";
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="insights" element={<Insights />} />
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
+            <Route path="faq" element={<Faq />} />
             <Route path="legal" element={<Legal />} />
             <Route path="book" element={<Book />} />
             <Route path="login" element={<Login />} />

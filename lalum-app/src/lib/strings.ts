@@ -465,6 +465,14 @@ const en = {
     ctaBody: "Reading is good. Applying it to your own exposure is better. Start with a Tech-Legal Diagnostics session.",
   },
 
+  faqPage: {
+    heroPill: "Q&A",
+    title: "Questions & answers",
+    lede: "Straight answers to the questions clients ask most, organized by topic.",
+    ctaTitle: "Still have a question?",
+    ctaBody: "Ask the firm directly. We reply within one business hour.",
+  },
+
   knowledge: {
     heroPill: "Knowledge & Guides",
     title: "Everything you need, in one place",
@@ -481,7 +489,7 @@ const en = {
     guidesTitle: "Guides",
     guidesBody: "Short how-to guides for using the app and the client portal.",
     guidesCta: "Open guide",
-    note: "Articles now open inside the app. Q&A is shown from our website for now, and will move into the app soon.",
+    note: "Courses, articles, Q&A, and guides all open inside the app.",
   },
 
   legal: {
@@ -1193,6 +1201,14 @@ const he: Dict = {
     ctaBody: "לקרוא זה טוב. ליישם על החשיפה שלכם זה טוב יותר. התחילו בפגישת אבחון Tech-Legal.",
   },
 
+  faqPage: {
+    heroPill: "שאלות ותשובות",
+    title: "שאלות ותשובות",
+    lede: "תשובות ישרות לשאלות שהלקוחות שואלים הכי הרבה, מסודרות לפי נושא.",
+    ctaTitle: "נשארה שאלה?",
+    ctaBody: "שאלו את המשרד ישירות. אנחנו עונים תוך שעת עסקים אחת.",
+  },
+
   knowledge: {
     heroPill: "ידע ומדריכים",
     title: "כל מה שצריך, במקום אחד",
@@ -1209,7 +1225,7 @@ const he: Dict = {
     guidesTitle: "מדריכים",
     guidesBody: "מדריכים קצרים לשימוש באפליקציה ובפורטל הלקוחות.",
     guidesCta: "לפתיחת המדריך",
-    note: "המאמרים נפתחים כעת בתוך האפליקציה. שאלות ותשובות מוצגות בינתיים מהאתר שלנו, ויעברו לאפליקציה בקרוב.",
+    note: "קורסים, מאמרים, שאלות ותשובות ומדריכים, הכול נפתח בתוך האפליקציה.",
   },
 
   legal: {

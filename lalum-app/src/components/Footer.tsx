@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { GPayMark, LeumiMark } from "./BrandMarks";
-import { contactEmail, officePhone, directPhone, socialLinks, externalLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { contactEmail, officePhone, directPhone, socialLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -78,7 +78,7 @@ export function Footer() {
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
-          <a href={externalLinks.qa} target="_blank" rel="noopener noreferrer">{L.qa}</a>
+          <Link to="/faq">{L.qa}</Link>
         </nav>
 
         <nav className="footer-col" aria-label={f.client}>
