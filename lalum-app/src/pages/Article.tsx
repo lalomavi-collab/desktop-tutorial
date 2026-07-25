@@ -69,18 +69,30 @@ export function Article() {
         path={`/insights/${slug}`}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          headline: view.title,
-          description: view.dek,
-          datePublished: view.date,
-          author: { "@type": "Organization", name: "LALUM" },
-          publisher: {
-            "@type": "Organization",
-            name: "LALUM",
-            logo: { "@type": "ImageObject", url: "https://lalumapp.com/icon-512.png" },
-          },
-          mainEntityOfPage: `https://lalumapp.com/insights/${slug}`,
-          image: view.cover || "https://lalumapp.com/og-card-v2.png",
+          "@graph": [
+            {
+              "@type": "BlogPosting",
+              headline: view.title,
+              description: view.dek,
+              datePublished: view.date,
+              author: { "@type": "Organization", name: "LALUM" },
+              publisher: {
+                "@type": "Organization",
+                name: "LALUM",
+                logo: { "@type": "ImageObject", url: "https://lalumapp.com/icon-512.png" },
+              },
+              mainEntityOfPage: `https://lalumapp.com/insights/${slug}`,
+              image: view.cover || "https://lalumapp.com/og-card-v2.png",
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://lalumapp.com/" },
+                { "@type": "ListItem", position: 2, name: "Insights", item: "https://lalumapp.com/insights" },
+                { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}` },
+              ],
+            },
+          ],
         }}
       />
       <div className="wrap" style={{ maxWidth: 760, padding: "64px 32px 0" }}>
