@@ -3,7 +3,7 @@ import { useEffect } from "react";
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
 // tags so each page and article is indexed and shared with its own metadata.
 // This is a SPA, so we update the tags in the <head> on each route.
-type Props = { title: string; description?: string; image?: string; path?: string };
+type Props = { title: string; description?: string; image?: string; path?: string; jsonLd?: object };
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null;
@@ -15,7 +15,8 @@ function setMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
-export function PageMeta({ title, description, image, path }: Props) {
+export function PageMeta({ title, description, image, path, jsonLd }: Props) {
+  const ldStr = jsonLd ? JSON.stringify(jsonLd) : "";
   useEffect(() => {
     document.title = title;
     const url = `https://lalumapp.com${path ?? window.location.pathname}`;
@@ -38,7 +39,24 @@ export function PageMeta({ title, description, image, path }: Props) {
       document.head.appendChild(canon);
     }
     canon.setAttribute("href", url);
-  }, [title, description, image, path]);
+
+    // Optional per-page structured data (Article, FAQPage, etc.). A single
+    // page-scoped script is added or updated, and removed when a route has none,
+    // so it never leaks onto the next page.
+    const LD_ID = "page-jsonld";
+    let ld = document.getElementById(LD_ID) as HTMLScriptElement | null;
+    if (ldStr) {
+      if (!ld) {
+        ld = document.createElement("script");
+        ld.type = "application/ld+json";
+        ld.id = LD_ID;
+        document.head.appendChild(ld);
+      }
+      ld.textContent = ldStr;
+    } else if (ld) {
+      ld.remove();
+    }
+  }, [title, description, image, path, ldStr]);
 
   return null;
 }

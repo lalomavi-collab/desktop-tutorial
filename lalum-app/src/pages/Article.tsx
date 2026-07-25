@@ -62,7 +62,27 @@ export function Article() {
 
   return (
     <>
-      <PageMeta title={`${view.title} · LALUM`} description={view.dek} image={view.cover} path={`/insights/${slug}`} />
+      <PageMeta
+        title={`${view.title} · LALUM`}
+        description={view.dek}
+        image={view.cover}
+        path={`/insights/${slug}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: view.title,
+          description: view.dek,
+          datePublished: view.date,
+          author: { "@type": "Organization", name: "LALUM" },
+          publisher: {
+            "@type": "Organization",
+            name: "LALUM",
+            logo: { "@type": "ImageObject", url: "https://lalumapp.com/icon-512.png" },
+          },
+          mainEntityOfPage: `https://lalumapp.com/insights/${slug}`,
+          image: view.cover || "https://lalumapp.com/og-card-v2.png",
+        }}
+      />
       <div className="wrap" style={{ maxWidth: 760, padding: "64px 32px 0" }}>
         <Link to="/insights" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "var(--slate)" }}>
           <span style={{ transform: dir === "rtl" ? "none" : "rotate(180deg)" }}><Icon name={dir === "rtl" ? "chevron-r" : "chevron-l"} size={16} /></span>

@@ -15,8 +15,8 @@ then keeps the site healthy. Keep each item small and independently shippable.
 ## Day 2, structured data depth
 
 - [x] Per-page title and meta description for each route and article (#281)
-- [ ] FAQPage JSON-LD generated from the home FAQ
-- [ ] Article JSON-LD on each insights article (headline, datePublished, author, image)
+- [x] FAQPage JSON-LD generated from the home FAQ
+- [x] Article JSON-LD on each insights article (headline, datePublished, author, image)
 - [ ] BreadcrumbList on inner pages
 - [ ] Service JSON-LD for the six rubrics, and Course JSON-LD for the Academy
 
