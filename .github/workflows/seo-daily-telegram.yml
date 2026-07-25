@@ -1,0 +1,67 @@
+name: Daily SEO/GEO Telegram report
+
+# Sends an orderly daily update on the site promotion status to Telegram.
+# Runs the SEO/GEO checks and reports pass/warn/fail to the firm's Telegram.
+# Uses the existing TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID repository secrets.
+
+on:
+  schedule:
+    # 17:00 UTC is 20:00 in Israel during summer (IDT, UTC+3).
+    # In winter (IST, UTC+2) this fires at 19:00; adjust if needed.
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run SEO/GEO check
+        id: seo
+        working-directory: lalum-app
+        run: |
+          OUT="$(node scripts/seo-check.mjs 2>&1)" || true
+          echo "$OUT"
+          SUMMARY="$(echo "$OUT" | grep -E '[0-9]+ pass, [0-9]+ warn, [0-9]+ fail' | tail -1)"
+          FAILS="$(echo "$OUT" | grep -c '^\[FAIL\]' || true)"
+          WARNS="$(echo "$OUT" | grep -c '^\[WARN\]' || true)"
+          URLS="$(echo "$OUT" | grep -oE 'sitemap.xml urls \([0-9]+\)' | grep -oE '[0-9]+' || echo '?')"
+          {
+            echo "summary=$SUMMARY"
+            echo "fails=$FAILS"
+            echo "warns=$WARNS"
+            echo "urls=$URLS"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send Telegram report
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUMMARY: ${{ steps.seo.outputs.summary }}
+          FAILS: ${{ steps.seo.outputs.fails }}
+          WARNS: ${{ steps.seo.outputs.warns }}
+          URLS: ${{ steps.seo.outputs.urls }}
+        run: |
+          if [ "$FAILS" != "0" ]; then STATUS="❌ יש כשלים לתיקון"; \
+          elif [ "$WARNS" != "0" ]; then STATUS="⚠️ תקין עם אזהרות"; \
+          else STATUS="✅ הכל תקין"; fi
+          DATE="$(date -u +%Y-%m-%d)"
+          MSG="📊 דוח קידום LALUM, $DATE
+
+          מצב SEO ו-GEO: $STATUS
+          תוצאות בדיקה: $SUMMARY
+          עמודים ב-sitemap: $URLS
+
+          פירוט מלא ב-GitHub Actions.
+          https://lalumapp.com/"
+          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
+            --data-urlencode "chat_id=${CHAT}" \
+            --data-urlencode "text=${MSG}" \
+            --data-urlencode "disable_web_page_preview=true"
