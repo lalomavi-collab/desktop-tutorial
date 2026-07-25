@@ -17,8 +17,9 @@ then keeps the site healthy. Keep each item small and independently shippable.
 - [x] Per-page title and meta description for each route and article (#281)
 - [x] FAQPage JSON-LD generated from the home FAQ
 - [x] Article JSON-LD on each insights article (headline, datePublished, author, image)
+- [x] Service JSON-LD (OfferCatalog) for the six rubrics on the organization
 - [ ] BreadcrumbList on inner pages
-- [ ] Service JSON-LD for the six rubrics, and Course JSON-LD for the Academy
+- [ ] Course JSON-LD for the Academy
 
 ## Day 3, crawler visible content
 
