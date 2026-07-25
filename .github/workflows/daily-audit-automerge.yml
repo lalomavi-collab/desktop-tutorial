@@ -37,6 +37,10 @@ jobs:
           npm ci || npm install
           npm run build
 
+      - name: SEO/GEO check (the promotion gate)
+        working-directory: lalum-app
+        run: npm run seo-check
+
       - name: Merge to main
         run: |
           git config user.name "github-actions[bot]"
