@@ -21,7 +21,20 @@ export function Home() {
 
   return (
     <>
-      <PageMeta title={`${h.heroH1a} ${h.heroH1b}`} description={h.heroLede} path="/" />
+      <PageMeta
+        title={`${h.heroH1a} ${h.heroH1b}`}
+        description={h.heroLede}
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: t.data.faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />
