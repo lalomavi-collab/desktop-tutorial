@@ -1,0 +1,28 @@
+# LALUM
+
+> LALUM is a Tech-Legal practice at the intersection of law, economics, and artificial intelligence, led by Dr. Avraham Lalum (Attorney and Notary, Ph.D. in Law and Economics). Based in Herzliya, Israel, LALUM helps technology companies, enterprises, and public institutions govern AI risk and meet regulatory requirements.
+
+LALUM combines legal advisory with an AI solutions practice. The approach turns legal risk into a system that can be controlled: certified, ex-ante legal opinions, documented conformity, and defensible records. This site provides general information and is not legal advice; an attorney and client relationship begins only with a signed engagement.
+
+## What LALUM does
+
+- AI Regulation and EU AI Act conformity: risk classification, GPAI obligations, technical documentation, and a conformity matrix for technology exporters and for M&A and VC due diligence.
+- AI Liability and Risk Governance: a conformity index and executive exposure matrix for boards, executives, and CPAs.
+- IP and Data Protection: a defensible IP layer and a secure, Privacy-by-Design data architecture.
+- Contracts and Venture Counsel: contract governance, counsel for startups and technology companies, funding rounds, founder agreements, and technology due diligence.
+- Public Sector AI: explainable, bias-audited decision systems for authorities, ministries, and public tenders.
+- Mediation and Dispute Resolution (DOM): Decision-Oriented Mediation for AI, corporate, and regulatory disputes.
+
+## Key pages
+
+- Home: https://lalumapp.com/
+- Advisory and Mediation: https://lalumapp.com/advisory
+- Training: https://lalumapp.com/training
+- Insights and articles: https://lalumapp.com/insights
+- Book a consultation: https://lalumapp.com/book
+
+## Contact
+
+- Email: avraham@lalum.co
+- Website: https://www.lalum.co
+- Location: Herzliya Pituach, Israel
