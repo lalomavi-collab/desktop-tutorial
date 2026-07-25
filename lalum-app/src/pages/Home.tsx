@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
+import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
@@ -20,6 +21,7 @@ export function Home() {
 
   return (
     <>
+      <PageMeta title={`${h.heroH1a} ${h.heroH1b}`} description={h.heroLede} path="/" />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />

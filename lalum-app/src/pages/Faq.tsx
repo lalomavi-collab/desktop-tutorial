@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { faqCategories } from "../lib/faq";
 
@@ -13,6 +14,7 @@ export function Faq() {
 
   return (
     <>
+      <PageMeta title={`${f.title} · LALUM`} description={f.lede} path="/faq" />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 40px", textAlign: "center" }}>

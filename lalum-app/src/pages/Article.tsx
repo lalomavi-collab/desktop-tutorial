@@ -1,5 +1,6 @@
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Icon } from "../components/Icon";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
@@ -61,6 +62,7 @@ export function Article() {
 
   return (
     <>
+      <PageMeta title={`${view.title} · LALUM`} description={view.dek} image={view.cover} path={`/insights/${slug}`} />
       <div className="wrap" style={{ maxWidth: 760, padding: "64px 32px 0" }}>
         <Link to="/insights" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "var(--slate)" }}>
           <span style={{ transform: dir === "rtl" ? "none" : "rotate(180deg)" }}><Icon name={dir === "rtl" ? "chevron-r" : "chevron-l"} size={16} /></span>
