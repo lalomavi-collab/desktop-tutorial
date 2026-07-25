@@ -28,7 +28,7 @@ then keeps the site healthy. Keep each item small and independently shippable.
 
 ## Day 4, off site and performance
 
-- [ ] Prepare Google Search Console and Bing verification (owner completes sign in)
+- [x] Google Search Console verified (domain) and Bing verified (meta tag); sitemap submitted to both
 - [ ] Code split the large JS bundle; lazy load pdfjs and mammoth
 - [ ] Image optimization and loading="lazy"; alt text audit
 - [ ] Internal linking pass
