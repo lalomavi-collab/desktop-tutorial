@@ -1,0 +1,47 @@
+name: Auto-merge daily audit
+
+# The daily audit routine pushes fixes to a claude/daily-audit-* branch.
+# This workflow rebuilds that branch and, only if the build passes, merges
+# it into main. The build is the safety gate, so nothing reaches main (and
+# the live site) without compiling and type-checking first.
+
+on:
+  push:
+    branches:
+      - "claude/daily-audit-**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-audit-automerge
+  cancel-in-progress: false
+
+jobs:
+  build-and-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install and build (the safety gate)
+        working-directory: lalum-app
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Merge to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git merge --no-ff "$GITHUB_SHA" -m "Auto-merge daily audit: ${GITHUB_REF_NAME}"
+          git push origin main
