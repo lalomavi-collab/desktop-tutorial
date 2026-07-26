@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -27,7 +27,11 @@ export function MarketingLayout() {
       <main id="main">
         {/* Keyed by path so each navigation replays the reveal (app-like page transition). */}
         <div key={pathname} className="route-view">
-          <Outlet />
+          {/* Code-split routes suspend while their chunk loads; the header and
+              footer stay put, and a min-height spacer avoids layout shift. */}
+          <Suspense fallback={<div style={{ minHeight: "70vh" }} />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
       <Footer />
