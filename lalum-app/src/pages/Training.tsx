@@ -5,6 +5,7 @@ import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { CourseSignup } from "../components/CourseSignup";
 import { CourseCatalog } from "../components/CourseCatalog";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { trainingEmail } from "../lib/content";
 
@@ -32,6 +33,19 @@ export function Training() {
 
   return (
     <>
+      <PageMeta
+        title={`${tr.heroH1a} ${tr.heroH1b} · LALUM`}
+        description={tr.heroLede}
+        path="/training"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: t.home.academy.title,
+          description: t.home.academy.body,
+          provider: { "@type": "Organization", name: "LALUM", url: "https://lalumapp.com/" },
+          hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: "PT24H" },
+        }}
+      />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />

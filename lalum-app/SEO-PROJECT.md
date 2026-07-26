@@ -19,7 +19,7 @@ then keeps the site healthy. Keep each item small and independently shippable.
 - [x] Article JSON-LD on each insights article (headline, datePublished, author, image)
 - [x] Service JSON-LD (OfferCatalog) for the six rubrics on the organization
 - [x] BreadcrumbList on insights articles (Home, Insights, Article)
-- [ ] Course JSON-LD for the Academy
+- [x] Course JSON-LD (Course schema) on the Training page
 
 ## Day 3, crawler visible content
 
