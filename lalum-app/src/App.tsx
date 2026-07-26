@@ -1,11 +1,14 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LangProvider } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Home } from "./pages/Home";
-import { CommandBar } from "./components/CommandBar";
+
+// The command bar (Cmd/Ctrl+K scheduling) is a power feature, not needed for
+// first paint, so it is code split and loaded after the page renders.
+const CommandBar = lazy(() => import("./components/CommandBar").then((m) => ({ default: m.CommandBar })));
 
 // Home stays eager so the landing page renders instantly. Every other route is
 // code split, so heavy pages (the ~1MB blog content behind Insights and
@@ -26,7 +29,9 @@ export default function App() {
     <LangProvider>
     <AuthProvider>
       <BrowserRouter>
-        <CommandBar />
+        <Suspense fallback={null}>
+          <CommandBar />
+        </Suspense>
         <Routes>
           <Route element={<MarketingLayout />}>
             <Route index element={<Home />} />
