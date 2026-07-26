@@ -1,8 +1,10 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { ChatWidget } from "./ChatWidget";
+// The chat bot is deferred: it is not needed for first paint, so splitting it
+// out keeps it (and its dependencies) off the initial load.
+const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
 import { BottomTabBar } from "./BottomTabBar";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
@@ -35,7 +37,9 @@ export function MarketingLayout() {
         </div>
       </main>
       <Footer />
-      <ChatWidget />
+      <Suspense fallback={null}>
+        <ChatWidget />
+      </Suspense>
       <BottomTabBar />
       <AccessibilityMenu />
       <A11yWidget />
