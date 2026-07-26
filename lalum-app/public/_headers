@@ -7,3 +7,9 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(self), camera=()
+  # Non-breaking CSP hardening: these directives do not restrict where scripts,
+  # styles, images, or connections load from, so they cannot break the app; they
+  # only block plugin/object embeds, base-tag injection, and clickjacking, and
+  # upgrade any stray http request to https. A full script-src/connect-src policy
+  # is a separate step that needs live testing against auth, payments, and embeds.
+  Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests
