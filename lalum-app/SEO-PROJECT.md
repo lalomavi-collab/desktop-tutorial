@@ -23,7 +23,7 @@ then keeps the site healthy. Keep each item small and independently shippable.
 
 ## Day 3, crawler visible content
 
-- [ ] Pre-render static HTML per route so content is in the HTML, not only JS
+- [x] Static content fallback in the raw HTML (home hero, six rubrics, key links) for non-JS crawlers and AI engines; full per-route SSR remains a future option
 - [ ] hreflang or language handling for the two languages
 
 ## Day 4, off site and performance

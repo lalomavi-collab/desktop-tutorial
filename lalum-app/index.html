@@ -116,7 +116,32 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static fallback so crawlers and AI engines that do not run JavaScript
+           still get the core content and links in the raw HTML. React replaces
+           this the moment the app mounts, so users never see it as a page. -->
+      <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815">
+        <h1>LALUM, Legal AI and AI Risk Governance</h1>
+        <p>LALUM is a Tech-Legal practice at the meeting point of law, economics, and AI. We help technology companies, enterprises, and public institutions turn legal risk into a system they can control: certified, ex-ante legal opinions, documented conformity, and defensible records. Herzliya, Israel.</p>
+        <h2>What LALUM does</h2>
+        <ul>
+          <li>AI Regulation and EU AI Act conformity</li>
+          <li>AI Liability and Risk Governance</li>
+          <li>IP and Data Protection</li>
+          <li>Contracts and Venture Counsel</li>
+          <li>Public Sector AI</li>
+          <li>Mediation and Dispute Resolution (DOM)</li>
+        </ul>
+        <p>
+          <a href="/advisory">Advisory and Mediation</a> ·
+          <a href="/training">Training</a> ·
+          <a href="/insights">Insights and articles</a> ·
+          <a href="/book">Book a consultation</a> ·
+          <a href="/legal">Legal and privacy</a>
+        </p>
+        <p>Contact: avraham@lalum.co</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
