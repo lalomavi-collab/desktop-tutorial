@@ -359,6 +359,14 @@ const en = {
       title: "AI Governance & Regulation Q&A | LALUM",
       desc: "Answers to common questions on AI governance, the EU AI Act, algorithmic risk management, mediation, and deals, from LALUM.",
     },
+    book: {
+      title: "Book an AI Risk Assessment & Consultation | LALUM",
+      desc: "Schedule an AI governance consultation or risk assessment on the EU AI Act and algorithmic risk with Dr. Avraham Lalum, LALUM.",
+    },
+    legal: {
+      title: "Privacy Policy & Terms | LALUM",
+      desc: "Privacy policy and terms of use for the LALUM app.",
+    },
   },
 
   home: {
@@ -1117,6 +1125,14 @@ const he: Dict = {
     faq: {
       title: "שאלות ותשובות על ממשל AI ורגולציה | LALUM",
       desc: "תשובות לשאלות נפוצות על ממשל בינה מלאכותית, EU AI Act, ניהול סיכונים אלגוריתמי, גישור ועסקאות, מבית LALUM.",
+    },
+    book: {
+      title: "בקשת הערכת סיכון AI וייעוץ | LALUM",
+      desc: "לתיאום ייעוץ או הערכת סיכון בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי עם ד\"ר אברהם ללום, LALUM.",
+    },
+    legal: {
+      title: "מדיניות פרטיות ותנאי שימוש | LALUM",
+      desc: "מדיניות הפרטיות ותנאי השימוש של אפליקציית LALUM.",
     },
   },
 

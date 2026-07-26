@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
@@ -51,6 +52,7 @@ export function Book() {
     const activeUrl = active.url || CALENDLY_URL;
     return (
       <section className="wrap" style={{ maxWidth: 880, padding: "80px 32px 110px" }}>
+        <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" />
         <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 26px" }}>
           <p className="eyebrow">{B.eyebrow}</p>
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
@@ -127,6 +129,7 @@ export function Book() {
 
   return (
     <section className="wrap" style={{ maxWidth: 760, padding: "80px 32px 120px" }}>
+      <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" />
       <div style={{ textAlign: "center", maxWidth: "56ch", margin: "0 auto 36px" }}>
         <p className="eyebrow">{B.eyebrow}</p>
         <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>

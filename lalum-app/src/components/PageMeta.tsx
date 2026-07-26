@@ -3,7 +3,10 @@ import { useEffect } from "react";
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
 // tags so each page and article is indexed and shared with its own metadata.
 // This is a SPA, so we update the tags in the <head> on each route.
-type Props = { title: string; description?: string; image?: string; path?: string; jsonLd?: object };
+type Props = { title: string; description?: string; image?: string; path?: string; jsonLd?: object; noindex?: boolean };
+
+// The site-wide default: index everything with large image previews.
+const ROBOTS_DEFAULT = "index, follow, max-image-preview:large";
 
 function setMeta(attr: "name" | "property", key: string, content: string) {
   let el = document.head.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null;
@@ -15,11 +18,14 @@ function setMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
-export function PageMeta({ title, description, image, path, jsonLd }: Props) {
+export function PageMeta({ title, description, image, path, jsonLd, noindex }: Props) {
   const ldStr = jsonLd ? JSON.stringify(jsonLd) : "";
   useEffect(() => {
     document.title = title;
     const url = `https://lalumapp.com${path ?? window.location.pathname}`;
+    // Keep auth pages (login, portal) out of the index; restore the default on
+    // every other route so navigation never leaves a stale noindex behind.
+    setMeta("name", "robots", noindex ? "noindex, nofollow" : ROBOTS_DEFAULT);
     setMeta("property", "og:title", title);
     setMeta("name", "twitter:title", title);
     setMeta("property", "og:url", url);
@@ -56,7 +62,7 @@ export function PageMeta({ title, description, image, path, jsonLd }: Props) {
     } else if (ld) {
       ld.remove();
     }
-  }, [title, description, image, path, ldStr]);
+  }, [title, description, image, path, ldStr, noindex]);
 
   return null;
 }

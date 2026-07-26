@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
@@ -634,6 +635,7 @@ export function Portal() {
 
   return (
     <section className="wrap" style={{ padding: "56px 32px 120px" }}>
+      <PageMeta title="LALUM" path="/portal" noindex />
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, flexWrap: "wrap", marginBottom: 40 }}>
         <div>
           <p className="eyebrow">{P.eyebrow}</p>
