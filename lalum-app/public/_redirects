@@ -1,1 +1,7 @@
+# Canonicalize the www host to the apex domain with a clean 301, matching the
+# canonical tag, sitemap, Open Graph, and structured data (all use lalumapp.com
+# with no www). This resolves the "broken redirects" a crawler sees on www.
+https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
+
+# SPA fallback: serve the app shell for every in-app route.
 /*    /index.html   200
