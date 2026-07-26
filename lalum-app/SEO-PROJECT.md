@@ -29,7 +29,7 @@ then keeps the site healthy. Keep each item small and independently shippable.
 ## Day 4, off site and performance
 
 - [x] Google Search Console verified (domain) and Bing verified (meta tag); sitemap submitted to both
-- [ ] Code split the large JS bundle; lazy load pdfjs and mammoth
+- [x] Route-based code splitting; the ~1MB blog content and pdfjs/mammoth now load only when needed (home bundle 1.7MB to ~0.3MB)
 - [ ] Image optimization and loading="lazy"; alt text audit
 - [ ] Internal linking pass
 
