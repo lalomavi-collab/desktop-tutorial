@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { REMEMBER_KEY } from "../lib/supabase";
 
@@ -40,6 +41,7 @@ export function Login() {
 
   return (
     <section className="wrap" style={{ maxWidth: 480, padding: "80px 32px 120px" }}>
+      <PageMeta title="LALUM" path="/login" noindex />
       <div className="card" style={{ padding: 40 }}>
         <p className="eyebrow" style={{ textAlign: "center" }}>{L.eyebrow}</p>
         <h1 className="serif" style={{ fontSize: 30, textAlign: "center", margin: "0 0 8px" }}>

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 
 export function Legal() {
@@ -25,6 +26,7 @@ export function Legal() {
 
   return (
     <section className="wrap" style={{ maxWidth: 820, padding: "80px 32px 120px" }}>
+      <PageMeta title={t.seo.legal.title} description={t.seo.legal.desc} path="/legal" />
       <p className="eyebrow">{g.eyebrow}</p>
       <h1 className="serif" style={{ fontSize: 42, lineHeight: 1.15, letterSpacing: "-0.015em", margin: "0 0 20px" }}>{g.title}</h1>
       <div className="notice notice-warn" style={{ marginBottom: 40 }}>{g.disclaimer}</div>
