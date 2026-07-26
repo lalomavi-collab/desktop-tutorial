@@ -14,7 +14,22 @@ export function Faq() {
 
   return (
     <>
-      <PageMeta title={`${f.title} · LALUM`} description={f.lede} path="/faq" />
+      <PageMeta
+        title={`${f.title} · LALUM`}
+        description={f.lede}
+        path="/faq"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqCategories.flatMap((cat) =>
+            cat.items.map((it) => ({
+              "@type": "Question",
+              name: it.q,
+              acceptedAnswer: { "@type": "Answer", text: it.a.join(" ") },
+            }))
+          ),
+        }}
+      />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 40px", textAlign: "center" }}>
