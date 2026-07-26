@@ -332,6 +332,35 @@ const en = {
     },
   },
 
+  // Per-page SEO copy: keyword-focused titles and meta descriptions, kept
+  // separate from on-page hero copy so search snippets can be tuned freely.
+  seo: {
+    home: {
+      title: "LALUM, Legal AI Governance & EU AI Act Compliance",
+      desc: "Tech-Legal practice for AI governance: EU AI Act conformity, algorithmic risk management, signed legal opinions, and a defense that holds up in court and the boardroom.",
+    },
+    advisory: {
+      title: "AI Governance Advisory & Mediation, EU AI Act | LALUM",
+      desc: "Legal advisory for AI governance: EU AI Act conformity, algorithmic liability, IP and data protection, and decision-oriented mediation for complex disputes.",
+    },
+    training: {
+      title: "AI Governance Courses & Training for Legal and Business | LALUM",
+      desc: "Practical training in AI governance, the EU AI Act, and algorithmic risk management for lawyers, boards, and product teams. LALUM Academy.",
+    },
+    knowledge: {
+      title: "LALUM Knowledge Hub, AI Governance Courses, Articles, Q&A",
+      desc: "Everything on AI governance and AI regulation in one place: courses, professional articles, and Q&A on the EU AI Act and algorithmic risk management.",
+    },
+    insights: {
+      title: "AI Governance & EU AI Act Insights | LALUM Articles",
+      desc: "Professional articles on the EU AI Act, algorithmic risk management, board liability, and mediation, by Dr. Avraham Lalum and LALUM.",
+    },
+    faq: {
+      title: "AI Governance & Regulation Q&A | LALUM",
+      desc: "Answers to common questions on AI governance, the EU AI Act, algorithmic risk management, mediation, and deals, from LALUM.",
+    },
+  },
+
   home: {
     heroPill: "PRECISION LEGAL INTELLIGENCE & RISK GOVERNANCE",
     heroH1a: "Fewer human errors.",
@@ -1060,6 +1089,34 @@ const he: Dict = {
       travelNote: "זמן הנסיעה מוערך מהמשרד בהרצליה; נתוני תנועה חיים חלים כשמוגדר מפתח מפות.",
       kinds: { lecture: "הרצאה", meeting: "פגישה", zoom: "זום", phone: "טלפון", block: "בלוק עבודה", travel: "נסיעה" },
       hint: "טיפ: לחצו Cmd/Ctrl+K בכל מקום כדי לתזמן בהקלדה.",
+    },
+  },
+
+  // עותק SEO לכל עמוד: כותרות ותיאורים ממוקדי מילות מפתח, בנפרד מכותרות התוכן.
+  seo: {
+    home: {
+      title: "LALUM, ממשל AI ורגולציית בינה מלאכותית",
+      desc: "משרד Tech-Legal לממשל בינה מלאכותית: התאמה ל-EU AI Act, ניהול סיכונים אלגוריתמי, חוות דעת חתומות והגנה שעומדת בבית משפט ובדירקטוריון.",
+    },
+    advisory: {
+      title: "ייעוץ AI וגישור, ממשל בינה מלאכותית ו-EU AI Act | LALUM",
+      desc: "ייעוץ משפטי לממשל בינה מלאכותית: התאמה ל-EU AI Act, אחריות אלגוריתמית, הגנת קניין רוחני ומידע, וגישור מכוון הכרעה לסכסוכים מורכבים.",
+    },
+    training: {
+      title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM",
+      desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM.",
+    },
+    knowledge: {
+      title: "מרכז הידע של LALUM, קורסים, מאמרים ושאלות ותשובות על AI",
+      desc: "כל הידע על ממשל בינה מלאכותית ורגולציית AI במקום אחד: קורסים, מאמרים מקצועיים ושאלות ותשובות על EU AI Act וניהול סיכונים אלגוריתמי.",
+    },
+    insights: {
+      title: "מאמרים על ממשל AI ורגולציית בינה מלאכותית | LALUM",
+      desc: "מאמרים מקצועיים על EU AI Act, ניהול סיכונים אלגוריתמי, אחריות דירקטוריון וגישור, מאת ד\"ר אברהם ללום ומשרד LALUM.",
+    },
+    faq: {
+      title: "שאלות ותשובות על ממשל AI ורגולציה | LALUM",
+      desc: "תשובות לשאלות נפוצות על ממשל בינה מלאכותית, EU AI Act, ניהול סיכונים אלגוריתמי, גישור ועסקאות, מבית LALUM.",
     },
   },
 

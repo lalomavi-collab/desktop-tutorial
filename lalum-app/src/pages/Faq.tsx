@@ -15,8 +15,8 @@ export function Faq() {
   return (
     <>
       <PageMeta
-        title={`${f.title} · LALUM`}
-        description={f.lede}
+        title={t.seo.faq.title}
+        description={t.seo.faq.desc}
         path="/faq"
         jsonLd={{
           "@context": "https://schema.org",

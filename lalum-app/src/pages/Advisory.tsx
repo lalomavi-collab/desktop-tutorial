@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
+import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 
 export function Advisory() {
@@ -10,6 +11,7 @@ export function Advisory() {
 
   return (
     <>
+      <PageMeta title={t.seo.advisory.title} description={t.seo.advisory.desc} path="/advisory" />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />
