@@ -34,8 +34,8 @@ export function Training() {
   return (
     <>
       <PageMeta
-        title={`${tr.heroH1a} ${tr.heroH1b} · LALUM`}
-        description={tr.heroLede}
+        title={t.seo.training.title}
+        description={t.seo.training.desc}
         path="/training"
         jsonLd={{
           "@context": "https://schema.org",

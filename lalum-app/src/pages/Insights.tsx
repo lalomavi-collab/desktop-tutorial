@@ -45,7 +45,7 @@ export function Insights() {
 
   return (
     <>
-      <PageMeta title={`${t.ui.footerLinks.insights} · LALUM`} description={ins.heroLede} path="/insights" />
+      <PageMeta title={t.seo.insights.title} description={t.seo.insights.desc} path="/insights" />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>

@@ -22,8 +22,8 @@ export function Home() {
   return (
     <>
       <PageMeta
-        title={`${h.heroH1a} ${h.heroH1b}`}
-        description={h.heroLede}
+        title={t.seo.home.title}
+        description={t.seo.home.desc}
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
