@@ -89,9 +89,11 @@ export type MeetingKey = (typeof meetingTypes)[number]["key"];
 // milestone from their portal: the app hands off to the Invoice4U secure hosted
 // page, which presents Google Pay, Apple Pay, Bit, and card. This never exposes
 // the firm's Invoice4U account, only a single-amount checkout for that payment.
-// Kept off until the Invoice4U clearing terminal is live, so no Pay buttons show
-// on the site while a charge would fail. Flip to true once clearing is verified.
-export const paymentsEnabled = false;
+// The Meshulam clearing terminal is live and the payment function is deployed.
+// A server-side safety gate in lalum-pay-create refuses to hand any client a
+// sandbox checkout unless INVOICE4U_ALLOW_SANDBOX=true, so real payers only ever
+// reach the production terminal (or a safe error), never a test page.
+export const paymentsEnabled = true;
 
 // Deep link into the firm's private Invoice4U dashboard (full accounting:
 // up-to-date status, income, expenses, and reports). Surfaced ONLY inside the

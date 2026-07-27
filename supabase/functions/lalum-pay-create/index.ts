@@ -8,6 +8,7 @@
 //   INVOICE4U_API_KEY        organization API key (GUID)
 //   INVOICE4U_CLEARING_COMPANY  6 UPay | 7 Meshulam | 12 YaadSarig | 15 Cardcom (default 7)
 //   INVOICE4U_ENV            "qa" (default) or "prod"
+//   INVOICE4U_ALLOW_SANDBOX  "true" to permit a sandbox checkout URL (testing); otherwise sandbox links are blocked so real clients never reach a test page
 //   LALUM_APP_URL            e.g. https://lalumapp.com
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -41,6 +42,7 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get("INVOICE4U_API_KEY")?.trim();
   const clearingCompany = Number(Deno.env.get("INVOICE4U_CLEARING_COMPANY") ?? "7");
   const env = (Deno.env.get("INVOICE4U_ENV") ?? "qa").toLowerCase();
+  const allowSandbox = Deno.env.get("INVOICE4U_ALLOW_SANDBOX") === "true";
   const appUrl = Deno.env.get("LALUM_APP_URL") ?? "https://lalumapp.com";
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -120,6 +122,19 @@ Deno.serve(async (req) => {
       }).eq("id", id);
       const first = Array.isArray(errors) && errors.length ? errors[0] : null;
       return json(502, { code: "invoice4u_error", status: res.status, detail: first });
+    }
+    // SAFETY GATE: never hand a real payer a sandbox checkout. If the returned
+    // clearing URL is a sandbox terminal and sandbox is not explicitly allowed,
+    // refuse. This protects clients if the production secrets are misconfigured.
+    if (!allowSandbox && /sandbox/i.test(link)) {
+      const detailText = `SANDBOX_BLOCKED | ${cfg} | ${link.slice(0, 120)}`;
+      console.log(detailText);
+      await admin.from("billing_milestones").update({
+        status: "failed",
+        last_error: detailText,
+        updated_at: new Date().toISOString(),
+      }).eq("id", id);
+      return json(502, { code: "sandbox_blocked", detail: "A sandbox checkout was blocked in live mode. Set INVOICE4U_ENV=prod with the production API key and a production terminal, or set INVOICE4U_ALLOW_SANDBOX=true to test." });
     }
     await admin.from("billing_milestones").update({
       status: "sent",
