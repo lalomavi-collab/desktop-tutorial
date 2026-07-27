@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
+import { useDialogA11y } from "../lib/useDialogA11y";
+import { cookieConsentResolved, COOKIE_RESOLVED_EVENT } from "./CookieConsent";
 
 // Persisted acknowledgment of the current Privacy Policy version. Bump VERSION
 // whenever the policy changes again, and every user is prompted afresh.
@@ -43,11 +45,26 @@ export function PrivacyUpdateNotice() {
   const p = t.ui.privacyUpdate;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (acknowledged() || snoozed()) return;
-    setOpen(true);
+    // Do not stack on top of the first-visit cookie banner: wait until the
+    // visitor has resolved cookies, then show. If cookies are already resolved,
+    // show immediately.
+    if (cookieConsentResolved()) {
+      setOpen(true);
+      return;
+    }
+    const onResolved = () => {
+      if (!acknowledged() && !snoozed()) setOpen(true);
+    };
+    window.addEventListener(COOKIE_RESOLVED_EVENT, onResolved);
+    return () => window.removeEventListener(COOKIE_RESOLVED_EVENT, onResolved);
   }, []);
+
+  // Escape / focus-trap / scroll-lock. Escape behaves like "Later" (snooze).
+  useDialogA11y(open, () => later(), modalRef);
 
   function confirm() {
     try {
@@ -71,7 +88,7 @@ export function PrivacyUpdateNotice() {
 
   return (
     <div className="cookie-overlay" role="dialog" aria-modal="true" aria-label={p.aria}>
-      <div dir={dir} className="cookie-modal privacy-update-modal">
+      <div dir={dir} className="cookie-modal privacy-update-modal" ref={modalRef}>
         <h2 className="h3" style={{ fontSize: 22, margin: "0 0 12px" }}>{p.title}</h2>
         <p style={{ fontSize: 15, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{p.body}</p>
 

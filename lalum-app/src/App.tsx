@@ -24,6 +24,7 @@ const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })));
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
+const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
 
 export default function App() {
   return (
@@ -58,7 +59,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
