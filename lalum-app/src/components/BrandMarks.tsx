@@ -185,3 +185,21 @@ export function PaymentBrands({ size = 24, includeLeumi = false }: { size?: numb
     </span>
   );
 }
+
+// The accepted-payments row wrapped in a calm, labelled panel. A small shield
+// label sits on one side and the brand marks on the other, evenly spaced, so
+// the colourful marks read as one tidy strip rather than floating loose.
+export function PaymentStrip({ label, size = 26, includeLeumi = false }: { label?: string; size?: number; includeLeumi?: boolean }) {
+  return (
+    <div className="pay-strip">
+      {label && (
+        <span className="pay-strip-label">
+          <Icon name="shield" size={15} /> {label}
+        </span>
+      )}
+      <span className="pay-strip-marks">
+        <PaymentBrands size={size} includeLeumi={includeLeumi} />
+      </span>
+    </div>
+  );
+}

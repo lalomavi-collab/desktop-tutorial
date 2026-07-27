@@ -7,7 +7,7 @@ import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
-import { LeumiMark, PaymentBrands } from "../components/BrandMarks";
+import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 
 // When set, an embedded Calendly replaces the manual day/time picker.
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
@@ -972,7 +972,7 @@ export function Portal() {
             <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.title}</h2>
           </div>
           <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 14px" }}>{P.billing.intro}</p>
-          <div style={{ marginBottom: 20 }}><PaymentBrands size={26} /></div>
+          <div style={{ marginBottom: 20 }}><PaymentStrip label={P.billing.secure} size={26} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {myBills.map((bl) => {
               const paid = bl.status === "paid";
