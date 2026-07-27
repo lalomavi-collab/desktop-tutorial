@@ -38,6 +38,16 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
+          {paymentsEnabled && (
+            <Link
+              to={user ? "/portal" : "/login"}
+              className="tb-btn tb-pay"
+              aria-label={t.ui.bookPage.quickPayTitle}
+              title={t.ui.bookPage.quickPayTitle}
+            >
+              <Icon name="card" size={18} />
+            </Link>
+          )}
           <button
             type="button"
             className="tb-btn hdr-secondary"
