@@ -180,6 +180,27 @@ export function Home() {
         </div>
       </section>
 
+      {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
+          at-a-glance trust signal (previously only on the Advisory page). */}
+      <section className="section-line">
+        <div className="wrap section">
+          <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+            <p className="eyebrow">{t.advisory.testimonialsEyebrow}</p>
+            <h2 className="h2">{t.advisory.testimonialsH2}</h2>
+          </div>
+          <div className="grid grid-3">
+            {t.data.testimonials.map((tm) => (
+              <div key={tm.attr} className="card" style={{ display: "flex", flexDirection: "column" }}>
+                <span style={{ color: "var(--clay)", opacity: 0.6 }}><Icon name="quote" size={26} /></span>
+                <p style={{ fontFamily: "var(--serif)", fontSize: 20, lineHeight: 1.5, color: "var(--ink)", margin: "18px 0 24px", flex: 1 }}>{tm.quote}</p>
+                <div style={{ height: 1, background: "var(--line)", marginBottom: 16 }} />
+                <div style={{ fontSize: 13, color: "var(--slate)" }}>{tm.attr}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FOUNDER */}
       <section className="section-line">
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
