@@ -7,9 +7,19 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(self), camera=()
-  # Non-breaking CSP hardening: these directives do not restrict where scripts,
-  # styles, images, or connections load from, so they cannot break the app; they
-  # only block plugin/object embeds, base-tag injection, and clickjacking, and
-  # upgrade any stray http request to https. A full script-src/connect-src policy
-  # is a separate step that needs live testing against auth, payments, and embeds.
+  # Phase 1 (enforcing): these directives do not restrict where scripts, styles,
+  # images, or connections load from, so they cannot break the app; they only
+  # block plugin/object embeds, base-tag injection, and clickjacking, and upgrade
+  # any stray http request to https.
   Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+  # Phase 2 (report-only): the full hardened policy runs in report-only mode, so
+  # it reports violations to the browser console without blocking anything. This
+  # is the safe way to reach a full script-src/connect-src lockdown: exercise the
+  # real flows (browse the public pages, log in, upload a file in the portal, book
+  # a meeting, start a payment), confirm no legitimate request is reported, then
+  # promote this exact policy to the enforcing Content-Security-Policy header
+  # above and remove this report-only line. The allowlist covers every third
+  # party the app actually uses: Supabase (auth, data, realtime), Invoice4U
+  # (payments), Calendly (booking), Google Fonts, wixstatic (article images), and
+  # the NytroSEO plugin (public pages only).
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://calendly.com https://assets.calendly.com https://fonts.googleapis.com https://fonts.gstatic.com; frame-src 'self' https://calendly.com https://*.calendly.com https://private.invoice4u.co.il; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'
