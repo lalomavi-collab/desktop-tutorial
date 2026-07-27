@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
-import { GPayMark, LeumiMark } from "./BrandMarks";
+import { LeumiMark, PaymentBrands } from "./BrandMarks";
 import { contactEmail, officePhone, directPhone, socialLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
@@ -119,7 +119,7 @@ export function Footer() {
             )}
             {(paymentsEnabled || paymentsComingSoon) && (
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <GPayMark size={24} />
+                <PaymentBrands size={22} />
                 {!paymentsEnabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
               </span>
             )}
