@@ -1,12 +1,14 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
+import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { MarketingConsent } from "../components/MarketingConsent";
-import { meetingTypes, bookingBaseUrl, type MeetingKey } from "../lib/content";
-import { ZoomMark, TeamsMark } from "../components/BrandMarks";
+import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
+import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
 
 // When a Calendly link is configured, booking is REAL and instant: the visitor
 // gets an email confirmation plus a calendar invite, and the meeting lands on
@@ -42,6 +44,7 @@ const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
 export function Book() {
   const { t, lang } = useLang();
+  const { user } = useAuth();
   const B = t.ui.bookPage;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
   const [method, setMethod] = useState<MeetingKey>(meetingTypes[0].key);
@@ -58,6 +61,21 @@ export function Book() {
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitleLive}</p>
         </div>
+
+        {/* Quick payment: accepted-method logos plus a one-tap route into the
+            secure payment flow, for clients who already agreed on a fee. */}
+        {paymentsEnabled && (
+          <Link to={user ? "/portal" : "/login"} className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 20px", margin: "0 auto 30px", maxWidth: 640, flexWrap: "wrap" }} aria-label={B.quickPayTitle}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "var(--ink)" }}>{B.quickPayTitle}</div>
+              <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 2, maxWidth: "40ch" }}>{B.quickPayNote}</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+              <PaymentBrands size={22} includeLeumi />
+              <span className="btn btn-clay btn-sm">{B.quickPayCta}</span>
+            </div>
+          </Link>
+        )}
 
         {/* Meeting format: each choice loads the matching Calendly event, which
             is wired to the right conferencing/location and to the calendar. */}
