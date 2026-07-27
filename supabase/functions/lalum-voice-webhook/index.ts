@@ -259,9 +259,12 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return json({ error: "method not allowed" }, 405);
   }
-  if (WEBHOOK_SECRET) {
-    const provided = req.headers.get("x-vapi-secret") ?? req.headers.get("x-webhook-secret");
-    if (provided !== WEBHOOK_SECRET) return json({ error: "invalid webhook secret" }, 401);
+  // Fail closed: the secret is mandatory. If VOICE_WEBHOOK_SECRET is unset the
+  // endpoint used to be fully open, letting anyone inject fabricated calls,
+  // poison CRM/billing rows, and run the (firm-billed) LLM extraction.
+  const provided = req.headers.get("x-vapi-secret") ?? req.headers.get("x-webhook-secret") ?? "";
+  if (!WEBHOOK_SECRET || provided !== WEBHOOK_SECRET) {
+    return json({ error: "unauthorized" }, 401);
   }
 
   let payload: any;
