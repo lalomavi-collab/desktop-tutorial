@@ -4,6 +4,7 @@ import { LangProvider } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { NytroLoader } from "./components/NytroLoader";
 import { Home } from "./pages/Home";
 
 // The command bar (Cmd/Ctrl+K scheduling) is a power feature, not needed for
@@ -29,6 +30,7 @@ export default function App() {
     <LangProvider>
     <AuthProvider>
       <BrowserRouter>
+        <NytroLoader />
         <Suspense fallback={null}>
           <CommandBar />
         </Suspense>
