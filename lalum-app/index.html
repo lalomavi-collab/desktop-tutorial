@@ -19,11 +19,15 @@
          (even where the Google Fonts CDN is slow or blocked) and swaps the web
          fonts in when they arrive. Fallback stacks are defined in CSS. -->
     <link
+      id="gfonts-css"
       href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
       media="print"
-      onload="this.media='all'"
     />
+    <!-- A self-hosted, deferred script (CSP script-src 'self') flips the print
+         stylesheet above to all, instead of an inline onload handler that a
+         strict Content-Security-Policy would block. Keeps fonts non-blocking. -->
+    <script src="/font-activate.js" defer></script>
     <noscript>
       <link
         href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap"
