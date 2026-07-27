@@ -2592,6 +2592,17 @@ html.a11y-reduce-motion *::after {
   filter: brightness(1.06);
   color: var(--paper);
 }
+/* Quick payment carries the brand burgundy so it stands apart from the clay
+   contact button and reads as the pay action, one tap from the top bar. */
+.tb-btn.tb-pay {
+  background: #800020;
+  border-color: #800020;
+  color: var(--paper);
+}
+.tb-btn.tb-pay:hover {
+  filter: brightness(1.1);
+  color: var(--paper);
+}
 .tabbar-bot { color: var(--clay); }
 .tb-lang {
   font-size: 13.5px;
