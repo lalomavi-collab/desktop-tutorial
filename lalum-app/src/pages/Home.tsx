@@ -49,6 +49,13 @@ export function Home() {
               <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
               <a href="#practice" className="btn btn-ghost">{t.ui.seeWhatWeDo}</a>
             </div>
+            {/* Framework trust strip: an at-a-glance credibility signal, and the
+                multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
+                that the leading AI-governance advisories lead with. */}
+            <div style={{ marginTop: 22, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)" }}>{h.frameworksLabel}</span>
+              <span dir="ltr" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>EU AI Act&nbsp;&middot;&nbsp;ISO/IEC 42001&nbsp;&middot;&nbsp;NIST AI RMF</span>
+            </div>
             <SiteSearch />
           </div>
 
