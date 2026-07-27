@@ -4,19 +4,22 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
-import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
+import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
   const { t, toggle } = useLang();
 
   // Articles, Q&A and guides now live under the single Knowledge hub, so the top
-  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub.
+  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. When
+  // payments are on, a Pay rubric leads a client to their portal (or to login
+  // first), so paying through the app is one tap from the top bar.
   const nav = [
     { to: "/", label: t.ui.nav.home, end: true },
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
+    ...(paymentsEnabled ? [{ to: user ? "/portal" : "/login", label: t.ui.nav.pay, end: false }] : []),
   ];
 
   return (
