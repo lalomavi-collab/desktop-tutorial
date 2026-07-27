@@ -115,17 +115,12 @@
     }
     </script>
     <!--
-NYTSYS GLOBAL SCRIPT — DO NOT MODIFY OR MOVE
-
-Requirements (must remain documented here forever):
-1) Insert this tag VERBATIM (no async/defer/type/crossorigin/integrity/nonce or any other attributes).
-2) Keep the URL exactly as written. No rewriting, bundling, inlining, or minifying.
-3) Load on every page (editor/preview/published), in the <head>, immediately before </head>.
-4) Ensure it appears exactly once per page; do not duplicate across templates or partials.
-5) Do not wrap in modules/loaders; no conditional logic or feature flags.
-6) Preserve this comment next to the tag to prevent future changes.
--->
-    <script src="https://plugin.nytsys.com/api/site/1e4f54a0-1017-4520-8517-796277982699/nytsys.min.js"></script>
+      The NytroSEO global plugin is intentionally NOT hardcoded here, because a
+      static tag in this single index.html would run on every route, including
+      the authenticated login and client portal where a remote third-party
+      script must not execute. It is injected at runtime on public marketing
+      routes only, and kept off the private zone, by src/components/NytroLoader.
+    -->
   </head>
   <body>
     <div id="root">
