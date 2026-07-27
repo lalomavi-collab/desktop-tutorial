@@ -5,22 +5,32 @@ import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
 
-// Imported blog posts arrive as one plain-text run. Split it into readable
-// paragraphs by grouping sentences, so the in-app page reads like an article
-// rather than a wall of text.
-function toParagraphs(body: string): string[] {
-  const sentences = body.split(/(?<=[.!?])\s+/);
-  const paras: string[] = [];
-  let cur: string[] = [];
-  for (const s of sentences) {
-    cur.push(s);
-    if (cur.join(" ").length > 300) {
-      paras.push(cur.join(" "));
-      cur = [];
+// Blog post bodies come in two shapes. Imported posts are one plain-text run
+// with no line breaks: those are grouped into readable paragraphs by sentence.
+// Authored posts use "## " on their own line for section headings and blank
+// lines between paragraphs: those render with real headings for a uniform,
+// professional structure. Both are handled by the same splitter.
+function toBlocks(body: string): ArticleBlock[] {
+  const blocks: ArticleBlock[] = [];
+  for (const raw of body.split(/\n+/)) {
+    const seg = raw.trim();
+    if (!seg) continue;
+    if (seg.startsWith("## ")) {
+      blocks.push({ type: "h2", text: seg.slice(3).trim() });
+      continue;
     }
+    const sentences = seg.split(/(?<=[.!?])\s+/);
+    let cur: string[] = [];
+    for (const s of sentences) {
+      cur.push(s);
+      if (cur.join(" ").length > 300) {
+        blocks.push({ type: "p", text: cur.join(" ") });
+        cur = [];
+      }
+    }
+    if (cur.length) blocks.push({ type: "p", text: cur.join(" ") });
   }
-  if (cur.length) paras.push(cur.join(" "));
-  return paras;
+  return blocks;
 }
 
 function Block({ block }: { block: ArticleBlock }) {
@@ -58,7 +68,7 @@ export function Article() {
 
   const view = article
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
-    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toParagraphs(post!.body).map((text) => ({ type: "p", text }) as ArticleBlock) };
+    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(post!.body) };
 
   return (
     <>

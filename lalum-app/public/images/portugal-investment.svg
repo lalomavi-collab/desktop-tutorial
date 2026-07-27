@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Portugal investment, LALUM">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1B1B"/>
+      <stop offset="0.62" stop-color="#2a1218"/>
+      <stop offset="1" stop-color="#800020"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D4AF37"/>
+      <stop offset="1" stop-color="#f0d987"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="26" y="26" width="1148" height="578" fill="none" stroke="#D4AF37" stroke-opacity="0.55" stroke-width="1.5"/>
+  <!-- Subtle azulejo-inspired arches motif, top right -->
+  <g fill="none" stroke="#D4AF37" stroke-opacity="0.18" stroke-width="2">
+    <path d="M980 96 a70 70 0 0 1 140 0 v120 h-140 z"/>
+    <path d="M1010 130 a40 40 0 0 1 80 0 v86 h-80 z"/>
+    <circle cx="1050" cy="96" r="8" stroke-opacity="0.4"/>
+  </g>
+  <g fill="#D4AF37" fill-opacity="0.10">
+    <circle cx="150" cy="520" r="120"/>
+    <circle cx="150" cy="520" r="78" fill="#800020" fill-opacity="0.25"/>
+  </g>
+  <text x="90" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="34" letter-spacing="10" fill="url(#gold)">L A L U M</text>
+  <text x="86" y="360" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="112" letter-spacing="4" fill="#FFFDD0">PORTUGAL</text>
+  <text x="92" y="420" font-family="Georgia, 'Times New Roman', serif" font-size="27" letter-spacing="6" fill="#D4AF37">INVESTMENT · RESIDENCY · LEGAL</text>
+  <line x1="92" y1="452" x2="560" y2="452" stroke="#D4AF37" stroke-opacity="0.5" stroke-width="1.5"/>
+  <text x="92" y="500" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="24" fill="#c9c3b8">A LALUM Tech-Legal Guide</text>
+</svg>
