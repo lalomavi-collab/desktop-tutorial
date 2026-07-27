@@ -122,3 +122,65 @@ export function BitMark({ size = 22 }: P) {
     </span>
   );
 }
+
+// Card-network marks. Simplified, recognisable wordmarks and emblems on a small
+// white or brand-coloured card, so the accepted cards read at a glance without
+// any external asset. Height is fixed to `size` so a row of mixed marks aligns.
+export function VisaMark({ size = 22 }: P) {
+  const h = size;
+  return (
+    <span
+      aria-hidden="true"
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#fff", border: "1px solid #e2ddd0" }}
+    >
+      <span style={{ color: "#1a1f71", fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontWeight: 800, fontSize: h * 0.52, letterSpacing: 0.5, lineHeight: 1 }}>VISA</span>
+    </span>
+  );
+}
+
+export function MastercardMark({ size = 22 }: P) {
+  const h = size;
+  return (
+    <span
+      aria-hidden="true"
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#fff", border: "1px solid #e2ddd0" }}
+    >
+      <svg width={h * 1.1} height={h * 0.68} viewBox="0 0 48 30" aria-hidden="true">
+        <circle cx="19" cy="15" r="11" fill="#EB001B" />
+        <circle cx="29" cy="15" r="11" fill="#F79E1B" />
+        {/* Paint the intersection orange by clipping the right disc to the left. */}
+        <clipPath id="lalum-mc-lens"><circle cx="19" cy="15" r="11" /></clipPath>
+        <circle cx="29" cy="15" r="11" fill="#FF5F00" clipPath="url(#lalum-mc-lens)" />
+      </svg>
+    </span>
+  );
+}
+
+export function AmexMark({ size = 22 }: P) {
+  const h = size;
+  return (
+    <span
+      aria-hidden="true"
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#006FCF", color: "#fff" }}
+    >
+      <span style={{ fontFamily: "Arial, sans-serif", fontWeight: 800, fontSize: h * 0.42, letterSpacing: 0.6, lineHeight: 1 }}>AMEX</span>
+    </span>
+  );
+}
+
+// A single accepted-payments row. Nominative "works with" use: it shows the
+// card networks and wallets the client can pay with. It never names the
+// underlying provider, so the client sees only familiar payment brands.
+export function PaymentBrands({ size = 24, includeLeumi = false }: { size?: number; includeLeumi?: boolean }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <VisaMark size={size} />
+      <MastercardMark size={size} />
+      <AmexMark size={size} />
+      <ApplePayMark size={size} />
+      <GPayMark size={size} />
+      <BitMark size={size} />
+      {includeLeumi && <LeumiMark size={size} />}
+    </span>
+  );
+}
