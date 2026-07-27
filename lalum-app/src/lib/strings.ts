@@ -218,7 +218,8 @@ const en = {
       },
       billing: {
         title: "Payments",
-        intro: "Your billing milestones. Pay securely with Bit, Apple Pay, Google Pay, or card.",
+        intro: "Your billing milestones. Pay securely in a few clicks.",
+        secure: "Secure payment",
         none: "No payments due right now.",
         pay: "Pay now",
         walletHint: "Google Pay",
@@ -986,7 +987,8 @@ const he: Dict = {
       },
       billing: {
         title: "תשלומים",
-        intro: "אבני הדרך לתשלום שלכם. שלמו באופן מאובטח ב-Bit, Apple Pay, Google Pay או כרטיס אשראי.",
+        intro: "אבני הדרך לתשלום שלכם. שלמו באופן מאובטח בכמה קליקים.",
+        secure: "תשלום מאובטח",
         none: "אין תשלומים לביצוע כרגע.",
         pay: "לתשלום",
         walletHint: "Google Pay",

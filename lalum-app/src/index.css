@@ -1836,6 +1836,35 @@ html.a11y-reduce-motion *::after {
 .pay-badge-bit { background: #1b1b1b; color: #fff; border-color: #1b1b1b; font-weight: 800; letter-spacing: 0.2px; }
 .pay-badge-card { color: #1b1b1b; }
 
+/* Contained accepted-payments strip: a calm labelled panel that keeps the
+   colourful brand marks tidy and evenly spaced instead of floating loose. */
+.pay-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+}
+.pay-strip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--slate);
+}
+.pay-strip-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .footer-bottom {
   display: flex;
   align-items: center;
