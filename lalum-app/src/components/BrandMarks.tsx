@@ -131,9 +131,9 @@ export function VisaMark({ size = 22 }: P) {
   return (
     <span
       aria-hidden="true"
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: h, padding: "0 9px", borderRadius: 6, background: "#fff", border: "1px solid #e2ddd0" }}
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: h, padding: "0 10px", borderRadius: 6, background: "#1434CB" }}
     >
-      <span style={{ color: "#1a1f71", fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontWeight: 800, fontSize: h * 0.52, letterSpacing: 0.5, lineHeight: 1 }}>VISA</span>
+      <span style={{ color: "#fff", fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontWeight: 800, fontSize: h * 0.52, letterSpacing: 0.5, lineHeight: 1 }}>VISA</span>
     </span>
   );
 }
@@ -169,14 +169,15 @@ export function AmexMark({ size = 22 }: P) {
 }
 
 // A single accepted-payments row. Nominative "works with" use: it shows the
-// card networks and wallets the client can pay with. It never names the
-// underlying provider, so the client sees only familiar payment brands.
+// card networks and wallets the client can pay with. Kept short and colourful
+// (Visa, Mastercard, Apple Pay, Google Pay, Bit) so it reads at a glance
+// without crowding. It never names the underlying provider, so the client sees
+// only familiar payment brands. AmexMark stays available for future use.
 export function PaymentBrands({ size = 24, includeLeumi = false }: { size?: number; includeLeumi?: boolean }) {
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
       <VisaMark size={size} />
       <MastercardMark size={size} />
-      <AmexMark size={size} />
       <ApplePayMark size={size} />
       <GPayMark size={size} />
       <BitMark size={size} />
