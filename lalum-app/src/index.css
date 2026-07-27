@@ -191,12 +191,18 @@ h1.serif,
 h2.serif,
 h3.serif {
   text-wrap: balance;
+  /* Never let a long headline overrun its column: the hero clips overflow, so
+     an unbreakable run would be cut off on the side otherwise. */
+  overflow-wrap: break-word;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 }
 .h1 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 60px;
+  /* Fluid between the mobile size (40px) and the desktop size (60px). The hero
+     stays two columns down to 900px, so a fixed 60px overflowed the narrowing
+     left column between 900px and ~1200px and was clipped on the side. */
+  font-size: clamp(40px, 5vw, 60px);
   line-height: 1.06;
   letter-spacing: -0.021em;
 }

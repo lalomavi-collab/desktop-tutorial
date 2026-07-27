@@ -39,6 +39,10 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />
             <Route path="training" element={<Training />} />
+            {/* /courses is the public URL for the Academy; it is the same page
+                as /training (labelled "Courses" in the nav). Without this alias
+                a direct visit to /courses fell through to the catch-all Home. */}
+            <Route path="courses" element={<Training />} />
             <Route path="insights" element={<Insights />} />
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
