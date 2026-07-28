@@ -1,6 +1,6 @@
 import type {
   Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
-  PracticeArea, RiskType, RiskStage, FaqCat,
+  PracticeArea, RiskType, RiskStage, FaqCat, HubItem,
 } from "./content";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
@@ -457,6 +457,76 @@ const en = {
           { q: "How does AI fit a legal practice?", a: "It sharpens risk analysis and documentation. The lawyering stays human; the exposure map gets faster and more defensible." },
         ]},
       ] as FaqCat[],
+    },
+    hub: {
+      eyebrow: "How we work",
+      title: "Representative situations",
+      note: "Illustrative scenarios that show how we approach a matter, not specific client cases.",
+      more: "See the approach",
+      close: "Close",
+      filters: [
+        { id: "all", label: "All" },
+        { id: "urban", label: "Urban renewal" },
+        { id: "intl", label: "International deals" },
+        { id: "advisory", label: "Strategic advisory & AI" },
+      ],
+      items: [
+        {
+          id: "u1", area: "urban", title: "A committee facing a stalled developer",
+          summary: "A tenant committee locked into a project where the developer had stopped performing.",
+          tags: ["Evacuate-and-rebuild", "Committee", "Guarantees"],
+          detail: [
+            "The classic exposure: an agreement signed on optimism, guarantees that did not match the timeline, and a committee that lost leverage once the project stalled.",
+            "The approach: read the agreement and collateral against the real milestones, identify the termination and step-in rights, and rebuild the committee's position around what actually protects the apartments.",
+            "The point: these outcomes are decided in the clauses, before signing, far more than in the crisis.",
+          ],
+        },
+        {
+          id: "u2", area: "urban", title: "Gap between the brochure and the spec",
+          summary: "Owners who found the promised apartment did not match the binding documents.",
+          tags: ["Tama 38", "Spec", "Betterment tax"],
+          detail: [
+            "Marketing promises and the definitive agreement had drifted apart, and the betterment-tax treatment quietly eroded the value the owners expected.",
+            "The approach: align the spec, the tax structure, and the majority mechanism inside the binding agreement, so the delivered value matches what was sold.",
+          ],
+        },
+        {
+          id: "i1", area: "intl", title: "A cross-border purchase with a tax structure",
+          summary: "An Israeli investor buying abroad, where the holding structure decided the real return.",
+          tags: ["Cross-border", "Holding structure", "Taxation"],
+          detail: [
+            "The risk sat in assumptions imported from Israel: title, holding structure, and taxation all worked differently in the destination country.",
+            "The approach: cross-border due diligence and a holding and tax structure set before money moved, coordinated with local counsel, with enforcement and dispute terms built into the contract.",
+          ],
+        },
+        {
+          id: "i2", area: "intl", title: "A multi-jurisdictional M&A",
+          summary: "A corporate transaction spanning several jurisdictions and external counsel.",
+          tags: ["M&A", "Due diligence", "Multi-jurisdiction"],
+          detail: [
+            "The deal touched multiple legal systems, with due diligence, term sheets, and definitive agreements that had to hold together across borders.",
+            "The approach: manage the legal and commercial due diligence end to end, coordinate external counsel across jurisdictions, and price the risk into the structure and the agreements.",
+          ],
+        },
+        {
+          id: "a1", area: "advisory", title: "Pre-litigation strategy that avoided a lawsuit",
+          summary: "A dispute headed for court, reframed by an early independent read.",
+          tags: ["Pre-litigation", "DOM", "Mediation"],
+          detail: [
+            "Both sides were on a path to years of litigation and fees, without a clear read on the real odds.",
+            "The approach: an independent assessment of the merits, then Decision-Oriented Mediation to reach a defensible resolution in a fraction of the time, with a documented record either way.",
+          ],
+        },
+        {
+          id: "a2", area: "advisory", title: "AI-based risk mapping for an investment portfolio",
+          summary: "A portfolio decision supported by an explainable, documented risk model.",
+          tags: ["AI risk", "Real estate", "Explainable"],
+          detail: [
+            "The decision needed more than intuition: a structured, defensible view of the exposure across the portfolio.",
+            "The approach: an AI-based, explainable risk model that maps the exposure and documents the reasoning, drawn from our peer-reviewed research on real-estate investment risk modeling.",
+          ],
+        },
+      ] as HubItem[],
     },
   },
   seo: {
@@ -1350,6 +1420,76 @@ const he: Dict = {
           { q: "מהו גישור מכוון-הכרעה (DOM)?", a: "מודל גישור מכוון-תוצאה שמוביל סכסוכים ליישוב בר-הגנה, לרוב הרבה יותר מהר מליטיגציה." },
           { q: "איך AI משתלב בפרקטיקה משפטית?", a: "הוא מחדד ניתוח סיכונים ותיעוד. העבודה המשפטית נשארת אנושית, ומפת החשיפה נעשית מהירה ובת-הגנה יותר." },
         ]},
+      ],
+    },
+    hub: {
+      eyebrow: "איך אנחנו עובדים",
+      title: "תרחישים מייצגים",
+      note: "תרחישים אילוסטרטיביים שמדגימים את גישת העבודה שלנו, לא תיקי לקוח ספציפיים.",
+      more: "לצפייה בגישה",
+      close: "סגירה",
+      filters: [
+        { id: "all", label: "הכל" },
+        { id: "urban", label: "התחדשות עירונית" },
+        { id: "intl", label: "עסקאות בינלאומיות" },
+        { id: "advisory", label: "ייעוץ אסטרטגי ו-AI" },
+      ],
+      items: [
+        {
+          id: "u1", area: "urban", title: "נציגות מול יזם שנתקע",
+          summary: "נציגות דיירים שנעולה בפרויקט שבו היזם הפסיק לבצע.",
+          tags: ["פינוי-בינוי", "נציגות", "ערבויות"],
+          detail: [
+            "החשיפה הקלאסית: הסכם שנחתם מתוך אופטימיות, ערבויות שלא תאמו את לוח הזמנים, ונציגות שאיבדה מנוף ברגע שהפרויקט נתקע.",
+            "הגישה: לקרוא את ההסכם והבטוחות מול אבני הדרך האמיתיות, לזהות את זכויות הביטול והכניסה, ולבנות מחדש את עמדת המשא ומתן של הנציגות סביב מה שבאמת מגן על הדירות.",
+            "הנקודה: התוצאות האלה נקבעות בסעיפים, לפני החתימה, הרבה יותר מאשר במשבר.",
+          ],
+        },
+        {
+          id: "u2", area: "urban", title: "פער בין הברושור למפרט",
+          summary: "בעלי דירות שגילו שהדירה שהובטחה לא תאמה את המסמכים המחייבים.",
+          tags: ["תמ״א 38", "מפרט", "היטל השבחה"],
+          detail: [
+            "הבטחות השיווק וההסכם המחייב התרחקו זה מזה, ומיסוי ההשבחה שחק בשקט את הערך שהבעלים ציפו לו.",
+            "הגישה: ליישר את המפרט, מבנה המיסוי ומנגנון הרוב בתוך ההסכם המחייב, כך שהערך שנמסר תואם את מה שנמכר.",
+          ],
+        },
+        {
+          id: "i1", area: "intl", title: "רכישה חוצת גבולות עם מבנה מיסוי",
+          summary: "משקיע ישראלי שרוכש בחו״ל, שבה מבנה ההחזקה קבע את התשואה האמיתית.",
+          tags: ["חוצה גבולות", "מבנה החזקה", "מיסוי"],
+          detail: [
+            "הסיכון ישב בהנחות שיובאו מישראל: רישום הזכויות, מבנה ההחזקה והמיסוי כולם פעלו אחרת במדינת היעד.",
+            "הגישה: בדיקת נאותות חוצת גבולות ומבנה החזקה ומיסוי שנקבע לפני שהכסף זז, בתיאום עם עורך דין מקומי, עם תנאי אכיפה וסכסוך שנבנו לתוך החוזה.",
+          ],
+        },
+        {
+          id: "i2", area: "intl", title: "M&A רב-שיפוטי",
+          summary: "עסקה תאגידית שנפרשת על פני כמה שיפוטים ועורכי דין חיצוניים.",
+          tags: ["M&A", "בדיקת נאותות", "רב-שיפוטי"],
+          detail: [
+            "העסקה נגעה בכמה מערכות דין, עם בדיקת נאותות, term sheets והסכמים מחייבים שהיו צריכים להחזיק יחד חוצה גבולות.",
+            "הגישה: לנהל את בדיקת הנאותות המשפטית והמסחרית מקצה לקצה, לתאם עורכי דין חיצוניים בין השיפוטים, ולתמחר את הסיכון לתוך המבנה וההסכמים.",
+          ],
+        },
+        {
+          id: "a1", area: "advisory", title: "אסטרטגיה טרום-תביעה שחסכה ליטיגציה",
+          summary: "סכסוך שהיה בדרך לבית משפט, ומוסגר מחדש בזכות קריאה עצמאית מוקדמת.",
+          tags: ["טרום-תביעה", "DOM", "גישור"],
+          detail: [
+            "שני הצדדים היו בדרך לשנים של ליטיגציה ואגרות, בלי קריאה ברורה של הסיכויים האמיתיים.",
+            "הגישה: הערכה עצמאית של הסיכויים, ואז גישור מכוון-הכרעה כדי להגיע ליישוב בר-הגנה בחלק קטן מהזמן, עם תיעוד בכל מקרה.",
+          ],
+        },
+        {
+          id: "a2", area: "advisory", title: "מיפוי סיכון מבוסס AI לתיק השקעה",
+          summary: "החלטת תיק שנתמכה במודל סיכון מוסבר ומתועד.",
+          tags: ["סיכון AI", "נדל״ן", "מוסבר"],
+          detail: [
+            "ההחלטה דרשה יותר מאינטואיציה: תמונה מובנית ובת-הגנה של החשיפה על פני התיק.",
+            "הגישה: מודל סיכון מבוסס AI ומוסבר שממפה את החשיפה ומתעד את ההיגיון, מתוך המחקר שלנו שעבר שיפוט עמיתים על מידול סיכון בהשקעות נדל״ן.",
+          ],
+        },
       ],
     },
   },

@@ -26,6 +26,7 @@ export type RiskType = { id: string; icon: IconName; label: string; vectors: Ris
 export type RiskStage = { id: string; label: string; level: string; tone: "ok" | "warn" | "high"; note: string };
 export type FaqQA = { q: string; a: string };
 export type FaqCat = { id: string; title: string; items: FaqQA[] };
+export type HubItem = { id: string; area: string; title: string; summary: string; tags: string[]; detail: string[] };
 export type Framework = { code: string; title: string; icon: IconName; body: string };
 export type Why = { icon: IconName; title: string; body: string };
 export type Faq = { q: string; a: string };
