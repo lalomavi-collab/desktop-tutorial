@@ -12,7 +12,9 @@ export type IconName =
   | "search"
   | "settings"
   | "quote"
-  | "check";
+  | "check"
+  | "compass"
+  | "home";
 
 export type Row = { icon: IconName; title: string; sub: string; tag: string };
 export type Pillar = { icon: IconName; tag: string; title: string; body: string };
