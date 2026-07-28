@@ -1012,12 +1012,16 @@ export function Portal() {
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
                       <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
-                        {payBusy === bl.id ? P.billing.paying : P.billing.pay}
+                        {payBusy === bl.id ? P.billing.paying : failed ? P.billing.retry : P.billing.pay}
                       </button>
                       <span className="muted" style={{ fontSize: 11 }} dir="ltr">{P.billing.walletHint}</span>
                     </div>
                   )}
-                  {failed && <span style={{ fontSize: 12, color: "var(--clay)" }}>{P.billing.statusLabels.failed}</span>}
+                  {failed && (
+                    <div style={{ flexBasis: "100%", fontSize: 12.5, color: "var(--clay)", lineHeight: 1.5, marginTop: 2 }}>
+                      {P.billing.failedHint}
+                    </div>
+                  )}
                 </div>
               );
             })}
