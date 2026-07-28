@@ -1,6 +1,6 @@
 import type {
   Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
-  PracticeArea, StrategyPath,
+  PracticeArea, RiskType, RiskStage, FaqCat,
 } from "./content";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
@@ -398,46 +398,65 @@ const en = {
         "Works with your lawyer, not instead of them",
       ],
     },
-    strategy: {
-      title: "Where are you standing right now?",
-      sub: "Pick your situation and see what an early strategic consultation changes.",
-      savingsNote: "An early consultation costs a fraction of the litigation, tax, or deal exposure it prevents.",
+    riskCalc: {
+      eyebrow: "Risk calculator",
+      title: "Map your risk before you sign",
+      sub: "Pick your project and stage. See the key risk vectors, and where an early strategic consultation changes the outcome.",
+      typeLabel: "Project type",
+      stageLabel: "Current stage",
+      vectorsLabel: "Key risk vectors",
+      exposureLabel: "Exposure at this stage",
+      ctaNote: "A pre-deal strategic consultation now, working alongside your lawyer, defuses most of this before it becomes a loss.",
       cta: "Book a strategic consultation",
-      paths: [
-        {
-          id: "urban",
-          icon: "home",
-          label: "Before an urban-renewal deal",
-          tagline: "Tama 38 / evacuate-and-rebuild",
-          steps: [
-            { title: "Map the exposure", body: "We read the developer agreement, collateral, and timeline before you sign, and flag what puts your apartment at risk." },
-            { title: "Set the strategy", body: "You get a clear recommendation and the leverage points, so the committee negotiates from strength, not hope." },
-            { title: "Protect the outcome", body: "Guarantees, milestones, and signatures structured so a developer's failure never becomes your loss." },
-          ],
-        },
-        {
-          id: "international",
-          icon: "compass",
-          label: "Before an international deal",
-          tagline: "Cross-border purchase or venture",
-          steps: [
-            { title: "Map the exposure", body: "Cross-border due diligence and the holding and tax structure, reviewed before money moves." },
-            { title: "Set the strategy", body: "A clear view of the risks and how to price them, coordinated with local counsel in the destination country." },
-            { title: "Protect the outcome", body: "The contract and safeguards built so protection stays with you even where foreign-law advice is given abroad." },
-          ],
-        },
-        {
-          id: "dispute",
-          icon: "gavel",
-          label: "Before a lawsuit",
-          tagline: "Pre-litigation strategy",
-          steps: [
-            { title: "Map the exposure", body: "An independent read of the dispute and the real odds, before you spend years and fees in court." },
-            { title: "Set the strategy", body: "Decision-Oriented Mediation and the fastest defensible route to resolution, weighed against litigation." },
-            { title: "Protect the outcome", body: "A documented, defensible record either way, so you are covered if it does reach a courtroom." },
-          ],
-        },
-      ] as StrategyPath[],
+      types: [
+        { id: "pinui", icon: "home", label: "Evacuate-and-rebuild", vectors: [
+          { title: "Developer solvency", body: "A developer that stalls or fails mid-project can freeze your building for years. Guarantees and milestones decide who absorbs it." },
+          { title: "Your rights in the agreement", body: "Apartment spec, betterment tax, and the majority mechanism are won or lost in the clauses, not the brochure." },
+          { title: "Committee alignment", body: "A split committee hands the developer leverage. A represented committee negotiates as one." },
+        ]},
+        { id: "tama", icon: "shield", label: "Tama 38", vectors: [
+          { title: "Structural and permit risk", body: "Strengthening scope, permits, and engineering exposure sit on the owners unless the agreement moves them." },
+          { title: "Collateral and guarantees", body: "Bank guarantees and a performance timeline are the difference between an upgrade and a half-built risk." },
+          { title: "Tax and betterment", body: "The tax treatment of the added rights can quietly erode the value you were promised." },
+        ]},
+        { id: "intl", icon: "compass", label: "International deal", vectors: [
+          { title: "Cross-border due diligence", body: "Title, holding structure, and local law differ from Israel. An assumption imported from home is where deals break." },
+          { title: "Taxation and structure", body: "The holding and tax structure, set before signing, decides your real net return and your exposure." },
+          { title: "Enforcement and disputes", body: "How and where a dispute is resolved must be built into the contract, not discovered afterward." },
+        ]},
+        { id: "dispute", icon: "gavel", label: "Legal dispute", vectors: [
+          { title: "The real odds", body: "An independent read on the merits, before years and fees, often reframes the whole fight." },
+          { title: "Faster defensible routes", body: "Decision-Oriented Mediation can resolve in weeks what litigation drags for years, on a defensible record." },
+          { title: "Cost and time exposure", body: "The true cost of the courtroom, priced early, changes what a good outcome even looks like." },
+        ]},
+      ] as RiskType[],
+      stages: [
+        { id: "pre", label: "Before signing", level: "Manageable, if addressed now", tone: "ok", note: "You still hold every lever. This is the cheapest, highest-impact moment to bring in strategy." },
+        { id: "nego", label: "In negotiation", level: "Elevated", tone: "warn", note: "Terms are moving. A strategic read now sets your leverage before positions harden." },
+        { id: "crisis", label: "In crisis or delay", level: "Critical", tone: "high", note: "Damage is compounding. Strategy now focuses on containment and the fastest defensible exit." },
+      ] as RiskStage[],
+    },
+    faq: {
+      eyebrow: "FAQ",
+      title: "Questions clients actually ask",
+      sub: "Short answers on the areas people search most.",
+      cats: [
+        { id: "urban", title: "Urban renewal & committees", items: [
+          { q: "Do owners need their own lawyer if the developer has one?", a: "Yes. The developer's lawyer represents the developer. Owners and the committee need independent representation whose only client is them." },
+          { q: "What protects us if the developer fails mid-project?", a: "Bank guarantees, staged milestones, and the right termination and step-in clauses, all set before signing." },
+          { q: "How early should we bring in a lawyer?", a: "Before signing anything, ideally before the committee commits to a developer. The leverage is highest at the start." },
+        ]},
+        { id: "intl", title: "International & commercial", items: [
+          { q: "Do I need an Israeli lawyer for a deal abroad?", a: "Alongside local counsel, yes. An Israeli lawyer guards the deal end-to-end and keeps the protection with you, even where local-law advice is given abroad." },
+          { q: "What is the biggest cross-border risk?", a: "Importing Israeli assumptions. Title, holding structure, and taxation differ, and that gap is where deals break." },
+          { q: "When should the structure be decided?", a: "Before money moves. The holding and tax structure set before signing decides your real return and exposure." },
+        ]},
+        { id: "advisory", title: "Strategic advisory & AI/DOM", items: [
+          { q: "Does a pre-deal consultation replace my lawyer?", a: "No. It is an executive strategy and risk layer that works alongside your existing lawyer or litigator, not instead of them." },
+          { q: "What is Decision-Oriented Mediation (DOM)?", a: "A results-oriented mediation model that drives disputes to a defensible resolution, often far faster than litigation." },
+          { q: "How does AI fit a legal practice?", a: "It sharpens risk analysis and documentation. The lawyering stays human; the exposure map gets faster and more defensible." },
+        ]},
+      ] as FaqCat[],
     },
   },
   seo: {
@@ -477,8 +496,8 @@ const en = {
 
   home: {
     heroPill: "Law · Real Estate · AI",
-    heroH1a: "Fewer human errors.",
-    heroH1b: "Sharp control of every case.",
+    heroH1a: "Real-estate and deal expertise,",
+    heroH1b: "with algorithmic risk control.",
     heroLede: "A Tech-Legal practice uniting law, real estate, and AI. From guiding property deals and buyers in Israel and abroad, through representing owners and rights-holders, to risk governance and EU AI Act conformity. To every matter we bring sharp control, ex-ante opinions, and a defensible record.",
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Aligned with",
@@ -1274,45 +1293,64 @@ const he: Dict = {
         "עובד עם עורך הדין שלכם, לא במקומו",
       ],
     },
-    strategy: {
-      title: "איפה אתם עומדים בדיוק עכשיו?",
-      sub: "בחרו את המצב שלכם וראו מה ייעוץ אסטרטגי מקדים משנה.",
-      savingsNote: "ייעוץ מקדים עולה חלק קטן מהחשיפה המשפטית, המיסויית או העסקית שהוא מונע.",
+    riskCalc: {
+      eyebrow: "מחשבון סיכונים",
+      title: "מפו את הסיכון לפני שאתם חותמים",
+      sub: "בחרו את הפרויקט והשלב. ראו את וקטורי הסיכון המרכזיים, ואיפה ייעוץ אסטרטגי מקדים משנה את התוצאה.",
+      typeLabel: "סוג הפרויקט",
+      stageLabel: "השלב הנוכחי",
+      vectorsLabel: "וקטורי סיכון מרכזיים",
+      exposureLabel: "החשיפה בשלב הזה",
+      ctaNote: "ייעוץ אסטרטגי מקדים עכשיו, לצד עורך הדין שלכם, מנטרל את רוב זה לפני שהוא הופך להפסד.",
       cta: "לתיאום ייעוץ אסטרטגי מקדים",
-      paths: [
-        {
-          id: "urban",
-          icon: "home",
-          label: "לפני עסקת התחדשות עירונית",
-          tagline: "תמ״א 38 / פינוי-בינוי",
-          steps: [
-            { title: "ממפים את החשיפה", body: "קוראים את הסכם היזם, הבטוחות ולוח הזמנים לפני שאתם חותמים, ומסמנים מה מסכן את הדירה שלכם." },
-            { title: "קובעים אסטרטגיה", body: "מקבלים המלצה ברורה ואת נקודות המנוף, כך שהנציגות מנהלת משא ומתן מעמדת כוח ולא מתקווה." },
-            { title: "מגנים על התוצאה", body: "ערבויות, אבני דרך וחתימות בנויות כך שכשל של יזם לעולם לא יהפוך להפסד שלכם." },
-          ],
-        },
-        {
-          id: "international",
-          icon: "compass",
-          label: "לפני עסקה בינלאומית",
-          tagline: "רכישה או השקעה בחו״ל",
-          steps: [
-            { title: "ממפים את החשיפה", body: "בדיקת נאותות חוצת גבולות ומבנה ההחזקה והמיסוי, נבחנים לפני שהכסף זז." },
-            { title: "קובעים אסטרטגיה", body: "תמונה ברורה של הסיכונים ואיך לתמחר אותם, בתיאום עם עורך דין מקומי במדינת היעד." },
-            { title: "מגנים על התוצאה", body: "החוזה וההגנות בנויים כך שההגנה נשארת אצלכם גם כשהייעוץ לדין הזר ניתן בחו״ל." },
-          ],
-        },
-        {
-          id: "dispute",
-          icon: "gavel",
-          label: "לפני תביעה משפטית",
-          tagline: "אסטרטגיה טרום-ליטיגציה",
-          steps: [
-            { title: "ממפים את החשיפה", body: "קריאה עצמאית של הסכסוך והסיכויים האמיתיים, לפני שנים ואגרות בבית המשפט." },
-            { title: "קובעים אסטרטגיה", body: "גישור מכוון-הכרעה והמסלול המהיר והבר-הגנה ביותר ליישוב, מול חלופת הליטיגציה." },
-            { title: "מגנים על התוצאה", body: "תיעוד בר-הגנה בכל מקרה, כך שאתם מכוסים גם אם זה כן מגיע לאולם בית המשפט." },
-          ],
-        },
+      types: [
+        { id: "pinui", icon: "home", label: "פינוי-בינוי", vectors: [
+          { title: "איתנות היזם", body: "יזם שנתקע או קורס באמצע יכול להקפיא את הבניין לשנים. ערבויות ואבני דרך קובעות מי סופג את זה." },
+          { title: "הזכויות שלכם בהסכם", body: "מפרט הדירה, היטל ההשבחה ומנגנון הרוב נקבעים בסעיפים, לא בברושור." },
+          { title: "לכידות הנציגות", body: "נציגות מפולגת נותנת ליזם מנוף. נציגות מיוצגת מנהלת משא ומתן כגוף אחד." },
+        ]},
+        { id: "tama", icon: "shield", label: "תמ״א 38", vectors: [
+          { title: "סיכון מבני והיתרים", body: "היקף החיזוק, ההיתרים והחשיפה ההנדסית יושבים על הדיירים, אלא אם ההסכם מעביר אותם." },
+          { title: "בטוחות וערבויות", body: "ערבויות בנקאיות ולוח ביצוע הם ההבדל בין שדרוג לבין סיכון חצי-בנוי." },
+          { title: "מיסוי והשבחה", body: "מיסוי הזכויות הנוספות יכול לשחוק בשקט את הערך שהובטח לכם." },
+        ]},
+        { id: "intl", icon: "compass", label: "עסקה בינלאומית", vectors: [
+          { title: "בדיקת נאותות חוצת גבולות", body: "רישום הזכויות, מבנה ההחזקה והדין המקומי שונים מישראל. הנחה שיובאה מהבית היא המקום שבו עסקאות נשברות." },
+          { title: "מיסוי ומבנה", body: "מבנה ההחזקה והמיסוי, שנקבע לפני החתימה, קובע את התשואה נטו האמיתית ואת החשיפה שלכם." },
+          { title: "אכיפה וסכסוכים", body: "איך והיכן ייושב סכסוך חייב להיבנות לתוך החוזה, לא להתגלות אחר כך." },
+        ]},
+        { id: "dispute", icon: "gavel", label: "סכסוך משפטי", vectors: [
+          { title: "הסיכויים האמיתיים", body: "קריאה עצמאית של הסיכויים, לפני שנים ואגרות, לרוב ממסגרת מחדש את כל המאבק." },
+          { title: "מסלולים מהירים ובני-הגנה", body: "גישור מכוון-הכרעה יכול ליישב בשבועות מה שליטיגציה גוררת שנים, על בסיס תיעוד בר-הגנה." },
+          { title: "חשיפת עלות וזמן", body: "העלות האמיתית של אולם בית המשפט, מתומחרת מוקדם, משנה איך נראית בכלל תוצאה טובה." },
+        ]},
+      ],
+      stages: [
+        { id: "pre", label: "לפני חתימה", level: "נשלט, אם מטפלים עכשיו", tone: "ok", note: "כל המנופים עדיין בידיכם. זה הרגע הזול והמשמעותי ביותר להכניס אסטרטגיה." },
+        { id: "nego", label: "במשא ומתן", level: "מוגבר", tone: "warn", note: "התנאים בתנועה. קריאה אסטרטגית עכשיו קובעת את המנוף שלכם לפני שהעמדות מתקבעות." },
+        { id: "crisis", label: "במשבר או עיכוב", level: "קריטי", tone: "high", note: "הנזק מצטבר. האסטרטגיה עכשיו מתמקדת בבלימה וביציאה המהירה והבר-הגנה ביותר." },
+      ],
+    },
+    faq: {
+      eyebrow: "שאלות ותשובות",
+      title: "השאלות שלקוחות באמת שואלים",
+      sub: "תשובות קצרות בתחומים שהכי מחפשים.",
+      cats: [
+        { id: "urban", title: "התחדשות עירונית ונציגויות", items: [
+          { q: "האם בעלי דירות צריכים עורך דין משלהם אם ליזם יש?", a: "כן. עורך הדין של היזם מייצג את היזם. לבעלים ולנציגות דרוש ייצוג עצמאי שהלקוח היחיד שלו הוא הם." },
+          { q: "מה מגן עלינו אם היזם קורס באמצע?", a: "ערבויות בנקאיות, אבני דרך מדורגות, וסעיפי ביטול וכניסה נכונים, כולם נקבעים לפני החתימה." },
+          { q: "מתי כדאי להכניס עורך דין?", a: "לפני שחותמים על משהו, ורצוי לפני שהנציגות מתחייבת ליזם. המנוף הכי גבוה בהתחלה." },
+        ]},
+        { id: "intl", title: "עסקאות בינלאומיות ומסחרי", items: [
+          { q: "האם אני צריך עורך דין ישראלי לעסקה בחו״ל?", a: "לצד עורך דין מקומי, כן. עורך דין ישראלי שומר על העסקה מקצה לקצה ומשאיר את ההגנה אצלכם, גם היכן שהייעוץ לדין המקומי ניתן בחו״ל." },
+          { q: "מהו הסיכון הגדול ביותר בעסקה חוצת גבולות?", a: "ייבוא הנחות ישראליות. רישום הזכויות, מבנה ההחזקה והמיסוי שונים, והפער הזה הוא המקום שבו עסקאות נשברות." },
+          { q: "מתי צריך להחליט על המבנה?", a: "לפני שהכסף זז. מבנה ההחזקה והמיסוי שנקבע לפני החתימה קובע את התשואה והחשיפה שלכם." },
+        ]},
+        { id: "advisory", title: "ייעוץ אסטרטגי ו-AI/DOM", items: [
+          { q: "האם ייעוץ מקדים מחליף את עורך הדין שלי?", a: "לא. זו שכבת אסטרטגיה וניהול סיכונים ניהולית שעובדת לצד עורך הדין או הליטיגטור הקיים שלכם, לא במקומם." },
+          { q: "מהו גישור מכוון-הכרעה (DOM)?", a: "מודל גישור מכוון-תוצאה שמוביל סכסוכים ליישוב בר-הגנה, לרוב הרבה יותר מהר מליטיגציה." },
+          { q: "איך AI משתלב בפרקטיקה משפטית?", a: "הוא מחדד ניתוח סיכונים ותיעוד. העבודה המשפטית נשארת אנושית, ומפת החשיפה נעשית מהירה ובת-הגנה יותר." },
+        ]},
       ],
     },
   },
@@ -1353,8 +1391,8 @@ const he: Dict = {
 
   home: {
     heroPill: "משפט · נדל״ן · בינה מלאכותית",
-    heroH1a: "פחות טעויות אנוש.",
-    heroH1b: "שליטה חדה בכל תיק.",
+    heroH1a: "מומחיות משפטית בנדל״ן ועסקאות,",
+    heroH1b: "עם ניהול סיכונים אלגוריתמי.",
     heroLede: "משרד Tech-Legal המשלב משפט, נדל״ן ובינה מלאכותית. מליווי עסקאות ורוכשים בארץ ובעולם, דרך ייצוג בעלים ובעלי זכויות, ועד ממשל סיכונים ו-EU AI Act. לכל תיק אנחנו מביאים שליטה חדה, חוות דעת מוקדמות ותיעוד בר-הגנה.",
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "עומדים במסגרות",

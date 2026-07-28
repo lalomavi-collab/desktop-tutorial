@@ -1,6 +1,6 @@
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
-import { StrategyChecker } from "./StrategyChecker";
+import { RiskCalculator } from "./RiskCalculator";
 
 // Dark-premium highlight for the pre-deal / pre-litigation strategic advisory.
 // The message is that this is an executive layer that works alongside the
@@ -26,7 +26,7 @@ export function PreDealStrategy() {
             ))}
           </ul>
         </div>
-        <StrategyChecker />
+        <RiskCalculator />
       </div>
     </section>
   );

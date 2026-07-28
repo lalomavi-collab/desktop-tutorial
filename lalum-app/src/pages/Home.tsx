@@ -9,6 +9,7 @@ import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { PracticeAreas } from "../components/PracticeAreas";
 import { PreDealStrategy } from "../components/PreDealStrategy";
+import { PracticeFaq } from "../components/PracticeFaq";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -48,7 +49,7 @@ export function Home() {
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <Link to="/book" className="btn btn-clay">{t.practice.strategy.cta}</Link>
+              <Link to="/book" className="btn btn-clay">{t.practice.riskCalc.cta}</Link>
               <Link to="/advisory" className="btn btn-ghost">{h.heroCtaAi}</Link>
             </div>
             {/* Framework trust strip: an at-a-glance credibility signal, and the
@@ -108,8 +109,11 @@ export function Home() {
       {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
       <PracticeAreas />
 
-      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive value map */}
+      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
       <PreDealStrategy />
+
+      {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
+      <PracticeFaq />
 
       {/* ABOUT */}
       <section className="section-line">
