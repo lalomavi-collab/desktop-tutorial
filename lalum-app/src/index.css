@@ -261,6 +261,20 @@ article p {
   -webkit-hyphens: manual;
   hyphens: manual;
 }
+/* On phones the wide reading column shrinks to the viewport width. At that short
+   measure justify stretches the inter-word spaces into ragged gaps (worst on
+   lines that carry a long Latin term inside Hebrew). Below the mobile breakpoint
+   fall back to clean start alignment, so Hebrew and English get identical, tidy
+   margins instead of stretched lines. */
+@media (max-width: 760px) {
+  .lede,
+  .section p:not(.eyebrow):not(.label),
+  article p {
+    text-align: start;
+    -webkit-hyphens: manual;
+    hyphens: manual;
+  }
+}
 
 /* Scheduling console: agenda beside the task sidebar, stacked on narrow screens. */
 .sched-grid {
