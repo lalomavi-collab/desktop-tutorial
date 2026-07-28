@@ -19,14 +19,17 @@ security definer
 set search_path = public
 as $$
 begin
-  if tg_op = 'INSERT' then
-    if coalesce(new.is_admin, false) and coalesce(auth.role(), '') <> 'service_role' then
-      raise exception 'is_admin may only be set by the service role';
-    end if;
-  else -- UPDATE
-    if coalesce(new.is_admin, false) is distinct from coalesce(old.is_admin, false)
-       and coalesce(auth.role(), '') <> 'service_role' then
-      raise exception 'is_admin may only be changed by the service role';
+  -- Block only writes coming through an end-user API session: PostgREST sets the
+  -- role to 'authenticated' (logged-in client) or 'anon'. Service-role edge
+  -- functions and direct DB/migration access (role null / 'postgres') are
+  -- trusted and may set the flag when seeding an admin.
+  if coalesce(auth.role(), '') in ('authenticated', 'anon') then
+    if tg_op = 'INSERT' then
+      if coalesce(new.is_admin, false) then
+        raise exception 'is_admin may only be set server-side';
+      end if;
+    elsif coalesce(new.is_admin, false) is distinct from coalesce(old.is_admin, false) then
+      raise exception 'is_admin may only be changed server-side';
     end if;
   end if;
   return new;
@@ -39,9 +42,9 @@ create trigger lalum_guard_profile_admin
   for each row execute function public.lalum_guard_profile_admin();
 
 -- Make the DB flag authoritative for the founder so admin authority no longer
--- depends solely on the hardcoded-email fallback. Runs as service role here.
-update public.lalum_profiles p
-   set is_admin = true
+-- depends solely on the hardcoded-email fallback. Runs with a trusted role here.
+insert into public.lalum_profiles (id, is_admin, verification_status)
+select u.id, true, 'verified'
   from auth.users u
- where u.id = p.id
-   and lower(u.email) = 'avraham@lalum.co';
+ where lower(u.email) = 'avraham@lalum.co'
+on conflict (id) do update set is_admin = true;
