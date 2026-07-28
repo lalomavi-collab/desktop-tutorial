@@ -596,6 +596,8 @@ const en = {
       { icon: "settings", tag: "Contracts & Venture", title: "Contracts & Venture Counsel", body: "Automated contract governance, counsel for startups and technology companies, funding rounds and founder agreements, and technology due diligence for deals." },
       { icon: "search", tag: "Public Sector", title: "Public Sector AI", body: "For municipalities, ministries, and public tenders: explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review." },
       { icon: "gavel", tag: "Mediation DOM", title: "Mediation & Dispute Resolution (DOM)", body: "Decision-Oriented Mediation for AI, corporate, and regulatory disputes, and defense of automated decisions under challenge, on a defensible record." },
+      { icon: "compass", tag: "Cross-Border Buyers", title: "Representing Overseas Property Buyers", body: "Israeli-side legal guidance for the buyer across the entire overseas transaction: cross-border due diligence, contract review before signing, holding structure and taxation, coordination with local counsel, and risk management. Protection that stays with the Israeli buyer even where advice on the foreign law is given in the destination country." },
+      { icon: "home", tag: "Owner Representation", title: "Personal Representation of Property Owners & Rights-Holders", body: "Close, one-on-one representation of owners and rights-holders in real estate, from negotiation to signing: protecting their rights in transactions, in urban renewal (Tama 38, evacuate-and-rebuild), and in disputes, and securing every undertaking. One lawyer who knows the file in depth and stays with you throughout." },
     ] as Pillar[],
     frameworks: [
       { code: "CLASSIFY", title: "Risk classification", icon: "search", body: "We classify every system against the EU AI Act risk tiers and GPAI thresholds, so you know exactly which obligations bind you, and by when." },
@@ -1374,6 +1376,8 @@ const he: Dict = {
       { icon: "settings", tag: "חוזים וחברות", title: "חוזים וליווי חברות", body: "ממשל חוזים אוטומטי, ליווי סטארטאפים וחברות טכנולוגיה, סבבי גיוס והסכמי מייסדים, ובדיקות נאותות טכנולוגית לעסקאות." },
       { icon: "search", tag: "מגזר ציבורי", title: "AI במגזר הציבורי", body: "לרשויות מקומיות, למשרדי ממשלה ולמכרזים ציבוריים: מערכות הכרעה מוסברות ונקיות מהטיה, שעומדות בעתירות מנהליות ובביקורת מבקר המדינה." },
       { icon: "gavel", tag: "גישור DOM", title: "גישור והכרעת סכסוכים (DOM)", body: "גישור מוכוון-הכרעה לסכסוכי AI, תאגידים ורגולציה, והגנה על החלטות אלגוריתמיות תחת תקיפה, על בסיס תיעוד בר-הגנה." },
+      { icon: "compass", tag: "רכישה בחו״ל", title: "ייצוג רוכשים בעסקאות נדל״ן מעבר לים", body: "ליווי משפטי ישראלי לרוכש לאורך כל עסקת הנדל״ן מעבר לים: בדיקת נאותות חוצת גבולות, בחינת החוזה לפני חתימה, מבנה החזקה ומיסוי, תיאום מול עורך הדין המקומי וניהול סיכונים. הגנה שנשארת לצד הרוכש הישראלי גם כאשר הייעוץ לדין הזר ניתן במדינת היעד." },
+      { icon: "home", tag: "ייצוג בעלים", title: "ליווי וייצוג אישי של בעלי זכויות ובעלים בנדל״ן", body: "ייצוג אישי וצמוד של בעלים ובעלי זכויות במקרקעין, מהמשא ומתן ועד החתימה: הגנה על הזכויות בעסקאות, בהתחדשות עירונית (תמ״א 38, פינוי-בינוי) ובסכסוכים, וניסוח והבטחת ההתחייבויות. עורך דין אחד שמכיר את התיק לעומק ונשאר איתכם לכל אורך הדרך." },
     ],
     frameworks: [
       { code: "CLASSIFY", title: "סיווג סיכון", icon: "search", body: "אנחנו מסווגים כל מערכת מול דרגות הסיכון של ה-EU AI Act וספי ה-GPAI, כדי שתדעו בדיוק אילו חובות חלות עליכם, ועד מתי." },
