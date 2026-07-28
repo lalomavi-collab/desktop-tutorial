@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../context/LangContext";
-import { OPEN_CHAT_EVENT } from "./ChatWidget";
+import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { appUrl } from "../lib/content";
 import { useDialogA11y } from "../lib/useDialogA11y";
 
