@@ -346,8 +346,8 @@ const en = {
   // separate from on-page hero copy so search snippets can be tuned freely.
   seo: {
     home: {
-      title: "LALUM, Legal AI Governance & EU AI Act Compliance",
-      desc: "Tech-Legal practice for AI governance: EU AI Act conformity, algorithmic risk management, signed legal opinions, and a defense that holds up in court and the boardroom.",
+      title: "LALUM, Law, Real Estate & AI",
+      desc: "A practice uniting law, real estate, and AI: guiding deals and buyers in Israel and abroad, representing owners and rights-holders, decision-oriented mediation, and AI risk governance with EU AI Act conformity.",
     },
     advisory: {
       title: "AI Governance Advisory & Mediation, EU AI Act | LALUM",
@@ -380,10 +380,10 @@ const en = {
   },
 
   home: {
-    heroPill: "PRECISION LEGAL INTELLIGENCE & RISK GOVERNANCE",
+    heroPill: "Law · Real Estate · AI",
     heroH1a: "Fewer human errors.",
     heroH1b: "Sharp control of every case.",
-    heroLede: "A Tech-Legal practice for AI governance. We turn algorithmic risk into a controlled system: signed EU AI Act conformity, ex-ante legal opinions, and defensible records, for technology companies, enterprises, and public bodies.",
+    heroLede: "A Tech-Legal practice uniting law, real estate, and AI. From guiding property deals and buyers in Israel and abroad, through representing owners and rights-holders, to risk governance and EU AI Act conformity. To every matter we bring sharp control, ex-ante opinions, and a defensible record.",
     frameworksLabel: "Aligned with",
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
@@ -413,9 +413,9 @@ const en = {
     aboutH2a: "We turn legal risk into",
     aboutH2b: "a system you can control.",
     aboutP1: "Complex cases fail on the small things: a clause that slips, a deadline no one logged, an exposure flagged too late. We build the layer that catches them, pairing algorithmic legal and economic analysis with disciplined process.",
-    aboutP2: "Precision Legal Intelligence and Risk Governance in one place. We audit exposure, streamline contract drafting, automate the workday, and keep even the most complex, enterprise-level cases under sharp, documented control.",
-    pillarsEyebrow: "How we manage risk",
-    pillarsH2: "Three pillars of risk governance",
+    aboutP2: "Law, real estate, and AI in one place. We guide deals and buyers in Israel and abroad, represent owners and rights-holders, audit exposure and streamline contract drafting, and keep even the most complex matters under sharp, documented control.",
+    pillarsEyebrow: "Practice areas",
+    pillarsH2: "Law, real estate, and AI, in one practice",
     pillarsGo: "Explore advisory",
     engineEyebrow: "Risk governance, built in",
     engineH2: "The engine runs inside your practice",
@@ -1126,8 +1126,8 @@ const he: Dict = {
   // עותק SEO לכל עמוד: כותרות ותיאורים ממוקדי מילות מפתח, בנפרד מכותרות התוכן.
   seo: {
     home: {
-      title: "LALUM, ממשל AI ורגולציית בינה מלאכותית",
-      desc: "משרד Tech-Legal לממשל בינה מלאכותית: התאמה ל-EU AI Act, ניהול סיכונים אלגוריתמי, חוות דעת חתומות והגנה שעומדת בבית משפט ובדירקטוריון.",
+      title: "LALUM, משפט, נדל״ן ובינה מלאכותית",
+      desc: "משרד המשלב משפט, נדל״ן ובינה מלאכותית: ליווי עסקאות ורוכשים בארץ ובעולם, ייצוג בעלים ובעלי זכויות, גישור מכוון הכרעה, וממשל סיכונים ו-EU AI Act.",
     },
     advisory: {
       title: "ייעוץ AI וגישור, ממשל בינה מלאכותית ו-EU AI Act | LALUM",
@@ -1160,10 +1160,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "PRECISION LEGAL INTELLIGENCE & RISK GOVERNANCE",
+    heroPill: "משפט · נדל״ן · בינה מלאכותית",
     heroH1a: "פחות טעויות אנוש.",
     heroH1b: "שליטה חדה בכל תיק.",
-    heroLede: "משרד Tech-Legal לממשל בינה מלאכותית. אנחנו הופכים סיכון אלגוריתמי למערכת נשלטת: עמידה חתומה ב-EU AI Act, חוות דעת מוקדמות ותיעוד בר-הגנה, לחברות טכנולוגיה, ארגונים וגופים ציבוריים.",
+    heroLede: "משרד Tech-Legal המשלב משפט, נדל״ן ובינה מלאכותית. מליווי עסקאות ורוכשים בארץ ובעולם, דרך ייצוג בעלים ובעלי זכויות, ועד ממשל סיכונים ו-EU AI Act. לכל תיק אנחנו מביאים שליטה חדה, חוות דעת מוקדמות ותיעוד בר-הגנה.",
     frameworksLabel: "עומדים במסגרות",
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",
@@ -1193,9 +1193,9 @@ const he: Dict = {
     aboutH2a: "אנחנו הופכים סיכון משפטי",
     aboutH2b: "למערכת שאפשר לשלוט בה.",
     aboutP1: "תיקים מורכבים נופלים על הדברים הקטנים: סעיף שנשמט, מועד שלא תועד, חשיפה שסומנה מאוחר מדי. אנחנו בונים את השכבה שתופסת אותם, בשילוב ניתוח משפטי-כלכלי אלגוריתמי עם תהליך מסודר.",
-    aboutP2: "Precision Legal Intelligence ו-Risk Governance במקום אחד. אנחנו מבקרים חשיפה, מייעלים ניסוח חוזים, מנגישים אוטומציה ליום העבודה, ושומרים גם על התיקים המורכבים ביותר ברמת Enterprise תחת שליטה חדה ומתועדת.",
-    pillarsEyebrow: "כך אנחנו מנהלים סיכון",
-    pillarsH2: "שלושה עמודי התווך של ממשל הסיכונים",
+    aboutP2: "משפט, נדל״ן ובינה מלאכותית במקום אחד. אנחנו מלווים עסקאות ורוכשים בארץ ובעולם, מייצגים בעלים ובעלי זכויות, מבקרים חשיפה ומייעלים ניסוח חוזים, ושומרים גם על התיקים המורכבים ביותר תחת שליטה חדה ומתועדת.",
+    pillarsEyebrow: "תחומי העשייה",
+    pillarsH2: "משפט, נדל״ן ובינה מלאכותית, במשרד אחד",
     pillarsGo: "למעבר לייעוץ",
     engineEyebrow: "ממשל סיכונים, מובנה",
     engineH2: "המנוע פועל בתוך המשרד שלכם",
