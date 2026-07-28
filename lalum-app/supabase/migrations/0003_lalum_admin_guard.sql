@@ -41,6 +41,11 @@ create trigger lalum_guard_profile_admin
   before insert or update on public.lalum_profiles
   for each row execute function public.lalum_guard_profile_admin();
 
+-- This is a trigger function only; it must never be callable as a PostgREST RPC.
+-- Triggers fire regardless of EXECUTE grants, so revoking is safe and closes the
+-- "public can execute SECURITY DEFINER function" advisor.
+revoke execute on function public.lalum_guard_profile_admin() from public, anon, authenticated;
+
 -- Make the DB flag authoritative for the founder so admin authority no longer
 -- depends solely on the hardcoded-email fallback. Runs with a trusted role here.
 insert into public.lalum_profiles (id, is_admin, verification_status)
