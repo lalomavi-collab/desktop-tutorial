@@ -14,8 +14,10 @@ export function Header() {
   // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. When
   // payments are on, a Pay rubric leads a client to their portal (or to login
   // first), so paying through the app is one tap from the top bar.
-  const nav = [
+  const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
     { to: "/", label: t.ui.nav.home, end: true },
+    { to: "/#practice-areas", label: t.ui.nav.practice, end: false, hash: true },
+    { to: "/#pre-deal", label: t.ui.nav.strategy, end: false, hash: true },
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
@@ -30,11 +32,17 @@ export function Header() {
         </Link>
 
         <nav className="nav-pills">
-          {nav.map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => "nav-pill" + (isActive ? " active" : "")}>
-              {n.label}
-            </NavLink>
-          ))}
+          {nav.map((n) =>
+            n.hash ? (
+              <Link key={n.to} to={n.to} className="nav-pill">
+                {n.label}
+              </Link>
+            ) : (
+              <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => "nav-pill" + (isActive ? " active" : "")}>
+                {n.label}
+              </NavLink>
+            )
+          )}
         </nav>
 
         <div className="header-tools">
