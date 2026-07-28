@@ -276,6 +276,178 @@ article p {
   }
 }
 
+/* ── Core practice-area cards ─────────────────────────────────────────── */
+.practice-card {
+  display: flex;
+  flex-direction: column;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.practice-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--clay-soft);
+  box-shadow: 0 18px 40px -24px rgba(27, 27, 27, .35);
+}
+.practice-tag {
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.practice-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 6px 0 8px;
+  color: var(--ink);
+}
+.practice-blurb {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--slate);
+  margin: 0 0 14px;
+}
+.practice-points {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.practice-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.practice-points li svg { color: var(--clay); flex: none; margin-top: 3px; }
+
+/* ── Pre-deal / pre-litigation strategic advisory (dark premium) ──────── */
+.pre-deal { background: var(--ink); color: var(--paper); }
+.pre-deal-grid {
+  display: grid;
+  grid-template-columns: .95fr 1.05fr;
+  gap: 44px;
+  align-items: center;
+}
+.pre-deal-lede {
+  font-size: 17px;
+  line-height: 1.7;
+  color: #CDC7BB;
+  margin: 0 0 20px;
+  max-width: 46ch;
+}
+.pre-deal-note {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #E7E2D8;
+  margin-bottom: 20px;
+}
+.pre-deal-note svg { color: var(--clay-soft); flex: none; margin-top: 2px; }
+.pre-deal-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pre-deal-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--paper);
+}
+.pre-deal-points li svg { color: var(--clay-soft); flex: none; margin-top: 3px; }
+
+/* ── Interactive strategy value map ───────────────────────────────────── */
+.strategy-checker {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .55);
+}
+.strategy-head { margin-bottom: 18px; }
+.strategy-title { font-family: var(--serif); font-size: 21px; line-height: 1.25; color: var(--ink); margin: 0 0 6px; }
+.strategy-sub { font-size: 14px; line-height: 1.55; color: var(--slate); margin: 0; }
+.strategy-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.strategy-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--slate);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .16s ease;
+}
+.strategy-tab svg { color: var(--clay); }
+.strategy-tab:hover { border-color: var(--clay-soft); color: var(--ink); }
+.strategy-tab.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.strategy-tab.on svg { color: var(--clay-soft); }
+.strategy-tagline {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 14px;
+}
+.strategy-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.strategy-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: strategy-in .34s ease forwards;
+}
+.strategy-step-n {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.strategy-step-title { font-size: 15.5px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.strategy-step-body { font-size: 14px; line-height: 1.6; color: var(--slate); }
+.strategy-foot {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+.strategy-savings { font-size: 13.5px; line-height: 1.55; color: var(--slate); margin: 0; }
+@keyframes strategy-in { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .strategy-step { animation: none; opacity: 1; transform: none; }
+}
+@media (max-width: 860px) {
+  .pre-deal-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
 /* Scheduling console: agenda beside the task sidebar, stacked on narrow screens. */
 .sched-grid {
   display: grid;

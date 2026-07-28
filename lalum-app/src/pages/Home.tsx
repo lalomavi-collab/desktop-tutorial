@@ -7,6 +7,8 @@ import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
+import { PracticeAreas } from "../components/PracticeAreas";
+import { PreDealStrategy } from "../components/PreDealStrategy";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -46,8 +48,8 @@ export function Home() {
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
-              <a href="#practice" className="btn btn-ghost">{t.ui.seeWhatWeDo}</a>
+              <Link to="/book" className="btn btn-clay">{t.practice.strategy.cta}</Link>
+              <Link to="/advisory" className="btn btn-ghost">{h.heroCtaAi}</Link>
             </div>
             {/* Framework trust strip: an at-a-glance credibility signal, and the
                 multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
@@ -102,6 +104,12 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
+      <PracticeAreas />
+
+      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive value map */}
+      <PreDealStrategy />
 
       {/* ABOUT */}
       <section className="section-line">

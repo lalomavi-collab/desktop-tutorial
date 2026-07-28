@@ -18,6 +18,9 @@ export type IconName =
 
 export type Row = { icon: IconName; title: string; sub: string; tag: string };
 export type Pillar = { icon: IconName; tag: string; title: string; body: string };
+export type PracticeArea = { icon: IconName; tag: string; title: string; blurb: string; points: string[] };
+export type StrategyStep = { title: string; body: string };
+export type StrategyPath = { id: string; icon: IconName; label: string; tagline: string; steps: StrategyStep[] };
 export type Framework = { code: string; title: string; icon: IconName; body: string };
 export type Why = { icon: IconName; title: string; body: string };
 export type Faq = { q: string; a: string };

@@ -1,5 +1,5 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { LangProvider } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
@@ -26,12 +26,36 @@ const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
 const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
 
+// Scroll to a #hash target after navigation, including cross-page links like
+// "/#pre-deal" from the top nav. React Router does not do this on its own.
+function ScrollToHash() {
+  const { hash, pathname } = useLocation();
+  useEffect(() => {
+    if (!hash) return;
+    const id = decodeURIComponent(hash.slice(1));
+    let tries = 0;
+    const tick = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (tries++ < 10) {
+        // The target route may still be lazy-loading; retry briefly.
+        setTimeout(tick, 80);
+      }
+    };
+    const t = setTimeout(tick, 60);
+    return () => clearTimeout(t);
+  }, [hash, pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <LangProvider>
     <AuthProvider>
       <BrowserRouter>
         <NytroLoader />
+        <ScrollToHash />
         <Suspense fallback={null}>
           <CommandBar />
         </Suspense>
