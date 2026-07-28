@@ -24,6 +24,7 @@ const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })));
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
+const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
 
 export default function App() {
   return (
@@ -39,6 +40,10 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />
             <Route path="training" element={<Training />} />
+            {/* /courses is the public URL for the Academy; it is the same page
+                as /training (labelled "Courses" in the nav). Without this alias
+                a direct visit to /courses fell through to the catch-all Home. */}
+            <Route path="courses" element={<Training />} />
             <Route path="insights" element={<Insights />} />
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
@@ -54,7 +59,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Home />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

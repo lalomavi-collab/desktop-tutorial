@@ -3,7 +3,7 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
-import { blogPosts } from "../lib/blogPosts";
+import { blogMeta } from "../lib/blogMeta";
 
 // A warm, brand-cohesive palette. Each article card takes the next accent so
 // the grid reads as one family, gently varied, rather than a flat wall of
@@ -38,7 +38,7 @@ export function Insights() {
   const curated: Card[] = t.data.articles.map((a) => ({
     slug: a.slug, title: a.title, dek: a.dek, category: a.category, date: a.date, read: a.read, icon: a.icon,
   }));
-  const imported: Card[] = blogPosts.map((b) => ({
+  const imported: Card[] = blogMeta.map((b) => ({
     slug: b.slug, title: b.title, dek: b.excerpt, category: t.insights.fromBlog, date: b.date, cover: b.cover,
   }));
   const cards = [...curated, ...imported];

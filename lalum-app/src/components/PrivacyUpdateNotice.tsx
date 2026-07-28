@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
+import { useDialogA11y } from "../lib/useDialogA11y";
+import { cookieConsentResolved, COOKIE_RESOLVED_EVENT } from "./CookieConsent";
 
 // Persisted acknowledgment of the current Privacy Policy version. Bump VERSION
 // whenever the policy changes again, and every user is prompted afresh.
 const KEY = "lalum-privacy-ack";
 const VERSION = "2026-07-amendment-13";
-// A "Later" choice hides the notice for the current session only, so it returns
-// on the next visit until the user confirms.
-const SESSION_DISMISS = "lalum-privacy-ack-dismissed";
+// A "Later" choice snoozes the notice, persisted in localStorage so a page
+// reload or a return visit within the window does not bring it back. It
+// reappears once the snooze lapses, so the update is not forgotten. "Confirm"
+// records the acknowledgment permanently for this version.
+const SNOOZE_KEY = "lalum-privacy-ack-snooze";
+const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 type Ack = { version: string; ts: number };
 
@@ -16,6 +21,17 @@ function acknowledged(): boolean {
   try {
     const raw = localStorage.getItem(KEY);
     return raw ? (JSON.parse(raw) as Ack).version === VERSION : false;
+  } catch {
+    return false;
+  }
+}
+
+function snoozed(): boolean {
+  try {
+    const raw = localStorage.getItem(SNOOZE_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw) as Ack;
+    return s.version === VERSION && Date.now() - s.ts < SNOOZE_MS;
   } catch {
     return false;
   }
@@ -29,16 +45,26 @@ export function PrivacyUpdateNotice() {
   const p = t.ui.privacyUpdate;
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (acknowledged()) return;
-    try {
-      if (sessionStorage.getItem(SESSION_DISMISS) === VERSION) return;
-    } catch {
-      /* ignore */
+    if (acknowledged() || snoozed()) return;
+    // Do not stack on top of the first-visit cookie banner: wait until the
+    // visitor has resolved cookies, then show. If cookies are already resolved,
+    // show immediately.
+    if (cookieConsentResolved()) {
+      setOpen(true);
+      return;
     }
-    setOpen(true);
+    const onResolved = () => {
+      if (!acknowledged() && !snoozed()) setOpen(true);
+    };
+    window.addEventListener(COOKIE_RESOLVED_EVENT, onResolved);
+    return () => window.removeEventListener(COOKIE_RESOLVED_EVENT, onResolved);
   }, []);
+
+  // Escape / focus-trap / scroll-lock. Escape behaves like "Later" (snooze).
+  useDialogA11y(open, () => later(), modalRef);
 
   function confirm() {
     try {
@@ -51,7 +77,7 @@ export function PrivacyUpdateNotice() {
 
   function later() {
     try {
-      sessionStorage.setItem(SESSION_DISMISS, VERSION);
+      localStorage.setItem(SNOOZE_KEY, JSON.stringify({ version: VERSION, ts: Date.now() } satisfies Ack));
     } catch {
       /* ignore */
     }
@@ -62,7 +88,7 @@ export function PrivacyUpdateNotice() {
 
   return (
     <div className="cookie-overlay" role="dialog" aria-modal="true" aria-label={p.aria}>
-      <div dir={dir} className="cookie-modal privacy-update-modal">
+      <div dir={dir} className="cookie-modal privacy-update-modal" ref={modalRef}>
         <h2 className="h3" style={{ fontSize: 22, margin: "0 0 12px" }}>{p.title}</h2>
         <p style={{ fontSize: 15, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{p.body}</p>
 

@@ -269,7 +269,16 @@ export function Portal() {
     setPayBusy(id);
     try {
       const { data, error } = await supabase.functions.invoke("lalum-pay-create", { body: { milestone_id: id } });
-      if (error) throw error;
+      if (error) {
+        // Read the function's error code so we can explain *why* it did not open
+        // instead of a single generic message. A 403 means the charge is on a
+        // different email than the one this account signed in with.
+        let code = "";
+        try { code = (((await (error as { context?: Response }).context?.json()) as { code?: string } | undefined)?.code) ?? ""; } catch { /* body unreadable or not JSON */ }
+        window.alert(code === "forbidden" ? t.ui.portal.billing.payErrForbidden : t.ui.portal.billing.payErr);
+        setPayBusy(undefined);
+        return;
+      }
       if (data?.url) window.location.href = data.url as string;
       else throw new Error("no_url");
     } catch {
@@ -964,13 +973,27 @@ export function Portal() {
         </div>
       )}
 
-      {/* CLIENT BILLING / PAYMENTS */}
-      {!isAdmin && paymentsEnabled && myBills.length > 0 && (
+      {/* CLIENT BILLING / PAYMENTS
+          Always rendered (when payments are enabled) so a client who was sent a
+          request but whose account does not match never faces a blank space.
+          When there is nothing to pay we say so, and explain the most likely
+          cause: the request went to a different email than the one they signed
+          in with. */}
+      {!isAdmin && paymentsEnabled && (
         <div className="card" style={{ padding: 34, marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
             <h2 className="h3" style={{ fontSize: 22 }}>{P.billing.title}</h2>
           </div>
+          {myBills.length === 0 ? (
+            <div style={{ border: "1px solid var(--line)", borderRadius: 12, padding: "18px 16px", background: "var(--card)" }}>
+              <p className="muted" style={{ fontSize: 15, margin: 0 }}>{P.billing.none}</p>
+              <p className="muted" style={{ fontSize: 13, lineHeight: 1.6, margin: "8px 0 0" }}>
+                {P.billing.noneHint} <span dir="ltr" style={{ fontWeight: 600 }}>{user?.email}</span>
+              </p>
+            </div>
+          ) : (
+          <>
           <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 14px" }}>{P.billing.intro}</p>
           <div style={{ marginBottom: 20 }}><PaymentStrip label={P.billing.secure} size={26} /></div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -989,16 +1012,22 @@ export function Portal() {
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
                       <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
-                        {payBusy === bl.id ? P.billing.paying : P.billing.pay}
+                        {payBusy === bl.id ? P.billing.paying : failed ? P.billing.retry : P.billing.pay}
                       </button>
                       <span className="muted" style={{ fontSize: 11 }} dir="ltr">{P.billing.walletHint}</span>
                     </div>
                   )}
-                  {failed && <span style={{ fontSize: 12, color: "var(--clay)" }}>{P.billing.statusLabels.failed}</span>}
+                  {failed && (
+                    <div style={{ flexBasis: "100%", fontSize: 12.5, color: "var(--clay)", lineHeight: 1.5, marginTop: 2 }}>
+                      {P.billing.failedHint}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
+          </>
+          )}
         </div>
       )}
 

@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "../context/LangContext";
+import { useDialogA11y } from "../lib/useDialogA11y";
 
 const KEY = "lalum-cookie-consent";
 export const OPEN_COOKIE_EVENT = "lalum:open-cookie-settings";
+// Fired once the visitor has made (or already has) a cookie choice, so other
+// first-visit overlays can wait their turn instead of stacking on top.
+export const COOKIE_RESOLVED_EVENT = "lalum:cookie-consent-resolved";
 
 type Consent = { analytics: boolean; ts: number };
 
@@ -15,6 +19,11 @@ function read(): Consent | null {
   }
 }
 
+// Whether the visitor has already resolved the cookie banner (any stored choice).
+export function cookieConsentResolved(): boolean {
+  return read() !== null;
+}
+
 // Additive cookie consent: a first-visit banner plus a settings dialog that the
 // footer "Cookie settings" link reopens. Essential cookies are always on; the
 // analytics preference is stored (no tracking is loaded unless it is allowed).
@@ -25,6 +34,8 @@ export function CookieConsent() {
   const [modal, setModal] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [saved, setSaved] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  useDialogA11y(modal, () => setModal(false), modalRef);
 
   useEffect(() => {
     const existing = read();
@@ -48,6 +59,8 @@ export function CookieConsent() {
     }
     setAnalytics(a);
     setBanner(false);
+    // Let any queued first-visit overlay (the privacy notice) know it may show.
+    window.dispatchEvent(new Event(COOKIE_RESOLVED_EVENT));
   }
 
   if (!banner && !modal) return null;
@@ -67,7 +80,7 @@ export function CookieConsent() {
 
       {modal && (
         <div className="cookie-overlay" role="dialog" aria-modal="true" aria-label={C.title} onMouseDown={(e) => { if (e.target === e.currentTarget) setModal(false); }}>
-          <div dir={dir} className="cookie-modal">
+          <div dir={dir} className="cookie-modal" ref={modalRef}>
             <h2 className="h3" style={{ fontSize: 22, margin: "0 0 8px" }}>{C.title}</h2>
             <p className="muted" style={{ fontSize: 14.5, lineHeight: 1.6, margin: "0 0 18px" }}>{C.intro}</p>
 

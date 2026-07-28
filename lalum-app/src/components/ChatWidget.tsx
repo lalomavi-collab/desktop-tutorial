@@ -4,12 +4,14 @@ import { useLang } from "../context/LangContext";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { extractText } from "../lib/extractText";
+import { OPEN_CHAT_EVENT } from "./chatEvents";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
-// Other components (e.g. the quick-start guide) can open the chat by dispatching
-// this event on window.
-export const OPEN_CHAT_EVENT = "lalum:open-chat";
+// OPEN_CHAT_EVENT lives in ./chatEvents so lightweight consumers can dispatch it
+// without statically importing this heavy component (which would break its lazy
+// chunk). Re-exported here for backwards compatibility.
+export { OPEN_CHAT_EVENT };
 
 // Web Speech API is not in the TS DOM lib; probe it loosely.
 const SpeechRec = typeof window !== "undefined" ? ((window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition) : undefined;

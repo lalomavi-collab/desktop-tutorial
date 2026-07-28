@@ -27,6 +27,7 @@ const NYTRO_ID = "nytsys-global";
 const PUBLIC_PREFIXES = [
   "/advisory",
   "/training",
+  "/courses",
   "/insights",
   "/knowledge",
   "/faq",

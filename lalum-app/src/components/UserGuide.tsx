@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../context/LangContext";
-import { OPEN_CHAT_EVENT } from "./ChatWidget";
+import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { appUrl } from "../lib/content";
+import { useDialogA11y } from "../lib/useDialogA11y";
 
 // Any component can open the quick-start guide by dispatching this event.
 export const OPEN_GUIDE_EVENT = "lalum:open-guide";
@@ -15,6 +16,7 @@ export function UserGuide() {
   const g = t.ui.guide;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const openGuide = () => setOpen(true);
@@ -22,18 +24,8 @@ export function UserGuide() {
     return () => window.removeEventListener(OPEN_GUIDE_EVENT, openGuide);
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  // Escape / focus-trap / scroll-lock / focus-restore.
+  useDialogA11y(open, () => setOpen(false), sheetRef);
 
   if (!open) return null;
 
@@ -48,7 +40,7 @@ export function UserGuide() {
 
   return (
     <div className="guide-overlay" role="dialog" aria-modal="true" aria-label={g.title} onClick={() => setOpen(false)}>
-      <div className="guide-sheet" onClick={(e) => e.stopPropagation()}>
+      <div className="guide-sheet" onClick={(e) => e.stopPropagation()} ref={sheetRef}>
         <div className="guide-head">
           <div>
             <div className="guide-eyebrow">LALUM</div>

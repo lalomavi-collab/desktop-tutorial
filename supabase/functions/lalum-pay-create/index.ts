@@ -44,6 +44,8 @@ Deno.serve(async (req) => {
   const env = (Deno.env.get("INVOICE4U_ENV") ?? "qa").toLowerCase();
   const allowSandbox = Deno.env.get("INVOICE4U_ALLOW_SANDBOX") === "true";
   const appUrl = Deno.env.get("LALUM_APP_URL") ?? "https://lalumapp.com";
+  // Shared secret that authenticates the Invoice4U callback to lalum-pay-webhook.
+  const payWebhookSecret = Deno.env.get("PAY_WEBHOOK_SECRET")?.trim();
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) return json(500, { code: "not_configured" });
@@ -89,7 +91,10 @@ Deno.serve(async (req) => {
     Email: m.client_email || "",
     IsAutoCreateCustomer: true,
     ReturnUrl: `${appUrl}/portal?pay=return`,
-    CallBackUrl: `${url}/functions/v1/lalum-pay-webhook`,
+    // The callback is authenticated with a shared secret token: lalum-pay-webhook
+    // rejects any call whose ?t= does not match PAY_WEBHOOK_SECRET, so a milestone
+    // cannot be marked paid by anyone who merely knows its id.
+    CallBackUrl: `${url}/functions/v1/lalum-pay-webhook${payWebhookSecret ? `?t=${encodeURIComponent(payWebhookSecret)}` : ""}`,
     IsDocCreate: true,
     DocHeadline: m.title,
     Language: "he",
