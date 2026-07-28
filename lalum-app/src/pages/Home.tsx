@@ -10,6 +10,7 @@ import { HomeAcademy } from "../components/HomeAcademy";
 import { PracticeAreas } from "../components/PracticeAreas";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
+import { PracticeHub } from "../components/PracticeHub";
 import { officePhone, directPhone } from "../lib/content";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
@@ -111,6 +112,9 @@ export function Home() {
 
       {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
       <PreDealStrategy />
+
+      {/* REPRESENTATIVE-SCENARIO HUB: filterable grid with detail modals */}
+      <PracticeHub />
 
       {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
       <PracticeFaq />
