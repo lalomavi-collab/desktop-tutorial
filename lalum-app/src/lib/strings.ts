@@ -1,5 +1,6 @@
 import type {
   Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
+  PracticeArea, StrategyPath,
 } from "./content";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
@@ -10,7 +11,7 @@ const en = {
     langName: "English",
     otherLangName: "עברית",
     otherLangShort: "עב",
-    nav: { home: "Home", advisory: "Advisory", training: "Courses", insights: "Articles", knowledge: "Knowledge", pay: "Pay" },
+    nav: { home: "Home", practice: "Practice areas", strategy: "Pre-deal strategy", advisory: "Advisory", training: "Courses", insights: "Articles", knowledge: "Knowledge", pay: "Pay" },
     tabs: { home: "Home", advisory: "Advisory", training: "Courses", book: "Book", client: "Client", assistant: "Assistant", knowledge: "Knowledge" },
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
@@ -344,6 +345,101 @@ const en = {
 
   // Per-page SEO copy: keyword-focused titles and meta descriptions, kept
   // separate from on-page hero copy so search snippets can be tuned freely.
+  practice: {
+    eyebrow: "Practice areas",
+    h2: "Full-suite legal coverage, sharpened by technology",
+    sub: "Complete representation for individuals, businesses, owners, and building committees. The technology never replaces the lawyering; it makes it sharper and more defensible.",
+    areas: [
+      {
+        icon: "home",
+        tag: "Urban renewal",
+        title: "Urban renewal & tenant committees",
+        blurb: "Full representation for owners, building committees, and developers in Tama 38 and evacuate-and-rebuild.",
+        points: [
+          "Owners and committees represented opposite the developer and contractor",
+          "Collateral checks and financial safety",
+          "Sale agreements and signatures drafted and protected",
+          "Risk management on complex, multi-year projects",
+        ],
+      },
+      {
+        icon: "compass",
+        tag: "International & commercial",
+        title: "International & commercial transactions",
+        blurb: "End-to-end legal backing for private clients and companies in cross-border ventures.",
+        points: [
+          "Buyers and investors guided abroad",
+          "Due diligence, holding structure, and taxation",
+          "Commercial contracts and partnerships",
+          "Coordination with local counsel in the destination country",
+        ],
+      },
+      {
+        icon: "scale",
+        tag: "Real estate",
+        title: "Real estate & owner representation",
+        blurb: "Personal representation in sale, purchase, and property rights, for individuals and businesses.",
+        points: [
+          "Sale and purchase transactions",
+          "Representation of owners and rights-holders",
+          "Real estate taxation and deal structuring",
+          "Close guidance through to signing",
+        ],
+      },
+    ] as PracticeArea[],
+    preDeal: {
+      eyebrow: "Pre-deal · pre-litigation",
+      title: "Strategic advisory before the point of no return",
+      lede: "A high-level strategic consultation before you file a lawsuit, sign an international deal, or enter an urban-renewal project.",
+      note: "It never replaces your transaction lawyer or litigator. It is an executive layer of risk management and strategy that works alongside your existing team.",
+      points: [
+        "An independent read on exposure, before you commit",
+        "Decision-Oriented Advisory: options, a recommendation, and a defensible record",
+        "Works with your lawyer, not instead of them",
+      ],
+    },
+    strategy: {
+      title: "Where are you standing right now?",
+      sub: "Pick your situation and see what an early strategic consultation changes.",
+      savingsNote: "An early consultation costs a fraction of the litigation, tax, or deal exposure it prevents.",
+      cta: "Book a strategic consultation",
+      paths: [
+        {
+          id: "urban",
+          icon: "home",
+          label: "Before an urban-renewal deal",
+          tagline: "Tama 38 / evacuate-and-rebuild",
+          steps: [
+            { title: "Map the exposure", body: "We read the developer agreement, collateral, and timeline before you sign, and flag what puts your apartment at risk." },
+            { title: "Set the strategy", body: "You get a clear recommendation and the leverage points, so the committee negotiates from strength, not hope." },
+            { title: "Protect the outcome", body: "Guarantees, milestones, and signatures structured so a developer's failure never becomes your loss." },
+          ],
+        },
+        {
+          id: "international",
+          icon: "compass",
+          label: "Before an international deal",
+          tagline: "Cross-border purchase or venture",
+          steps: [
+            { title: "Map the exposure", body: "Cross-border due diligence and the holding and tax structure, reviewed before money moves." },
+            { title: "Set the strategy", body: "A clear view of the risks and how to price them, coordinated with local counsel in the destination country." },
+            { title: "Protect the outcome", body: "The contract and safeguards built so protection stays with you even where foreign-law advice is given abroad." },
+          ],
+        },
+        {
+          id: "dispute",
+          icon: "gavel",
+          label: "Before a lawsuit",
+          tagline: "Pre-litigation strategy",
+          steps: [
+            { title: "Map the exposure", body: "An independent read of the dispute and the real odds, before you spend years and fees in court." },
+            { title: "Set the strategy", body: "Decision-Oriented Mediation and the fastest defensible route to resolution, weighed against litigation." },
+            { title: "Protect the outcome", body: "A documented, defensible record either way, so you are covered if it does reach a courtroom." },
+          ],
+        },
+      ] as StrategyPath[],
+    },
+  },
   seo: {
     home: {
       title: "LALUM, Law, Real Estate & AI",
@@ -384,6 +480,7 @@ const en = {
     heroH1a: "Fewer human errors.",
     heroH1b: "Sharp control of every case.",
     heroLede: "A Tech-Legal practice uniting law, real estate, and AI. From guiding property deals and buyers in Israel and abroad, through representing owners and rights-holders, to risk governance and EU AI Act conformity. To every matter we bring sharp control, ex-ante opinions, and a defensible record.",
+    heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Aligned with",
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
@@ -791,7 +888,7 @@ const he: Dict = {
     langName: "עברית",
     otherLangName: "English",
     otherLangShort: "EN",
-    nav: { home: "בית", advisory: "ייעוץ", training: "קורסים", insights: "מאמרים", knowledge: "ידע", pay: "תשלום" },
+    nav: { home: "בית", practice: "תחומי עיסוק", strategy: "ייעוץ אסטרטגי", advisory: "ייעוץ", training: "קורסים", insights: "מאמרים", knowledge: "ידע", pay: "תשלום" },
     tabs: { home: "בית", advisory: "ייעוץ", training: "קורסים", book: "פגישה", client: "לקוחות", assistant: "עוזר", knowledge: "ידע" },
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
@@ -1124,6 +1221,101 @@ const he: Dict = {
   },
 
   // עותק SEO לכל עמוד: כותרות ותיאורים ממוקדי מילות מפתח, בנפרד מכותרות התוכן.
+  practice: {
+    eyebrow: "תחומי עיסוק",
+    h2: "כיסוי משפטי מלא, מחודד בטכנולוגיה",
+    sub: "ייצוג מלא לפרטיים, לעסקים, לבעלי דירות ולנציגויות. הטכנולוגיה לעולם לא מחליפה את העבודה המשפטית, היא הופכת אותה לחדה ובת-הגנה יותר.",
+    areas: [
+      {
+        icon: "home",
+        tag: "התחדשות עירונית",
+        title: "התחדשות עירונית ונציגויות דיירים",
+        blurb: "ליווי מלא לבעלי דירות, לנציגויות וליזמים בתמ״א 38 ובפינוי-בינוי.",
+        points: [
+          "ייצוג בעלים ונציגויות מול היזם והקבלן",
+          "בדיקת בטוחות והגנה פיננסית",
+          "ניסוח והגנה על הסכמי מכר וחתימות",
+          "ניהול סיכונים בפרויקטים מורכבים ורב-שנתיים",
+        ],
+      },
+      {
+        icon: "compass",
+        tag: "בינלאומי ומסחרי",
+        title: "עסקאות בינלאומיות ומסחרי",
+        blurb: "גב משפטי מקצה לקצה ללקוחות פרטיים ולחברות בעסקאות חוצות גבולות.",
+        points: [
+          "ליווי רוכשים ומשקיעים בחו״ל",
+          "בדיקת נאותות, מבנה החזקה ומיסוי",
+          "חוזים מסחריים ושותפויות",
+          "תיאום מול עורך דין מקומי במדינת היעד",
+        ],
+      },
+      {
+        icon: "scale",
+        tag: "נדל״ן ומקרקעין",
+        title: "נדל״ן, מקרקעין וייצוג בעלים",
+        blurb: "ייצוג אישי בעסקאות מכר ורכישה ובזכויות במקרקעין, לפרטיים ולעסקים.",
+        points: [
+          "עסקאות מכר ורכישה",
+          "ייצוג בעלי זכויות ובעלים",
+          "מיסוי מקרקעין ותכנון עסקה",
+          "ליווי צמוד עד החתימה",
+        ],
+      },
+    ],
+    preDeal: {
+      eyebrow: "טרום-עסקה · טרום-תביעה",
+      title: "ייעוץ אסטרטגי לפני הנקודה שאין ממנה חזרה",
+      lede: "ייעוץ אסטרטגי ברמה גבוהה לפני הגשת תביעה, לפני חתימה על עסקה בינלאומית, או לפני כניסה לפרויקט התחדשות עירונית.",
+      note: "השירות אינו מחליף את עורך הדין שמלווה את העסקה או את הליטיגטור שלכם. זו שכבת ניהול סיכונים ואסטרטגיה שעובדת לצד הצוות הקיים שלכם.",
+      points: [
+        "קריאה עצמאית של החשיפה, לפני שמתחייבים",
+        "ייעוץ מכוון-הכרעה: אפשרויות, המלצה ותיעוד בר-הגנה",
+        "עובד עם עורך הדין שלכם, לא במקומו",
+      ],
+    },
+    strategy: {
+      title: "איפה אתם עומדים בדיוק עכשיו?",
+      sub: "בחרו את המצב שלכם וראו מה ייעוץ אסטרטגי מקדים משנה.",
+      savingsNote: "ייעוץ מקדים עולה חלק קטן מהחשיפה המשפטית, המיסויית או העסקית שהוא מונע.",
+      cta: "לתיאום ייעוץ אסטרטגי מקדים",
+      paths: [
+        {
+          id: "urban",
+          icon: "home",
+          label: "לפני עסקת התחדשות עירונית",
+          tagline: "תמ״א 38 / פינוי-בינוי",
+          steps: [
+            { title: "ממפים את החשיפה", body: "קוראים את הסכם היזם, הבטוחות ולוח הזמנים לפני שאתם חותמים, ומסמנים מה מסכן את הדירה שלכם." },
+            { title: "קובעים אסטרטגיה", body: "מקבלים המלצה ברורה ואת נקודות המנוף, כך שהנציגות מנהלת משא ומתן מעמדת כוח ולא מתקווה." },
+            { title: "מגנים על התוצאה", body: "ערבויות, אבני דרך וחתימות בנויות כך שכשל של יזם לעולם לא יהפוך להפסד שלכם." },
+          ],
+        },
+        {
+          id: "international",
+          icon: "compass",
+          label: "לפני עסקה בינלאומית",
+          tagline: "רכישה או השקעה בחו״ל",
+          steps: [
+            { title: "ממפים את החשיפה", body: "בדיקת נאותות חוצת גבולות ומבנה ההחזקה והמיסוי, נבחנים לפני שהכסף זז." },
+            { title: "קובעים אסטרטגיה", body: "תמונה ברורה של הסיכונים ואיך לתמחר אותם, בתיאום עם עורך דין מקומי במדינת היעד." },
+            { title: "מגנים על התוצאה", body: "החוזה וההגנות בנויים כך שההגנה נשארת אצלכם גם כשהייעוץ לדין הזר ניתן בחו״ל." },
+          ],
+        },
+        {
+          id: "dispute",
+          icon: "gavel",
+          label: "לפני תביעה משפטית",
+          tagline: "אסטרטגיה טרום-ליטיגציה",
+          steps: [
+            { title: "ממפים את החשיפה", body: "קריאה עצמאית של הסכסוך והסיכויים האמיתיים, לפני שנים ואגרות בבית המשפט." },
+            { title: "קובעים אסטרטגיה", body: "גישור מכוון-הכרעה והמסלול המהיר והבר-הגנה ביותר ליישוב, מול חלופת הליטיגציה." },
+            { title: "מגנים על התוצאה", body: "תיעוד בר-הגנה בכל מקרה, כך שאתם מכוסים גם אם זה כן מגיע לאולם בית המשפט." },
+          ],
+        },
+      ],
+    },
+  },
   seo: {
     home: {
       title: "LALUM, משפט, נדל״ן ובינה מלאכותית",
@@ -1164,6 +1356,7 @@ const he: Dict = {
     heroH1a: "פחות טעויות אנוש.",
     heroH1b: "שליטה חדה בכל תיק.",
     heroLede: "משרד Tech-Legal המשלב משפט, נדל״ן ובינה מלאכותית. מליווי עסקאות ורוכשים בארץ ובעולם, דרך ייצוג בעלים ובעלי זכויות, ועד ממשל סיכונים ו-EU AI Act. לכל תיק אנחנו מביאים שליטה חדה, חוות דעת מוקדמות ותיעוד בר-הגנה.",
+    heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "עומדים במסגרות",
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",

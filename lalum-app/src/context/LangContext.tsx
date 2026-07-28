@@ -14,9 +14,9 @@ type LangValue = {
 const LangContext = createContext<LangValue | null>(null);
 
 const STORAGE_KEY = "lalum_lang";
-// English is the primary language. Visitors can switch to Hebrew from the
-// header, and the choice is remembered for next time.
-const DEFAULT_LANG: Lang = "en";
+// Hebrew is the primary language for the Israeli audience. Visitors can switch
+// to English from the header, and the choice is remembered for next time.
+const DEFAULT_LANG: Lang = "he";
 
 // A saved choice always wins; otherwise open in the primary language.
 function initialLang(): Lang {
