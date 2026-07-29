@@ -6,8 +6,9 @@ import { PageMeta } from "../components/PageMeta";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeHub } from "../components/PracticeHub";
 import { PracticeFaq } from "../components/PracticeFaq";
-import { buildFaqPage } from "../lib/faqSchema";
+import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
+import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 
 export function Advisory() {
@@ -16,7 +17,7 @@ export function Advisory() {
 
   return (
     <>
-      <PageMeta title={t.seo.advisory.title} description={t.seo.advisory.desc} path="/advisory" jsonLd={buildFaqPage(faqsForPath(t, "/advisory"))} />
+      <PageMeta title={t.seo.advisory.title} description={t.seo.advisory.desc} path="/advisory" jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/advisory")), howToForPath(t, "/advisory")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />

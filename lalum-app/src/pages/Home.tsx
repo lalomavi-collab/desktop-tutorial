@@ -12,8 +12,9 @@ import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
 import { officePhone, directPhone } from "../lib/content";
-import { buildFaqPage } from "../lib/faqSchema";
+import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
+import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
 // busts any browser or CDN cache instead of serving a stale /founder.jpg.
@@ -31,7 +32,7 @@ export function Home() {
         title={t.seo.home.title}
         description={t.seo.home.desc}
         path="/"
-        jsonLd={buildFaqPage(faqsForPath(t, "/"))}
+        jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/")), howToForPath(t, "/")])}
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>

@@ -9,7 +9,7 @@
 
 import type { Dict } from "./strings";
 import { faqCategories } from "./faq";
-import type { QA } from "./faqSchema";
+import type { QA } from "./schema";
 
 // The general homepage FAQ (rendered in the Home FAQ section).
 function homeFaqs(t: Dict): QA[] {
