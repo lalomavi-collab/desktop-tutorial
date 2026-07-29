@@ -24,7 +24,7 @@ export function PracticeFaq() {
 
   return (
     <section id="faq-practice" className="wrap section" style={{ maxWidth: 920 }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
       <div style={{ maxWidth: "56ch", margin: "0 0 32px" }}>
         <p className="eyebrow">{f.eyebrow}</p>
         <h2 className="h2">{f.title}</h2>
