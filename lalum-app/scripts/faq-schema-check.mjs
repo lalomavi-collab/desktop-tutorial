@@ -65,6 +65,12 @@ function courseNode(name, description, workload = "PT24H") {
     hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: workload },
   };
 }
+function pageNode(type, name, description, url) {
+  const n = (name ?? "").trim();
+  if (!n) return null;
+  const d = (description ?? "").trim();
+  return { "@type": type, name: n, ...(d ? { description: d } : {}), ...(url ? { url } : {}), isPartOf: { "@id": "https://lalumapp.com/#website" } };
+}
 function pageJsonLd(nodes) {
   const real = nodes.filter(Boolean);
   if (real.length === 0) return null;
@@ -95,6 +101,8 @@ function validateNode(node) {
     if (!node.name || !node.name.trim()) problems.push("Course: empty name");
     if (!node.provider || node.provider["@type"] !== "Organization") problems.push("Course: no provider");
     if (!node.hasCourseInstance || node.hasCourseInstance["@type"] !== "CourseInstance") problems.push("Course: no CourseInstance");
+  } else if (node["@type"] === "CollectionPage" || node["@type"] === "WebPage") {
+    if (!node.name || !node.name.trim()) problems.push(`${node["@type"]}: empty name`);
   } else {
     problems.push(`unexpected @type: ${node["@type"]}`);
   }
@@ -140,6 +148,11 @@ function validatePage(obj) {
   p = course ? validatePage(course) : ["null for valid Course"];
   p.length ? fail("Course: valid input", p.join("; ")) : pass("Course: valid input");
   courseNode("", "x") === null ? pass("Course: no name -> null") : fail("Course: no name", "expected null");
+
+  const coll = pageJsonLd([pageNode("CollectionPage", "Knowledge", "Hub", "https://lalumapp.com/knowledge")]);
+  p = coll ? validatePage(coll) : ["null for valid CollectionPage"];
+  p.length ? fail("CollectionPage: valid input", p.join("; ")) : pass("CollectionPage: valid input");
+  pageNode("WebPage", "", "x", "u") === null ? pass("WebPage: no name -> null") : fail("WebPage: no name", "expected null");
 }
 
 // ---------- 2. architecture guard: no inline FAQPage/HowTo outside schema.ts ----------

@@ -67,6 +67,26 @@ export function courseNode(name: string, description: string, workload = "PT24H"
   };
 }
 
+// CollectionPage / WebPage node for hub and static pages that are not a process
+// or Q&A. Ties into the sitewide WebSite node by @id. Returns null without a name.
+export function pageNode(
+  type: "CollectionPage" | "WebPage",
+  name: string,
+  description: string,
+  url: string
+): object | null {
+  const n = (name ?? "").trim();
+  if (!n) return null;
+  const d = (description ?? "").trim();
+  return {
+    "@type": type,
+    name: n,
+    ...(d ? { description: d } : {}),
+    ...(url ? { url } : {}),
+    isPartOf: { "@id": "https://lalumapp.com/#website" },
+  };
+}
+
 // Compose a page's JSON-LD from its nodes. Drops nulls, returns null when the
 // page has none, a single node (with @context) when it has one, or an @graph
 // when it has several, so one page can carry FAQPage + HowTo together.
