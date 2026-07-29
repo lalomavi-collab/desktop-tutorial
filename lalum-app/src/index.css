@@ -277,6 +277,7 @@ article p {
 }
 
 /* ── Core practice-area cards ─────────────────────────────────────────── */
+.practice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 16px; }
 .practice-card {
   display: flex;
   flex-direction: column;
@@ -432,11 +433,15 @@ article p {
 }
 .pfaq-chev { flex: none; color: var(--clay); transition: transform .22s ease; }
 .pfaq-item.on .pfaq-chev { transform: rotate(180deg); }
-.pfaq-a { max-height: 0; overflow: hidden; transition: max-height .28s ease; }
-.pfaq-a p { margin: 0; padding: 0 18px 16px; font-size: 14.5px; line-height: 1.65; color: var(--slate); }
+/* Uncapped open/close: animate grid rows 0fr -> 1fr so no answer is ever clipped. */
+.pfaq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s ease; }
+.pfaq-item.on .pfaq-a { grid-template-rows: 1fr; }
+.pfaq-a > div { overflow: hidden; }
+.pfaq-a p { margin: 0; padding: 2px 18px 16px; font-size: 14.5px; line-height: 1.65; color: var(--slate); }
 
 /* ── Representative-scenario hub (filter grid + detail modal) ─────────── */
 .hub-note { font-size: 14px; line-height: 1.55; color: var(--slate); margin: 14px 0 0; font-style: italic; }
+.hub-empty { font-size: 15px; line-height: 1.6; color: var(--slate); padding: 24px 0; margin: 0; }
 .hub-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
 .hub-tab {
   padding: 8px 15px; border-radius: 9999px;

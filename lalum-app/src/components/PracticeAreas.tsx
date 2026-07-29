@@ -13,7 +13,7 @@ export function PracticeAreas() {
         <h2 className="h2">{p.h2}</h2>
         <p className="lede" style={{ marginTop: 16, maxWidth: "58ch" }}>{p.sub}</p>
       </div>
-      <div className="grid grid-3">
+      <div className="practice-grid">
         {p.areas.map((a) => (
           <article key={a.title} className="card practice-card">
             <span className="icon-badge"><Icon name={a.icon} size={22} /></span>

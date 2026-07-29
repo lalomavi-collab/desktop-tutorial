@@ -3,6 +3,9 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { PageMeta } from "../components/PageMeta";
+import { PreDealStrategy } from "../components/PreDealStrategy";
+import { PracticeHub } from "../components/PracticeHub";
+import { PracticeFaq } from "../components/PracticeFaq";
 import { useLang } from "../context/LangContext";
 
 export function Advisory() {
@@ -49,6 +52,9 @@ export function Advisory() {
         </div>
       </section>
 
+      {/* PRE-DEAL STRATEGY + interactive risk calculator */}
+      <PreDealStrategy />
+
       {/* MEDIATION / DOM */}
       <section id="mediation" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
@@ -70,6 +76,9 @@ export function Advisory() {
           </div>
         </div>
       </section>
+
+      {/* REPRESENTATIVE-SCENARIO HUB */}
+      <PracticeHub />
 
       {/* TESTIMONIALS */}
       <section className="wrap section">
@@ -120,6 +129,9 @@ export function Advisory() {
           </div>
         </div>
       </section>
+
+      {/* PRACTICE-AREA FAQ with FAQPage schema */}
+      <PracticeFaq />
 
       <ContactCTA title={a.ctaTitle} body={a.ctaBody} primaryLabel={t.ui.initiateRisk} />
     </>

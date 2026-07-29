@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 
@@ -10,21 +10,25 @@ export function PracticeFaq() {
   const f = t.practice.faq;
   const [open, setOpen] = useState("");
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: f.cats.flatMap((c) =>
-      c.items.map((it) => ({
-        "@type": "Question",
-        name: it.q,
-        acceptedAnswer: { "@type": "Answer", text: it.a },
-      }))
-    ),
-  };
+  const schemaJson = useMemo(
+    () =>
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: f.cats.flatMap((c) =>
+          c.items.map((it) => ({
+            "@type": "Question",
+            name: it.q,
+            acceptedAnswer: { "@type": "Answer", text: it.a },
+          }))
+        ),
+      }),
+    [f]
+  );
 
   return (
     <section id="faq-practice" className="wrap section" style={{ maxWidth: 920 }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: schemaJson }} />
       <div style={{ maxWidth: "56ch", margin: "0 0 32px" }}>
         <p className="eyebrow">{f.eyebrow}</p>
         <h2 className="h2">{f.title}</h2>
@@ -40,12 +44,12 @@ export function PracticeFaq() {
                 const on = open === key;
                 return (
                   <div key={key} className={"pfaq-item" + (on ? " on" : "")}>
-                    <button type="button" className="pfaq-q" aria-expanded={on} onClick={() => setOpen(on ? "" : key)}>
+                    <button type="button" className="pfaq-q" id={`${key}-b`} aria-expanded={on} aria-controls={`${key}-p`} onClick={() => setOpen(on ? "" : key)}>
                       <span>{it.q}</span>
                       <span className="pfaq-chev" aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
                     </button>
-                    <div className="pfaq-a" style={{ maxHeight: on ? 420 : 0 }}>
-                      <p>{it.a}</p>
+                    <div className="pfaq-a" id={`${key}-p`} role="region" aria-labelledby={`${key}-b`}>
+                      <div><p>{it.a}</p></div>
                     </div>
                   </div>
                 );

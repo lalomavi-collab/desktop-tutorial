@@ -386,6 +386,18 @@ const en = {
           "Close guidance through to signing",
         ],
       },
+      {
+        icon: "gavel",
+        tag: "Dispute resolution",
+        title: "Mediation, arbitration & dispute resolution",
+        blurb: "Resolving commercial, corporate, and property disputes as mediator, arbitrator, and expert.",
+        points: [
+          "Decision-Oriented Mediation (DOM) for a fast, defensible outcome",
+          "Arbitration in commercial and property disputes",
+          "Expert opinions and legal positions",
+          "Resolution strategy before, and instead of, litigation",
+        ],
+      },
     ] as PracticeArea[],
     preDeal: {
       eyebrow: "Pre-deal · pre-litigation",
@@ -464,6 +476,7 @@ const en = {
       note: "Illustrative scenarios that show how we approach a matter, not specific client cases.",
       more: "See the approach",
       close: "Close",
+      empty: "No scenarios in this category yet.",
       filters: [
         { id: "all", label: "All" },
         { id: "urban", label: "Urban renewal" },
@@ -1350,6 +1363,18 @@ const he: Dict = {
           "ליווי צמוד עד החתימה",
         ],
       },
+      {
+        icon: "gavel",
+        tag: "יישוב סכסוכים",
+        title: "גישור, בוררות ויישוב סכסוכים",
+        blurb: "יישוב סכסוכים מסחריים, תאגידיים ובמקרקעין, כמגשר, בורר ונותן חוות דעת מומחה.",
+        points: [
+          "גישור מכוון-הכרעה (DOM) לתוצאה מהירה ובת-הגנה",
+          "בוררות בסכסוכים מסחריים ובמקרקעין",
+          "חוות דעת מומחה ועמדות משפטיות",
+          "אסטרטגיית יישוב לפני ובמקום ליטיגציה",
+        ],
+      },
     ],
     preDeal: {
       eyebrow: "טרום-עסקה · טרום-תביעה",
@@ -1428,6 +1453,7 @@ const he: Dict = {
       note: "תרחישים אילוסטרטיביים שמדגימים את גישת העבודה שלנו, לא תיקי לקוח ספציפיים.",
       more: "לצפייה בגישה",
       close: "סגירה",
+      empty: "אין תרחישים בקטגוריה הזו עדיין.",
       filters: [
         { id: "all", label: "הכל" },
         { id: "urban", label: "התחדשות עירונית" },
