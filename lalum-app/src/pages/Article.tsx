@@ -5,6 +5,7 @@ import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
 import { blogMeta } from "../lib/blogMeta";
+import { toIsoDate } from "../lib/isoDate";
 
 // Blog post bodies come in two shapes. Imported posts are one plain-text run
 // with no line breaks: those are grouped into readable paragraphs by sentence.
@@ -79,6 +80,11 @@ export function Article() {
     ...blogMeta.map((b) => ({ slug: b.slug, title: b.title })),
   ].filter((a) => a.slug !== slug).slice(0, 3);
 
+  // schema.org datePublished must be ISO 8601. The visible date stays the
+  // human string; the structured-data field gets a parsed ISO date, or is
+  // omitted when the string cannot be parsed.
+  const datePublished = toIsoDate(view.date);
+
   return (
     <>
       <PageMeta
@@ -93,7 +99,7 @@ export function Article() {
               "@type": "BlogPosting",
               headline: view.title,
               description: view.dek,
-              datePublished: view.date,
+              ...(datePublished ? { datePublished } : {}),
               author: { "@type": "Organization", name: "LALUM" },
               publisher: {
                 "@type": "Organization",

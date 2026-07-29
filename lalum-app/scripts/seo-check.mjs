@@ -103,6 +103,34 @@ if (!sitemap) {
   insecure.length ? fail("sitemap.xml https", `${insecure.length} insecure url(s)`) : pass("sitemap.xml https");
   const dupes = locs.length - new Set(locs).size;
   dupes ? warn("sitemap.xml duplicates", `${dupes} duplicate url(s)`) : pass("sitemap.xml no duplicates");
+
+  // Coverage: every published article must be in the sitemap, and the sitemap
+  // must not list an article that no longer exists. This keeps the hand-authored
+  // sitemap from drifting as articles are added or removed. Slugs are read from
+  // the source of truth: blogMeta.ts (imported posts) and strings.ts (curated
+  // pieces under data.articles). Sitemap article paths are compared against that
+  // union, URL-decoded so Hebrew slugs match regardless of percent-encoding.
+  const blogMetaSrc = read("src/lib/blogMeta.ts") || "";
+  const stringsSrc = read("src/lib/strings.ts") || "";
+  const blogSlugs = [...blogMetaSrc.matchAll(/"slug":\s*"([^"]+)"/g)].map((m) => m[1]);
+  const curatedSlugs = [...stringsSrc.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
+  const knownSlugs = new Set([...blogSlugs, ...curatedSlugs]);
+  const sitemapArticleSlugs = new Set(
+    locs
+      .map((u) => { try { return decodeURIComponent(u); } catch { return u; } })
+      .map((u) => u.replace(DOMAIN, "").replace(/\/$/, ""))
+      .filter((p) => p.startsWith("/insights/"))
+      .map((p) => p.slice("/insights/".length))
+  );
+  if (!blogSlugs.length && !curatedSlugs.length) {
+    warn("sitemap.xml article coverage", "could not read article slugs to verify");
+  } else {
+    const missingFromSitemap = [...knownSlugs].filter((s) => !sitemapArticleSlugs.has(s));
+    const staleInSitemap = [...sitemapArticleSlugs].filter((s) => !knownSlugs.has(s));
+    if (missingFromSitemap.length) fail("sitemap.xml article coverage", `${missingFromSitemap.length} article(s) missing: ${missingFromSitemap.slice(0, 5).join(", ")}${missingFromSitemap.length > 5 ? " ..." : ""}`);
+    else pass(`sitemap.xml article coverage (${knownSlugs.size} articles)`);
+    if (staleInSitemap.length) warn("sitemap.xml stale articles", `${staleInSitemap.length} sitemap url(s) with no matching article: ${staleInSitemap.slice(0, 5).join(", ")}`);
+  }
 }
 
 // ---------- llms.txt (GEO) ----------

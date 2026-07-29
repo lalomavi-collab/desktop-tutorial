@@ -35,5 +35,8 @@ then keeps the site healthy. Keep each item small and independently shippable.
 
 ## Ongoing maintenance
 
-- [ ] Keep seo-check green; add Article JSON-LD to new insights as they land
-- [ ] Refresh sitemap and watch Core Web Vitals
+- [x] Article JSON-LD now emits automatically for every article (curated and imported), with a valid ISO 8601 `datePublished` derived from the display date; new insights are covered as they land with no per-article work
+- [x] `seo-check` now guards sitemap coverage: it fails if any published article is missing from the sitemap and warns on stale entries, so the hand-authored sitemap cannot silently drift
+- [ ] Keep seo-check green as new content lands
+- [ ] Watch Core Web Vitals (LCP, CLS, INP) in Search Console after deploy
+- [ ] Optional: trim the home meta description (currently ~227 chars) to ~155 so it is not truncated in search results
