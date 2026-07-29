@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
+import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
 
@@ -45,7 +46,7 @@ export function Insights() {
 
   return (
     <>
-      <PageMeta title={t.seo.insights.title} description={t.seo.insights.desc} path="/insights" />
+      <PageMeta title={t.seo.insights.title} description={t.seo.insights.desc} path="/insights" jsonLd={pageJsonLd([pageNode("CollectionPage", t.seo.insights.title, t.seo.insights.desc, "https://lalumapp.com/insights")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>

@@ -6,6 +6,7 @@ import { AmbientBackground } from "../components/AmbientBackground";
 import { CourseSignup } from "../components/CourseSignup";
 import { CourseCatalog } from "../components/CourseCatalog";
 import { PageMeta } from "../components/PageMeta";
+import { courseNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { trainingEmail } from "../lib/content";
 
@@ -37,14 +38,7 @@ export function Training() {
         title={t.seo.training.title}
         description={t.seo.training.desc}
         path="/training"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Course",
-          name: t.home.academy.title,
-          description: t.home.academy.body,
-          provider: { "@type": "Organization", name: "LALUM", url: "https://lalumapp.com/" },
-          hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: "PT24H" },
-        }}
+        jsonLd={pageJsonLd([courseNode(t.home.academy.title, t.home.academy.body)])}
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { REMEMBER_KEY } from "../lib/supabase";
+import { pwnedCount } from "../lib/pwnedCheck";
 
 export function Login() {
   const { signIn, signUp, demoMode } = useAuth();
@@ -25,6 +26,14 @@ export function Login() {
     setBusy(true);
     // Record the choice before auth so the session lands in the right store.
     try { localStorage.setItem(REMEMBER_KEY, remember ? "1" : "0"); } catch { /* ignore */ }
+    // On account creation, reject passwords known from public breaches (the
+    // free, in-app equivalent of Supabase's Pro leaked-password protection).
+    // Skipped in demo mode, which has no real backend to protect.
+    if (mode === "up" && !demoMode && (await pwnedCount(password)) > 0) {
+      setBusy(false);
+      setError(L.leakedPassword);
+      return;
+    }
     const res = mode === "in" ? await signIn(email, password) : await signUp(email, password);
     setBusy(false);
     if (res.error) {

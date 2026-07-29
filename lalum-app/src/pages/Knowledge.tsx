@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
+import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { OPEN_GUIDE_EVENT } from "../components/UserGuide";
 
@@ -56,7 +57,7 @@ export function Knowledge() {
 
   return (
     <>
-      <PageMeta title={t.seo.knowledge.title} description={t.seo.knowledge.desc} path="/knowledge" />
+      <PageMeta title={t.seo.knowledge.title} description={t.seo.knowledge.desc} path="/knowledge" jsonLd={pageJsonLd([pageNode("CollectionPage", t.seo.knowledge.title, t.seo.knowledge.desc, "https://lalumapp.com/knowledge")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 40px", textAlign: "center" }}>

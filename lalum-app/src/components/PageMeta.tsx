@@ -6,7 +6,7 @@ import { syncLangParam } from "../lib/langParam";
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
 // tags so each page and article is indexed and shared with its own metadata.
 // This is a SPA, so we update the tags in the <head> on each route.
-type Props = { title: string; description?: string; image?: string; path?: string; jsonLd?: object; noindex?: boolean };
+type Props = { title: string; description?: string; image?: string; path?: string; jsonLd?: object | null; noindex?: boolean };
 
 // The site-wide default: index everything with large image previews.
 const ROBOTS_DEFAULT = "index, follow, max-image-preview:large";

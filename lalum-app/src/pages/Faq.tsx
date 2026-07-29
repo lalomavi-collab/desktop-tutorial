@@ -4,6 +4,8 @@ import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { faqCategories } from "../lib/faq";
+import { faqPageNode, pageJsonLd } from "../lib/schema";
+import { faqsForPath } from "../lib/pageFaqs";
 
 // In-app Q&A page. Questions and answers are imported from the firm's Wix FAQ,
 // grouped by category, each an accessible accordion.
@@ -18,17 +20,7 @@ export function Faq() {
         title={t.seo.faq.title}
         description={t.seo.faq.desc}
         path="/faq"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqCategories.flatMap((cat) =>
-            cat.items.map((it) => ({
-              "@type": "Question",
-              name: it.q,
-              acceptedAnswer: { "@type": "Answer", text: it.a.join(" ") },
-            }))
-          ),
-        }}
+        jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/faq"))])}
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
