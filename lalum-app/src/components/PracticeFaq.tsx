@@ -10,6 +10,8 @@ export function PracticeFaq() {
   const f = t.practice.faq;
   const [open, setOpen] = useState("");
 
+  // Escape "<" to < so a stray "</script>" in copy can never break out of
+  // the inline JSON-LD block.
   const schemaJson = useMemo(
     () =>
       JSON.stringify({
@@ -22,7 +24,7 @@ export function PracticeFaq() {
             acceptedAnswer: { "@type": "Answer", text: it.a },
           }))
         ),
-      }),
+      }).replace(/</g, "\\u003c"),
     [f]
   );
 

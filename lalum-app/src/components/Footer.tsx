@@ -55,13 +55,13 @@ export function Footer() {
           <p className="footer-download-sub">{f.downloadSub}</p>
         </div>
         <a className="footer-qr" href="https://lalumapp.com" aria-label={f.qrAlt}>
-          <img src="/download-qr.svg" alt={f.qrAlt} width={112} height={112} />
+          <img src="/download-qr.svg" alt={f.qrAlt} width={112} height={112} loading="lazy" decoding="async" />
         </a>
       </div>
 
       <div className="wrap footer-inner">
         <div className="footer-brand">
-          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" />
+          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" loading="lazy" decoding="async" />
           <p className="footer-tagline">{f.tagline}</p>
           <div className="footer-social" aria-label={f.follow}>
             <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label={f.linkedin} className="footer-social-link"><LinkedInIcon /></a>

@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
+import { alternatesFor } from "./src/lib/hreflang";
 
 const SITE = "https://lalumapp.com";
 
@@ -31,7 +32,7 @@ function replaceTag(html: string, re: RegExp, prefix: string, value: string, suf
   return re.test(html) ? html.replace(re, `${prefix}${esc(value)}${suffix}`) : html;
 }
 
-function applyMeta(template: string, r: { title: string; desc: string; url: string; image?: string }): string {
+function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string }): string {
   let h = template;
   h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(r.title)}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
@@ -41,6 +42,12 @@ function applyMeta(template: string, r: { title: string; desc: string; url: stri
   h = replaceTag(h, /(<meta name="twitter:title" content=")[^"]*("\s*\/>)/, "$1", r.title, "$2");
   h = replaceTag(h, /(<meta property="og:url" content=")[^"]*("\s*\/>)/, "$1", r.url, "$2");
   h = replaceTag(h, /(<link rel="canonical" href=")[^"]*("\s*\/>)/, "$1", r.url, "$2");
+  // Point each hreflang alternate at this route (the template carries the home
+  // route's set). Each variant is matched by its hreflang and its href swapped.
+  for (const a of alternatesFor(`/${r.path}`)) {
+    const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
+    h = replaceTag(h, re, "$1", a.href, "$2");
+  }
   if (r.image) {
     h = replaceTag(h, /(<meta property="og:image" content=")[^"]*("\s*\/>)/, "$1", r.image, "$2");
     h = replaceTag(h, /(<meta name="twitter:image" content=")[^"]*("\s*\/>)/, "$1", r.image, "$2");
@@ -76,7 +83,7 @@ function seoPrerender(): Plugin {
       ];
       let written = 0;
       for (const r of routes) {
-        const html = applyMeta(template, { title: r.title, desc: r.desc, url: `${SITE}/${r.path}`, image: r.image });
+        const html = applyMeta(template, { title: r.title, desc: r.desc, url: `${SITE}/${r.path}`, path: r.path, image: r.image });
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");

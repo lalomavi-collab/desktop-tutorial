@@ -24,16 +24,19 @@ then keeps the site healthy. Keep each item small and independently shippable.
 ## Day 3, crawler visible content
 
 - [x] Static content fallback in the raw HTML (home hero, six rubrics, key links) for non-JS crawlers and AI engines; full per-route SSR remains a future option
-- [ ] hreflang or language handling for the two languages
+- [x] hreflang or language handling for the two languages: English reachable at `?lang=en` (a distinct, crawlable address), reciprocal `he-IL`/`en`/`x-default` alternates in the static home, every prerendered route file, and at runtime via PageMeta; canonical and og:url are language-specific; `seo-check` gates the alternates
 
 ## Day 4, off site and performance
 
 - [x] Google Search Console verified (domain) and Bing verified (meta tag); sitemap submitted to both
 - [x] Route-based code splitting; the ~1MB blog content and pdfjs/mammoth now load only when needed (home bundle 1.7MB to ~0.3MB)
-- [ ] Image optimization and loading="lazy"; alt text audit
-- [ ] Internal linking pass
+- [x] Image optimization and loading="lazy"; alt text audit: below-the-fold images (footer QR and logo, founder-section logo) now `loading="lazy" decoding="async"`; above-the-fold LCP images (hero portrait, article cover) stay eager; the article cover now carries a descriptive alt (the article title) instead of an empty one; decorative card images keep `alt=""` with adjacent visible titles
+- [x] Internal linking pass: each article now ends with a "More articles" block linking three sibling pieces, so articles no longer dead-end and link equity flows between them
 
 ## Ongoing maintenance
 
-- [ ] Keep seo-check green; add Article JSON-LD to new insights as they land
-- [ ] Refresh sitemap and watch Core Web Vitals
+- [x] Article JSON-LD now emits automatically for every article (curated and imported), with a valid ISO 8601 `datePublished` derived from the display date; new insights are covered as they land with no per-article work
+- [x] `seo-check` now guards sitemap coverage: it fails if any published article is missing from the sitemap and warns on stale entries, so the hand-authored sitemap cannot silently drift
+- [ ] Keep seo-check green as new content lands
+- [ ] Watch Core Web Vitals (LCP, CLS, INP) in Search Console after deploy
+- [ ] Optional: trim the home meta description (currently ~227 chars) to ~155 so it is not truncated in search results
