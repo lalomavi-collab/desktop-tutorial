@@ -126,8 +126,13 @@ export function Home() {
           <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
             {h.aboutH2a} <span className="italic-clay">{h.aboutH2b}</span>
           </h2>
-          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto 18px", maxWidth: "70ch" }}>{h.aboutP1}</p>
-          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto", maxWidth: "70ch" }}>{h.aboutP2}</p>
+          {/* Centered to match the centered eyebrow and heading above. This block
+              carries the `.section` class, so without an explicit center here the
+              global `.section p` rule would justify the body (and fall back to
+              right alignment on mobile), leaving a centered heading over a
+              right-aligned body. Centering keeps the whole block aligned as one. */}
+          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto 18px", maxWidth: "62ch", textAlign: "center" }}>{h.aboutP1}</p>
+          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto", maxWidth: "62ch", textAlign: "center" }}>{h.aboutP2}</p>
         </div>
       </section>
 
