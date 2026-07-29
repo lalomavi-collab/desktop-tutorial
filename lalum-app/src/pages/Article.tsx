@@ -4,6 +4,7 @@ import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
+import { blogMeta } from "../lib/blogMeta";
 
 // Blog post bodies come in two shapes. Imported posts are one plain-text run
 // with no line breaks: those are grouped into readable paragraphs by sentence.
@@ -70,6 +71,14 @@ export function Article() {
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
     : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(post!.body) };
 
+  // Related reading: the same curated-then-imported ordering the Insights list
+  // uses, minus the current piece. These internal links keep readers (and
+  // crawlers) moving between articles instead of dead-ending after one.
+  const related = [
+    ...t.data.articles.map((a) => ({ slug: a.slug, title: a.title })),
+    ...blogMeta.map((b) => ({ slug: b.slug, title: b.title })),
+  ].filter((a) => a.slug !== slug).slice(0, 3);
+
   return (
     <>
       <PageMeta
@@ -121,7 +130,7 @@ export function Article() {
 
       {view.cover && (
         <div className="wrap" style={{ maxWidth: 760, padding: "28px 32px 0" }}>
-          <img src={view.cover} alt="" style={{ width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--line)", display: "block" }} />
+          <img src={view.cover} alt={view.title} decoding="async" style={{ width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--line)", display: "block" }} />
         </div>
       )}
 
@@ -140,6 +149,26 @@ export function Article() {
           </div>
         </div>
       </div>
+
+      {related.length > 0 && (
+        <section className="section-line">
+          <div className="wrap" style={{ maxWidth: 760, padding: "48px 32px 8px" }}>
+            <p className="eyebrow" style={{ textAlign: "center" }}>{t.ui.article.moreArticles}</p>
+            <div style={{ display: "grid", gap: 12, marginTop: 20 }}>
+              {related.map((r) => (
+                <Link
+                  key={r.slug}
+                  to={`/insights/${r.slug}`}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12, padding: "16px 20px", color: "var(--ink)", textDecoration: "none" }}
+                >
+                  <span className="serif" style={{ fontSize: 17, lineHeight: 1.4 }}>{r.title}</span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section-line">
         <div className="wrap" style={{ maxWidth: 760, padding: "56px 32px", textAlign: "center" }}>

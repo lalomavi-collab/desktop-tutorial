@@ -30,8 +30,8 @@ then keeps the site healthy. Keep each item small and independently shippable.
 
 - [x] Google Search Console verified (domain) and Bing verified (meta tag); sitemap submitted to both
 - [x] Route-based code splitting; the ~1MB blog content and pdfjs/mammoth now load only when needed (home bundle 1.7MB to ~0.3MB)
-- [ ] Image optimization and loading="lazy"; alt text audit
-- [ ] Internal linking pass
+- [x] Image optimization and loading="lazy"; alt text audit: below-the-fold images (footer QR and logo, founder-section logo) now `loading="lazy" decoding="async"`; above-the-fold LCP images (hero portrait, article cover) stay eager; the article cover now carries a descriptive alt (the article title) instead of an empty one; decorative card images keep `alt=""` with adjacent visible titles
+- [x] Internal linking pass: each article now ends with a "More articles" block linking three sibling pieces, so articles no longer dead-end and link equity flows between them
 
 ## Ongoing maintenance
 

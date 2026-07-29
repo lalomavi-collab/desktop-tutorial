@@ -222,7 +222,7 @@ export function Home() {
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
           <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
-            <img src="/lalum-logo.png" alt={h.logoAlt} style={{ display: "block", height: 34, width: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
+            <img src="/lalum-logo.png" alt={h.logoAlt} loading="lazy" decoding="async" style={{ display: "block", height: 34, width: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
