@@ -37,6 +37,19 @@ if (!html) {
 
   present(/rel="canonical"/) ? pass("canonical") : fail("canonical", "missing");
   present(/<html[^>]+lang=/) ? pass("html lang") : fail("html lang", "missing");
+
+  // hreflang: the two languages (he, en) plus x-default must all be declared,
+  // and every href must be absolute so the alternates are unambiguous.
+  const alts = [...html.matchAll(/<link\s+rel="alternate"\s+hreflang="([^"]+)"\s+href="([^"]+)"/g)];
+  const langs = alts.map((m) => m[1].toLowerCase());
+  const hasHe = langs.some((l) => l === "he" || l.startsWith("he-"));
+  const hasEn = langs.some((l) => l === "en" || l.startsWith("en-"));
+  const hasDefault = langs.includes("x-default");
+  const relative = alts.filter((m) => !/^https:\/\//.test(m[2]));
+  if (!alts.length) fail("hreflang alternates", "no rel=alternate hreflang links");
+  else if (!(hasHe && hasEn && hasDefault)) fail("hreflang alternates", `need he, en and x-default; found: ${langs.join(", ")}`);
+  else if (relative.length) fail("hreflang alternates", `${relative.length} non-absolute href(s)`);
+  else pass("hreflang alternates");
   present(/name="viewport"/) ? pass("viewport") : fail("viewport", "missing");
   present(/name="robots"/) ? pass("robots meta") : warn("robots meta", "missing (optional but recommended)");
 

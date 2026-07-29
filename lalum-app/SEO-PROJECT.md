@@ -24,7 +24,7 @@ then keeps the site healthy. Keep each item small and independently shippable.
 ## Day 3, crawler visible content
 
 - [x] Static content fallback in the raw HTML (home hero, six rubrics, key links) for non-JS crawlers and AI engines; full per-route SSR remains a future option
-- [ ] hreflang or language handling for the two languages
+- [x] hreflang or language handling for the two languages: English reachable at `?lang=en` (a distinct, crawlable address), reciprocal `he-IL`/`en`/`x-default` alternates in the static home, every prerendered route file, and at runtime via PageMeta; canonical and og:url are language-specific; `seo-check` gates the alternates
 
 ## Day 4, off site and performance
 
