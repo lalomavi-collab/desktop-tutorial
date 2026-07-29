@@ -1,36 +1,18 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 
-// Accordion FAQ grouped by practice area, with a FAQPage JSON-LD block emitted
-// inline so Google can surface the questions as rich snippets. Single source of
-// truth: the schema is built from the same copy the accordion renders.
+// Accordion FAQ grouped by practice area. This renders the visible Q&A only; the
+// FAQPage JSON-LD is emitted once per page via PageMeta (see src/lib/pageFaqs.ts),
+// so a page that shows this section still carries exactly one FAQPage block
+// instead of a second, competing one.
 export function PracticeFaq() {
   const { t } = useLang();
   const f = t.practice.faq;
   const [open, setOpen] = useState("");
 
-  // Escape "<" to < so a stray "</script>" in copy can never break out of
-  // the inline JSON-LD block.
-  const schemaJson = useMemo(
-    () =>
-      JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: f.cats.flatMap((c) =>
-          c.items.map((it) => ({
-            "@type": "Question",
-            name: it.q,
-            acceptedAnswer: { "@type": "Answer", text: it.a },
-          }))
-        ),
-      }).replace(/</g, "\\u003c"),
-    [f]
-  );
-
   return (
     <section id="faq-practice" className="wrap section" style={{ maxWidth: 920 }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: schemaJson }} />
       <div style={{ maxWidth: "56ch", margin: "0 0 32px" }}>
         <p className="eyebrow">{f.eyebrow}</p>
         <h2 className="h2">{f.title}</h2>

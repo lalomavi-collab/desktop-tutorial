@@ -12,6 +12,8 @@ import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
 import { officePhone, directPhone } from "../lib/content";
+import { buildFaqPage } from "../lib/faqSchema";
+import { faqsForPath } from "../lib/pageFaqs";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
 // busts any browser or CDN cache instead of serving a stale /founder.jpg.
@@ -29,15 +31,7 @@ export function Home() {
         title={t.seo.home.title}
         description={t.seo.home.desc}
         path="/"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: t.data.faqs.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }}
+        jsonLd={buildFaqPage(faqsForPath(t, "/"))}
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
