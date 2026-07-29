@@ -53,6 +53,18 @@ function howToNode(name, steps) {
     step: cleaned.map((s, i) => ({ "@type": "HowToStep", position: i + 1, ...(s.name ? { name: s.name } : {}), text: s.text || s.name })),
   };
 }
+function courseNode(name, description, workload = "PT24H") {
+  const n = (name ?? "").trim();
+  if (!n) return null;
+  const d = (description ?? "").trim();
+  return {
+    "@type": "Course",
+    name: n,
+    ...(d ? { description: d } : {}),
+    provider: { "@type": "Organization", name: "LALUM", url: "https://lalumapp.com/" },
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: workload },
+  };
+}
 function pageJsonLd(nodes) {
   const real = nodes.filter(Boolean);
   if (real.length === 0) return null;
@@ -79,6 +91,10 @@ function validateNode(node) {
       if (s["@type"] !== "HowToStep") problems.push(`HowTo step ${i}: not a HowToStep`);
       if (!s.text || !s.text.trim()) problems.push(`HowTo step ${i}: empty text`);
     });
+  } else if (node["@type"] === "Course") {
+    if (!node.name || !node.name.trim()) problems.push("Course: empty name");
+    if (!node.provider || node.provider["@type"] !== "Organization") problems.push("Course: no provider");
+    if (!node.hasCourseInstance || node.hasCourseInstance["@type"] !== "CourseInstance") problems.push("Course: no CourseInstance");
   } else {
     problems.push(`unexpected @type: ${node["@type"]}`);
   }
@@ -119,6 +135,11 @@ function validatePage(obj) {
     ? pass("compose: FAQPage + HowTo -> single @graph")
     : fail("compose: @graph", "expected a 2-node @graph with @context");
   pageJsonLd([null, null]) === null ? pass("compose: all-empty -> null") : fail("compose: all-empty", "expected null");
+
+  const course = pageJsonLd([courseNode("LALUM Academy", "AI governance training")]);
+  p = course ? validatePage(course) : ["null for valid Course"];
+  p.length ? fail("Course: valid input", p.join("; ")) : pass("Course: valid input");
+  courseNode("", "x") === null ? pass("Course: no name -> null") : fail("Course: no name", "expected null");
 }
 
 // ---------- 2. architecture guard: no inline FAQPage/HowTo outside schema.ts ----------

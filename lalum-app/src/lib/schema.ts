@@ -51,6 +51,22 @@ export function howToNode(name: string, steps: Step[]): object | null {
   };
 }
 
+// Course node (schema.org/Course). Use on a training/course page. Returns null
+// without a name. Always carries a provider and a CourseInstance so the block
+// meets Google's Course requirements.
+export function courseNode(name: string, description: string, workload = "PT24H"): object | null {
+  const n = (name ?? "").trim();
+  if (!n) return null;
+  const d = (description ?? "").trim();
+  return {
+    "@type": "Course",
+    name: n,
+    ...(d ? { description: d } : {}),
+    provider: { "@type": "Organization", name: "LALUM", url: "https://lalumapp.com/" },
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: workload },
+  };
+}
+
 // Compose a page's JSON-LD from its nodes. Drops nulls, returns null when the
 // page has none, a single node (with @context) when it has one, or an @graph
 // when it has several, so one page can carry FAQPage + HowTo together.

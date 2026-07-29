@@ -30,5 +30,18 @@ export function howToForPath(t: Dict, path: string): object | null {
     );
   }
 
+  // Book: the three-step flow to request a consultation slot, from the labels
+  // shown on the page (t.ui.bookPage). Each carries a "1 · " ordinal prefix for
+  // the UI, stripped here.
+  if (clean === "/book") {
+    const b = t.ui.bookPage;
+    const strip = (s: string) => s.replace(/^\s*\d+\s*·\s*/, "").trim();
+    return howToNode(b.title, [
+      { name: strip(b.step1), text: strip(b.step1) },
+      { name: strip(b.step2), text: strip(b.step2) },
+      { name: strip(b.topic), text: strip(b.topic) },
+    ]);
+  }
+
   return null;
 }
