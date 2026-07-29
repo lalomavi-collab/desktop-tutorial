@@ -100,7 +100,17 @@ export function Article() {
               headline: view.title,
               description: view.dek,
               ...(datePublished ? { datePublished } : {}),
-              author: { "@type": "Organization", name: "LALUM" },
+              // Person author (stronger E-E-A-T than an Organization author),
+              // linked by @id to the verified founder node in index.html's graph
+              // so the two JSON-LD blocks resolve to one identity. Real name and
+              // profile only; no invented author or links.
+              author: {
+                "@type": "Person",
+                "@id": "https://lalumapp.com/#founder",
+                name: "Dr. Avraham Lalum",
+                url: "https://lalumapp.com/",
+                sameAs: ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"],
+              },
               publisher: {
                 "@type": "Organization",
                 name: "LALUM",
