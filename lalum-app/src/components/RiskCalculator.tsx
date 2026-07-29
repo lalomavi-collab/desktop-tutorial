@@ -25,9 +25,9 @@ export function RiskCalculator() {
       <div className="riskcalc-controls">
         <div className="riskcalc-field">
           <span className="riskcalc-flabel">{r.typeLabel}</span>
-          <div className="riskcalc-opts" role="tablist" aria-label={r.typeLabel}>
+          <div className="riskcalc-opts" role="group" aria-label={r.typeLabel}>
             {r.types.map((x) => (
-              <button key={x.id} type="button" role="tab" aria-selected={x.id === typeId}
+              <button key={x.id} type="button" aria-pressed={x.id === typeId}
                 className={"riskcalc-opt" + (x.id === typeId ? " on" : "")} onClick={() => setTypeId(x.id)}>
                 <Icon name={x.icon} size={16} /><span>{x.label}</span>
               </button>
@@ -36,9 +36,9 @@ export function RiskCalculator() {
         </div>
         <div className="riskcalc-field">
           <span className="riskcalc-flabel">{r.stageLabel}</span>
-          <div className="riskcalc-opts" role="tablist" aria-label={r.stageLabel}>
+          <div className="riskcalc-opts" role="group" aria-label={r.stageLabel}>
             {r.stages.map((x) => (
-              <button key={x.id} type="button" role="tab" aria-selected={x.id === stageId}
+              <button key={x.id} type="button" aria-pressed={x.id === stageId}
                 className={"riskcalc-opt" + (x.id === stageId ? " on" : "")} onClick={() => setStageId(x.id)}>
                 {x.label}
               </button>
@@ -47,20 +47,20 @@ export function RiskCalculator() {
         </div>
       </div>
 
-      <div key={typeId + stageId} className="riskcalc-result">
+      <div className="riskcalc-result" aria-live="polite">
         <div className={"riskcalc-exposure tone-" + stage.tone}>
           <div className="riskcalc-exposure-top">
             <span className="riskcalc-exposure-label">{r.exposureLabel}</span>
             <span className="riskcalc-exposure-level">{stage.level}</span>
           </div>
-          <span className="riskcalc-meter"><span className={"riskcalc-meter-fill tone-" + stage.tone} /></span>
+          <span className="riskcalc-meter" aria-hidden="true"><span className={"riskcalc-meter-fill tone-" + stage.tone} /></span>
           <p className="riskcalc-exposure-note">{stage.note}</p>
         </div>
         <div className="riskcalc-vectors">
           <div className="riskcalc-vectors-label">{r.vectorsLabel}</div>
-          <ul>
+          <ul key={typeId}>
             {type.vectors.map((v, i) => (
-              <li key={i} className="riskcalc-vector" style={{ animationDelay: `${i * 70}ms` }}>
+              <li key={v.title} className="riskcalc-vector" style={{ animationDelay: `${i * 70}ms` }}>
                 <span className="riskcalc-vdot" aria-hidden="true" />
                 <div>
                   <div className="riskcalc-vtitle">{v.title}</div>
