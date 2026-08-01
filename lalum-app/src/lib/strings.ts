@@ -16,6 +16,7 @@ const en = {
     share: { aria: "Share LALUM", copied: "Link copied", text: "LALUM, Tech-Legal and Strategic Advisory" },
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
     telegram: { aria: "Chat with us on Telegram" },
+    quickActions: "Quick actions",
     botCall: { aria: "Call the AI assistant" },
     accounting: { aria: "Accounting (Invoice4U)" },
     consent: {
@@ -996,6 +997,7 @@ const he: Dict = {
     share: { aria: "שיתוף LALUM", copied: "הקישור הועתק", text: "LALUM, ייעוץ משפטי, טכנולוגי ואסטרטגי" },
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
     telegram: { aria: "צ'אט מהיר בטלגרם" },
+    quickActions: "פעולות מהירות",
     botCall: { aria: "שיחה עם העוזר הדיגיטלי" },
     accounting: { aria: "הנהלת חשבונות (Invoice4U)" },
     consent: {

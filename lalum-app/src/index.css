@@ -1244,6 +1244,14 @@ a.caps-item:focus-visible .caps-go {
   height: var(--ctrl-h);
   flex: 0 1 auto;
   min-width: 0;
+  /* Absorb a tight bar by scrolling the pills, so they never overflow their box
+     and overlap the tools. The scrollbar is hidden; on wide screens everything
+     fits and there is nothing to scroll. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-pills::-webkit-scrollbar {
+  display: none;
 }
 /* Each nav item is its own framed button, matching the round tool buttons, so
    the bar reads as one clean set of controls. */
@@ -2733,6 +2741,68 @@ html.a11y-reduce-motion *::after {
   box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.6);
 }
 
+/* ---------- floating quick-action rail ---------- */
+/* A slim vertical rail of round quick-action buttons on the inline-start edge,
+   vertically centred. It carries the contact/utility icons that used to crowd
+   the top bar, so the header stays lean. Placed inline-start so it clears the
+   chat bubble (inline-end) and sits above the accessibility button. */
+.contact-rail {
+  position: fixed;
+  inset-inline-start: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+/* Collapsed, only this toggle shows, so the rail's footprint is a single round
+   button, like the chat and accessibility corner buttons, and never covers a
+   strip of text. */
+.rail-toggle {
+  background: var(--paper);
+  box-shadow: 0 10px 26px -12px rgba(27, 27, 27, 0.5);
+}
+.contact-rail.open .rail-toggle {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: var(--paper);
+}
+/* The actions expand on hover / focus / tap. Collapsed they take no space and
+   cannot be clicked. A wrapping backdrop appears only when open. */
+.rail-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
+}
+.contact-rail.open .rail-items {
+  max-height: 62vh;
+  opacity: 1;
+  pointer-events: auto;
+  margin-top: 2px;
+  padding: 8px;
+  background: rgba(251, 249, 243, 0.9);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rail-items { transition: none; }
+}
+@media (max-width: 900px) {
+  .contact-rail {
+    inset-inline-start: 10px;
+  }
+}
+
 /* ---------- mobile app shell: bottom tab bar ---------- */
 .tabbar {
   display: none;
@@ -2799,6 +2869,11 @@ html.a11y-reduce-motion *::after {
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Never shrink: the icon buttons are fixed-width, so if the toolbar were
+     allowed to shrink they would overflow and overlap each other (and the nav).
+     Keeping it rigid means the row stays clean and any tight space is taken from
+     the nav instead, which can scroll. */
+  flex: none;
 }
 /* One uniform round control for every header action (guide, share, language)
    so the toolbar reads as a single, high-quality set. Mirrors the share button. */
