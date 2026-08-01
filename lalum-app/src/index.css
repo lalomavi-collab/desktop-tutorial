@@ -2765,13 +2765,19 @@ html.a11y-reduce-motion *::after {
   height: 52px;
   box-shadow: 0 14px 30px -12px rgba(128, 0, 32, 0.6);
 }
+/* Payment shows in exactly one place per breakpoint: the floating rail on
+   desktop (where it sits in the margin), the header on phones (where the bar has
+   room and a floating button would otherwise cover text). */
+@media (min-width: 901px) {
+  /* Specificity must beat .tb-btn's display:inline-flex, which is declared later
+     in the file, so hide via the parent selector. */
+  .header-tools .header-pay-m {
+    display: none;
+  }
+}
 @media (max-width: 900px) {
   .contact-rail {
-    inset-inline-end: 12px;
-  }
-  .rail-pay {
-    width: 46px;
-    height: 46px;
+    display: none;
   }
 }
 

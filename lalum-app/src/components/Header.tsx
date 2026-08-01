@@ -4,7 +4,7 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
-import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
+import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
@@ -44,6 +44,19 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
+          {/* On phones payment lives in the header (which has room there); on
+              desktop it lives in the floating ContactRail, so the two never
+              show at once. */}
+          {paymentsEnabled && (
+            <Link
+              to={user ? "/portal" : "/login"}
+              className="tb-btn tb-pay header-pay-m"
+              aria-label={t.ui.bookPage.quickPayTitle}
+              title={t.ui.bookPage.quickPayTitle}
+            >
+              <Icon name="card" size={18} />
+            </Link>
+          )}
           <button
             type="button"
             className="tb-btn hdr-secondary"
