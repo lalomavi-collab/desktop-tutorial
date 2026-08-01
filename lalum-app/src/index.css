@@ -2748,58 +2748,30 @@ html.a11y-reduce-motion *::after {
    chat bubble (inline-end) and sits above the accessibility button. */
 .contact-rail {
   position: fixed;
-  inset-inline-start: 14px;
+  inset-inline-end: 16px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 55;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-/* Collapsed, only this toggle shows, so the rail's footprint is a single round
-   button, like the chat and accessibility corner buttons, and never covers a
-   strip of text. */
-.rail-toggle {
-  background: var(--paper);
-  box-shadow: 0 10px 26px -12px rgba(27, 27, 27, 0.5);
-}
-.contact-rail.open .rail-toggle {
-  background: var(--clay);
-  border-color: var(--clay);
-  color: var(--paper);
-}
-/* The actions expand on hover / focus / tap. Collapsed they take no space and
-   cannot be clicked. A wrapping backdrop appears only when open. */
-.rail-items {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
-}
-.contact-rail.open .rail-items {
-  max-height: 62vh;
-  opacity: 1;
-  pointer-events: auto;
-  margin-top: 2px;
-  padding: 8px;
-  background: rgba(251, 249, 243, 0.9);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--line);
-  border-radius: 9999px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .rail-items { transition: none; }
+/* The one-tap payment button, promoted out of the top bar into a prominent
+   floating control. Slightly larger than a header icon, brand burgundy, with a
+   soft lift so it reads as the primary quick action. */
+.rail-pay {
+  width: 52px;
+  height: 52px;
+  box-shadow: 0 14px 30px -12px rgba(128, 0, 32, 0.6);
 }
 @media (max-width: 900px) {
   .contact-rail {
-    inset-inline-start: 10px;
+    inset-inline-end: 12px;
+  }
+  .rail-pay {
+    width: 46px;
+    height: 46px;
   }
 }
 

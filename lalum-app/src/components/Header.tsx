@@ -1,17 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
-import { paymentsEnabled } from "../lib/content";
+import { OPEN_GUIDE_EVENT } from "./UserGuide";
+import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
   const { t, toggle } = useLang();
 
   // Articles, Q&A and guides now live under the single Knowledge hub, so the top
-  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. When
-  // payments are on, a Pay rubric leads a client to their portal (or to login
-  // first), so paying through the app is one tap from the top bar.
+  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. Payment is a
+  // one-tap action from the floating ContactRail, not the top bar.
   const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
     { to: "/", label: t.ui.nav.home, end: true },
     { to: "/#practice-areas", label: t.ui.nav.practice, end: false, hash: true },
@@ -19,7 +20,6 @@ export function Header() {
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
-    ...(paymentsEnabled ? [{ to: user ? "/portal" : "/login", label: t.ui.nav.pay, end: false }] : []),
   ];
 
   return (
@@ -32,7 +32,7 @@ export function Header() {
         <nav className="nav-pills">
           {nav.map((n) =>
             n.hash ? (
-              <Link key={n.to} to={n.to} className="nav-pill nav-pill-secondary">
+              <Link key={n.to} to={n.to} className="nav-pill">
                 {n.label}
               </Link>
             ) : (
@@ -43,10 +43,45 @@ export function Header() {
           )}
         </nav>
 
-        {/* The top bar stays intentionally lean: brand, navigation, language and
-            login. The quick-action icons (pay, call, WhatsApp, Telegram, share,
-            guide) live in the floating ContactRail so the bar never crowds. */}
         <div className="header-tools">
+          <button
+            type="button"
+            className="tb-btn hdr-secondary"
+            onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
+            aria-label={t.ui.guide.open}
+            title={t.ui.guide.open}
+          >
+            <Icon name="compass" size={18} />
+          </button>
+          <a
+            className="tb-btn tb-bot"
+            href={`tel:${officePhone.tel}`}
+            aria-label={t.ui.botCall.aria}
+            title={t.ui.botCall.aria}
+          >
+            <Icon name="headset" size={19} />
+          </a>
+          <a
+            className="tb-btn"
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.ui.whatsapp.aria}
+            title={t.ui.whatsapp.aria}
+          >
+            <Icon name="whatsapp" size={19} />
+          </a>
+          <a
+            className="tb-btn tb-tg"
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.ui.telegram.aria}
+            title={t.ui.telegram.aria}
+          >
+            <Icon name="telegram" size={18} />
+          </a>
+          <ShareButton />
           <button
             type="button"
             onClick={toggle}
@@ -56,6 +91,9 @@ export function Header() {
           >
             {t.ui.otherLangShort}
           </button>
+          {/* The assessment CTA lives in the page body (hero, advisory card,
+              closing CTA), not the top bar, so the header stays uncluttered.
+              Only the client login/portal button remains here. */}
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm header-cta hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
