@@ -4,16 +4,15 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
-import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
+import { whatsappNumber, telegramUrl, officePhone } from "../lib/content";
 
 export function Header() {
   const { user } = useAuth();
   const { t, toggle } = useLang();
 
   // Articles, Q&A and guides now live under the single Knowledge hub, so the top
-  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. When
-  // payments are on, a Pay rubric leads a client to their portal (or to login
-  // first), so paying through the app is one tap from the top bar.
+  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. Payment is a
+  // one-tap action from the floating ContactRail, not the top bar.
   const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
     { to: "/", label: t.ui.nav.home, end: true },
     { to: "/#practice-areas", label: t.ui.nav.practice, end: false, hash: true },
@@ -21,7 +20,6 @@ export function Header() {
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
-    ...(paymentsEnabled ? [{ to: user ? "/portal" : "/login", label: t.ui.nav.pay, end: false }] : []),
   ];
 
   return (
@@ -46,16 +44,6 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
-          {paymentsEnabled && (
-            <Link
-              to={user ? "/portal" : "/login"}
-              className="tb-btn tb-pay"
-              aria-label={t.ui.bookPage.quickPayTitle}
-              title={t.ui.bookPage.quickPayTitle}
-            >
-              <Icon name="card" size={18} />
-            </Link>
-          )}
           <button
             type="button"
             className="tb-btn hdr-secondary"

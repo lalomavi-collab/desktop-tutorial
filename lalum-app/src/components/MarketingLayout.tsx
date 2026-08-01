@@ -6,6 +6,7 @@ import { Footer } from "./Footer";
 // out keeps it (and its dependencies) off the initial load.
 const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
 import { BottomTabBar } from "./BottomTabBar";
+import { ContactRail } from "./ContactRail";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
@@ -40,6 +41,7 @@ export function MarketingLayout() {
       <Suspense fallback={null}>
         <ChatWidget />
       </Suspense>
+      <ContactRail />
       <BottomTabBar />
       <AccessibilityMenu />
       <A11yWidget />

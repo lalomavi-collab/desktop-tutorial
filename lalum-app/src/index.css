@@ -1244,6 +1244,14 @@ a.caps-item:focus-visible .caps-go {
   height: var(--ctrl-h);
   flex: 0 1 auto;
   min-width: 0;
+  /* Absorb a tight bar by scrolling the pills, so they never overflow their box
+     and overlap the tools. The scrollbar is hidden; on wide screens everything
+     fits and there is nothing to scroll. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-pills::-webkit-scrollbar {
+  display: none;
 }
 /* Each nav item is its own framed button, matching the round tool buttons, so
    the bar reads as one clean set of controls. */
@@ -2733,6 +2741,40 @@ html.a11y-reduce-motion *::after {
   box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.6);
 }
 
+/* ---------- floating quick-action rail ---------- */
+/* A slim vertical rail of round quick-action buttons on the inline-start edge,
+   vertically centred. It carries the contact/utility icons that used to crowd
+   the top bar, so the header stays lean. Placed inline-start so it clears the
+   chat bubble (inline-end) and sits above the accessibility button. */
+.contact-rail {
+  position: fixed;
+  inset-inline-end: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+/* The one-tap payment button, promoted out of the top bar into a prominent
+   floating control. Slightly larger than a header icon, brand burgundy, with a
+   soft lift so it reads as the primary quick action. */
+.rail-pay {
+  width: 52px;
+  height: 52px;
+  box-shadow: 0 14px 30px -12px rgba(128, 0, 32, 0.6);
+}
+@media (max-width: 900px) {
+  .contact-rail {
+    inset-inline-end: 12px;
+  }
+  .rail-pay {
+    width: 46px;
+    height: 46px;
+  }
+}
+
 /* ---------- mobile app shell: bottom tab bar ---------- */
 .tabbar {
   display: none;
@@ -2799,6 +2841,11 @@ html.a11y-reduce-motion *::after {
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Never shrink: the icon buttons are fixed-width, so if the toolbar were
+     allowed to shrink they would overflow and overlap each other (and the nav).
+     Keeping it rigid means the row stays clean and any tight space is taken from
+     the nav instead, which can scroll. */
+  flex: none;
 }
 /* One uniform round control for every header action (guide, share, language)
    so the toolbar reads as a single, high-quality set. Mirrors the share button. */
