@@ -8,6 +8,7 @@ import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { PracticeAreas } from "../components/PracticeAreas";
+import { MnaSpotlight } from "../components/MnaSpotlight";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
@@ -105,6 +106,9 @@ export function Home() {
 
       {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
       <PracticeAreas />
+
+      {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
+      <MnaSpotlight />
 
       {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
       <PreDealStrategy />
