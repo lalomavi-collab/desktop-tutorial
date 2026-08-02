@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { LeumiMark, PaymentBrands } from "./BrandMarks";
-import { contactEmail, officePhone, directPhone, socialLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { contactEmail, officePhone, directPhone, personalLine, socialLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -96,7 +96,16 @@ export function Footer() {
         <div className="footer-col">
           <div className="footer-head">{f.contact}</div>
           <a href={`mailto:${contactEmail}`} dir="ltr">{contactEmail}</a>
-          <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
+          {/* Office line: answered by the AI voice assistant. */}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
+            <span className="phone-tag phone-tag-ai">{t.ui.phoneAi}</span>
+          </span>
+          {/* New direct landline: personal, human answer. */}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <a href={`tel:${personalLine.tel}`} dir="ltr">{personalLine.display}</a>
+            <span className="phone-tag">{t.ui.phonePersonal}</span>
+          </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <a href={`tel:${directPhone.tel}`} dir="ltr">{directPhone.display}</a>
             <span className="muted" style={{ fontSize: 11 }}>{t.ui.urgentOnly}</span>
