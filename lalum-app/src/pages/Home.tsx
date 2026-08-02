@@ -11,6 +11,7 @@ import { PracticeAreas } from "../components/PracticeAreas";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
+import { LinkedInFeed } from "../components/LinkedInFeed";
 import { officePhone, directPhone } from "../lib/content";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
@@ -292,6 +293,8 @@ export function Home() {
         </div>
         )}
       </section>
+
+      <LinkedInFeed />
 
       <ContactCTA title={h.ctaTitle} body={h.ctaBody} primaryLabel={t.ui.initiateRisk} />
     </>
