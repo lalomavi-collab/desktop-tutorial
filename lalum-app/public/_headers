@@ -7,20 +7,16 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(self), camera=()
-  # Phase 1 (enforcing): these directives do not restrict where scripts, styles,
-  # images, or connections load from, so they cannot break the app; they only
-  # block plugin/object embeds, base-tag injection, and clickjacking, and upgrade
-  # any stray http request to https.
-  Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-  # Phase 2 (report-only): the full hardened policy runs in report-only mode, so
-  # it reports violations to the browser console without blocking anything. This
-  # is the safe way to reach a full script-src/connect-src lockdown: exercise the
-  # real flows (browse the public pages, log in, upload a file in the portal, book
-  # a meeting, start a payment), confirm no legitimate request is reported, then
-  # promote this exact policy to the enforcing Content-Security-Policy header
-  # above and remove this report-only line. The allowlist covers every third
-  # party the app actually uses: Supabase (auth, data, realtime), Invoice4U
-  # (payments), Calendly (booking), Google Fonts, wixstatic (article images), the
+  # Enforcing: the full hardened policy. It is safe to enforce because every
+  # resource the app loads on-page is allowlisted below, the build emits no
+  # inline scripts (the one print action on cv.html uses a same-origin
+  # /cv-print.js file), and the Invoice4U payment is a top-level redirect
+  # (window.location) rather than an on-page embed, so no script-src/frame-src
+  # directive can interrupt it. The allowlist covers every third party the app
+  # actually uses: Supabase (auth, data, realtime), Invoice4U (payments),
+  # Calendly (booking), Google Fonts, wixstatic (article images), the
   # HaveIBeenPwned range API (leaked-password check at sign-up), the SociableKit
-  # LinkedIn feed widget (home page), and the NytroSEO plugin (public pages only).
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://assets.calendly.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://calendly.com https://assets.calendly.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com; frame-src 'self' https://calendly.com https://*.calendly.com https://private.invoice4u.co.il https://widgets.sociablekit.com; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'
+  # LinkedIn feed widget (home page), and the NytroSEO plugin (public pages).
+  # Outbound links (WhatsApp, Telegram, social profiles, legal citation sources)
+  # are top-level navigations, which CSP does not restrict, so they need no entry.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://assets.calendly.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://calendly.com https://assets.calendly.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com; frame-src 'self' https://calendly.com https://*.calendly.com https://private.invoice4u.co.il https://widgets.sociablekit.com; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'; upgrade-insecure-requests
