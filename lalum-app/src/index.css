@@ -2224,6 +2224,27 @@ html.a11y-reduce-motion *::after {
   border-color: var(--clay);
   transform: translateY(-1px);
 }
+/* Prominent LinkedIn follow button, so visitors reach the founder's posts and
+   connect. LinkedIn brand blue so it reads instantly as the social action. */
+.footer-linkedin-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: #0a66c2;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.2;
+  transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.footer-linkedin-cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(10, 102, 194, 0.7);
+}
 .footer-website {
   display: inline-block;
   margin-top: 12px;

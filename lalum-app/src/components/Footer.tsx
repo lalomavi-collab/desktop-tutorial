@@ -69,6 +69,12 @@ export function Footer() {
             <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label={f.instagram} className="footer-social-link"><InstagramIcon /></a>
             <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" aria-label={f.website} className="footer-social-link"><GlobeIcon /></a>
           </div>
+          {/* Prominent LinkedIn call-to-action: drives visitors to the founder's
+              profile to see his posts and connect. */}
+          <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="footer-linkedin-cta">
+            <LinkedInIcon />
+            <span>{f.linkedinCta}</span>
+          </a>
         </div>
 
         <nav className="footer-col" aria-label={f.explore}>
