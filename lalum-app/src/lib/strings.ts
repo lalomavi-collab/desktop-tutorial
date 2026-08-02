@@ -581,10 +581,10 @@ const en = {
   },
 
   home: {
-    heroPill: "Real Estate · International & Commercial · AI",
-    heroH1a: "Deals, real estate, and cross-border,",
-    heroH1b: "with algorithmic risk control.",
-    heroLede: "A Tech-Legal practice uniting deals, real estate, and AI. From M&A and commercial and cross-border transactions, through real estate and urban renewal, to mediation, arbitration, and algorithmic risk governance. Over 20 years of transactional practice, with ex-ante opinions and a defensible record.",
+    heroPill: "AI · M&A & International Deals · Real Estate",
+    heroH1a: "M&A, international deals, and real estate,",
+    heroH1b: "with leading AI expertise.",
+    heroLede: "A Tech-Legal practice combining deep legal expertise with AI. We handle M&A, international and commercial transactions, and real estate and urban renewal, alongside algorithmic risk management. Over 20 years of transactional practice, with ex-ante opinions and a defensible record.",
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     heroCreds: "20+ years · 150+ deals · TAMA 38 author · Notary & mediator",
@@ -1561,10 +1561,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "נדל״ן · בינלאומי ומסחרי · בינה מלאכותית",
-    heroH1a: "עסקאות, נדל״ן ובינלאומי,",
-    heroH1b: "עם ניהול סיכונים אלגוריתמי.",
-    heroLede: "משרד Tech-Legal המשלב עסקאות, נדל״ן ובינה מלאכותית. מ-M&A ועסקאות מסחריות ובינלאומיות, דרך נדל״ן והתחדשות עירונית, ועד גישור, בוררות וניהול סיכונים אלגוריתמי. מעל 20 שנות ניסיון טרנזקציוני, עם חוות דעת מוקדמות ותיעוד בר-הגנה.",
+    heroPill: "בינה מלאכותית · מיזוגים ועסקאות בינלאומיות · נדל״ן",
+    heroH1a: "מיזוגים, עסקאות בינלאומיות ונדל״ן,",
+    heroH1b: "עם מומחיות מובילה ב-AI.",
+    heroLede: "משרד Tech-Legal המשלב מומחיות משפטית עמוקה עם בינה מלאכותית. אנחנו מלווים מיזוגים ורכישות (M&A), עסקאות בינלאומיות ומסחריות, ונדל״ן והתחדשות עירונית, לצד ניהול סיכונים אלגוריתמי. מעל 20 שנות ניסיון טרנזקציוני, עם חוות דעת מוקדמות ותיעוד בר-הגנה.",
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     heroCreds: "20+ שנים · 150+ עסקאות · מחבר מדריך תמ״א 38 · נוטריון ומגשר",
