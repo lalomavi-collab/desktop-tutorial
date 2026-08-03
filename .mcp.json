@@ -24,6 +24,12 @@
       "command": "npx",
       "args": ["-y", "data-gov-il-mcp"],
       "description": "Israeli open data portal (data.gov.il), used for real estate comparable transactions in the israeli-property-appraisal skill. Requires outbound network access to data.gov.il, so it only works when run locally, not from a remote sandboxed environment."
+    },
+    "datagov-israel": {
+      "command": "python",
+      "args": ["server.py"],
+      "cwd": "/path/to/datagov-mcp",
+      "description": "aviveldan/datagov-mcp, cloned and vetted locally via the lalum-skill-scout skill (SHA 31143d3, risk band 1 of 5, no findings). Set cwd to wherever you clone https://github.com/aviveldan/datagov-mcp on your own machine and pin it to that same commit. Requires outbound network access to data.gov.il, so it only works when run locally, not from a remote sandboxed environment."
     }
   }
 }
