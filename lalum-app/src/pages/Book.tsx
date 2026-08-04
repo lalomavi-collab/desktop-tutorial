@@ -12,11 +12,12 @@ import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
 import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
 
-// When a Calendly link is configured, booking is REAL and instant: the visitor
-// gets an email confirmation plus a calendar invite, and the meeting lands on
-// the connected Outlook calendar automatically. The manual request form below
-// is only a fallback for when scheduling is not yet connected.
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || bookingBaseUrl;
+// When a scheduling link is configured (Zoho Bookings), booking is REAL and
+// instant: the visitor gets an email confirmation plus a calendar invite, and
+// the meeting lands on the connected Outlook calendar automatically. The
+// manual request form below is only a fallback for when scheduling is not yet
+// connected (no link configured yet).
+const SCHEDULING_URL = import.meta.env.VITE_SCHEDULING_URL || bookingBaseUrl;
 // Clay / ivory palette to match the light brand (hex without '#').
 const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
 
@@ -52,9 +53,9 @@ export function Book() {
   const [method, setMethod] = useState<MeetingKey>(meetingTypes[0].key);
 
   // Real, instant scheduling via the connected calendar.
-  if (CALENDLY_URL) {
+  if (SCHEDULING_URL) {
     const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
-    const activeUrl = active.url || CALENDLY_URL;
+    const activeUrl = active.url || SCHEDULING_URL;
     // Horizontal padding is left to the responsive `.wrap` rule (32px desktop,
     // 20px ≤900, 16px ≤560) instead of a fixed inline 32px, so on phones the
     // frame stays wide enough for the 320px-min scheduling embed and never clips
@@ -83,8 +84,8 @@ export function Book() {
           </Link>
         )}
 
-        {/* Meeting format: each choice loads the matching Calendly event, which
-            is wired to the right conferencing/location and to the calendar. */}
+        {/* Meeting format: each choice loads the matching Zoho Bookings service,
+            which is wired to the right conferencing/location and to the calendar. */}
         <div style={{ textAlign: "center", marginBottom: 12 }}>
           <span className="label">{B.meetingLabel}</span>
         </div>
@@ -107,7 +108,7 @@ export function Book() {
             <span className="book-frame-secure"><Icon name="shield" size={15} /> {B.secureNote}</span>
             <span className="book-frame-logos">
               <ZoomMark size={20} />
-              <span className="book-frame-cal"><Icon name="calendar" size={14} /> Calendly</span>
+              <span className="book-frame-cal"><Icon name="calendar" size={14} /> Zoho Bookings</span>
             </span>
           </div>
           <div style={{ padding: 8 }}>
