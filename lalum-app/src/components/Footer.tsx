@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { LeumiMark, PaymentBrands } from "./BrandMarks";
-import { contactEmail, officePhone, directPhone, personalLine, socialLinks, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { contactEmail, officePhone, directPhone, personalLine, socialLinks, websiteDisplay, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 
 function LinkedInIcon() {
@@ -96,6 +96,8 @@ export function Footer() {
         <div className="footer-col">
           <div className="footer-head">{f.contact}</div>
           <a href={`mailto:${contactEmail}`} dir="ltr">{contactEmail}</a>
+          {/* Cross-link from the app to the firm's main website (lalum.co). */}
+          <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" aria-label={f.website} dir="ltr">{websiteDisplay}</a>
           {/* Office line: answered by the AI voice assistant. */}
           <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
