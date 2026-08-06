@@ -352,7 +352,7 @@ const en = {
   // separate from on-page hero copy so search snippets can be tuned freely.
   practice: {
     eyebrow: "Practice areas",
-    h2: "Full-suite legal coverage, sharpened by technology",
+    h2: "Full-suite legal coverage",
     sub: "Complete representation for individuals, businesses, owners, and building committees. The technology never replaces the lawyering; it makes it sharper and more defensible.",
     areas: [
       {
@@ -1334,7 +1334,7 @@ const he: Dict = {
   // עותק SEO לכל עמוד: כותרות ותיאורים ממוקדי מילות מפתח, בנפרד מכותרות התוכן.
   practice: {
     eyebrow: "תחומי עיסוק",
-    h2: "כיסוי משפטי מלא, מחודד בטכנולוגיה",
+    h2: "כיסוי משפטי מלא",
     sub: "ייצוג מלא לפרטיים, לעסקים, לבעלי דירות ולנציגויות. הטכנולוגיה לעולם לא מחליפה את העבודה המשפטית, היא הופכת אותה לחדה ובת-הגנה יותר.",
     areas: [
       {

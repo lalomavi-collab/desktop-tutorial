@@ -27,11 +27,13 @@
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
-   Assistant is a modern, crisp Hebrew sans; Heebo and the system Hebrew faces
-   are fallbacks. Slightly more line-height so Hebrew descenders never clip. */
+   Assistant is a modern, crisp Hebrew sans for body; Rubik is a modern Hebrew
+   display face for headings (replacing the traditional serif, for a more
+   contemporary feel). Heebo and the system Hebrew faces are fallbacks. Slightly
+   more line-height so Hebrew descenders never clip. */
 html[lang="he"] {
   --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
-  --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+  --serif: "Rubik", "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", sans-serif;
 }
 html[lang="he"] body {
   line-height: 1.65;
