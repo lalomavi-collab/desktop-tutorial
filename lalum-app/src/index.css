@@ -35,6 +35,15 @@ html[lang="he"] {
   --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
   --serif: "Suez One", "David Libre", Georgia, serif;
 }
+/* Suez One ships a single (already heavy) weight. Various heading classes across
+   the app request 500/700, which the browser would fake as a smeared bold on a
+   display face. Disabling weight synthesis makes every Hebrew heading render
+   Suez One's true weight, so the display type is uniform on every page. Body
+   text is unaffected: Assistant carries real 400-800 faces, so nothing there is
+   ever synthesised. Hierarchy comes from size, as it should for a display face. */
+html[lang="he"] {
+  font-synthesis-weight: none;
+}
 html[lang="he"] body {
   line-height: 1.65;
   letter-spacing: 0;
