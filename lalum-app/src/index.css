@@ -27,13 +27,13 @@
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
-   Assistant is a modern, crisp Hebrew sans for body; Rubik is a modern Hebrew
-   display face for headings (replacing the traditional serif, for a more
-   contemporary feel). Heebo and the system Hebrew faces are fallbacks. Slightly
+   Assistant is a modern, crisp Hebrew sans for body; Suez One is a modern Hebrew
+   editorial slab-serif for headings, giving the display type real weight and a
+   premium, authoritative voice. David/Georgia serif faces are fallbacks. Slightly
    more line-height so Hebrew descenders never clip. */
 html[lang="he"] {
   --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
-  --serif: "Rubik", "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", sans-serif;
+  --serif: "Suez One", "David Libre", Georgia, serif;
 }
 html[lang="he"] body {
   line-height: 1.65;
@@ -46,31 +46,31 @@ html[lang="he"] .btn {
 html[lang="he"] .eyebrow {
   letter-spacing: 0.04em;
 }
-/* Hebrew display type. Frank Ruhl Libre carries real weight here so Hebrew
-   headings read with the same confidence and craft as the English Newsreader.
-   Latin negative tracking is neutralised (it thins Hebrew letterforms), and the
-   accent line uses weight and colour instead of italic, which Hebrew has no
-   genuine form of. */
+/* Hebrew display type. Suez One is a single-weight editorial slab, already heavy
+   and confident, so the headings use its natural weight (400) rather than a faux
+   bold, which would smear a display face. Latin negative tracking is neutralised
+   (it thins Hebrew letterforms), and the accent line uses colour instead of
+   italic, which Hebrew has no genuine form of. */
 html[lang="he"] .h1,
 html[lang="he"] h1.serif {
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 html[lang="he"] .h2,
 html[lang="he"] h2.serif {
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0;
   line-height: 1.2;
 }
 html[lang="he"] .h3,
 html[lang="he"] h3.serif {
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0;
 }
 html[lang="he"] .italic-clay {
   font-style: normal;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 *,
