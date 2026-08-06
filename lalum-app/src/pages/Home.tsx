@@ -13,7 +13,7 @@ import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
 import { LinkedInFeed } from "../components/LinkedInFeed";
-import { officePhone, directPhone } from "../lib/content";
+import { officePhone, directPhone, personalLine } from "../lib/content";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
@@ -236,6 +236,13 @@ export function Home() {
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderOffice}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{officePhone.display}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phoneAi}</span>
+              </a>
+              <a href={`tel:${personalLine.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+                <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
+                <span style={{ color: "var(--slate)" }}>{h.founderPersonal}</span>
+                <span dir="ltr" style={{ fontWeight: 600 }}>{personalLine.display}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phonePersonal}</span>
               </a>
               <a href={`tel:${directPhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
