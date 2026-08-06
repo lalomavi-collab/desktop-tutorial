@@ -78,7 +78,9 @@ function seoPrerender(): Plugin {
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,
           desc: m.excerpt,
-          image: m.cover ? `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}` : undefined,
+          // m.cover is already absolute for wixstatic-hosted covers; only
+          // site-relative covers (e.g. /images/foo.svg) need SITE prefixed.
+          image: m.cover ? (m.cover.startsWith("http") ? m.cover : `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}`) : undefined,
         })),
       ];
       let written = 0;
