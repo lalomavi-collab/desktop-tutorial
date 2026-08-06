@@ -85,17 +85,21 @@ export const telegramUrl = "https://t.me/Lalumbot";
 // Portal billing area, and only while payments are switched on below.
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
 
-// Meeting formats offered on the Book page. Each maps to a Calendly event type
-// wired in Calendly to the right conferencing (Zoom / Microsoft Teams) or
-// location (phone / in-person) and to the firm's Outlook calendar. Teams is the
-// second video option (it works with Outlook, unlike Google Meet). A blank
-// `url` falls back to the base link.
-export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
+// Meeting formats offered on the Book page. Each maps to a Zoho Bookings
+// service, wired in Zoho to the right conferencing (Zoom / Microsoft Teams) or
+// location (phone / in-person) and synced to the firm's Outlook calendar. A
+// blank `url` falls back to the base link; when both are blank, Book.tsx shows
+// the manual request form instead of a broken embed.
+//
+// TODO: paste the real Zoho Bookings service links here once created (see
+// docs/INFRASTRUCTURE.md, "Embedded scheduling"). Until then these stay blank
+// on purpose, so the site never embeds a dead link.
+export const bookingBaseUrl = "";
 export const meetingTypes = [
-  { key: "zoom", icon: "video", url: "https://calendly.com/lalomavi/zoom" },
-  { key: "teams", icon: "video", url: "https://calendly.com/lalomavi/teams" },
-  { key: "phone", icon: "phone", url: "https://calendly.com/lalomavi/phone" },
-  { key: "inperson", icon: "pin", url: "https://calendly.com/lalomavi/in-person" },
+  { key: "zoom", icon: "video", url: "" },
+  { key: "teams", icon: "video", url: "" },
+  { key: "phone", icon: "phone", url: "" },
+  { key: "inperson", icon: "pin", url: "" },
 ] as const;
 export type MeetingKey = (typeof meetingTypes)[number]["key"];
 
