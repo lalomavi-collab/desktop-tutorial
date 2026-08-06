@@ -6,9 +6,18 @@
 //
 // What it does:
 // 1. Reads public/sitemap.xml, requests every URL against the live site.
-// 2. For each HTML page, extracts <img src> and checks each image loads.
-// 3. Flags any image still hosted on static.wixstatic.com (task #8 list).
-// 4. Prints a summary: broken pages, broken images, wixstatic image count.
+// 2. Scans the raw HTML each URL returns for <img src> / og:image tags.
+//    NOTE: the app is a client-rendered SPA, so the raw HTML of article
+//    pages does NOT contain the article body images (React renders those
+//    in the browser after JS runs). This step only catches images that
+//    are present in the static shell (e.g. the og:image meta tag), it is
+//    not a substitute for step 3 below.
+// 3. Reads src/lib/blogMeta.ts directly (the actual source of truth for
+//    article cover images) and checks every cover URL for reachability.
+//    Flags any image still hosted on static.wixstatic.com (task #8 list)
+//    and any article with no cover at all.
+// 4. Prints a summary: broken pages, broken images, wixstatic image count,
+//    articles missing a cover.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -51,12 +60,22 @@ async function checkImage(url) {
 }
 
 function extractImageUrls(html, pageUrl) {
-  const srcs = [...html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)].map((m) => m[1]);
+  const srcs = [
+    ...html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi),
+    ...html.matchAll(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/gi),
+  ].map((m) => m[1]);
   return srcs.map((src) => {
     if (src.startsWith("http")) return src;
     if (src.startsWith("//")) return "https:" + src;
     return new URL(src, pageUrl).toString();
   });
+}
+
+function readBlogCovers() {
+  const src = readFileSync(path.join(__dirname, "..", "src", "lib", "blogMeta.ts"), "utf8");
+  const start = src.indexOf("blogMeta: BlogMeta[] = [") + "blogMeta: BlogMeta[] = ".length;
+  const jsonText = src.slice(start, src.lastIndexOf("];") + 1);
+  return JSON.parse(jsonText);
 }
 
 async function pool(items, worker, concurrency) {
@@ -80,13 +99,11 @@ async function main() {
   const pageResults = await pool(urls, fetchStatus, CONCURRENCY);
   const brokenPages = pageResults.filter((r) => !r.ok);
 
-  const wixstaticImages = new Set();
   const allImageUrls = new Set();
   for (const r of pageResults) {
     if (r.ok && r.body) {
       for (const img of extractImageUrls(r.body, r.finalUrl || r.url)) {
         allImageUrls.add(img);
-        if (img.includes("wixstatic.com")) wixstaticImages.add(img);
       }
     }
   }
@@ -98,24 +115,43 @@ async function main() {
     for (const p of brokenPages) console.log(`  [${p.status}] ${p.url} ${p.error || ""}`);
   }
 
-  console.log(`\n--- Images found across pages: ${allImageUrls.size} total, ${wixstaticImages.size} on wixstatic.com ---`);
-  console.log(`Checking image reachability...`);
-  const imageResults = await pool([...allImageUrls], checkImage, CONCURRENCY);
-  const brokenImages = imageResults.filter((r) => !r.ok);
-  console.log(`Images OK: ${imageResults.length - brokenImages.length}/${imageResults.length}`);
-  if (brokenImages.length) {
-    console.log(`BROKEN IMAGES:`);
-    for (const im of brokenImages) console.log(`  [${im.status}] ${im.url}`);
+  console.log(`\n--- Images found in raw page HTML (shell only, e.g. og:image): ${allImageUrls.size} ---`);
+  const shellImageResults = await pool([...allImageUrls], checkImage, CONCURRENCY);
+  const brokenShellImages = shellImageResults.filter((r) => !r.ok);
+  console.log(`OK: ${shellImageResults.length - brokenShellImages.length}/${shellImageResults.length}`);
+  if (brokenShellImages.length) {
+    console.log(`BROKEN:`);
+    for (const im of brokenShellImages) console.log(`  [${im.status}] ${im.url}`);
   }
 
-  console.log(`\n--- wixstatic.com images (candidates for task #8: download + self-host before closing Wix) ---`);
-  for (const w of [...wixstaticImages].sort()) console.log(`  ${w}`);
-  console.log(`\nTotal wixstatic images referenced: ${wixstaticImages.size}`);
+  // The real article-cover inventory: read straight from source, since the
+  // SPA never renders these into the HTML this script fetches.
+  const articles = readBlogCovers();
+  const wixCovers = articles.filter((a) => a.cover && a.cover.includes("wixstatic.com"));
+  const missingCovers = articles.filter((a) => !a.cover);
+  console.log(`\n--- Article covers (source of truth: src/lib/blogMeta.ts) ---`);
+  console.log(`Total articles: ${articles.length}`);
+  console.log(`Covers on wixstatic.com: ${wixCovers.length} (candidates for task #8: download + self-host before closing Wix)`);
+  console.log(`Checking reachability of all ${wixCovers.length} wixstatic covers...`);
+  const wixResults = await pool(wixCovers.map((a) => a.cover), checkImage, CONCURRENCY);
+  const brokenWix = wixResults.filter((r) => !r.ok);
+  console.log(`Reachable: ${wixResults.length - brokenWix.length}/${wixResults.length}`);
+  if (brokenWix.length) {
+    console.log(`BROKEN wixstatic covers (already unreachable, migrate/replace urgently):`);
+    for (const im of brokenWix) console.log(`  [${im.status}] ${im.url}`);
+  }
+  if (missingCovers.length) {
+    console.log(`\nArticles with NO cover image at all (${missingCovers.length}):`);
+    for (const a of missingCovers) console.log(`  ${a.slug}`);
+  }
+  console.log(`\nFull wixstatic cover list:`);
+  for (const a of wixCovers) console.log(`  ${a.slug} -> ${a.cover}`);
 
   console.log(`\n=== SUMMARY ===`);
   console.log(`Pages: ${pageResults.length}, broken: ${brokenPages.length}`);
-  console.log(`Images: ${imageResults.length}, broken: ${brokenImages.length}, wixstatic: ${wixstaticImages.size}`);
-  process.exitCode = brokenPages.length || brokenImages.length ? 1 : 0;
+  console.log(`Shell images: ${shellImageResults.length}, broken: ${brokenShellImages.length}`);
+  console.log(`Article covers: ${articles.length}, on wixstatic: ${wixCovers.length}, broken wixstatic: ${brokenWix.length}, missing entirely: ${missingCovers.length}`);
+  process.exitCode = brokenPages.length || brokenShellImages.length || brokenWix.length ? 1 : 0;
 }
 
 main();
