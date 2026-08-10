@@ -76,7 +76,7 @@ export function Knowledge() {
             const inner = (
               <>
                 <span style={badge(c.accent, c.tint)}><Icon name={c.icon} size={20} /></span>
-                <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h3>
+                <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h2>
                 <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{c.body}</p>
                 <span style={cta(c.accent)}>{c.cta} <Icon name="chevron-l" size={15} /></span>
               </>
@@ -89,7 +89,7 @@ export function Knowledge() {
           })}
           <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))} style={accented("#8a3f45")}>
             <span style={badge("#8a3f45", "#f3e4e4")}><Icon name="compass" size={20} /></span>
-            <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h3>
+            <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h2>
             <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{k.guidesBody}</p>
             <span style={cta("#8a3f45")}>{k.guidesCta} <Icon name="chevron-l" size={15} /></span>
           </button>
