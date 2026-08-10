@@ -554,28 +554,28 @@ const en = {
       desc: "A practice uniting law, real estate, and AI: guiding deals and buyers in Israel and abroad, representing owners and rights-holders, decision-oriented mediation, and AI risk governance with EU AI Act conformity.",
     },
     advisory: {
-      title: "AI Governance Advisory & Mediation, EU AI Act | LALUM",
-      desc: "Legal advisory for AI governance: EU AI Act conformity, algorithmic liability, IP and data protection, and decision-oriented mediation for complex disputes.",
+      title: "Real Estate, M&A & AI Governance Advisory | LALUM",
+      desc: "Legal advisory across real estate, M&A and international deals, urban renewal, mediation and arbitration, plus AI governance and EU AI Act conformity.",
     },
     training: {
       title: "AI Governance Courses & Training for Legal and Business | LALUM",
       desc: "Practical training in AI governance, the EU AI Act, and algorithmic risk management for lawyers, boards, and product teams. LALUM Academy.",
     },
     knowledge: {
-      title: "LALUM Knowledge Hub, AI Governance Courses, Articles, Q&A",
-      desc: "Everything on AI governance and AI regulation in one place: courses, professional articles, and Q&A on the EU AI Act and algorithmic risk management.",
+      title: "Real Estate, M&A & AI Knowledge Hub | LALUM",
+      desc: "Courses, articles, and Q&A on real estate, M&A and international deals, urban renewal, mediation, and AI governance, all in one place.",
     },
     insights: {
-      title: "AI Governance & EU AI Act Insights | LALUM Articles",
-      desc: "Professional articles on the EU AI Act, algorithmic risk management, board liability, and mediation, by Dr. Avraham Lalum and LALUM.",
+      title: "Real Estate, M&A & AI Governance Insights | LALUM",
+      desc: "Professional articles on real estate, M&A, urban renewal, mediation, and AI governance, by Dr. Avraham Lalum and LALUM.",
     },
     faq: {
-      title: "AI Governance & Regulation Q&A | LALUM",
-      desc: "Answers to common questions on AI governance, the EU AI Act, algorithmic risk management, mediation, and deals, from LALUM.",
+      title: "Real Estate, M&A & AI Governance Q&A | LALUM",
+      desc: "Answers to common questions on real estate, M&A, urban renewal, mediation and dispute resolution, and AI governance, from LALUM.",
     },
     book: {
-      title: "Book an AI Risk Assessment & Consultation | LALUM",
-      desc: "Schedule an AI governance consultation or risk assessment on the EU AI Act and algorithmic risk with Dr. Avraham Lalum, LALUM.",
+      title: "Book a Consultation, Real Estate, M&A & AI | LALUM",
+      desc: "Schedule a consultation on real estate, M&A, urban renewal, mediation, or AI governance with Dr. Avraham Lalum, LALUM.",
     },
     legal: {
       title: "Privacy Policy & Terms | LALUM",
@@ -1537,28 +1537,28 @@ const he: Dict = {
       desc: "משרד המשלב משפט, נדל״ן ובינה מלאכותית: ליווי עסקאות ורוכשים בארץ ובעולם, ייצוג בעלים ובעלי זכויות, גישור מכוון הכרעה, וממשל סיכונים ו-EU AI Act.",
     },
     advisory: {
-      title: "ייעוץ AI וגישור, ממשל בינה מלאכותית ו-EU AI Act | LALUM",
-      desc: "ייעוץ משפטי לממשל בינה מלאכותית: התאמה ל-EU AI Act, אחריות אלגוריתמית, הגנת קניין רוחני ומידע, וגישור מכוון הכרעה לסכסוכים מורכבים.",
+      title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM",
+      desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act.",
     },
     training: {
       title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM",
       desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM.",
     },
     knowledge: {
-      title: "מרכז הידע של LALUM, קורסים, מאמרים ושאלות ותשובות על AI",
-      desc: "כל הידע על ממשל בינה מלאכותית ורגולציית AI במקום אחד: קורסים, מאמרים מקצועיים ושאלות ותשובות על EU AI Act וניהול סיכונים אלגוריתמי.",
+      title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI",
+      desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד.",
     },
     insights: {
-      title: "מאמרים על ממשל AI ורגולציית בינה מלאכותית | LALUM",
-      desc: "מאמרים מקצועיים על EU AI Act, ניהול סיכונים אלגוריתמי, אחריות דירקטוריון וגישור, מאת ד\"ר אברהם ללום ומשרד LALUM.",
+      title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM",
+      desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד\"ר אברהם ללום ומשרד LALUM.",
     },
     faq: {
-      title: "שאלות ותשובות על ממשל AI ורגולציה | LALUM",
-      desc: "תשובות לשאלות נפוצות על ממשל בינה מלאכותית, EU AI Act, ניהול סיכונים אלגוריתמי, גישור ועסקאות, מבית LALUM.",
+      title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM",
+      desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM.",
     },
     book: {
-      title: "בקשת הערכת סיכון AI וייעוץ | LALUM",
-      desc: "לתיאום ייעוץ או הערכת סיכון בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי עם ד\"ר אברהם ללום, LALUM.",
+      title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM",
+      desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד\"ר אברהם ללום, LALUM.",
     },
     legal: {
       title: "מדיניות פרטיות ותנאי שימוש | LALUM",
@@ -2517,28 +2517,28 @@ const es: Dict = {
       desc: "Una práctica que une el derecho, los bienes raíces, y la IA: guiando operaciones y compradores en Israel y en el extranjero, representando a propietarios y titulares de derechos, mediación orientada a la decisión, y gobernanza de riesgo de IA con conformidad al Reglamento de IA de la UE.",
     },
     advisory: {
-      title: "Asesoría en Gobernanza de IA y Mediación, Reglamento de IA de la UE | LALUM",
-      desc: "Asesoría legal en gobernanza de IA: conformidad con el Reglamento de IA de la UE, responsabilidad algorítmica, propiedad intelectual y protección de datos, y mediación orientada a la decisión para disputas complejas.",
+      title: "Asesoría en Bienes Raíces, M&A y Gobernanza de IA | LALUM",
+      desc: "Asesoría legal en operaciones inmobiliarias, fusiones y adquisiciones internacionales, renovación urbana, mediación y arbitraje, y gobernanza de IA con conformidad al Reglamento de IA de la UE.",
     },
     training: {
       title: "Cursos y Formación en Gobernanza de IA para el Sector Legal y Empresarial | LALUM",
       desc: "Formación práctica en gobernanza de IA, el Reglamento de IA de la UE, y gestión de riesgo algorítmico para abogados, consejos directivos, y equipos de producto. LALUM Academy.",
     },
     knowledge: {
-      title: "Centro de Conocimiento LALUM, Cursos de Gobernanza de IA, Artículos, Preguntas y Respuestas",
-      desc: "Todo sobre gobernanza de IA y regulación de IA en un solo lugar: cursos, artículos profesionales, y preguntas y respuestas sobre el Reglamento de IA de la UE y la gestión de riesgo algorítmico.",
+      title: "Centro de Conocimiento LALUM: Bienes Raíces, M&A e IA",
+      desc: "Cursos, artículos y preguntas frecuentes sobre bienes raíces, fusiones y adquisiciones, renovación urbana, mediación y gobernanza de inteligencia artificial, todo en un solo lugar.",
     },
     insights: {
-      title: "Perspectivas sobre Gobernanza de IA y el Reglamento de IA de la UE | Artículos de LALUM",
-      desc: "Artículos profesionales sobre el Reglamento de IA de la UE, la gestión de riesgo algorítmico, la responsabilidad de los consejos directivos, y la mediación, por el Dr. Avraham Lalum y LALUM.",
+      title: "Artículos sobre Bienes Raíces, M&A y Gobernanza de IA | LALUM",
+      desc: "Artículos profesionales sobre bienes raíces, fusiones y adquisiciones, renovación urbana, mediación y gobernanza de IA, por el Dr. Avraham Lalum y LALUM.",
     },
     faq: {
-      title: "Preguntas y Respuestas sobre Gobernanza y Regulación de IA | LALUM",
-      desc: "Respuestas a preguntas frecuentes sobre gobernanza de IA, el Reglamento de IA de la UE, gestión de riesgo algorítmico, mediación, y operaciones, de parte de LALUM.",
+      title: "Preguntas sobre Bienes Raíces, M&A y Gobernanza de IA | LALUM",
+      desc: "Respuestas a preguntas frecuentes sobre bienes raíces, fusiones y adquisiciones, renovación urbana, mediación y resolución de disputas, y gobernanza de IA, de LALUM.",
     },
     book: {
-      title: "Reserve una Evaluación de Riesgo de IA y Consulta | LALUM",
-      desc: "Programe una consulta de gobernanza de IA o una evaluación de riesgo sobre el Reglamento de IA de la UE y el riesgo algorítmico con el Dr. Avraham Lalum, LALUM.",
+      title: "Reserve una Consulta: Bienes Raíces, M&A e IA | LALUM",
+      desc: "Programe una consulta sobre bienes raíces, fusiones y adquisiciones, renovación urbana, mediación o gobernanza de IA con el Dr. Avraham Lalum, LALUM.",
     },
     legal: {
       title: "Política de Privacidad y Términos | LALUM",
@@ -3496,28 +3496,28 @@ const fr: Dict = {
       desc: "Un cabinet qui réunit le droit, l'immobilier et l'IA : accompagnement des transactions et des acheteurs en Israël et à l'étranger, représentation des propriétaires et ayants droit, médiation orientée décision, et gouvernance du risque IA en conformité avec l'AI Act européen.",
     },
     advisory: {
-      title: "Conseil en gouvernance de l'IA et médiation, AI Act européen | LALUM",
-      desc: "Conseil juridique en gouvernance de l'IA : conformité à l'AI Act européen, responsabilité algorithmique, propriété intellectuelle et protection des données, et médiation orientée décision pour les litiges complexes.",
+      title: "Conseil en Immobilier, M&A et Gouvernance de l'IA | LALUM",
+      desc: "Conseil juridique en transactions immobilières, fusions et acquisitions internationales, rénovation urbaine, médiation et arbitrage, et gouvernance de l'IA conforme à l'AI Act européen.",
     },
     training: {
       title: "Formations en gouvernance de l'IA pour le droit et les affaires | LALUM",
       desc: "Formation pratique en gouvernance de l'IA, AI Act européen et gestion du risque algorithmique pour avocats, conseils d'administration et équipes produit. LALUM Academy.",
     },
     knowledge: {
-      title: "Centre de ressources LALUM, formations en gouvernance de l'IA, articles, questions et réponses",
-      desc: "Tout sur la gouvernance de l'IA et la régulation de l'IA en un seul endroit : formations, articles professionnels, et questions et réponses sur l'AI Act européen et la gestion du risque algorithmique.",
+      title: "Centre de Connaissances LALUM : Immobilier, M&A et IA",
+      desc: "Cours, articles et questions fréquentes sur l'immobilier, les fusions et acquisitions, la rénovation urbaine, la médiation et la gouvernance de l'intelligence artificielle, en un seul endroit.",
     },
     insights: {
-      title: "Analyses sur la gouvernance de l'IA et l'AI Act européen | Articles LALUM",
-      desc: "Articles professionnels sur l'AI Act européen, la gestion du risque algorithmique, la responsabilité des conseils d'administration et la médiation, par le Dr Avraham Lalum et LALUM.",
+      title: "Articles sur l'Immobilier, les Fusions et la Gouvernance de l'IA | LALUM",
+      desc: "Articles professionnels sur l'immobilier, les fusions et acquisitions, la rénovation urbaine, la médiation et la gouvernance de l'IA, par le Dr Avraham Lalum et LALUM.",
     },
     faq: {
-      title: "Questions et réponses sur la gouvernance et la régulation de l'IA | LALUM",
-      desc: "Réponses aux questions fréquentes sur la gouvernance de l'IA, l'AI Act européen, la gestion du risque algorithmique, la médiation et les transactions, par LALUM.",
+      title: "Questions sur l'Immobilier, les Fusions et la Gouvernance de l'IA | LALUM",
+      desc: "Réponses aux questions fréquentes sur l'immobilier, les fusions et acquisitions, la rénovation urbaine, la médiation et la résolution de litiges, et la gouvernance de l'IA, par LALUM.",
     },
     book: {
-      title: "Réserver une évaluation et une consultation sur le risque IA | LALUM",
-      desc: "Planifiez une consultation en gouvernance de l'IA ou une évaluation de risque sur l'AI Act européen et le risque algorithmique avec le Dr Avraham Lalum, LALUM.",
+      title: "Réservez une Consultation : Immobilier, M&A et IA | LALUM",
+      desc: "Planifiez une consultation sur l'immobilier, les fusions et acquisitions, la rénovation urbaine, la médiation ou la gouvernance de l'IA avec le Dr Avraham Lalum, LALUM.",
     },
     legal: {
       title: "Politique de confidentialité et conditions générales | LALUM",
@@ -4468,28 +4468,28 @@ const ar: Dict = {
       desc: "ممارسة توحّد القانون والعقارات والذكاء الاصطناعي: توجيه الصفقات والمشترين في إسرائيل والخارج، تمثيل الملاك وأصحاب الحقوق، الوساطة الموجَّهة نحو القرار، وحوكمة مخاطر الذكاء الاصطناعي بما يتوافق مع EU AI Act.",
     },
     advisory: {
-      title: "استشارات حوكمة الذكاء الاصطناعي والوساطة، EU AI Act | LALUM",
-      desc: "استشارات قانونية لحوكمة الذكاء الاصطناعي: التوافق مع EU AI Act، المسؤولية الخوارزمية، حماية الملكية الفكرية والبيانات، والوساطة الموجَّهة نحو القرار للنزاعات المعقدة.",
+      title: "استشارات العقارات والاندماج وحوكمة الذكاء الاصطناعي | LALUM",
+      desc: "استشارات قانونية في صفقات العقارات والاندماج والاستحواذ الدولية، والتجديد الحضري، والوساطة والتحكيم، وحوكمة الذكاء الاصطناعي بما يتوافق مع EU AI Act.",
     },
     training: {
       title: "دورات وتدريب على حوكمة الذكاء الاصطناعي للقطاعين القانوني والتجاري | LALUM",
       desc: "تدريب عملي على حوكمة الذكاء الاصطناعي، وEU AI Act، وإدارة المخاطر الخوارزمية للمحامين ومجالس الإدارة وفرق المنتج. أكاديمية LALUM.",
     },
     knowledge: {
-      title: "مركز معرفة LALUM، دورات حوكمة الذكاء الاصطناعي، مقالات، أسئلة وأجوبة",
-      desc: "كل ما يتعلق بحوكمة الذكاء الاصطناعي وتنظيم الذكاء الاصطناعي في مكان واحد: دورات، ومقالات مهنية، وأسئلة وأجوبة حول EU AI Act وإدارة المخاطر الخوارزمية.",
+      title: "مركز معرفة LALUM: العقارات والاندماج والذكاء الاصطناعي",
+      desc: "دورات ومقالات وأسئلة شائعة حول العقارات والاندماج والاستحواذ والتجديد الحضري والوساطة وحوكمة الذكاء الاصطناعي، في مكان واحد.",
     },
     insights: {
-      title: "رؤى حوكمة الذكاء الاصطناعي وEU AI Act | مقالات LALUM",
-      desc: "مقالات مهنية حول EU AI Act، وإدارة المخاطر الخوارزمية، ومسؤولية مجالس الإدارة، والوساطة، بقلم د. أبراهام لالوم وLALUM.",
+      title: "مقالات حول العقارات والاندماج وحوكمة الذكاء الاصطناعي | LALUM",
+      desc: "مقالات مهنية حول العقارات والاندماج والاستحواذ والتجديد الحضري والوساطة وحوكمة الذكاء الاصطناعي، بقلم د. أبراهام لالوم ومكتب LALUM.",
     },
     faq: {
-      title: "أسئلة وأجوبة حول حوكمة الذكاء الاصطناعي والتنظيم | LALUM",
-      desc: "إجابات عن الأسئلة الشائعة حول حوكمة الذكاء الاصطناعي، وEU AI Act، وإدارة المخاطر الخوارزمية، والوساطة، والصفقات، من LALUM.",
+      title: "أسئلة حول العقارات والاندماج وحوكمة الذكاء الاصطناعي | LALUM",
+      desc: "إجابات على الأسئلة الشائعة حول العقارات والاندماج والاستحواذ والتجديد الحضري والوساطة وحل النزاعات وحوكمة الذكاء الاصطناعي، من LALUM.",
     },
     book: {
-      title: "احجزوا تقييم مخاطر واستشارة في الذكاء الاصطناعي | LALUM",
-      desc: "جدولة استشارة حوكمة ذكاء اصطناعي أو تقييم مخاطر حول EU AI Act والمخاطر الخوارزمية مع د. أبراهام لالوم، LALUM.",
+      title: "احجز استشارة: العقارات والاندماج والذكاء الاصطناعي | LALUM",
+      desc: "حدد موعداً لاستشارة حول العقارات والاندماج والاستحواذ والتجديد الحضري والوساطة أو حوكمة الذكاء الاصطناعي مع د. أبراهام لالوم، LALUM.",
     },
     legal: {
       title: "سياسة الخصوصية والشروط | LALUM",
