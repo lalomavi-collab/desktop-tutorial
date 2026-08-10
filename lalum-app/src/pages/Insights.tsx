@@ -79,7 +79,7 @@ export function Insights() {
                   </div>
                 )}
                 <div className="article-card-body">
-                  <h3 className="serif article-card-title">{c.title}</h3>
+                  <h2 className="serif article-card-title">{c.title}</h2>
                   <p className="article-card-dek">{c.dek}</p>
                   <div className="article-card-meta">
                     <span>{c.date}</span>{c.read ? <><span style={{ color: p.accent }}>·</span><span>{c.read}</span></> : null}
