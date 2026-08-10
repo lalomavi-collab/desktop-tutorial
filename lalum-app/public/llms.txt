@@ -18,7 +18,7 @@ LALUM brings law, real estate, and AI together in one practice. On the real esta
 
 ## Languages
 
-The site is available in Hebrew (primary) and English. Every page renders in both; the English rendering of any page is reachable by adding ?lang=en to its address.
+The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Every page renders in all five; the non-Hebrew rendering of any page is reachable by adding ?lang=en, ?lang=es, ?lang=fr, or ?lang=ar to its address.
 
 ## Key pages
 
