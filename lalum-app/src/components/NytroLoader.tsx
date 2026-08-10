@@ -17,8 +17,22 @@ import { useLocation } from "react-router-dom";
 // rebuilds the document without it. The static index.html carries no Nytro tag,
 // so a fresh document on a non-public route never has it, and no reload loop is
 // possible (we only inject on public routes).
-const NYTRO_SRC =
-  "https://plugin.nytsys.com/api/site/1e4f54a0-1017-4520-8517-796277982699/nytsys.min.js";
+//
+// This app is served from two domains (lalumapp.com and lalum.co), and NytroSEO
+// ties each script to a specific verified site ID per domain: loading the
+// lalumapp.com script on lalum.co throws a DomainNameAndSiteIdMismatch console
+// error there. Pick the site ID by hostname so each domain loads its own.
+const NYTRO_SITES: { host: string; siteId: string }[] = [
+  { host: "lalum.co", siteId: "5e7a05f3-01da-4c0f-b542-679b371ad03b" },
+  { host: "lalumapp.com", siteId: "1e4f54a0-1017-4520-8517-796277982699" },
+];
+
+function nytroSrcForHost(hostname: string): string {
+  const match = NYTRO_SITES.find((s) => hostname === s.host || hostname.endsWith("." + s.host));
+  const siteId = match ? match.siteId : NYTRO_SITES[1].siteId; // default: lalumapp.com's ID
+  return `https://plugin.nytsys.com/api/site/${siteId}/nytsys.min.js`;
+}
+
 const NYTRO_ID = "nytsys-global";
 
 // The public, indexable marketing pages, the only pages that promote the site
@@ -61,7 +75,7 @@ export function NytroLoader() {
     if (!existing) {
       const script = document.createElement("script");
       script.id = NYTRO_ID;
-      script.src = NYTRO_SRC;
+      script.src = nytroSrcForHost(window.location.hostname);
       document.head.appendChild(script);
     }
   }, [pathname]);
