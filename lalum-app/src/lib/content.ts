@@ -155,5 +155,8 @@ export const externalLinks = {
 export const officeAddress = {
   en: ["Herzliya Business Park, Building G", "85 Medinat HaYehudim St., 3rd Floor", "Herzliya Pituach 4676670, Israel"],
   he: ["פארק עסקים הרצליה, בניין G", "רחוב מדינת היהודים 85, קומה 3", "הרצליה פיתוח 4676670"],
+  es: ["Parque Empresarial Herzliya, Edificio G", "Calle Medinat HaYehudim 85, 3.ª planta", "Herzliya Pituach 4676670, Israel"],
+  fr: ["Parc d'affaires de Herzliya, Bâtiment G", "85 rue Medinat HaYehudim, 3e étage", "Herzliya Pituach 4676670, Israël"],
+  ar: ["مجمع هرتسليا التجاري، مبنى G", "85 Medinat HaYehudim St.، الطابق 3", "هرتسليا بيتواح 4676670، إسرائيل"],
   full: "85 Medinat HaYehudim St, Herzliya Pituach 4676670, Israel",
 };

@@ -20,7 +20,7 @@
          fonts in when they arrive. Fallback stacks are defined in CSS. -->
     <link
       id="gfonts-css"
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Suez+One&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Suez+One&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=Markazi+Text:wght@400;500;600;700&display=swap"
       rel="stylesheet"
       media="print"
     />
@@ -30,7 +30,7 @@
     <script src="/font-activate.js" defer></script>
     <noscript>
       <link
-        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Suez+One&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Suez+One&family=Heebo:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=Markazi+Text:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
     </noscript>
@@ -40,12 +40,16 @@
       content="LALUM is a Tech-Legal practice uniting law, real estate, and AI: guiding property deals and buyers in Israel and abroad, representing owners and rights-holders, mediation (DOM), and AI risk governance with EU AI Act conformity."
     />
     <link rel="canonical" href="https://lalumapp.com/" />
-    <!-- Language alternates. The site renders Hebrew (primary) or English via a
-         client toggle; English is also reachable at ?lang=en so search engines
-         have a distinct, crawlable address for it. The prerender injects the
-         same set, per route, into each generated route HTML file. -->
+    <!-- Language alternates. The site renders Hebrew (primary) or one of four
+         secondary languages via a client picker; each secondary language is
+         also reachable at ?lang=xx so search engines have a distinct,
+         crawlable address for it. The prerender injects the same set, per
+         route, into each generated route HTML file. -->
     <link rel="alternate" hreflang="he-IL" href="https://lalumapp.com/" />
     <link rel="alternate" hreflang="en" href="https://lalumapp.com/?lang=en" />
+    <link rel="alternate" hreflang="es" href="https://lalumapp.com/?lang=es" />
+    <link rel="alternate" hreflang="fr" href="https://lalumapp.com/?lang=fr" />
+    <link rel="alternate" hreflang="ar" href="https://lalumapp.com/?lang=ar" />
     <link rel="alternate" hreflang="x-default" href="https://lalumapp.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="LALUM" />

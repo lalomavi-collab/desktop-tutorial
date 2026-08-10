@@ -2,6 +2,7 @@ import type {
   Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
   PracticeArea, RiskType, RiskStage, FaqCat, HubItem,
 } from "./content";
+import type { Lang } from "./hreflang";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
 // typed as `Dict`, so the compiler flags any key that drifts out of sync.
@@ -1971,4 +1972,8 @@ const he: Dict = {
   },
 };
 
-export const strings: Record<"en" | "he", Dict> = { en, he };
+// TEMPORARY: es/fr/ar fall back to the English dict until their real
+// translations (in progress) are spliced in. This keeps the 5-language
+// routing/hreflang infrastructure from crashing at runtime in the meantime;
+// it is not the shipped state; see task #10.
+export const strings: Record<Lang, Dict> = { en, he, es: en, fr: en, ar: en };

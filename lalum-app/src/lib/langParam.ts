@@ -5,20 +5,21 @@
 
 import { LANG_PARAM, type Lang } from "./hreflang";
 
-// Without pushing a history entry: English carries ?lang=en so it is a distinct,
-// shareable, crawlable address; Hebrew is the clean canonical URL with no param.
-// Called both when the language toggles and on each route change, so client-side
-// navigation (which would otherwise drop the query) preserves the choice.
+// Without pushing a history entry: every non-Hebrew language carries ?lang=xx
+// so it is a distinct, shareable, crawlable address; Hebrew is the clean
+// canonical URL with no param. Called both when the language changes and on
+// each route change, so client-side navigation (which would otherwise drop
+// the query) preserves the choice.
 export function syncLangParam(lang: Lang) {
   try {
     const url = new URL(window.location.href);
     const current = url.searchParams.get(LANG_PARAM);
-    if (lang === "en") {
-      if (current === "en") return;
-      url.searchParams.set(LANG_PARAM, "en");
-    } else {
+    if (lang === "he") {
       if (current === null) return;
       url.searchParams.delete(LANG_PARAM);
+    } else {
+      if (current === lang) return;
+      url.searchParams.set(LANG_PARAM, lang);
     }
     window.history.replaceState(window.history.state, "", url.toString());
   } catch { /* ignore */ }
