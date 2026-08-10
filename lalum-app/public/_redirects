@@ -3,5 +3,23 @@
 # with no www). This resolves the "broken redirects" a crawler sees on www.
 https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 
+# Legacy Wix path-based language routing. The old Wix site served the English
+# version under an /en/... path prefix; the app switches language with a
+# ?lang=en query param instead, so any indexed/bookmarked /en link now 404s.
+# Redirect the prefix off and preserve the rest of the path as the query param.
+/en       /?lang=en        301
+/en/*     /:splat?lang=en  301
+
+# Legacy Wix default page slugs, confirmed 404ing on the live domain (found
+# /about live; the rest are the same class of Wix-default slug and equally
+# likely indexed/bookmarked). Best-effort mapping to the closest equivalent
+# in the new app, pending the full old-site URL list for a precise redirect
+# map (see task: compare against Wix's old sitemap / Search Console export).
+/about      /            301
+/contact    /book        301
+/services   /advisory    301
+/team       /            301
+/blog       /insights    301
+
 # SPA fallback: serve the app shell for every in-app route.
 /*    /index.html   200
