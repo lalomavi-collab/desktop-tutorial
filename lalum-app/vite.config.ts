@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
+import { strings } from "./src/lib/strings";
 import { alternatesFor } from "./src/lib/hreflang";
 
 const SITE = "https://lalumapp.com";
@@ -23,6 +24,17 @@ const STATIC_ROUTES: { path: string; title: string; desc: string }[] = [
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Meta descriptions should stay within ~160 chars so a search snippet is not
+// truncated mid-sentence. Hand-tuned copy is already short; imported article
+// excerpts can run long, so clip those at a word boundary and add an ellipsis.
+function clip(s: string, max = 160): string {
+  const t = s.trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).trimEnd() + "…";
 }
 
 // Replace one tag's content by a precise pattern. `re` must capture the prefix
@@ -72,6 +84,20 @@ function seoPrerender(): Plugin {
     },
     closeBundle() {
       const template = readFileSync(join(outDir, "index.html"), "utf8");
+      // Curated articles live in the app's own copy (strings.data.articles),
+      // not in blogMeta. They are linked from the site and listed in the sitemap,
+      // so they must be prerendered too, otherwise a crawler or a direct hit gets
+      // only the empty SPA shell for them. Use the Hebrew copy to match the
+      // prerendered document's lang, and skip any slug blogMeta already covers.
+      const blogSlugs = new Set(blogMeta.map((m) => m.slug));
+      const curated = strings.he.data.articles
+        .filter((a) => !blogSlugs.has(a.slug))
+        .map((a) => ({
+          path: `insights/${a.slug}`,
+          title: `${a.title} · LALUM`,
+          desc: a.dek,
+          image: undefined as string | undefined,
+        }));
       const routes = [
         ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined })),
         ...blogMeta.map((m) => ({
@@ -82,17 +108,18 @@ function seoPrerender(): Plugin {
           // site-relative covers (e.g. /images/foo.svg) need SITE prefixed.
           image: m.cover ? (m.cover.startsWith("http") ? m.cover : `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}`) : undefined,
         })),
+        ...curated,
       ];
       let written = 0;
       for (const r of routes) {
-        const html = applyMeta(template, { title: r.title, desc: r.desc, url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        const html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");
         written++;
       }
       // eslint-disable-next-line no-console
-      console.log(`[seo-prerender] wrote ${written} route HTML files (${STATIC_ROUTES.length} pages + ${blogMeta.length} articles)`);
+      console.log(`[seo-prerender] wrote ${written} route HTML files (${STATIC_ROUTES.length} pages + ${blogMeta.length} articles + ${curated.length} curated)`);
     },
   };
 }
