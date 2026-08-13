@@ -26,6 +26,17 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Meta descriptions should stay within ~160 chars so a search snippet is not
+// truncated mid-sentence. Hand-tuned copy is already short; imported article
+// excerpts can run long, so clip those at a word boundary and add an ellipsis.
+function clip(s: string, max = 160): string {
+  const t = s.trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).trimEnd() + "…";
+}
+
 // Replace one tag's content by a precise pattern. `re` must capture the prefix
 // up to the opening content quote in group 1 and the closing quote (+ tag end)
 // in group 2, tolerating the multiline attribute layout Vite emits.
@@ -99,7 +110,7 @@ function seoPrerender(): Plugin {
       ];
       let written = 0;
       for (const r of routes) {
-        const html = applyMeta(template, { title: r.title, desc: r.desc, url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        const html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");
