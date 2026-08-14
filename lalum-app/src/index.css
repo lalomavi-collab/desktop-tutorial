@@ -17,6 +17,11 @@
   --line: #e3dccd;
   --line-strong: #d3c9b5;
   --success: #3f8f5f;
+  /* Brand green darkened to meet WCAG AA (4.5:1) for white text on a green fill.
+     Use ONLY where white text sits on a green background (badges, pills); the
+     lighter brand green stays for decorative lines, icons, and borders. White on
+     #00aa77 is 2.99:1 (fail); white on #00855d is 4.65:1 (pass). */
+  --brand-green-on-white: #00855d;
   --danger: #b3402f;
   --warning: #b8842a;
 

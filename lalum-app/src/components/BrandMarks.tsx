@@ -116,7 +116,7 @@ export function BitMark({ size = 22 }: P) {
   return (
     <span
       aria-hidden="true"
-      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 10px", borderRadius: 6, background: "#0a7", color: "#fff", fontFamily: "Arial, sans-serif", fontSize: h * 0.62, fontWeight: 800, letterSpacing: 0.3, lineHeight: 1 }}
+      style={{ display: "inline-flex", alignItems: "center", height: h, padding: "0 10px", borderRadius: 6, background: "var(--brand-green-on-white, #00855d)", color: "#fff", fontFamily: "Arial, sans-serif", fontSize: h * 0.62, fontWeight: 800, letterSpacing: 0.3, lineHeight: 1 }}
     >
       bit
     </span>
