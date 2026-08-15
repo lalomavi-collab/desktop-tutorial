@@ -32,7 +32,10 @@ export type Why = { icon: IconName; title: string; body: string };
 export type Faq = { q: string; a: string };
 export type Service = { icon: IconName; title: string; body: string };
 export type Module = { icon: IconName; title: string; body: string };
-export type Testimonial = { quote: string; attr: string };
+// Anonymous, detailed engagement scenarios (no invented names, quotes, or
+// logos): sector, the challenge, what we did, and the outcome. Stronger and more
+// honest than an unattributed testimonial for Enterprise positioning.
+export type Testimonial = { sector: string; challenge: string; work: string; outcome: string };
 export type Plan = {
   name: string;
   tagline: string;

@@ -841,9 +841,24 @@ const en = {
       { icon: "shield", title: "Defensible, binding outcome", body: "A settlement that is legally binding and built on a documented, defensible record, without draining corporate resources." },
     ] as Module[],
     testimonials: [
-      { quote: "LALUM issued the signed EU AI Act conformity matrix that cleared our enterprise due diligence. It changed how the whole organization treats regulatory risk.", attr: "General Counsel, SaaS exporter" },
-      { quote: "They gave our AI-assisted decisions the explainability and documented audit that survives an administrative petition. Exactly what a public body needs.", attr: "Legal advisor, local authority" },
-      { quote: "The risk index quantified an exposure our previous advisors never priced. This is what algorithmic precision looks like at board level.", attr: "Board member, regulated enterprise" },
+      {
+        sector: "SaaS exporter to Europe",
+        challenge: "An enterprise client's due diligence stalled on EU AI Act conformity, with no documentation that would hold up.",
+        work: "We mapped the AI systems, classified risk, and issued a signed conformity matrix with GPAI obligations and technical documentation.",
+        outcome: "Due diligence cleared, and the company adopted the classification as a standing process for every new product.",
+      },
+      {
+        sector: "Local authority",
+        challenge: "AI-assisted decisions were exposed to administrative petition, with no explainability or orderly record.",
+        work: "We built an explainability layer, a documented bias audit, and an audit trail for every automated decision.",
+        outcome: "The system withstands administrative petitions, freedom-of-information requests, and State Comptroller review.",
+      },
+      {
+        sector: "Regulated enterprise, board level",
+        challenge: "The board had no quantified picture of its AI exposure, and previous advisors had never priced it.",
+        work: "We ran a risk index and an officer exposure matrix, quantifying the exposure against the risk tiers.",
+        outcome: "The board got a clear exposure picture and prioritized controls by actual risk.",
+      },
     ] as Testimonial[],
     plans: [
       { name: "Fixed-scope mandate", tagline: "A defined engagement, a predictable cost", best: "Best for: a single high-stakes matter with a clear deliverable", popular: false, features: ["Response time under one hour", "Algorithmic risk assessment", "Court-ready deliverable", "Fixed price, no hourly billing"], cta: "Request a scope proposal" },
@@ -1859,9 +1874,24 @@ const he: Dict = {
       { icon: "shield", title: "תוצאה מחייבת ובת-הגנה", body: "הסדר מחייב מבחינה משפטית ובנוי על תיעוד בר-הגנה, בלי לרוקן משאבים ארגוניים." },
     ],
     testimonials: [
-      { quote: "LALUM הנפיקו את מטריצת העמידה החתומה ב-EU AI Act שעברה את בדיקת הנאותות הארגונית שלנו. זה שינה את האופן שבו כל הארגון מתייחס לסיכון רגולטורי.", attr: "יועץ משפטי, יצואנית SaaS" },
-      { quote: "הם העניקו להכרעות מבוססות ה-AI שלנו את יכולת ההסבר והתיעוד שעומדים בעתירה מנהלית. בדיוק מה שגוף ציבורי צריך.", attr: "יועצת משפטית, רשות מקומית" },
-      { quote: "מדד הסיכון כימת חשיפה שהיועצים הקודמים שלנו מעולם לא תמחרו. כך נראה דיוק אלגוריתמי ברמת הדירקטוריון.", attr: "חבר דירקטוריון, ארגון מפוקח" },
+      {
+        sector: "יצואנית SaaS לאירופה",
+        challenge: "בדיקת נאותות של לקוח Enterprise נתקעה על שאלת עמידה ב-EU AI Act, בלי תיעוד שמחזיק.",
+        work: "מיפינו את מערכות ה-AI, סיווגנו סיכון, והנפקנו מטריצת עמידה חתומה עם חובות GPAI ותיעוד טכני.",
+        outcome: "בדיקת הנאותות עברה, והחברה אימצה את הסיווג כתהליך קבוע לכל מוצר חדש.",
+      },
+      {
+        sector: "רשות מקומית",
+        challenge: "הכרעות מבוססות-AI היו חשופות לעתירה מנהלית, בלי יכולת הסבר ותיעוד מסודר.",
+        work: "בנינו שכבת הסבר, ביקורת הטיה מתועדת, ושובל ראיות לכל הכרעה אוטומטית.",
+        outcome: "המערכת עומדת בעתירה מנהלית, בבקשות חופש מידע ובביקורת מבקר המדינה.",
+      },
+      {
+        sector: "ארגון מפוקח, רמת דירקטוריון",
+        challenge: "לדירקטוריון לא הייתה תמונה כמותית של חשיפת ה-AI, והיועצים הקודמים לא תמחרו אותה.",
+        work: "הרצנו מדד סיכון ומטריצת חשיפה לנושאי משרה, וכימתנו את החשיפה מול דרגות הסיכון.",
+        outcome: "הדירקטוריון קיבל תמונת חשיפה ברורה, ותיעדף את הבקרות לפי הסיכון בפועל.",
+      },
     ],
     plans: [
       { name: "מנדט בהיקף קבוע", tagline: "התקשרות מוגדרת, עלות צפויה", best: "מתאים ל: עניין יחיד בסיכון גבוה עם תוצר ברור", popular: false, features: ["זמן תגובה עד שעה", "הערכת סיכונים אלגוריתמית", "תוצר מוכן לבית המשפט", "מחיר קבוע, ללא חיוב שעתי"], cta: "לבקשת הצעת היקף" },

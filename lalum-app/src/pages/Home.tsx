@@ -13,6 +13,7 @@ import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
 import { LinkedInFeed } from "../components/LinkedInFeed";
+import { ScenarioCard } from "../components/ScenarioCard";
 import { officePhone, directPhone, personalLine } from "../lib/content";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
@@ -211,12 +212,7 @@ export function Home() {
           </div>
           <div className="grid grid-3">
             {t.data.testimonials.map((tm) => (
-              <div key={tm.attr} className="card" style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ color: "var(--clay)", opacity: 0.6 }}><Icon name="quote" size={26} /></span>
-                <p style={{ fontFamily: "var(--serif)", fontSize: 20, lineHeight: 1.5, color: "var(--ink)", margin: "18px 0 24px", flex: 1 }}>{tm.quote}</p>
-                <div style={{ height: 1, background: "var(--line)", marginBottom: 16 }} />
-                <div style={{ fontSize: 13, color: "var(--slate)" }}>{tm.attr}</div>
-              </div>
+              <ScenarioCard key={tm.sector} s={tm} />
             ))}
           </div>
         </div>
