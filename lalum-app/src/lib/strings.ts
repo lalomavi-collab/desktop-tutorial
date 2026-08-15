@@ -583,10 +583,10 @@ const en = {
   },
 
   home: {
-    heroPill: "AI · M&A & International Deals · Real Estate",
-    heroH1a: "M&A, international deals, and real estate,",
-    heroH1b: "with leading AI expertise.",
-    heroLede: "A Tech-Legal practice combining deep legal expertise with AI. We handle M&A, international and commercial transactions, and real estate and urban renewal, alongside algorithmic risk management. Over 20 years of transactional practice.",
+    heroPill: "AI Governance · Tech-Legal · M&A & Deals · Real Estate",
+    heroH1a: "AI governance, deals, and real estate,",
+    heroH1b: "built to hold up.",
+    heroLede: "A Tech-Legal practice uniting law, technology, and economics. We turn AI exposure and regulation (the EU AI Act) into a managed, defensible system, and back M&A, international transactions, and real estate and urban renewal. Over 20 years of transactional practice.",
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     heroCreds: "20+ years · 150+ deals · TAMA 38 author · Notary & mediator",
@@ -1601,10 +1601,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "בינה מלאכותית · מיזוגים ועסקאות בינלאומיות · נדל״ן",
-    heroH1a: "מיזוגים, עסקאות בינלאומיות ונדל״ן,",
-    heroH1b: "עם מומחיות מובילה ב-AI.",
-    heroLede: "משרד Tech-Legal המשלב מומחיות משפטית עמוקה עם בינה מלאכותית. אנחנו מלווים מיזוגים ורכישות (M&A), עסקאות בינלאומיות ומסחריות, ונדל״ן והתחדשות עירונית, לצד ניהול סיכונים אלגוריתמי. מעל 20 שנות ניסיון טרנזקציוני.",
+    heroPill: "ממשל AI · Tech-Legal · מיזוגים ועסקאות · נדל״ן",
+    heroH1a: "ממשל AI, עסקאות ונדל״ן,",
+    heroH1b: "בנויים להחזיק מעמד.",
+    heroLede: "משרד Tech-Legal שמחבר משפט, טכנולוגיה וכלכלה. אנחנו הופכים חשיפת AI ורגולציה (EU AI Act) למערכת מנוהלת ובת-הגנה, ומלווים מיזוגים, עסקאות בינלאומיות, ונדל״ן והתחדשות עירונית. מעל 20 שנות ניסיון טרנזקציוני.",
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     heroCreds: "20+ שנים · 150+ עסקאות · מחבר מדריך תמ״א 38 · נוטריון ומגשר",
