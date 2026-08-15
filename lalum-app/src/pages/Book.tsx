@@ -55,8 +55,12 @@ export function Book() {
   if (CALENDLY_URL) {
     const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
     const activeUrl = active.url || CALENDLY_URL;
+    // Horizontal padding is left to the responsive `.wrap` rule (32px desktop,
+    // 20px ≤900, 16px ≤560) instead of a fixed inline 32px, so on phones the
+    // frame stays wide enough for the 320px-min scheduling embed and never clips
+    // its (LTR) left edge inside the RTL page.
     return (
-      <section className="wrap" style={{ maxWidth: 880, padding: "80px 32px 110px" }}>
+      <section className="wrap" style={{ maxWidth: 880, paddingTop: 80, paddingBottom: 110 }}>
         <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" jsonLd={pageJsonLd([howToForPath(t, "/book")])} />
         <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 26px" }}>
           <p className="eyebrow">{B.eyebrow}</p>
@@ -148,7 +152,7 @@ export function Book() {
   }
 
   return (
-    <section className="wrap" style={{ maxWidth: 760, padding: "80px 32px 120px" }}>
+    <section className="wrap" style={{ maxWidth: 760, paddingTop: 80, paddingBottom: 120 }}>
       <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" jsonLd={pageJsonLd([howToForPath(t, "/book")])} />
       <div style={{ textAlign: "center", maxWidth: "56ch", margin: "0 auto 36px" }}>
         <p className="eyebrow">{B.eyebrow}</p>
