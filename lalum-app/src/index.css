@@ -2367,6 +2367,44 @@ html.a11y-reduce-motion *::after {
   gap: 8px;
   flex-wrap: wrap;
 }
+/* On phones the fixed bottom tab bar owns the very bottom edge, and the page's
+   primary CTA sits in the first screens. Dock the cookie banner just above the
+   tab bar and keep it compact (one tight row), so it no longer covers the nav or
+   hides the main action. */
+@media (max-width: 900px) {
+  .cookie-banner {
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+    inset-inline: 8px;
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .cookie-banner-text {
+    font-size: 12.5px;
+    line-height: 1.4;
+    min-width: 0;
+  }
+  .cookie-banner-actions {
+    gap: 6px;
+  }
+  .cookie-banner-actions .btn {
+    padding: 0 12px;
+  }
+}
+/* Small spinner for the scheduling embed's loading state. */
+.embed-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--clay);
+  border-radius: 50%;
+  animation: embed-spin 0.8s linear infinite;
+}
+@keyframes embed-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .cookie-overlay {
   position: fixed;
   inset: 0;
