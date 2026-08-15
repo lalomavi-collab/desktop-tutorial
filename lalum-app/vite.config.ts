@@ -37,6 +37,60 @@ function clip(s: string, max = 160): string {
   return (sp > max * 0.6 ? cut.slice(0, sp) : cut).trimEnd() + "…";
 }
 
+// Parse the human date strings the articles carry ("Aug 2026", "יולי 2026") into
+// an ISO date for schema.org datePublished. Returns "" when it cannot parse, so
+// the field is simply omitted rather than emitting an invalid value.
+const MONTHS: Record<string, string> = {
+  jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06", jul: "07",
+  aug: "08", sep: "09", oct: "10", nov: "11", dec: "12",
+  ינואר: "01", פברואר: "02", מרץ: "03", אפריל: "04", מאי: "05", יוני: "06",
+  יולי: "07", אוגוסט: "08", ספטמבר: "09", אוקטובר: "10", נובמבר: "11", דצמבר: "12",
+};
+function toIsoDate(s: string): string {
+  const raw = (s ?? "").trim();
+  const year = (raw.match(/\b(20\d{2})\b/) || [])[1];
+  if (!year) return "";
+  let mm = "";
+  for (const key of Object.keys(MONTHS)) {
+    if (raw.toLowerCase().includes(key)) { mm = MONTHS[key]; break; }
+  }
+  return mm ? `${year}-${mm}-01` : `${year}-01-01`;
+}
+
+// The per-article structured data (BlogPosting + BreadcrumbList) that the Article
+// component sets client-side. Baking the same graph into the static HTML means a
+// non-JS crawler or an AI answer engine sees the author, publisher, and date up
+// front, instead of the app-shell's Organization graph. Matches the runtime
+// shape (author linked by @id to the verified founder node).
+function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string }): string {
+  const iso = toIsoDate(a.date);
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: a.headline,
+        description: a.desc,
+        inLanguage: "he",
+        ...(iso ? { datePublished: iso } : {}),
+        author: { "@type": "Person", "@id": `${SITE}/#founder`, name: "Dr. Avraham Lalum", url: `${SITE}/`, sameAs: ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"] },
+        publisher: { "@type": "Organization", name: "LALUM", logo: { "@type": "ImageObject", url: `${SITE}/icon-512.png` } },
+        mainEntityOfPage: `${SITE}/insights/${a.slug}`,
+        image: a.image || `${SITE}/og-card-v2.png`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+          { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights` },
+          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}` },
+        ],
+      },
+    ],
+  };
+  return `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(graph)}</script>`;
+}
+
 // Replace one tag's content by a precise pattern. `re` must capture the prefix
 // up to the opening content quote in group 1 and the closing quote (+ tag end)
 // in group 2, tolerating the multiline attribute layout Vite emits.
@@ -97,9 +151,10 @@ function seoPrerender(): Plugin {
           title: `${a.title} · LALUM`,
           desc: a.dek,
           image: undefined as string | undefined,
+          article: { slug: a.slug, headline: a.title, date: a.date },
         }));
       const routes = [
-        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined })),
+        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string } })),
         ...blogMeta.map((m) => ({
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,
@@ -107,16 +162,37 @@ function seoPrerender(): Plugin {
           // m.cover is already absolute for wixstatic-hosted covers; only
           // site-relative covers (e.g. /images/foo.svg) need SITE prefixed.
           image: m.cover ? (m.cover.startsWith("http") ? m.cover : `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}`) : undefined,
+          article: { slug: m.slug, headline: m.title, date: m.date },
         })),
         ...curated,
       ];
       let written = 0;
       for (const r of routes) {
-        const html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        // Bake per-article structured data into the static HTML for crawlers and
+        // AI answer engines; the runtime PageMeta finds this same #page-jsonld
+        // script on hydration and updates it in place, so nothing duplicates.
+        if (r.article) {
+          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image });
+          html = html.replace("</head>", `    ${script}\n  </head>`);
+        }
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");
         written++;
+      }
+      // Stamp a dynamic lastmod on every sitemap URL at build time, so crawlers
+      // see a fresh, self-updating date on each deploy instead of a hand-edited
+      // one that drifts. Only URLs that do not already carry a <lastmod> are
+      // stamped, so any hand-set date is preserved.
+      const sitemapPath = join(outDir, "sitemap.xml");
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const xml = readFileSync(sitemapPath, "utf8");
+        const stamped = xml.replace(/(<loc>[^<]*<\/loc>)(?!\s*<lastmod>)/g, `$1<lastmod>${today}</lastmod>`);
+        writeFileSync(sitemapPath, stamped, "utf8");
+      } catch {
+        // No sitemap in the build output; nothing to stamp.
       }
       // eslint-disable-next-line no-console
       console.log(`[seo-prerender] wrote ${written} route HTML files (${STATIC_ROUTES.length} pages + ${blogMeta.length} articles + ${curated.length} curated)`);
