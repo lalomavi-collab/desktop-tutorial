@@ -14,6 +14,7 @@ import { PracticeFaq } from "../components/PracticeFaq";
 import { PracticeHub } from "../components/PracticeHub";
 import { LinkedInFeed } from "../components/LinkedInFeed";
 import { ScenarioCard } from "../components/ScenarioCard";
+import { AudiencePaths } from "../components/AudiencePaths";
 import { officePhone, directPhone, personalLine } from "../lib/content";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
@@ -107,6 +108,9 @@ export function Home() {
 
       {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
       <PracticeAreas />
+
+      {/* Audience paths: let each visitor self-select their route into the site */}
+      <AudiencePaths />
 
       {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
       <MnaSpotlight />

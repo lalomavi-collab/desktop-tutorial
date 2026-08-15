@@ -1,6 +1,6 @@
 import type {
   Pillar, Framework, Why, Faq, Service, Module, Testimonial, Plan, Audience, Format, Article,
-  PracticeArea, RiskType, RiskStage, FaqCat, HubItem,
+  PracticeArea, RiskType, RiskStage, FaqCat, HubItem, AudiencePath,
 } from "./content";
 
 // The full site copy in both languages. `en` is the source of truth; `he` is
@@ -590,6 +590,14 @@ const en = {
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     heroCreds: "20+ years · 150+ deals · TAMA 38 author · Notary & mediator",
+    audienceEyebrow: "A path for every audience",
+    audienceTitle: "Which one are you?",
+    audiences: [
+      { label: "Homeowner in urban renewal", body: "Full representation opposite the developer and contractor, collateral checks, and protection of the agreement and signatures.", to: "/book", cta: "Talk to us" },
+      { label: "Technology company / CTO", body: "AI governance, the EU AI Act, IP and data protection, from the development stage and across the product.", to: "/advisory", cta: "AI and regulation advisory" },
+      { label: "Board and CPAs", body: "An officer exposure matrix, risk classification, and a defensible record for every material decision.", to: "/advisory", cta: "Map your exposure" },
+      { label: "Public sector and authorities", body: "Explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review.", to: "/advisory", cta: "Public sector solutions" },
+    ] as AudiencePath[],
     capsEyebrow: "One app, end to end",
     capsTitle: "Everything the firm runs on, in one place",
     caps: ["AI voice intake", "Video meetings", "Smart scheduling", "Secure payments", "Client documents", "WhatsApp & Telegram", "Knowledge & guides", "In-app search"],
@@ -1623,6 +1631,14 @@ const he: Dict = {
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     heroCreds: "20+ שנים · 150+ עסקאות · מחבר מדריך תמ״א 38 · נוטריון ומגשר",
+    audienceEyebrow: "מסלול לכל קהל",
+    audienceTitle: "לאיזה קהל אתם שייכים?",
+    audiences: [
+      { label: "בעל דירה בהתחדשות עירונית", body: "ליווי מלא מול היזם והקבלן, בדיקת בטוחות, והגנה על ההסכם והחתימות.", to: "/book", cta: "לשיחת ייעוץ" },
+      { label: "חברת טכנולוגיה / CTO", body: "ממשל AI, EU AI Act, קניין רוחני והגנת מידע, משלב הפיתוח ולאורך המוצר.", to: "/advisory", cta: "לייעוץ AI ורגולציה" },
+      { label: "דירקטוריון ורו״ח", body: "מטריצת חשיפה לנושאי משרה, סיווג סיכון, ותיעוד בר-הגנה לכל הכרעה מהותית.", to: "/advisory", cta: "למיפוי חשיפה" },
+      { label: "מגזר ציבורי ורשות", body: "מערכות הכרעה מוסברות ונקיות מהטיה, שעומדות בעתירה מנהלית ובביקורת מבקר המדינה.", to: "/advisory", cta: "לפתרונות מגזר ציבורי" },
+    ] as AudiencePath[],
     capsEyebrow: "אפליקציה אחת, מקצה לקצה",
     capsTitle: "כל מה שהמשרד מנהל, במקום אחד",
     caps: ["בוט קולי חכם", "פגישות וידאו", "תיאום פגישות", "תשלום מאובטח", "מסמכי לקוחות", "וואטסאפ וטלגרם", "ידע ומדריכים", "חיפוש באפליקציה"],

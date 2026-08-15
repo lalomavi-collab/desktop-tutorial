@@ -45,6 +45,10 @@ export type Plan = {
   cta: string;
 };
 export type Audience = { icon: IconName; title: string; body: string; points: string[] };
+
+// A homepage "which one are you?" path: a named audience, a one-line value, and
+// a link to where that audience is served.
+export type AudiencePath = { label: string; body: string; to: string; cta: string };
 export type Format = { meta: string; title: string; body: string };
 
 export type ArticleBlock =
