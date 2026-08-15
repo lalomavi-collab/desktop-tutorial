@@ -106,23 +106,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
-      <PracticeAreas />
-
-      {/* Audience paths: let each visitor self-select their route into the site */}
-      <AudiencePaths />
-
-      {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
-      <MnaSpotlight />
-
-      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
-      <PreDealStrategy />
-
-      {/* REPRESENTATIVE-SCENARIO HUB: filterable grid with detail modals */}
-      <PracticeHub />
-
-      {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
-      <PracticeFaq />
+      {/* AI GOVERNANCE narrative leads (positioning, then the AI risk pillars,
+          then the engine); the legal practice areas below are proof of execution. */}
 
       {/* ABOUT */}
       <section className="section-line">
@@ -141,13 +126,7 @@ export function Home() {
         </div>
       </section>
 
-      {/* CAPABILITIES */}
-      <Capabilities />
-
-      {/* LALUM ACADEMY promo band */}
-      <HomeAcademy />
-
-      {/* PRACTICE */}
+      {/* PRACTICE (AI + risk-governance pillars) */}
       <section id="practice" className="wrap section">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
           <p className="eyebrow">{h.pillarsEyebrow}</p>
@@ -188,6 +167,30 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* Audience paths: let each visitor self-select their route into the site */}
+      <AudiencePaths />
+
+      {/* CORE LEGAL PRACTICE AREAS (proof of execution, below the AI pillars) */}
+      <PracticeAreas />
+
+      {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
+      <MnaSpotlight />
+
+      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
+      <PreDealStrategy />
+
+      {/* REPRESENTATIVE-SCENARIO HUB: filterable grid with detail modals */}
+      <PracticeHub />
+
+      {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
+      <PracticeFaq />
+
+      {/* CAPABILITIES */}
+      <Capabilities />
+
+      {/* LALUM ACADEMY promo band */}
+      <HomeAcademy />
 
       {/* WHY */}
       <section className="wrap section">
