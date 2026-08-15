@@ -796,7 +796,7 @@ const en = {
 
   data: {
     pillars: [
-      { icon: "scale", tag: "EU AI Act", title: "AI Regulation & EU AI Act Conformity", body: "Risk classification, GPAI obligations, and technical documentation, mapped into an orderly conformity matrix. For tech exporters and for M&A and VC due diligence, ahead of the August 2026 High-Risk deadline." },
+      { icon: "scale", tag: "EU AI Act", title: "AI Regulation & EU AI Act Conformity", body: "Risk classification, GPAI obligations, and technical documentation, mapped into an orderly conformity matrix. For tech exporters and for M&A and VC due diligence, phased by obligation and risk tier." },
       { icon: "brain", tag: "Risk Governance", title: "AI Liability & Risk Governance", body: "For boards, executives, and CPAs: a conformity index and exposure matrix that price your algorithmic liability early, before a regulator or a claimant does." },
       { icon: "shield", tag: "IP & Data", title: "IP & Data Protection", body: "A defensible IP layer around your technology and a secure, Privacy-by-Design data architecture: patents, trade secrets, and proprietary models." },
       { icon: "settings", tag: "Contracts & Venture", title: "Contracts & Venture Counsel", body: "Automated contract governance, counsel for startups and technology companies, funding rounds and founder agreements, and technology due diligence for deals." },
@@ -828,7 +828,7 @@ const en = {
       { q: "How do we start working with you?", a: "We begin with a strategic Tech-Legal Diagnostics session. In this initial meeting, we map your current technical architecture, corporate structure, and regulatory exposure to identify immediate vulnerabilities and design a tailored roadmap for your venture." },
     ] as Faq[],
     advisoryServices: [
-      { icon: "scale", title: "AI Regulation & EU AI Act Conformity", body: "Mapping and managing advanced regulatory exposure, including the EU AI Act, from the development stage. Risk classification, GPAI obligations, and technical documentation, mapped into an orderly conformity matrix ahead of the August 2026 High-Risk deadline." },
+      { icon: "scale", title: "AI Regulation & EU AI Act Conformity", body: "Mapping and managing advanced regulatory exposure, including the EU AI Act, from the development stage. Risk classification, GPAI obligations, and technical documentation, mapped into an orderly conformity matrix, phased by obligation and risk tier." },
       { icon: "brain", title: "AI Liability & Risk Governance", body: "For boards, executives, and CPAs: a conformity index and executive exposure matrix that price your algorithmic liability early, before a regulator or a claimant does." },
       { icon: "shield", title: "IP & Data Protection", body: "A defensible IP layer around your technology, patents, trade secrets, and proprietary models, together with a secure local-model and RAG architecture built Privacy-by-Design, so protection sits in the foundation rather than bolted on." },
       { icon: "settings", title: "Contracts & Venture Counsel", body: "Automated contract governance across the lifecycle, plus a strategic envelope for technology companies: incorporation, funding rounds, founder and employee agreements, and technology due diligence for deals and raises." },
@@ -896,7 +896,8 @@ const en = {
           { type: "p", text: "Not: \"do we have an AI policy?\"." },
           { type: "p", text: "But rather: \"which business or human decision is affected by the system, who bears responsibility for the outcome, and can we defend the process if it is challenged?\"." },
           { type: "p", text: "An organization that can answer these three questions is already building an advantage. One that cannot usually discovers the gap after a deal, a complaint, a vendor failure, or a client demand." },
-          { type: "p", text: "LALUM helps organizations map AI exposure, build governance and a defensible record, and translate regulation into a working mechanism that can actually be managed." },
+          { type: "p", text: "LALUM helps organizations map AI exposure, build governance and a defensible record, and translate regulation into a working mechanism that can actually be managed. More on the advisory and mediation page." },
+          { type: "cta", text: "Map your organization's AI exposure", to: "/advisory" },
           { type: "p", text: "This is general information and not legal advice. The applicability of the EU AI Act depends on the system, the organization's role in the value chain, the target market, and the circumstances of use." },
           { type: "p", text: "Current source: European Commission, AI Act." },
         ],
@@ -1813,7 +1814,7 @@ const he: Dict = {
 
   data: {
     pillars: [
-      { icon: "scale", tag: "EU AI Act", title: "רגולציית AI ותאימות EU AI Act", body: "סיווג סיכון, חובות GPAI ותיעוד טכני, ממופים למטריצת תאימות מסודרת. ליצואני טכנולוגיה ולבדיקות נאותות ב-M&A וב-VC, לקראת מועד ה-High-Risk באוגוסט 2026." },
+      { icon: "scale", tag: "EU AI Act", title: "רגולציית AI ותאימות EU AI Act", body: "סיווג סיכון, חובות GPAI ותיעוד טכני, ממופים למטריצת תאימות מסודרת. ליצואני טכנולוגיה ולבדיקות נאותות ב-M&A וב-VC, לפי סוג החובה ודרגת הסיכון." },
       { icon: "brain", tag: "ממשל סיכונים", title: "אחריות וממשל סיכונים", body: "לדירקטוריון, להנהלה ולרואי חשבון: מדד תאימות ומטריצת חשיפה שמתמחרים את האחריות האלגוריתמית מראש, לפני הרגולטור או התובע." },
       { icon: "shield", tag: "IP ונתונים", title: "הגנת קניין רוחני ונתונים", body: "שכבת IP בת-הגנה סביב הטכנולוגיה שלכם, וארכיטקטורת נתונים מאובטחת בגישת Privacy-by-Design: פטנטים, סודות מסחריים ומודלים קנייניים." },
       { icon: "settings", tag: "חוזים וחברות", title: "חוזים וליווי חברות", body: "ממשל חוזים אוטומטי, ליווי סטארטאפים וחברות טכנולוגיה, סבבי גיוס והסכמי מייסדים, ובדיקות נאותות טכנולוגית לעסקאות." },
@@ -1845,7 +1846,7 @@ const he: Dict = {
       { q: "כיצד מתחילים לעבוד אתכם?", a: "אנחנו מתחילים בפגישת אבחון Tech-Legal אסטרטגית. בפגישה ראשונית זו אנחנו ממפים את הארכיטקטורה הטכנית, המבנה התאגידי והחשיפה הרגולטורית הנוכחיים שלכם, כדי לזהות פגיעויות מיידיות ולתכנן מפת דרכים מותאמת למיזם שלכם." },
     ],
     advisoryServices: [
-      { icon: "scale", title: "רגולציית AI ותאימות EU AI Act", body: "מיפוי וניהול חשיפה רגולטורית מתקדמת, לרבות ה-EU AI Act, משלב הפיתוח. סיווג סיכון, חובות GPAI ותיעוד טכני, ממופים למטריצת תאימות מסודרת לקראת מועד ה-High-Risk באוגוסט 2026." },
+      { icon: "scale", title: "רגולציית AI ותאימות EU AI Act", body: "מיפוי וניהול חשיפה רגולטורית מתקדמת, לרבות ה-EU AI Act, משלב הפיתוח. סיווג סיכון, חובות GPAI ותיעוד טכני, ממופים למטריצת תאימות מסודרת, לפי סוג החובה ודרגת הסיכון." },
       { icon: "brain", title: "אחריות וממשל סיכונים", body: "לדירקטוריון, להנהלה ולרואי חשבון: מדד תאימות ומטריצת חשיפה ניהולית שמתמחרים את האחריות האלגוריתמית מראש, לפני הרגולטור או התובע." },
       { icon: "shield", title: "הגנת קניין רוחני ונתונים", body: "שכבת IP בת-הגנה סביב הטכנולוגיה שלכם, פטנטים, סודות מסחריים ומודלים קנייניים, יחד עם ארכיטקטורת מודלים מקומיים ו-RAG בגישת Privacy-by-Design, כך שההגנה מובנית בבסיס ולא מוצמדת בדיעבד." },
       { icon: "settings", title: "חוזים וליווי חברות", body: "ממשל חוזים אוטומטי לאורך מחזור החיים, לצד מעטפת אסטרטגית לחברות טכנולוגיה: התאגדות, סבבי גיוס, הסכמי מייסדים ועובדים, ובדיקות נאותות טכנולוגית לעסקאות ולגיוסים." },
@@ -1913,7 +1914,8 @@ const he: Dict = {
           { type: "p", text: "לא: \"האם יש לנו מדיניות AI?\"." },
           { type: "p", text: "אלא: \"איזו החלטה עסקית או אנושית מושפעת מהמערכת, מי נושא באחריות לתוצאה, והאם נוכל להגן על התהליך אם הוא יותקף?\"." },
           { type: "p", text: "ארגון שיודע לענות על שלוש השאלות הללו כבר בונה יתרון. ארגון שאינו יודע, מגלה את הפער בדרך כלל אחרי עסקה, תלונה, כשל ספק או דרישת לקוח." },
-          { type: "p", text: "LALUM מסייעת לארגונים למפות חשיפת AI, לבנות ממשל ותיעוד בר-הגנה, ולתרגם רגולציה למנגנון עבודה שניתן לנהל בפועל." },
+          { type: "p", text: "LALUM מסייעת לארגונים למפות חשיפת AI, לבנות ממשל ותיעוד בר-הגנה, ולתרגם רגולציה למנגנון עבודה שניתן לנהל בפועל. פרטים נוספים בעמוד הייעוץ והגישור." },
+          { type: "cta", text: "למיפוי חשיפת ה-AI של הארגון", to: "/advisory" },
           { type: "p", text: "האמור הוא מידע כללי ואינו חוות דעת משפטית. תחולת ה-EU AI Act תלויה במערכת, בתפקיד הארגון בשרשרת הערך, בשוק היעד ובנסיבות השימוש." },
           { type: "p", text: "מקור עדכני: European Commission, AI Act." },
         ],

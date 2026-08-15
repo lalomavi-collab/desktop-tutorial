@@ -58,6 +58,12 @@ function Block({ block }: { block: ArticleBlock }) {
           ))}
         </ul>
       );
+    case "cta":
+      return (
+        <p style={{ margin: "8px 0 28px" }}>
+          <Link to={block.to} className="btn btn-clay" style={{ display: "inline-flex" }}>{block.text}</Link>
+        </p>
+      );
   }
 }
 

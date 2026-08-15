@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLang } from "../context/LangContext";
+import { whatsappNumber, contactEmail } from "../lib/content";
 
 // Branded Calendly inline embed. Users schedule without leaving lalumapp.com.
 // Colors are Calendly widget params (hex without '#'). Default is the LALUM
@@ -28,6 +30,27 @@ type Props = {
   height?: number;
   onScheduled?: () => void;
 };
+
+const COPY = {
+  he: {
+    loading: "טוען את היומן…",
+    trouble: "היומן לא נטען?",
+    openNew: "לפתיחת היומן בחלון חדש",
+    errTitle: "לא הצלחנו לטעון את היומן",
+    errBody: "אפשר לקבוע דרך הקישור הישיר, או להשאיר פרטים ונחזור אליכם.",
+    whatsapp: "תיאום בוואטסאפ",
+    email: "לשליחת מייל",
+  },
+  en: {
+    loading: "Loading the calendar…",
+    trouble: "Calendar not loading?",
+    openNew: "Open the calendar in a new tab",
+    errTitle: "We couldn't load the calendar",
+    errBody: "You can book via the direct link, or leave your details and we'll get back to you.",
+    whatsapp: "Schedule on WhatsApp",
+    email: "Send an email",
+  },
+} as const;
 
 let loader: Promise<void> | null = null;
 function loadCalendly(): Promise<void> {
@@ -59,17 +82,22 @@ function withTheme(url: string, t: Theme): string {
 
 export function SchedulingEmbed({ url, prefill, theme, height = 680, onScheduled }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const { lang } = useLang();
+  const c = COPY[lang];
   const t: Theme = { ...OBSIDIAN_GOLD, ...theme };
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
   useEffect(() => {
     let alive = true;
+    setStatus("loading");
     loadCalendly()
       .then(() => {
         if (!alive || !ref.current || !window.Calendly) return;
         ref.current.innerHTML = "";
         window.Calendly.initInlineWidget({ url: withTheme(url, t), parentElement: ref.current, prefill });
+        setStatus("ready");
       })
-      .catch(() => {});
+      .catch(() => { if (alive) setStatus("error"); });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, t.background, t.text, t.primary, prefill?.name, prefill?.email]);
@@ -85,5 +113,43 @@ export function SchedulingEmbed({ url, prefill, theme, height = 680, onScheduled
     return () => window.removeEventListener("message", onMsg);
   }, [onScheduled]);
 
-  return <div ref={ref} style={{ minWidth: 320, height, borderRadius: 16, overflow: "hidden" }} />;
+  const waHref = `https://wa.me/${whatsappNumber}`;
+
+  // Error fallback: the calendar script did not load (blocked, offline, or slow).
+  // Never leave the visitor at a dead frame; offer the direct link plus two
+  // channels that always work.
+  if (status === "error") {
+    return (
+      <div style={{ minWidth: 320, borderRadius: 16, border: "1px solid var(--line-strong)", background: "var(--card)", padding: "26px 22px", textAlign: "center" }}>
+        <p className="h3" style={{ fontSize: 19, margin: "0 0 6px" }}>{c.errTitle}</p>
+        <p className="muted" style={{ fontSize: 14.5, lineHeight: 1.6, margin: "0 0 18px", maxWidth: "44ch", marginInline: "auto" }}>{c.errBody}</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+          <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm">{c.openNew}</a>
+          <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">{c.whatsapp}</a>
+          <a href={`mailto:${contactEmail}`} className="btn btn-ghost btn-sm">{c.email}</a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ position: "relative", minWidth: 320, height, borderRadius: 16, overflow: "hidden" }}>
+        <div ref={ref} style={{ width: "100%", height: "100%" }} />
+        {status === "loading" && (
+          <div aria-hidden="true" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: "var(--slate)", fontSize: 14.5 }}>
+            <span className="embed-spinner" />
+            {c.loading}
+          </div>
+        )}
+      </div>
+      {/* Persistent escape hatch: even when the widget "loads" it can render an
+          empty frame (blocked third-party cookies, ad blockers); the direct link
+          always works. */}
+      <p style={{ marginTop: 12, fontSize: 13, color: "var(--slate)", textAlign: "center" }}>
+        {c.trouble}{" "}
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{c.openNew}</a>
+      </p>
+    </div>
+  );
 }

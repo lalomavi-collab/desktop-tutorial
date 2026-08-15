@@ -48,7 +48,8 @@ export type ArticleBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
   | { type: "quote"; text: string }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  | { type: "cta"; text: string; to: string };
 
 export type Article = {
   slug: string;
