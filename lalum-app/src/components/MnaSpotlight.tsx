@@ -5,7 +5,13 @@ import { useLang } from "../context/LangContext";
 // A prominent, standalone spotlight for M&A, so mergers and acquisitions read as
 // a headline practice, not just one card in the grid. It reuses the approved
 // M&A practice-area copy (title, blurb, points) so nothing new needs review.
-const CTA = { he: "לשיחה על עסקה או מיזוג", en: "Talk to us about a deal or M&A" } as const;
+const CTA = {
+  he: "לשיחה על עסקה או מיזוג",
+  en: "Talk to us about a deal or M&A",
+  es: "Hable con nosotros sobre una operación o fusión",
+  fr: "Parlez-nous d'une opération ou d'une fusion",
+  ar: "تحدث معنا بشأن صفقة أو اندماج",
+} as const;
 
 export function MnaSpotlight() {
   const { t, lang } = useLang();

@@ -87,6 +87,47 @@ html[lang="he"] .italic-clay {
   font-weight: 400;
 }
 
+/* Arabic swaps to complex-script fonts for the same reason as Hebrew: the
+   default Latin faces (Hanken Grotesk/Newsreader) have no Arabic glyphs, so
+   without this the browser falls back to a generic system font with the
+   Latin display's negative tracking still applied, which breaks Arabic's
+   connected letterforms. Cairo is a modern Arabic sans for body/UI; Markazi
+   Text is an Arabic-native serif with real display weight for headings. */
+html[lang="ar"] {
+  --sans: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  --serif: "Markazi Text", "Traditional Arabic", Georgia, serif;
+}
+html[lang="ar"] body {
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+html[lang="ar"] .btn {
+  line-height: 1.2;
+}
+html[lang="ar"] .eyebrow {
+  letter-spacing: 0;
+}
+/* Latin negative tracking thins and disconnects Arabic letterforms just like
+   it does Hebrew, so it's neutralised the same way here. */
+html[lang="ar"] .h1,
+html[lang="ar"] h1.serif {
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+html[lang="ar"] .h2,
+html[lang="ar"] h2.serif {
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+html[lang="ar"] .h3,
+html[lang="ar"] h3.serif {
+  letter-spacing: 0;
+}
+html[lang="ar"] .italic-clay {
+  font-style: normal;
+  font-weight: 600;
+}
+
 *,
 *::before,
 *::after {

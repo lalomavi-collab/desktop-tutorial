@@ -50,6 +50,33 @@ const COPY = {
     whatsapp: "Schedule on WhatsApp",
     email: "Send an email",
   },
+  es: {
+    loading: "Cargando el calendario…",
+    trouble: "¿El calendario no carga?",
+    openNew: "Abrir el calendario en una pestaña nueva",
+    errTitle: "No pudimos cargar el calendario",
+    errBody: "Puede reservar a través del enlace directo, o dejar sus datos y le responderemos.",
+    whatsapp: "Coordinar por WhatsApp",
+    email: "Enviar un correo",
+  },
+  fr: {
+    loading: "Chargement du calendrier…",
+    trouble: "Le calendrier ne se charge pas ?",
+    openNew: "Ouvrir le calendrier dans un nouvel onglet",
+    errTitle: "Nous n'avons pas pu charger le calendrier",
+    errBody: "Vous pouvez réserver via le lien direct, ou laisser vos coordonnées et nous vous recontacterons.",
+    whatsapp: "Planifier sur WhatsApp",
+    email: "Envoyer un e-mail",
+  },
+  ar: {
+    loading: "جارٍ تحميل التقويم…",
+    trouble: "التقويم لا يُحمَّل؟",
+    openNew: "افتحوا التقويم في تبويب جديد",
+    errTitle: "لم نتمكن من تحميل التقويم",
+    errBody: "يمكنكم الحجز عبر الرابط المباشر، أو ترك بياناتكم وسنعاود التواصل معكم.",
+    whatsapp: "التنسيق عبر واتساب",
+    email: "إرسال بريد إلكتروني",
+  },
 } as const;
 
 let loader: Promise<void> | null = null;

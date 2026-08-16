@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { extractText } from "../lib/extractText";
 import { OPEN_CHAT_EVENT } from "./chatEvents";
+import { bcp47For } from "../lib/hreflang";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
@@ -21,7 +22,7 @@ export function ChatWidget() {
   const { t, lang } = useLang();
   const { user } = useAuth();
   const C = t.ui.chat;
-  const speechLang = lang === "he" ? "he-IL" : "en-US";
+  const speechLang = bcp47For(lang);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

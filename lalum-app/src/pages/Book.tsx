@@ -11,6 +11,7 @@ import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
 import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
+import type { Lang } from "../lib/hreflang";
 
 // When a Calendly link is configured, booking is REAL and instant: the visitor
 // gets an email confirmation plus a calendar invite, and the meeting lands on
@@ -24,12 +25,22 @@ const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
 type DayOption = { key: string; wd: string; dm: string };
 
-function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
+// Short weekday labels, one terse glyph/abbreviation per day, matching the
+// original design's compact date-button width. Hand-picked per language
+// rather than pulled from Intl so the layout stays exactly as designed.
+const WEEKDAYS: Record<Lang, string[]> = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  he: ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"],
+  es: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+  fr: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+  ar: ["أحد", "اثن", "ثلا", "أرب", "خمی", "جمع", "سبت"],
+};
+
+function nextBusinessDays(count: number, lang: Lang): DayOption[] {
   const out: DayOption[] = [];
   const d = new Date();
-  const wdEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const wdHe = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
   const mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const wd = WEEKDAYS[lang];
   const pad = (n: number) => (n < 10 ? "0" + n : "" + n);
   let guard = 0;
   while (out.length < count && guard < 30) {
@@ -37,7 +48,7 @@ function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
     guard++;
     const day = d.getDay();
     if (day === 5 || day === 6) continue;
-    out.push({ key: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, wd: lang === "he" ? wdHe[day] : wdEn[day], dm: `${mo[d.getMonth()]} ${d.getDate()}` });
+    out.push({ key: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, wd: wd[day], dm: `${mo[d.getMonth()]} ${d.getDate()}` });
   }
   return out;
 }

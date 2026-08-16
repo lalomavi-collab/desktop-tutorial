@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
@@ -5,10 +6,13 @@ import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
+import { LANGS } from "../lib/hreflang";
 
 export function Header() {
   const { user } = useAuth();
-  const { t, toggle } = useLang();
+  const { t, lang, setLang } = useLang();
+  const [langOpen, setLangOpen] = useState(false);
+  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
 
   // Articles, Q&A and guides now live under the single Knowledge hub, so the top
   // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. Payment is a
@@ -95,15 +99,49 @@ export function Header() {
             <Icon name="telegram" size={18} />
           </a>
           <ShareButton />
-          <button
-            type="button"
-            onClick={toggle}
-            className="tb-btn tb-lang"
-            aria-label="Switch language"
-            title={t.ui.otherLangName}
-          >
-            {t.ui.otherLangShort}
-          </button>
+          <div className="tb-lang-wrap" style={{ position: "relative" }}>
+            <button
+              type="button"
+              onClick={() => setLangOpen((v) => !v)}
+              className="tb-btn tb-lang"
+              aria-label="Switch language"
+              aria-haspopup="listbox"
+              aria-expanded={langOpen}
+              title={current.autonym}
+            >
+              {current.code.toUpperCase()}
+            </button>
+            {langOpen && (
+              <>
+                {/* Backdrop closes the menu on outside click without a global listener. */}
+                <div onClick={() => setLangOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                <ul
+                  role="listbox"
+                  className="card"
+                  style={{ position: "absolute", insetInlineEnd: 0, top: "calc(100% + 8px)", zIndex: 41, listStyle: "none", margin: 0, padding: 6, minWidth: 140, display: "flex", flexDirection: "column", gap: 2 }}
+                >
+                  {LANGS.map((l) => (
+                    <li key={l.code}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={l.code === lang}
+                        onClick={() => { setLang(l.code); setLangOpen(false); }}
+                        dir={l.dir}
+                        style={{
+                          width: "100%", textAlign: l.dir === "rtl" ? "right" : "left", padding: "9px 12px", borderRadius: 8, border: "none",
+                          background: l.code === lang ? "var(--clay-tint)" : "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 14.5,
+                          fontWeight: l.code === lang ? 700 : 500,
+                        }}
+                      >
+                        {l.autonym}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
           {/* The assessment CTA lives in the page body (hero, advisory card,
               closing CTA), not the top bar, so the header stays uncluttered.
               Only the client login/portal button remains here. */}
