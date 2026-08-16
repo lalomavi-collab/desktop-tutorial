@@ -6,6 +6,7 @@ import { PageMeta } from "../components/PageMeta";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeHub } from "../components/PracticeHub";
 import { PracticeFaq } from "../components/PracticeFaq";
+import { ScenarioCard } from "../components/ScenarioCard";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
@@ -91,12 +92,7 @@ export function Advisory() {
         </div>
         <div className="grid grid-3">
           {t.data.testimonials.map((tm) => (
-            <div key={tm.attr} className="card" style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ color: "var(--clay)", opacity: 0.6 }}><Icon name="quote" size={26} /></span>
-              <p style={{ fontFamily: "var(--serif)", fontSize: 20, lineHeight: 1.5, color: "var(--ink)", margin: "18px 0 24px", flex: 1 }}>{tm.quote}</p>
-              <div style={{ height: 1, background: "var(--line)", marginBottom: 16 }} />
-              <div style={{ fontSize: 13, color: "var(--slate)" }}>{tm.attr}</div>
-            </div>
+            <ScenarioCard key={tm.sector} s={tm} />
           ))}
         </div>
       </section>

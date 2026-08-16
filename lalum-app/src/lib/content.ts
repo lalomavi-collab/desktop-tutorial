@@ -32,7 +32,10 @@ export type Why = { icon: IconName; title: string; body: string };
 export type Faq = { q: string; a: string };
 export type Service = { icon: IconName; title: string; body: string };
 export type Module = { icon: IconName; title: string; body: string };
-export type Testimonial = { quote: string; attr: string };
+// Anonymous, detailed engagement scenarios (no invented names, quotes, or
+// logos): sector, the challenge, what we did, and the outcome. Stronger and more
+// honest than an unattributed testimonial for Enterprise positioning.
+export type Testimonial = { sector: string; challenge: string; work: string; outcome: string };
 export type Plan = {
   name: string;
   tagline: string;
@@ -42,13 +45,18 @@ export type Plan = {
   cta: string;
 };
 export type Audience = { icon: IconName; title: string; body: string; points: string[] };
+
+// A homepage "which one are you?" path: a named audience, a one-line value, and
+// a link to where that audience is served.
+export type AudiencePath = { label: string; body: string; to: string; cta: string };
 export type Format = { meta: string; title: string; body: string };
 
 export type ArticleBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
   | { type: "quote"; text: string }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  | { type: "cta"; text: string; to: string };
 
 export type Article = {
   slug: string;
