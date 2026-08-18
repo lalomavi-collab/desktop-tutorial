@@ -1,10 +1,13 @@
 # LALUM redirect map (Wix -> new app). Full precise map built from the
 # Search Console export (188 ranked URLs + coverage). www host redirects are
 # handled at Cloudflare; these are the path-level 301s Netlify applies on the
-# apex. Order: specific rules first, general language fallback, then SPA shell.
+# apex. Order: specific rules first, general fallbacks, then SPA shell.
 
 # Canonicalize the www host to the apex, matching canonical/sitemap/OG/JSON-LD.
 https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
+
+# --- Legacy Wix blog index -> new articles hub ---
+/post   /insights   301
 
 # --- Legacy Wix BLOG posts (/post/<he-slug>) -> new /insights/<slug> ---
 /post/2026-שנת-המפנה-של-הבינה-המלאכותית-במשפט-בנדל-ן-וביישוב-סכסוכים  /insights/ai-turning-point-2026  301
@@ -150,6 +153,10 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/שקיפות-אלגוריתמית-האתיקה-של-הבינה-המלאכותית-במרחב-המשפטי-כלכלי-החדש  /insights/algorithmic-transparency  301
 /post/תהליכי-בוררות-נדל-ן-פתרון-סכסוכי-נדל-ן-חוקיים  /insights/real-estate-arbitration  301
 /post/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות  /insights/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות  301
+
+# Fallback for any /post/<slug> not individually mapped above (must come AFTER
+# the specific rules): send unknown legacy posts to the articles hub, never 404.
+/post/*   /insights   301
 
 # --- Legacy Wix pages -> closest equivalent in the new app ---
 /blog   /insights   301
