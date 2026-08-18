@@ -310,7 +310,7 @@ export const blogMeta: BlogMeta[] = [
     "title": "השקעות נדלן פורטוגל: כך תשקעו חכם בשוק אירופי צומח ",
     "excerpt": "מדריך להשקעות נדל\"ן בפורטוגל, מסלולי השקעה בליסבון ובפורטו, מיסוי, תשואות, מימון וויזות שהייה.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/portugal-realestate-investment.png"
+    "cover": "/images/covers/portugal-realestate-investment.webp"
   },
   {
     "slug": "contract-review-before-signing",
