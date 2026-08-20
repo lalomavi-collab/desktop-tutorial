@@ -100,9 +100,34 @@ function replaceTag(html: string, re: RegExp, prefix: string, value: string, suf
   return re.test(html) ? html.replace(re, `${prefix}${esc(value)}${suffix}`) : html;
 }
 
+// Search engines truncate the <title> around 60 characters, so a 100+ char
+// editorial headline shows up chopped mid-word in results. Produce a concise
+// <title> (prefer the pre-colon headline, else a clean word-boundary cut),
+// while og:title and twitter:title keep the FULL headline for social cards.
+function shortTitle(full: string): string {
+  if (full.length <= 60) return full;
+  const m = full.match(/^([\s\S]*?)(\s*[·|]\s*LALUM)\s*$/);
+  const head = m ? m[1] : full;
+  const suffix = m ? m[2] : "";
+  const budget = 60 - suffix.length;
+  let t = head;
+  if (t.length > budget) {
+    const colon = head.indexOf(":");
+    if (colon >= 15 && colon <= budget) {
+      t = head.slice(0, colon);
+    } else {
+      t = head.slice(0, budget);
+      const sp = t.lastIndexOf(" ");
+      if (sp > 20) t = t.slice(0, sp);
+    }
+    t = t.replace(/[\s,;:·|(–\-]+$/, "");
+  }
+  return t + suffix;
+}
+
 function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string }): string {
   let h = template;
-  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(r.title)}</title>`);
+  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(shortTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
   h = h.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, `<meta name="description" content="${esc(r.desc)}" />`);
   h = h.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:description" content="${esc(r.desc)}" />`);
