@@ -81,6 +81,7 @@ export function Footer() {
           <div className="footer-head">{f.explore}</div>
           <Link to="/">{L.home}</Link>
           <Link to="/advisory">{L.advisory}</Link>
+          <Link to="/ai-legal-advisory">ייעוץ וחוות דעת AI</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
