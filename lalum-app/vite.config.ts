@@ -5,6 +5,8 @@ import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { strings } from "./src/lib/strings";
 import { alternatesFor } from "./src/lib/hreflang";
+import { faqsForPath } from "./src/lib/pageFaqs";
+import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 
 const SITE = "https://lalumapp.com";
 
@@ -175,6 +177,16 @@ function seoPrerender(): Plugin {
         if (r.article) {
           const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image });
           html = html.replace("</head>", `    ${script}\n  </head>`);
+        } else {
+          // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
+          // so the Q&A is visible to crawlers and AI answer engines without running
+          // JS. Uses the same faqsForPath/faqPageNode helpers the runtime PageMeta
+          // uses, so hydration finds a matching #page-jsonld and nothing duplicates.
+          const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, `/${r.path}`))]);
+          if (faqNode) {
+            const script = `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>`;
+            html = html.replace("</head>", `    ${script}\n  </head>`);
+          }
         }
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
