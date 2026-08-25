@@ -122,15 +122,15 @@ export function Article() {
                 name: "LALUM",
                 logo: { "@type": "ImageObject", url: "https://lalumapp.com/icon-512.png" },
               },
-              mainEntityOfPage: `https://lalumapp.com/insights/${slug}`,
+              mainEntityOfPage: `https://lalumapp.com/insights/${slug}/`,
               image: view.cover || "https://lalumapp.com/og-card-v2.png",
             },
             {
               "@type": "BreadcrumbList",
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: "https://lalumapp.com/" },
-                { "@type": "ListItem", position: 2, name: "Insights", item: "https://lalumapp.com/insights" },
-                { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}` },
+                { "@type": "ListItem", position: 2, name: "Insights", item: "https://lalumapp.com/insights/" },
+                { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}/` },
               ],
             },
           ],

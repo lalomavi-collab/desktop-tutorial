@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { strings } from "./src/lib/strings";
-import { alternatesFor } from "./src/lib/hreflang";
+import { alternatesFor, langUrl } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 
@@ -78,15 +78,15 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
         ...(iso ? { datePublished: iso } : {}),
         author: { "@type": "Person", "@id": `${SITE}/#founder`, name: "Dr. Avraham Lalum", url: `${SITE}/`, sameAs: ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"] },
         publisher: { "@type": "Organization", name: "LALUM", logo: { "@type": "ImageObject", url: `${SITE}/icon-512.png` } },
-        mainEntityOfPage: `${SITE}/insights/${a.slug}`,
+        mainEntityOfPage: `${SITE}/insights/${a.slug}/`,
         image: a.image || `${SITE}/og-card-v2.png`,
       },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
-          { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights` },
-          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}` },
+          { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights/` },
+          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
         ],
       },
     ],
@@ -196,7 +196,7 @@ function seoPrerender(): Plugin {
       ];
       let written = 0;
       for (const r of routes) {
-        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image });
         // Bake per-article structured data into the static HTML for crawlers and
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
