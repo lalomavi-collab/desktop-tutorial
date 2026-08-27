@@ -217,59 +217,57 @@ Cloudflare Email Routing (which sets the root MX to Cloudflare) and forward to
 
 ---
 
-## 4. Embedded scheduling (Calendly, on brand)
+## 4. Embedded scheduling (Zoho Bookings, free)
 
-The portal embeds Calendly inline so the client never leaves `lalumapp.com`. It
-is wired behind `VITE_CALENDLY_URL`: set it and the embed replaces the built-in
-picker; leave it empty and the built-in picker stays.
+The portal embeds the scheduling provider inline (as an iframe) so the client
+never leaves `lalumapp.com`. It is wired behind `VITE_SCHEDULING_URL`: set it
+and the embed replaces the built-in picker; leave it empty and the built-in
+picker (a manual request form, see `Book.tsx`) stays.
 
 ```
-VITE_CALENDLY_URL=https://calendly.com/<your-org>/<event>
+VITE_SCHEDULING_URL=https://<yourzone>.zoho.com/bookings/<service-link>
 ```
 
-Component: `src/components/SchedulingEmbed.tsx`. Colors are Calendly widget
-parameters (hex without `#`). The default is the LALUM premium dark palette.
+Per-meeting-type links (Zoom / Teams / phone / in-person) live in
+`src/lib/content.ts` (`meetingTypes`), each pointing at its own Zoho Bookings
+service link. A blank `url` there falls back to `bookingBaseUrl` /
+`VITE_SCHEDULING_URL`; if both are blank, `Book.tsx` shows the manual request
+form instead of embedding a dead link.
+
+We switched from Calendly to **Zoho Bookings** because its free, single-user
+plan includes unlimited calendar connections (including two-way Outlook /
+Microsoft 365 sync), unlimited service types, and an embeddable booking page,
+at no cost. Setmore is a solid free alternative if the firm ever needs more
+than one staff member on the free tier.
+
+Setup (in the Zoho Bookings dashboard, not in this repo):
+1. Create a free account at zoho.com/bookings.
+2. Settings → Integrations → Calendar Sync: connect the firm's Outlook /
+   Office 365 calendar, two-way sync.
+3. Services: create one service per meeting format (Zoom, Microsoft Teams,
+   Phone Call, In-Person Meeting), each with its own duration.
+4. Per service, use Share / Embed to get its booking URL, and paste it into
+   the matching `meetingTypes` entry in `content.ts`.
+
+Component: `src/components/SchedulingEmbed.tsx`. It renders a plain iframe, so
+it works with any provider that allows iframe embedding, not just Zoho, no
+component change needed if the provider changes again later.
 
 ```tsx
 import { SchedulingEmbed } from "./components/SchedulingEmbed";
 
-// Dark, premium: obsidian background, cream text, gold accent (the default).
 <SchedulingEmbed
-  url={import.meta.env.VITE_CALENDLY_URL!}
+  url={import.meta.env.VITE_SCHEDULING_URL!}
   prefill={{ name: "Client name", email: "client@company.com" }}
-  theme={{ background: "0a0a0a", text: "fffdd0", primary: "d4af37" }}
-  onScheduled={() => {/* confirmed: record it, fire lalum-notify, show success */}}
+  onScheduled={() => {/* best-effort: fires only if the provider postMessages a booking-confirmed event */}}
 />
 ```
 
-Palette presets:
-
-| Look | background | text | primary |
-| --- | --- | --- | --- |
-| Obsidian and gold (premium dark) | `0a0a0a` | `fffdd0` | `d4af37` |
-| Dark gray and metal | `1b1b1b` | `f5f1e8` | `c0c0c0` |
-| Clay and ivory (matches the light app) | `fbf9f3` | `1a1815` | `c15f3c` |
-
-Plain HTML alternative (no framework):
-
-```html
-<link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css" />
-<div
-  class="calendly-inline-widget"
-  data-url="https://calendly.com/your-org/event?background_color=0a0a0a&text_color=fffdd0&primary_color=d4af37&hide_gdpr_banner=1"
-  style="min-width:320px;height:680px;border-radius:16px;overflow:hidden;">
-</div>
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
-```
-
-The component listens for Calendly's `calendly.event_scheduled` postMessage event
-and calls `onScheduled`, which is where you record the booking and trigger the
-confirmation email.
-
-Acuity alternative: embed with
-`https://app.acuityscheduling.com/schedule.php?owner=<OWNER_ID>`. Acuity offers a
-`Embed a scheduling button/inline` snippet, but its color theming is more limited
-than Calendly's, so Calendly is the better fit for the dark and gold look.
+Note: `onScheduled` listens broadly for a postMessage event whose `event`
+field looks booking-related. This was Calendly's documented contract
+(`calendly.event_scheduled`); Zoho Bookings' exact event name has not been
+verified here, so treat the callback as best-effort. The visitor still always
+gets a confirmation directly from Zoho Bookings by email regardless.
 
 ---
 
@@ -279,7 +277,7 @@ than Calendly's, so Calendly is the better fit for the dark and gold look.
 | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Pages (build) | Supabase URL, e.g. `https://api.lalumapp.com` |
 | `VITE_SUPABASE_ANON_KEY` | Pages (build) | Public anon key (RLS protected) |
-| `VITE_CALENDLY_URL` | Pages (build) | Optional Calendly link for the portal embed |
+| `VITE_SCHEDULING_URL` | Pages (build) | Optional scheduling link (Zoho Bookings) for the portal embed |
 | `SUPABASE_URL` | Edge Functions | Same URL, server side |
 | `SUPABASE_SERVICE_ROLE_KEY` | Edge Functions | Service role, secret |
 | `ANTHROPIC_API_KEY` | Edge Functions | `lalum-assistant` chat |

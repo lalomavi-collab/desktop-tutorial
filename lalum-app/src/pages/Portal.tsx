@@ -10,8 +10,9 @@ import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfe
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { bcp47For, type Lang } from "../lib/hreflang";
 
-// When set, an embedded Calendly replaces the manual day/time picker.
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL as string | undefined;
+// When set, an embedded scheduling widget (Zoho Bookings) replaces the manual
+// day/time picker.
+const SCHEDULING_URL = import.meta.env.VITE_SCHEDULING_URL as string | undefined;
 
 const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
@@ -1141,10 +1142,10 @@ export function Portal() {
             <span className="icon-badge"><Icon name="calendar" size={22} /></span>
             <h2 className="h3" style={{ fontSize: 22 }}>{P.book.title}</h2>
           </div>
-          {CALENDLY_URL ? (
+          {SCHEDULING_URL ? (
             <div style={{ background: "var(--ink)", borderRadius: 16, padding: 14 }}>
               <SchedulingEmbed
-                url={CALENDLY_URL}
+                url={SCHEDULING_URL}
                 prefill={{ email: user?.email ?? undefined }}
                 onScheduled={() => setBookMsg({ tone: "ok", text: P.book.okSuffix })}
               />

@@ -23,20 +23,20 @@ The site is available in Hebrew (primary), English, Spanish, French, and Arabic.
 ## Key pages
 
 - Home: https://lalumapp.com/
-- Advisory and Mediation: https://lalumapp.com/advisory
-- Training and courses: https://lalumapp.com/training
-- Knowledge center: https://lalumapp.com/knowledge
-- Insights and articles: https://lalumapp.com/insights
-- Questions and answers: https://lalumapp.com/faq
-- Book a consultation: https://lalumapp.com/book
+- Advisory and Mediation: https://lalumapp.com/advisory/
+- Training and courses: https://lalumapp.com/training/
+- Knowledge center: https://lalumapp.com/knowledge/
+- Insights and articles: https://lalumapp.com/insights/
+- Questions and answers: https://lalumapp.com/faq/
+- Book a consultation: https://lalumapp.com/book/
 
 ## Featured articles
 
-- The EU AI Act is here, what Israeli leadership must do now: https://lalumapp.com/insights/eu-ai-act-2026 — the AI Act already applies; how boards and Israeli companies operating in Europe should map exposure, classify systems (prohibited, transparency, GPAI, high-risk), anchor human accountability, and keep a defensible evidence file.
-- The black box fallacy, why unexplainable AI is a legal liability: https://lalumapp.com/insights/explainability — accuracy without the ability to reason is exposure; the governance controls a board must be able to evidence on demand.
-- The corporate trap, are your AI models leaking the organization's IP: https://lalumapp.com/insights/sovereignty — feeding confidential contracts and client records into third-party models as a privacy and trade-secret breach, and zero-data-leakage architecture.
-- Board liability for algorithmic decisions: https://lalumapp.com/insights/board-liability — when automated decisions expose directors and officers personally, and the record that defends them.
-- Public sector AI and procurement: https://lalumapp.com/insights/procurement — explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review.
+- The EU AI Act is here, what Israeli leadership must do now: https://lalumapp.com/insights/eu-ai-act-2026/ . The AI Act already applies; how boards and Israeli companies operating in Europe should map exposure, classify systems (prohibited, transparency, GPAI, high-risk), anchor human accountability, and keep a defensible evidence file.
+- The black box fallacy, why unexplainable AI is a legal liability: https://lalumapp.com/insights/explainability/ . Accuracy without the ability to reason is exposure; the governance controls a board must be able to evidence on demand.
+- The corporate trap, are your AI models leaking the organization's IP: https://lalumapp.com/insights/sovereignty/ . Feeding confidential contracts and client records into third-party models as a privacy and trade-secret breach, and zero-data-leakage architecture.
+- Board liability for algorithmic decisions: https://lalumapp.com/insights/board-liability/ . When automated decisions expose directors and officers personally, and the record that defends them.
+- Public sector AI and procurement: https://lalumapp.com/insights/procurement/ . Explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review.
 
 ## Contact
 

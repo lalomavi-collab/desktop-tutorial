@@ -7,6 +7,12 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(self), camera=()
+  # Isolate the top-level browsing context from cross-origin windows (a
+  # defense-in-depth against cross-window attacks). The "allow-popups" variant
+  # keeps window.open working, so it does not affect the two noopener popups
+  # (site search, portal file links), the Zoho Bookings inline iframe (COOP does
+  # not touch iframes), or the Invoice4U payment (a top-level redirect).
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
   # Enforcing: the full hardened policy. It is safe to enforce because every
   # resource the app loads on-page is allowlisted below, the build emits no
   # inline scripts (the one print action on cv.html uses a same-origin
@@ -14,9 +20,13 @@
   # (window.location) rather than an on-page embed, so no script-src/frame-src
   # directive can interrupt it. The allowlist covers every third party the app
   # actually uses: Supabase (auth, data, realtime), Invoice4U (payments),
-  # Calendly (booking), Google Fonts, wixstatic (article images), the
+  # Zoho Bookings (booking, embedded as a plain iframe, no external script/style
+  # needed; *.zohobookings.com covers the .com data center, add *.zoho.eu /
+  # *.zoho.in / *.zoho.com.cn here too if the firm's account ends up on a
+  # different zone), Google Fonts, wixstatic (article images), the
   # HaveIBeenPwned range API (leaked-password check at sign-up), the SociableKit
-  # LinkedIn feed widget (home page), and the NytroSEO plugin (public pages).
+  # LinkedIn feed widget (home page) and its data backends (accentapi and the
+  # SociableKit image host), and the NytroSEO plugin (public pages).
   # Outbound links (WhatsApp, Telegram, social profiles, legal citation sources)
   # are top-level navigations, which CSP does not restrict, so they need no entry.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://assets.calendly.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://calendly.com https://assets.calendly.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com; frame-src 'self' https://calendly.com https://*.calendly.com https://private.invoice4u.co.il https://widgets.sociablekit.com; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com https://data.accentapi.com https://data-image.sociablekit.com; frame-src 'self' https://*.zoho.com https://*.zohobookings.com https://private.invoice4u.co.il https://widgets.sociablekit.com; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'; upgrade-insecure-requests

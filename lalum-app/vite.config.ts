@@ -4,7 +4,9 @@ import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { strings } from "./src/lib/strings";
-import { alternatesFor } from "./src/lib/hreflang";
+import { alternatesFor, langUrl } from "./src/lib/hreflang";
+import { faqsForPath } from "./src/lib/pageFaqs";
+import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 
 const SITE = "https://lalumapp.com";
 
@@ -14,6 +16,7 @@ const SITE = "https://lalumapp.com";
 // description, instead of the app-shell default.
 const STATIC_ROUTES: { path: string; title: string; desc: string }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
+  { path: "ai-legal-advisory", title: "ייעוץ משפטי וחוות דעת שנייה בנושא AI לחברות | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
   { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד\"ר אברהם ללום ומשרד LALUM." },
@@ -75,15 +78,15 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
         ...(iso ? { datePublished: iso } : {}),
         author: { "@type": "Person", "@id": `${SITE}/#founder`, name: "Dr. Avraham Lalum", url: `${SITE}/`, sameAs: ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"] },
         publisher: { "@type": "Organization", name: "LALUM", logo: { "@type": "ImageObject", url: `${SITE}/icon-512.png` } },
-        mainEntityOfPage: `${SITE}/insights/${a.slug}`,
+        mainEntityOfPage: `${SITE}/insights/${a.slug}/`,
         image: a.image || `${SITE}/og-card-v2.png`,
       },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
-          { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights` },
-          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}` },
+          { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights/` },
+          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
         ],
       },
     ],
@@ -98,9 +101,34 @@ function replaceTag(html: string, re: RegExp, prefix: string, value: string, suf
   return re.test(html) ? html.replace(re, `${prefix}${esc(value)}${suffix}`) : html;
 }
 
+// Search engines truncate the <title> around 60 characters, so a 100+ char
+// editorial headline shows up chopped mid-word in results. Produce a concise
+// <title> (prefer the pre-colon headline, else a clean word-boundary cut),
+// while og:title and twitter:title keep the FULL headline for social cards.
+function shortTitle(full: string): string {
+  if (full.length <= 60) return full;
+  const m = full.match(/^([\s\S]*?)(\s*[·|]\s*LALUM)\s*$/);
+  const head = m ? m[1] : full;
+  const suffix = m ? m[2] : "";
+  const budget = 60 - suffix.length;
+  let t = head;
+  if (t.length > budget) {
+    const colon = head.indexOf(":");
+    if (colon >= 15 && colon <= budget) {
+      t = head.slice(0, colon);
+    } else {
+      t = head.slice(0, budget);
+      const sp = t.lastIndexOf(" ");
+      if (sp > 20) t = t.slice(0, sp);
+    }
+    t = t.replace(/[\s,;:·|(–\-]+$/, "");
+  }
+  return t + suffix;
+}
+
 function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string }): string {
   let h = template;
-  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(r.title)}</title>`);
+  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(shortTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
   h = h.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, `<meta name="description" content="${esc(r.desc)}" />`);
   h = h.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:description" content="${esc(r.desc)}" />`);
@@ -168,13 +196,23 @@ function seoPrerender(): Plugin {
       ];
       let written = 0;
       for (const r of routes) {
-        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: `${SITE}/${r.path}`, path: r.path, image: r.image });
+        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image });
         // Bake per-article structured data into the static HTML for crawlers and
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
           const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image });
           html = html.replace("</head>", `    ${script}\n  </head>`);
+        } else {
+          // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
+          // so the Q&A is visible to crawlers and AI answer engines without running
+          // JS. Uses the same faqsForPath/faqPageNode helpers the runtime PageMeta
+          // uses, so hydration finds a matching #page-jsonld and nothing duplicates.
+          const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, `/${r.path}`))]);
+          if (faqNode) {
+            const script = `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>`;
+            html = html.replace("</head>", `    ${script}\n  </head>`);
+          }
         }
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });

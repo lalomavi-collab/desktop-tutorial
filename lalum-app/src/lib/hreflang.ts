@@ -45,13 +45,18 @@ export function bcp47For(lang: Lang): string {
   return LANGS.find((l) => l.code === lang)?.bcp47 ?? "en-US";
 }
 
-// Normalise a route path to a leading-slash, no-trailing-slash form, so the
-// home route is "/" and every other route is "/path".
+// Normalise a route path to a leading-slash, TRAILING-slash form (home stays
+// "/"). The content routes are prerendered as `<path>/index.html`, and the host
+// serves them at `<path>/`: a request without the trailing slash 301-redirects
+// to the slash form. Canonical, hreflang, and og:url must therefore use the
+// trailing-slash form so they name the actual served URL and never a redirect
+// (a no-slash canonical is what made Google flag the English pages as
+// "redirects to another URL" and treat them as duplicates of the Hebrew URL).
 function normPath(path: string): string {
   let p = path || "/";
   if (!p.startsWith("/")) p = "/" + p;
-  if (p.length > 1 && p.endsWith("/")) p = p.replace(/\/+$/, "");
-  return p;
+  p = p.replace(/\/+$/, "");
+  return p === "" ? "/" : p + "/";
 }
 
 // The absolute URL for a given path in a given language. Hebrew is the clean
