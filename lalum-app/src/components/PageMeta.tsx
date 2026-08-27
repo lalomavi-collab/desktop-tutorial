@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLang } from "../context/LangContext";
-import { langUrl, alternatesFor } from "../lib/hreflang";
+import { langUrl, alternatesFor, bcp47For } from "../lib/hreflang";
 import { syncLangParam } from "../lib/langParam";
 
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
@@ -57,7 +57,7 @@ export function PageMeta({ title, description, image, path, jsonLd, noindex }: P
     setMeta("property", "og:title", title);
     setMeta("name", "twitter:title", title);
     setMeta("property", "og:url", url);
-    setMeta("property", "og:locale", lang === "he" ? "he_IL" : "en_US");
+    setMeta("property", "og:locale", bcp47For(lang).replace("-", "_"));
     if (description) {
       setMeta("name", "description", description);
       setMeta("property", "og:description", description);

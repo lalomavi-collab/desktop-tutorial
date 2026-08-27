@@ -7,6 +7,9 @@ import type { Testimonial } from "../lib/content";
 const LABELS = {
   he: { challenge: "האתגר", work: "מה עשינו", outcome: "התוצאה" },
   en: { challenge: "The challenge", work: "What we did", outcome: "The outcome" },
+  es: { challenge: "El desafío", work: "Qué hicimos", outcome: "El resultado" },
+  fr: { challenge: "Le défi", work: "Ce que nous avons fait", outcome: "Le résultat" },
+  ar: { challenge: "التحدي", work: "ما قمنا به", outcome: "النتيجة" },
 } as const;
 
 export function ScenarioCard({ s }: { s: Testimonial }) {

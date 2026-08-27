@@ -188,13 +188,19 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /thedecisionroom  /advisory  301
 /valuation  /book  301
 
-# --- Legacy Wix language prefixes (/en, /ar, /es, /fr). App uses ?lang=en. ---
+# --- Legacy Wix language prefixes (Wix Multilingual, SUBDIRECTORY URLs). The
+# old site served en/es/fr/ar under /en, /es, /fr, /ar path prefixes; the app
+# now switches language with ?lang=xx, so preserve the rest of the path and
+# set the matching language param instead of dropping the visitor on the home
+# page. ---
 /en       /?lang=en        301
 /en/*     /:splat?lang=en  301
-/ar       /                301
-/ar/*     /                301
-/es/*     /                301
-/fr/*     /                301
+/es       /?lang=es        301
+/es/*     /:splat?lang=es  301
+/fr       /?lang=fr        301
+/fr/*     /:splat?lang=fr  301
+/ar       /?lang=ar        301
+/ar/*     /:splat?lang=ar  301
 
 # SPA fallback: serve the app shell for every in-app route.
 /*    /index.html   200

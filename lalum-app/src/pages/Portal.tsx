@@ -8,6 +8,7 @@ import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
+import { bcp47For, type Lang } from "../lib/hreflang";
 
 // When set, an embedded scheduling widget (Zoho Bookings) replaces the manual
 // day/time picker.
@@ -17,11 +18,20 @@ const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
 type DayOption = { key: string; wd: string; dm: string };
 
-function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
+// Short weekday labels, one terse glyph/abbreviation per day, matching the
+// original design's compact date-button width.
+const WEEKDAYS: Record<Lang, string[]> = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  he: ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"],
+  es: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+  fr: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+  ar: ["أحد", "اثن", "ثلا", "أرب", "خمی", "جمع", "سبت"],
+};
+
+function nextBusinessDays(count: number, lang: Lang): DayOption[] {
   const out: DayOption[] = [];
   const d = new Date();
-  const wdEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const wdHe = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
+  const wd = WEEKDAYS[lang];
   const mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const pad = (n: number) => (n < 10 ? "0" + n : "" + n);
   let guard = 0;
@@ -32,7 +42,7 @@ function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
     if (day === 5 || day === 6) continue; // skip Fri/Sat
     out.push({
       key: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-      wd: lang === "he" ? wdHe[day] : wdEn[day],
+      wd: wd[day],
       dm: `${mo[d.getMonth()]} ${d.getDate()}`,
     });
   }
@@ -521,7 +531,7 @@ export function Portal() {
     const sym: Record<string, string> = { ILS: "₪", USD: "$", EUR: "€" };
     return `${sym[currency] ?? ""}${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
-  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { day: "numeric", month: "short" });
+  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(bcp47For(lang), { day: "numeric", month: "short" });
 
   // Admin inbox grouped into a folder per client, with search + "needs reply"
   // filtering, most-urgent client first.
@@ -955,7 +965,7 @@ export function Portal() {
                 <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
-                    <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{new Date(m.created_at).toLocaleDateString(lang === "he" ? "he-IL" : "en-US")}</span>
+                    <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{new Date(m.created_at).toLocaleDateString(bcp47For(lang))}</span>
                   </div>
                   {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
                   <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
