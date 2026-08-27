@@ -7,6 +7,12 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(self), camera=()
+  # Isolate the top-level browsing context from cross-origin windows (a
+  # defense-in-depth against cross-window attacks). The "allow-popups" variant
+  # keeps window.open working, so it does not affect the two noopener popups
+  # (site search, portal file links), the Calendly inline iframe (COOP does not
+  # touch iframes), or the Invoice4U payment (a top-level redirect).
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
   # Enforcing: the full hardened policy. It is safe to enforce because every
   # resource the app loads on-page is allowlisted below, the build emits no
   # inline scripts (the one print action on cv.html uses a same-origin
