@@ -21,8 +21,10 @@ import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
-// busts any browser or CDN cache instead of serving a stale /founder.jpg.
-import founderPhoto from "../assets/founder.jpg";
+// busts any browser or CDN cache instead of serving a stale /founder.webp.
+// WebP, resized to 944px (2x the on-page display width) for a sharp retina
+// portrait at a fraction of the original JPEG weight.
+import founderPhoto from "../assets/founder.webp";
 
 export function Home() {
   const { t } = useLang();

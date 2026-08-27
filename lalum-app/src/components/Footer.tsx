@@ -61,7 +61,7 @@ export function Footer() {
 
       <div className="wrap footer-inner">
         <div className="footer-brand">
-          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" loading="lazy" decoding="async" />
+          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" width={1945} height={432} loading="lazy" decoding="async" />
           <p className="footer-tagline">{f.tagline}</p>
           <div className="footer-social" aria-label={f.follow}>
             <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label={f.linkedin} className="footer-social-link"><LinkedInIcon /></a>
