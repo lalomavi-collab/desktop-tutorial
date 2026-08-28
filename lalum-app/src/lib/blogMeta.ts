@@ -436,14 +436,14 @@ export const blogMeta: BlogMeta[] = [
     "title": "המדריך שמונע טעויות חוזרות בהתחדשות עירונית",
     "excerpt": "מדוע נדרשת חוות דעת מתכללת אחת בהתחדשות עירונית, וכיצד ריבוי חוות דעת חלקיות משתק פרויקטים.",
     "date": "נובמבר 2025",
-    "cover": ""
+    "cover": "/images/covers/urban-renewal-risk.webp"
   },
   {
     "slug": "four-opinions-one-agreement",
     "title": "“ארבע חוות דעת, הסכם אחד: ומחלוקת שנמשכה מעל שנה\"",
     "excerpt": "סיפור מקרה על ארבע חוות דעת סותרות על אותו הסכם התחדשות עירונית, ומדוע נדרשת חוות דעת מתכללת אחת.",
     "date": "נובמבר 2025",
-    "cover": ""
+    "cover": "/images/covers/decision-oriented-mediation-benefits.webp"
   },
   {
     "slug": "lalum-investment-model-launch",
