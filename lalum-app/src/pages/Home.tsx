@@ -147,6 +147,28 @@ export function Home() {
         </div>
       </section>
 
+      {/* ADVISORY PILLARS: prominent entry points to the two second-opinion pillar pages */}
+      <section className="wrap section section-line">
+        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
+          <p className="eyebrow">ייעוץ וחוות דעת שנייה</p>
+          <h2 className="h2">שני מסלולי ייעוץ עצמאי וחוות דעת שנייה</h2>
+        </div>
+        <div className="grid grid-2">
+          <Link to="/ai-legal-advisory" className="card" aria-label="ייעוץ וחוות דעת שנייה בנושא AI">
+            <span className="icon-badge"><Icon name="brain" size={23} /></span>
+            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>ייעוץ וחוות דעת שנייה בנושא AI</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>לחברות וארגונים: ממשל בינה מלאכותית, EU AI Act, אחריות אלגוריתמית וניהול סיכונים.</p>
+            <span className="card-go">מידע נוסף &rarr;</span>
+          </Link>
+          <Link to="/real-estate-legal-advisory" className="card" aria-label="ייעוץ וחוות דעת שנייה בנדלן והתחדשות עירונית">
+            <span className="icon-badge"><Icon name="scale" size={23} /></span>
+            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>ייעוץ וחוות דעת שנייה בנדל"ן</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>עסקאות נדל"ן והתחדשות עירונית (תמ"א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות.</p>
+            <span className="card-go">מידע נוסף &rarr;</span>
+          </Link>
+        </div>
+      </section>
+
       {/* ENGINE */}
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
