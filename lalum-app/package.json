@@ -11,7 +11,8 @@
     "faq-check": "node scripts/faq-schema-check.mjs",
     "preview": "vite preview",
     "build-check": "node scripts/build-check.mjs",
-    "postbuild": "node scripts/build-check.mjs"
+    "postbuild": "node scripts/build-check.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
