@@ -17,6 +17,9 @@ on:
     branches: [main]
     paths:
       - "lalum-app/**"
+      # The workflow's own file, so a change to the submission itself is
+      # exercised on merge instead of waiting for the next content change.
+      - ".github/workflows/indexnow.yml"
   workflow_dispatch:
 
 permissions:
