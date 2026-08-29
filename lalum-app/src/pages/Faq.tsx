@@ -36,7 +36,11 @@ export function Faq() {
         {faqCategories.map((cat) => (
           <div key={cat.id} style={{ marginTop: 40 }}>
             <div className="faq-cat-head">
-              <span className="faq-cat-badge">{cat.title}</span>
+              {/* A real <h2> per chapter: the page carried a single heading for
+                  28 chapters, so neither a search engine nor a screen reader
+                  could see its structure. Styling is unchanged, the class
+                  already sets the font and now also zeroes the heading margin. */}
+              <h2 className="faq-cat-badge">{cat.title}</h2>
               <span className="faq-cat-count">{cat.items.length}</span>
             </div>
             <div className="faq-list" style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 18 }}>
@@ -47,10 +51,15 @@ export function Faq() {
                 const bid = `faq-btn-${key}`;
                 return (
                   <div key={key} className="faq-item">
-                    <button id={bid} type="button" className="faq-q" aria-expanded={isOpen} aria-controls={pid} onClick={() => setOpen(isOpen ? "" : key)}>
-                      <span>{it.q}</span>
-                      <span className={"faq-chevron" + (isOpen ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
-                    </button>
+                    {/* The WAI-ARIA accordion pattern puts the control inside a
+                        heading, so assistive tech can jump question to question
+                        and the Q&A gains real document structure. */}
+                    <h3 className="faq-qh">
+                      <button id={bid} type="button" className="faq-q" aria-expanded={isOpen} aria-controls={pid} onClick={() => setOpen(isOpen ? "" : key)}>
+                        <span>{it.q}</span>
+                        <span className={"faq-chevron" + (isOpen ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
+                      </button>
+                    </h3>
                     {isOpen && (
                       <div id={pid} role="region" aria-labelledby={bid} className="faq-answer">
                         {it.a.map((p, j) => <p key={j} style={{ margin: j === 0 ? "0 0 12px" : "0 0 12px" }}>{p}</p>)}
