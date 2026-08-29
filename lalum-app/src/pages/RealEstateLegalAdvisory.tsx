@@ -3,12 +3,12 @@ import { PageMeta } from "../components/PageMeta";
 import { Icon } from "../components/Icon";
 import { useLang } from "../context/LangContext";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
-import { faqsForPath } from "../lib/pageFaqs";
-import { realEstatePillar as P } from "../lib/pillars";
+import { realEstatePillarFor } from "../lib/pillars";
 
 export function RealEstateLegalAdvisory() {
-  const { t } = useLang();
-  const faqs = faqsForPath(t, "/real-estate-legal-advisory");
+  const { lang } = useLang();
+  const P = realEstatePillarFor(lang);
+  const faqs = P.faqs;
   const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
 
   return (
@@ -23,8 +23,8 @@ export function RealEstateLegalAdvisory() {
         </h1>
         <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch" }}>{P.lede}        </p>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
-          <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> לתיאום פגישת אבחון</Link>
-          <Link to="/advisory" className="btn btn-ghost">שירותי הייעוץ המלאים</Link>
+          <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+          <Link to="/advisory" className="btn btn-ghost">{P.ui.fullAdvisory}</Link>
         </div>
       </section>
 
@@ -88,9 +88,9 @@ export function RealEstateLegalAdvisory() {
         <div className="grid grid-3">
           {P.related.map((r) => (
             <Link key={r.slug} to={`/insights/${r.slug}`} className="card" style={{ display: "block" }}>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)" }}>מאמר</span>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)" }}>{P.ui.articleLabel}</span>
               <h3 className="h3" style={{ fontSize: 18, margin: "10px 0 0", lineHeight: 1.35 }}>{r.title}</h3>
-              <span className="card-go">קריאה &rarr;</span>
+              <span className="card-go">{P.ui.read} &rarr;</span>
             </Link>
           ))}
         </div>
@@ -116,7 +116,7 @@ export function RealEstateLegalAdvisory() {
       <section className="wrap section" style={{ maxWidth: 760, textAlign: "center" }}>
         <h2 className="serif" style={{ fontSize: "clamp(26px, 5.5vw, 36px)", lineHeight: 1.2, margin: "0 0 14px" }}>{P.ctaH2}        </h2>
         <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "0 auto 24px", maxWidth: "52ch" }}>{P.ctaBody}        </p>
-        <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> לתיאום פגישת אבחון</Link>
+        <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
         <p style={{ fontSize: 13, color: "var(--slate)", marginTop: 20 }}>{P.disclaimer}        </p>
       </section>
     </>

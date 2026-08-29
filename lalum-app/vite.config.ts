@@ -8,7 +8,7 @@ import { strings } from "./src/lib/strings";
 import { alternatesFor, langUrl } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
-import { pillarPages, type PillarPage } from "./src/lib/pillars";
+import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import type { ArticleBlock } from "./src/lib/content";
@@ -346,7 +346,8 @@ function seoPrerender(): Plugin {
           // Replace the generic English fallback with this route's own Hebrew
           // heading and summary. /faq carries its full Q&A; the other routes
           // carry the Q&A they already publish as structured data.
-          const pillar = pillarPages.find((p) => p.path === r.path);
+          // The prerendered document is the Hebrew one, so the Hebrew copy.
+          const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
           html = withStaticBody(html, r.path === "faq" ? faqBodyHtml() : pillar ? pillarBodyHtml(pillar) : pageBodyHtml(r.title, r.desc, r.path));
         }
         const file = join(outDir, r.path, "index.html");
