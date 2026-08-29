@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 
 // "Which one are you?" audience paths. Each audience (homeowner in renewal,
