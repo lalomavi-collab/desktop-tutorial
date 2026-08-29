@@ -3,10 +3,13 @@ import react from "@vitejs/plugin-react";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
+import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
 import { alternatesFor, langUrl } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
+import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
+import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
 
@@ -66,7 +69,7 @@ function toIsoDate(s: string): string {
 // non-JS crawler or an AI answer engine sees the author, publisher, and date up
 // front, instead of the app-shell's Organization graph. Matches the runtime
 // shape (author linked by @id to the verified founder node).
-function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string }): string {
+function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string }): string {
   const iso = toIsoDate(a.date);
   const graph = {
     "@context": "https://schema.org",
@@ -77,6 +80,11 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
         description: a.desc,
         inLanguage: "he",
         ...(iso ? { datePublished: iso } : {}),
+        // The reading text, so an AI answer engine that consumes only the
+        // structured data still gets the article rather than the headline. It
+        // mirrors the prose rendered into the static body below, so this is a
+        // machine-readable copy of visible content, never hidden text.
+        ...(a.body ? { articleBody: a.body, wordCount: a.body.split(/\s+/).filter(Boolean).length } : {}),
         author: { "@type": "Person", "@id": `${SITE}/#founder`, name: "Dr. Avraham Lalum", url: `${SITE}/`, sameAs: ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"] },
         publisher: { "@type": "Organization", name: "LALUM", logo: { "@type": "ImageObject", url: `${SITE}/icon-512.png` } },
         mainEntityOfPage: `${SITE}/insights/${a.slug}/`,
@@ -93,6 +101,57 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
     ],
   };
   return `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(graph)}</script>`;
+}
+
+// Render article blocks as the static HTML a non-JS crawler reads. Mirrors the
+// Block component in the Article route: "## " sections become <h2>, prose
+// becomes <p>. React discards this the moment it mounts, so a visitor never
+// sees it; only crawlers and AI answer engines that skip JS do.
+function blocksToHtml(blocks: ArticleBlock[]): string {
+  const out: string[] = [];
+  for (const b of blocks) {
+    switch (b.type) {
+      case "h2":
+        out.push(`<h2>${esc(b.text)}</h2>`);
+        break;
+      case "p":
+        out.push(`<p>${esc(b.text)}</p>`);
+        break;
+      case "quote":
+        out.push(`<blockquote>${esc(b.text)}</blockquote>`);
+        break;
+      case "list":
+        out.push(`<ul>${b.items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`);
+        break;
+      case "cta":
+        out.push(`<p><a href="${esc(b.to)}">${esc(b.text)}</a></p>`);
+        break;
+    }
+  }
+  return out.join("\n        ");
+}
+
+// Swap the generic app-shell fallback inside #root for this article's own
+// heading and prose. Everything else about the document is untouched, and the
+// swap is skipped if the template's fallback markup ever changes shape, so a
+// template edit degrades to today's behaviour instead of producing a broken
+// page.
+// The build emits the module script into <head>, so #root is closed by
+// "</div></body>"; the source template closes it before a <script>. Accept
+// either so the swap works against both shapes.
+const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
+function withStaticBody(html: string, headline: string, dek: string, blocks: ArticleBlock[]): string {
+  if (!FALLBACK_RE.test(html)) return html;
+  const body = `
+      <!-- Static article content for crawlers and AI engines that do not run
+           JavaScript. React replaces this the moment the app mounts. -->
+      <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="rtl" lang="he">
+        <h1>${esc(headline)}</h1>
+        <p>${esc(dek)}</p>
+        ${blocksToHtml(blocks)}
+        <p><a href="/insights">כל המאמרים</a> · <a href="/book">תיאום פגישת ייעוץ</a></p>
+      </div>`;
+  return html.replace(FALLBACK_RE, `$1${body}$3`);
 }
 
 // Replace one tag's content by a precise pattern. `re` must capture the prefix
@@ -173,6 +232,10 @@ function seoPrerender(): Plugin {
       // only the empty SPA shell for them. Use the Hebrew copy to match the
       // prerendered document's lang, and skip any slug blogMeta already covers.
       const blogSlugs = new Set(blogMeta.map((m) => m.slug));
+      // Article prose, keyed by slug. Authored and imported posts carry one
+      // markdown-ish body that the shared splitter turns into blocks; curated
+      // articles already ship as blocks.
+      const bodyBySlug = new Map(blogPosts.map((p) => [p.slug, p.body]));
       const curated = strings.he.data.articles
         .filter((a) => !blogSlugs.has(a.slug))
         .map((a) => ({
@@ -181,9 +244,10 @@ function seoPrerender(): Plugin {
           desc: a.dek,
           image: undefined as string | undefined,
           article: { slug: a.slug, headline: a.title, date: a.date },
+          blocks: a.blocks as ArticleBlock[],
         }));
       const routes = [
-        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string } })),
+        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
         ...blogMeta.map((m) => ({
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,
@@ -192,6 +256,7 @@ function seoPrerender(): Plugin {
           // site-relative covers (e.g. /images/foo.svg) need SITE prefixed.
           image: m.cover ? (m.cover.startsWith("http") ? m.cover : `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}`) : undefined,
           article: { slug: m.slug, headline: m.title, date: m.date },
+          blocks: toBlocks(bodyBySlug.get(m.slug) ?? ""),
         })),
         ...curated,
       ];
@@ -202,8 +267,11 @@ function seoPrerender(): Plugin {
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
-          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image });
+          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined });
           html = html.replace("</head>", `    ${script}\n  </head>`);
+          // Put the article's own prose in the raw HTML, replacing the generic
+          // site fallback, so a crawler that skips JS reads the piece itself.
+          if (r.blocks?.length) html = withStaticBody(html, r.article.headline, r.desc, r.blocks);
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running

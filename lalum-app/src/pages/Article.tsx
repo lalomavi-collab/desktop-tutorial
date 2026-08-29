@@ -6,34 +6,7 @@ import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
 import { blogMeta } from "../lib/blogMeta";
 import { toIsoDate } from "../lib/isoDate";
-
-// Blog post bodies come in two shapes. Imported posts are one plain-text run
-// with no line breaks: those are grouped into readable paragraphs by sentence.
-// Authored posts use "## " on their own line for section headings and blank
-// lines between paragraphs: those render with real headings for a uniform,
-// professional structure. Both are handled by the same splitter.
-function toBlocks(body: string): ArticleBlock[] {
-  const blocks: ArticleBlock[] = [];
-  for (const raw of body.split(/\n+/)) {
-    const seg = raw.trim();
-    if (!seg) continue;
-    if (seg.startsWith("## ")) {
-      blocks.push({ type: "h2", text: seg.slice(3).trim() });
-      continue;
-    }
-    const sentences = seg.split(/(?<=[.!?])\s+/);
-    let cur: string[] = [];
-    for (const s of sentences) {
-      cur.push(s);
-      if (cur.join(" ").length > 300) {
-        blocks.push({ type: "p", text: cur.join(" ") });
-        cur = [];
-      }
-    }
-    if (cur.length) blocks.push({ type: "p", text: cur.join(" ") });
-  }
-  return blocks;
-}
+import { toBlocks } from "../lib/articleBlocks";
 
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
