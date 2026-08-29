@@ -61,16 +61,41 @@ if (dry) {
   process.exit(0);
 }
 
-const res = await fetch(ENDPOINT, {
-  method: "POST",
-  headers: { "Content-Type": "application/json; charset=utf-8" },
-  body: JSON.stringify(payload),
-});
-const body = await res.text();
-// 200 accepted, 202 accepted but the key is still being validated.
-console.log(`\nHTTP ${res.status} ${res.statusText}${body ? `\n${body}` : ""}`);
-if (res.status !== 200 && res.status !== 202) {
-  console.error("\nIndexNow submission FAILED");
-  process.exit(1);
+// IndexNow verifies the key file asynchronously, so the very first submission
+// from a new key answers 403 SiteVerificationNotCompleted and asks to try again
+// later. That is a queue, not a rejection, so retry it here instead of leaving
+// the submission half done. Rate limits and server errors get the same
+// treatment; a genuine rejection (bad key, wrong host) fails at once.
+const ATTEMPTS = Number(process.env.INDEXNOW_ATTEMPTS || 6);
+const GAP_MS = Number(process.env.INDEXNOW_GAP_MS || 120000);
+
+for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.text();
+  console.log(`\nattempt ${attempt}/${ATTEMPTS}: HTTP ${res.status} ${res.statusText}${body ? `\n${body}` : ""}`);
+
+  // 200 accepted, 202 accepted but the key is still being validated.
+  if (res.status === 200 || res.status === 202) {
+    console.log("\nIndexNow submission accepted");
+    process.exit(0);
+  }
+
+  const stillVerifying = res.status === 403 && /SiteVerification/i.test(body);
+  const transient = res.status === 429 || res.status >= 500;
+  if (!stillVerifying && !transient) {
+    console.error("\nIndexNow submission FAILED, not retryable");
+    process.exit(1);
+  }
+  if (attempt === ATTEMPTS) break;
+  console.log(`waiting ${Math.round(GAP_MS / 1000)}s before retrying`);
+  await new Promise((r) => setTimeout(r, GAP_MS));
 }
-console.log("\nIndexNow submission accepted");
+
+console.error("\nIndexNow submission FAILED after every attempt");
+console.error("If the reason is SiteVerificationNotCompleted, the key file is fine and");
+console.error("verification simply has not finished. The next scheduled run retries.");
+process.exit(1);
