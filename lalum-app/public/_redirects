@@ -202,5 +202,9 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /ar       /?lang=ar        301
 /ar/*     /:splat?lang=ar  301
 
-# SPA fallback: serve the app shell for every in-app route.
-/*    /index.html   200
+# No SPA catch-all. Every real route is written as its own file by the build's
+# prerender step, so Cloudflare serves the exact document for a direct hit. A
+# blanket "/* /index.html 200" made every wrong URL answer 200 with the app
+# shell, which is a soft 404: a crawler asking for /blog-posts-sitemap.xml or
+# any stale Wix path got a page instead of an error. With no catch-all,
+# unmatched paths fall through to 404.html with a real 404 status.
