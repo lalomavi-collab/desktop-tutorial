@@ -65,7 +65,7 @@ export function Home() {
           </div>
 
           {/* Founder portrait, clickable, opens the full CV */}
-          <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
+          <a href="/cv" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
             <img src={founderPhoto} alt={h.founderName} />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
@@ -278,7 +278,7 @@ export function Home() {
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.urgentOnly}</span>
               </a>
             </div>
-            <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
+            <a href="/cv" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
               <Icon name="file" size={16} /> {h.founderCv}
             </a>
           </div>

@@ -492,6 +492,15 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
         if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
+        // Auto-add every article from blogMeta, so a newly published /insights/
+        // post is always in the sitemap without a manual edit. Slugs are
+        // percent-encoded to match the canonical served URL (Hebrew slugs), and
+        // deduped against whatever the static sitemap already lists.
+        const articleRows = blogMeta
+          .map((m) => `${SITE}/insights/${encodeURI(m.slug)}/`)
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>`);
+        if (articleRows.length) xml = sub(xml, "</urlset>", () => `${articleRows.join("\n")}\n</urlset>`);
         const stamped = xml.replace(/(<loc>[^<]*<\/loc>)(?!\s*<lastmod>)/g, `$1<lastmod>${today}</lastmod>`);
         writeFileSync(sitemapPath, stamped, "utf8");
       } catch {

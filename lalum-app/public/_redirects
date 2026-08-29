@@ -161,7 +161,8 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # --- Legacy Wix pages -> closest equivalent in the new app ---
 /blog   /insights   301
 /about  /  301
-/accessibility-statement  /legal  301
+/accessibility-statement  /legal/  301
+/en/accessibility-statement  /en/legal/  301
 /avrahamlalum  /  301
 /books  /knowledge  301
 /business-mediation  /advisory  301
