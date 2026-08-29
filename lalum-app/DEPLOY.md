@@ -64,6 +64,32 @@ VITE_SUPABASE_ANON_KEY=...
 
 Set them in the host's environment settings, then redeploy.
 
+### Floating video bubble
+
+The small looping circle in the corner of every marketing page, which expands
+into a vertical player with two calls to action. It is off until a clip is
+configured: with `VITE_VIDEO_BUBBLE_SRC` empty the component renders nothing, so
+there is no empty player and no request for a file that was never uploaded.
+
+```
+VITE_VIDEO_BUBBLE_SRC=/media/lalum-intro.mp4
+VITE_VIDEO_BUBBLE_POSTER=/media/lalum-intro.jpg
+VITE_VIDEO_BUBBLE_CAPTIONS=/media/lalum-intro.he.vtt
+```
+
+* `SRC` is the clip. A file placed in `public/` (served from the site's own
+  domain, as in the example) or an absolute CDN URL. MP4/H.264 plays everywhere;
+  add a WebM only if you also want to serve one.
+* `POSTER` is the still frame shown before the clip loads, and instead of the
+  loop for a visitor who asked for reduced motion or whose browser is in
+  data-saver mode. Worth setting: without it those visitors see a dark circle.
+* `CAPTIONS` is a WebVTT file. Required in practice, not merely nice to have:
+  the expanded player carries speech, and IS 5568 expects a text alternative.
+
+Keep the clip short (under about 30 seconds), vertical (9:16, 720x1280 is
+plenty), and light (a couple of megabytes at most). It loads on every marketing
+page.
+
 ## Backend (Supabase), when going live
 
 From `lalum-app/`:
