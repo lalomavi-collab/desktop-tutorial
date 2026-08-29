@@ -21,6 +21,8 @@ const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const Faq = lazy(() => import("./pages/Faq").then((m) => ({ default: m.Faq })));
+const Risk = lazy(() => import("./pages/Risk").then((m) => ({ default: m.Risk })));
+const RiskResult = lazy(() => import("./pages/Risk").then((m) => ({ default: m.RiskResult })));
 const Article = lazy(() => import("./pages/Article").then((m) => ({ default: m.Article })));
 const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal })));
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
@@ -76,6 +78,8 @@ export default function App() {
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="faq" element={<Faq />} />
+            <Route path="risk" element={<Risk />} />
+            <Route path="risk/:track/:band" element={<RiskResult />} />
             <Route path="legal" element={<Legal />} />
             <Route path="book" element={<Book />} />
             <Route path="login" element={<Login />} />

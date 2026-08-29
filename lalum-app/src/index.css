@@ -3419,3 +3419,58 @@ html.a11y-reduce-motion *::after {
   0%, 100% { box-shadow: 0 0 0 0 rgba(168, 72, 42, 0.45); }
   50% { box-shadow: 0 0 0 5px rgba(168, 72, 42, 0); }
 }
+
+/* ---------- Tech-Legal readiness self-assessment ---------- */
+.riskcalc-progress {
+  block-size: 6px;
+  background: var(--line);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin: 22px 0 10px;
+}
+.riskcalc-progress-fill {
+  display: block;
+  block-size: 100%;
+  background: var(--clay);
+  border-radius: 9999px;
+  transition: inline-size 0.35s ease;
+}
+.riskcalc-step { font-size: 12.5px; color: var(--slate); margin: 0 0 22px; }
+.riskcalc-q { font-size: 19px; font-weight: 600; line-height: 1.4; color: var(--ink); margin: 0 0 18px; }
+.riskcalc-choices { display: flex; flex-direction: column; gap: 10px; }
+.riskcalc-choice {
+  inline-size: 100%;
+  text-align: start;
+  padding: 15px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.55;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+.riskcalc-choice:hover { border-color: var(--clay-soft); }
+.riskcalc-choice.on { border-color: var(--clay); background: var(--clay-tint); }
+.riskcalc-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 6px 0 10px;
+  border: 1px solid;
+}
+.riskcalc-badge.tone-ok { color: #2f6f4f; background: #eef6f1; border-color: #cfe3d8; }
+.riskcalc-badge.tone-warn { color: #8a6318; background: #fbf3e2; border-color: #ecdcbb; }
+.riskcalc-badge.tone-risk { color: #800020; background: #fbeef0; border-color: #eccfd5; }
+.riskcalc-score { font-size: 13.5px; color: var(--slate); margin: 0 0 16px; }
+.riskcalc-body { font-size: 16px; line-height: 1.72; color: var(--ink); margin: 0 0 14px; max-inline-size: 60ch; }
+.riskcalc-next { font-size: 15.5px; line-height: 1.7; color: var(--slate); margin: 0 0 24px; max-inline-size: 60ch; }
+.riskcalc-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn-linkedin { background: #0A66C2; border-color: #0A66C2; color: #fff; }
+.btn-linkedin:hover { background: #08528f; border-color: #08528f; }
+.riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
+.riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }

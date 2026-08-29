@@ -9,6 +9,7 @@ import { alternatesFor, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
+import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import type { ArticleBlock } from "./src/lib/content";
@@ -158,7 +159,7 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/book">תיאום פגישה</a></p>`;
+const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/risk">מבדק מוכנות</a> · <a href="/book">תיאום פגישה</a></p>`;
 
 function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
@@ -380,6 +381,46 @@ function seoPrerender(): Plugin {
         writeFileSync(file, html, "utf8");
         written++;
       }
+      // The readiness assessment and its shareable results. Each result is its
+      // own prerendered document with its own Open Graph tags and preview
+      // image, because LinkedIn builds a card from the raw HTML of the shared
+      // URL: it runs no JavaScript, and it dropped the `summary` parameter that
+      // the draft relied on, so a share pointing at the site root with the text
+      // in a query string would have shown the generic site card.
+      {
+        const riskTitle = `מבדק מוכנות Tech-Legal: כמה הארגון שלכם חשוף?`;
+        const riskDesc = `מבדק קצר בן שלוש שאלות שמעריך את מוכנות הארגון בממשל בינה מלאכותית, בבדיקת חוזים ובתיעוד החלטות. תיאור עצמי, בלי להעלות שום מסמך.`;
+        let h = applyMeta(template, { title: `${riskTitle} | LALUM`, desc: clip(riskDesc), url: langUrl("/risk", "he"), path: "risk", image: `${SITE}/og/risk-intro.png` });
+        h = withStaticBody(h, `        <h1>${esc(riskTitle)}</h1>\n        <p>${esc(riskDesc)}</p>`);
+        const rf = join(outDir, "risk", "index.html");
+        mkdirSync(dirname(rf), { recursive: true });
+        writeFileSync(rf, h, "utf8");
+        written++;
+
+        for (const tr of TRACKS) {
+          for (const band of BANDS) {
+            const r = resultFor(tr.id, band);
+            const title = `${r.title}: מוכנות Tech-Legal ב${tr.blurb}`;
+            const path = resultPath(tr.id, band).slice(1);
+            let rh = applyMeta(template, {
+              title: `${title} | LALUM`, desc: clip(r.body), url: langUrl(`/${path}`, "he"),
+              path, image: `${SITE}/og/risk-${tr.id}-${band}.png`,
+            });
+            const inner = [
+              `        <h1>${esc(title)}</h1>`,
+              `        <p>${esc(r.body)}</p>`,
+              `        <p>${esc(r.next)}</p>`,
+              `        <p>${esc(`התוצאה מבוססת על תיאור עצמי בן שלוש שאלות, בסולם של ${MAX_SCORE} נקודות חשיפה. היא אינה ביקורת משפטית ואינה חוות דעת.`)}</p>`,
+            ].join("\n");
+            rh = withStaticBody(rh, inner);
+            const f = join(outDir, path, "index.html");
+            mkdirSync(dirname(f), { recursive: true });
+            writeFileSync(f, rh, "utf8");
+            written++;
+          }
+        }
+      }
+
       // The Hebrew home document is Vite's own index.html, so the route loop
       // never touches it and it kept the template's ?lang= alternates: hrefs
       // that no longer resolve to anything. Repoint them at the real paths.
