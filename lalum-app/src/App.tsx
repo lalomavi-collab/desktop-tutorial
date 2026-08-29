@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { LangProvider } from "./context/LangContext";
+import { LangProvider, langBasename } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -55,7 +55,7 @@ export default function App() {
   return (
     <LangProvider>
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={langBasename()}>
         <NytroLoader />
         <ScrollToHash />
         <Suspense fallback={null}>

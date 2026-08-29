@@ -5,7 +5,7 @@ import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, langUrl } from "./src/lib/hreflang";
+import { alternatesFor, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
@@ -35,6 +35,15 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
 ];
+
+// String.replace treats $1, $&, $` and $' in a REPLACEMENT STRING as pattern
+// references. Article and metadata text is content, not a pattern: an article
+// priced "Pro ($19/mo)" expanded $1 into the captured markup and duplicated the
+// page container. Every replacement below therefore passes a function, whose
+// return value is used verbatim.
+function sub(haystack: string, re: RegExp | string, build: (...m: string[]) => string): string {
+  return haystack.replace(re as RegExp, ((...args: unknown[]) => build(...(args.slice(0, -2) as string[]))) as never);
+}
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -151,16 +160,16 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
 const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/book">תיאום פגישה</a></p>`;
 
-function withStaticBody(html: string, inner: string): string {
+function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
   const body = `
       <!-- Static content for crawlers and AI engines that do not run
            JavaScript. React replaces this the moment the app mounts. -->
-      <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="rtl" lang="he">
+      <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="${dir}" lang="${lang}">
 ${inner}
         ${SITE_NAV}
       </div>`;
-  return html.replace(FALLBACK_RE, `$1${body}$3`);
+  return sub(html, FALLBACK_RE, (_m, open, _old, close) => `${open}${body}${close}`);
 }
 
 // An article: its own headline, standfirst and prose.
@@ -209,10 +218,10 @@ function pillarBodyHtml(p: PillarPage): string {
 // plus the Q&A the page already publishes as structured data. Those pages still
 // hold their prose inline in JSX, so emitting it would mean running the React
 // tree at build time; that is a larger change and is deliberately not done.
-function pageBodyHtml(title: string, desc: string, path: string): string {
+function pageBodyHtml(title: string, desc: string, path: string, dict = strings.he, lang: Lang = "he"): string {
   const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
   const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
-  for (const it of faqsForPath(strings.he, `/${path}`)) {
+  for (const it of faqsForPath(dict, `/${path}`, lang)) {
     // QA.a is a single string. Iterating it as if it were a list of paragraphs
     // walks it character by character and emits one <p> per letter.
     out.push(`        <h2>${esc(it.q)}</h2>`, `        <p>${esc(it.a)}</p>`);
@@ -224,7 +233,7 @@ function pageBodyHtml(title: string, desc: string, path: string): string {
 // up to the opening content quote in group 1 and the closing quote (+ tag end)
 // in group 2, tolerating the multiline attribute layout Vite emits.
 function replaceTag(html: string, re: RegExp, prefix: string, value: string, suffix: string): string {
-  return re.test(html) ? html.replace(re, `${prefix}${esc(value)}${suffix}`) : html;
+  return re.test(html) ? sub(html, re, (_m, a, b) => `${prefix === "$1" ? a : prefix}${esc(value)}${suffix === "$2" ? b : suffix}`) : html;
 }
 
 // Search engines truncate the <title> around 60 characters, so a 100+ char
@@ -254,19 +263,27 @@ function shortTitle(full: string): string {
 
 function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string; noindex?: boolean }): string {
   let h = template;
-  h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(shortTitle(r.title))}</title>`);
+  h = sub(h, /<title>[\s\S]*?<\/title>/, () => `<title>${esc(shortTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
-  h = h.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, `<meta name="description" content="${esc(r.desc)}" />`);
-  h = h.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, `<meta property="og:description" content="${esc(r.desc)}" />`);
+  h = sub(h, /<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta name="description" content="${esc(r.desc)}" />`);
+  h = sub(h, /<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta property="og:description" content="${esc(r.desc)}" />`);
   h = replaceTag(h, /(<meta property="og:title" content=")[^"]*("\s*\/>)/, "$1", r.title, "$2");
   h = replaceTag(h, /(<meta name="twitter:title" content=")[^"]*("\s*\/>)/, "$1", r.title, "$2");
   h = replaceTag(h, /(<meta property="og:url" content=")[^"]*("\s*\/>)/, "$1", r.url, "$2");
   h = replaceTag(h, /(<link rel="canonical" href=")[^"]*("\s*\/>)/, "$1", r.url, "$2");
   // Point each hreflang alternate at this route (the template carries the home
-  // route's set). Each variant is matched by its hreflang and its href swapped.
-  for (const a of alternatesFor(`/${r.path}`)) {
-    const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
-    h = replaceTag(h, re, "$1", a.href, "$2");
+  // route's set). A route with no translation claims none, so its inherited
+  // set is removed rather than repointed: telling Google that four translated
+  // versions exist when the same Hebrew document is served at all of them is
+  // what got those URLs crawled and then discarded as duplicates.
+  const alts = alternatesFor(`/${r.path}`);
+  if (alts.length === 0) {
+    h = h.replace(/\s*<link rel="alternate" hreflang="[^"]*" href="[^"]*"\s*\/>/g, "");
+  } else {
+    for (const a of alts) {
+      const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
+      h = replaceTag(h, re, "$1", a.href, "$2");
+    }
   }
   if (r.noindex) {
     h = replaceTag(h, /(<meta name="robots" content=")[^"]*("\s*\/>)/, "$1", "noindex, follow", "$2");
@@ -337,7 +354,7 @@ function seoPrerender(): Plugin {
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
           const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined });
-          html = html.replace("</head>", `    ${script}\n  </head>`);
+          html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
           if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks));
@@ -349,7 +366,7 @@ function seoPrerender(): Plugin {
           const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, `/${r.path}`))]);
           if (faqNode) {
             const script = `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>`;
-            html = html.replace("</head>", `    ${script}\n  </head>`);
+            html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           }
           // Replace the generic English fallback with this route's own Hebrew
           // heading and summary. /faq carries its full Q&A; the other routes
@@ -363,6 +380,60 @@ function seoPrerender(): Plugin {
         writeFileSync(file, html, "utf8");
         written++;
       }
+      // The Hebrew home document is Vite's own index.html, so the route loop
+      // never touches it and it kept the template's ?lang= alternates: hrefs
+      // that no longer resolve to anything. Repoint them at the real paths.
+      {
+        const homeFile = join(outDir, "index.html");
+        let h = readFileSync(homeFile, "utf8");
+        for (const a of alternatesFor("/")) {
+          const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
+          h = replaceTag(h, re, "$1", a.href, "$2");
+        }
+        writeFileSync(homeFile, h, "utf8");
+      }
+
+      // Language variants. Only the routes measured as genuinely translated get
+      // one, and each is a real file at /<lang>/<path>/ carrying that language's
+      // metadata, its own self-referencing canonical, and the same reciprocal
+      // hreflang set. This is what a query parameter could never do: the host
+      // serves one document per path whatever the query, so ?lang=en returned
+      // the Hebrew file under a Hebrew canonical and Google folded it away.
+      const VARIANTS: { path: string; seoKey: "home" | "advisory" | "knowledge" | "book" | "legal" | null }[] = [
+        { path: "", seoKey: "home" },
+        { path: "advisory", seoKey: "advisory" },
+        { path: "ai-legal-advisory", seoKey: null },
+        { path: "real-estate-legal-advisory", seoKey: null },
+        { path: "knowledge", seoKey: "knowledge" },
+        { path: "book", seoKey: "book" },
+        { path: "legal", seoKey: "legal" },
+      ];
+      for (const v of VARIANTS) {
+        for (const l of LANGS) {
+          if (l.code === "he") continue;
+          const lang = l.code as Lang;
+          const dict = strings[lang];
+          const pillar = pillarPagesFor(lang).find((x: PillarPage) => x.path === v.path);
+          const title = pillar ? `${pillar.title} | LALUM` : dict.seo[v.seoKey!].title;
+          const desc = pillar ? pillar.desc : dict.seo[v.seoKey!].desc;
+          let html = applyMeta(template, {
+            title, desc: clip(desc), url: langUrl(`/${v.path}`, lang), path: v.path, image: undefined,
+          });
+          // The document must declare the language it is written in, not the
+          // template's Hebrew.
+          html = sub(html, /<html[^>]*>/, () => `<html lang="${lang}" dir="${l.dir}">`);
+          const faqNode = pageJsonLd([faqPageNode(pillar ? pillar.faqs : faqsForPath(dict, `/${v.path}`, lang))]);
+          if (faqNode) {
+            html = sub(html, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>\n  </head>`);
+          }
+          const inner = pillar ? pillarBodyHtml(pillar) : pageBodyHtml(title, desc, v.path, dict, lang);
+          html = withStaticBody(html, inner, l.dir, lang);
+          const file = join(outDir, lang, v.path, "index.html");
+          mkdirSync(dirname(file), { recursive: true });
+          writeFileSync(file, html, "utf8");
+          written++;
+        }
+      }
       // Stamp a dynamic lastmod on every sitemap URL at build time, so crawlers
       // see a fresh, self-updating date on each deploy instead of a hand-edited
       // one that drifts. Only URLs that do not already carry a <lastmod> are
@@ -370,7 +441,16 @@ function seoPrerender(): Plugin {
       const sitemapPath = join(outDir, "sitemap.xml");
       try {
         const today = new Date().toISOString().slice(0, 10);
-        const xml = readFileSync(sitemapPath, "utf8");
+        let xml = readFileSync(sitemapPath, "utf8");
+        // Add the language variants. They are real, indexable addresses, so a
+        // crawler should find them in the sitemap and not only by following an
+        // hreflang link from the Hebrew page.
+        const rows = VARIANTS.flatMap((v) =>
+          LANGS.filter((l) => l.code !== "he").map((l) => langUrl(`/${v.path}`, l.code)),
+        )
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+        if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
         const stamped = xml.replace(/(<loc>[^<]*<\/loc>)(?!\s*<lastmod>)/g, `$1<lastmod>${today}</lastmod>`);
         writeFileSync(sitemapPath, stamped, "utf8");
       } catch {
