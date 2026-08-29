@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 
 // Opt-in marketing consent, per the Israeli Communications Law (spam law):

@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "./AppLink";
 import { Icon } from "./Icon";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";

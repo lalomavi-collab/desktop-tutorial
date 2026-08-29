@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";

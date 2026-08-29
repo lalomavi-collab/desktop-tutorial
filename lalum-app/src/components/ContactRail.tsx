@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";

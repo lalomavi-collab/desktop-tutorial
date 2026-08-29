@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { courses, courseFramework, type Course } from "../lib/courses";
 

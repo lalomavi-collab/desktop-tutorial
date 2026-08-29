@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { PageMeta } from "../components/PageMeta";
 import { pageJsonLd } from "../lib/schema";
 import { howToForPath } from "../lib/pageHowTos";
