@@ -7,6 +7,7 @@ import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
 import { alternatesFor, langUrl } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
+import { faqCategories } from "./src/lib/faq";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import type { ArticleBlock } from "./src/lib/content";
@@ -131,27 +132,65 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
   return out.join("\n        ");
 }
 
-// Swap the generic app-shell fallback inside #root for this article's own
-// heading and prose. Everything else about the document is untouched, and the
-// swap is skipped if the template's fallback markup ever changes shape, so a
-// template edit degrades to today's behaviour instead of producing a broken
-// page.
+// Swap the generic app-shell fallback inside #root for this route's own
+// content. The fallback is not merely thin, it is wrong: it announces an
+// English H1 about the firm on every Hebrew page, so a crawler that skips JS
+// reads the same off-topic heading for all 161 routes. Everything else about
+// the document is untouched, and the swap is skipped if the template's
+// fallback markup ever changes shape, so a template edit degrades to today's
+// behaviour instead of producing a broken page.
 // The build emits the module script into <head>, so #root is closed by
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-function withStaticBody(html: string, headline: string, dek: string, blocks: ArticleBlock[]): string {
+const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/book">תיאום פגישה</a></p>`;
+
+function withStaticBody(html: string, inner: string): string {
   if (!FALLBACK_RE.test(html)) return html;
   const body = `
-      <!-- Static article content for crawlers and AI engines that do not run
+      <!-- Static content for crawlers and AI engines that do not run
            JavaScript. React replaces this the moment the app mounts. -->
       <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="rtl" lang="he">
-        <h1>${esc(headline)}</h1>
-        <p>${esc(dek)}</p>
-        ${blocksToHtml(blocks)}
-        <p><a href="/insights">כל המאמרים</a> · <a href="/book">תיאום פגישת ייעוץ</a></p>
+${inner}
+        ${SITE_NAV}
       </div>`;
   return html.replace(FALLBACK_RE, `$1${body}$3`);
+}
+
+// An article: its own headline, standfirst and prose.
+function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[]): string {
+  return `        <h1>${esc(headline)}</h1>\n        <p>${esc(dek)}</p>\n        ${blocksToHtml(blocks)}`;
+}
+
+// The FAQ page: its heading and the full chapter and question structure. The
+// answers are deliberately left out. This same document already carries all
+// 423 answers in its FAQPage JSON-LD, so emitting them here too would ship the
+// same 134KB of text twice and roughly double the page for every visitor, for
+// no gain to a crawler that reads either form. The questions are the part
+// worth repeating: they are the actual search queries, and they give the
+// static copy the same shape as the rendered page.
+function faqBodyHtml(): string {
+  const f = strings.he.faqPage;
+  const out = [`        <h1>${esc(f.title)}</h1>`, `        <p>${esc(f.lede)}</p>`];
+  for (const cat of faqCategories) {
+    out.push(`        <h2>${esc(cat.title)}</h2>`);
+    for (const it of cat.items) out.push(`        <h3>${esc(it.q)}</h3>`);
+  }
+  return out.join("\n");
+}
+
+// Any other marketing route: at minimum its real Hebrew heading and summary,
+// plus the Q&A the page already publishes as structured data. The full prose of
+// those pages lives in JSX, so rendering it here would mean running the React
+// tree at build time; that is a larger change and is deliberately not done.
+function pageBodyHtml(title: string, desc: string, path: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
+  for (const it of faqsForPath(strings.he, `/${path}`)) {
+    out.push(`        <h2>${esc(it.q)}</h2>`);
+    for (const p of it.a) out.push(`        <p>${esc(p)}</p>`);
+  }
+  return out.join("\n");
 }
 
 // Replace one tag's content by a precise pattern. `re` must capture the prefix
@@ -271,7 +310,7 @@ function seoPrerender(): Plugin {
           html = html.replace("</head>", `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
-          if (r.blocks?.length) html = withStaticBody(html, r.article.headline, r.desc, r.blocks);
+          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks));
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running
@@ -282,6 +321,10 @@ function seoPrerender(): Plugin {
             const script = `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>`;
             html = html.replace("</head>", `    ${script}\n  </head>`);
           }
+          // Replace the generic English fallback with this route's own Hebrew
+          // heading and summary. /faq carries its full Q&A; the other routes
+          // carry the Q&A they already publish as structured data.
+          html = withStaticBody(html, r.path === "faq" ? faqBodyHtml() : pageBodyHtml(r.title, r.desc, r.path));
         }
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });

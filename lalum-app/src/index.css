@@ -1437,7 +1437,10 @@ a.caps-item:focus-visible .caps-go {
   align-items: center;
   gap: 12px;
 }
+/* Rendered as an <h2> for document structure. Font is set here, so only the
+   browser's default heading margin needs zeroing to keep the row aligned. */
 .faq-cat-badge {
+  margin: 0;
   font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
@@ -1463,6 +1466,12 @@ a.caps-item:focus-visible .caps-go {
 }
 .faq-item:hover {
   border-color: var(--clay-soft);
+}
+/* Heading wrapper around each accordion control. It exists for structure only,
+   so it must not introduce any of a heading's own box or type. */
+.faq-qh {
+  margin: 0;
+  font: inherit;
 }
 .faq-q {
   width: 100%;
