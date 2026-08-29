@@ -19,7 +19,7 @@ const SITE = "https://lalumapp.com";
 // Kept here so the static HTML a non-JS crawler or a social scraper (WhatsApp,
 // Facebook, Telegram, LinkedIn) sees already carries the right title and
 // description, instead of the app-shell default.
-const STATIC_ROUTES: { path: string; title: string; desc: string }[] = [
+const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
   { path: "ai-legal-advisory", title: "ייעוץ משפטי וחוות דעת שנייה בנושא AI לחברות | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים." },
   { path: "real-estate-legal-advisory", title: "ייעוץ וחוות דעת שנייה בנדל״ן והתחדשות עירונית | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים, מבית LALUM." },
@@ -29,6 +29,11 @@ const STATIC_ROUTES: { path: string; title: string; desc: string }[] = [
   { path: "faq", title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM." },
   { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד\"ר אברהם ללום, LALUM." },
   { path: "legal", title: "מדיניות פרטיות ותנאי שימוש | LALUM", desc: "מדיניות הפרטיות ותנאי השימוש של אפליקציית LALUM." },
+  // Prerendered so they resolve to a real file rather than falling through to
+  // the SPA catch-all, but kept out of the index: a sign-in form and a private
+  // client area are not search results anyone wants.
+  { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
+  { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
 ];
 
 function esc(s: string): string {
@@ -247,7 +252,7 @@ function shortTitle(full: string): string {
   return t + suffix;
 }
 
-function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string }): string {
+function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string; noindex?: boolean }): string {
   let h = template;
   h = h.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(shortTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
@@ -262,6 +267,9 @@ function applyMeta(template: string, r: { title: string; desc: string; url: stri
   for (const a of alternatesFor(`/${r.path}`)) {
     const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
     h = replaceTag(h, re, "$1", a.href, "$2");
+  }
+  if (r.noindex) {
+    h = replaceTag(h, /(<meta name="robots" content=")[^"]*("\s*\/>)/, "$1", "noindex, follow", "$2");
   }
   if (r.image) {
     h = replaceTag(h, /(<meta property="og:image" content=")[^"]*("\s*\/>)/, "$1", r.image, "$2");
@@ -308,7 +316,7 @@ function seoPrerender(): Plugin {
           blocks: a.blocks as ArticleBlock[],
         }));
       const routes = [
-        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
+        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, noindex: s.noindex, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
         ...blogMeta.map((m) => ({
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,
@@ -323,7 +331,7 @@ function seoPrerender(): Plugin {
       ];
       let written = 0;
       for (const r of routes) {
-        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image });
+        let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image, noindex: (r as { noindex?: boolean }).noindex });
         // Bake per-article structured data into the static HTML for crawlers and
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
