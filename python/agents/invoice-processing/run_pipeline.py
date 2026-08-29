@@ -145,7 +145,26 @@ def print_table(items: list[dict]):
             print(f"  • {o['filename']}")
 
 
-def run(month: str | None = None, json_path: str | None = None, confirm_send: bool = False):
+def validate_for_auto_send(items: list[dict], collect_error: str | None) -> list[str]:
+    """
+    שער האימות לשליחה אוטומטית. מחזיר רשימת כשלים, ריקה = מותר לשלוח.
+    התנאים: האיסוף הצליח, יש פריטים, ולכל פריט יש קובץ PDF בתיקייה.
+    """
+    failures = []
+    if collect_error:
+        failures.append(f"האיסוף מהמייל נכשל: {collect_error}")
+    if not items:
+        failures.append("לא נאספו חשבוניות כלל החודש")
+    missing = [i for i in items
+               if not (i.get("has_attachment") and i.get("path"))]
+    for m in missing:
+        label = m.get("client") or m.get("subject") or m.get("filename") or "פריט"
+        failures.append(f"חסר קובץ PDF עבור: {label}")
+    return failures
+
+
+def run(month: str | None = None, json_path: str | None = None, confirm_send: bool = False,
+        auto_send: bool = False):
     month = month or datetime.now().strftime("%Y-%m")
     print(f"\n{'='*55}")
     print(f"  סוכן חשבוניות LALUM — {month}")
@@ -156,6 +175,7 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
     print(f"\n📁 תיקייה: {folder_result['month_folder']} ({folder_result['count']} קבצים)")
 
     # שלב 2: נתוני מייל
+    collect_error = None
     if json_path and Path(json_path).exists():
         print(f"📨 טוען נתוני מייל מ: {json_path}")
         email_items = load_from_json(json_path)
@@ -165,6 +185,7 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
         result = collect_from_emails(month)
         if result.get("error"):
             print(f"⚠️  {result['error']}")
+            collect_error = result["error"]
         email_items = result["items"]
 
     # שלב 3: מיזוג — מייל + תיקייה
@@ -185,6 +206,18 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
     print(f"  צרופות:  {draft['attachment_count']} PDF")
     print(f"  ללא PDF: {draft['no_pdf_count']} פריטים")
     print(f"\n--- גוף ---\n{draft['body']}\n{'='*55}")
+
+    # שלב 5א: שליחה אוטומטית, רק אם שער האימות עובר במלואו
+    if auto_send:
+        failures = validate_for_auto_send(items, collect_error)
+        if failures:
+            print("\n🛑 שליחה אוטומטית בוטלה, הבדיקה מצאה חוסרים:")
+            for f in failures:
+                print(f"  • {f}")
+            print("השלם את החסר והרץ שוב, או שלח ידנית עם invoices.bat ואישור Y.")
+            return draft
+        print("\n✅ שער האימות עבר: כל הפריטים עם PDF, האיסוף תקין. שולח אוטומטית...")
+        confirm_send = True
 
     # שלב 5: שליחה
     if confirm_send:
@@ -210,5 +243,8 @@ if __name__ == "__main__":
     parser.add_argument("--month", default=None, help="YYYY-MM, ברירת מחדל: החודש הנוכחי")
     parser.add_argument("--json", default=None, help="נתיב לקובץ JSON (מצב ענן/MCP)")
     parser.add_argument("--send", action="store_true", help="שלח את המייל")
+    parser.add_argument("--auto-send", action="store_true",
+                        help="שלח אוטומטית רק אם שער האימות עובר (כל הפריטים עם PDF)")
     args = parser.parse_args()
-    run(month=args.month, json_path=args.json, confirm_send=args.send)
+    run(month=args.month, json_path=args.json, confirm_send=args.send,
+        auto_send=args.auto_send)
