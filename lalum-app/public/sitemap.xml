@@ -163,4 +163,14 @@
   <url><loc>https://lalumapp.com/insights/%D7%94%D7%A9%D7%A4%D7%A2%D7%AA-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%94-%D7%94%D7%A2%D7%95%D7%9C%D7%9E%D7%99%D7%AA-%D7%95%D7%A9%D7%95%D7%A7-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%9C%D7%90%D7%97%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://lalumapp.com/insights/%D7%9C%D7%A7%D7%97%D7%99%D7%9D-%D7%91%D7%A2%D7%A0%D7%99%D7%99%D7%9F-%D7%9E%D7%99%D7%9E%D7%95%D7%9F-%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98%D7%99%D7%9D-%D7%A9%D7%9C-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%9C%D7%90%D7%95%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://lalumapp.com/insights/portugal-investment-guide/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://lalumapp.com/risk/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lalumapp.com/risk/tech/low/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/tech/medium/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/tech/high/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/legal/low/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/legal/medium/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/legal/high/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/realestate/low/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/realestate/medium/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://lalumapp.com/risk/realestate/high/</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>
