@@ -28,7 +28,9 @@ export function TechLegalCalculator() {
   const [copied, setCopied] = useState(false);
 
   const total = QUESTIONS.length + 1;
-  const index = step === "result" ? total : (step as number) + 1;
+  // step is -1 on the track picker and 0-based on the questions, so the
+  // human-facing counter is step + 2. Using step + 1 showed "step 0 of 4".
+  const index = step === "result" ? total : (step as number) + 2;
   const progress = Math.round((index / total) * 100);
 
   const score = answers.reduce((a, b) => a + b, 0);
