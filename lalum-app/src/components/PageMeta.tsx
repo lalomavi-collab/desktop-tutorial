@@ -24,7 +24,15 @@ function setMeta(attr: "name" | "property", key: string, content: string) {
 // Keep exactly one <link rel="alternate" hreflang="X"> per language in the
 // head, updating hrefs on navigation so they always match the current route.
 function setAlternates(path: string) {
-  for (const a of alternatesFor(path)) {
+  const alts = alternatesFor(path);
+  // A route with no translation makes no language claim. Any set left over
+  // from a previous route must go, or a Hebrew-only article would inherit the
+  // alternates of the translated page the visitor came from.
+  const keep = new Set(alts.map((a) => a.hreflang));
+  document.head.querySelectorAll("link[rel=\"alternate\"][hreflang]").forEach((el) => {
+    if (!keep.has(el.getAttribute("hreflang") || "")) el.remove();
+  });
+  for (const a of alts) {
     const sel = `link[rel="alternate"][hreflang="${a.hreflang}"]`;
     let el = document.head.querySelector(sel) as HTMLLinkElement | null;
     if (!el) {

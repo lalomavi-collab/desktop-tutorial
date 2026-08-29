@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "seo-check": "node scripts/seo-check.mjs",
     "faq-check": "node scripts/faq-schema-check.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-check": "node scripts/build-check.mjs",
+    "postbuild": "node scripts/build-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",

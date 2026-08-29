@@ -188,19 +188,13 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /thedecisionroom  /advisory  301
 /valuation  /book  301
 
-# --- Legacy Wix language prefixes (Wix Multilingual, SUBDIRECTORY URLs). The
-# old site served en/es/fr/ar under /en, /es, /fr, /ar path prefixes; the app
-# now switches language with ?lang=xx, so preserve the rest of the path and
-# set the matching language param instead of dropping the visitor on the home
-# page. ---
-/en       /?lang=en        301
-/en/*     /:splat?lang=en  301
-/es       /?lang=es        301
-/es/*     /:splat?lang=es  301
-/fr       /?lang=fr        301
-/fr/*     /:splat?lang=fr  301
-/ar       /?lang=ar        301
-/ar/*     /:splat?lang=ar  301
+# --- Language prefixes ---
+# /en, /es, /fr and /ar are now REAL paths: the build prerenders a document per
+# language for every translated route, each with its own canonical. The old
+# rules here rewrote /en/* to /:splat?lang=en, which would now intercept those
+# real paths and redirect them away, so they are gone. A prefixed path with no
+# translated page falls through to 404.html, which is correct: that page does
+# not exist in that language.
 
 # No SPA catch-all. Every real route is written as its own file by the build's
 # prerender step, so Cloudflare serves the exact document for a direct hit. A
