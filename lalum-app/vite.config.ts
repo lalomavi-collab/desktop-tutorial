@@ -206,13 +206,38 @@ function pillarBodyHtml(p: PillarPage): string {
   out.push(`        <h2>${esc(p.stepsH2)}</h2>`);
   for (const s of p.steps) out.push(`        <h3>${esc(s.title)}</h3>\n        <p>${esc(s.body)}</p>`);
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
-  out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(r.slug)}">${esc(r.title)}</a></li>`).join("")}</ul>`);
+  out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.faqH2)}</h2>`);
   for (const f of faqsForPath(strings.he, `/${p.path}`)) {
     out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
   }
   out.push(`        <h2>${esc(p.ctaH2)}</h2>`, `        <p>${esc(p.ctaBody)}</p>`, `        <p>${esc(p.disclaimer)}</p>`);
   return out.join("\n");
+}
+
+// The articles index. Without this it fell to pageBodyHtml, which emits only a
+// heading and a summary, so the static document listed zero of the 147
+// articles: a crawler that does not run JavaScript saw an index page with
+// nothing indexed on it. The articles were reachable from sitemap.xml alone,
+// which gets them crawled but passes no anchor text and no internal links, and
+// internal linking from a topical hub is most of what an index page is for.
+//
+// Titles and links only, no excerpts. The excerpt is a summary of prose that
+// already lives on the article's own page, so repeating all 147 of them here
+// would ship the same text twice for no gain to the crawler that reads either.
+// The anchor text is the part that carries weight, and that is the part kept.
+function insightsBodyHtml(title: string, desc: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const items = blogMeta
+    .map((m) => `        <li><a href="/insights/${esc(encodeURI(m.slug))}/">${esc(m.title)}</a></li>`)
+    .join("\n");
+  return [
+    `        <h1>${esc(heading)}</h1>`,
+    `        <p>${esc(desc)}</p>`,
+    `        <ul>`,
+    items,
+    `        </ul>`,
+  ].join("\n");
 }
 
 // Any other marketing route: at minimum its real Hebrew heading and summary,
@@ -374,7 +399,12 @@ function seoPrerender(): Plugin {
           // carry the Q&A they already publish as structured data.
           // The prerendered document is the Hebrew one, so the Hebrew copy.
           const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
-          html = withStaticBody(html, r.path === "faq" ? faqBodyHtml() : pillar ? pillarBodyHtml(pillar) : pageBodyHtml(r.title, r.desc, r.path));
+          const staticBody =
+            r.path === "faq" ? faqBodyHtml()
+            : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
+            : pillar ? pillarBodyHtml(pillar)
+            : pageBodyHtml(r.title, r.desc, r.path);
+          html = withStaticBody(html, staticBody);
         }
         const file = join(outDir, r.path, "index.html");
         mkdirSync(dirname(file), { recursive: true });
