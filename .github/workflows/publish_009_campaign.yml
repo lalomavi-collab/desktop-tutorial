@@ -1,4 +1,4 @@
-name: Publish Post 010 - The Gap (LinkedIn EN + Facebook HE)
+name: Publish Post 009 - AI Risk Exposure (LinkedIn only)
 
 # Manual only, on purpose. A cron here would publish to a live professional
 # audience with nobody in the room, so the schedule in
@@ -18,10 +18,10 @@ jobs:
       # lalum-app/public/og/, and the API calls in scripts/publish_post.py.
       # This file is a trigger and nothing else, so no copy is duplicated
       # across six workflows and no text passes through YAML quoting.
-      - name: Publish post 010 (הפער)
+      - name: Publish post 009 (מבדק חשיפה)
         env:
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
-        run: python3 scripts/publish_post.py 010
+        run: python3 scripts/publish_post.py 009 --only linkedin
