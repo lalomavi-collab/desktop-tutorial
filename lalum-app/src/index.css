@@ -2808,6 +2808,7 @@ html.a11y-reduce-motion *::after {
   .ambient-blob,
   .ambient-grain,
   .ambient-sweep,
+  .clause-sweep,
   .route-view,
   .route-view .grid > * {
     animation: none !important;
@@ -2831,6 +2832,79 @@ html.a11y-reduce-motion *::after {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+}
+/* ---------- clause scan: contract lines read by a passing light ---------- */
+.clause-doc {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 6%;
+  padding: 6% 7%;
+  align-content: center;
+}
+.clause-para {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.clause-line {
+  block-size: 7px;
+  border-radius: 4px;
+  background: var(--ink);
+  opacity: 0.055;
+}
+.clause-line.flagged {
+  background: var(--clay);
+  opacity: 0.14;
+}
+/* The light travels from the inline start, so it reads as a pass over the text
+   in the direction the page is read. */
+.clause-sweep {
+  position: absolute;
+  inset-block: -10%;
+  inline-size: 26%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85) 45%, rgba(232, 201, 168, 0.5) 62%, transparent);
+  filter: blur(6px);
+  animation: clause-sweep 11s linear infinite;
+}
+@keyframes clause-sweep {
+  from { transform: translateX(140%); }
+  to { transform: translateX(-420%); }
+}
+/* On a phone the two columns collapse to one, so the block stays a paragraph
+   rather than two crowded stacks. */
+@media (max-width: 640px) {
+  .clause-doc {
+    grid-template-columns: 1fr;
+    padding: 10% 9%;
+  }
+  .clause-doc .clause-para:last-child { display: none; }
+  /* One column on a narrow screen is a short block in a tall hero, so the
+     rhythm opens up and the lines carry slightly more weight to stay read. */
+  .clause-para { gap: 17px; }
+  .clause-line { block-size: 6px; opacity: 0.07; }
+  .clause-line.flagged { opacity: 0.17; }
+  .clause-sweep { inline-size: 42%; }
+}
+.ambient-canvas {
+
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Drawn variants have to stay visible through the scrim, so they keep the veil
+   light. The warm blobs need the heavier one; lines do not. */
+.ambient-lattice .ambient-scrim,
+.ambient-clauses .ambient-scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(245, 241, 232, 0.12) 0%,
+    rgba(245, 241, 232, 0.26) 58%,
+    rgba(245, 241, 232, 0.72) 100%
+  );
 }
 .ambient-blob {
   position: absolute;
