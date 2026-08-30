@@ -174,7 +174,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "three-minute-legal-check",
-    "title": "בדיקה משפטית ב-3 דקות – ולמה עדיין חשוב לקבל חוות דעת מקצועית(הקליניקה המשפטית: LALUM)",
+    "title": "בדיקה משפטית ב-3 דקות, ולמה עדיין חשוב לקבל חוות דעת מקצועית(הקליניקה המשפטית: LALUM)",
     "excerpt": "בדיקה משפטית ראשונית בבינה מלאכותית היא כלי מועיל, אך אינה מחליפה חוות דעת מקצועית וניתוח סיכונים בעסקאות נדל״ן משמעותיות.",
     "date": "מרץ 2026",
     "cover": "/images/covers/three-minute-legal-check.webp"
@@ -482,7 +482,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "portugal-realestate-legal-guide",
-    "title": "השקעות נדל\"ן בפורטוגל – פתיחה ומבט כללי",
+    "title": "השקעות נדל\"ן בפורטוגל: פתיחה ומבט כללי",
     "excerpt": "מדריך מקיף להשקעות נדל\"ן בפורטוגל, שלבי הרכישה מ-NIF ועד Deed, מיסוי, תכניות ממשלתיות וליווי משפטי בינלאומי.",
     "date": "אוקטובר 2025",
     "cover": "/images/covers/portugal-realestate-legal-guide.webp"

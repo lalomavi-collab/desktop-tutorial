@@ -11,12 +11,55 @@ load_dotenv()
 
 import json
 import os
+import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from invoice_processing.collectors.folder_collector import collect_from_folder
 from invoice_processing.senders.smtp_sender import prepare_accounting_email, send_accounting_email
+
+
+def previous_month() -> str:
+    """
+    מחזיר את החודש הקודם בפורמט YYYY-MM.
+
+    ההרצה החודשית מתבצעת ב-1 בחודש, ואז החודש הנוכחי בן יום אחד.
+    החומר שנשלח להנהלת חשבונות הוא של החודש שהסתיים.
+    """
+    today = datetime.now().replace(day=1)
+    last = today - timedelta(days=1)
+    return last.strftime("%Y-%m")
+
+
+SENT_DIR = Path(__file__).parent / "data" / "sent"
+
+
+def _sent_marker(month: str) -> Path:
+    return SENT_DIR / f"{month}.json"
+
+
+def already_sent(month: str) -> dict | None:
+    """מחזיר את פרטי השליחה הקודמת לחודש, או None אם טרם נשלח."""
+    marker = _sent_marker(month)
+    if not marker.exists():
+        return None
+    try:
+        return json.loads(marker.read_text(encoding="utf-8"))
+    except Exception:
+        return {"when": "unknown"}
+
+
+def mark_sent(month: str, result: dict):
+    SENT_DIR.mkdir(parents=True, exist_ok=True)
+    _sent_marker(month).write_text(
+        json.dumps({
+            "when": datetime.now().isoformat(timespec="seconds"),
+            "to": result.get("to"),
+            "attachments": result.get("attachments_sent", []),
+        }, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
 
 def load_from_json(path: str) -> list[dict]:
@@ -69,6 +112,26 @@ def merge_items(email_items: list[dict], folder_files: list[dict]) -> list[dict]
                     item["has_attachment"] = True
                     folder_by_name.pop(folder_fname)
                     break
+
+    # פריט מייל בלי צרופה: חיפוש קובץ בתיקייה לפי מספר המסמך שבנושא.
+    # למשל "קבלה 20010" מול "Receipt_20010 (2).pdf".
+    for item in result:
+        if item.get("path"):
+            continue
+        numbers = re.findall(r"\d{4,}", item.get("subject") or "")
+        matched = None
+        for num in numbers:
+            for folder_fname in folder_by_name:
+                if num in folder_fname:
+                    matched = folder_fname
+                    break
+            if matched:
+                break
+        if matched:
+            fdata = folder_by_name.pop(matched)
+            item["filename"] = fdata["filename"]
+            item["path"] = fdata["path"]
+            item["has_attachment"] = True
 
     # קבצים שנמצאו רק בתיקייה (לא ממייל)
     for fname, fdata in folder_by_name.items():
@@ -164,7 +227,7 @@ def validate_for_auto_send(items: list[dict], collect_error: str | None) -> list
 
 
 def run(month: str | None = None, json_path: str | None = None, confirm_send: bool = False,
-        auto_send: bool = False):
+        auto_send: bool = False, force: bool = False):
     month = month or datetime.now().strftime("%Y-%m")
     print(f"\n{'='*55}")
     print(f"  סוכן חשבוניות LALUM — {month}")
@@ -221,12 +284,19 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
 
     # שלב 5: שליחה
     if confirm_send:
+        prev = already_sent(month)
+        if prev and not force:
+            print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}.")
+            print(f"   {len(prev.get('attachments', []))} צרופות. לא נשלח שוב.")
+            print("   לשליחה חוזרת מכוונת: --force")
+            return draft
         if draft["attachment_count"] == 0:
             print("\n❌ לא נשלח — אין קבצי PDF מצורפים. הורד קבצים לתיקייה ונסה שוב.")
             return draft
         print("\n🚀 שולח...")
         result = send_accounting_email(draft, confirm="true")
         if result["sent"]:
+            mark_sent(month, result)
             print(f"✅ נשלח ל-{result['to']}")
             print(f"   צרופות: {result['attachments_sent']}")
         else:
@@ -241,10 +311,15 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--month", default=None, help="YYYY-MM, ברירת מחדל: החודש הנוכחי")
+    parser.add_argument("--prev", action="store_true",
+                        help="החודש הקודם. זו ברירת המחדל של ההרצה החודשית ב-1 בחודש")
     parser.add_argument("--json", default=None, help="נתיב לקובץ JSON (מצב ענן/MCP)")
     parser.add_argument("--send", action="store_true", help="שלח את המייל")
+    parser.add_argument("--force", action="store_true",
+                        help="שלח שוב גם אם החודש כבר נשלח")
     parser.add_argument("--auto-send", action="store_true",
                         help="שלח אוטומטית רק אם שער האימות עובר (כל הפריטים עם PDF)")
     args = parser.parse_args()
-    run(month=args.month, json_path=args.json, confirm_send=args.send,
-        auto_send=args.auto_send)
+    month = args.month or (previous_month() if args.prev else None)
+    run(month=month, json_path=args.json, confirm_send=args.send,
+        auto_send=args.auto_send, force=args.force)

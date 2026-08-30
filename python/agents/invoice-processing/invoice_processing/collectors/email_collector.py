@@ -11,6 +11,9 @@ from datetime import datetime
 from email.header import decode_header
 from pathlib import Path
 
+from ..utils.credentials import get_secret, missing_secrets
+from .filters import is_expense_document
+from .outlook_com_collector import collect_from_outlook_com
 from .base_folder import get_base_folder
 from .month_path import resolve_month_folder
 
@@ -28,15 +31,6 @@ def _decode_str(value: str) -> str:
 
 def _month_folder(base: Path, month: str) -> Path:
     return resolve_month_folder(month)
-
-
-def _is_invoice_subject(subject: str) -> bool:
-    keywords = [
-        "חשבונית", "invoice", "receipt", "קבלה", "פקטורה",
-        "חשבון עסקה", "google ads", "gett", "anthropic", "justificante",
-    ]
-    s = subject.lower()
-    return any(k in s for k in keywords)
 
 
 def _parse_date(date_str: str) -> str:
@@ -86,8 +80,6 @@ def collect_from_mailbox(
             sender = msg.get("From", "")
             date_str = _parse_date(msg.get("Date", ""))
 
-            if not _is_invoice_subject(subject):
-                continue
 
             # חיפוש צרופת PDF — רשומה אחת לכל מייל
             pdf_found = None
@@ -111,6 +103,9 @@ def collect_from_mailbox(
                             f.write(part.get_payload(decode=True))
                     pdf_found = {"filename": safe_name, "path": str(dest_path)}
                     break  # רק צרופה ראשונה
+
+            if not is_expense_document(subject, sender, has_pdf=pdf_found is not None):
+                continue
 
             collected.append({
                 "filename": pdf_found["filename"] if pdf_found else None,
@@ -136,44 +131,59 @@ def collect_from_mailbox(
 
 def collect_from_emails(month: str) -> dict:
     """
-    אוסף חשבוניות משתי תיבות המייל (Outlook + Gmail).
-    מוריד PDFs לתיקיית ~/Desktop/LALUM/חשבוניות/YYYY-MM/.
+    אוסף הוצאות משתי התיבות, כל אחת במסלול שעובד עבורה.
+
+    Outlook (Exchange): דרך Outlook Desktop ב-COM. מיקרוסופט חסמה IMAP
+    בסיסמה ב-Exchange Online, ולכן אין מסלול סיסמה. COM לא דורש כלום.
+
+    Gmail: IMAP עם App Password מהכספת. חשבון ה-IMAP של Gmail בתוך Outlook
+    נכשל בחיבור (0x800CCC0E) ולכן אי אפשר להישען עליו.
+
+    MAIL_MODE=imap מכריח את שתי התיבות למסלול IMAP.
     """
     base = get_base_folder()
+    errors = []
+    all_items = []
+    mode = os.environ.get("MAIL_MODE", "outlook_com").strip().lower()
 
-    required = ["IMAP1_HOST", "IMAP1_USER", "IMAP1_PASS", "IMAP2_HOST", "IMAP2_USER", "IMAP2_PASS"]
-    missing = [v for v in required if not os.environ.get(v)]
-    if missing:
-        return {
-            "month": month,
-            "total": 0,
-            "items": [],
-            "error": f"חסרים משתני .env: {', '.join(missing)}. העתק את .env.example לקובץ .env ומלא את הפרטים.",
-        }
+    # --- תיבה 1: Outlook ---
+    if mode == "imap":
+        host, user, pw = os.environ.get("IMAP1_HOST"), os.environ.get("IMAP1_USER"), get_secret("IMAP1_PASS")
+        if host and user and pw:
+            all_items += collect_from_mailbox(host, int(os.environ.get("IMAP1_PORT", 993)),
+                                              user, pw, month, base, "Outlook")
+        else:
+            errors.append("Outlook: חסרים פרטי IMAP או סיסמה")
+    else:
+        all_items += collect_from_outlook_com(month)
 
-    outlook_items = collect_from_mailbox(
-        host=os.environ["IMAP1_HOST"],
-        port=int(os.environ.get("IMAP1_PORT", 993)),
-        user=os.environ["IMAP1_USER"],
-        password=os.environ["IMAP1_PASS"],
-        month=month,
-        base_folder=base,
-        label="Outlook",
-    )
+    # --- תיבה 2: Gmail ---
+    # כשהיא מכובה, זו החלטה מודעת ולא תקלה, ולכן היא לא נספרת כשגיאה
+    # ולא חוסמת את השליחה האוטומטית החודשית.
+    gmail_on = os.environ.get("GMAIL_ENABLED", "true").strip().lower() not in ("0", "false", "no")
+    if not gmail_on:
+        print("ℹ️  תיבת Gmail מכובה בהגדרות (GMAIL_ENABLED=false). נאסף רק מ-Outlook.")
+        host = user = pw = None
 
-    gmail_items = collect_from_mailbox(
-        host=os.environ["IMAP2_HOST"],
-        port=int(os.environ.get("IMAP2_PORT", 993)),
-        user=os.environ["IMAP2_USER"],
-        password=os.environ["IMAP2_PASS"],
-        month=month,
-        base_folder=base,
-        label="Gmail",
-    )
+    host = os.environ.get("IMAP2_HOST") if gmail_on else None
+    user = os.environ.get("IMAP2_USER") if gmail_on else None
+    pw = get_secret("IMAP2_PASS") if gmail_on else None
+    if not gmail_on:
+        pass
+    elif not host or not user:
+        errors.append("Gmail: חסרים IMAP2_HOST/IMAP2_USER ב-.env")
+    elif not pw:
+        errors.append("Gmail: חסרה סיסמת אפליקציה בכספת — הרץ setup_credentials.bat")
+    else:
+        all_items += collect_from_mailbox(host, int(os.environ.get("IMAP2_PORT", 993)),
+                                          user, pw, month, base, "Gmail")
 
-    all_items = outlook_items + gmail_items
-    return {
-        "month": month,
-        "total": len(all_items),
-        "items": all_items,
-    }
+    for it in list(all_items):
+        if it.get("error"):
+            errors.append(f"{it.get('source')}: {it['error']}")
+            all_items.remove(it)
+
+    result = {"month": month, "total": len(all_items), "items": all_items}
+    if errors:
+        result["error"] = " | ".join(errors)
+    return result
