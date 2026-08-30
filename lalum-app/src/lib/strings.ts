@@ -20,7 +20,7 @@ const en = {
     quickActions: "Quick actions",
     videoBubble: {
       open: "Watch a short introduction video",
-      teaser: "Is your AI exposing you?",
+      teaser: "A short introduction from Dr. Avraham Lalum",
       hide: "Hide the video",
       close: "Close the video",
       play: "Play",
@@ -1077,7 +1077,7 @@ const he: Dict = {
     quickActions: "פעולות מהירות",
     videoBubble: {
       open: "צפייה בסרטון היכרות קצר",
-      teaser: "האם ה-AI שלכם חושף אתכם?",
+      teaser: "רגע היכרות עם ד״ר אברהם ללום",
       hide: "הסתרת הסרטון",
       close: "סגירת הסרטון",
       play: "הפעלה",
@@ -2131,7 +2131,7 @@ const es: Dict = {
     quickActions: "Acciones rápidas",
     videoBubble: {
       open: "Ver un breve vídeo de presentación",
-      teaser: "¿Su IA lo está exponiendo?",
+      teaser: "Una breve presentación del Dr. Avraham Lalum",
       hide: "Ocultar el vídeo",
       close: "Cerrar el vídeo",
       play: "Reproducir",
@@ -3149,7 +3149,7 @@ const fr: Dict = {
     quickActions: "Actions rapides",
     videoBubble: {
       open: "Voir une courte vidéo de présentation",
-      teaser: "Et si votre IA vous exposait ?",
+      teaser: "Une courte présentation du Dr Avraham Lalum",
       hide: "Masquer la vidéo",
       close: "Fermer la vidéo",
       play: "Lecture",
@@ -4158,7 +4158,7 @@ const ar: Dict = {
     quickActions: "إجراءات سريعة",
     videoBubble: {
       open: "مشاهدة فيديو تعريفي قصير",
-      teaser: "هل يعرّضك الذكاء الاصطناعي للمخاطر؟",
+      teaser: "تعريف قصير من د. أبراهام لالوم",
       hide: "إخفاء الفيديو",
       close: "إغلاق الفيديو",
       play: "تشغيل",

@@ -73,6 +73,22 @@ function prefersStill(): boolean {
 // The clip's length, as m:ss. Shown on the invitation so "short" is a number
 // rather than a promise, and read from the file at runtime so it stays true
 // when the clip is replaced.
+// Whether the file carries an audio track at all. No browser exposes this the
+// same way, so: Firefox answers directly, Chromium and Safari only once some
+// audio has been decoded, and the standard `audioTracks` list is missing in
+// most. An unknown answer stays unknown, and the caller keeps the control.
+function audioPresence(el: HTMLVideoElement): boolean | null {
+  const v = el as HTMLVideoElement & {
+    mozHasAudio?: boolean;
+    webkitAudioDecodedByteCount?: number;
+    audioTracks?: { length: number };
+  };
+  if (typeof v.mozHasAudio === "boolean") return v.mozHasAudio;
+  if (v.audioTracks && typeof v.audioTracks.length === "number") return v.audioTracks.length > 0;
+  if (typeof v.webkitAudioDecodedByteCount === "number" && v.webkitAudioDecodedByteCount > 0) return true;
+  return null;
+}
+
 function clock(seconds: number): string | null {
   // A browser that cannot decode the file reports NaN or Infinity, and a
   // stream reports something absurd. Anything outside a plausible clip length
@@ -96,6 +112,9 @@ export function VideoBubble() {
   const [still, setStill] = useState(prefersStill);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
+  // null until the file has been asked. `true` only on a positive answer, so a
+  // browser that cannot tell keeps the control rather than hiding a working one.
+  const [hasAudio, setHasAudio] = useState<boolean | null>(null);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -186,15 +205,17 @@ export function VideoBubble() {
     const el = fullRef.current;
     if (!el) return;
     el.currentTime = 0;
-    el.muted = false;
-    setMuted(false);
-    void el.play().catch(() => {
-      // Sound refused after all: fall back to a muted start with the control
-      // showing, rather than a player that sits there doing nothing.
-      el.muted = true;
-      setMuted(true);
-      void el.play().catch(() => setPlaying(false));
-    });
+    // Always muted on open, never "unmute and hope".
+    //
+    // The clip on the site carries no audio track at all: the message is the
+    // component's own text, and the recording it was cut from is about
+    // something else. Starting muted means that if a future upload does carry
+    // that soundtrack, the site still never plays it on its own; a visitor has
+    // to ask for it, and the control to ask only appears when the file really
+    // has audio.
+    el.muted = true;
+    setMuted(true);
+    void el.play().catch(() => setPlaying(false));
   }
 
   function togglePlay() {
@@ -247,7 +268,10 @@ export function VideoBubble() {
                 playsInline
                 tabIndex={-1}
                 aria-hidden="true"
-                onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+                onLoadedMetadata={(e) => {
+                  setDuration(e.currentTarget.duration || 0);
+                  setHasAudio(audioPresence(e.currentTarget));
+                }}
                 onError={() => setBroken(true)}
               />
               <span className="vbub-orb-play" aria-hidden="true">
@@ -281,12 +305,14 @@ export function VideoBubble() {
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
               )}
             </button>
+            {hasAudio !== false && (
             <button type="button" className="vbub-tool" onClick={toggleMute} aria-label={muted ? V.unmute : V.mute} title={muted ? V.unmute : V.mute}>
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M11 5 6 9H2v6h4l5 4z" />
                 {muted ? <path d="m17 9 4 6M21 9l-4 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
               </svg>
             </button>
+            )}
           </div>
 
           <video
@@ -299,7 +325,10 @@ export function VideoBubble() {
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}
-            onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+            onLoadedMetadata={(e) => {
+              setDuration(e.currentTarget.duration || 0);
+              setHasAudio((known) => (known === true ? true : audioPresence(e.currentTarget)));
+            }}
             onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
             onError={() => { setBroken(true); setOpen(false); }}
           >
