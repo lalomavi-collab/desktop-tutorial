@@ -99,3 +99,5 @@ supabase functions deploy lalum-attorney-verify
 - Icons are served from `public/icons.svg` as an SVG sprite.
 - Routing uses `BrowserRouter`; `vite preview` and most static hosts need an SPA
   fallback to `index.html` for deep links.
+- The floating video bubble (`src/components/VideoBubble.tsx`) is off until a
+  clip is configured. See "Floating video bubble" in `DEPLOY.md`.

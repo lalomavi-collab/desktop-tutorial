@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; background: #1B1B1B; font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', Georgia, serif; overflow: hidden; }
+  .container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; }
+  .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+  .glow { position: absolute; inset-inline-start: -130px; bottom: -170px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(128,0,32,0.4), transparent 66%); }
+  .content { position: relative; padding: 54px 76px; width: 100%; }
+  .label { color: #D4AF37; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 24px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; }
+  h1 { color: #FFFDD0; font-size: 46px; font-weight: 400; line-height: 1.26; margin-bottom: 34px; }
+  h1 em { color: #D4AF37; font-style: normal; }
+  .misses-label { color: #FFFDD0; opacity: 0.5; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; font-size: 13px; letter-spacing: 1.5px; margin-bottom: 14px; }
+  .misses { display: flex; gap: 24px; margin-bottom: 34px; }
+  .m { flex: 1; border-top: 2px solid rgba(212,175,55,0.5); padding-top: 15px; display: flex; gap: 12px; align-items: flex-start; }
+  .m-mark { color: #800020; font-size: 20px; line-height: 1.1; flex: none; }
+  .m-text { color: #FFFDD0; font-size: 17px; line-height: 1.48; opacity: 0.85; }
+  .strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .cta { background: #D4AF37; color: #1B1B1B; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; font-size: 16px; font-weight: 700; padding: 13px 24px; border-radius: 4px; }
+  .brandline { text-align: start; }
+  .brand { color: #D4AF37; font-size: 17px; letter-spacing: 3px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; }
+  .url { color: #FFFDD0; font-size: 14px; opacity: 0.55; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; direction: ltr; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+  <div class="content">
+    <div class="label">מבדק חשיפה חדש · LALUM</div>
+    <h1>ה-AI שלכם הוא נכס אסטרטגי,<br><em>או פצצת זמן משפטית?</em></h1>
+    <div class="misses-label">מה שמודל ציבורי, בלי ביקורת אלגוריתמית, מפספס:</div>
+    <div class="misses">
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">ניסוחים משפטיים מפותלים בעברית.</div></div>
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">החרגות של הרשות המקומית בהתחדשות עירונית.</div></div>
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">ערבויות בנקאיות ותנאים מתלים קריטיים.</div></div>
+    </div>
+    <div class="strip">
+      <div class="cta">מבדק חשיפה Tech-Legal · שתי דקות · בחינם</div>
+      <div class="brandline">
+        <div class="brand">LALUM</div>
+        <div class="url">lalumapp.com/risk</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

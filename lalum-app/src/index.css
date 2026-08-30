@@ -3474,3 +3474,323 @@ html.a11y-reduce-motion *::after {
 .btn-linkedin:hover { background: #08528f; border-color: #08528f; }
 .riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
 .riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }
+
+/* ============================================================
+   Floating video bubble (components/VideoBubble.tsx)
+   ------------------------------------------------------------
+   Deep navy and royal gold, the Tech-Legal premium pairing, kept
+   deliberately apart from the clay/ivory page palette so the
+   bubble reads as an invitation laid over the site rather than a
+   piece of it. The four values below are the whole palette: swap
+   them here and the bubble follows.
+   Positioning is logical (inset-inline-*), so the dock lands on
+   the correct side in Hebrew and Arabic (RTL) as well as in the
+   Latin languages, and it sits stacked above the chat button in
+   the same column rather than in a corner of its own.
+   ============================================================ */
+.vbub-dock {
+  --vbub-navy: #0a192f;
+  --vbub-navy-soft: #112240;
+  --vbub-gold: #d4af37;
+  --vbub-gold-soft: #c5a880;
+
+  position: fixed;
+  /* Clear of the chat button (60px) that sits at bottom: 24px. */
+  bottom: 98px;
+  inset-inline-end: 24px;
+  z-index: 82;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+/* Expanded, the player takes the whole corner: it covers the chat button, so
+   there is no reason to keep the gap above it. */
+.vbub-dock.is-open {
+  bottom: 24px;
+}
+
+.vbub-orb-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The hover / focus teaser line. */
+.vbub-teaser {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  inset-inline-end: 0;
+  background: var(--vbub-navy);
+  color: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 11px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -14px rgba(10, 25, 47, 0.8);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.vbub-teaser-mark { color: var(--vbub-gold); }
+.vbub-orb-wrap:hover .vbub-teaser,
+.vbub-orb-wrap:focus-within .vbub-teaser {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vbub-orb {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  border: 3px solid var(--vbub-gold);
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(160deg, var(--vbub-navy-soft), var(--vbub-navy));
+  box-shadow: 0 14px 34px -10px rgba(212, 175, 55, 0.45), 0 6px 18px -8px rgba(10, 25, 47, 0.55);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.vbub-orb:hover {
+  transform: scale(1.07);
+  box-shadow: 0 18px 40px -10px rgba(212, 175, 55, 0.6), 0 8px 22px -8px rgba(10, 25, 47, 0.6);
+}
+.vbub-orb-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+/* Shown instead of a running loop when motion is reduced or data is saved. */
+.vbub-orb-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--vbub-gold);
+  background: rgba(10, 25, 47, 0.35);
+  pointer-events: none;
+}
+/* The pulsing gold halo. */
+.vbub-ring {
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--vbub-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-ring {
+    animation: vbub-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+@keyframes vbub-ping {
+  0% { opacity: 0.75; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.35); }
+}
+
+.vbub-dismiss {
+  position: absolute;
+  top: -4px;
+  inset-inline-end: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: var(--vbub-navy);
+  color: #d8d3c8;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.vbub-dismiss:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+/* ---------- expanded player ---------- */
+.vbub-panel {
+  position: relative;
+  width: 330px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 130px);
+  background: var(--vbub-navy);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 34px 70px -28px rgba(10, 25, 47, 0.8);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-panel { animation: vbub-rise 0.28s ease; }
+}
+@keyframes vbub-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.vbub-panel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--vbub-navy);
+  cursor: pointer;
+}
+
+.vbub-panel-tools {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.vbub-tool {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(10, 25, 47, 0.75);
+  color: #ffffff;
+  font-size: 17px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.vbub-tool:hover {
+  color: var(--vbub-gold);
+  border-color: var(--vbub-gold);
+}
+
+/* The metadata and calls to action, over a navy fade so the text stays readable
+   whatever frame is behind it. */
+.vbub-panel-foot {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 74px 18px 18px;
+  background: linear-gradient(to top, var(--vbub-navy) 42%, rgba(10, 25, 47, 0.72) 72%, rgba(10, 25, 47, 0));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vbub-seek {
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  accent-color: var(--vbub-gold);
+  cursor: pointer;
+}
+.vbub-seek:disabled { opacity: 0.4; cursor: default; }
+
+.vbub-meta { text-align: start; }
+.vbub-badge {
+  display: inline-block;
+  background: var(--vbub-gold);
+  color: var(--vbub-navy);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.vbub-name {
+  margin: 7px 0 0;
+  color: #ffffff;
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.vbub-tagline {
+  margin: 5px 0 0;
+  color: #cfd6e2;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.vbub-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vbub-cta-gold,
+.vbub-cta-ghost {
+  display: block;
+  text-align: center;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+.vbub-cta-gold {
+  background: var(--vbub-gold);
+  color: var(--vbub-navy);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 14px;
+  box-shadow: 0 10px 24px -12px rgba(212, 175, 55, 0.9);
+}
+.vbub-cta-gold:hover {
+  background: var(--vbub-gold-soft);
+  transform: translateY(-1px);
+}
+.vbub-cta-ghost {
+  background: rgba(17, 34, 64, 0.85);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 14px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+.vbub-cta-ghost:hover {
+  background: var(--vbub-navy-soft);
+  border-color: var(--vbub-gold);
+}
+
+/* Keyboard focus has to stay obvious against a dark, moving background. */
+.vbub-orb:focus-visible,
+.vbub-dismiss:focus-visible,
+.vbub-tool:focus-visible,
+.vbub-seek:focus-visible,
+.vbub-cta-gold:focus-visible,
+.vbub-cta-ghost:focus-visible {
+  outline: 3px solid var(--vbub-gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .vbub-dock {
+    /* The chat button is itself lifted above the bottom tab bar on phones. */
+    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
+    inset-inline-end: 16px;
+  }
+  .vbub-dock.is-open {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  }
+  .vbub-orb {
+    width: 72px;
+    height: 72px;
+    border-width: 2px;
+  }
+  .vbub-panel {
+    height: min(560px, calc(100vh - 190px));
+  }
+}
