@@ -618,6 +618,49 @@ article p {
 .btn-ghost:hover {
   color: var(--clay);
 }
+/* The second call to action. It carries its own opaque surface, so whatever
+   the hero paints behind it stops at the button's edge instead of running
+   under the words. Quieter than .btn-clay, and still unmistakably a button:
+   the ghost style it replaced read as a line of text. */
+.btn-outline {
+  background: var(--paper);
+  color: var(--clay);
+  border: 1.5px solid var(--clay-soft);
+  /* Tighter than the primary so the pair still fits one row in the hero: the
+     pill's own padding is what pushed them onto two. */
+  padding-inline: 20px;
+}
+.btn-outline:hover {
+  background: var(--card);
+  border-color: var(--clay);
+}
+/* Each line sits in the same grid cell, so the button is as wide as the
+   longest one and holds still while the text rolls. */
+.btn-roll {
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  block-size: 1.5em;
+}
+.btn-roll > span {
+  grid-area: 1 / 1;
+  display: block;
+  transform: translateY(110%);
+  opacity: 0;
+}
+.btn-roll > span.on {
+  transform: translateY(0);
+  opacity: 1;
+}
+.btn-roll > span.out {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn-roll > span {
+    transition: transform 0.5s cubic-bezier(0.22, 0.9, 0.28, 1), opacity 0.5s ease;
+  }
+}
 .btn-sm {
   height: var(--ctrl-h, 40px);
   padding: 0 20px;
