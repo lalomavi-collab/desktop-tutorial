@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; background: #1B1B1B; font-family: 'Georgia', serif; overflow: hidden; }
+  .container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; }
+  .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+  .glow { position: absolute; inset-inline-start: -130px; bottom: -170px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(128,0,32,0.4), transparent 66%); }
+  .content { position: relative; padding: 54px 76px; width: 100%; }
+  .label { color: #D4AF37; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 24px; font-family: 'Arial', sans-serif; }
+  h1 { color: #FFFDD0; font-size: 46px; font-weight: 400; line-height: 1.26; margin-bottom: 34px; }
+  h1 em { color: #D4AF37; font-style: normal; }
+  .misses-label { color: #FFFDD0; opacity: 0.5; font-family: 'Arial', sans-serif; font-size: 13px; letter-spacing: 1.5px; margin-bottom: 14px; }
+  .misses { display: flex; gap: 24px; margin-bottom: 34px; }
+  .m { flex: 1; border-top: 2px solid rgba(212,175,55,0.5); padding-top: 15px; display: flex; gap: 12px; align-items: flex-start; }
+  .m-mark { color: #800020; font-size: 20px; line-height: 1.1; flex: none; }
+  .m-text { color: #FFFDD0; font-size: 17px; line-height: 1.48; opacity: 0.85; }
+  .strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .cta { background: #D4AF37; color: #1B1B1B; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: 700; padding: 13px 24px; border-radius: 4px; }
+  .brandline { text-align: start; }
+  .brand { color: #D4AF37; font-size: 17px; letter-spacing: 3px; font-family: 'Arial', sans-serif; }
+  .url { color: #FFFDD0; font-size: 14px; opacity: 0.55; font-family: 'Arial', sans-serif; direction: ltr; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+  <div class="content">
+    <div class="label">NEW RISK ASSESSMENT · LALUM</div>
+    <h1>Is your AI a strategic asset,<br><em>or a legal time bomb?</em></h1>
+    <div class="misses-label">What a public model, with no algorithmic review, misses:</div>
+    <div class="misses">
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">Convoluted legal drafting in Hebrew.</div></div>
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">Local authority carve-outs in urban renewal.</div></div>
+      <div class="m"><div class="m-mark">✕</div><div class="m-text">Bank guarantees and critical conditions precedent.</div></div>
+    </div>
+    <div class="strip">
+      <div class="cta">Tech-Legal exposure assessment · Two minutes · Free</div>
+      <div class="brandline">
+        <div class="brand">LALUM</div>
+        <div class="url">lalumapp.com/risk</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
