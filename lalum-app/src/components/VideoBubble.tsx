@@ -84,16 +84,16 @@ function prefersStill(): boolean {
 type Caption = { from: number; to: number; text: string; sub?: string };
 const SCRIPT: Record<string, Caption[]> = {
   he: [
-    { from: 0.3, to: 3.6, text: "רוב הארגונים לא יודעים איפה הם חשופים" },
-    { from: 3.8, to: 7.4, text: "בדרך כלל זה לא הסעיף המסובך בחוזה" },
-    { from: 7.6, to: 10.8, text: "אלא הדבר הפשוט שאיש לא תיעד" },
-    { from: 11.0, to: 14.1, text: "שמונה שאלות, שתי דקות, ואז נדבר" },
+    { from: 0.0, to: 4.95, text: "רוב הארגונים לא יודעים איפה הם חשופים" },
+    { from: 5.1, to: 7.95, text: "בדרך כלל זה לא הסעיף המסובך בחוזה" },
+    { from: 8.2, to: 11.0, text: "אלא הדבר הפשוט שאיש לא תיעד" },
+    { from: 11.65, to: 14.92, text: "שמונה שאלות, שתי דקות, ואז נדבר" },
   ],
   en: [
-    { from: 0.3, to: 3.6, text: "Most organisations do not know where they are exposed" },
-    { from: 3.8, to: 7.4, text: "It is rarely the complicated clause" },
-    { from: 7.6, to: 10.8, text: "It is the simple thing nobody recorded" },
-    { from: 11.0, to: 14.1, text: "Eight questions, two minutes, then we talk" },
+    { from: 0.0, to: 4.95, text: "Most organisations do not know where they are exposed" },
+    { from: 5.1, to: 7.95, text: "It is rarely the complicated clause" },
+    { from: 8.2, to: 11.0, text: "It is the simple thing nobody recorded" },
+    { from: 11.65, to: 14.92, text: "Eight questions, two minutes, then we talk" },
   ],
 };
 
@@ -232,17 +232,18 @@ export function VideoBubble() {
     const el = fullRef.current;
     if (!el) return;
     el.currentTime = 0;
-    // Always muted on open, never "unmute and hope".
-    //
-    // The clip on the site carries no audio track at all: the message is the
-    // component's own text, and the recording it was cut from is about
-    // something else. Starting muted means that if a future upload does carry
-    // that soundtrack, the site still never plays it on its own; a visitor has
-    // to ask for it, and the control to ask only appears when the file really
-    // has audio.
-    el.muted = true;
-    setMuted(true);
-    void el.play().catch(() => setPlaying(false));
+    // The clip carries a voiceover recorded for it, so opening the player asks
+    // for sound: the click is the gesture browsers require. A refusal falls
+    // back to muted with the control showing, rather than a player that sits
+    // there doing nothing. The collapsed preview stays silent either way, since
+    // nothing should make noise before it is asked to.
+    el.muted = false;
+    setMuted(false);
+    void el.play().catch(() => {
+      el.muted = true;
+      setMuted(true);
+      void el.play().catch(() => setPlaying(false));
+    });
   }
 
   function togglePlay() {
