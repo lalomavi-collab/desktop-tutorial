@@ -90,6 +90,14 @@ Keep the clip short (under about 30 seconds), vertical (9:16, 720x1280 is
 plenty), and light (a couple of megabytes at most). It loads on every marketing
 page.
 
+The repository already ships a clip at those paths: a 14 second silent motion
+portrait built from the founder photograph, brand graded, looping seamlessly.
+It carries no text and no wordmark on purpose, because the bubble draws its own
+name, tagline and buttons over the lower third and its controls over the top,
+so anything burned into the frame would land behind them. Replace the three
+files with a filmed clip whenever one exists; nothing in the code changes, and
+if the new clip has speech, replace the note in the .vtt with real cues.
+
 ## Backend (Supabase), when going live
 
 From `lalum-app/`:
