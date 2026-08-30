@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Link } from "../components/AppLink";
 import { PageMeta } from "../components/PageMeta";
 import { pageJsonLd } from "../lib/schema";
@@ -12,6 +13,7 @@ import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
 import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
 import type { Lang } from "../lib/hreflang";
+import { TRACKS, BANDS, MAX_SCORE, resultFor, type BandId } from "../lib/riskScore";
 
 // When a scheduling link is configured (Zoho Bookings), booking is REAL and
 // instant: the visitor gets an email confirmation plus a calendar invite, and
@@ -56,6 +58,30 @@ function nextBusinessDays(count: number, lang: Lang): DayOption[] {
 
 const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
+
+// Someone arriving from the readiness assessment already answered eight
+// questions. Repeating none of it would make the meeting start from a blank
+// page, so the result is read back from the query string the assessment sets.
+// Nothing here trusts the values: an unknown track or band renders nothing.
+function FromAssessment() {
+  const [params] = useSearchParams();
+  if (params.get("from") !== "risk") return null;
+  const track = TRACKS.find((x) => x.id === params.get("track"));
+  const band = BANDS.includes(params.get("band") as BandId) ? (params.get("band") as BandId) : null;
+  const score = Number(params.get("score"));
+  if (!track || !band || !Number.isInteger(score) || score < 0 || score > MAX_SCORE) return null;
+  const r = resultFor(track.id, band);
+  return (
+    <div className="from-risk">
+      <span className={"riskcalc-badge tone-" + r.tone}>{r.title}</span>
+      <p>
+        הגעתם ממבדק המוכנות בתחום {track.blurb}, עם {score} מתוך {MAX_SCORE} נקודות חשיפה.
+        נתחיל את הפגישה מהפער שסימנתם.
+      </p>
+    </div>
+  );
+}
+
 export function Book() {
   const { t, lang } = useLang();
   const { user } = useAuth();
@@ -79,6 +105,8 @@ export function Book() {
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitleLive}</p>
         </div>
+
+        <FromAssessment />
 
         {/* Quick payment: accepted-method logos plus a one-tap route into the
             secure payment flow, for clients who already agreed on a fee. */}
@@ -171,6 +199,11 @@ export function Book() {
         <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
         <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitle}</p>
       </div>
+
+      {/* Also on the manual path: which of the two forms is on screen depends on
+          whether scheduling is connected, and the visitor's answers are just as
+          relevant either way. */}
+      <FromAssessment />
 
       <div className="card" style={{ padding: 34 }}>
         <form onSubmit={submit}>

@@ -3697,11 +3697,47 @@ html.a11y-reduce-motion *::after {
 .riskcalc-badge.tone-warn { color: #8a6318; background: #fbf3e2; border-color: #ecdcbb; }
 .riskcalc-badge.tone-risk { color: #800020; background: #fbeef0; border-color: #eccfd5; }
 .riskcalc-score { font-size: 13.5px; color: var(--slate); margin: 0 0 16px; }
+/* Where they scored worst. The total says how exposed; this says where, and it
+   is the line that earns the meeting. */
+/* The line that greets someone arriving from the assessment. */
+.from-risk {
+  max-inline-size: 640px;
+  margin: 0 auto 30px;
+  padding: 16px 20px;
+  border: 1px solid var(--clay-soft);
+  background: var(--clay-tint);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.from-risk p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  flex: 1;
+  min-inline-size: 16ch;
+}
+.riskcalc-gap {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--clay-tint);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.riskcalc-gap strong { color: var(--clay); }
 .riskcalc-body { font-size: 16px; line-height: 1.72; color: var(--ink); margin: 0 0 14px; max-inline-size: 60ch; }
 .riskcalc-next { font-size: 15.5px; line-height: 1.7; color: var(--slate); margin: 0 0 24px; max-inline-size: 60ch; }
 .riskcalc-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.btn-linkedin { background: #0A66C2; border-color: #0A66C2; color: #fff; }
-.btn-linkedin:hover { background: #08528f; border-color: #08528f; }
+/* Outlined, not filled: the assessment exists to start a conversation, and a
+   solid brand-blue block next to the clay call to action wins the eye from it.
+   The blue stays as the mark of where the link goes. */
+.btn-linkedin { background: var(--paper); border: 1.5px solid #0A66C2; color: #0A66C2; }
+.btn-linkedin:hover { background: #0A66C2; color: #fff; }
 .riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
 .riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }
 

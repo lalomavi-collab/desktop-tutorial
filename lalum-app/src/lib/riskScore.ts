@@ -25,13 +25,20 @@ export const TRACKS: Track[] = [
 ];
 
 export type Choice = { text: string; points: number };
-export type Question = { id: string; question: string; choices: Choice[] };
+// `track` marks a question as belonging to one path only. A question without
+// it is asked of everyone.
+export type Question = { id: string; area: string; track?: TrackId; question: string; choices: Choice[] };
 
-// Three scored questions, 0 to 3 each, so the range is 0 to 9 for every track.
-// Low points mean low exposure.
+// Six questions everyone answers, then two that belong to the track. Each is
+// scored 0 to 3, so every path runs on the same 0 to 24 scale and the results
+// stay comparable.
+//
+// Every question asks about practice, not intent. "Do you have a policy" is
+// answered yes by almost everyone; "is it enforced and reviewed" is not.
 export const QUESTIONS: Question[] = [
   {
     id: "governance",
+    area: `ממשל ומדיניות`,
     question: `איך מנוהלת אצלכם החשיפה לבינה מלאכותית ולדליפת מידע?`,
     choices: [
       { text: `יש מדיניות כתובה, סביבה מאובטחת, ובדיקה תקופתית מתועדת`, points: 0 },
@@ -41,6 +48,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "review",
+    area: `בקרה לפני חתימה`,
     question: `איך נבדקים חוזים, מסמכים והחלטות מהותיות לפני חתימה?`,
     choices: [
       { text: `בדיקה אנושית מובנית, ובנוסף שכבת ביקורת בלתי תלויה`, points: 0 },
@@ -50,6 +58,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "accountability",
+    area: `תיעוד החלטות`,
     question: `אם יתגלה כשל, האם תוכלו להראות מי החליט, על סמך מה, ומתי?`,
     choices: [
       { text: `כן, יש תיעוד החלטות שניתן להציג לרגולטור, לדירקטוריון או לבית משפט`, points: 0 },
@@ -57,14 +66,139 @@ export const QUESTIONS: Question[] = [
       { text: `לא, אין תיעוד מסודר של שרשרת ההחלטות`, points: 3 },
     ],
   },
+  {
+    id: "data",
+    area: `מידע וסודיות`,
+    question: `מה קורה למידע שאתם מזינים לכלים חיצוניים?`,
+    choices: [
+      { text: `סביבה ייעודית או הסכם שמונע אימון על המידע שלנו, עם מדיניות שמירה מוגדרת`, points: 0 },
+      { text: `יש הסכם מול הספק, אבל לא בדקנו מה נשמר ולכמה זמן`, points: 2 },
+      { text: `משתמשים בכלים ציבוריים, ולא ידוע מה נעשה עם המידע`, points: 3 },
+    ],
+  },
+  {
+    id: "vendors",
+    area: `אחריות מול ספקים`,
+    question: `מי נושא באחריות כשהכלי או הספק טועה?`,
+    choices: [
+      { text: `החוזה מול הספק מגדיר אחריות, שיפוי וזכות ביקורת`, points: 0 },
+      { text: `יש חוזה סטנדרטי של הספק, שלא נבדק מול הסיכון שלנו`, points: 2 },
+      { text: `אין התייחסות חוזית לאחריות על תוצרי המערכת`, points: 3 },
+    ],
+  },
+  {
+    id: "people",
+    area: `הרשאות והכשרה`,
+    question: `מי בארגון רשאי להשתמש בכלים האלה, ומי הוכשר לכך?`,
+    choices: [
+      { text: `ההרשאות מוגדרות לפי תפקיד, והייתה הכשרה מתועדת`, points: 0 },
+      { text: `אין הגבלה מסודרת, אבל דובר על זה בעל פה`, points: 2 },
+      { text: `כל אחד משתמש במה שהוא מוצא, בלי הרשאה ובלי הכשרה`, points: 3 },
+    ],
+  },
+
+  // Technology
+  {
+    id: "classification",
+    area: `סיווג רגולטורי`,
+    track: "tech",
+    question: `האם סיווגתם את המערכות שלכם מול דרגות הסיכון של ה-EU AI Act?`,
+    choices: [
+      { text: `כן, לכל מערכת יש סיווג מתועד, וגם מיפוי של חובות GPAI`, points: 0 },
+      { text: `התחלנו, אבל הסיווג אינו מלא ואינו מתועד`, points: 2 },
+      { text: `לא ביצענו סיווג`, points: 3 },
+    ],
+  },
+  {
+    id: "trainingData",
+    area: `זכויות בנתונים`,
+    track: "tech",
+    question: `מה מקור הנתונים שעליהם אתם מאמנים או שאתם מזינים, ואילו זכויות יש בהם?`,
+    choices: [
+      { text: `לכל מערך נתונים יש מקור מתועד, עם בדיקת זכויות ורישוי`, points: 0 },
+      { text: `רוב המקורות ידועים, בלי בדיקת זכויות מסודרת`, points: 2 },
+      { text: `לא מיפינו מקורות וזכויות`, points: 3 },
+    ],
+  },
+
+  // Professional services
+  {
+    id: "privilege",
+    area: `חיסיון לקוח`,
+    track: "legal",
+    question: `איך נשמר חיסיון עורך דין לקוח כשמשתמשים בכלי AI?`,
+    choices: [
+      { text: `סביבה סגורה או ספק בהסכם ייעודי, ואיסור מפורש על כלים ציבוריים`, points: 0 },
+      { text: `יש הנחיה לא להעלות מידע מזהה, בלי אכיפה טכנית`, points: 2 },
+      { text: `אין הבחנה, ומעלים חומרי לקוח לכלים ציבוריים`, points: 3 },
+    ],
+  },
+  {
+    id: "verification",
+    area: `אימות הפלט`,
+    track: "legal",
+    question: `איך נבדקת נכונות הפלט לפני שהוא יוצא ללקוח או לבית משפט?`,
+    choices: [
+      { text: `כל אסמכתא וציטוט נבדקים מול המקור, ויש תיעוד של הבדיקה`, points: 0 },
+      { text: `עורך הדין קורא ומתקן, בלי בדיקה שיטתית של האסמכתאות`, points: 2 },
+      { text: `הפלט משמש כמעט כפי שהוא`, points: 3 },
+    ],
+  },
+
+  // Real estate and urban renewal
+  {
+    id: "guarantees",
+    area: `בטוחות ומנגנוני איחור`,
+    track: "realestate",
+    question: `איך נבדקות הבטוחות ומנגנוני האיחור בהסכם מול היזם?`,
+    choices: [
+      { text: `בדיקה ייעודית של בטוחות, ערבויות ופיצוי מוסכם, לפני חתימה`, points: 0 },
+      { text: `נבדק בקריאה כללית של ההסכם`, points: 2 },
+      { text: `הסתמכנו על הנוסח שהיזם הביא`, points: 3 },
+    ],
+  },
+  {
+    id: "representation",
+    area: `ייצוג עצמאי`,
+    track: "realestate",
+    question: `מי מייצג את בעלי הזכויות, ומי משלם לעורך הדין?`,
+    choices: [
+      { text: `ייצוג עצמאי שנבחר על ידי בעלי הזכויות, בלי תלות ביזם`, points: 0 },
+      { text: `עורך דין שהיזם הציע, עם בדיקה חלקית מטעמנו`, points: 2 },
+      { text: `עורך הדין מטעם היזם מטפל בכולם`, points: 3 },
+    ],
+  },
 ];
 
-export const MAX_SCORE = QUESTIONS.length * 3;
+// The eight questions a given track answers, in order: the shared six, then
+// the two that belong to it.
+export function questionsFor(track: TrackId): Question[] {
+  return [...QUESTIONS.filter((q) => !q.track), ...QUESTIONS.filter((q) => q.track === track)];
+}
+
+export const QUESTIONS_PER_TRACK = 8;
+
+export const MAX_SCORE = QUESTIONS_PER_TRACK * 3;
 
 export function bandFor(score: number): BandId {
-  if (score <= 2) return "low";
-  if (score <= 5) return "medium";
+  // Thirds of the 0 to 24 scale, so a band means the same thing on every track.
+  if (score <= 6) return "low";
+  if (score <= 14) return "medium";
   return "high";
+}
+
+// The area a visitor scored worst on. The total says how exposed they are; this
+// says where, which is the part worth a conversation. Ties resolve to the first
+// question asked, so the shared governance questions come before the
+// track-specific ones.
+export function topGap(track: TrackId, answers: number[]): string | null {
+  const qs = questionsFor(track);
+  let best = -1;
+  let at = -1;
+  answers.forEach((points, i) => {
+    if (points > best) { best = points; at = i; }
+  });
+  return best > 0 && qs[at] ? qs[at].area : null;
 }
 
 export type Band = { id: BandId; title: string; tone: "ok" | "warn" | "risk"; body: string; next: string };
@@ -108,5 +242,5 @@ export function resultPath(track: TrackId, band: BandId): string {
 export function shareText(track: TrackId, band: BandId, score: number): string {
   const t = TRACKS.find((x) => x.id === track)!;
   const r = resultFor(track, band);
-  return `בדקתי את מוכנות הארגון שלי מול תשעה וקטורי סיכון בתחום ${t.blurb}. התוצאה: ${r.title} (${score} מתוך ${MAX_SCORE} נקודות חשיפה). מבדק קצר, לא חוות דעת משפטית.`;
+  return `בדקתי את מוכנות הארגון שלי מול ${MAX_SCORE} נקודות חשיפה בתחום ${t.blurb}. התוצאה: ${r.title} (${score} מתוך ${MAX_SCORE}). מבדק קצר של שמונה שאלות, לא חוות דעת משפטית.`;
 }
