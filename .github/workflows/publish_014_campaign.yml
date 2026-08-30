@@ -1,0 +1,24 @@
+name: Publish Post 014 - The Session (LinkedIn EN + Facebook HE)
+
+# Manual only, on purpose. A cron here would publish to a live professional
+# audience with nobody in the room, so the schedule in
+# campaigns/tech_legal_sept_2026/content_calendar.md is a plan, not a trigger.
+# Add `schedule:` here only once the drafts have actually been read and signed
+# off, and even then keep workflow_dispatch for a manual re-run.
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The post text lives in posts/campaign_sept_2026.json and the sending
+      # logic in scripts/publish_post.py, so this file stays a trigger and
+      # nothing more. No copy is duplicated across five workflows.
+      - name: Publish post 014 (הפגישה)
+        env:
+          ZAPIER_LINKEDIN: ${{ secrets.ZAPIER_LINKEDIN }}
+          ZAPIER_FACEBOOK: ${{ secrets.ZAPIER_FACEBOOK }}
+        run: python3 scripts/publish_post.py 014
