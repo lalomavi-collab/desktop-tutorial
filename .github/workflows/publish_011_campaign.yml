@@ -1,0 +1,27 @@
+name: Publish Post 011 - The Three Places (LinkedIn EN + Facebook HE)
+
+# Manual only, on purpose. A cron here would publish to a live professional
+# audience with nobody in the room, so the schedule in
+# campaigns/tech_legal_sept_2026/content_calendar.md is a plan, not a trigger.
+# Add `schedule:` only once the drafts have been read and signed off, and keep
+# workflow_dispatch alongside it for a manual re-run.
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Text lives in posts/campaign_sept_2026.json, cards in
+      # lalum-app/public/og/, and the API calls in scripts/publish_post.py.
+      # This file is a trigger and nothing else, so no copy is duplicated
+      # across six workflows and no text passes through YAML quoting.
+      - name: Publish post 011 (שלושת המקומות)
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+        run: python3 scripts/publish_post.py 011
