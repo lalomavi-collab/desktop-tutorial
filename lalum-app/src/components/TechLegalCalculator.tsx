@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "./Icon";
 import {
-  TRACKS, QUESTIONS, MAX_SCORE, bandFor, resultFor, resultPath, shareText,
+  TRACKS, MAX_SCORE, QUESTIONS_PER_TRACK, bandFor, questionsFor, resultFor, resultPath, shareText, topGap,
   type TrackId,
 } from "../lib/riskScore";
 
@@ -27,7 +27,11 @@ export function TechLegalCalculator() {
   const [pending, setPending] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const total = QUESTIONS.length + 1;
+  // The questions depend on the track: six shared, then two that belong to it.
+  // Before a track is picked there are none to show, but the counter still has
+  // to say "of 9", or the picker announces itself as step 1 of 1.
+  const questions = track ? questionsFor(track) : [];
+  const total = QUESTIONS_PER_TRACK + 1;
   // step is -1 on the track picker and 0-based on the questions, so the
   // human-facing counter is step + 2. Using step + 1 showed "step 0 of 4".
   const index = step === "result" ? total : (step as number) + 2;
@@ -36,14 +40,18 @@ export function TechLegalCalculator() {
   const score = answers.reduce((a, b) => a + b, 0);
   const band = bandFor(score);
   const result = track ? resultFor(track, band) : null;
+  const gap = track ? topGap(track, answers) : null;
   const url = track ? `https://lalumapp.com${resultPath(track, band)}/` : "";
+  // The booking page reads these and opens with what the visitor already told
+  // us, so the meeting does not start from a blank page.
+  const bookHref = track ? `/book?from=risk&track=${track}&band=${band}&score=${score}` : "/book";
 
   function next() {
     if (step === -1) { if (track) setStep(0); return; }
     if (pending === null) return;
     setAnswers([...answers, pending]);
     setPending(null);
-    setStep((step as number) + 1 >= QUESTIONS.length ? "result" : (step as number) + 1);
+    setStep((step as number) + 1 >= questions.length ? "result" : (step as number) + 1);
   }
 
   function restart() {
@@ -66,7 +74,7 @@ export function TechLegalCalculator() {
         <p className="eyebrow" style={{ color: "var(--clay)" }}>מבדק מוכנות</p>
         <h3 className="riskcalc-title">כמה הארגון שלכם מוכן, באמת?</h3>
         <p className="riskcalc-sub">
-          שלוש שאלות על התנהלות בפועל, לא על החוזה שלכם. שום מסמך לא נשלח ולא נשמר.
+          שמונה שאלות על התנהלות בפועל, לא על החוזה שלכם. שש משותפות ושתיים לפי תחום הפעילות. שום מסמך לא נשלח ולא נשמר.
         </p>
       </div>
 
@@ -92,9 +100,9 @@ export function TechLegalCalculator() {
             </>
           ) : (
             <>
-              <h4 className="riskcalc-q">{QUESTIONS[step as number].question}</h4>
-              <div className="riskcalc-choices" role="group" aria-label={QUESTIONS[step as number].question}>
-                {QUESTIONS[step as number].choices.map((c) => (
+              <h4 className="riskcalc-q">{questions[step as number].question}</h4>
+              <div className="riskcalc-choices" role="group" aria-label={questions[step as number].question}>
+                {questions[step as number].choices.map((c) => (
                   <button key={c.text} type="button" aria-pressed={pending === c.points}
                     className={"riskcalc-choice" + (pending === c.points ? " on" : "")}
                     onClick={() => setPending(c.points)}>
@@ -107,7 +115,7 @@ export function TechLegalCalculator() {
 
           <div className="riskcalc-foot">
             <button type="button" className="btn btn-clay" disabled={!canAdvance} onClick={next}>
-              {step === QUESTIONS.length - 1 ? "לתוצאה" : "המשך"}
+              {step === questions.length - 1 ? "לתוצאה" : "המשך"}
             </button>
           </div>
         </div>
@@ -116,19 +124,20 @@ export function TechLegalCalculator() {
           <p className="eyebrow" style={{ color: "var(--clay)" }}>התוצאה שלכם</p>
           <div className={"riskcalc-badge tone-" + result!.tone}>{result!.title}</div>
           <p className="riskcalc-score">{score} מתוך {MAX_SCORE} נקודות חשיפה</p>
+          {gap && <p className="riskcalc-gap"><strong>הפער הגדול ביותר שסימנתם:</strong> {gap}</p>}
           <p className="riskcalc-body">{result!.body}</p>
           <p className="riskcalc-next"><strong>הצעד הבא:</strong> {result!.next}</p>
 
           <div className="riskcalc-actions">
+            <Link to={bookHref} className="btn btn-clay">
+              <Icon name="calendar" size={16} /> לתיאום פגישת אבחון
+            </Link>
             <a className="btn btn-linkedin"
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
               target="_blank" rel="noopener noreferrer"
               onClick={() => { void copyLink(); }}>
               <Icon name="share" size={16} /> שיתוף התוצאה בלינקדאין
             </a>
-            <Link to="/book" className="btn btn-clay">
-              <Icon name="calendar" size={16} /> לתיאום פגישת אבחון
-            </Link>
             <button type="button" className="btn btn-ghost" onClick={restart}>מבדק מחדש</button>
           </div>
           {/* LinkedIn composes its post from the shared page, so the wording is

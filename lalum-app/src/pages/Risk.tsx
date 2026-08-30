@@ -6,7 +6,7 @@ import { pageNode, pageJsonLd } from "../lib/schema";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE, type TrackId, type BandId } from "../lib/riskScore";
 
 const TITLE = `מבדק מוכנות Tech-Legal: כמה הארגון שלכם חשוף?`;
-const DESC = `מבדק קצר בן שלוש שאלות שמעריך את מוכנות הארגון בממשל בינה מלאכותית, בבדיקת חוזים ובתיעוד החלטות. תיאור עצמי, בלי להעלות שום מסמך.`;
+const DESC = `מבדק קצר בן שמונה שאלות שמעריך את מוכנות הארגון בממשל בינה מלאכותית, בבדיקת חוזים, בסודיות מידע, באחריות מול ספקים ובתיעוד החלטות. תיאור עצמי, בלי להעלות שום מסמך.`;
 
 export function Risk() {
   return (
@@ -19,7 +19,7 @@ export function Risk() {
           {TITLE}
         </h1>
         <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "62ch" }}>
-          רוב הארגונים לא יודעים היכן הם חשופים עד שמשהו משתבש. שלוש שאלות על התנהלות בפועל מספיקות כדי לסמן את הפער העיקרי, ולדעת מה הצעד הבא.
+          רוב הארגונים לא יודעים היכן הם חשופים עד שמשהו משתבש. שמונה שאלות על התנהלות בפועל, שש משותפות ושתיים לפי תחום הפעילות, מספיקות כדי לסמן את הפער העיקרי ולדעת מה הצעד הבא.
         </p>
       </section>
       <section className="wrap section" style={{ maxWidth: 820, paddingTop: 0 }}>
@@ -63,7 +63,7 @@ export function RiskResult() {
           <Link to="/book" className="btn btn-ghost"><Icon name="calendar" size={16} /> לתיאום פגישת אבחון</Link>
         </div>
         <p style={{ fontSize: 12.5, lineHeight: 1.6, color: "var(--slate)", marginTop: 26 }}>
-          התוצאה מבוססת על תיאור עצמי בן שלוש שאלות, בסולם של {MAX_SCORE} נקודות חשיפה. היא אינה ביקורת משפטית, אינה חוות דעת ואינה תחליף לבדיקה פרטנית.
+          התוצאה מבוססת על תיאור עצמי בן שמונה שאלות, בסולם של {MAX_SCORE} נקודות חשיפה. היא אינה ביקורת משפטית, אינה חוות דעת ואינה תחליף לבדיקה פרטנית.
         </p>
       </section>
     </>
