@@ -70,6 +70,18 @@ function prefersStill(): boolean {
   }
 }
 
+// The clip's length, as m:ss. Shown on the invitation so "short" is a number
+// rather than a promise, and read from the file at runtime so it stays true
+// when the clip is replaced.
+function clock(seconds: number): string | null {
+  // A browser that cannot decode the file reports NaN or Infinity, and a
+  // stream reports something absurd. Anything outside a plausible clip length
+  // prints nothing rather than a wrong promise.
+  if (!Number.isFinite(seconds) || seconds < 1 || seconds > 3600) return null;
+  const total = Math.round(seconds);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+}
+
 export function VideoBubble() {
   const { t, lang } = useLang();
   const V = t.ui.videoBubble;
@@ -219,30 +231,35 @@ export function VideoBubble() {
     <div className={"vbub-dock" + (open ? " is-open" : "")}>
       {!open && (
         <div className="vbub-orb-wrap">
-          <span className="vbub-teaser" aria-hidden="true">
-            {V.teaser} <span className="vbub-teaser-mark">⚖️</span>
-          </span>
-
-          <button ref={orbRef} type="button" className="vbub-orb" onClick={expand} aria-label={V.open} title={V.open}>
-            <span className="vbub-ring" aria-hidden="true" />
-            <video
-              ref={previewRef}
-              className="vbub-orb-video"
-              src={videoBubbleSrc}
-              poster={videoBubblePoster || undefined}
-              preload={still ? "none" : "metadata"}
-              loop
-              muted
-              playsInline
-              tabIndex={-1}
-              aria-hidden="true"
-              onError={() => setBroken(true)}
-            />
-            {still && (
+          {/* One control, not a circle plus a caption that only appears on
+              hover. A phone has no hover, so the old bubble was a floating face
+              with nothing saying what tapping it would do. */}
+          <button ref={orbRef} type="button" className="vbub-invite" onClick={expand} aria-label={V.open} title={V.open}>
+            <span className="vbub-orb">
+              <video
+                ref={previewRef}
+                className="vbub-orb-video"
+                src={videoBubbleSrc}
+                poster={videoBubblePoster || undefined}
+                preload={still ? "none" : "metadata"}
+                loop
+                muted
+                playsInline
+                tabIndex={-1}
+                aria-hidden="true"
+                onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+                onError={() => setBroken(true)}
+              />
               <span className="vbub-orb-play" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
               </span>
-            )}
+            </span>
+            <span className="vbub-invite-txt" aria-hidden="true">
+              <span className="vbub-invite-line">{V.teaser}</span>
+              {/* The runtime knows how long the clip is, so the promise is
+                  measured rather than guessed. */}
+              <span className="vbub-invite-meta">{V.open}{clock(duration) ? ` · ${clock(duration)}` : ""}</span>
+            </span>
           </button>
 
           <button type="button" className="vbub-dismiss" onClick={hideForGood} aria-label={V.hide} title={V.hide}>
