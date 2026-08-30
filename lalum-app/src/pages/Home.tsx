@@ -21,6 +21,7 @@ import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 import { Wordmark } from "../components/Wordmark";
+import { RotatingCta } from "../components/RotatingCta";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
 // busts any browser or CDN cache instead of serving a stale /founder.webp.
 // WebP, resized to 944px (2x the on-page display width) for a sharp retina
@@ -43,7 +44,7 @@ export function Home() {
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <AmbientBackground variant="clauses" />
+        <AmbientBackground />
         <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
           <div>
             <span className="pill">{h.heroPill}</span>
@@ -53,7 +54,7 @@ export function Home() {
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <Link to="/book" className="btn btn-clay">{t.practice.riskCalc.cta}</Link>
-              <Link to="/advisory" className="btn btn-ghost">{h.heroCtaAi}</Link>
+              <RotatingCta to="/advisory" label={h.heroCtaAi} />
             </div>
             {/* Framework trust strip: an at-a-glance credibility signal, and the
                 multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
