@@ -8,6 +8,17 @@
 - Instead use a comma, period, colon, or parentheses.
 - Allowed: a hyphen that is an integral part of a word, term, identifier, date, URL, or email (e.g. `פינוי-בינוי`, `תמ"א`, `UTF-8`, `2026-06-22`, `test@lalum.legal`). These are not separators and stay as-is.
 
+## Logo: Single Source (PERMANENT)
+
+**Only the current logo may represent LALUM, in the app and in every deliverable.**
+
+- The logo is the LALUM wordmark supplied in `lalum-app/brand/LALUM-LOGO.pdf`. It is artwork, not text.
+- Never set the name in a typeface as a substitute, and never reuse a retired mark (the cream seal, the serif LALUM, the L in a circle, the gold dot).
+- Inside the app use the `Wordmark` component (`lalum-app/src/components/Wordmark.tsx`), which inherits the surrounding colour.
+- Outside the app use `public/lalum-logo.svg` on light backgrounds, `public/lalum-logo-inverse.svg` on dark ones, and `public/lalum-logo.png` only where SVG is rejected (email).
+- Icons, favicons and Open Graph cards are all derived from that same artwork. Regeneration and geometry are documented in `lalum-app/brand/README.md`.
+- Every produced file (docx, html, pdf, images, posts, presentations) carries this logo and no other.
+
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
 **Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**

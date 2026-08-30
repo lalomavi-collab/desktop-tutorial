@@ -4,6 +4,7 @@ import { Icon } from "./Icon";
 import { LeumiMark, PaymentBrands } from "./BrandMarks";
 import { contactEmail, officePhone, directPhone, personalLine, socialLinks, websiteDisplay, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
+import { Wordmark } from "./Wordmark";
 
 function LinkedInIcon() {
   return (
@@ -61,7 +62,7 @@ export function Footer() {
 
       <div className="wrap footer-inner">
         <div className="footer-brand">
-          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" width={1945} height={432} loading="lazy" decoding="async" />
+          <Wordmark height={24} className="footer-logo" />
           <p className="footer-tagline">{f.tagline}</p>
           <div className="footer-social" aria-label={f.follow}>
             <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label={f.linkedin} className="footer-social-link"><LinkedInIcon /></a>

@@ -7,6 +7,7 @@ import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
+import { Wordmark } from "./Wordmark";
 
 export function Header() {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ export function Header() {
     <header className="site-header">
       <div className="wrap header-inner">
         <Link to="/" className="brand">
-          <span className="brand-word">LALUM</span>
+          <Wordmark height={19} />
         </Link>
 
         <nav className="nav-pills">
