@@ -562,7 +562,7 @@ export function Portal() {
   const callGroups = useMemo(() => {
     const map = new Map<string, CallRow[]>();
     for (const c of calls) {
-      const key = c.caller_phone || "—";
+      const key = c.caller_phone || "ללא מספר";
       const arr = map.get(key) ?? [];
       arr.push(c);
       map.set(key, arr);
