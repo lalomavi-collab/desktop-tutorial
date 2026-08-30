@@ -1284,12 +1284,6 @@ a.caps-item:focus-visible .caps-go {
   font-weight: 500;
   font-size: 17px;
 }
-.brand-word {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 21px;
-  letter-spacing: -0.01em;
-}
 /* Header controls share one height so the bar reads as a single toolbar. */
 :root {
   --ctrl-h: 40px;
