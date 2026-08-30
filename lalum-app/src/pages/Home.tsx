@@ -136,14 +136,22 @@ export function Home() {
           <p className="eyebrow">{h.pillarsEyebrow}</p>
           <h2 className="h2">{h.pillarsH2}</h2>
         </div>
-        <div className="grid grid-3">
+        {/* Layers, not a grid of cards. The section is named for a layer, and
+            six identical boxes said nothing of the sort: these are bands that
+            stack, each with its own edge colour, so the six read as one system
+            and the eye can run down them. */}
+        <div className="pillar-layers">
           {t.data.pillars.map((p) => (
-            <Link key={p.title} to="/advisory" className="card" aria-label={p.title}>
-              <span className="icon-badge"><Icon name={p.icon} size={23} /></span>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)", margin: "20px 0 6px" }}>{p.tag}</div>
-              <h3 className="h3" style={{ fontSize: 23, margin: "0 0 12px", lineHeight: 1.25 }}>{p.title}</h3>
-              <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{p.body}</p>
-              <span className="card-go">{h.pillarsGo} &rarr;</span>
+            <Link key={p.title} to="/advisory" className="pillar-band" aria-label={p.title}>
+              <span className="pillar-mark" aria-hidden="true"><Icon name={p.icon} size={20} /></span>
+              <span className="pillar-txt">
+                <span className="pillar-line">
+                  <h3 className="h3 pillar-title">{p.title}</h3>
+                  <span className="pillar-tag">{p.tag}</span>
+                </span>
+                <p className="pillar-body">{p.body}</p>
+              </span>
+              <span className="pillar-go" aria-hidden="true">&rarr;</span>
             </Link>
           ))}
         </div>
