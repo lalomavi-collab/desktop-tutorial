@@ -70,6 +70,33 @@ function prefersStill(): boolean {
   }
 }
 
+
+// What the clip says, in text, because the clip itself says nothing.
+//
+// The recording has no soundtrack: it was cut from a session about another
+// subject, so the speaker is present but silent, and the message is carried
+// here. Each line holds for about three seconds, which is a comfortable read
+// in Hebrew at this size, and the last one hands over to the buttons below.
+//
+// The timings are tied to this fourteen second file. A new clip needs new
+// lines, which is why they sit beside the component and not in the shared
+// string table.
+type Caption = { from: number; to: number; text: string; sub?: string };
+const SCRIPT: Record<string, Caption[]> = {
+  he: [
+    { from: 0.3, to: 3.6, text: "רוב הארגונים לא יודעים איפה הם חשופים" },
+    { from: 3.8, to: 7.4, text: "בדרך כלל זה לא הסעיף המסובך בחוזה" },
+    { from: 7.6, to: 10.8, text: "אלא הדבר הפשוט שאיש לא תיעד" },
+    { from: 11.0, to: 14.1, text: "שמונה שאלות, שתי דקות, ואז נדבר" },
+  ],
+  en: [
+    { from: 0.3, to: 3.6, text: "Most organisations do not know where they are exposed" },
+    { from: 3.8, to: 7.4, text: "It is rarely the complicated clause" },
+    { from: 7.6, to: 10.8, text: "It is the simple thing nobody recorded" },
+    { from: 11.0, to: 14.1, text: "Eight questions, two minutes, then we talk" },
+  ],
+};
+
 // The clip's length, as m:ss. Shown on the invitation so "short" is a number
 // rather than a promise, and read from the file at runtime so it stays true
 // when the clip is replaced.
@@ -244,6 +271,11 @@ export function VideoBubble() {
     setVisible(false);
   }
 
+  // The line on screen right now. Anything outside every window shows nothing,
+  // so a clip longer than the script simply runs on without text.
+  const lines = SCRIPT[lang];
+  const caption = lines?.find((c) => progress >= c.from && progress < c.to) ?? null;
+
   const captions = videoBubbleCaptions ? (
     <track kind="captions" src={videoBubbleCaptions} srcLang={bcp47For(lang)} label={t.ui.langName} default />
   ) : null;
@@ -326,14 +358,31 @@ export function VideoBubble() {
             onPause={() => setPlaying(false)}
             onEnded={() => setPlaying(false)}
             onLoadedMetadata={(e) => {
-              setDuration(e.currentTarget.duration || 0);
-              setHasAudio((known) => (known === true ? true : audioPresence(e.currentTarget)));
+              // The element has to be captured here: React clears
+              // `currentTarget` once the handler returns, and the updater below
+              // runs during the next render, where it would already be null.
+              const el = e.currentTarget;
+              setDuration(el.duration || 0);
+              setHasAudio((known) => (known === true ? true : audioPresence(el)));
             }}
             onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
             onError={() => { setBroken(true); setOpen(false); }}
           >
             {captions}
           </video>
+
+          {/* The lines change every few seconds, which no screen reader can
+              follow, so the whole message is offered once, in order, and the
+              moving copy is marked decorative. */}
+          {lines && (
+            <p className="vbub-script-full">{lines.map((c) => c.text).join(". ")}</p>
+          )}
+
+          {caption && (
+            <div className="vbub-script" aria-hidden="true">
+              <p className="vbub-script-line">{caption.text}</p>
+            </div>
+          )}
 
           <div className="vbub-panel-foot">
             <input
