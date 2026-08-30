@@ -22,6 +22,7 @@ import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
+import { VoiceNote } from "../components/VoiceNote";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
 // busts any browser or CDN cache instead of serving a stale /founder.webp.
 // WebP, resized to 944px (2x the on-page display width) for a sharp retina
@@ -268,6 +269,9 @@ export function Home() {
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
+            {/* His own voice, beside his own details. Nothing plays until it is
+                asked to. */}
+            <VoiceNote />
             <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
               <a href={`tel:${officePhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
