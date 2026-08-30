@@ -43,7 +43,7 @@ export function Home() {
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <AmbientBackground />
+        <AmbientBackground variant="clauses" />
         <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
           <div>
             <span className="pill">{h.heroPill}</span>
