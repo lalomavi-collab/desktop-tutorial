@@ -3755,10 +3755,12 @@ html.a11y-reduce-motion *::after {
    the same column rather than in a corner of its own.
    ============================================================ */
 .vbub-dock {
-  --vbub-navy: #0a192f;
-  --vbub-navy-soft: #112240;
-  --vbub-gold: #d4af37;
-  --vbub-gold-soft: #c5a880;
+  /* Warm near-black rather than navy: the player stays dark, which is right
+     for video, but in the site's own family instead of a second brand. */
+  --vbub-navy: #17140f;
+  --vbub-navy-soft: #221d16;
+  --vbub-gold: var(--clay-bright);
+  --vbub-gold-soft: var(--clay-soft);
 
   position: fixed;
   /* Clear of the chat button (60px) that sits at bottom: 24px. */
@@ -3779,110 +3781,135 @@ html.a11y-reduce-motion *::after {
 .vbub-orb-wrap {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
-/* The hover / focus teaser line. */
-.vbub-teaser {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  inset-inline-end: 0;
-  background: var(--vbub-navy);
-  color: #ffffff;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 11px;
-  padding: 7px 11px;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.35;
-  white-space: nowrap;
-  box-shadow: 0 12px 28px -14px rgba(10, 25, 47, 0.8);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  pointer-events: none;
+/* The invitation. One control: the clip's thumbnail, the question it answers,
+   and how long it takes. The old bubble kept its caption behind :hover, which
+   on a phone means it never appeared at all, so the thing in the corner was a
+   floating face with nothing saying what tapping it would do. */
+.vbub-invite {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-inline-size: min(300px, calc(100vw - 40px));
+  /* Logical padding: the thumbnail sits at the inline start, so the tighter
+     side has to follow the writing direction rather than being pinned left. */
+  padding-block: 10px;
+  padding-inline-start: 10px;
+  padding-inline-end: 18px;
+  border: 1px solid var(--clay-soft);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
+  cursor: pointer;
+  text-align: start;
+  font: inherit;
 }
-.vbub-teaser-mark { color: var(--vbub-gold); }
-.vbub-orb-wrap:hover .vbub-teaser,
-.vbub-orb-wrap:focus-within .vbub-teaser {
-  opacity: 1;
-  transform: translateY(0);
+.vbub-invite:hover {
+  border-color: var(--clay);
+  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
+}
+.vbub-invite:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-invite {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    animation: vbub-arrive 0.5s cubic-bezier(0.22, 0.9, 0.28, 1) both;
+  }
+  .vbub-invite:hover {
+    transform: translateY(-2px);
+  }
+}
+@keyframes vbub-arrive {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }
 
 .vbub-orb {
   position: relative;
-  width: 88px;
-  height: 88px;
-  padding: 0;
-  border: 3px solid var(--vbub-gold);
+  inline-size: 54px;
+  block-size: 54px;
   border-radius: 50%;
   overflow: hidden;
-  cursor: pointer;
-  background: linear-gradient(160deg, var(--vbub-navy-soft), var(--vbub-navy));
-  box-shadow: 0 14px 34px -10px rgba(212, 175, 55, 0.45), 0 6px 18px -8px rgba(10, 25, 47, 0.55);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.vbub-orb:hover {
-  transform: scale(1.07);
-  box-shadow: 0 18px 40px -10px rgba(212, 175, 55, 0.6), 0 8px 22px -8px rgba(10, 25, 47, 0.6);
+  flex: none;
+  background: var(--vbub-navy);
+  border: 2px solid var(--clay-soft);
 }
 .vbub-orb-video {
-  width: 100%;
-  height: 100%;
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  /* The clip is a vertical portrait, so a centred crop lands on the chest.
+     Pulling the frame up puts the face in the circle. */
+  object-position: 50% 22%;
   display: block;
 }
-/* Shown instead of a running loop when motion is reduced or data is saved. */
+/* A play chip, always present: it is what marks the thumbnail as a video
+   rather than a photo of somebody. */
 .vbub-orb-play {
   position: absolute;
-  inset: 0;
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: #fff;
   display: grid;
   place-items: center;
-  color: var(--vbub-gold);
-  background: rgba(10, 25, 47, 0.35);
-  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--paper);
 }
-/* The pulsing gold halo. */
-.vbub-ring {
-  position: absolute;
-  inset: -3px;
-  border: 2px solid var(--vbub-gold);
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-ring {
-    animation: vbub-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-}
-@keyframes vbub-ping {
-  0% { opacity: 0.75; transform: scale(1); }
-  70%, 100% { opacity: 0; transform: scale(1.35); }
+.vbub-orb-play svg {
+  /* The glyph is a right-pointing triangle, and it means "play" in every
+     direction, so it must not flip with the page. */
+  transform: translateX(1px);
 }
 
+.vbub-invite-txt {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vbub-invite-line {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.vbub-invite-meta {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--slate);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Quiet: closing is not the action being offered. */
 .vbub-dismiss {
   position: absolute;
-  top: -4px;
-  inset-inline-end: -4px;
-  width: 22px;
-  height: 22px;
+  inset-block-start: -7px;
+  inset-inline-end: -7px;
+  inline-size: 22px;
+  block-size: 22px;
   border-radius: 50%;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: var(--vbub-navy);
-  color: #d8d3c8;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--slate);
   font-size: 14px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .vbub-dismiss:hover {
   background: var(--danger);
+  border-color: var(--danger);
   color: #ffffff;
 }
 
