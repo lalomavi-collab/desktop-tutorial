@@ -161,27 +161,27 @@ export function Home() {
       {/* ADVISORY PILLARS: prominent entry points to the three pillar pages */}
       <section className="wrap section section-line">
         <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
-          <p className="eyebrow">ייעוץ, חוות דעת שנייה וגישור</p>
-          <h2 className="h2">שלושה מסלולי ייעוץ וגישור עצמאיים</h2>
+          <p className="eyebrow">{h.advisoryPillarsEyebrow}</p>
+          <h2 className="h2">{h.advisoryPillarsH2}</h2>
         </div>
         <div className="grid grid-3">
-          <Link to="/ai-legal-advisory" className="card" aria-label="ייעוץ וחוות דעת שנייה בנושא AI">
+          <Link to="/ai-legal-advisory" className="card" aria-label={h.advisoryAiTitle}>
             <span className="icon-badge"><Icon name="brain" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>ייעוץ וחוות דעת שנייה בנושא AI</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>לחברות וארגונים: ממשל בינה מלאכותית, EU AI Act, אחריות אלגוריתמית וניהול סיכונים.</p>
-            <span className="card-go">מידע נוסף &rarr;</span>
+            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryAiBody}</p>
+            <span className="card-go">{h.advisoryMore} &rarr;</span>
           </Link>
-          <Link to="/real-estate-legal-advisory" className="card" aria-label="ייעוץ וחוות דעת שנייה בנדלן והתחדשות עירונית">
+          <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
             <span className="icon-badge"><Icon name="scale" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>ייעוץ וחוות דעת שנייה בנדל"ן</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>עסקאות נדל"ן והתחדשות עירונית (תמ"א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות.</p>
-            <span className="card-go">מידע נוסף &rarr;</span>
+            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
+            <span className="card-go">{h.advisoryMore} &rarr;</span>
           </Link>
-          <Link to="/mediation-dispute-resolution" className="card" aria-label="גישור מסחרי ויישוב סכסוכים עסקיים">
+          <Link to="/mediation-dispute-resolution" className="card" aria-label={h.advisoryMediationTitle}>
             <span className="icon-badge"><Icon name="gavel" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>גישור מסחרי ויישוב סכסוכים</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>גישור מכוון הכרעה בסכסוכי שותפים, ספקים, נדל"ן והתחדשות עירונית, עם הכרעה מנומקת.</p>
-            <span className="card-go">מידע נוסף &rarr;</span>
+            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryMediationTitle}</h3>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryMediationBody}</p>
+            <span className="card-go">{h.advisoryMore} &rarr;</span>
           </Link>
         </div>
       </section>
