@@ -141,6 +141,23 @@ export function articlesByTopic(dict: Dict): Map<string, TopicArticle[]> {
   return g;
 }
 
+// The topic one article belongs to. The hubs are only worth having if the
+// articles point back at them: without this, 160 pieces sat under five hubs
+// that nothing but the index linked to.
+const ofArticle = new WeakMap<object, Map<string, Topic>>();
+export function topicOfArticle(dict: Dict, slug: string): Topic | undefined {
+  let m = ofArticle.get(dict);
+  if (!m) {
+    m = new Map<string, Topic>();
+    for (const [topicSlug, rows] of articlesByTopic(dict)) {
+      const topic = topicBySlug.get(topicSlug)!;
+      for (const r of rows) m.set(r.slug, topic);
+    }
+    ofArticle.set(dict, m);
+  }
+  return m.get(slug);
+}
+
 export function topicPath(slug: string): string {
   return `/insights/topics/${slug}`;
 }

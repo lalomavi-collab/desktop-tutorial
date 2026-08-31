@@ -13,7 +13,7 @@ import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskS
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
-import { TOPICS, articlesByTopic, topicPath } from "./src/lib/topics";
+import { TOPICS, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -89,7 +89,7 @@ function toIsoDate(s: string): string {
 // non-JS crawler or an AI answer engine sees the author, publisher, and date up
 // front, instead of the app-shell's Organization graph. Matches the runtime
 // shape (author linked by @id to the verified founder node).
-function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string }): string {
+function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string; topic?: Topic }): string {
   const iso = toIsoDate(a.date);
   const graph = {
     "@context": "https://schema.org",
@@ -112,10 +112,13 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
       },
       {
         "@type": "BreadcrumbList",
+        // The topic sits between the index and the piece, so the trail a search
+        // result shows matches the path a reader actually has through the site.
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
           { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights/` },
-          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
+          ...(a.topic ? [{ "@type": "ListItem", position: 3, name: a.topic.name, item: `${SITE}${topicPath(a.topic.slug)}/` }] : []),
+          { "@type": "ListItem", position: a.topic ? 4 : 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
         ],
       },
     ],
@@ -181,8 +184,11 @@ ${inner}
 // left every article a dead end: a crawler that does not run JavaScript could
 // reach an article, read it, and then had nowhere to go but the site nav, so
 // the corpus had no paths through it at all.
-function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = []): string {
+function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = [], topic?: Topic): string {
   const out = [`        <h1>${esc(headline)}</h1>`, `        <p>${esc(dek)}</p>`, `        ${blocksToHtml(blocks)}`];
+  if (topic) {
+    out.push(`        <p>${esc("נושא")}: <a href="${topicPath(topic.slug)}/">${esc(topic.name)}</a></p>`);
+  }
   if (related.length) {
     out.push(`        <h2>${esc(strings.he.ui.article.moreArticles)}</h2>`);
     out.push(`        <ul>${related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
@@ -451,11 +457,12 @@ function seoPrerender(): Plugin {
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
-          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined });
+          const topic = topicOfArticle(strings.he, r.article.slug);
+          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined, topic });
           html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
-          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus)));
+          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus), topic));
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running

@@ -6,6 +6,7 @@ import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
 import { articleCorpus, relatedTo } from "../lib/related";
+import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
 import { toBlocks } from "../lib/articleBlocks";
 
@@ -57,6 +58,10 @@ export function Article() {
   // crawlers) moving between articles instead of dead-ending after one, and
   // being topical is what makes them worth following in either role.
   const related = relatedTo(slug ?? "", articleCorpus(t));
+  // The subject this piece belongs to. Shown as a link so a reader who wants
+  // more of the same has somewhere to go, and so the topic hubs are reachable
+  // from the articles rather than only from the index.
+  const topic = topicOfArticle(t, slug ?? "");
 
   // schema.org datePublished must be ISO 8601. The visible date stays the
   // human string; the structured-data field gets a parsed ISO date, or is
@@ -143,6 +148,15 @@ export function Article() {
           </div>
         </div>
       </div>
+
+      {topic && (
+        <section className="wrap" style={{ maxWidth: 760, padding: "0 32px" }}>
+          <p style={{ fontSize: 14.5, color: "var(--slate)", margin: 0 }}>
+            {t.insights.heroPill}:{" "}
+            <Link to={topicPath(topic.slug)} style={{ color: "var(--clay)" }}>{topic.name}</Link>
+          </p>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="section-line">
