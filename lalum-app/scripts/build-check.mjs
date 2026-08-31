@@ -202,6 +202,50 @@ nameOff
   ? fail("one form of the name", `${nameOff} titled mention(s) differ from ${CANON_NAME}, e.g. ${nameSample.join("; ")}`)
   : pass(`one form of the name (${CANON_NAME})`);
 
+// 9. The two areas the practice leads with must be reachable from every
+//    document, and must not be outranked by the one it does not lead with.
+//
+//    The navigation linked neither of them. /advisory ("Advisory") sat in the
+//    top bar, the two pillar pages carrying the whole positioning were
+//    reachable only from the footer and from the middle of the home page, and
+//    the mediation pillar carried the same sitemap priority as both. Every
+//    check above passed the whole time, because each one asks whether a page is
+//    correct, and none asks what the site says it is about.
+const LEAD_PILLARS = ["/real-estate-legal-advisory/", "/ai-legal-advisory/"];
+const MEDIATION_PILLAR = "/mediation-dispute-resolution/";
+
+const unlinked = [];
+for (const p of pages) {
+  const h = readFileSync(p, "utf8");
+  // The sign-in form and the client area are deliberately minimal and carry no
+  // site navigation at all, so there is nothing there to lead with.
+  if (/name="robots" content="noindex/.test(h)) continue;
+  const missing = LEAD_PILLARS.filter((u) => !h.includes(`href="${u}"`));
+  if (missing.length) unlinked.push(`${rel(p)} (${missing.join(", ")})`);
+}
+unlinked.length
+  ? fail("every page links both focus areas", `${unlinked.length} document(s) link neither or only one, e.g. ${unlinked[0]}`)
+  : pass(`every page links both focus areas (${pages.length - unlinked.length})`);
+
+// Sitemap priority is a weak signal on its own, but it is the site stating its
+// own order of importance, and it stated the wrong one.
+if (existsSync(smPath)) {
+  const xml = readFileSync(smPath, "utf8");
+  const priorityOf = (path) => {
+    const m = new RegExp(`<loc>${DOMAIN}${path}</loc>[^<]*(?:<[^>]+>[^<]*)*?<priority>([\\d.]+)</priority>`).exec(xml);
+    return m ? Number(m[1]) : null;
+  };
+  const med = priorityOf(MEDIATION_PILLAR);
+  const leads = LEAD_PILLARS.map((u) => priorityOf(u));
+  if (med === null || leads.some((v) => v === null)) {
+    fail("the two focus areas outrank mediation", "a pillar page is missing from the sitemap");
+  } else if (leads.some((v) => v <= med)) {
+    fail("the two focus areas outrank mediation", `mediation is at ${med}, the focus areas at ${leads.join(" and ")}`);
+  } else {
+    pass(`the two focus areas outrank mediation (${leads.join(" and ")} vs ${med})`);
+  }
+}
+
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
 console.log(`\n${results.length - fails.length} pass, ${fails.length} fail`);

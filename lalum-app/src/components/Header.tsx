@@ -15,13 +15,18 @@ export function Header() {
   const [langOpen, setLangOpen] = useState(false);
   const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
 
-  // Articles, Q&A and guides now live under the single Knowledge hub, so the top
-  // bar stays lean: Home, Advisory, Courses, and the Knowledge hub. Payment is a
-  // one-tap action from the floating ContactRail, not the top bar.
+  // The top bar names the two areas the practice leads with, then the advisory
+  // hub, courses and the Knowledge hub. It used to open with two anchors into
+  // the home page (practice areas, pre-deal strategy) and a single "Advisory"
+  // pill, so neither focus area had a link anywhere in the navigation: the two
+  // pages carrying the positioning were reachable only from the footer and from
+  // the middle of the home page. Both anchors still sit on the home page, and
+  // pre-deal strategy is a section of /advisory as well, so nothing lost an
+  // address. Payment is a one-tap action from the floating ContactRail.
   const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
     { to: "/", label: t.ui.nav.home, end: true },
-    { to: "/#practice-areas", label: t.ui.nav.practice, end: false, hash: true },
-    { to: "/#pre-deal", label: t.ui.nav.strategy, end: false, hash: true },
+    { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate, end: false },
+    { to: "/ai-legal-advisory", label: t.ui.nav.ai, end: false },
     { to: "/advisory", label: t.ui.nav.advisory, end: false },
     { to: "/training", label: t.ui.nav.training, end: false },
     { to: "/knowledge", label: t.ui.nav.knowledge, end: false },

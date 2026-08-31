@@ -81,9 +81,12 @@ export function Footer() {
         <nav className="footer-col" aria-label={f.explore}>
           <div className="footer-head">{f.explore}</div>
           <Link to="/">{L.home}</Link>
-          <Link to="/advisory">{L.advisory}</Link>
-          <Link to="/ai-legal-advisory">{L.advisoryAi}</Link>
+          {/* The two areas the practice leads with come first here, as they do
+              in the top bar and on the home page. The advisory hub follows, and
+              mediation after it: live, linked, and not led with. */}
           <Link to="/real-estate-legal-advisory">{L.advisoryRe}</Link>
+          <Link to="/ai-legal-advisory">{L.advisoryAi}</Link>
+          <Link to="/advisory">{L.advisory}</Link>
           <Link to="/mediation-dispute-resolution">{L.advisoryMediation}</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
