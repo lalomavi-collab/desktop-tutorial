@@ -49,3 +49,10 @@
 | 2026-08-31 | https://lalumapp.com/ar/real-estate-legal-advisory/ | כבר ב-Google (דילוג) |
 | 2026-08-31 | https://lalumapp.com/ar/knowledge/ | כבר ב-Google (דילוג) |
 | 2026-08-31 | https://lalumapp.com/ar/book/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/insights/pinui-binui-owner-guide/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/insights/amendment-13-data-security-guide/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/legal/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/en/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/en/knowledge/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/en/book/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/en/legal/ | נשלח |
