@@ -328,7 +328,13 @@ function shortTitle(full: string, allowColonCut = true): string {
   let t = head;
   if (t.length > budget) {
     const colon = head.indexOf(":");
-    if (allowColonCut && colon >= 15 && colon <= budget) {
+    // Cut at the colon only when the half before it is a headline in its own
+    // right, filling most of the budget. On 62 pages it was not: a title like
+    // "שקיפות אלגוריתמית: האתיקה של הבינה המלאכותית במרחב המשפטי-כלכלי" was
+    // shown to searchers as "שקיפות אלגוריתמית", two words, when 26 more
+    // characters of it would have fitted. A short head means the subject is
+    // stated after the colon, so the plain cut keeps more of the meaning.
+    if (allowColonCut && colon >= Math.max(15, budget * 0.6) && colon <= budget) {
       t = head.slice(0, colon);
     } else {
       t = head.slice(0, budget);
