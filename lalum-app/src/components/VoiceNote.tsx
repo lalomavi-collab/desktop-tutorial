@@ -23,7 +23,7 @@ const SOURCES = [
 // renders only on the Hebrew site (see the lang guard below), so it never
 // reaches a translated page.
 const COPY = {
-  label: "האזינו לד״ר אברהם ללום",
+  label: "האזינו לד״ר עו״ד אברהם ללום",
   play: "האזנה להקלטה",
   pause: "עצירת ההקלטה",
   seek: "מיקום בהקלטה",
