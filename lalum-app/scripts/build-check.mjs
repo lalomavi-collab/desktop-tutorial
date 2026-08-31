@@ -43,12 +43,17 @@ function walk(dir, out = []) {
 const pages = walk(dist);
 const rel = (p) => "/" + relative(dist, p).replace(/\\/g, "/");
 
-// A path is served if the exact file exists or the directory has an index.
+// A path is served if the exact file exists, the directory has an index, or a
+// file of the same name with .html appended exists. The third case is how the
+// host serves an extension-less page written straight into public/, and leaving
+// it out made this check report a page that is live and returns 200.
 function served(urlPath) {
   const p = decodeURIComponent(urlPath.replace(/\/+$/, ""));
   if (p === "" || p === "/") return existsSync(join(dist, "index.html"));
   const f = join(dist, p);
-  return existsSync(f) && statSync(f).isFile() ? true : existsSync(join(f, "index.html"));
+  if (existsSync(f) && statSync(f).isFile()) return true;
+  if (existsSync(join(f, "index.html"))) return true;
+  return existsSync(`${f}.html`);
 }
 
 const bodyOf = (h) => {
@@ -167,6 +172,32 @@ const sharedDesc = [...byDesc.values()].filter((v) => v.length > 1);
 sharedDesc.length
   ? fail("every description is unique", `${sharedDesc.length} description(s) shared, e.g. ${sharedDesc[0].join(" and ")}`)
   : pass(`every description is unique (${byDesc.size})`);
+
+// 8. One form of the name, everywhere the site speaks. The app used
+//    "ד״ר אברהם ללום" and the article metadata used "עו״ד אברהם ללום", so the
+//    same person appeared under two titles depending on which page you landed
+//    on. Any titled mention must now be the canonical form.
+//
+//    Untitled mentions are left alone: repeating the full form in every
+//    sentence is not consistency, it is unreadable Hebrew. And JSON-LD is
+//    skipped, because alternateName deliberately carries the other spellings:
+//    those are what people type into a search box, and the entity needs them.
+const CANON_NAME = "ד״ר עו״ד אברהם ללום";
+const TITLED = /(?:(?:ד["״]ר|עו["״]ד|ו?דוקטורנט)(?:\s+למשפטים)?\s+)+אברהם\s+ללום/g;
+let nameOff = 0;
+const nameSample = [];
+for (const p of pages) {
+  const h = readFileSync(p, "utf8").replace(/<script[\s\S]*?<\/script>/g, "");
+  for (const m of h.matchAll(TITLED)) {
+    if (m[0] !== CANON_NAME) {
+      nameOff++;
+      if (nameSample.length < 3) nameSample.push(`${rel(p)}: ${m[0]}`);
+    }
+  }
+}
+nameOff
+  ? fail("one form of the name", `${nameOff} titled mention(s) differ from ${CANON_NAME}, e.g. ${nameSample.join("; ")}`)
+  : pass(`one form of the name (${CANON_NAME})`);
 
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");

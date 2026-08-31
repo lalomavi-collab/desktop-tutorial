@@ -67,84 +67,281 @@
     <meta name="twitter:title" content="LALUM · Law, Real Estate & AI" />
     <meta name="twitter:image" content="https://lalumapp.com/og-card-v2.png" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <script type="application/ld+json">
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": ["LegalService", "ProfessionalService"],
-          "@id": "https://lalumapp.com/#organization",
-          "name": "LALUM",
-          "url": "https://lalumapp.com/",
-          "logo": "https://lalumapp.com/icon-512.png",
-          "image": "https://lalumapp.com/og-card-v2.png",
-          "description": "Tech-Legal practice uniting law, real estate, and AI. Real estate transactions and the representation of buyers and owners in Israel and abroad, urban renewal, decision-oriented mediation (DOM), and AI risk governance with EU AI Act conformity.",
-          "email": "avraham@lalum.co",
-          "telephone": "+97233751235",
-          "areaServed": ["IL", "Worldwide"],
-          "knowsAbout": ["Real estate law", "Real estate transactions", "Cross-border property investment", "Urban renewal", "Mediation", "EU AI Act", "AI governance", "AI liability", "AI risk management", "Legal AI", "Intellectual property", "Contract governance", "Public sector AI"],
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "85 Medinat HaYehudim St, 3rd Floor",
-            "addressLocality": "Herzliya Pituach",
-            "postalCode": "4676670",
-            "addressCountry": "IL"
+      "@type": [
+        "LegalService",
+        "ProfessionalService"
+      ],
+      "@id": "https://lalumapp.com/#organization",
+      "name": "LALUM",
+      "url": "https://lalumapp.com/",
+      "logo": "https://lalumapp.com/icon-512.png",
+      "image": "https://lalumapp.com/og-card-v2.png",
+      "description": "Tech-Legal practice uniting law, real estate, and AI. Real estate transactions and the representation of buyers and owners in Israel and abroad, urban renewal, decision-oriented mediation (DOM), and AI risk governance with EU AI Act conformity.",
+      "email": "avraham@lalum.co",
+      "telephone": "+97233751235",
+      "areaServed": [
+        "IL",
+        "Worldwide"
+      ],
+      "knowsAbout": [
+        "Real estate law",
+        "Real estate transactions",
+        "Cross-border property investment",
+        "Urban renewal",
+        "Mediation",
+        "EU AI Act",
+        "AI governance",
+        "AI liability",
+        "AI risk management",
+        "Legal AI",
+        "Intellectual property",
+        "Contract governance",
+        "Public sector AI"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "85 Medinat HaYehudim St, 3rd Floor",
+        "addressLocality": "Herzliya Pituach",
+        "postalCode": "4676670",
+        "addressCountry": "IL"
+      },
+      "founder": {
+        "@id": "https://lalumapp.com/#founder"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "What LALUM does",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Representing overseas property buyers"
+            }
           },
-          "founder": { "@id": "https://lalumapp.com/#founder" },
-          "hasOfferCatalog": {
-            "@type": "OfferCatalog",
-            "name": "What LALUM does",
-            "itemListElement": [
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Representing overseas property buyers" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Representation of property owners and rights-holders" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Real estate transactions and urban renewal" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Mediation and Dispute Resolution (DOM)" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI Regulation and EU AI Act conformity" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI Liability and Risk Governance" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "IP and Data Protection" } },
-              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Contracts and Venture Counsel" } }
-            ]
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Representation of property owners and rights-holders"
+            }
           },
-          "sameAs": [
-            "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
-            "https://www.facebook.com/profile.php?id=61573518832531&locale=he_IL",
-            "https://www.lalum.co"
-          ]
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Real estate transactions and urban renewal"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Mediation and Dispute Resolution (DOM)"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI Regulation and EU AI Act conformity"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI Liability and Risk Governance"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "IP and Data Protection"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Contracts and Venture Counsel"
+            }
+          }
+        ]
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
+        "https://www.facebook.com/profile.php?id=61573518832531&locale=he_IL",
+        "https://www.lalum.co"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://lalumapp.com/#founder",
+      "name": "Dr. Avraham Lalum",
+      "alternateName": [
+        "ד״ר עו״ד אברהם ללום",
+        "ד\"ר אברהם ללום",
+        "אברהם ללום",
+        "אבי ללום",
+        "ד\"ר ללום",
+        "עו\"ד אברהם ללום",
+        "Avraham Lalum",
+        "Avi Lalum",
+        "Dr. Avi Lalum"
+      ],
+      "jobTitle": "Founder, Attorney and Notary, Head of AI",
+      "worksFor": {
+        "@id": "https://lalumapp.com/#organization"
+      },
+      "url": "https://lalumapp.com/",
+      "sameAs": [
+        "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"
+      ],
+      "mainEntityOfPage": "https://lalumapp.com/cv",
+      "hasCredential": [
+        {
+          "@type": "EducationalOccupationalCredential",
+          "credentialCategory": "professional certification",
+          "name": "Attorney (Israel Bar)"
         },
         {
-          "@type": "Person",
-          "@id": "https://lalumapp.com/#founder",
-          "name": "Dr. Avraham Lalum",
-          "alternateName": "ד\"ר אברהם ללום",
-          "jobTitle": "Founder, Attorney and Notary, Head of AI",
-          "worksFor": { "@id": "https://lalumapp.com/#organization" },
-          "url": "https://lalumapp.com/",
-          "sameAs": ["https://www.linkedin.com/in/dr-avraham-lalum-ab833929/"],
-          "hasCredential": [
-            { "@type": "EducationalOccupationalCredential", "credentialCategory": "professional certification", "name": "Attorney (Israel Bar)" },
-            { "@type": "EducationalOccupationalCredential", "credentialCategory": "professional certification", "name": "Notary" },
-            { "@type": "EducationalOccupationalCredential", "credentialCategory": "degree", "name": "Ph.D., Law and Economics" }
-          ]
+          "@type": "EducationalOccupationalCredential",
+          "credentialCategory": "professional certification",
+          "name": "Notary"
         },
         {
-          "@type": "WebSite",
-          "@id": "https://lalumapp.com/#website",
-          "url": "https://lalumapp.com/",
-          "name": "LALUM",
-          "publisher": { "@id": "https://lalumapp.com/#organization" },
-          "inLanguage": ["he", "en", "es", "fr", "ar"]
-        },
+          "@type": "EducationalOccupationalCredential",
+          "credentialCategory": "degree",
+          "name": "Ph.D., Law and Economics"
+        }
+      ],
+      "knowsAbout": [
+        "התחדשות עירונית",
+        "תמ\"א 38",
+        "פינוי-בינוי",
+        "מיסוי מקרקעין",
+        "עסקאות קומבינציה",
+        "נדל\"ן בחו\"ל",
+        "בוררות וגישור בסכסוכי נדל\"ן",
+        "ממשל בינה מלאכותית",
+        "EU AI Act",
+        "אחריות אלגוריתמית",
+        "Legal AI",
+        "משפט וכלכלה",
+        "Urban renewal",
+        "Real estate taxation",
+        "Cross-border real estate",
+        "Real estate arbitration",
+        "AI governance",
+        "Algorithmic liability",
+        "Law and economics"
+      ],
+      "author": [
         {
-          "@type": "WebPage",
-          "@id": "https://lalumapp.com/#webpage",
-          "url": "https://lalumapp.com/",
-          "isPartOf": { "@id": "https://lalumapp.com/#website" },
-          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".lede"] },
+          "@type": "Book",
+          "name": "Guidebook on National Outline Plan 38 (TAMA 38) Transactions",
+          "alternateName": "מורה הדרך בעסקאות תמ\"א 38",
+          "bookEdition": "Three-volume edition",
+          "datePublished": "2020",
           "inLanguage": "he"
+        },
+        {
+          "@type": "Book",
+          "name": "Urban Renewal: A Practical Guide",
+          "bookEdition": "Updated edition",
+          "datePublished": "2025",
+          "inLanguage": "he"
+        },
+        {
+          "@type": "Book",
+          "name": "Limits of Judicial Intervention in Standard Contracts",
+          "datePublished": "2012",
+          "inLanguage": "he"
+        },
+        {
+          "@type": "Book",
+          "name": "Guide to Standard Contracts",
+          "datePublished": "2017",
+          "inLanguage": "he"
+        },
+        {
+          "@type": "Book",
+          "name": "The Decision Room: Conflict, Clarity and Change",
+          "datePublished": "2025"
+        },
+        {
+          "@type": "ScholarlyArticle",
+          "name": "Multi-Dimensional AI-Based Modeling of Real Estate Investment Risk: A Regulatory and Explainable Framework",
+          "datePublished": "2025",
+          "isPartOf": {
+            "@type": "Periodical",
+            "name": "Mathematics"
+          },
+          "identifier": "Mathematics 13(21), 3413"
+        },
+        {
+          "@type": "ScholarlyArticle",
+          "name": "Synthetic Reality Mapping of Real Estate Investment Portfolios",
+          "datePublished": "2024",
+          "isPartOf": {
+            "@type": "Periodical",
+            "name": "SN Business & Economics"
+          }
+        }
+      ],
+      "memberOf": [
+        {
+          "@type": "Organization",
+          "name": "Israel Bar Association"
+        }
+      ],
+      "affiliation": [
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Tel Aviv University"
         }
       ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://lalumapp.com/#website",
+      "url": "https://lalumapp.com/",
+      "name": "LALUM",
+      "publisher": {
+        "@id": "https://lalumapp.com/#organization"
+      },
+      "inLanguage": [
+        "he",
+        "en",
+        "es",
+        "fr",
+        "ar"
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://lalumapp.com/#webpage",
+      "url": "https://lalumapp.com/",
+      "isPartOf": {
+        "@id": "https://lalumapp.com/#website"
+      },
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": [
+          "h1",
+          ".lede"
+        ]
+      },
+      "inLanguage": "he"
     }
-    </script>
+  ]
+}</script>
     <!--
       The NytroSEO global plugin is intentionally NOT hardcoded here, because a
       static tag in this single index.html would run on every route, including

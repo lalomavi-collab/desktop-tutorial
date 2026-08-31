@@ -29,6 +29,15 @@
 - Anything produced for the site (articles, posts, pages, keywords, campaigns) serves one of the two areas.
 - Before writing a new article, check it does not compete with one that exists. `npm run build` fails on two articles whose titles are variations of each other, and on two pages sharing a meta description. Both defects reached production and neither was visible without looking for it.
 
+## The Name (PERMANENT)
+
+**In Hebrew the name is always `ד״ר עו״ד אברהם ללום`, in that order, wherever the app or the site speaks.**
+
+- One form in the interface, in headings, in bylines, in article metadata and in the site's own prose. Before this rule the app said `ד״ר אברהם ללום` and the article metadata said `עו״ד אברהם ללום`, so the same person carried two different titles depending on which page you landed on.
+- Untitled mentions inside article prose stay as they are. Repeating the full form in every sentence is not consistency, it is unreadable Hebrew: full form on first mention, short form after.
+- The other spellings (`אברהם ללום`, `אבי ללום`, `ד״ר ללום`) stay in the Person entity's `alternateName`. Those are what people type into a search box, and the entity needs them to resolve to one person. They are search variants, never display forms.
+- `npm run build` fails on any titled mention that is not the canonical form, including a doubled title.
+
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
 **Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**

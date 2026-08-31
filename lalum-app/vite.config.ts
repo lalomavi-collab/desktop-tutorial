@@ -286,6 +286,13 @@ function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
   for (const p of dict.data.pillars) {
     out.push(`        <h3>${esc(p.title)}</h3>\n        <p>${esc(p.body)}</p>`);
   }
+  // The person, in the static body. The founder block renders for a reader but
+  // never reached the document a crawler without JavaScript reads, so the name
+  // people actually search for, and the treatises behind it, were missing from
+  // the one page most likely to answer that search.
+  out.push(`        <h2>${esc(h.founderName)}</h2>`);
+  out.push(`        <p>${esc(h.founderCreds1)}. ${esc(h.founderBio)}</p>`);
+  out.push(`        <p>${esc(h.founderWorks)} <a href="/cv">${esc(h.founderCv)}</a></p>`);
   out.push(`        <h2>${esc(h.whyH2)}</h2>`);
   out.push(`        <ul>${dict.data.why.map((w) => `<li>${esc(w.title)}: ${esc(w.body)}</li>`).join("")}</ul>`);
   for (const it of faqsForPath(dict, "/", lang)) {
