@@ -8,6 +8,7 @@ import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { PracticeAreas } from "../components/PracticeAreas";
+import { FocusAreas } from "../components/FocusAreas";
 import { MnaSpotlight } from "../components/MnaSpotlight";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
@@ -159,33 +160,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* ADVISORY PILLARS: the two areas the practice leads with. Mediation has
-          its own page and is linked below the pair, as a service the practice
-          offers rather than a third headline. */}
-      <section className="wrap section section-line">
-        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
-          <p className="eyebrow">{h.advisoryPillarsEyebrow}</p>
-          <h2 className="h2">{h.advisoryPillarsH2}</h2>
-        </div>
-        <div className="grid grid-2">
-          <Link to="/ai-legal-advisory" className="card" aria-label={h.advisoryAiTitle}>
-            <span className="icon-badge"><Icon name="brain" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryAiBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
-          </Link>
-          <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
-            <span className="icon-badge"><Icon name="scale" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
-          </Link>
-        </div>
-        <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: "26px 0 0" }}>
-          {h.advisoryMediationLead}{" "}
-          <Link to="/mediation-dispute-resolution" style={{ color: "var(--clay)" }}>{h.advisoryMediationTitle}</Link>
-        </p>
-      </section>
+      {/* The two areas the practice leads with. Shared with /advisory. */}
+      <FocusAreas />
 
       {/* ENGINE */}
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
