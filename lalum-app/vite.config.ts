@@ -10,8 +10,10 @@ import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
-import { faqPageNode, pageJsonLd } from "./src/lib/schema";
+import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
+import { articleCorpus, relatedTo } from "./src/lib/related";
+import { TOPICS, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -24,6 +26,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
   { path: "ai-legal-advisory", title: "ייעוץ משפטי וחוות דעת שנייה בנושא AI לחברות | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים." },
   { path: "real-estate-legal-advisory", title: "ייעוץ וחוות דעת שנייה בנדל״ן והתחדשות עירונית | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים, מבית LALUM." },
+  { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל\"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
   { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד\"ר אברהם ללום ומשרד LALUM." },
@@ -86,7 +89,7 @@ function toIsoDate(s: string): string {
 // non-JS crawler or an AI answer engine sees the author, publisher, and date up
 // front, instead of the app-shell's Organization graph. Matches the runtime
 // shape (author linked by @id to the verified founder node).
-function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string }): string {
+function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string; topic?: Topic }): string {
   const iso = toIsoDate(a.date);
   const graph = {
     "@context": "https://schema.org",
@@ -109,10 +112,13 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
       },
       {
         "@type": "BreadcrumbList",
+        // The topic sits between the index and the piece, so the trail a search
+        // result shows matches the path a reader actually has through the site.
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
           { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE}/insights/` },
-          { "@type": "ListItem", position: 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
+          ...(a.topic ? [{ "@type": "ListItem", position: 3, name: a.topic.name, item: `${SITE}${topicPath(a.topic.slug)}/` }] : []),
+          { "@type": "ListItem", position: a.topic ? 4 : 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
         ],
       },
     ],
@@ -159,7 +165,7 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/risk">מבדק מוכנות</a> · <a href="/book">תיאום פגישה</a></p>`;
+const SITE_NAV = `<p><a href="/advisory/">ייעוץ וגישור</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/real-estate-legal-advisory/">ייעוץ נדל״ן</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
 
 function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
@@ -173,9 +179,21 @@ ${inner}
   return sub(html, FALLBACK_RE, (_m, open, _old, close) => `${open}${body}${close}`);
 }
 
-// An article: its own headline, standfirst and prose.
-function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[]): string {
-  return `        <h1>${esc(headline)}</h1>\n        <p>${esc(dek)}</p>\n        ${blocksToHtml(blocks)}`;
+// An article: its own headline, standfirst, prose, and the same three related
+// pieces the rendered page ends with. Without those links the static document
+// left every article a dead end: a crawler that does not run JavaScript could
+// reach an article, read it, and then had nowhere to go but the site nav, so
+// the corpus had no paths through it at all.
+function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = [], topic?: Topic): string {
+  const out = [`        <h1>${esc(headline)}</h1>`, `        <p>${esc(dek)}</p>`, `        ${blocksToHtml(blocks)}`];
+  if (topic) {
+    out.push(`        <p>${esc("נושא")}: <a href="${topicPath(topic.slug)}/">${esc(topic.name)}</a></p>`);
+  }
+  if (related.length) {
+    out.push(`        <h2>${esc(strings.he.ui.article.moreArticles)}</h2>`);
+    out.push(`        <ul>${related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
+  }
+  return out.join("\n");
 }
 
 // The FAQ page: its heading and the full chapter and question structure. The
@@ -231,13 +249,48 @@ function insightsBodyHtml(title: string, desc: string): string {
   const items = blogMeta
     .map((m) => `        <li><a href="/insights/${esc(encodeURI(m.slug))}/">${esc(m.title)}</a></li>`)
     .join("\n");
+  const topics = TOPICS
+    .map((t) => ({ t, n: articlesByTopic(strings.he).get(t.slug)?.length ?? 0 }))
+    .filter((x) => x.n > 0)
+    .map((x) => `<li><a href="${topicPath(x.t.slug)}/">${esc(x.t.name)}</a> (${x.n})</li>`)
+    .join("");
   return [
     `        <h1>${esc(heading)}</h1>`,
     `        <p>${esc(desc)}</p>`,
+    `        <h2>${esc("נושאים")}</h2>`,
+    `        <ul>${topics}</ul>`,
+    `        <h2>${esc("כל המאמרים")}</h2>`,
     `        <ul>`,
     items,
     `        </ul>`,
   ].join("\n");
+}
+
+// The home page, built from the same dictionary the page component renders
+// from: the hero, the positioning paragraphs, the six AI and risk layers, the
+// reasons, and the Q&A the page already publishes. The root document is the one
+// file the route loop never wrote, so it kept the template placeholder: the most
+// linked page on the site introduced itself in English, under an English title,
+// to every crawler and answer engine that does not run JavaScript.
+function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
+  const h = dict.home;
+  const out = [
+    `        <h1>${esc(`${h.heroH1a} ${h.heroH1b}`)}</h1>`,
+    `        <p>${esc(h.heroLede)}</p>`,
+    `        <h2>${esc(`${h.aboutH2a} ${h.aboutH2b}`)}</h2>`,
+    `        <p>${esc(h.aboutP1)}</p>`,
+    `        <p>${esc(h.aboutP2)}</p>`,
+    `        <h2>${esc(h.pillarsH2)}</h2>`,
+  ];
+  for (const p of dict.data.pillars) {
+    out.push(`        <h3>${esc(p.title)}</h3>\n        <p>${esc(p.body)}</p>`);
+  }
+  out.push(`        <h2>${esc(h.whyH2)}</h2>`);
+  out.push(`        <ul>${dict.data.why.map((w) => `<li>${esc(w.title)}: ${esc(w.body)}</li>`).join("")}</ul>`);
+  for (const it of faqsForPath(dict, "/", lang)) {
+    out.push(`        <h3>${esc(it.q)}</h3>`, `        <p>${esc(it.a)}</p>`);
+  }
+  return out.join("\n");
 }
 
 // Any other marketing route: at minimum its real Hebrew heading and summary,
@@ -266,7 +319,7 @@ function replaceTag(html: string, re: RegExp, prefix: string, value: string, suf
 // editorial headline shows up chopped mid-word in results. Produce a concise
 // <title> (prefer the pre-colon headline, else a clean word-boundary cut),
 // while og:title and twitter:title keep the FULL headline for social cards.
-function shortTitle(full: string): string {
+function shortTitle(full: string, allowColonCut = true): string {
   if (full.length <= 60) return full;
   const m = full.match(/^([\s\S]*?)(\s*[·|]\s*LALUM)\s*$/);
   const head = m ? m[1] : full;
@@ -275,7 +328,13 @@ function shortTitle(full: string): string {
   let t = head;
   if (t.length > budget) {
     const colon = head.indexOf(":");
-    if (colon >= 15 && colon <= budget) {
+    // Cut at the colon only when the half before it is a headline in its own
+    // right, filling most of the budget. On 62 pages it was not: a title like
+    // "שקיפות אלגוריתמית: האתיקה של הבינה המלאכותית במרחב המשפטי-כלכלי" was
+    // shown to searchers as "שקיפות אלגוריתמית", two words, when 26 more
+    // characters of it would have fitted. A short head means the subject is
+    // stated after the colon, so the plain cut keeps more of the meaning.
+    if (allowColonCut && colon >= Math.max(15, budget * 0.6) && colon <= budget) {
       t = head.slice(0, colon);
     } else {
       t = head.slice(0, budget);
@@ -287,9 +346,28 @@ function shortTitle(full: string): string {
   return t + suffix;
 }
 
+// Two pages whose headlines share a long opening trimmed to the same 60
+// characters ship the same <title>, which is one of the few things a search
+// engine treats as a page being a copy of another. It happened to the two
+// pillar pages in Spanish and French, and to two articles that differ only
+// after their colon. So the trimmed titles are tracked across the build: a
+// collision retries without the pre-colon shortcut, which usually keeps the
+// distinguishing half, and falls back to the untrimmed headline when even that
+// repeats. Longer than ideal beats identical.
+const usedTitles = new Set<string>();
+function tagTitle(full: string): string {
+  for (const candidate of [shortTitle(full), shortTitle(full, false), full]) {
+    if (!usedTitles.has(candidate)) {
+      usedTitles.add(candidate);
+      return candidate;
+    }
+  }
+  return full;
+}
+
 function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string; noindex?: boolean }): string {
   let h = template;
-  h = sub(h, /<title>[\s\S]*?<\/title>/, () => `<title>${esc(shortTitle(r.title))}</title>`);
+  h = sub(h, /<title>[\s\S]*?<\/title>/, () => `<title>${esc(tagTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
   h = sub(h, /<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta name="description" content="${esc(r.desc)}" />`);
   h = sub(h, /<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta property="og:description" content="${esc(r.desc)}" />`);
@@ -337,6 +415,9 @@ function seoPrerender(): Plugin {
       outDir = join(config.root, config.build.outDir);
     },
     closeBundle() {
+      // Watch mode runs this more than once per process; a stale set would make
+      // the second build think every title was already taken.
+      usedTitles.clear();
       const template = readFileSync(join(outDir, "index.html"), "utf8");
       // Curated articles live in the app's own copy (strings.data.articles),
       // not in blogMeta. They are linked from the site and listed in the sitemap,
@@ -372,6 +453,9 @@ function seoPrerender(): Plugin {
         })),
         ...curated,
       ];
+      // The same corpus the app scores against, so a prerendered article ends
+      // with exactly the three links the rendered page ends with.
+      const corpus = articleCorpus(strings.he);
       let written = 0;
       for (const r of routes) {
         let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image, noindex: (r as { noindex?: boolean }).noindex });
@@ -379,11 +463,12 @@ function seoPrerender(): Plugin {
         // AI answer engines; the runtime PageMeta finds this same #page-jsonld
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
-          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined });
+          const topic = topicOfArticle(strings.he, r.article.slug);
+          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined, topic });
           html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
-          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks));
+          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus), topic));
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running
@@ -451,17 +536,58 @@ function seoPrerender(): Plugin {
         }
       }
 
-      // The Hebrew home document is Vite's own index.html, so the route loop
-      // never touches it and it kept the template's ?lang= alternates: hrefs
-      // that no longer resolve to anything. Repoint them at the real paths.
+      // Topic hubs. Each is a real page for one subject, with its own title,
+      // description and the full list of that subject's writing as anchor
+      // text. Hebrew only, like the writing itself, so they claim no
+      // translated alternates.
+      {
+        const byTopic = articlesByTopic(strings.he);
+        for (const topic of TOPICS) {
+          const rows = byTopic.get(topic.slug) ?? [];
+          if (!rows.length) continue;
+          const path = topicPath(topic.slug).slice(1);
+          let h = applyMeta(template, {
+            title: `${topic.title} | LALUM`, desc: clip(topic.desc), url: langUrl(`/${path}`, "he"), path,
+          });
+          const graph = pageJsonLd([pageNode("CollectionPage", topic.title, topic.desc, `${SITE}${topicPath(topic.slug)}/`)]);
+          if (graph) {
+            h = sub(h, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(graph)}</script>\n  </head>`);
+          }
+          const inner = [
+            `        <h1>${esc(topic.name)}</h1>`,
+            `        <p>${esc(topic.lede)}</p>`,
+            ...(topic.pillar ? [`        <p><a href="/${esc(topic.pillar.path)}/">${esc(topic.pillar.label)}</a></p>`] : []),
+            `        <ul>${rows.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`,
+          ].join("\n");
+          h = withStaticBody(h, inner);
+          const f = join(outDir, path, "index.html");
+          mkdirSync(dirname(f), { recursive: true });
+          writeFileSync(f, h, "utf8");
+          written++;
+        }
+      }
+
+      // The Hebrew home document. It is Vite's own index.html, so the route
+      // loop above never wrote it: it kept the template's English title,
+      // English description and English placeholder body, and its ?lang=
+      // alternates pointed at hrefs that no longer resolve. Every other route
+      // served correct Hebrew; the root, the page that carries the site's name
+      // and most of its links, did not. It gets the same treatment here: its
+      // own metadata, a self-referencing canonical, the real hreflang set, the
+      // Q&A it publishes, and a Hebrew static body.
       {
         const homeFile = join(outDir, "index.html");
-        let h = readFileSync(homeFile, "utf8");
-        for (const a of alternatesFor("/")) {
-          const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
-          h = replaceTag(h, re, "$1", a.href, "$2");
+        const seo = strings.he.seo.home;
+        let h = applyMeta(template, {
+          title: seo.title, desc: clip(seo.desc), url: langUrl("/", "he"), path: "", image: undefined,
+        });
+        const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, "/"))]);
+        if (faqNode) {
+          h = sub(h, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>\n  </head>`);
         }
+        h = withStaticBody(h, homeBodyHtml());
         writeFileSync(homeFile, h, "utf8");
+        written++;
       }
 
       // Language variants. Only the routes measured as genuinely translated get
@@ -475,6 +601,7 @@ function seoPrerender(): Plugin {
         { path: "advisory", seoKey: "advisory" },
         { path: "ai-legal-advisory", seoKey: null },
         { path: "real-estate-legal-advisory", seoKey: null },
+        { path: "mediation-dispute-resolution", seoKey: null },
         { path: "knowledge", seoKey: "knowledge" },
         { path: "book", seoKey: "book" },
         { path: "legal", seoKey: "legal" },
@@ -497,7 +624,9 @@ function seoPrerender(): Plugin {
           if (faqNode) {
             html = sub(html, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>\n  </head>`);
           }
-          const inner = pillar ? pillarBodyHtml(pillar) : pageBodyHtml(title, desc, v.path, dict, lang);
+          const inner = pillar ? pillarBodyHtml(pillar)
+            : v.path === "" ? homeBodyHtml(dict, lang)
+            : pageBodyHtml(title, desc, v.path, dict, lang);
           html = withStaticBody(html, inner, l.dir, lang);
           const file = join(outDir, lang, v.path, "index.html");
           mkdirSync(dirname(file), { recursive: true });
@@ -516,6 +645,12 @@ function seoPrerender(): Plugin {
         // Add the language variants. They are real, indexable addresses, so a
         // crawler should find them in the sitemap and not only by following an
         // hreflang link from the Hebrew page.
+        const hubRows = TOPICS
+          .filter((t) => (articlesByTopic(strings.he).get(t.slug)?.length ?? 0) > 0)
+          .map((t) => `${SITE}${topicPath(t.slug)}/`)
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+        if (hubRows.length) xml = sub(xml, "</urlset>", () => `${hubRows.join("\n")}\n</urlset>`);
         const rows = VARIANTS.flatMap((v) =>
           LANGS.filter((l) => l.code !== "he").map((l) => langUrl(`/${v.path}`, l.code)),
         )

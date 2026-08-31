@@ -5,7 +5,8 @@ import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
-import { blogMeta } from "../lib/blogMeta";
+import { articleCorpus, relatedTo } from "../lib/related";
+import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
 import { toBlocks } from "../lib/articleBlocks";
 
@@ -52,13 +53,15 @@ export function Article() {
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
     : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(post!.body) };
 
-  // Related reading: the same curated-then-imported ordering the Insights list
-  // uses, minus the current piece. These internal links keep readers (and
-  // crawlers) moving between articles instead of dead-ending after one.
-  const related = [
-    ...t.data.articles.map((a) => ({ slug: a.slug, title: a.title })),
-    ...blogMeta.map((b) => ({ slug: b.slug, title: b.title })),
-  ].filter((a) => a.slug !== slug).slice(0, 3);
+  // Related reading: the three pieces closest to this one in subject, scored by
+  // relatedTo over the whole corpus. These internal links keep readers (and
+  // crawlers) moving between articles instead of dead-ending after one, and
+  // being topical is what makes them worth following in either role.
+  const related = relatedTo(slug ?? "", articleCorpus(t));
+  // The subject this piece belongs to. Shown as a link so a reader who wants
+  // more of the same has somewhere to go, and so the topic hubs are reachable
+  // from the articles rather than only from the index.
+  const topic = topicOfArticle(t, slug ?? "");
 
   // schema.org datePublished must be ISO 8601. The visible date stays the
   // human string; the structured-data field gets a parsed ISO date, or is
@@ -145,6 +148,15 @@ export function Article() {
           </div>
         </div>
       </div>
+
+      {topic && (
+        <section className="wrap" style={{ maxWidth: 760, padding: "0 32px" }}>
+          <p style={{ fontSize: 14.5, color: "var(--slate)", margin: 0 }}>
+            {t.insights.heroPill}:{" "}
+            <Link to={topicPath(topic.slug)} style={{ color: "var(--clay)" }}>{topic.name}</Link>
+          </p>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="section-line">

@@ -84,6 +84,7 @@ export function Footer() {
           <Link to="/advisory">{L.advisory}</Link>
           <Link to="/ai-legal-advisory">{L.advisoryAi}</Link>
           <Link to="/real-estate-legal-advisory">{L.advisoryRe}</Link>
+          <Link to="/mediation-dispute-resolution">{L.advisoryMediation}</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>

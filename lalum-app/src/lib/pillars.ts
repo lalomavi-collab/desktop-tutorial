@@ -95,6 +95,19 @@ const SHARED = {
       { slug: "ai-turning-point-2026", title: `2026: שנת המפנה של הבינה המלאכותית במשפט ובנדל"ן` },
     ],
   },
+  mediation: {
+    path: "mediation-dispute-resolution",
+    url: "https://lalumapp.com/mediation-dispute-resolution",
+    icons: ["gavel", "scale", "settings", "shield"] as IconName[],
+    related: [
+      { slug: "מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי", title: `מהו גישור מכוון הכרעה וכיצד הוא שונה מגישור מסורתי?` },
+      { slug: "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים", title: `האם גישור מכוון הכרעה חוסך זמן וכסף לעומת הליכים משפטיים?` },
+      { slug: "סכסוך-שותפים-בין-עורכי-דין-למה-גישור-מכוון-הכרעה-הוא-המסלול-שנשכח-והנכון-הקדמה-סכסוכים-בין-שותפי", title: `סכסוך שותפים בין עורכי דין: למה גישור מכוון הכרעה הוא המסלול שנשכח` },
+      { slug: "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי", title: `פתרון סכסוך בין יזם לקבלן באמצעות גישור מכוון הכרעה: תיאור מקרה` },
+      { slug: "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה", title: `כיצד לבחור מגשר מוסמך מטעם בית המשפט להליכי גישור מכוון הכרעה?` },
+      { slug: "האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים", title: `האם גישור מכוון הכרעה מתאים לכל סוגי הסכסוכים?` },
+    ],
+  },
   realEstate: {
     path: "real-estate-legal-advisory",
     url: "https://lalumapp.com/real-estate-legal-advisory",
@@ -557,7 +570,246 @@ const ar: { ai: Copy; realEstate: Copy } = {
   },
 };
 
-const COPY: Record<Lang, { ai: Copy; realEstate: Copy }> = { he, en, es, fr, ar };
+// The mediation pillar's copy, in its own table rather than folded into the
+// per-language objects above, so adding a third pillar did not mean editing
+// five hand-maintained blocks.
+//
+// Why this page exists: mediation and dispute resolution is the largest body of
+// writing on the site, 55 articles, and it was the only one of the three
+// practices with no page to land on. The articles were reachable from a flat
+// index and the sitemap, which gets them crawled but gives the subject no
+// address of its own.
+//
+// What it targets: the term the practice is named for, גישור מכוון הכרעה, is
+// uncontested and close to unsearched. The demand sits in גישור מסחרי, גישור
+// עסקי and יישוב סכסוכים, held by small firms with a dedicated landing page
+// each. So the page leads with the commercial language a party in a dispute
+// actually types, and explains the method inside it.
+const mediationCopy: Record<Lang, Copy> = {
+  he: {
+    title: `גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה`,
+    desc: `גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם מתועד ובר-הגנה.`,
+    heroEyebrow: `גישור מכוון הכרעה (DOM)`,
+    lede: `סכסוך עסקי עוצר את העסק הרבה לפני שהוא מגיע לפסק דין. גישור מכוון הכרעה מוסיף לגישור המסורתי את מה שחסר בו: הערכה משפטית מנומקת מצד מי שמכיר את הדין ואת המספרים, כך שהצדדים מגיעים להסכמה מתוך תמונה ברורה, ולא מתוך תשישות או פערי כוחות.`,
+    labels: { covers: `מה ההליך מכסה`, when: `מתי לגשת לגישור`, steps: `איך זה עובד`, related: `להעמקה`, faq: `שאלות ותשובות` },
+    coversH2: `סוגי הסכסוכים שאנחנו מגשרים`,
+    cards: [
+      { title: `סכסוכי שותפים ובעלי מניות`, body: `פרידה בין שותפים, מבוי סתום בהצבעה, טענות לקיפוח מיעוט ומחלוקות על שווי ועל מנגנוני יציאה. ההליך מפריד בין השאלה המשפטית לבין הכעס שנצבר סביבה.` },
+      { title: `סכסוכים מסחריים בין חברות`, body: `הפרות חוזה, מחלוקות ספק ולקוח, עמלות ותמורות, וסיום התקשרות. כשהיחסים המסחריים עדיין שווים משהו, פסק דין הוא הדרך היקרה ביותר לסיים אותם.` },
+      { title: `סכסוכי נדל"ן והתחדשות עירונית`, body: `בעלי דירות מול נציגות, נציגות מול יזם, יזם מול קבלן, ומחלוקות על תמורות, לוחות זמנים ובטוחות. אלה סכסוכים עם מאות בעלי זכויות, שבהם עיכוב עולה יותר מהמחלוקת עצמה.` },
+      { title: `סכסוכי טכנולוגיה, קניין רוחני ו-AI`, body: `בעלות על קוד ועל מודלים, שימוש בנתונים, כשל של מערכת אלגוריתמית, ומחלוקות מול ספקי בינה מלאכותית. סכסוכים שדורשים מגשר שקורא גם את הארכיטקטורה וגם את החוזה.` },
+    ],
+    whenH2: `מתי גישור מכוון הכרעה עדיף על הליך משפטי`,
+    whenLede: `גישור מכוון הכרעה אינו ויתור על הזכויות ואינו פשרה בכל מחיר. הוא מסלול שבו הצדדים שומרים על השליטה בתוצאה, ומקבלים לאורך הדרך הערכה משפטית מנומקת של מה שהיה קורה בבית המשפט.`,
+    when: [
+      `כשהסכסוך מקפיא עסקה, פרויקט או תזרים`,
+      `כשהצדדים צריכים להמשיך לעבוד יחד גם אחרי ההכרעה`,
+      `כשחשיפת המחלוקת בפומבי תפגע במוניטין או בסוד מסחרי`,
+      `כשגישור מסורתי מיצה את עצמו ולא הגיע להכרעה`,
+      `כשהפער בין הצדדים הוא בהערכת הסיכון המשפטי, לא בעובדות`,
+      `כשעלות ההתדיינות גדולה מהסכום השנוי במחלוקת`,
+    ],
+    stepsH2: `שלושה שלבים מסכסוך להסכם`,
+    steps: [
+      { title: `אבחון ומיפוי`, body: `שומעים כל צד בנפרד, ממפים את העובדות, את המסמכים ואת החשיפה המשפטית והכלכלית של כל עמדה, ומגדירים מה באמת שנוי במחלוקת.` },
+      { title: `ישיבות והערכה מנומקת`, body: `מנהלים את ישיבות הגישור, ובנקודה הנכונה מציגים הערכה משפטית מנומקת של הסיכויים והסיכונים, שמחליפה ניחוש בתמונה שאפשר להחליט לפיה.` },
+      { title: `הסכם מתועד ובר-אכיפה`, body: `מנסחים הסדר שמחזיק: מנגנוני ביצוע, לוחות זמנים, בטוחות וסעד למקרה של הפרה, בנוסח שאפשר לאשר כפסק דין.` },
+    ],
+    relatedH2: `מאמרים בנושא גישור, בוררות ויישוב סכסוכים`,
+    faqH2: `גישור מסחרי וגישור מכוון הכרעה`,
+    faqs: [
+      { q: `מה זה גישור מכוון הכרעה, ובמה הוא שונה מגישור רגיל?`, a: `בגישור מסורתי המגשר נמנע מהבעת עמדה, ותפקידו לקרב בין הצדדים בלבד. בגישור מכוון הכרעה המגשר, שהוא עורך דין ובורר, מציג בשלב המתאים הערכה משפטית מנומקת של הסיכויים והסיכונים של כל צד. ההערכה אינה מחייבת, אבל היא מחליפה ניחוש בתמונה ברורה, ולכן הליכים שנתקעו בגישור רגיל מגיעים כאן להסכמה.` },
+      { q: `האם ההכרעה של המגשר מחייבת את הצדדים?`, a: `לא מעצמה. ההערכה שהמגשר מציג היא חוות דעת, לא פסק דין, והצדדים חופשיים לדחות אותה. מה שמחייב הוא ההסכם שהם חותמים עליו בסוף. אם הצדדים מבקשים תוצאה מחייבת מראש, אפשר לעצב את ההליך כבוררות מואצת, וזו החלטה שמתקבלת בתחילת הדרך ונרשמת בהסכם.` },
+      { q: `כמה זמן לוקח הליך גישור מסחרי, וכמה הוא עולה?`, a: `רוב הסכסוכים המסחריים נסגרים בשתיים עד ארבע ישיבות, לאורך שבועות ולא שנים. העלות היא חלק קטן מעלות ההתדיינות באותו סכסוך, והיא ידועה מראש. לשם השוואה, תביעה מסחרית בבית משפט נמדדת בשנים ובכתבי טענות, והיא גם מקפיאה את היחסים המסחריים לאורך כל התקופה.` },
+      { q: `מה קורה אם הגישור לא מצליח, האם אפשר עדיין לפנות לבית המשפט?`, a: `כן. הפנייה לגישור אינה מוותרת על שום זכות משפטית. ההליך חסוי, ומה שנאמר בו אינו קביל בהליך משפטי מאוחר, כך שצד שנכנס לגישור אינו חושף את קלפיו. גם גישור שלא הסתיים בהסכם מצמצם בדרך כלל את המחלוקת ומקצר את ההליך שבא אחריו.` },
+      { q: `אילו סכסוכים אינם מתאימים לגישור?`, a: `סכסוך שבו צד אחד זקוק לסעד דחוף מבית משפט, למשל צו מניעה למניעת נזק מיידי, סכסוך שבו יש חשד לפלילים, וסכסוך שבו צד אחד אינו מעוניין בפתרון אלא בעיכוב. בכל אלה ההליך המשפטי הוא הכלי הנכון, ולעיתים אפשר לחזור לגישור אחרי שהסעד הדחוף ניתן.` },
+      { q: `האם ההליך חסוי, ומי רואה את המסמכים?`, a: `ההליך חסוי במלואו. הישיבות אינן פומביות, המסמכים אינם מוגשים לתיק בית משפט, ומה שנמסר למגשר בשיחה נפרדת עם צד אחד אינו מועבר לצד השני בלי רשות. זו אחת הסיבות המרכזיות שחברות בוחרות בגישור כשהמחלוקת נוגעת לסוד מסחרי, לתמחור או למוניטין.` },
+    ],
+    ctaH2: `יש סכסוך שעוצר לכם את העסק?`,
+    ctaBody: `פגישת אבחון קצרה בודקת אם הסכסוך מתאים לגישור מכוון הכרעה, ומה המסלול המהיר ביותר לסיים אותו.`,
+    disclaimer: `המידע בעמוד זה כללי ואינו מהווה ייעוץ משפטי או תחליף לחוות דעת פרטנית.`,
+  },
+  en: {
+    title: `Commercial mediation and business dispute resolution`,
+    desc: `Decision-oriented mediation (DOM) for commercial disputes: partners and shareholders, suppliers and customers, real estate and urban renewal, with a reasoned legal assessment and a documented, enforceable settlement.`,
+    heroEyebrow: `Decision-oriented mediation (DOM)`,
+    lede: `A commercial dispute stops the business long before it reaches a judgment. Decision-oriented mediation adds to conventional mediation the one thing it lacks: a reasoned legal assessment from someone who reads both the law and the numbers, so the parties settle from a clear picture rather than from exhaustion or an imbalance of power.`,
+    labels: { covers: `What the process covers`, when: `When to mediate`, steps: `How it works`, related: `Further reading`, faq: `Questions and answers` },
+    coversH2: `The disputes we mediate`,
+    cards: [
+      { title: `Partner and shareholder disputes`, body: `Separating partners, deadlocked votes, minority oppression claims, and disagreements over valuation and exit mechanics. The process separates the legal question from the anger that has built up around it.` },
+      { title: `Commercial disputes between companies`, body: `Breach of contract, supplier and customer disputes, commissions and consideration, and terminating a relationship. While the commercial relationship is still worth something, a judgment is the most expensive way to end it.` },
+      { title: `Real estate and urban renewal disputes`, body: `Owners against their committee, a committee against the developer, a developer against the contractor, and disputes over consideration, timetables and security. These involve hundreds of rights-holders, where delay costs more than the dispute.` },
+      { title: `Technology, IP and AI disputes`, body: `Ownership of code and models, use of data, failure of an algorithmic system, and disputes with AI vendors. These need a mediator who reads the architecture as well as the contract.` },
+    ],
+    whenH2: `When mediation beats litigation`,
+    whenLede: `Decision-oriented mediation is not a waiver of rights, and not compromise at any price. It is a route where the parties keep control of the outcome while receiving a reasoned legal assessment of what a court would have done.`,
+    when: [
+      `When the dispute has frozen a deal, a project or cash flow`,
+      `When the parties must keep working together afterwards`,
+      `When airing the dispute in public would cost reputation or a trade secret`,
+      `When conventional mediation has run its course without a decision`,
+      `When the parties differ on legal risk rather than on the facts`,
+      `When litigating costs more than the amount in dispute`,
+    ],
+    stepsH2: `Three stages from dispute to agreement`,
+    steps: [
+      { title: `Diagnosis and mapping`, body: `Each side is heard separately. The facts, the documents and the legal and commercial exposure of each position are mapped, and what is genuinely in dispute is defined.` },
+      { title: `Sessions and a reasoned assessment`, body: `The sessions are run, and at the right moment a reasoned legal assessment of each side's prospects and risks is put on the table, replacing guesswork with a picture that can be decided on.` },
+      { title: `A documented, enforceable agreement`, body: `A settlement built to hold: performance mechanics, timetables, security and a remedy for breach, drafted so it can be entered as a judgment.` },
+    ],
+    relatedH2: `Writing on mediation, arbitration and dispute resolution`,
+    faqH2: `Commercial and decision-oriented mediation`,
+    faqs: [
+      { q: `What is decision-oriented mediation, and how does it differ from ordinary mediation?`, a: `In conventional mediation the mediator withholds any view and works only to bring the parties closer. In decision-oriented mediation the mediator, a lawyer and arbitrator, presents at the right stage a reasoned legal assessment of each side's prospects and risks. The assessment does not bind anyone, but it replaces guesswork with a clear picture, which is why matters that stalled in ordinary mediation settle here.` },
+      { q: `Is the mediator's assessment binding on the parties?`, a: `Not by itself. What the mediator presents is an opinion, not a judgment, and either party is free to reject it. What binds is the agreement they sign at the end. Parties who want a binding outcome from the start can have the process structured as expedited arbitration, a choice made at the outset and recorded in the agreement.` },
+      { q: `How long does commercial mediation take, and what does it cost?`, a: `Most commercial disputes close in two to four sessions, over weeks rather than years. The cost is a fraction of litigating the same dispute, and it is known in advance. A commercial claim in court, by contrast, is measured in years and pleadings, and it freezes the commercial relationship throughout.` },
+      { q: `If mediation fails, can we still go to court?`, a: `Yes. Going to mediation waives no legal right. The process is confidential, and what is said in it is inadmissible in later proceedings, so a party entering mediation is not showing its hand. Even mediation that ends without agreement usually narrows the dispute and shortens what follows.` },
+      { q: `Which disputes are not suited to mediation?`, a: `A dispute where one side needs urgent relief from a court, an injunction against immediate harm for instance; a dispute with a suspicion of criminal conduct; and a dispute where one side wants delay rather than resolution. In all of these litigation is the right instrument, and mediation is sometimes possible once the urgent relief is granted.` },
+      { q: `Is the process confidential, and who sees the documents?`, a: `It is fully confidential. Sessions are not public, documents are not filed with a court, and what one party tells the mediator in a private session is not passed to the other without permission. This is a main reason companies choose mediation where the dispute touches a trade secret, pricing or reputation.` },
+    ],
+    ctaH2: `Is a dispute holding your business up?`,
+    ctaBody: `A short diagnostic meeting establishes whether the dispute suits decision-oriented mediation, and what the fastest route to ending it is.`,
+    disclaimer: `The information on this page is general and is not legal advice or a substitute for an opinion on your own matter.`,
+  },
+  es: {
+    title: `Mediación comercial y resolución de conflictos empresariales`,
+    desc: `Mediación orientada a la decisión (DOM) para conflictos comerciales: socios y accionistas, proveedores y clientes, inmobiliario y renovación urbana, con una evaluación jurídica razonada y un acuerdo documentado y ejecutable.`,
+    heroEyebrow: `Mediación orientada a la decisión (DOM)`,
+    lede: `Un conflicto empresarial detiene el negocio mucho antes de llegar a sentencia. La mediación orientada a la decisión añade a la mediación tradicional lo único que le falta: una evaluación jurídica razonada de quien lee tanto el derecho como los números, de modo que las partes acuerdan a partir de un panorama claro y no del agotamiento o de un desequilibrio de fuerzas.`,
+    labels: { covers: `Qué cubre el proceso`, when: `Cuándo mediar`, steps: `Cómo funciona`, related: `Para profundizar`, faq: `Preguntas y respuestas` },
+    coversH2: `Los conflictos que mediamos`,
+    cards: [
+      { title: `Conflictos entre socios y accionistas`, body: `Separación de socios, bloqueo en las votaciones, alegaciones de opresión de la minoría y desacuerdos sobre valoración y mecanismos de salida. El proceso separa la cuestión jurídica del enfado acumulado a su alrededor.` },
+      { title: `Conflictos mercantiles entre empresas`, body: `Incumplimiento de contrato, disputas entre proveedor y cliente, comisiones y contraprestaciones, y terminación de la relación. Mientras la relación comercial todavía vale algo, una sentencia es la forma más cara de acabar con ella.` },
+      { title: `Conflictos inmobiliarios y de renovación urbana`, body: `Propietarios frente a su comisión, la comisión frente al promotor, el promotor frente a la constructora, y desacuerdos sobre contraprestaciones, plazos y garantías. Son conflictos con cientos de titulares de derechos, donde la demora cuesta más que la propia disputa.` },
+      { title: `Conflictos de tecnología, propiedad intelectual e IA`, body: `Titularidad del código y de los modelos, uso de datos, fallo de un sistema algorítmico y disputas con proveedores de IA. Exigen un mediador que lea la arquitectura además del contrato.` },
+    ],
+    whenH2: `Cuándo la mediación supera al litigio`,
+    whenLede: `La mediación orientada a la decisión no es una renuncia de derechos ni una transacción a cualquier precio. Es una vía en la que las partes conservan el control del resultado y reciben una evaluación jurídica razonada de lo que habría hecho un tribunal.`,
+    when: [
+      `Cuando el conflicto ha congelado una operación, un proyecto o la tesorería`,
+      `Cuando las partes deben seguir trabajando juntas después`,
+      `Cuando ventilar el conflicto en público costaría reputación o un secreto comercial`,
+      `Cuando la mediación tradicional se ha agotado sin llegar a una decisión`,
+      `Cuando las partes discrepan sobre el riesgo jurídico y no sobre los hechos`,
+      `Cuando litigar cuesta más que la cantidad en disputa`,
+    ],
+    stepsH2: `Tres etapas del conflicto al acuerdo`,
+    steps: [
+      { title: `Diagnóstico y mapeo`, body: `Se escucha a cada parte por separado. Se mapean los hechos, los documentos y la exposición jurídica y económica de cada posición, y se define qué está realmente en disputa.` },
+      { title: `Sesiones y evaluación razonada`, body: `Se dirigen las sesiones y, en el momento adecuado, se pone sobre la mesa una evaluación jurídica razonada de las posibilidades y los riesgos de cada parte, que sustituye la conjetura por un panorama sobre el que se puede decidir.` },
+      { title: `Acuerdo documentado y ejecutable`, body: `Un acuerdo construido para durar: mecanismos de cumplimiento, plazos, garantías y remedio en caso de incumplimiento, redactado para poder homologarse como sentencia.` },
+    ],
+    relatedH2: `Artículos sobre mediación, arbitraje y resolución de conflictos`,
+    faqH2: `Mediación comercial y orientada a la decisión`,
+    faqs: [
+      { q: `¿Qué es la mediación orientada a la decisión y en qué se diferencia de la mediación habitual?`, a: `En la mediación tradicional el mediador se abstiene de opinar y solo acerca a las partes. En la mediación orientada a la decisión el mediador, abogado y árbitro, presenta en la fase adecuada una evaluación jurídica razonada de las posibilidades y los riesgos de cada parte. La evaluación no vincula a nadie, pero sustituye la conjetura por un panorama claro, y por eso se resuelven aquí asuntos que se habían estancado en la mediación habitual.` },
+      { q: `¿La evaluación del mediador vincula a las partes?`, a: `No por sí misma. Lo que el mediador presenta es un dictamen, no una sentencia, y cualquiera de las partes puede rechazarlo. Lo que vincula es el acuerdo que firman al final. Quien desee un resultado vinculante desde el principio puede estructurar el proceso como arbitraje acelerado, una elección que se toma al inicio y se recoge en el acuerdo.` },
+      { q: `¿Cuánto dura la mediación comercial y cuánto cuesta?`, a: `La mayoría de los conflictos mercantiles se cierran en dos a cuatro sesiones, en semanas y no en años. El coste es una fracción del de litigar el mismo conflicto y se conoce de antemano. Una demanda mercantil ante los tribunales, en cambio, se mide en años y escritos, y congela la relación comercial durante todo ese tiempo.` },
+      { q: `Si la mediación fracasa, ¿podemos acudir igualmente a los tribunales?`, a: `Sí. Acudir a la mediación no renuncia a ningún derecho. El proceso es confidencial y lo dicho en él no es admisible en un procedimiento posterior, de modo que quien entra en mediación no descubre sus cartas. Incluso una mediación que termina sin acuerdo suele reducir la disputa y acortar lo que viene después.` },
+      { q: `¿Qué conflictos no son aptos para mediación?`, a: `Aquel en el que una parte necesita tutela urgente de un tribunal, por ejemplo una medida cautelar frente a un daño inmediato; aquel en el que hay sospecha de conducta delictiva; y aquel en el que una parte busca demora en lugar de solución. En todos ellos el litigio es el instrumento correcto, y a veces cabe volver a la mediación una vez concedida la tutela urgente.` },
+      { q: `¿El proceso es confidencial y quién ve los documentos?`, a: `Es plenamente confidencial. Las sesiones no son públicas, los documentos no se presentan ante un tribunal, y lo que una parte cuenta al mediador en sesión privada no se traslada a la otra sin permiso. Es una razón principal por la que las empresas eligen la mediación cuando el conflicto afecta a un secreto comercial, a los precios o a la reputación.` },
+    ],
+    ctaH2: `¿Un conflicto está frenando su negocio?`,
+    ctaBody: `Una breve reunión de diagnóstico determina si el conflicto es apto para la mediación orientada a la decisión y cuál es la vía más rápida para cerrarlo.`,
+    disclaimer: `La información de esta página es general y no constituye asesoramiento jurídico ni sustituye un dictamen sobre su caso concreto.`,
+  },
+  fr: {
+    title: `Médiation commerciale et règlement des litiges d'affaires`,
+    desc: `Médiation orientée vers la décision (DOM) pour les litiges commerciaux : associés et actionnaires, fournisseurs et clients, immobilier et renouvellement urbain, avec une évaluation juridique motivée et un accord documenté et exécutoire.`,
+    heroEyebrow: `Médiation orientée vers la décision (DOM)`,
+    lede: `Un litige commercial arrête l'entreprise bien avant d'arriver au jugement. La médiation orientée vers la décision ajoute à la médiation classique ce qui lui manque : une évaluation juridique motivée, par quelqu'un qui lit à la fois le droit et les chiffres, pour que les parties s'accordent sur une image claire plutôt que par épuisement ou par déséquilibre des forces.`,
+    labels: { covers: `Ce que couvre le processus`, when: `Quand médier`, steps: `Comment cela fonctionne`, related: `Pour approfondir`, faq: `Questions et réponses` },
+    coversH2: `Les litiges que nous médions`,
+    cards: [
+      { title: `Litiges entre associés et actionnaires`, body: `Séparation d'associés, blocage des votes, allégations d'abus de minorité, désaccords sur la valorisation et les mécanismes de sortie. Le processus sépare la question juridique de la colère accumulée autour d'elle.` },
+      { title: `Litiges commerciaux entre sociétés`, body: `Inexécution contractuelle, différends fournisseur et client, commissions et contreparties, fin de relation. Tant que la relation commerciale vaut encore quelque chose, un jugement est la manière la plus coûteuse d'y mettre fin.` },
+      { title: `Litiges immobiliers et de renouvellement urbain`, body: `Copropriétaires contre leur comité, comité contre promoteur, promoteur contre entreprise générale, et désaccords sur les contreparties, les délais et les garanties. Des litiges à des centaines d'ayants droit, où le retard coûte plus cher que le différend.` },
+      { title: `Litiges technologiques, propriété intellectuelle et IA`, body: `Propriété du code et des modèles, usage des données, défaillance d'un système algorithmique, différends avec des fournisseurs d'IA. Ils exigent un médiateur qui lit l'architecture autant que le contrat.` },
+    ],
+    whenH2: `Quand la médiation vaut mieux qu'un procès`,
+    whenLede: `La médiation orientée vers la décision n'est ni une renonciation à ses droits, ni une transaction à tout prix. C'est une voie où les parties gardent la maîtrise du résultat tout en recevant une évaluation juridique motivée de ce qu'aurait fait un tribunal.`,
+    when: [
+      `Quand le litige gèle une opération, un projet ou la trésorerie`,
+      `Quand les parties devront continuer à travailler ensemble ensuite`,
+      `Quand exposer le litige en public coûterait une réputation ou un secret d'affaires`,
+      `Quand la médiation classique s'est épuisée sans aboutir à une décision`,
+      `Quand les parties divergent sur le risque juridique et non sur les faits`,
+      `Quand le coût du procès dépasse le montant en jeu`,
+    ],
+    stepsH2: `Trois étapes du litige à l'accord`,
+    steps: [
+      { title: `Diagnostic et cartographie`, body: `Chaque partie est entendue séparément. Les faits, les pièces et l'exposition juridique et économique de chaque position sont cartographiés, et ce qui est réellement en litige est défini.` },
+      { title: `Séances et évaluation motivée`, body: `Les séances sont conduites et, au bon moment, une évaluation juridique motivée des chances et des risques de chacun est posée sur la table, remplaçant la conjecture par une image sur laquelle on peut décider.` },
+      { title: `Accord documenté et exécutoire`, body: `Un accord fait pour tenir : mécanismes d'exécution, délais, garanties et remède en cas d'inexécution, rédigé pour pouvoir être homologué comme jugement.` },
+    ],
+    relatedH2: `Articles sur la médiation, l'arbitrage et le règlement des litiges`,
+    faqH2: `Médiation commerciale et orientée vers la décision`,
+    faqs: [
+      { q: `Qu'est-ce que la médiation orientée vers la décision et en quoi diffère-t-elle de la médiation ordinaire ?`, a: `Dans la médiation classique, le médiateur s'abstient de toute opinion et se borne à rapprocher les parties. Dans la médiation orientée vers la décision, le médiateur, avocat et arbitre, présente au bon stade une évaluation juridique motivée des chances et des risques de chaque partie. Cette évaluation ne lie personne, mais elle remplace la conjecture par une image claire, et c'est pourquoi des dossiers enlisés en médiation ordinaire se règlent ici.` },
+      { q: `L'évaluation du médiateur lie-t-elle les parties ?`, a: `Pas en elle-même. Ce que le médiateur présente est un avis, non un jugement, et chaque partie reste libre de l'écarter. Ce qui lie, c'est l'accord signé à la fin. Les parties qui veulent d'emblée un résultat contraignant peuvent faire structurer le processus en arbitrage accéléré, un choix arrêté dès le départ et consigné dans la convention.` },
+      { q: `Combien de temps dure une médiation commerciale et combien coûte-t-elle ?`, a: `La plupart des litiges commerciaux se règlent en deux à quatre séances, en semaines et non en années. Le coût représente une fraction de celui d'un procès sur le même litige, et il est connu à l'avance. Une action commerciale devant les tribunaux, elle, se mesure en années et en écritures, et elle gèle la relation commerciale pendant toute cette durée.` },
+      { q: `Si la médiation échoue, pouvons-nous encore saisir le tribunal ?`, a: `Oui. Recourir à la médiation ne fait renoncer à aucun droit. Le processus est confidentiel et ce qui s'y dit n'est pas recevable dans une procédure ultérieure, de sorte qu'une partie qui entre en médiation ne dévoile pas son jeu. Même une médiation qui s'achève sans accord réduit en général le litige et raccourcit ce qui suit.` },
+      { q: `Quels litiges ne se prêtent pas à la médiation ?`, a: `Celui où une partie a besoin d'une mesure urgente du tribunal, une injonction contre un dommage immédiat par exemple ; celui où pèse un soupçon d'infraction pénale ; et celui où une partie cherche le retard plutôt que la solution. Dans tous ces cas, le procès est l'instrument juste, et il est parfois possible de revenir à la médiation une fois la mesure urgente obtenue.` },
+      { q: `Le processus est-il confidentiel et qui voit les pièces ?`, a: `Il est entièrement confidentiel. Les séances ne sont pas publiques, les pièces ne sont pas versées à un dossier judiciaire, et ce qu'une partie confie au médiateur en séance séparée n'est pas transmis à l'autre sans autorisation. C'est une raison majeure pour laquelle les entreprises choisissent la médiation lorsque le litige touche à un secret d'affaires, à des prix ou à la réputation.` },
+    ],
+    ctaH2: `Un litige bloque votre activité ?`,
+    ctaBody: `Une courte réunion de diagnostic détermine si le litige se prête à la médiation orientée vers la décision, et quelle est la voie la plus rapide pour y mettre fin.`,
+    disclaimer: `Les informations de cette page sont générales et ne constituent ni un conseil juridique ni un substitut à un avis sur votre dossier.`,
+  },
+  ar: {
+    title: `الوساطة التجارية وحل النزاعات بين الشركات`,
+    desc: `وساطة موجّهة نحو الحسم (DOM) للنزاعات التجارية: الشركاء والمساهمون، المورّدون والعملاء، العقارات والتجديد الحضري، مع تقييم قانوني مُعلّل واتفاق موثّق وقابل للتنفيذ.`,
+    heroEyebrow: `وساطة موجّهة نحو الحسم (DOM)`,
+    lede: `النزاع التجاري يوقف العمل قبل وقت طويل من صدور الحكم. الوساطة الموجّهة نحو الحسم تضيف إلى الوساطة التقليدية ما ينقصها: تقييم قانوني مُعلّل ممن يقرأ القانون والأرقام معاً، فيصل الطرفان إلى اتفاق من صورة واضحة، لا من الإنهاك أو من اختلال موازين القوى.`,
+    labels: { covers: `ما الذي تغطيه العملية`, when: `متى نلجأ إلى الوساطة`, steps: `كيف تعمل`, related: `للتعمّق`, faq: `أسئلة وأجوبة` },
+    coversH2: `النزاعات التي نتوسّط فيها`,
+    cards: [
+      { title: `نزاعات الشركاء والمساهمين`, body: `انفصال الشركاء، وتعطّل التصويت، ودعاوى إجحاف الأقلية، والخلاف على التقييم وآليات الخروج. تفصل العملية المسألة القانونية عن الغضب المتراكم حولها.` },
+      { title: `نزاعات تجارية بين الشركات`, body: `الإخلال بالعقد، وخلافات المورّد والعميل، والعمولات والمقابل، وإنهاء التعاقد. وما دامت العلاقة التجارية تساوي شيئاً، فالحكم القضائي أغلى وسيلة لإنهائها.` },
+      { title: `نزاعات العقارات والتجديد الحضري`, body: `أصحاب الشقق أمام لجنتهم، واللجنة أمام المطوّر، والمطوّر أمام المقاول، والخلاف على المقابل والجداول الزمنية والضمانات. نزاعات بمئات أصحاب الحقوق، يكلّف فيها التأخير أكثر من الخلاف نفسه.` },
+      { title: `نزاعات التكنولوجيا والملكية الفكرية والذكاء الاصطناعي`, body: `ملكية الشيفرة والنماذج، واستخدام البيانات، وإخفاق نظام خوارزمي، والخلافات مع مورّدي الذكاء الاصطناعي. تحتاج إلى وسيط يقرأ البنية التقنية كما يقرأ العقد.` },
+    ],
+    whenH2: `متى تتفوّق الوساطة على التقاضي`,
+    whenLede: `الوساطة الموجّهة نحو الحسم ليست تنازلاً عن الحقوق ولا تسوية بأي ثمن. هي مسار يحتفظ فيه الطرفان بالسيطرة على النتيجة، ويتلقّيان تقييماً قانونياً مُعلّلاً لما كانت المحكمة ستقضي به.`,
+    when: [
+      `حين يجمّد النزاع صفقة أو مشروعاً أو التدفق النقدي`,
+      `حين يتعيّن على الطرفين مواصلة العمل معاً بعد ذلك`,
+      `حين يكلّف كشف النزاع علناً سمعةً أو سرّاً تجارياً`,
+      `حين تستنفد الوساطة التقليدية نفسها دون الوصول إلى حسم`,
+      `حين يكون الخلاف على تقدير المخاطر القانونية لا على الوقائع`,
+      `حين تفوق كلفة التقاضي المبلغ محل النزاع`,
+    ],
+    stepsH2: `ثلاث مراحل من النزاع إلى الاتفاق`,
+    steps: [
+      { title: `التشخيص ورسم الخريطة`, body: `يُسمع كل طرف على حدة، وتُرسم خريطة الوقائع والمستندات والتعرّض القانوني والاقتصادي لكل موقف، ويُحدَّد ما هو محل النزاع فعلاً.` },
+      { title: `الجلسات والتقييم المُعلّل`, body: `تُدار جلسات الوساطة، وفي اللحظة المناسبة يُطرح تقييم قانوني مُعلّل لفرص كل طرف ومخاطره، فيحلّ محل التخمين صورةٌ يمكن أن يُبنى عليها القرار.` },
+      { title: `اتفاق موثّق وقابل للتنفيذ`, body: `تسوية مبنية لتصمد: آليات تنفيذ وجداول زمنية وضمانات وجزاء عند الإخلال، بصياغة تتيح المصادقة عليها كحكم قضائي.` },
+    ],
+    relatedH2: `مقالات في الوساطة والتحكيم وحل النزاعات`,
+    faqH2: `الوساطة التجارية والوساطة الموجّهة نحو الحسم`,
+    faqs: [
+      { q: `ما الوساطة الموجّهة نحو الحسم، وبم تختلف عن الوساطة العادية؟`, a: `في الوساطة التقليدية يمتنع الوسيط عن إبداء أي موقف، ودوره التقريب بين الطرفين فحسب. أما في الوساطة الموجّهة نحو الحسم فيقدّم الوسيط، وهو محامٍ ومحكّم، في المرحلة المناسبة تقييماً قانونياً مُعلّلاً لفرص كل طرف ومخاطره. التقييم غير ملزم، لكنه يستبدل بالتخمين صورةً واضحة، ولذلك تُحسم هنا ملفات تعثّرت في الوساطة العادية.` },
+      { q: `هل تقييم الوسيط ملزم للطرفين؟`, a: `ليس بذاته. ما يقدّمه الوسيط رأي لا حكم، ولكل طرف أن يرفضه. الملزم هو الاتفاق الذي يوقّعانه في النهاية. ومن أراد نتيجة ملزمة منذ البداية أمكنه تصميم العملية بوصفها تحكيماً معجّلاً، وهو خيار يُتّخذ في المستهل ويُثبت في الاتفاق.` },
+      { q: `كم تستغرق الوساطة التجارية وكم تكلّف؟`, a: `تُغلق معظم النزاعات التجارية في جلستين إلى أربع، خلال أسابيع لا سنوات. والكلفة جزء يسير من كلفة التقاضي في النزاع نفسه، وهي معروفة سلفاً. أما الدعوى التجارية أمام المحاكم فتُقاس بالسنوات واللوائح، وتجمّد العلاقة التجارية طوال تلك المدة.` },
+      { q: `إذا أخفقت الوساطة، هل يمكننا اللجوء إلى المحكمة؟`, a: `نعم. اللجوء إلى الوساطة لا يسقط أي حق قانوني. والعملية سرّية، وما يُقال فيها غير مقبول في إجراء لاحق، فلا يكشف الطرف الداخل إليها أوراقه. وحتى الوساطة التي تنتهي دون اتفاق تضيّق النزاع عادةً وتختصر ما يليه.` },
+      { q: `أي النزاعات لا تصلح للوساطة؟`, a: `النزاع الذي يحتاج فيه أحد الطرفين إلى إنصاف عاجل من المحكمة، كأمر منع لتفادي ضرر فوري؛ والنزاع الذي تُشتبه فيه مخالفة جنائية؛ والنزاع الذي يسعى فيه أحد الطرفين إلى التأخير لا إلى الحل. في هذه جميعاً يكون التقاضي هو الأداة الصحيحة، وقد يمكن العودة إلى الوساطة بعد صدور الإنصاف العاجل.` },
+      { q: `هل العملية سرّية، ومن يطّلع على المستندات؟`, a: `سرّية بالكامل. الجلسات ليست علنية، والمستندات لا تُقدَّم إلى ملف قضائي، وما يُفضي به طرف إلى الوسيط في جلسة منفردة لا يُنقل إلى الطرف الآخر دون إذن. وهذا من أهم أسباب اختيار الشركات للوساطة حين يمسّ النزاع سرّاً تجارياً أو تسعيراً أو سمعة.` },
+    ],
+    ctaH2: `هل يعطّل نزاعٌ نشاطكم؟`,
+    ctaBody: `لقاء تشخيصي قصير يحدّد ما إذا كان النزاع صالحاً للوساطة الموجّهة نحو الحسم، وما أسرع طريق لإنهائه.`,
+    disclaimer: `المعلومات في هذه الصفحة عامة ولا تشكل استشارة قانونية ولا بديلاً عن رأي قانوني خاص.`,
+  },
+};
+
+const COPY: Record<Lang, { ai: Copy; realEstate: Copy; mediation: Copy }> = {
+  he: { ...he, mediation: mediationCopy.he },
+  en: { ...en, mediation: mediationCopy.en },
+  es: { ...es, mediation: mediationCopy.es },
+  fr: { ...fr, mediation: mediationCopy.fr },
+  ar: { ...ar, mediation: mediationCopy.ar },
+};
 
 function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[] }): PillarPage {
   return {
@@ -598,6 +850,10 @@ export function realEstatePillarFor(lang: Lang): PillarPage {
   return build(lang, COPY[lang].realEstate, SHARED.realEstate);
 }
 
+export function mediationPillarFor(lang: Lang): PillarPage {
+  return build(lang, COPY[lang].mediation, SHARED.mediation);
+}
+
 export function pillarPagesFor(lang: Lang): PillarPage[] {
-  return [aiPillarFor(lang), realEstatePillarFor(lang)];
+  return [aiPillarFor(lang), realEstatePillarFor(lang), mediationPillarFor(lang)];
 }
