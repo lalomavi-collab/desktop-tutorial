@@ -12,6 +12,7 @@ import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
+import { articleCorpus, relatedTo } from "./src/lib/related";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -173,9 +174,18 @@ ${inner}
   return sub(html, FALLBACK_RE, (_m, open, _old, close) => `${open}${body}${close}`);
 }
 
-// An article: its own headline, standfirst and prose.
-function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[]): string {
-  return `        <h1>${esc(headline)}</h1>\n        <p>${esc(dek)}</p>\n        ${blocksToHtml(blocks)}`;
+// An article: its own headline, standfirst, prose, and the same three related
+// pieces the rendered page ends with. Without those links the static document
+// left every article a dead end: a crawler that does not run JavaScript could
+// reach an article, read it, and then had nowhere to go but the site nav, so
+// the corpus had no paths through it at all.
+function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = []): string {
+  const out = [`        <h1>${esc(headline)}</h1>`, `        <p>${esc(dek)}</p>`, `        ${blocksToHtml(blocks)}`];
+  if (related.length) {
+    out.push(`        <h2>${esc(strings.he.ui.article.moreArticles)}</h2>`);
+    out.push(`        <ul>${related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
+  }
+  return out.join("\n");
 }
 
 // The FAQ page: its heading and the full chapter and question structure. The
@@ -421,6 +431,9 @@ function seoPrerender(): Plugin {
         })),
         ...curated,
       ];
+      // The same corpus the app scores against, so a prerendered article ends
+      // with exactly the three links the rendered page ends with.
+      const corpus = articleCorpus(strings.he);
       let written = 0;
       for (const r of routes) {
         let html = applyMeta(template, { title: r.title, desc: clip(r.desc), url: langUrl(`/${r.path}`, "he"), path: r.path, image: r.image, noindex: (r as { noindex?: boolean }).noindex });
@@ -432,7 +445,7 @@ function seoPrerender(): Plugin {
           html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
-          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks));
+          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus)));
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running
