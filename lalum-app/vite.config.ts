@@ -24,7 +24,7 @@ const SITE = "https://lalumapp.com";
 // description, instead of the app-shell default.
 const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
-  { path: "ai-legal-advisory", title: "ייעוץ משפטי וחוות דעת שנייה בנושא AI לחברות | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים." },
+  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים." },
   { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים." },
   { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל\"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
@@ -217,6 +217,7 @@ function faqBodyHtml(): string {
 // renders from, so the static copy matches the page exactly.
 function pillarBodyHtml(p: PillarPage): string {
   const out = [`        <h1>${esc(p.title)}</h1>`, `        <p>${esc(p.lede)}</p>`];
+  out.push(`        <p><a href="/${esc(p.secondary)}/">${esc(p.secondary === "training" ? p.ui.training : p.ui.fullAdvisory)}</a></p>`);
   out.push(`        <h2>${esc(p.coversH2)}</h2>`);
   for (const c of p.cards) out.push(`        <h3>${esc(c.title)}</h3>\n        <p>${esc(c.body)}</p>`);
   out.push(`        <h2>${esc(p.whenH2)}</h2>`, `        <p>${esc(p.whenLede)}</p>`);

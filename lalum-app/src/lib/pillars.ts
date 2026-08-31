@@ -18,6 +18,10 @@ export type PillarLink = { slug: string; title: string };
 export type PillarPage = {
   path: string;
   url: string;
+  // Where the secondary button in the hero goes. Defaults to the general
+  // advisory page; the AI pillar sends the reader to the courses instead,
+  // because on that page the training is one of the services and not a detour.
+  secondary: string;
   title: string;
   desc: string;
   heroEyebrow: string;
@@ -46,14 +50,14 @@ export type PillarPage = {
 
 // Button and card labels. Identical for both pillar pages within a language,
 // so they are declared once per language rather than twice.
-export type PillarUi = { book: string; fullAdvisory: string; articleLabel: string; read: string };
+export type PillarUi = { book: string; fullAdvisory: string; training: string; articleLabel: string; read: string };
 
 const UI: Record<Lang, PillarUi> = {
-  he: { book: `לתיאום פגישת אבחון`, fullAdvisory: `שירותי הייעוץ המלאים`, articleLabel: `מאמר`, read: `קריאה` },
-  en: { book: `Book a diagnostic meeting`, fullAdvisory: `Full advisory services`, articleLabel: `Article`, read: `Read` },
-  es: { book: `Reservar una reunión de diagnóstico`, fullAdvisory: `Servicios de asesoría completos`, articleLabel: `Artículo`, read: `Leer` },
-  fr: { book: `Réserver une réunion de diagnostic`, fullAdvisory: `Services de conseil complets`, articleLabel: `Article`, read: `Lire` },
-  ar: { book: `حجز لقاء تشخيصي`, fullAdvisory: `خدمات الاستشارة الكاملة`, articleLabel: `مقال`, read: `قراءة` },
+  he: { book: `לתיאום פגישת אבחון`, fullAdvisory: `שירותי הייעוץ המלאים`, training: `קורסים והכשרות AI`, articleLabel: `מאמר`, read: `קריאה` },
+  en: { book: `Book a diagnostic meeting`, fullAdvisory: `Full advisory services`, training: `AI courses and training`, articleLabel: `Article`, read: `Read` },
+  es: { book: `Reservar una reunión de diagnóstico`, fullAdvisory: `Servicios de asesoría completos`, training: `Cursos y formación en IA`, articleLabel: `Artículo`, read: `Leer` },
+  fr: { book: `Réserver une réunion de diagnostic`, fullAdvisory: `Services de conseil complets`, training: `Formations en IA`, articleLabel: `Article`, read: `Lire` },
+  ar: { book: `حجز لقاء تشخيصي`, fullAdvisory: `خدمات الاستشارة الكاملة`, training: `دورات وتدريب في الذكاء الاصطناعي`, articleLabel: `مقال`, read: `قراءة` },
 };
 
 type Copy = {
@@ -85,7 +89,8 @@ const SHARED = {
   ai: {
     path: "ai-legal-advisory",
     url: "https://lalumapp.com/ai-legal-advisory",
-    icons: ["scale", "brain", "shield", "gavel"] as IconName[],
+    icons: ["scale", "brain", "shield", "gavel", "book"] as IconName[],
+    secondary: "training",
     related: [
       { slug: "second-opinion-revolution", title: `מהפכת הדעה השנייה: למה חוות דעת בלתי תלויה היא צעד של אחריות` },
       { slug: "ai-liability-ruling", title: `מי אחראי על מה שה-AI אומר? בין מינכן, וושינגטון וירושלים` },
@@ -127,10 +132,10 @@ const STEP_NUMBERS = ["1", "2", "3"];
 
 const he: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `ייעוץ משפטי וחוות דעת שנייה בתחום ה-AI לחברות וארגונים`,
-    desc: `ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, הגנת קניין רוחני וניהול סיכונים, מאת ד"ר אברהם ללום.`,
-    heroEyebrow: `ייעוץ משפטי וחוות דעת שנייה בנושא AI`,
-    lede: `חברות וארגונים מאמצים בינה מלאכותית מהר יותר משהמסגרת המשפטית מדביקה. אנחנו נותנים ייעוץ משפטי עצמאי וחוות דעת שנייה בלתי תלויה, שהופכים את הסיכון האלגוריתמי למערכת שאפשר לשלוט בה, לפני שרגולטור, דירקטוריון או תובע עושים זאת במקומכם.`,
+    title: `ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים`,
+    desc: `ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים וחוות דעת שנייה בלתי תלויה.`,
+    heroEyebrow: `ייעוץ, ליווי והדרכה בנושא AI`,
+    lede: `חברות וארגונים מאמצים בינה מלאכותית מהר יותר משהמסגרת המשפטית מדביקה. אנחנו מלווים את הדרך כולה: מיפוי החשיפה, בניית הממשל והמדיניות, החוזים מול הספקים, הדרכת ההנהלה והצוותים שמפעילים את המערכות, וחוות דעת שנייה בלתי תלויה כשצריך עין נוספת. המטרה אחת: להפוך את הסיכון האלגוריתמי למערכת שאפשר לשלוט בה, לפני שרגולטור, דירקטוריון או תובע עושים זאת במקומכם.`,
     labels: { covers: `מה הייעוץ מכסה`, when: `חוות דעת שנייה`, steps: `איך זה עובד`, related: `להעמקה`, faq: `שאלות ותשובות` },
     coversH2: `שכבת ההגנה המשפטית סביב ה-AI שלכם`,
     cards: [
@@ -138,6 +143,7 @@ const he: { ai: Copy; realEstate: Copy } = {
       { title: `אחריות אלגוריתמית לדירקטוריון`, body: `מדד ציות ומטריצת חשיפה לנושאי משרה, שמתמחרים את האחריות המשפטית מוקדם, לפני שרגולטור או תובע עושים זאת.` },
       { title: `קניין רוחני והגנת מידע`, body: `שכבת הגנה על הטכנולוגיה, סביבות מודל מקומיות ומאובטחות, ומדיניות שימוש שמונעת זליגת מידע רגיש וזיהום קוד בזכויות צד שלישי.` },
       { title: `חוזים מול ספקי AI`, body: `בחינה מחדש של הסכמי ספקים, הקצאת סיכונים, סעיפי שיפוי ואחריות, כך שהחוזה מגן על הארגון ולא רק על הספק.` },
+      { title: `הדרכות והכשרות`, body: `הכשרה להנהלה, לדירקטוריון ולצוותי המוצר, הפיתוח והמשפט: מה מותר, מה מתועד, ואיפה נגמרת הסמכות של המערכת ומתחילה האחריות של האדם. מעשי, מותאם לתפקיד, ומעוגן בעניינים אמיתיים.` },
     ],
     whenH2: `מתי כדאי חוות דעת משפטית שנייה בנושא AI`,
     whenLede: `חוות דעת שנייה בלתי תלויה אינה מגינה על החלטה שכבר התקבלה, אלא בוחנת אותה מחדש. היא מחזקת גם את הארגון וגם את היועץ המייצג, ומספקת בסיס מתועד ובר-הגנה.`,
@@ -162,11 +168,13 @@ const he: { ai: Copy; realEstate: Copy } = {
       { q: `מתי כדאי לפנות לייעוץ משפטי חיצוני לפני החלטת AI?`, a: `לפני הטמעת מערכת AI חדשה, לפני חתימה על חוזה עם ספק AI, לפני השקת מוצר מבוסס אלגוריתם, וכשיש אי-ודאות רגולטורית או חשיפה אישית של נושאי משרה. ייעוץ מוקדם זול ומהיר יותר מהתמודדות עם תביעה או קנס בדיעבד.` },
       { q: `למי מיועד הייעוץ, לחברות הייטק בלבד?`, a: `לא. השירות מיועד לחברות טכנולוגיה, לתאגידים מסורתיים שמטמיעים AI, לגופים ציבוריים ולרשויות, וכן לעורכי דין ומשרדים שמבקשים חוות דעת שנייה בלתי תלויה בסוגיה מורכבת. הליבה היא המפגש בין משפט, כלכלה ובינה מלאכותית.` },
       { q: `האם EU AI Act חל על חברה ישראלית?`, a: `הוא עשוי לחול גם בלי נוכחות פיזית באירופה, כאשר המערכת מוצעת בשוק האירופי או כאשר הפלט שלה משמש בתוך האיחוד. לכן הצעד הראשון הוא מיפוי: היכן המשתמשים והיכן נעשה שימוש בפלט.` },
+      { q: `מה כולל הליווי השוטף, ובמה הוא שונה מחוות דעת חד פעמית?`, a: `חוות דעת נותנת תמונה בנקודת זמן. ליווי שוטף אומר שאנחנו נמצאים לאורך הדרך: בונים את מסגרת הממשל והמדיניות, עוברים על החוזים מול ספקי ה-AI לפני חתימה, מלווים השקה של מוצר או מערכת חדשה, מדריכים את הצוותים שמפעילים אותם, ומעדכנים את המסגרת כשהרגולציה או המוצר משתנים. ארגון שמטמיע בינה מלאכותית ברצף זקוק לשנייה, לא לראשונה.` },
+      { q: `מה כוללות ההדרכות ולמי הן מיועדות?`, a: `הכשרות מעשיות להנהלה, לדירקטוריון, לצוותי מוצר ופיתוח ולצוותים משפטיים, מותאמות לתפקיד ולמערכות שהארגון מפעיל בפועל. הן עוסקות בשאלות שהצוות פוגש ביום העבודה: מה מותר להזין לכלי חיצוני, מה חייב להיות מתועד, מתי נדרשת הכרעה אנושית, ומה החשיפה האישית של מי שמאשר. פירוט התוכניות נמצא בעמוד הקורסים וההכשרות.` },
       { q: `כמה זמן לוקח לקבל חוות דעת?`, a: `זה תלוי בהיקף ובמורכבות. אבחון ראשוני נעשה בפגישה קצרה, וחוות דעת ממוקדת מוכנה בדרך כלל בתוך ימים ספורים עד שבועות, לפי כמות המסמכים והמערכות שנבחנות.` },
       { q: `האם חוות הדעת מחליפה את עורך הדין של החברה?`, a: `לא. חוות דעת שנייה נועדה לעבוד לצד היועץ המשפטי הקיים, לא במקומו. היא מוסיפה שכבת בדיקה בלתי תלויה ומחזקת את עמדת שני הצדדים.` },
     ],
-    ctaH2: `מוכנים לחוות דעת בלתי תלויה על ה-AI שלכם?`,
-    ctaBody: `פגישת אבחון קצרה ממפה את החשיפה שלכם ומגדירה מפת דרכים ברורה לניהול הסיכון.`,
+    ctaH2: `מוכנים לקחת שליטה על ה-AI שבארגון?`,
+    ctaBody: `פגישת אבחון קצרה ממפה את החשיפה שלכם ומגדירה מפת דרכים ברורה: מה נבנה, מה נבדק, ומי צריך הדרכה.`,
     disclaimer: `המידע בעמוד זה כללי ואינו מהווה ייעוץ משפטי או תחליף לחוות דעת פרטנית.`,
   },
   realEstate: {
@@ -219,10 +227,10 @@ const he: { ai: Copy; realEstate: Copy } = {
 
 const en: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Independent AI legal advice and second opinions for companies and organizations`,
-    desc: `Independent legal advice and second opinions for companies and organizations on artificial intelligence: AI governance, the EU AI Act, algorithmic liability, IP protection and risk management, by Dr. Avraham Lalum.`,
-    heroEyebrow: `AI legal advice and second opinions`,
-    lede: `Companies and organizations are adopting artificial intelligence faster than the legal framework can follow. We provide independent legal advice and an arm's length second opinion that turn algorithmic risk into a system you can control, before a regulator, a board or a claimant does it for you.`,
+    title: `AI legal advice, full support and training for organizations`,
+    desc: `Full legal advice and support for companies and organizations on artificial intelligence: AI governance, the EU AI Act, algorithmic liability, intellectual property and risk management, alongside training for management and teams and an independent second opinion.`,
+    heroEyebrow: `AI advice, support and training`,
+    lede: `Companies and organizations are adopting artificial intelligence faster than the legal framework can keep up. We accompany the whole road: mapping the exposure, building the governance and the policy, the contracts with the vendors, training the management and the teams who operate the systems, and an arm's length second opinion when another pair of eyes is needed. One aim: to turn algorithmic risk into a system you can control, before a regulator, a board or a claimant does it for you.`,
     labels: { covers: `What the advisory covers`, when: `Second opinion`, steps: `How it works`, related: `Further reading`, faq: `Questions and answers` },
     coversH2: `The legal protection layer around your AI`,
     cards: [
@@ -230,6 +238,7 @@ const en: { ai: Copy; realEstate: Copy } = {
       { title: `Algorithmic liability for the board`, body: `A compliance measure and an exposure matrix for officers, pricing legal liability early, before a regulator or a claimant prices it for you.` },
       { title: `Intellectual property and data protection`, body: `A protective layer around the technology, local and secured model environments, and a usage policy that prevents leakage of sensitive information and contamination of code with third party rights.` },
       { title: `Contracts with AI vendors`, body: `Re-examining vendor agreements, risk allocation, indemnity and liability clauses, so the contract protects the organization and not only the vendor.` },
+      { title: `Training and workshops`, body: `Training for management, the board and the product, engineering and legal teams: what is permitted, what must be documented, and where the system's authority ends and a person's responsibility begins. Practical, role-specific, and grounded in real matters.` },
     ],
     whenH2: `When an AI second opinion is worth it`,
     whenLede: `An independent second opinion does not defend a decision already taken, it re-examines it. It strengthens both the organization and the advising counsel, and provides a documented, defensible basis.`,
@@ -254,11 +263,13 @@ const en: { ai: Copy; realEstate: Copy } = {
       { q: `When should you seek outside legal advice before an AI decision?`, a: `Before deploying a new AI system, before signing with an AI vendor, before launching an algorithm based product, and whenever there is regulatory uncertainty or personal exposure for officers. Advice taken early is cheaper and faster than dealing with a claim or a fine after the fact.` },
       { q: `Is the advisory only for technology companies?`, a: `No. It serves technology companies, traditional corporations adopting AI, public bodies and authorities, and also lawyers and firms seeking an independent second opinion on a complex question. The core is the meeting point of law, economics and artificial intelligence.` },
       { q: `Does the EU AI Act apply to an Israeli company?`, a: `It may apply without any physical presence in Europe, where the system is placed on the European market or where its output is used within the Union. The first step is therefore mapping: where the users are, and where the output is used.` },
+      { q: `What does ongoing support include, and how is it different from a one-off opinion?`, a: `An opinion gives you a picture at a point in time. Ongoing support means we are there along the way: building the governance framework and the policy, reviewing contracts with AI vendors before signature, accompanying the launch of a new product or system, training the teams that operate them, and updating the framework when the regulation or the product changes. An organization adopting AI continuously needs the second, not the first.` },
+      { q: `What do the trainings cover and who are they for?`, a: `Practical workshops for management, the board, product and engineering teams and legal teams, matched to the role and to the systems the organization actually runs. They deal with the questions a team meets in its working day: what may be entered into an external tool, what must be documented, when a human decision is required, and what personal exposure the person approving carries. The programmes are set out on the courses and training page.` },
       { q: `How long does an opinion take?`, a: `It depends on scope and complexity. An initial diagnosis is done in a short meeting, and a focused opinion is usually ready within days to weeks, according to the volume of documents and systems examined.` },
       { q: `Does the opinion replace the company's own counsel?`, a: `No. A second opinion is designed to work alongside existing counsel, not instead of them. It adds an independent layer of review and strengthens both positions.` },
     ],
-    ctaH2: `Ready for an independent opinion on your AI?`,
-    ctaBody: `A short diagnostic meeting maps your exposure and sets a clear roadmap for managing the risk.`,
+    ctaH2: `Ready to take control of the AI in your organization?`,
+    ctaBody: `A short diagnostic meeting maps your exposure and defines a clear roadmap: what to build, what to review, and who needs training.`,
     disclaimer: `The information on this page is general and does not constitute legal advice or a substitute for a specific opinion.`,
   },
   realEstate: {
@@ -311,9 +322,9 @@ const en: { ai: Copy; realEstate: Copy } = {
 
 const es: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Asesoría jurídica independiente y segunda opinión en IA para empresas y organizaciones`,
+    title: `Asesoría, acompañamiento y formación en IA para organizaciones`,
     desc: `Asesoría jurídica independiente y segunda opinión para empresas y organizaciones en materia de inteligencia artificial: gobernanza de la IA, Reglamento Europeo de IA, responsabilidad algorítmica, protección de la propiedad intelectual y gestión de riesgos, por el Dr. Avraham Lalum.`,
-    heroEyebrow: `Asesoría jurídica y segunda opinión en IA`,
+    heroEyebrow: `Asesoría, acompañamiento y formación en IA`,
     lede: `Las empresas y organizaciones adoptan la inteligencia artificial más rápido de lo que avanza el marco jurídico. Ofrecemos asesoría jurídica independiente y una segunda opinión imparcial que convierten el riesgo algorítmico en un sistema que usted puede controlar, antes de que lo haga un regulador, un consejo de administración o un demandante.`,
     labels: { covers: `Qué cubre la asesoría`, when: `Segunda opinión`, steps: `Cómo funciona`, related: `Para profundizar`, faq: `Preguntas y respuestas` },
     coversH2: `La capa de protección jurídica alrededor de su IA`,
@@ -322,6 +333,7 @@ const es: { ai: Copy; realEstate: Copy } = {
       { title: `Responsabilidad algorítmica para el consejo`, body: `Un índice de cumplimiento y una matriz de exposición para los administradores, que ponen precio a la responsabilidad jurídica de forma temprana, antes de que lo haga un regulador o un demandante.` },
       { title: `Propiedad intelectual y protección de datos`, body: `Una capa de protección sobre la tecnología, entornos de modelo locales y seguros, y una política de uso que evita la fuga de información sensible y la contaminación del código con derechos de terceros.` },
       { title: `Contratos con proveedores de IA`, body: `Revisión de los acuerdos con proveedores, asignación de riesgos, cláusulas de indemnidad y responsabilidad, de modo que el contrato proteja a la organización y no solo al proveedor.` },
+      { title: `Formación y talleres`, body: `Formación para la dirección, el consejo y los equipos de producto, ingeniería y jurídico: qué está permitido, qué debe documentarse, y dónde termina la autoridad del sistema y empieza la responsabilidad de la persona. Práctica, adaptada al puesto y anclada en casos reales.` },
     ],
     whenH2: `Cuándo conviene una segunda opinión jurídica en IA`,
     whenLede: `Una segunda opinión independiente no defiende una decisión ya tomada, sino que la vuelve a examinar. Refuerza tanto a la organización como al asesor que la representa, y aporta una base documentada y defendible.`,
@@ -346,6 +358,8 @@ const es: { ai: Copy; realEstate: Copy } = {
       { q: `¿Cuándo conviene acudir a asesoría jurídica externa antes de una decisión sobre IA?`, a: `Antes de implantar un nuevo sistema de IA, antes de firmar con un proveedor, antes de lanzar un producto basado en algoritmos, y cuando existe incertidumbre regulatoria o exposición personal de los administradores. Asesorarse a tiempo resulta más barato y más rápido que afrontar una demanda o una sanción después.` },
       { q: `¿La asesoría es solo para empresas tecnológicas?`, a: `No. El servicio se dirige a empresas tecnológicas, a corporaciones tradicionales que adoptan IA, a organismos públicos y autoridades, y también a abogados y despachos que buscan una segunda opinión independiente sobre una cuestión compleja. El núcleo es el encuentro entre derecho, economía e inteligencia artificial.` },
       { q: `¿El Reglamento Europeo de IA se aplica a una empresa israelí?`, a: `Puede aplicarse incluso sin presencia física en Europa, cuando el sistema se ofrece en el mercado europeo o cuando su resultado se utiliza dentro de la Unión. Por eso el primer paso es el mapeo: dónde están los usuarios y dónde se usa el resultado.` },
+      { q: `¿Qué incluye el acompañamiento continuo y en qué se diferencia de un dictamen puntual?`, a: `Un dictamen ofrece una imagen en un momento dado. El acompañamiento continuo significa que estamos a lo largo del camino: construimos el marco de gobernanza y la política, revisamos los contratos con proveedores de IA antes de la firma, acompañamos el lanzamiento de un producto o sistema nuevo, formamos a los equipos que los operan, y actualizamos el marco cuando cambia la regulación o el producto. Una organización que adopta IA de forma continua necesita lo segundo, no lo primero.` },
+      { q: `¿Qué cubren las formaciones y a quién van dirigidas?`, a: `Talleres prácticos para la dirección, el consejo, los equipos de producto e ingeniería y los equipos jurídicos, adaptados al puesto y a los sistemas que la organización opera realmente. Abordan las preguntas que el equipo encuentra en su jornada: qué puede introducirse en una herramienta externa, qué debe documentarse, cuándo se requiere una decisión humana, y qué exposición personal asume quien aprueba. Los programas se detallan en la página de cursos y formación.` },
       { q: `¿Cuánto tarda un dictamen?`, a: `Depende del alcance y de la complejidad. El diagnóstico inicial se realiza en una reunión breve, y un dictamen enfocado suele estar listo en un plazo de días a semanas, según el volumen de documentos y sistemas examinados.` },
       { q: `¿El dictamen sustituye al abogado de la empresa?`, a: `No. Una segunda opinión está pensada para trabajar junto al asesor jurídico existente, no en su lugar. Añade una capa de revisión independiente y refuerza ambas posiciones.` },
     ],
@@ -403,9 +417,9 @@ const es: { ai: Copy; realEstate: Copy } = {
 
 const fr: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Conseil juridique indépendant et deuxième avis en IA pour les entreprises et les organisations`,
+    title: `Conseil, accompagnement et formation en IA pour les organisations`,
     desc: `Conseil juridique indépendant et deuxième avis pour les entreprises et les organisations en matière d'intelligence artificielle : gouvernance de l'IA, règlement européen sur l'IA, responsabilité algorithmique, protection de la propriété intellectuelle et gestion des risques, par le Dr Avraham Lalum.`,
-    heroEyebrow: `Conseil juridique et deuxième avis en IA`,
+    heroEyebrow: `Conseil, accompagnement et formation en IA`,
     lede: `Les entreprises et les organisations adoptent l'intelligence artificielle plus vite que le cadre juridique ne progresse. Nous apportons un conseil juridique indépendant et un deuxième avis impartial qui transforment le risque algorithmique en un système que vous pouvez maîtriser, avant qu'un régulateur, un conseil d'administration ou un demandeur ne le fasse à votre place.`,
     labels: { covers: `Ce que couvre le conseil`, when: `Deuxième avis`, steps: `Comment cela fonctionne`, related: `Pour approfondir`, faq: `Questions et réponses` },
     coversH2: `La couche de protection juridique autour de votre IA`,
@@ -414,6 +428,7 @@ const fr: { ai: Copy; realEstate: Copy } = {
       { title: `Responsabilité algorithmique pour le conseil`, body: `Un indice de conformité et une matrice d'exposition pour les dirigeants, qui chiffrent la responsabilité juridique tôt, avant qu'un régulateur ou un demandeur ne le fasse.` },
       { title: `Propriété intellectuelle et protection des données`, body: `Une couche de protection sur la technologie, des environnements de modèle locaux et sécurisés, et une politique d'usage qui empêche la fuite d'informations sensibles et la contamination du code par des droits de tiers.` },
       { title: `Contrats avec les fournisseurs d'IA`, body: `Réexamen des accords fournisseurs, répartition des risques, clauses d'indemnisation et de responsabilité, afin que le contrat protège l'organisation et pas seulement le fournisseur.` },
+      { title: `Formations et ateliers`, body: `Formation de la direction, du conseil et des équipes produit, technique et juridique : ce qui est permis, ce qui doit être documenté, et où s'arrête l'autorité du système et où commence la responsabilité de la personne. Pratique, adaptée au rôle et ancrée dans des dossiers réels.` },
     ],
     whenH2: `Quand un deuxième avis juridique en IA est utile`,
     whenLede: `Un deuxième avis indépendant ne défend pas une décision déjà prise, il la réexamine. Il renforce à la fois l'organisation et le conseil qui la représente, et fournit une base documentée et défendable.`,
@@ -438,6 +453,8 @@ const fr: { ai: Copy; realEstate: Copy } = {
       { q: `Quand faut-il consulter un conseil juridique externe avant une décision liée à l'IA ?`, a: `Avant de déployer un nouveau système d'IA, avant de signer avec un fournisseur, avant de lancer un produit fondé sur un algorithme, et en cas d'incertitude réglementaire ou d'exposition personnelle des dirigeants. Un conseil pris tôt coûte moins cher et va plus vite que la gestion d'une réclamation ou d'une amende après coup.` },
       { q: `Le conseil s'adresse-t-il uniquement aux entreprises technologiques ?`, a: `Non. Le service s'adresse aux entreprises technologiques, aux groupes traditionnels qui adoptent l'IA, aux organismes publics et aux autorités, ainsi qu'aux avocats et cabinets qui souhaitent un deuxième avis indépendant sur une question complexe. Le cœur du sujet est la rencontre entre le droit, l'économie et l'intelligence artificielle.` },
       { q: `Le règlement européen sur l'IA s'applique-t-il à une société israélienne ?`, a: `Il peut s'appliquer même sans présence physique en Europe, lorsque le système est mis sur le marché européen ou lorsque son résultat est utilisé au sein de l'Union. La première étape est donc la cartographie : où se trouvent les utilisateurs et où le résultat est utilisé.` },
+      { q: `Que comprend l'accompagnement continu et en quoi diffère-t-il d'un avis ponctuel ?`, a: `Un avis donne une image à un instant donné. L'accompagnement continu signifie que nous sommes présents tout au long : nous construisons le cadre de gouvernance et la politique, examinons les contrats avec les fournisseurs d'IA avant signature, accompagnons le lancement d'un produit ou d'un système, formons les équipes qui les exploitent, et mettons à jour le cadre lorsque la réglementation ou le produit change. Une organisation qui adopte l'IA en continu a besoin du second, non du premier.` },
+      { q: `Que couvrent les formations et à qui s'adressent-elles ?`, a: `Des ateliers pratiques pour la direction, le conseil, les équipes produit et technique et les équipes juridiques, adaptés au rôle et aux systèmes que l'organisation exploite réellement. Ils traitent des questions rencontrées au quotidien : ce qui peut être saisi dans un outil externe, ce qui doit être documenté, quand une décision humaine est requise, et quelle exposition personnelle assume celui qui approuve. Les programmes figurent sur la page des formations.` },
       { q: `Combien de temps faut-il pour obtenir un avis ?`, a: `Cela dépend de l'ampleur et de la complexité. Le diagnostic initial se fait lors d'une courte réunion, et un avis ciblé est généralement prêt en quelques jours à quelques semaines, selon le volume de documents et de systèmes examinés.` },
       { q: `L'avis remplace-t-il l'avocat de l'entreprise ?`, a: `Non. Un deuxième avis est conçu pour travailler aux côtés du conseil juridique existant, et non à sa place. Il ajoute une couche de vérification indépendante et renforce les deux positions.` },
     ],
@@ -495,9 +512,9 @@ const fr: { ai: Copy; realEstate: Copy } = {
 
 const ar: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `استشارة قانونية مستقلة ورأي ثانٍ في الذكاء الاصطناعي للشركات والمؤسسات`,
+    title: `استشارة ومرافقة وتدريب في الذكاء الاصطناعي للمؤسسات`,
     desc: `استشارة قانونية مستقلة ورأي ثانٍ للشركات والمؤسسات في مجال الذكاء الاصطناعي: حوكمة الذكاء الاصطناعي، قانون الذكاء الاصطناعي الأوروبي، المسؤولية الخوارزمية، حماية الملكية الفكرية وإدارة المخاطر، بقلم د. أبراهام لالوم.`,
-    heroEyebrow: `استشارة قانونية ورأي ثانٍ في الذكاء الاصطناعي`,
+    heroEyebrow: `استشارة ومرافقة وتدريب في الذكاء الاصطناعي`,
     lede: `تتبنى الشركات والمؤسسات الذكاء الاصطناعي بوتيرة أسرع مما يواكبه الإطار القانوني. نقدم استشارة قانونية مستقلة ورأياً ثانياً محايداً يحولان المخاطر الخوارزمية إلى منظومة يمكنكم التحكم بها، قبل أن يقوم بذلك جهة تنظيمية أو مجلس إدارة أو مدّعٍ نيابة عنكم.`,
     labels: { covers: `ما تغطيه الاستشارة`, when: `رأي ثانٍ`, steps: `كيف تسير العملية`, related: `لمزيد من التعمق`, faq: `أسئلة وأجوبة` },
     coversH2: `طبقة الحماية القانونية حول الذكاء الاصطناعي لديكم`,
@@ -506,6 +523,7 @@ const ar: { ai: Copy; realEstate: Copy } = {
       { title: `المسؤولية الخوارزمية لمجلس الإدارة`, body: `مؤشر امتثال ومصفوفة تعرض لأعضاء الإدارة، يسعّران المسؤولية القانونية مبكراً، قبل أن تفعل ذلك جهة تنظيمية أو مدّعٍ.` },
       { title: `الملكية الفكرية وحماية البيانات`, body: `طبقة حماية للتقنية، بيئات نماذج محلية ومؤمّنة، وسياسة استخدام تمنع تسرب المعلومات الحساسة وتلوث الشيفرة بحقوق أطراف ثالثة.` },
       { title: `العقود مع مزودي الذكاء الاصطناعي`, body: `إعادة فحص اتفاقيات المزودين، توزيع المخاطر، بنود التعويض والمسؤولية، بحيث يحمي العقد المؤسسة لا المزود وحده.` },
+      { title: `التدريب والورشات`, body: `تدريب للإدارة ولمجلس الإدارة ولفرق المنتج والتطوير والشؤون القانونية: ما هو مسموح، وما يجب توثيقه، وأين تنتهي صلاحية النظام وتبدأ مسؤولية الإنسان. عملي، مصمم بحسب الدور، ومبني على ملفات حقيقية.` },
     ],
     whenH2: `متى يستحق الرأي القانوني الثاني في الذكاء الاصطناعي`,
     whenLede: `الرأي الثاني المستقل لا يدافع عن قرار سبق اتخاذه، بل يعيد فحصه. وهو يعزز المؤسسة والمستشار الممثل لها معاً، ويوفر أساساً موثقاً وقابلاً للدفاع عنه.`,
@@ -530,6 +548,8 @@ const ar: { ai: Copy; realEstate: Copy } = {
       { q: `متى ينبغي طلب استشارة قانونية خارجية قبل قرار يتعلق بالذكاء الاصطناعي؟`, a: `قبل تطبيق نظام ذكاء اصطناعي جديد، وقبل التوقيع مع مزود، وقبل إطلاق منتج قائم على خوارزمية، وعند وجود عدم يقين تنظيمي أو تعرض شخصي لأعضاء الإدارة. الاستشارة المبكرة أقل كلفة وأسرع من مواجهة دعوى أو غرامة لاحقاً.` },
       { q: `هل الاستشارة مخصصة لشركات التقنية فقط؟`, a: `لا. الخدمة موجهة لشركات التقنية، وللشركات التقليدية التي تتبنى الذكاء الاصطناعي، وللجهات العامة والسلطات، وكذلك للمحامين والمكاتب التي تطلب رأياً ثانياً مستقلاً في مسألة معقدة. الجوهر هو الالتقاء بين القانون والاقتصاد والذكاء الاصطناعي.` },
       { q: `هل ينطبق قانون الذكاء الاصطناعي الأوروبي على شركة إسرائيلية؟`, a: `قد ينطبق حتى دون وجود مادي في أوروبا، عندما يُطرح النظام في السوق الأوروبية أو عندما تُستخدم مخرجاته داخل الاتحاد. لذلك فإن الخطوة الأولى هي رسم الخريطة: أين المستخدمون وأين تُستخدم المخرجات.` },
+      { q: `ماذا تشمل المرافقة المستمرة، وبم تختلف عن رأي لمرة واحدة؟`, a: `الرأي يعطي صورة في لحظة زمنية. أما المرافقة المستمرة فتعني أننا حاضرون على طول الطريق: نبني إطار الحوكمة والسياسة، ونفحص العقود مع مزودي الذكاء الاصطناعي قبل التوقيع، ونرافق إطلاق منتج أو نظام جديد، وندرّب الفرق التي تشغّلها، ونحدّث الإطار عندما تتغير التنظيمات أو المنتج. المؤسسة التي تتبنى الذكاء الاصطناعي باستمرار تحتاج إلى الثانية لا إلى الأولى.` },
+      { q: `ماذا تغطي الدورات التدريبية ولمن هي موجهة؟`, a: `ورشات عملية للإدارة ولمجلس الإدارة ولفرق المنتج والتطوير وللفرق القانونية، مصممة بحسب الدور وبحسب الأنظمة التي تشغّلها المؤسسة فعلاً. تتناول الأسئلة التي يواجهها الفريق في يوم عمله: ما الذي يجوز إدخاله إلى أداة خارجية، وما الذي يجب توثيقه، ومتى يلزم قرار بشري، وما التعرّض الشخصي لمن يصادق. تفاصيل البرامج في صفحة الدورات والتدريب.` },
       { q: `كم يستغرق إعداد الرأي؟`, a: `يعتمد ذلك على النطاق ودرجة التعقيد. يجري التشخيص الأولي في لقاء قصير، ويكون الرأي المركز جاهزاً عادة خلال أيام إلى أسابيع، بحسب حجم المستندات والأنظمة التي تُفحص.` },
       { q: `هل يحل الرأي محل المستشار القانوني للشركة؟`, a: `لا. الرأي الثاني مصمم للعمل إلى جانب المستشار القانوني القائم، لا بديلاً عنه. فهو يضيف طبقة فحص مستقلة ويعزز الموقفين معاً.` },
     ],
@@ -826,10 +846,11 @@ const COPY: Record<Lang, { ai: Copy; realEstate: Copy; mediation: Copy }> = {
   ar: { ...ar, mediation: mediationCopy.ar },
 };
 
-function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[] }): PillarPage {
+function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[]; secondary?: string }): PillarPage {
   return {
     path: shared.path,
     url: shared.url,
+    secondary: shared.secondary ?? "advisory",
     title: c.title,
     desc: c.desc,
     heroEyebrow: c.heroEyebrow,

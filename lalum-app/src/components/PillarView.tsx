@@ -30,7 +30,7 @@ export function PillarView({ P }: { P: PillarPage }) {
         <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch" }}>{P.lede}        </p>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
           <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
-          <Link to="/advisory" className="btn btn-outline">{P.ui.fullAdvisory}</Link>
+          <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
         </div>
       </section>
 
