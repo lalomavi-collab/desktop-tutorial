@@ -183,13 +183,16 @@ sharedDesc.length
 //    skipped, because alternateName deliberately carries the other spellings:
 //    those are what people type into a search box, and the entity needs them.
 const CANON_NAME = "ד״ר עו״ד אברהם ללום";
-const TITLED = /(?:(?:ד["״]ר|עו["״]ד|ו?דוקטורנט)(?:\s+למשפטים)?\s+)+אברהם\s+ללום/g;
+// A later mention in the same piece may be the short form. Repeating the full
+// form in every sentence is not consistency, it is unreadable Hebrew.
+const SHORT_NAME = "ד״ר ללום";
+const TITLED = /(?:(?:ד["״]ר|עו["״]ד|ו?דוקטורנט)(?:\s+למשפטים)?\s+)+(?:אברהם\s+)?ללום/g;
 let nameOff = 0;
 const nameSample = [];
 for (const p of pages) {
   const h = readFileSync(p, "utf8").replace(/<script[\s\S]*?<\/script>/g, "");
   for (const m of h.matchAll(TITLED)) {
-    if (m[0] !== CANON_NAME) {
+    if (m[0] !== CANON_NAME && m[0] !== SHORT_NAME) {
       nameOff++;
       if (nameSample.length < 3) nameSample.push(`${rel(p)}: ${m[0]}`);
     }
