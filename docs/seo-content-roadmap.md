@@ -27,7 +27,7 @@
 - V EU AI Act: מדריך מעשי לסיווג מערכת כבעלת סיכון גבוה (eu-ai-act-high-risk-classification)
 - V EU AI Act: חובות שקיפות למערכות ג'נרטיביות ולמודלי יסוד (eu-ai-act-transparency-generative)
 - תיקון 13 לחוק הגנת הפרטיות: מתי חובה למנות ממונה הגנת פרטיות (DPO)
-- תיקון 13: מדריך אבטחת מידע ונהלים לארגון
+- V תיקון 13: מדריך אבטחת מידע ונהלים לארגון (amendment-13-data-security-guide)
 - V ממשל בינה מלאכותית (AI Governance): מסגרת עבודה לדירקטוריון (ai-governance-board-framework)
 - V אחריות דירקטורים ונושאי משרה בעידן הבינה המלאכותית (directors-liability-ai-era)
 - V מדיניות שימוש בבינה מלאכותית בארגון (AI Use Policy) (ai-use-policy-organization)
