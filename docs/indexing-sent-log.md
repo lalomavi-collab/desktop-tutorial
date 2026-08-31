@@ -39,13 +39,13 @@
 | 2026-08-31 | https://lalumapp.com/fr/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/fr/advisory/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/fr/ai-legal-advisory/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/fr/real-estate-legal-advisory/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/fr/knowledge/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/fr/book/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/fr/legal/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/advisory/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/ai-legal-advisory/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/real-estate-legal-advisory/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/knowledge/ | נשלח |
-| 2026-08-31 | https://lalumapp.com/ar/book/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/real-estate-legal-advisory/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/fr/knowledge/ | אושר (בקשת אינדוקס נשלחה) |
+| 2026-08-31 | https://lalumapp.com/fr/book/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/fr/legal/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/advisory/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/ai-legal-advisory/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/real-estate-legal-advisory/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/knowledge/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/ar/book/ | כבר ב-Google (דילוג) |
