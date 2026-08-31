@@ -29,3 +29,13 @@
 | 2026-08-31 | https://lalumapp.com/en/real-estate-legal-advisory/ | כבר ב-Google (דילוג) |
 | 2026-08-31 | https://lalumapp.com/en/ai-legal-advisory/ | כבר ב-Google (דילוג) |
 | 2026-08-31 | https://lalumapp.com/en/advisory/ | כבר ב-Google (דילוג) |
+| 2026-08-31 | https://lalumapp.com/es/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/ai-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/real-estate-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/knowledge/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/book/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/es/legal/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/ai-legal-advisory/ | נשלח |
