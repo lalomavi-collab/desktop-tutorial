@@ -159,7 +159,7 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-const SITE_NAV = `<p><a href="/advisory">ייעוץ וגישור</a> · <a href="/ai-legal-advisory">ייעוץ AI</a> · <a href="/real-estate-legal-advisory">ייעוץ נדל״ן</a> · <a href="/insights">מאמרים</a> · <a href="/faq">שאלות ותשובות</a> · <a href="/risk">מבדק מוכנות</a> · <a href="/book">תיאום פגישה</a></p>`;
+const SITE_NAV = `<p><a href="/advisory/">ייעוץ וגישור</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/real-estate-legal-advisory/">ייעוץ נדל״ן</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
 
 function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
@@ -240,6 +240,33 @@ function insightsBodyHtml(title: string, desc: string): string {
   ].join("\n");
 }
 
+// The home page, built from the same dictionary the page component renders
+// from: the hero, the positioning paragraphs, the six AI and risk layers, the
+// reasons, and the Q&A the page already publishes. The root document is the one
+// file the route loop never wrote, so it kept the template placeholder: the most
+// linked page on the site introduced itself in English, under an English title,
+// to every crawler and answer engine that does not run JavaScript.
+function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
+  const h = dict.home;
+  const out = [
+    `        <h1>${esc(`${h.heroH1a} ${h.heroH1b}`)}</h1>`,
+    `        <p>${esc(h.heroLede)}</p>`,
+    `        <h2>${esc(`${h.aboutH2a} ${h.aboutH2b}`)}</h2>`,
+    `        <p>${esc(h.aboutP1)}</p>`,
+    `        <p>${esc(h.aboutP2)}</p>`,
+    `        <h2>${esc(h.pillarsH2)}</h2>`,
+  ];
+  for (const p of dict.data.pillars) {
+    out.push(`        <h3>${esc(p.title)}</h3>\n        <p>${esc(p.body)}</p>`);
+  }
+  out.push(`        <h2>${esc(h.whyH2)}</h2>`);
+  out.push(`        <ul>${dict.data.why.map((w) => `<li>${esc(w.title)}: ${esc(w.body)}</li>`).join("")}</ul>`);
+  for (const it of faqsForPath(dict, "/", lang)) {
+    out.push(`        <h3>${esc(it.q)}</h3>`, `        <p>${esc(it.a)}</p>`);
+  }
+  return out.join("\n");
+}
+
 // Any other marketing route: at minimum its real Hebrew heading and summary,
 // plus the Q&A the page already publishes as structured data. Those pages still
 // hold their prose inline in JSX, so emitting it would mean running the React
@@ -266,7 +293,7 @@ function replaceTag(html: string, re: RegExp, prefix: string, value: string, suf
 // editorial headline shows up chopped mid-word in results. Produce a concise
 // <title> (prefer the pre-colon headline, else a clean word-boundary cut),
 // while og:title and twitter:title keep the FULL headline for social cards.
-function shortTitle(full: string): string {
+function shortTitle(full: string, allowColonCut = true): string {
   if (full.length <= 60) return full;
   const m = full.match(/^([\s\S]*?)(\s*[·|]\s*LALUM)\s*$/);
   const head = m ? m[1] : full;
@@ -275,7 +302,7 @@ function shortTitle(full: string): string {
   let t = head;
   if (t.length > budget) {
     const colon = head.indexOf(":");
-    if (colon >= 15 && colon <= budget) {
+    if (allowColonCut && colon >= 15 && colon <= budget) {
       t = head.slice(0, colon);
     } else {
       t = head.slice(0, budget);
@@ -287,9 +314,28 @@ function shortTitle(full: string): string {
   return t + suffix;
 }
 
+// Two pages whose headlines share a long opening trimmed to the same 60
+// characters ship the same <title>, which is one of the few things a search
+// engine treats as a page being a copy of another. It happened to the two
+// pillar pages in Spanish and French, and to two articles that differ only
+// after their colon. So the trimmed titles are tracked across the build: a
+// collision retries without the pre-colon shortcut, which usually keeps the
+// distinguishing half, and falls back to the untrimmed headline when even that
+// repeats. Longer than ideal beats identical.
+const usedTitles = new Set<string>();
+function tagTitle(full: string): string {
+  for (const candidate of [shortTitle(full), shortTitle(full, false), full]) {
+    if (!usedTitles.has(candidate)) {
+      usedTitles.add(candidate);
+      return candidate;
+    }
+  }
+  return full;
+}
+
 function applyMeta(template: string, r: { title: string; desc: string; url: string; path: string; image?: string; noindex?: boolean }): string {
   let h = template;
-  h = sub(h, /<title>[\s\S]*?<\/title>/, () => `<title>${esc(shortTitle(r.title))}</title>`);
+  h = sub(h, /<title>[\s\S]*?<\/title>/, () => `<title>${esc(tagTitle(r.title))}</title>`);
   // description and og:description are emitted multiline; collapse to one line.
   h = sub(h, /<meta\s+name="description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta name="description" content="${esc(r.desc)}" />`);
   h = sub(h, /<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/>/, () => `<meta property="og:description" content="${esc(r.desc)}" />`);
@@ -337,6 +383,9 @@ function seoPrerender(): Plugin {
       outDir = join(config.root, config.build.outDir);
     },
     closeBundle() {
+      // Watch mode runs this more than once per process; a stale set would make
+      // the second build think every title was already taken.
+      usedTitles.clear();
       const template = readFileSync(join(outDir, "index.html"), "utf8");
       // Curated articles live in the app's own copy (strings.data.articles),
       // not in blogMeta. They are linked from the site and listed in the sitemap,
@@ -451,17 +500,27 @@ function seoPrerender(): Plugin {
         }
       }
 
-      // The Hebrew home document is Vite's own index.html, so the route loop
-      // never touches it and it kept the template's ?lang= alternates: hrefs
-      // that no longer resolve to anything. Repoint them at the real paths.
+      // The Hebrew home document. It is Vite's own index.html, so the route
+      // loop above never wrote it: it kept the template's English title,
+      // English description and English placeholder body, and its ?lang=
+      // alternates pointed at hrefs that no longer resolve. Every other route
+      // served correct Hebrew; the root, the page that carries the site's name
+      // and most of its links, did not. It gets the same treatment here: its
+      // own metadata, a self-referencing canonical, the real hreflang set, the
+      // Q&A it publishes, and a Hebrew static body.
       {
         const homeFile = join(outDir, "index.html");
-        let h = readFileSync(homeFile, "utf8");
-        for (const a of alternatesFor("/")) {
-          const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
-          h = replaceTag(h, re, "$1", a.href, "$2");
+        const seo = strings.he.seo.home;
+        let h = applyMeta(template, {
+          title: seo.title, desc: clip(seo.desc), url: langUrl("/", "he"), path: "", image: undefined,
+        });
+        const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, "/"))]);
+        if (faqNode) {
+          h = sub(h, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>\n  </head>`);
         }
+        h = withStaticBody(h, homeBodyHtml());
         writeFileSync(homeFile, h, "utf8");
+        written++;
       }
 
       // Language variants. Only the routes measured as genuinely translated get
@@ -497,7 +556,9 @@ function seoPrerender(): Plugin {
           if (faqNode) {
             html = sub(html, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>\n  </head>`);
           }
-          const inner = pillar ? pillarBodyHtml(pillar) : pageBodyHtml(title, desc, v.path, dict, lang);
+          const inner = pillar ? pillarBodyHtml(pillar)
+            : v.path === "" ? homeBodyHtml(dict, lang)
+            : pageBodyHtml(title, desc, v.path, dict, lang);
           html = withStaticBody(html, inner, l.dir, lang);
           const file = join(outDir, lang, v.path, "index.html");
           mkdirSync(dirname(file), { recursive: true });
