@@ -162,7 +162,7 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-const SITE_NAV = `<p><a href="/advisory/">ייעוץ וגישור</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/real-estate-legal-advisory/">ייעוץ נדל״ן</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
+const SITE_NAV = `<p><a href="/advisory/">ייעוץ וגישור</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/real-estate-legal-advisory/">ייעוץ נדל״ן</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
 
 function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
