@@ -62,6 +62,7 @@ export const TRANSLATED_ROUTES = new Set([
   "/advisory/",
   "/ai-legal-advisory/",
   "/real-estate-legal-advisory/",
+  "/mediation-dispute-resolution/",
   "/knowledge/",
   "/book/",
   "/legal/",

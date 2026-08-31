@@ -17,6 +17,7 @@ const CommandBar = lazy(() => import("./components/CommandBar").then((m) => ({ d
 const Advisory = lazy(() => import("./pages/Advisory").then((m) => ({ default: m.Advisory })));
 const AiLegalAdvisory = lazy(() => import("./pages/AiLegalAdvisory").then((m) => ({ default: m.AiLegalAdvisory })));
 const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdvisory").then((m) => ({ default: m.RealEstateLegalAdvisory })));
+const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
 const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m.Training })));
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="advisory" element={<Advisory />} />
             <Route path="ai-legal-advisory" element={<AiLegalAdvisory />} />
             <Route path="real-estate-legal-advisory" element={<RealEstateLegalAdvisory />} />
+            <Route path="mediation-dispute-resolution" element={<MediationDisputeResolution />} />
             <Route path="training" element={<Training />} />
             {/* /courses is the public URL for the Academy; it is the same page
                 as /training (labelled "Courses" in the nav). Without this alias

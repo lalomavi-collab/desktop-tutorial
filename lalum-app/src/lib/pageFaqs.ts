@@ -11,7 +11,7 @@ import type { Dict } from "./strings";
 import { faqCategories } from "./faq";
 import type { QA } from "./schema";
 import type { Lang } from "./hreflang";
-import { aiPillarFor, realEstatePillarFor } from "./pillars";
+import { aiPillarFor, mediationPillarFor, realEstatePillarFor } from "./pillars";
 
 // The general homepage FAQ (rendered in the Home FAQ section).
 function homeFaqs(t: Dict): QA[] {
@@ -43,6 +43,10 @@ function realEstateAdvisoryFaqs(lang: Lang): QA[] {
   return realEstatePillarFor(lang).faqs;
 }
 
+function mediationFaqs(lang: Lang): QA[] {
+  return mediationPillarFor(lang).faqs;
+}
+
 function exactSets(t: Dict, lang: Lang): Record<string, QA[]> {
   return {
     "/": [...homeFaqs(t), ...practiceFaqs(t)],
@@ -50,6 +54,7 @@ function exactSets(t: Dict, lang: Lang): Record<string, QA[]> {
     "/faq": faqPageFaqs(),
     "/ai-legal-advisory": aiLegalAdvisoryFaqs(lang),
     "/real-estate-legal-advisory": realEstateAdvisoryFaqs(lang),
+    "/mediation-dispute-resolution": mediationFaqs(lang),
   };
 }
 

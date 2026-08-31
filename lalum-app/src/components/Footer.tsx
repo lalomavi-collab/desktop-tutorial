@@ -84,6 +84,7 @@ export function Footer() {
           <Link to="/advisory">{L.advisory}</Link>
           <Link to="/ai-legal-advisory">ייעוץ וחוות דעת AI</Link>
           <Link to="/real-estate-legal-advisory">ייעוץ וחוות דעת נדל"ן</Link>
+          <Link to="/mediation-dispute-resolution">גישור ויישוב סכסוכים</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
