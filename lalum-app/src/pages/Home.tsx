@@ -275,6 +275,11 @@ export function Home() {
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
+            {/* The treatises. They sat in the CV page alone, which carried no
+                structured data and was not in the sitemap, so the strongest
+                credential the practice holds for urban renewal was invisible
+                everywhere a reader or a crawler would look for it. */}
+            <p style={{ fontSize: 13, color: "var(--slate)", lineHeight: 1.6, margin: "10px auto 0", maxWidth: "36ch" }}>{h.founderWorks}</p>
             {/* His own voice, beside his own details. Nothing plays until it is
                 asked to. */}
             <VoiceNote />

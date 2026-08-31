@@ -143,7 +143,9 @@ export function Article() {
             <span style={{ fontFamily: "var(--serif)", fontSize: 26, color: "var(--clay)" }} dir="ltr">AL</span>
           </div>
           <div>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>{t.home.founderName}</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>
+              <a href="/cv" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{t.home.founderName}</a>
+            </div>
             <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 4 }}>{t.ui.article.seal}</div>
           </div>
         </div>
