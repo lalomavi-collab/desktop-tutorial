@@ -19,6 +19,9 @@ const SOURCES = [
   { src: "/media/lalum-voice.ogg", type: "audio/ogg; codecs=opus" },
 ];
 
+// Hebrew-only labels: the recording itself is in Hebrew, and the component
+// renders only on the Hebrew site (see the lang guard below), so it never
+// reaches a translated page.
 const COPY = {
   label: "האזינו לד״ר אברהם ללום",
   play: "האזנה להקלטה",
