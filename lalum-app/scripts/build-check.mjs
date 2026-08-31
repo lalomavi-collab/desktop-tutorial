@@ -43,12 +43,17 @@ function walk(dir, out = []) {
 const pages = walk(dist);
 const rel = (p) => "/" + relative(dist, p).replace(/\\/g, "/");
 
-// A path is served if the exact file exists or the directory has an index.
+// A path is served if the exact file exists, the directory has an index, or a
+// file of the same name with .html appended exists. The third case is how the
+// host serves an extension-less page written straight into public/, and leaving
+// it out made this check report a page that is live and returns 200.
 function served(urlPath) {
   const p = decodeURIComponent(urlPath.replace(/\/+$/, ""));
   if (p === "" || p === "/") return existsSync(join(dist, "index.html"));
   const f = join(dist, p);
-  return existsSync(f) && statSync(f).isFile() ? true : existsSync(join(f, "index.html"));
+  if (existsSync(f) && statSync(f).isFile()) return true;
+  if (existsSync(join(f, "index.html"))) return true;
+  return existsSync(`${f}.html`);
 }
 
 const bodyOf = (h) => {
