@@ -10,9 +10,10 @@ import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
-import { faqPageNode, pageJsonLd } from "./src/lib/schema";
+import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
+import { TOPICS, articlesByTopic, topicPath } from "./src/lib/topics";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -242,9 +243,17 @@ function insightsBodyHtml(title: string, desc: string): string {
   const items = blogMeta
     .map((m) => `        <li><a href="/insights/${esc(encodeURI(m.slug))}/">${esc(m.title)}</a></li>`)
     .join("\n");
+  const topics = TOPICS
+    .map((t) => ({ t, n: articlesByTopic(strings.he).get(t.slug)?.length ?? 0 }))
+    .filter((x) => x.n > 0)
+    .map((x) => `<li><a href="${topicPath(x.t.slug)}/">${esc(x.t.name)}</a> (${x.n})</li>`)
+    .join("");
   return [
     `        <h1>${esc(heading)}</h1>`,
     `        <p>${esc(desc)}</p>`,
+    `        <h2>${esc("נושאים")}</h2>`,
+    `        <ul>${topics}</ul>`,
+    `        <h2>${esc("כל המאמרים")}</h2>`,
     `        <ul>`,
     items,
     `        </ul>`,
@@ -514,6 +523,37 @@ function seoPrerender(): Plugin {
         }
       }
 
+      // Topic hubs. Each is a real page for one subject, with its own title,
+      // description and the full list of that subject's writing as anchor
+      // text. Hebrew only, like the writing itself, so they claim no
+      // translated alternates.
+      {
+        const byTopic = articlesByTopic(strings.he);
+        for (const topic of TOPICS) {
+          const rows = byTopic.get(topic.slug) ?? [];
+          if (!rows.length) continue;
+          const path = topicPath(topic.slug).slice(1);
+          let h = applyMeta(template, {
+            title: `${topic.title} | LALUM`, desc: clip(topic.desc), url: langUrl(`/${path}`, "he"), path,
+          });
+          const graph = pageJsonLd([pageNode("CollectionPage", topic.title, topic.desc, `${SITE}${topicPath(topic.slug)}/`)]);
+          if (graph) {
+            h = sub(h, "</head>", () => `    <script id="page-jsonld" type="application/ld+json">${JSON.stringify(graph)}</script>\n  </head>`);
+          }
+          const inner = [
+            `        <h1>${esc(topic.name)}</h1>`,
+            `        <p>${esc(topic.lede)}</p>`,
+            ...(topic.pillar ? [`        <p><a href="/${esc(topic.pillar.path)}/">${esc(topic.pillar.label)}</a></p>`] : []),
+            `        <ul>${rows.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`,
+          ].join("\n");
+          h = withStaticBody(h, inner);
+          const f = join(outDir, path, "index.html");
+          mkdirSync(dirname(f), { recursive: true });
+          writeFileSync(f, h, "utf8");
+          written++;
+        }
+      }
+
       // The Hebrew home document. It is Vite's own index.html, so the route
       // loop above never wrote it: it kept the template's English title,
       // English description and English placeholder body, and its ?lang=
@@ -592,6 +632,12 @@ function seoPrerender(): Plugin {
         // Add the language variants. They are real, indexable addresses, so a
         // crawler should find them in the sitemap and not only by following an
         // hreflang link from the Hebrew page.
+        const hubRows = TOPICS
+          .filter((t) => (articlesByTopic(strings.he).get(t.slug)?.length ?? 0) > 0)
+          .map((t) => `${SITE}${topicPath(t.slug)}/`)
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+        if (hubRows.length) xml = sub(xml, "</urlset>", () => `${hubRows.join("\n")}\n</urlset>`);
         const rows = VARIANTS.flatMap((v) =>
           LANGS.filter((l) => l.code !== "he").map((l) => langUrl(`/${v.path}`, l.code)),
         )

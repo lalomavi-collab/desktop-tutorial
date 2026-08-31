@@ -18,6 +18,7 @@ const Advisory = lazy(() => import("./pages/Advisory").then((m) => ({ default: m
 const AiLegalAdvisory = lazy(() => import("./pages/AiLegalAdvisory").then((m) => ({ default: m.AiLegalAdvisory })));
 const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdvisory").then((m) => ({ default: m.RealEstateLegalAdvisory })));
 const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
+const Topic = lazy(() => import("./pages/Topic").then((m) => ({ default: m.Topic })));
 const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m.Training })));
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
@@ -77,6 +78,7 @@ export default function App() {
                 a direct visit to /courses fell through to the catch-all Home. */}
             <Route path="courses" element={<Training />} />
             <Route path="insights" element={<Insights />} />
+            <Route path="insights/topics/:topic" element={<Topic />} />
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="faq" element={<Faq />} />
