@@ -112,6 +112,62 @@ for (const p of pages) {
 altDead ? fail("hreflang targets exist", `${altDead} alternate href(s) have no file`) : pass(`hreflang targets exist (${altTotal})`);
 badCanon ? fail("language variants self-canonical", `${badCanon} document(s) claim alternates but canonicalise elsewhere`) : pass("language variants self-canonical");
 
+// 6. Two articles must not compete for the same query. Nine of them did: seven
+//    titles were variations on each other and two were cut to the same 60
+//    characters, so Google picked one and diluted the rest. The bodies were not
+//    duplicates at all, which is why nothing before this noticed.
+//
+//    Scoped to articles. The risk-result pages are deliberately parallel, three
+//    bands of the same sentence per track, and they are not competing: each
+//    answers a different score.
+//
+//    The threshold is measured, not guessed. The pairs that had to be rewritten
+//    scored 0.50 to 0.67; the closest legitimate pair in the corpus scores 0.44.
+const STOP = new Set("של על עם את מה למה איך כיצד מתי האם הוא היא זה זו כל לא אם אבל או גם בין יותר רק lalum".split(" "));
+const titleTokens = (t) =>
+  new Set(
+    (t.toLowerCase().match(/[\p{L}\p{N}"']+/gu) || []).filter((w) => w.length > 2 && !STOP.has(w)),
+  );
+
+const articles = [];
+for (const p of pages) {
+  const r = rel(p);
+  if (!r.startsWith("/insights/") || r.startsWith("/insights/topics/") || r === "/insights/index.html") continue;
+  const h = readFileSync(p, "utf8");
+  const t = (/<title>([\s\S]*?)<\/title>/.exec(h) || [])[1];
+  if (t) articles.push({ path: r, title: t, tokens: titleTokens(t) });
+}
+const clashes = [];
+for (let i = 0; i < articles.length; i++) {
+  for (let j = i + 1; j < articles.length; j++) {
+    const a = articles[i], b = articles[j];
+    if (!a.tokens.size || !b.tokens.size) continue;
+    let shared = 0;
+    for (const w of a.tokens) if (b.tokens.has(w)) shared++;
+    const score = shared / (a.tokens.size + b.tokens.size - shared);
+    if (score >= 0.5) clashes.push(`${a.title} || ${b.title}`);
+  }
+}
+clashes.length
+  ? fail("no two articles compete for one query", `${clashes.length} near-duplicate title pair(s), e.g. ${clashes[0]}`)
+  : pass(`no two articles compete for one query (${articles.length} articles)`);
+
+// 7. Two documents with the same meta description are the same page under two
+//    addresses. That is how the article published twice under two titles was
+//    found, after every other check passed it.
+const byDesc = new Map();
+for (const p of pages) {
+  const h = readFileSync(p, "utf8");
+  if (/name="robots" content="noindex/.test(h)) continue;
+  const d = (/name="description" content="([^"]*)"/.exec(h) || [])[1];
+  if (!d) continue;
+  byDesc.set(d, [...(byDesc.get(d) || []), rel(p)]);
+}
+const sharedDesc = [...byDesc.values()].filter((v) => v.length > 1);
+sharedDesc.length
+  ? fail("every description is unique", `${sharedDesc.length} description(s) shared, e.g. ${sharedDesc[0].join(" and ")}`)
+  : pass(`every description is unique (${byDesc.size})`);
+
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
 console.log(`\n${results.length - fails.length} pass, ${fails.length} fail`);

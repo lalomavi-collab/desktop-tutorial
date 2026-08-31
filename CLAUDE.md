@@ -27,6 +27,7 @@
 - Real estate covers both sides of the border: deals and urban renewal here, and property and investment abroad.
 - **Mediation and dispute resolution is not to be invested in from now on.** Its pages stay live and keep working, and it may be mentioned as a service the practice provides. Do not write new mediation articles, do not build it new pages, and do not spend promotion on it. The mediation cluster already holds 64 articles; it needs nothing more.
 - Anything produced for the site (articles, posts, pages, keywords, campaigns) serves one of the two areas.
+- Before writing a new article, check it does not compete with one that exists. `npm run build` fails on two articles whose titles are variations of each other, and on two pages sharing a meta description. Both defects reached production and neither was visible without looking for it.
 
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
