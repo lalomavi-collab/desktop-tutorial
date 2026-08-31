@@ -45,6 +45,15 @@ export function bcp47For(lang: Lang): string {
   return LANGS.find((l) => l.code === lang)?.bcp47 ?? "en-US";
 }
 
+// The CV exists as two documents, not one page with a toggle: it is a static
+// file served straight from public/, outside the app, so it cannot read the
+// language context. Hebrew readers get /cv, everyone else /cv-en. Each is its
+// own canonical and the two point at each other with hreflang, so the pair
+// resolves to one person rather than two competing pages.
+export function cvPath(lang: Lang): string {
+  return lang === "he" ? "/cv" : "/cv-en";
+}
+
 // Routes whose content is genuinely translated. Measured, not assumed: each
 // route was loaded at every language and the share of Hebrew left in the main
 // content was counted. These came back under 6%, the remainder being links to

@@ -187,4 +187,5 @@
   <url><loc>https://lalumapp.com/insights/gdpr-israeli-companies-ai/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://lalumapp.com/insights/overseas-property-due-diligence/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://lalumapp.com/cv</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://lalumapp.com/cv-en</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
 </urlset>
