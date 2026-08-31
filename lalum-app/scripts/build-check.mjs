@@ -246,6 +246,27 @@ if (existsSync(smPath)) {
   }
 }
 
+// 10. The mediation cluster does not grow. It holds 64 pieces, which is more
+//     than any other subject on the site, and the practice does not lead with
+//     it: the pages stay live and keep working, and nothing new is written for
+//     them. The daily writing task picks its own topic, so this is the line
+//     that stops a drift back, rather than a sentence in a document that a
+//     future run may or may not weigh.
+//
+//     A legitimate article can also trip this by being classified into
+//     mediation when it belongs elsewhere, and that is worth catching too: it
+//     would have landed on the wrong hub and next to the wrong related pieces.
+const MEDIATION_CAP = 64;
+const medHub = `href="/insights/topics/mediation/"`;
+const medArticles = pages.filter((p) => {
+  const r = rel(p);
+  if (!r.startsWith("/insights/") || r.startsWith("/insights/topics/") || r === "/insights/index.html") return false;
+  return readFileSync(p, "utf8").includes(medHub);
+});
+medArticles.length > MEDIATION_CAP
+  ? fail("the mediation cluster does not grow", `${medArticles.length} articles, ${MEDIATION_CAP} allowed. Either a new mediation piece was written, which the positioning rules out, or a piece belonging to one of the two focus areas was classified into mediation and needs its title or its keywords looked at.`)
+  : pass(`the mediation cluster does not grow (${medArticles.length}/${MEDIATION_CAP})`);
+
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
 console.log(`\n${results.length - fails.length} pass, ${fails.length} fail`);
