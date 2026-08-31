@@ -82,6 +82,13 @@ function prefersStill(): boolean {
 // lines, which is why they sit beside the component and not in the shared
 // string table.
 type Caption = { from: number; to: number; text: string; sub?: string };
+
+// The languages the clip's soundtrack actually speaks. The narration is in
+// Hebrew, so on every other page the clip plays silently with its on-screen
+// lines and offers no way to unmute: a French visitor reading French text while
+// a Hebrew voice talks over it is worse than no sound at all. Add a language
+// here only once a narration exists in it.
+const SPOKEN: string[] = ["he"];
 const SCRIPT: Record<string, Caption[]> = {
   he: [
     { from: 0.0, to: 4.95, text: "רוב הארגונים לא יודעים איפה הם חשופים" },
@@ -94,6 +101,24 @@ const SCRIPT: Record<string, Caption[]> = {
     { from: 5.1, to: 7.95, text: "It is rarely the complicated clause" },
     { from: 8.2, to: 11.0, text: "It is the simple thing nobody recorded" },
     { from: 11.65, to: 14.92, text: "Eight questions, two minutes, then we talk" },
+  ],
+  es: [
+    { from: 0.0, to: 4.95, text: "La mayoría de las organizaciones no sabe dónde está expuesta" },
+    { from: 5.1, to: 7.95, text: "Casi nunca es la cláusula complicada" },
+    { from: 8.2, to: 11.0, text: "Es lo simple que nadie documentó" },
+    { from: 11.65, to: 14.92, text: "Ocho preguntas, dos minutos, y hablamos" },
+  ],
+  fr: [
+    { from: 0.0, to: 4.95, text: "La plupart des organisations ignorent où elles sont exposées" },
+    { from: 5.1, to: 7.95, text: "Ce n'est presque jamais la clause compliquée" },
+    { from: 8.2, to: 11.0, text: "C'est la chose simple que personne n'a documentée" },
+    { from: 11.65, to: 14.92, text: "Huit questions, deux minutes, puis on en parle" },
+  ],
+  ar: [
+    { from: 0.0, to: 4.95, text: "معظم المؤسسات لا تعرف أين تكمن مخاطرها" },
+    { from: 5.1, to: 7.95, text: "ونادرًا ما يكون السبب البند المعقّد" },
+    { from: 8.2, to: 11.0, text: "بل الأمر البسيط الذي لم يوثّقه أحد" },
+    { from: 11.65, to: 14.92, text: "ثمانية أسئلة، دقيقتان، ثم نتحدث" },
   ],
 };
 
@@ -233,12 +258,13 @@ export function VideoBubble() {
     if (!el) return;
     el.currentTime = 0;
     // The clip carries a voiceover recorded for it, so opening the player asks
-    // for sound: the click is the gesture browsers require. A refusal falls
-    // back to muted with the control showing, rather than a player that sits
-    // there doing nothing. The collapsed preview stays silent either way, since
-    // nothing should make noise before it is asked to.
-    el.muted = false;
-    setMuted(false);
+    // for sound where that voice matches the page: the click is the gesture
+    // browsers require. A refusal falls back to muted with the control showing,
+    // rather than a player that sits there doing nothing. The collapsed preview
+    // stays silent either way, since nothing should make noise before it is
+    // asked to.
+    el.muted = !spoken;
+    setMuted(el.muted);
     void el.play().catch(() => {
       el.muted = true;
       setMuted(true);
@@ -275,6 +301,8 @@ export function VideoBubble() {
   // The line on screen right now. Anything outside every window shows nothing,
   // so a clip longer than the script simply runs on without text.
   const lines = SCRIPT[lang];
+  // Sound is offered only where the narration matches the page's language.
+  const spoken = SPOKEN.includes(lang);
   const caption = lines?.find((c) => progress >= c.from && progress < c.to) ?? null;
 
   const captions = videoBubbleCaptions ? (
@@ -338,7 +366,7 @@ export function VideoBubble() {
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
               )}
             </button>
-            {hasAudio !== false && (
+            {hasAudio !== false && spoken && (
             <button type="button" className="vbub-tool" onClick={toggleMute} aria-label={muted ? V.unmute : V.mute} title={muted ? V.unmute : V.mute}>
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M11 5 6 9H2v6h4l5 4z" />
