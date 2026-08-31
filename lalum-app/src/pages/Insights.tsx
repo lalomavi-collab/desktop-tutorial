@@ -5,7 +5,7 @@ import { PageMeta } from "../components/PageMeta";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
-import { TOPICS, articlesByTopic, topicPath } from "../lib/topics";
+import { TOPICS_IN_ORDER, articlesByTopic, topicPath } from "../lib/topics";
 
 // A warm, brand-cohesive palette. Each article card takes the next accent so
 // the grid reads as one family, gently varied, rather than a flat wall of
@@ -47,7 +47,7 @@ export function Insights() {
   // The subjects, ahead of the list. 160 articles in one undifferentiated grid
   // asks every reader to scroll past five subjects to reach theirs.
   const byTopic = articlesByTopic(t);
-  const topics = TOPICS.map((x) => ({ ...x, count: byTopic.get(x.slug)?.length ?? 0 })).filter((x) => x.count > 0);
+  const topics = TOPICS_IN_ORDER.map((x) => ({ ...x, count: byTopic.get(x.slug)?.length ?? 0 })).filter((x) => x.count > 0);
 
   return (
     <>

@@ -18,6 +18,10 @@ export type PillarLink = { slug: string; title: string };
 export type PillarPage = {
   path: string;
   url: string;
+  // Where the secondary button in the hero goes. Defaults to the general
+  // advisory page; the AI pillar sends the reader to the courses instead,
+  // because on that page the training is one of the services and not a detour.
+  secondary: string;
   title: string;
   desc: string;
   heroEyebrow: string;
@@ -46,14 +50,14 @@ export type PillarPage = {
 
 // Button and card labels. Identical for both pillar pages within a language,
 // so they are declared once per language rather than twice.
-export type PillarUi = { book: string; fullAdvisory: string; articleLabel: string; read: string };
+export type PillarUi = { book: string; fullAdvisory: string; training: string; articleLabel: string; read: string };
 
 const UI: Record<Lang, PillarUi> = {
-  he: { book: `לתיאום פגישת אבחון`, fullAdvisory: `שירותי הייעוץ המלאים`, articleLabel: `מאמר`, read: `קריאה` },
-  en: { book: `Book a diagnostic meeting`, fullAdvisory: `Full advisory services`, articleLabel: `Article`, read: `Read` },
-  es: { book: `Reservar una reunión de diagnóstico`, fullAdvisory: `Servicios de asesoría completos`, articleLabel: `Artículo`, read: `Leer` },
-  fr: { book: `Réserver une réunion de diagnostic`, fullAdvisory: `Services de conseil complets`, articleLabel: `Article`, read: `Lire` },
-  ar: { book: `حجز لقاء تشخيصي`, fullAdvisory: `خدمات الاستشارة الكاملة`, articleLabel: `مقال`, read: `قراءة` },
+  he: { book: `לתיאום פגישת אבחון`, fullAdvisory: `שירותי הייעוץ המלאים`, training: `קורסים והכשרות AI`, articleLabel: `מאמר`, read: `קריאה` },
+  en: { book: `Book a diagnostic meeting`, fullAdvisory: `Full advisory services`, training: `AI courses and training`, articleLabel: `Article`, read: `Read` },
+  es: { book: `Reservar una reunión de diagnóstico`, fullAdvisory: `Servicios de asesoría completos`, training: `Cursos y formación en IA`, articleLabel: `Artículo`, read: `Leer` },
+  fr: { book: `Réserver une réunion de diagnostic`, fullAdvisory: `Services de conseil complets`, training: `Formations en IA`, articleLabel: `Article`, read: `Lire` },
+  ar: { book: `حجز لقاء تشخيصي`, fullAdvisory: `خدمات الاستشارة الكاملة`, training: `دورات وتدريب في الذكاء الاصطناعي`, articleLabel: `مقال`, read: `قراءة` },
 };
 
 type Copy = {
@@ -85,7 +89,8 @@ const SHARED = {
   ai: {
     path: "ai-legal-advisory",
     url: "https://lalumapp.com/ai-legal-advisory",
-    icons: ["scale", "brain", "shield", "gavel"] as IconName[],
+    icons: ["scale", "brain", "shield", "gavel", "book"] as IconName[],
+    secondary: "training",
     related: [
       { slug: "second-opinion-revolution", title: `מהפכת הדעה השנייה: למה חוות דעת בלתי תלויה היא צעד של אחריות` },
       { slug: "ai-liability-ruling", title: `מי אחראי על מה שה-AI אומר? בין מינכן, וושינגטון וירושלים` },
@@ -111,7 +116,7 @@ const SHARED = {
   realEstate: {
     path: "real-estate-legal-advisory",
     url: "https://lalumapp.com/real-estate-legal-advisory",
-    icons: ["scale", "gavel", "shield", "brain"] as IconName[],
+    icons: ["scale", "gavel", "compass", "shield", "brain"] as IconName[],
     related: [
       { slug: "urban-renewal-mistakes-guide", title: `המדריך לטעויות נפוצות בהתחדשות עירונית` },
       { slug: "urban-renewal-risk", title: `ניהול סיכונים בפרויקטי התחדשות עירונית` },
@@ -127,10 +132,10 @@ const STEP_NUMBERS = ["1", "2", "3"];
 
 const he: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `ייעוץ משפטי וחוות דעת שנייה בתחום ה-AI לחברות וארגונים`,
-    desc: `ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, הגנת קניין רוחני וניהול סיכונים, מאת ד"ר אברהם ללום.`,
-    heroEyebrow: `ייעוץ משפטי וחוות דעת שנייה בנושא AI`,
-    lede: `חברות וארגונים מאמצים בינה מלאכותית מהר יותר משהמסגרת המשפטית מדביקה. אנחנו נותנים ייעוץ משפטי עצמאי וחוות דעת שנייה בלתי תלויה, שהופכים את הסיכון האלגוריתמי למערכת שאפשר לשלוט בה, לפני שרגולטור, דירקטוריון או תובע עושים זאת במקומכם.`,
+    title: `ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים`,
+    desc: `ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים וחוות דעת שנייה בלתי תלויה.`,
+    heroEyebrow: `ייעוץ, ליווי והדרכה בנושא AI`,
+    lede: `חברות וארגונים מאמצים בינה מלאכותית מהר יותר משהמסגרת המשפטית מדביקה. אנחנו מלווים את הדרך כולה: מיפוי החשיפה, בניית הממשל והמדיניות, החוזים מול הספקים, הדרכת ההנהלה והצוותים שמפעילים את המערכות, וחוות דעת שנייה בלתי תלויה כשצריך עין נוספת. המטרה אחת: להפוך את הסיכון האלגוריתמי למערכת שאפשר לשלוט בה, לפני שרגולטור, דירקטוריון או תובע עושים זאת במקומכם.`,
     labels: { covers: `מה הייעוץ מכסה`, when: `חוות דעת שנייה`, steps: `איך זה עובד`, related: `להעמקה`, faq: `שאלות ותשובות` },
     coversH2: `שכבת ההגנה המשפטית סביב ה-AI שלכם`,
     cards: [
@@ -138,6 +143,7 @@ const he: { ai: Copy; realEstate: Copy } = {
       { title: `אחריות אלגוריתמית לדירקטוריון`, body: `מדד ציות ומטריצת חשיפה לנושאי משרה, שמתמחרים את האחריות המשפטית מוקדם, לפני שרגולטור או תובע עושים זאת.` },
       { title: `קניין רוחני והגנת מידע`, body: `שכבת הגנה על הטכנולוגיה, סביבות מודל מקומיות ומאובטחות, ומדיניות שימוש שמונעת זליגת מידע רגיש וזיהום קוד בזכויות צד שלישי.` },
       { title: `חוזים מול ספקי AI`, body: `בחינה מחדש של הסכמי ספקים, הקצאת סיכונים, סעיפי שיפוי ואחריות, כך שהחוזה מגן על הארגון ולא רק על הספק.` },
+      { title: `הדרכות והכשרות`, body: `הכשרה להנהלה, לדירקטוריון ולצוותי המוצר, הפיתוח והמשפט: מה מותר, מה מתועד, ואיפה נגמרת הסמכות של המערכת ומתחילה האחריות של האדם. מעשי, מותאם לתפקיד, ומעוגן בעניינים אמיתיים.` },
     ],
     whenH2: `מתי כדאי חוות דעת משפטית שנייה בנושא AI`,
     whenLede: `חוות דעת שנייה בלתי תלויה אינה מגינה על החלטה שכבר התקבלה, אלא בוחנת אותה מחדש. היא מחזקת גם את הארגון וגם את היועץ המייצג, ומספקת בסיס מתועד ובר-הגנה.`,
@@ -162,23 +168,26 @@ const he: { ai: Copy; realEstate: Copy } = {
       { q: `מתי כדאי לפנות לייעוץ משפטי חיצוני לפני החלטת AI?`, a: `לפני הטמעת מערכת AI חדשה, לפני חתימה על חוזה עם ספק AI, לפני השקת מוצר מבוסס אלגוריתם, וכשיש אי-ודאות רגולטורית או חשיפה אישית של נושאי משרה. ייעוץ מוקדם זול ומהיר יותר מהתמודדות עם תביעה או קנס בדיעבד.` },
       { q: `למי מיועד הייעוץ, לחברות הייטק בלבד?`, a: `לא. השירות מיועד לחברות טכנולוגיה, לתאגידים מסורתיים שמטמיעים AI, לגופים ציבוריים ולרשויות, וכן לעורכי דין ומשרדים שמבקשים חוות דעת שנייה בלתי תלויה בסוגיה מורכבת. הליבה היא המפגש בין משפט, כלכלה ובינה מלאכותית.` },
       { q: `האם EU AI Act חל על חברה ישראלית?`, a: `הוא עשוי לחול גם בלי נוכחות פיזית באירופה, כאשר המערכת מוצעת בשוק האירופי או כאשר הפלט שלה משמש בתוך האיחוד. לכן הצעד הראשון הוא מיפוי: היכן המשתמשים והיכן נעשה שימוש בפלט.` },
+      { q: `מה כולל הליווי השוטף, ובמה הוא שונה מחוות דעת חד פעמית?`, a: `חוות דעת נותנת תמונה בנקודת זמן. ליווי שוטף אומר שאנחנו נמצאים לאורך הדרך: בונים את מסגרת הממשל והמדיניות, עוברים על החוזים מול ספקי ה-AI לפני חתימה, מלווים השקה של מוצר או מערכת חדשה, מדריכים את הצוותים שמפעילים אותם, ומעדכנים את המסגרת כשהרגולציה או המוצר משתנים. ארגון שמטמיע בינה מלאכותית ברצף זקוק לשנייה, לא לראשונה.` },
+      { q: `מה כוללות ההדרכות ולמי הן מיועדות?`, a: `הכשרות מעשיות להנהלה, לדירקטוריון, לצוותי מוצר ופיתוח ולצוותים משפטיים, מותאמות לתפקיד ולמערכות שהארגון מפעיל בפועל. הן עוסקות בשאלות שהצוות פוגש ביום העבודה: מה מותר להזין לכלי חיצוני, מה חייב להיות מתועד, מתי נדרשת הכרעה אנושית, ומה החשיפה האישית של מי שמאשר. פירוט התוכניות נמצא בעמוד הקורסים וההכשרות.` },
       { q: `כמה זמן לוקח לקבל חוות דעת?`, a: `זה תלוי בהיקף ובמורכבות. אבחון ראשוני נעשה בפגישה קצרה, וחוות דעת ממוקדת מוכנה בדרך כלל בתוך ימים ספורים עד שבועות, לפי כמות המסמכים והמערכות שנבחנות.` },
       { q: `האם חוות הדעת מחליפה את עורך הדין של החברה?`, a: `לא. חוות דעת שנייה נועדה לעבוד לצד היועץ המשפטי הקיים, לא במקומו. היא מוסיפה שכבת בדיקה בלתי תלויה ומחזקת את עמדת שני הצדדים.` },
     ],
-    ctaH2: `מוכנים לחוות דעת בלתי תלויה על ה-AI שלכם?`,
-    ctaBody: `פגישת אבחון קצרה ממפה את החשיפה שלכם ומגדירה מפת דרכים ברורה לניהול הסיכון.`,
+    ctaH2: `מוכנים לקחת שליטה על ה-AI שבארגון?`,
+    ctaBody: `פגישת אבחון קצרה ממפה את החשיפה שלכם ומגדירה מפת דרכים ברורה: מה נבנה, מה נבדק, ומי צריך הדרכה.`,
     disclaimer: `המידע בעמוד זה כללי ואינו מהווה ייעוץ משפטי או תחליף לחוות דעת פרטנית.`,
   },
   realEstate: {
-    title: `ייעוץ משפטי וחוות דעת שנייה בנדל"ן והתחדשות עירונית`,
-    desc: `ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל"ן ובהתחדשות עירונית (תמ"א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים, מאת ד"ר אברהם ללום.`,
-    heroEyebrow: `ייעוץ וחוות דעת שנייה בנדל"ן והתחדשות עירונית`,
-    lede: `עסקאות נדל"ן ופרויקטים של התחדשות עירונית הם זירה שבה טעות חוזית אחת עולה ביוקר. אנחנו נותנים ייעוץ משפטי עצמאי וחוות דעת שנייה בלתי תלויה, בשילוב כלי Legal AI, שהופכים מאות עמודי מסמכים לתמונת סיכון ברורה, לפני שאתם מתחייבים.`,
+    title: `נדל"ן והתחדשות עירונית בארץ ובחו"ל: ייעוץ וחוות דעת שנייה`,
+    desc: `ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל"ן בארץ ובחו"ל ובהתחדשות עירונית (תמ"א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים.`,
+    heroEyebrow: `ייעוץ וחוות דעת שנייה בנדל"ן, בארץ ובחו"ל`,
+    lede: `עסקה בארץ, נכס מעבר לים, או פרויקט התחדשות עירונית: אלה זירות שבהן טעות חוזית אחת עולה ביוקר, ומעבר לים גם הדין החל אינו הדין שאתם מכירים. אנחנו נותנים ייעוץ משפטי עצמאי וחוות דעת שנייה בלתי תלויה, בשילוב כלי Legal AI, שהופכים מאות עמודי מסמכים לתמונת סיכון ברורה, לפני שאתם מתחייבים.`,
     labels: { covers: `מה הייעוץ מכסה`, when: `חוות דעת שנייה`, steps: `איך זה עובד`, related: `להעמקה`, faq: `שאלות ותשובות` },
     coversH2: `שכבת ההגנה המשפטית סביב העסקה שלכם`,
     cards: [
       { title: `עסקאות נדל"ן וחוזים`, body: `ליווי וייצוג בעסקאות מכר, רכישה והשקעה: בדיקת זכויות, ניסוח והגנה חוזית, מיסוי וזיהוי סיכונים מוקדם, לפני שהם הופכים לחשיפה.` },
       { title: `התחדשות עירונית: תמ"א 38 ופינוי-בינוי`, body: `ליווי בעלי דירות ונציגויות בפרויקטים מורכבים: בחינת הסכמי יזם, בטוחות, לוחות זמנים ומנגנוני הכרעה, לאיזון מול היזם ולהסכם בר-הגנה.` },
+      { title: `עסקאות ונכסים בחו"ל`, body: `ליווי ישראלי לרוכש ולמשקיע מעבר לים: מבנה העסקה והחזקה, מיסוי בשתי המדינות, בדיקת מה שהדין המקומי באמת מחייב, ועבודה מול עורך הדין המקומי במקום במקומו.` },
       { title: `בדיקת נאותות וניהול סיכונים`, body: `מיפוי חשיפות משפטיות, זכויות בנייה, הערות אזהרה, מיסוי ובטוחות, ובניית ארכיטקטורת עסקה חסינה שמחזיקה גם כשמשהו משתבש.` },
       { title: `ניתוח מבוסס Legal AI`, body: `כלים מבוססי בינה מלאכותית סורקים מאות מסמכים, נספחים והסכמים, מחלצים סתירות וסיכונים, ומאיצים את הבדיקה, תמיד בפיקוח ובאישור עורך דין.` },
     ],
@@ -189,7 +198,8 @@ const he: { ai: Copy; realEstate: Copy } = {
       `לפני חתימה על הסכם יזם בפרויקט תמ"א 38 או פינוי-בינוי`,
       `כשקיבלתם הסכם או חוות דעת ורוצים בדיקה בלתי תלויה`,
       `כשמתגלע סכסוך בין בעלי דירות, נציגות או מול היזם`,
-      `לפני עסקת קומבינציה או עסקה חוצת גבולות`,
+      `לפני רכישת נכס או השקעה מעבר לים`,
+      `לפני עסקת קומבינציה או עסקה מורכבת מול יזם`,
       `כשנדרש בסיס מתועד ובר-הגנה להחלטה`,
     ],
     stepsH2: `שלושה שלבים לחוות דעת בת-הגנה`,
@@ -198,13 +208,14 @@ const he: { ai: Copy; realEstate: Copy } = {
       { title: `חוות דעת בלתי תלויה`, body: `בוחנים מחדש את העסקה בעין ביקורתית, בשילוב משפט, כלכלה וכלי Legal AI לניתוח מסמכים וסיכונים.` },
       { title: `מפת דרכים לניהול סיכון`, body: `מוסרים מסמך בר-הגנה, ממוקד ומתועד, עם צעדים מעשיים להקטנת החשיפה ולחיזוק העמדה המשפטית.` },
     ],
-    relatedH2: `מאמרים בנושא נדל"ן, התחדשות עירונית ו-Legal AI`,
+    relatedH2: `מאמרים בנושא נדל"ן בארץ ובחו"ל, התחדשות עירונית ו-Legal AI`,
     faqH2: `ייעוץ וחוות דעת שנייה בנדל"ן והתחדשות עירונית`,
     faqs: [
       { q: `מה כוללת חוות דעת משפטית שנייה בעסקת נדל"ן?`, a: `בדיקה בלתי תלויה של רישום הזכויות, העיקולים והערות האזהרה, ההתאמה בין המצב הרשום למצב בפועל, חבויות המס, זכויות הבנייה והבטוחות המבטיחות את התמורה. המטרה אינה רק לאתר בעיה, אלא לבנות ארכיטקטורת עסקה שמחזיקה גם כאשר משהו משתבש.` },
       { q: `מתי כדאי חוות דעת שנייה בפרויקט תמ"א 38 או פינוי-בינוי?`, a: `לפני חתימה על הסכם היזם, וכן כאשר מתגלעת מחלוקת בין בעלי הדירות, הנציגות והיזם. בפרויקטים אלה יש מאות בעלי זכויות וחוזים מורכבים, ובדיקה בלתי תלויה של נוסח ההסכם היא ההגנה המרכזית מול פערי הכוחות שמול היזם.` },
       { q: `מה בודקים בהסכם מול יזם בהתחדשות עירונית?`, a: `את איתנות היזם, הבטוחות האוטונומיות הניתנות לבעלי הדירות, לוחות הזמנים ומנגנוני הפיצוי על איחור, השוויון בתמורות בין בעלי הדירות, מנגנון ההכרעה במחלוקות, ותנאי הביטול ומחיקת הערות האזהרה.` },
       { q: `כיצד Legal AI משתלב בבדיקה?`, a: `כלים מבוססי בינה מלאכותית סורקים מאות עמודי מסמכים, נספחים והסכמים בזמן קצר, מחלצים סתירות, סעיפים חסרים וחשיפות, ומצליבים אותם מול המצב המשפטי והכלכלי. הניתוח האלגוריתמי הוא נקודת פתיחה בלבד, וכל ממצא נבדק ומאושר בידי עורך דין.` },
+      { q: `אני קונה נכס בחו"ל, למה צריך גם עורך דין ישראלי?`, a: `עורך הדין המקומי מכיר את הדין שלו, ולא את מה שהעסקה עושה לכם בישראל: חובות הדיווח, המיסוי הכפול והאמנה שמסדירה אותו, מבנה ההחזקה שנכון לתושב ישראלי, וההשלכות בהמשך על מכירה או על הורשה. הוא גם אינו מייצג אתכם מול המוכר או היזם באותה מידה שמייצג עורך דין שהלקוח שלו הוא אתם בלבד. שני התפקידים משלימים, והישראלי הוא זה שרואה את התמונה משני צדי הגבול.` },
       { q: `האם חוות דעת שנייה מחליפה את עורך הדין המלווה?`, a: `לא. היא בוחנת את העסקה מבחוץ ומאתרת נקודות עיוורון, ובכך מחזקת גם את הלקוח וגם את היועץ המייצג. שני התפקידים משלימים זה את זה ואינם מתחרים.` },
       { q: `כמה זמן לוקחת הבדיקה?`, a: `זה תלוי בהיקף המסמכים ובמורכבות העסקה. בדיקה של עסקת נכס בודד מתבצעת בדרך כלל בתוך ימים, ופרויקט התחדשות עירונית מלא דורש זמן ארוך יותר, בהתאם לכמות ההסכמים והנספחים.` },
     ],
@@ -216,10 +227,10 @@ const he: { ai: Copy; realEstate: Copy } = {
 
 const en: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Independent AI legal advice and second opinions for companies and organizations`,
-    desc: `Independent legal advice and second opinions for companies and organizations on artificial intelligence: AI governance, the EU AI Act, algorithmic liability, IP protection and risk management, by Dr. Avraham Lalum.`,
-    heroEyebrow: `AI legal advice and second opinions`,
-    lede: `Companies and organizations are adopting artificial intelligence faster than the legal framework can follow. We provide independent legal advice and an arm's length second opinion that turn algorithmic risk into a system you can control, before a regulator, a board or a claimant does it for you.`,
+    title: `AI legal advice, full support and training for organizations`,
+    desc: `Full legal advice and support for companies and organizations on artificial intelligence: AI governance, the EU AI Act, algorithmic liability, intellectual property and risk management, alongside training for management and teams and an independent second opinion.`,
+    heroEyebrow: `AI advice, support and training`,
+    lede: `Companies and organizations are adopting artificial intelligence faster than the legal framework can keep up. We accompany the whole road: mapping the exposure, building the governance and the policy, the contracts with the vendors, training the management and the teams who operate the systems, and an arm's length second opinion when another pair of eyes is needed. One aim: to turn algorithmic risk into a system you can control, before a regulator, a board or a claimant does it for you.`,
     labels: { covers: `What the advisory covers`, when: `Second opinion`, steps: `How it works`, related: `Further reading`, faq: `Questions and answers` },
     coversH2: `The legal protection layer around your AI`,
     cards: [
@@ -227,6 +238,7 @@ const en: { ai: Copy; realEstate: Copy } = {
       { title: `Algorithmic liability for the board`, body: `A compliance measure and an exposure matrix for officers, pricing legal liability early, before a regulator or a claimant prices it for you.` },
       { title: `Intellectual property and data protection`, body: `A protective layer around the technology, local and secured model environments, and a usage policy that prevents leakage of sensitive information and contamination of code with third party rights.` },
       { title: `Contracts with AI vendors`, body: `Re-examining vendor agreements, risk allocation, indemnity and liability clauses, so the contract protects the organization and not only the vendor.` },
+      { title: `Training and workshops`, body: `Training for management, the board and the product, engineering and legal teams: what is permitted, what must be documented, and where the system's authority ends and a person's responsibility begins. Practical, role-specific, and grounded in real matters.` },
     ],
     whenH2: `When an AI second opinion is worth it`,
     whenLede: `An independent second opinion does not defend a decision already taken, it re-examines it. It strengthens both the organization and the advising counsel, and provides a documented, defensible basis.`,
@@ -251,23 +263,26 @@ const en: { ai: Copy; realEstate: Copy } = {
       { q: `When should you seek outside legal advice before an AI decision?`, a: `Before deploying a new AI system, before signing with an AI vendor, before launching an algorithm based product, and whenever there is regulatory uncertainty or personal exposure for officers. Advice taken early is cheaper and faster than dealing with a claim or a fine after the fact.` },
       { q: `Is the advisory only for technology companies?`, a: `No. It serves technology companies, traditional corporations adopting AI, public bodies and authorities, and also lawyers and firms seeking an independent second opinion on a complex question. The core is the meeting point of law, economics and artificial intelligence.` },
       { q: `Does the EU AI Act apply to an Israeli company?`, a: `It may apply without any physical presence in Europe, where the system is placed on the European market or where its output is used within the Union. The first step is therefore mapping: where the users are, and where the output is used.` },
+      { q: `What does ongoing support include, and how is it different from a one-off opinion?`, a: `An opinion gives you a picture at a point in time. Ongoing support means we are there along the way: building the governance framework and the policy, reviewing contracts with AI vendors before signature, accompanying the launch of a new product or system, training the teams that operate them, and updating the framework when the regulation or the product changes. An organization adopting AI continuously needs the second, not the first.` },
+      { q: `What do the trainings cover and who are they for?`, a: `Practical workshops for management, the board, product and engineering teams and legal teams, matched to the role and to the systems the organization actually runs. They deal with the questions a team meets in its working day: what may be entered into an external tool, what must be documented, when a human decision is required, and what personal exposure the person approving carries. The programmes are set out on the courses and training page.` },
       { q: `How long does an opinion take?`, a: `It depends on scope and complexity. An initial diagnosis is done in a short meeting, and a focused opinion is usually ready within days to weeks, according to the volume of documents and systems examined.` },
       { q: `Does the opinion replace the company's own counsel?`, a: `No. A second opinion is designed to work alongside existing counsel, not instead of them. It adds an independent layer of review and strengthens both positions.` },
     ],
-    ctaH2: `Ready for an independent opinion on your AI?`,
-    ctaBody: `A short diagnostic meeting maps your exposure and sets a clear roadmap for managing the risk.`,
+    ctaH2: `Ready to take control of the AI in your organization?`,
+    ctaBody: `A short diagnostic meeting maps your exposure and defines a clear roadmap: what to build, what to review, and who needs training.`,
     disclaimer: `The information on this page is general and does not constitute legal advice or a substitute for a specific opinion.`,
   },
   realEstate: {
-    title: `Independent real estate and urban renewal legal advice and second opinions`,
-    desc: `Independent legal advice and second opinions on real estate transactions and urban renewal (TAMA 38 and evacuate and rebuild), combined with Legal AI for due diligence and risk management, by Dr. Avraham Lalum.`,
-    heroEyebrow: `Real estate and urban renewal advice and second opinions`,
-    lede: `Real estate transactions and urban renewal projects are an arena where a single contractual mistake is expensive. We provide independent legal advice and an arm's length second opinion, combined with Legal AI tools, that turn hundreds of pages of documents into a clear picture of risk, before you commit.`,
+    title: `Real estate and urban renewal in Israel and abroad: advice and second opinions`,
+    desc: `Independent legal advice and second opinions on real estate transactions in Israel and abroad and on urban renewal (TAMA 38 and evacuate and rebuild), combined with Legal AI for due diligence and risk management.`,
+    heroEyebrow: `Real estate advice and second opinions, in Israel and abroad`,
+    lede: `A transaction at home, a property overseas, or an urban renewal project: each is an arena where a single contractual mistake is expensive, and overseas the governing law is not the one you know. We provide independent legal advice and an arm's length second opinion, combined with Legal AI tools, that turn hundreds of pages of documents into a clear picture of risk, before you commit.`,
     labels: { covers: `What the advisory covers`, when: `Second opinion`, steps: `How it works`, related: `Further reading`, faq: `Questions and answers` },
     coversH2: `The legal protection layer around your transaction`,
     cards: [
       { title: `Real estate transactions and contracts`, body: `Guidance and representation in sale, purchase and investment transactions: title checks, drafting and contractual protection, taxation, and early identification of risks before they become exposure.` },
       { title: `Urban renewal: TAMA 38 and evacuate and rebuild`, body: `Guidance for apartment owners and owner committees in complex projects: reviewing developer agreements, guarantees, timetables and decision mechanisms, to balance the position against the developer and reach a defensible agreement.` },
+      { title: `Transactions and property abroad`, body: `Israeli counsel beside the buyer and the investor overseas: the structure of the deal and of the holding, taxation in both countries, what the local law actually requires, and working with local counsel rather than in place of them.` },
       { title: `Due diligence and risk management`, body: `Mapping legal exposures, building rights, cautionary notes, taxation and guarantees, and building a resilient transaction architecture that holds even when something goes wrong.` },
       { title: `Legal AI based analysis`, body: `Artificial intelligence tools scan hundreds of documents, annexes and agreements, extract contradictions and risks, and accelerate the review, always under the supervision and approval of a lawyer.` },
     ],
@@ -278,7 +293,8 @@ const en: { ai: Copy; realEstate: Copy } = {
       `Before signing a developer agreement in a TAMA 38 or evacuate and rebuild project`,
       `When you have received an agreement or an opinion and want an independent check`,
       `When a dispute arises among apartment owners, the committee or with the developer`,
-      `Before a combination transaction or a cross-border transaction`,
+      `Before buying a property or investing overseas`,
+      `Before a combination transaction or a complex deal with a developer`,
       `When a documented, defensible basis for a decision is required`,
     ],
     stepsH2: `Three steps to a defensible opinion`,
@@ -287,13 +303,14 @@ const en: { ai: Copy; realEstate: Copy } = {
       { title: `Independent opinion`, body: `We re-examine the transaction with a critical eye, combining law, economics and Legal AI tools for document and risk analysis.` },
       { title: `Risk management roadmap`, body: `We deliver a focused, documented and defensible paper, with practical steps to reduce exposure and strengthen the legal position.` },
     ],
-    relatedH2: `Articles on real estate, urban renewal and Legal AI`,
+    relatedH2: `Articles on real estate at home and abroad, urban renewal and Legal AI`,
     faqH2: `Real estate and urban renewal advice and second opinions`,
     faqs: [
       { q: `What does a real estate second opinion cover?`, a: `An independent review of the registration of rights, attachments and cautionary notes, the match between the registered position and the position on the ground, tax liabilities, building rights, and the guarantees securing the consideration. The aim is not only to find a problem, but to build a transaction architecture that holds even when something goes wrong.` },
       { q: `When is a second opinion worth it in a TAMA 38 or evacuate and rebuild project?`, a: `Before signing the developer agreement, and whenever a dispute arises among the apartment owners, the committee and the developer. These projects involve hundreds of rights holders and complex contracts, and an independent review of the agreement is the main protection against the imbalance of power with the developer.` },
       { q: `What is examined in a developer agreement in urban renewal?`, a: `The developer's financial strength, the autonomous guarantees given to the apartment owners, the timetables and the compensation mechanisms for delay, the equality of consideration among the owners, the dispute resolution mechanism, and the conditions for cancellation and deletion of cautionary notes.` },
       { q: `How does Legal AI fit into the review?`, a: `Artificial intelligence tools scan hundreds of pages of documents, annexes and agreements in a short time, extract contradictions, missing clauses and exposures, and cross-reference them against the legal and economic position. The algorithmic analysis is only a starting point, and every finding is checked and approved by a lawyer.` },
+      { q: `I am buying a property abroad, why do I also need an Israeli lawyer?`, a: `Local counsel knows their own law, not what the transaction does to you in Israel: the reporting duties, double taxation and the treaty that governs it, the holding structure that suits an Israeli resident, and the later consequences on a sale or on inheritance. Nor do they represent you against the seller or developer the way a lawyer whose only client is you does. The two roles complement each other, and the Israeli one is what sees the picture on both sides of the border.` },
       { q: `Does a second opinion replace the lawyer handling the transaction?`, a: `No. It examines the transaction from the outside and finds blind spots, strengthening both the client and the advising counsel. The two roles complement each other rather than compete.` },
       { q: `How long does the review take?`, a: `It depends on the volume of documents and the complexity of the transaction. A single property transaction is usually reviewed within days, while a full urban renewal project takes longer, according to the number of agreements and annexes.` },
     ],
@@ -305,9 +322,9 @@ const en: { ai: Copy; realEstate: Copy } = {
 
 const es: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Asesoría jurídica independiente y segunda opinión en IA para empresas y organizaciones`,
+    title: `Asesoría, acompañamiento y formación en IA para organizaciones`,
     desc: `Asesoría jurídica independiente y segunda opinión para empresas y organizaciones en materia de inteligencia artificial: gobernanza de la IA, Reglamento Europeo de IA, responsabilidad algorítmica, protección de la propiedad intelectual y gestión de riesgos, por el Dr. Avraham Lalum.`,
-    heroEyebrow: `Asesoría jurídica y segunda opinión en IA`,
+    heroEyebrow: `Asesoría, acompañamiento y formación en IA`,
     lede: `Las empresas y organizaciones adoptan la inteligencia artificial más rápido de lo que avanza el marco jurídico. Ofrecemos asesoría jurídica independiente y una segunda opinión imparcial que convierten el riesgo algorítmico en un sistema que usted puede controlar, antes de que lo haga un regulador, un consejo de administración o un demandante.`,
     labels: { covers: `Qué cubre la asesoría`, when: `Segunda opinión`, steps: `Cómo funciona`, related: `Para profundizar`, faq: `Preguntas y respuestas` },
     coversH2: `La capa de protección jurídica alrededor de su IA`,
@@ -316,6 +333,7 @@ const es: { ai: Copy; realEstate: Copy } = {
       { title: `Responsabilidad algorítmica para el consejo`, body: `Un índice de cumplimiento y una matriz de exposición para los administradores, que ponen precio a la responsabilidad jurídica de forma temprana, antes de que lo haga un regulador o un demandante.` },
       { title: `Propiedad intelectual y protección de datos`, body: `Una capa de protección sobre la tecnología, entornos de modelo locales y seguros, y una política de uso que evita la fuga de información sensible y la contaminación del código con derechos de terceros.` },
       { title: `Contratos con proveedores de IA`, body: `Revisión de los acuerdos con proveedores, asignación de riesgos, cláusulas de indemnidad y responsabilidad, de modo que el contrato proteja a la organización y no solo al proveedor.` },
+      { title: `Formación y talleres`, body: `Formación para la dirección, el consejo y los equipos de producto, ingeniería y jurídico: qué está permitido, qué debe documentarse, y dónde termina la autoridad del sistema y empieza la responsabilidad de la persona. Práctica, adaptada al puesto y anclada en casos reales.` },
     ],
     whenH2: `Cuándo conviene una segunda opinión jurídica en IA`,
     whenLede: `Una segunda opinión independiente no defiende una decisión ya tomada, sino que la vuelve a examinar. Refuerza tanto a la organización como al asesor que la representa, y aporta una base documentada y defendible.`,
@@ -340,6 +358,8 @@ const es: { ai: Copy; realEstate: Copy } = {
       { q: `¿Cuándo conviene acudir a asesoría jurídica externa antes de una decisión sobre IA?`, a: `Antes de implantar un nuevo sistema de IA, antes de firmar con un proveedor, antes de lanzar un producto basado en algoritmos, y cuando existe incertidumbre regulatoria o exposición personal de los administradores. Asesorarse a tiempo resulta más barato y más rápido que afrontar una demanda o una sanción después.` },
       { q: `¿La asesoría es solo para empresas tecnológicas?`, a: `No. El servicio se dirige a empresas tecnológicas, a corporaciones tradicionales que adoptan IA, a organismos públicos y autoridades, y también a abogados y despachos que buscan una segunda opinión independiente sobre una cuestión compleja. El núcleo es el encuentro entre derecho, economía e inteligencia artificial.` },
       { q: `¿El Reglamento Europeo de IA se aplica a una empresa israelí?`, a: `Puede aplicarse incluso sin presencia física en Europa, cuando el sistema se ofrece en el mercado europeo o cuando su resultado se utiliza dentro de la Unión. Por eso el primer paso es el mapeo: dónde están los usuarios y dónde se usa el resultado.` },
+      { q: `¿Qué incluye el acompañamiento continuo y en qué se diferencia de un dictamen puntual?`, a: `Un dictamen ofrece una imagen en un momento dado. El acompañamiento continuo significa que estamos a lo largo del camino: construimos el marco de gobernanza y la política, revisamos los contratos con proveedores de IA antes de la firma, acompañamos el lanzamiento de un producto o sistema nuevo, formamos a los equipos que los operan, y actualizamos el marco cuando cambia la regulación o el producto. Una organización que adopta IA de forma continua necesita lo segundo, no lo primero.` },
+      { q: `¿Qué cubren las formaciones y a quién van dirigidas?`, a: `Talleres prácticos para la dirección, el consejo, los equipos de producto e ingeniería y los equipos jurídicos, adaptados al puesto y a los sistemas que la organización opera realmente. Abordan las preguntas que el equipo encuentra en su jornada: qué puede introducirse en una herramienta externa, qué debe documentarse, cuándo se requiere una decisión humana, y qué exposición personal asume quien aprueba. Los programas se detallan en la página de cursos y formación.` },
       { q: `¿Cuánto tarda un dictamen?`, a: `Depende del alcance y de la complejidad. El diagnóstico inicial se realiza en una reunión breve, y un dictamen enfocado suele estar listo en un plazo de días a semanas, según el volumen de documentos y sistemas examinados.` },
       { q: `¿El dictamen sustituye al abogado de la empresa?`, a: `No. Una segunda opinión está pensada para trabajar junto al asesor jurídico existente, no en su lugar. Añade una capa de revisión independiente y refuerza ambas posiciones.` },
     ],
@@ -348,15 +368,16 @@ const es: { ai: Copy; realEstate: Copy } = {
     disclaimer: `La información de esta página es general y no constituye asesoramiento jurídico ni sustituye a un dictamen específico.`,
   },
   realEstate: {
-    title: `Asesoría jurídica independiente y segunda opinión en inmobiliario y renovación urbana`,
-    desc: `Asesoría jurídica independiente y segunda opinión en operaciones inmobiliarias y renovación urbana (TAMA 38 y demolición y reconstrucción), con herramientas de Legal AI para la debida diligencia y la gestión de riesgos, por el Dr. Avraham Lalum.`,
-    heroEyebrow: `Asesoría y segunda opinión en inmobiliario y renovación urbana`,
-    lede: `Las operaciones inmobiliarias y los proyectos de renovación urbana son un terreno donde un solo error contractual sale caro. Ofrecemos asesoría jurídica independiente y una segunda opinión imparcial, con herramientas de Legal AI, que convierten cientos de páginas de documentos en una imagen clara del riesgo, antes de que usted se comprometa.`,
+    title: `Inmobiliario y renovación urbana en Israel y en el extranjero`,
+    desc: `Asesoría jurídica independiente y segunda opinión en operaciones inmobiliarias en Israel y en el extranjero y en renovación urbana (TAMA 38 y demolición y reconstrucción), con Legal AI para la debida diligencia y la gestión de riesgos.`,
+    heroEyebrow: `Asesoría y segunda opinión inmobiliaria, en Israel y fuera`,
+    lede: `Una operación en el país, un inmueble al otro lado del mar o un proyecto de renovación urbana: en cada uno un solo error contractual sale caro, y fuera del país la ley aplicable tampoco es la que usted conoce. Ofrecemos asesoría jurídica independiente y una segunda opinión imparcial, con herramientas de Legal AI, que convierten cientos de páginas de documentos en un panorama claro del riesgo, antes de que usted se comprometa.`,
     labels: { covers: `Qué cubre la asesoría`, when: `Segunda opinión`, steps: `Cómo funciona`, related: `Para profundizar`, faq: `Preguntas y respuestas` },
     coversH2: `La capa de protección jurídica alrededor de su operación`,
     cards: [
       { title: `Operaciones inmobiliarias y contratos`, body: `Acompañamiento y representación en operaciones de compraventa e inversión: comprobación de derechos, redacción y protección contractual, fiscalidad e identificación temprana de riesgos, antes de que se conviertan en exposición.` },
       { title: `Renovación urbana: TAMA 38 y demolición y reconstrucción`, body: `Acompañamiento a propietarios y comisiones de vecinos en proyectos complejos: revisión de los acuerdos con el promotor, garantías, plazos y mecanismos de resolución, para equilibrar la posición frente al promotor y alcanzar un acuerdo defendible.` },
+      { title: `Operaciones e inmuebles en el extranjero`, body: `Acompañamiento israelí al comprador y al inversor fuera del país: la estructura de la operación y de la tenencia, la fiscalidad en ambos países, qué exige realmente la ley local, y el trabajo junto al abogado local y no en su lugar.` },
       { title: `Debida diligencia y gestión de riesgos`, body: `Mapeo de exposiciones jurídicas, derechos de edificación, anotaciones preventivas, fiscalidad y garantías, y construcción de una arquitectura de operación resistente que aguanta incluso cuando algo falla.` },
       { title: `Análisis basado en Legal AI`, body: `Las herramientas de inteligencia artificial revisan cientos de documentos, anexos y acuerdos, extraen contradicciones y riesgos y aceleran la revisión, siempre bajo la supervisión y aprobación de un abogado.` },
     ],
@@ -367,7 +388,8 @@ const es: { ai: Copy; realEstate: Copy } = {
       `Antes de firmar un acuerdo con el promotor en un proyecto TAMA 38 o de demolición y reconstrucción`,
       `Cuando ha recibido un acuerdo o un dictamen y desea una verificación independiente`,
       `Cuando surge un conflicto entre propietarios, la comisión de vecinos o con el promotor`,
-      `Antes de una operación de permuta o de una operación transfronteriza`,
+      `Antes de comprar un inmueble o invertir al otro lado del mar`,
+      `Antes de una operación de permuta o de una operación compleja con un promotor`,
       `Cuando se requiere una base documentada y defendible para la decisión`,
     ],
     stepsH2: `Tres pasos hacia un dictamen defendible`,
@@ -376,13 +398,14 @@ const es: { ai: Copy; realEstate: Copy } = {
       { title: `Dictamen independiente`, body: `Volvemos a examinar la operación con mirada crítica, combinando derecho, economía y herramientas de Legal AI para el análisis de documentos y riesgos.` },
       { title: `Hoja de ruta de gestión del riesgo`, body: `Entregamos un documento enfocado, documentado y defendible, con pasos prácticos para reducir la exposición y reforzar la posición jurídica.` },
     ],
-    relatedH2: `Artículos sobre inmobiliario, renovación urbana y Legal AI`,
+    relatedH2: `Artículos sobre inmobiliario dentro y fuera del país, renovación urbana y Legal AI`,
     faqH2: `Asesoría y segunda opinión en inmobiliario y renovación urbana`,
     faqs: [
       { q: `¿Qué incluye una segunda opinión jurídica en una operación inmobiliaria?`, a: `Una revisión independiente de la inscripción de los derechos, los embargos y las anotaciones preventivas, la correspondencia entre la situación registral y la situación real, las obligaciones fiscales, los derechos de edificación y las garantías que aseguran la contraprestación. El objetivo no es solo detectar un problema, sino construir una arquitectura de operación que aguante incluso cuando algo falla.` },
       { q: `¿Cuándo conviene una segunda opinión en un proyecto TAMA 38 o de demolición y reconstrucción?`, a: `Antes de firmar el acuerdo con el promotor, y cuando surge una discrepancia entre los propietarios, la comisión de vecinos y el promotor. En estos proyectos intervienen cientos de titulares de derechos y contratos complejos, y una revisión independiente del acuerdo es la principal protección frente al desequilibrio de fuerzas con el promotor.` },
       { q: `¿Qué se examina en un acuerdo con el promotor en renovación urbana?`, a: `La solvencia del promotor, las garantías autónomas otorgadas a los propietarios, los plazos y los mecanismos de compensación por retraso, la igualdad de contraprestación entre los propietarios, el mecanismo de resolución de controversias y las condiciones de cancelación y de levantamiento de las anotaciones preventivas.` },
       { q: `¿Cómo se integra Legal AI en la revisión?`, a: `Las herramientas de inteligencia artificial revisan cientos de páginas de documentos, anexos y acuerdos en poco tiempo, extraen contradicciones, cláusulas ausentes y exposiciones, y las contrastan con la situación jurídica y económica. El análisis algorítmico es solo un punto de partida, y cada hallazgo es verificado y aprobado por un abogado.` },
+      { q: `Compro un inmueble en el extranjero, ¿por qué necesito además un abogado israelí?`, a: `El abogado local conoce su propia ley, no lo que la operación produce en Israel: los deberes de declaración, la doble imposición y el convenio que la regula, la estructura de tenencia adecuada para un residente israelí, y las consecuencias posteriores en una venta o en una sucesión. Tampoco le representa frente al vendedor o al promotor como lo hace un abogado cuyo único cliente es usted. Los dos papeles se complementan, y el israelí es el que ve el cuadro a ambos lados de la frontera.` },
       { q: `¿Una segunda opinión sustituye al abogado que lleva la operación?`, a: `No. Examina la operación desde fuera y detecta puntos ciegos, reforzando así tanto al cliente como al asesor que lo representa. Los dos papeles se complementan en lugar de competir.` },
       { q: `¿Cuánto dura la revisión?`, a: `Depende del volumen de documentos y de la complejidad de la operación. La revisión de una operación de un único inmueble suele realizarse en días, mientras que un proyecto completo de renovación urbana requiere más tiempo, según la cantidad de acuerdos y anexos.` },
     ],
@@ -394,9 +417,9 @@ const es: { ai: Copy; realEstate: Copy } = {
 
 const fr: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `Conseil juridique indépendant et deuxième avis en IA pour les entreprises et les organisations`,
+    title: `Conseil, accompagnement et formation en IA pour les organisations`,
     desc: `Conseil juridique indépendant et deuxième avis pour les entreprises et les organisations en matière d'intelligence artificielle : gouvernance de l'IA, règlement européen sur l'IA, responsabilité algorithmique, protection de la propriété intellectuelle et gestion des risques, par le Dr Avraham Lalum.`,
-    heroEyebrow: `Conseil juridique et deuxième avis en IA`,
+    heroEyebrow: `Conseil, accompagnement et formation en IA`,
     lede: `Les entreprises et les organisations adoptent l'intelligence artificielle plus vite que le cadre juridique ne progresse. Nous apportons un conseil juridique indépendant et un deuxième avis impartial qui transforment le risque algorithmique en un système que vous pouvez maîtriser, avant qu'un régulateur, un conseil d'administration ou un demandeur ne le fasse à votre place.`,
     labels: { covers: `Ce que couvre le conseil`, when: `Deuxième avis`, steps: `Comment cela fonctionne`, related: `Pour approfondir`, faq: `Questions et réponses` },
     coversH2: `La couche de protection juridique autour de votre IA`,
@@ -405,6 +428,7 @@ const fr: { ai: Copy; realEstate: Copy } = {
       { title: `Responsabilité algorithmique pour le conseil`, body: `Un indice de conformité et une matrice d'exposition pour les dirigeants, qui chiffrent la responsabilité juridique tôt, avant qu'un régulateur ou un demandeur ne le fasse.` },
       { title: `Propriété intellectuelle et protection des données`, body: `Une couche de protection sur la technologie, des environnements de modèle locaux et sécurisés, et une politique d'usage qui empêche la fuite d'informations sensibles et la contamination du code par des droits de tiers.` },
       { title: `Contrats avec les fournisseurs d'IA`, body: `Réexamen des accords fournisseurs, répartition des risques, clauses d'indemnisation et de responsabilité, afin que le contrat protège l'organisation et pas seulement le fournisseur.` },
+      { title: `Formations et ateliers`, body: `Formation de la direction, du conseil et des équipes produit, technique et juridique : ce qui est permis, ce qui doit être documenté, et où s'arrête l'autorité du système et où commence la responsabilité de la personne. Pratique, adaptée au rôle et ancrée dans des dossiers réels.` },
     ],
     whenH2: `Quand un deuxième avis juridique en IA est utile`,
     whenLede: `Un deuxième avis indépendant ne défend pas une décision déjà prise, il la réexamine. Il renforce à la fois l'organisation et le conseil qui la représente, et fournit une base documentée et défendable.`,
@@ -429,6 +453,8 @@ const fr: { ai: Copy; realEstate: Copy } = {
       { q: `Quand faut-il consulter un conseil juridique externe avant une décision liée à l'IA ?`, a: `Avant de déployer un nouveau système d'IA, avant de signer avec un fournisseur, avant de lancer un produit fondé sur un algorithme, et en cas d'incertitude réglementaire ou d'exposition personnelle des dirigeants. Un conseil pris tôt coûte moins cher et va plus vite que la gestion d'une réclamation ou d'une amende après coup.` },
       { q: `Le conseil s'adresse-t-il uniquement aux entreprises technologiques ?`, a: `Non. Le service s'adresse aux entreprises technologiques, aux groupes traditionnels qui adoptent l'IA, aux organismes publics et aux autorités, ainsi qu'aux avocats et cabinets qui souhaitent un deuxième avis indépendant sur une question complexe. Le cœur du sujet est la rencontre entre le droit, l'économie et l'intelligence artificielle.` },
       { q: `Le règlement européen sur l'IA s'applique-t-il à une société israélienne ?`, a: `Il peut s'appliquer même sans présence physique en Europe, lorsque le système est mis sur le marché européen ou lorsque son résultat est utilisé au sein de l'Union. La première étape est donc la cartographie : où se trouvent les utilisateurs et où le résultat est utilisé.` },
+      { q: `Que comprend l'accompagnement continu et en quoi diffère-t-il d'un avis ponctuel ?`, a: `Un avis donne une image à un instant donné. L'accompagnement continu signifie que nous sommes présents tout au long : nous construisons le cadre de gouvernance et la politique, examinons les contrats avec les fournisseurs d'IA avant signature, accompagnons le lancement d'un produit ou d'un système, formons les équipes qui les exploitent, et mettons à jour le cadre lorsque la réglementation ou le produit change. Une organisation qui adopte l'IA en continu a besoin du second, non du premier.` },
+      { q: `Que couvrent les formations et à qui s'adressent-elles ?`, a: `Des ateliers pratiques pour la direction, le conseil, les équipes produit et technique et les équipes juridiques, adaptés au rôle et aux systèmes que l'organisation exploite réellement. Ils traitent des questions rencontrées au quotidien : ce qui peut être saisi dans un outil externe, ce qui doit être documenté, quand une décision humaine est requise, et quelle exposition personnelle assume celui qui approuve. Les programmes figurent sur la page des formations.` },
       { q: `Combien de temps faut-il pour obtenir un avis ?`, a: `Cela dépend de l'ampleur et de la complexité. Le diagnostic initial se fait lors d'une courte réunion, et un avis ciblé est généralement prêt en quelques jours à quelques semaines, selon le volume de documents et de systèmes examinés.` },
       { q: `L'avis remplace-t-il l'avocat de l'entreprise ?`, a: `Non. Un deuxième avis est conçu pour travailler aux côtés du conseil juridique existant, et non à sa place. Il ajoute une couche de vérification indépendante et renforce les deux positions.` },
     ],
@@ -437,15 +463,16 @@ const fr: { ai: Copy; realEstate: Copy } = {
     disclaimer: `Les informations de cette page sont générales et ne constituent ni un conseil juridique ni un substitut à un avis particulier.`,
   },
   realEstate: {
-    title: `Conseil juridique indépendant et deuxième avis en immobilier et renouvellement urbain`,
-    desc: `Conseil juridique indépendant et deuxième avis sur les transactions immobilières et le renouvellement urbain (TAMA 38 et démolition reconstruction), avec des outils de Legal AI pour la due diligence et la gestion des risques, par le Dr Avraham Lalum.`,
-    heroEyebrow: `Conseil et deuxième avis en immobilier et renouvellement urbain`,
-    lede: `Les transactions immobilières et les projets de renouvellement urbain sont un terrain où une seule erreur contractuelle coûte cher. Nous apportons un conseil juridique indépendant et un deuxième avis impartial, avec des outils de Legal AI, qui transforment des centaines de pages de documents en une image claire du risque, avant que vous ne vous engagiez.`,
+    title: `Immobilier et renouvellement urbain, en Israël et à l'étranger`,
+    desc: `Conseil juridique indépendant et deuxième avis sur les transactions immobilières en Israël et à l'étranger et sur le renouvellement urbain (TAMA 38 et démolition reconstruction), avec le Legal AI pour la due diligence et la gestion des risques.`,
+    heroEyebrow: `Conseil et deuxième avis en immobilier, ici et à l'étranger`,
+    lede: `Une transaction au pays, un bien de l'autre côté de la mer, ou un projet de renouvellement urbain : dans chacun, une seule erreur contractuelle coûte cher, et à l'étranger la loi applicable n'est pas celle que vous connaissez. Nous apportons un conseil juridique indépendant et un deuxième avis impartial, avec des outils de Legal AI, qui transforment des centaines de pages de documents en une image claire du risque, avant que vous ne vous engagiez.`,
     labels: { covers: `Ce que couvre le conseil`, when: `Deuxième avis`, steps: `Comment cela fonctionne`, related: `Pour approfondir`, faq: `Questions et réponses` },
     coversH2: `La couche de protection juridique autour de votre transaction`,
     cards: [
       { title: `Transactions immobilières et contrats`, body: `Accompagnement et représentation dans les opérations de vente, d'achat et d'investissement : vérification des droits, rédaction et protection contractuelle, fiscalité et identification précoce des risques, avant qu'ils ne deviennent une exposition.` },
       { title: `Renouvellement urbain : TAMA 38 et démolition reconstruction`, body: `Accompagnement des copropriétaires et des comités dans des projets complexes : examen des accords avec le promoteur, garanties, calendriers et mécanismes de règlement, pour rééquilibrer la position face au promoteur et obtenir un accord défendable.` },
+      { title: `Transactions et biens à l'étranger`, body: `Un accompagnement israélien aux côtés de l'acquéreur et de l'investisseur à l'étranger : la structure de l'opération et de la détention, la fiscalité dans les deux pays, ce que le droit local exige réellement, et le travail avec l'avocat local plutôt qu'à sa place.` },
       { title: `Due diligence et gestion des risques`, body: `Cartographie des expositions juridiques, des droits à construire, des mentions conservatoires, de la fiscalité et des garanties, et construction d'une architecture de transaction résistante qui tient même lorsque quelque chose dérape.` },
       { title: `Analyse fondée sur le Legal AI`, body: `Les outils d'intelligence artificielle parcourent des centaines de documents, annexes et accords, en extraient contradictions et risques et accélèrent l'examen, toujours sous la supervision et l'approbation d'un avocat.` },
     ],
@@ -456,7 +483,8 @@ const fr: { ai: Copy; realEstate: Copy } = {
       `Avant de signer un accord avec le promoteur dans un projet TAMA 38 ou de démolition reconstruction`,
       `Lorsque vous avez reçu un accord ou un avis et souhaitez une vérification indépendante`,
       `Lorsqu'un litige survient entre copropriétaires, avec le comité ou avec le promoteur`,
-      `Avant une opération de dation en paiement ou une opération transfrontalière`,
+      `Avant d'acheter un bien ou d'investir à l'étranger`,
+      `Avant une opération de dation en paiement ou une opération complexe avec un promoteur`,
       `Lorsqu'une base documentée et défendable est requise pour la décision`,
     ],
     stepsH2: `Trois étapes vers un avis défendable`,
@@ -465,13 +493,14 @@ const fr: { ai: Copy; realEstate: Copy } = {
       { title: `Avis indépendant`, body: `Nous réexaminons la transaction d'un œil critique, en combinant droit, économie et outils de Legal AI pour l'analyse des documents et des risques.` },
       { title: `Feuille de route de gestion du risque`, body: `Nous remettons un document ciblé, documenté et défendable, avec des étapes concrètes pour réduire l'exposition et renforcer la position juridique.` },
     ],
-    relatedH2: `Articles sur l'immobilier, le renouvellement urbain et le Legal AI`,
+    relatedH2: `Articles sur l'immobilier ici et à l'étranger, le renouvellement urbain et le Legal AI`,
     faqH2: `Conseil et deuxième avis en immobilier et renouvellement urbain`,
     faqs: [
       { q: `Que comprend un deuxième avis juridique dans une transaction immobilière ?`, a: `Un examen indépendant de l'inscription des droits, des saisies et des mentions conservatoires, de la correspondance entre la situation inscrite et la situation réelle, des obligations fiscales, des droits à construire et des garanties qui sécurisent la contrepartie. L'objectif n'est pas seulement de trouver un problème, mais de construire une architecture de transaction qui tient même lorsque quelque chose dérape.` },
       { q: `Quand un deuxième avis est-il utile dans un projet TAMA 38 ou de démolition reconstruction ?`, a: `Avant de signer l'accord avec le promoteur, et lorsqu'un désaccord survient entre les copropriétaires, le comité et le promoteur. Ces projets impliquent des centaines de titulaires de droits et des contrats complexes, et un examen indépendant de l'accord est la protection principale face au déséquilibre des forces avec le promoteur.` },
       { q: `Qu'examine-t-on dans un accord avec le promoteur en renouvellement urbain ?`, a: `La solidité financière du promoteur, les garanties autonomes accordées aux copropriétaires, les calendriers et les mécanismes d'indemnisation en cas de retard, l'égalité des contreparties entre les copropriétaires, le mécanisme de règlement des différends, et les conditions de résiliation et de radiation des mentions conservatoires.` },
       { q: `Comment le Legal AI s'intègre-t-il à l'examen ?`, a: `Les outils d'intelligence artificielle parcourent des centaines de pages de documents, annexes et accords en peu de temps, en extraient contradictions, clauses manquantes et expositions, et les recoupent avec la situation juridique et économique. L'analyse algorithmique n'est qu'un point de départ, et chaque constat est vérifié et validé par un avocat.` },
+      { q: `J'achète un bien à l'étranger, pourquoi aussi un avocat israélien ?`, a: `L'avocat local connaît son propre droit, non ce que l'opération produit pour vous en Israël : les obligations déclaratives, la double imposition et la convention qui la régit, la structure de détention adaptée à un résident israélien, et les conséquences ultérieures lors d'une vente ou d'une succession. Il ne vous représente pas non plus face au vendeur ou au promoteur comme le fait un avocat dont vous êtes le seul client. Les deux rôles sont complémentaires, et l'israélien est celui qui voit le tableau des deux côtés de la frontière.` },
       { q: `Un deuxième avis remplace-t-il l'avocat qui suit la transaction ?`, a: `Non. Il examine la transaction de l'extérieur et repère les angles morts, renforçant ainsi le client comme le conseil qui le représente. Les deux rôles se complètent au lieu de se concurrencer.` },
       { q: `Combien de temps dure l'examen ?`, a: `Cela dépend du volume de documents et de la complexité de la transaction. L'examen d'une opération portant sur un seul bien se fait généralement en quelques jours, tandis qu'un projet complet de renouvellement urbain demande plus de temps, selon le nombre d'accords et d'annexes.` },
     ],
@@ -483,9 +512,9 @@ const fr: { ai: Copy; realEstate: Copy } = {
 
 const ar: { ai: Copy; realEstate: Copy } = {
   ai: {
-    title: `استشارة قانونية مستقلة ورأي ثانٍ في الذكاء الاصطناعي للشركات والمؤسسات`,
+    title: `استشارة ومرافقة وتدريب في الذكاء الاصطناعي للمؤسسات`,
     desc: `استشارة قانونية مستقلة ورأي ثانٍ للشركات والمؤسسات في مجال الذكاء الاصطناعي: حوكمة الذكاء الاصطناعي، قانون الذكاء الاصطناعي الأوروبي، المسؤولية الخوارزمية، حماية الملكية الفكرية وإدارة المخاطر، بقلم د. أبراهام لالوم.`,
-    heroEyebrow: `استشارة قانونية ورأي ثانٍ في الذكاء الاصطناعي`,
+    heroEyebrow: `استشارة ومرافقة وتدريب في الذكاء الاصطناعي`,
     lede: `تتبنى الشركات والمؤسسات الذكاء الاصطناعي بوتيرة أسرع مما يواكبه الإطار القانوني. نقدم استشارة قانونية مستقلة ورأياً ثانياً محايداً يحولان المخاطر الخوارزمية إلى منظومة يمكنكم التحكم بها، قبل أن يقوم بذلك جهة تنظيمية أو مجلس إدارة أو مدّعٍ نيابة عنكم.`,
     labels: { covers: `ما تغطيه الاستشارة`, when: `رأي ثانٍ`, steps: `كيف تسير العملية`, related: `لمزيد من التعمق`, faq: `أسئلة وأجوبة` },
     coversH2: `طبقة الحماية القانونية حول الذكاء الاصطناعي لديكم`,
@@ -494,6 +523,7 @@ const ar: { ai: Copy; realEstate: Copy } = {
       { title: `المسؤولية الخوارزمية لمجلس الإدارة`, body: `مؤشر امتثال ومصفوفة تعرض لأعضاء الإدارة، يسعّران المسؤولية القانونية مبكراً، قبل أن تفعل ذلك جهة تنظيمية أو مدّعٍ.` },
       { title: `الملكية الفكرية وحماية البيانات`, body: `طبقة حماية للتقنية، بيئات نماذج محلية ومؤمّنة، وسياسة استخدام تمنع تسرب المعلومات الحساسة وتلوث الشيفرة بحقوق أطراف ثالثة.` },
       { title: `العقود مع مزودي الذكاء الاصطناعي`, body: `إعادة فحص اتفاقيات المزودين، توزيع المخاطر، بنود التعويض والمسؤولية، بحيث يحمي العقد المؤسسة لا المزود وحده.` },
+      { title: `التدريب والورشات`, body: `تدريب للإدارة ولمجلس الإدارة ولفرق المنتج والتطوير والشؤون القانونية: ما هو مسموح، وما يجب توثيقه، وأين تنتهي صلاحية النظام وتبدأ مسؤولية الإنسان. عملي، مصمم بحسب الدور، ومبني على ملفات حقيقية.` },
     ],
     whenH2: `متى يستحق الرأي القانوني الثاني في الذكاء الاصطناعي`,
     whenLede: `الرأي الثاني المستقل لا يدافع عن قرار سبق اتخاذه، بل يعيد فحصه. وهو يعزز المؤسسة والمستشار الممثل لها معاً، ويوفر أساساً موثقاً وقابلاً للدفاع عنه.`,
@@ -518,6 +548,8 @@ const ar: { ai: Copy; realEstate: Copy } = {
       { q: `متى ينبغي طلب استشارة قانونية خارجية قبل قرار يتعلق بالذكاء الاصطناعي؟`, a: `قبل تطبيق نظام ذكاء اصطناعي جديد، وقبل التوقيع مع مزود، وقبل إطلاق منتج قائم على خوارزمية، وعند وجود عدم يقين تنظيمي أو تعرض شخصي لأعضاء الإدارة. الاستشارة المبكرة أقل كلفة وأسرع من مواجهة دعوى أو غرامة لاحقاً.` },
       { q: `هل الاستشارة مخصصة لشركات التقنية فقط؟`, a: `لا. الخدمة موجهة لشركات التقنية، وللشركات التقليدية التي تتبنى الذكاء الاصطناعي، وللجهات العامة والسلطات، وكذلك للمحامين والمكاتب التي تطلب رأياً ثانياً مستقلاً في مسألة معقدة. الجوهر هو الالتقاء بين القانون والاقتصاد والذكاء الاصطناعي.` },
       { q: `هل ينطبق قانون الذكاء الاصطناعي الأوروبي على شركة إسرائيلية؟`, a: `قد ينطبق حتى دون وجود مادي في أوروبا، عندما يُطرح النظام في السوق الأوروبية أو عندما تُستخدم مخرجاته داخل الاتحاد. لذلك فإن الخطوة الأولى هي رسم الخريطة: أين المستخدمون وأين تُستخدم المخرجات.` },
+      { q: `ماذا تشمل المرافقة المستمرة، وبم تختلف عن رأي لمرة واحدة؟`, a: `الرأي يعطي صورة في لحظة زمنية. أما المرافقة المستمرة فتعني أننا حاضرون على طول الطريق: نبني إطار الحوكمة والسياسة، ونفحص العقود مع مزودي الذكاء الاصطناعي قبل التوقيع، ونرافق إطلاق منتج أو نظام جديد، وندرّب الفرق التي تشغّلها، ونحدّث الإطار عندما تتغير التنظيمات أو المنتج. المؤسسة التي تتبنى الذكاء الاصطناعي باستمرار تحتاج إلى الثانية لا إلى الأولى.` },
+      { q: `ماذا تغطي الدورات التدريبية ولمن هي موجهة؟`, a: `ورشات عملية للإدارة ولمجلس الإدارة ولفرق المنتج والتطوير وللفرق القانونية، مصممة بحسب الدور وبحسب الأنظمة التي تشغّلها المؤسسة فعلاً. تتناول الأسئلة التي يواجهها الفريق في يوم عمله: ما الذي يجوز إدخاله إلى أداة خارجية، وما الذي يجب توثيقه، ومتى يلزم قرار بشري، وما التعرّض الشخصي لمن يصادق. تفاصيل البرامج في صفحة الدورات والتدريب.` },
       { q: `كم يستغرق إعداد الرأي؟`, a: `يعتمد ذلك على النطاق ودرجة التعقيد. يجري التشخيص الأولي في لقاء قصير، ويكون الرأي المركز جاهزاً عادة خلال أيام إلى أسابيع، بحسب حجم المستندات والأنظمة التي تُفحص.` },
       { q: `هل يحل الرأي محل المستشار القانوني للشركة؟`, a: `لا. الرأي الثاني مصمم للعمل إلى جانب المستشار القانوني القائم، لا بديلاً عنه. فهو يضيف طبقة فحص مستقلة ويعزز الموقفين معاً.` },
     ],
@@ -526,15 +558,16 @@ const ar: { ai: Copy; realEstate: Copy } = {
     disclaimer: `المعلومات في هذه الصفحة عامة ولا تشكل استشارة قانونية ولا بديلاً عن رأي قانوني خاص.`,
   },
   realEstate: {
-    title: `استشارة قانونية مستقلة ورأي ثانٍ في العقارات والتجديد الحضري`,
-    desc: `استشارة قانونية مستقلة ورأي ثانٍ في الصفقات العقارية والتجديد الحضري (تاما 38 والهدم وإعادة البناء)، مع أدوات الذكاء الاصطناعي القانوني للعناية الواجبة وإدارة المخاطر، بقلم د. أبراهام لالوم.`,
-    heroEyebrow: `استشارة ورأي ثانٍ في العقارات والتجديد الحضري`,
-    lede: `الصفقات العقارية ومشاريع التجديد الحضري ساحة يكلّف فيها خطأ تعاقدي واحد ثمناً باهظاً. نقدم استشارة قانونية مستقلة ورأياً ثانياً محايداً، مع أدوات الذكاء الاصطناعي القانوني، تحوّل مئات صفحات المستندات إلى صورة واضحة للمخاطر، قبل أن تلتزموا.`,
+    title: `العقارات والتجديد الحضري في إسرائيل وخارجها: استشارة ورأي ثانٍ`,
+    desc: `استشارة قانونية مستقلة ورأي ثانٍ في الصفقات العقارية داخل البلاد وخارجها وفي التجديد الحضري (تاما 38 والهدم وإعادة البناء)، مع الذكاء الاصطناعي القانوني للعناية الواجبة وإدارة المخاطر.`,
+    heroEyebrow: `استشارة ورأي ثانٍ في العقارات، داخل البلاد وخارجها`,
+    lede: `صفقة في البلاد، أو عقار وراء البحر، أو مشروع تجديد حضري: في كل منها يكلّف خطأ تعاقدي واحد ثمناً باهظاً، وخارج البلاد لا يكون القانون الحاكم هو القانون الذي تعرفونه. نقدم استشارة قانونية مستقلة ورأياً ثانياً محايداً، مع أدوات الذكاء الاصطناعي القانوني، تحوّل مئات صفحات المستندات إلى صورة واضحة للمخاطر، قبل أن تلتزموا.`,
     labels: { covers: `ما تغطيه الاستشارة`, when: `رأي ثانٍ`, steps: `كيف تسير العملية`, related: `لمزيد من التعمق`, faq: `أسئلة وأجوبة` },
     coversH2: `طبقة الحماية القانونية حول صفقتكم`,
     cards: [
       { title: `الصفقات العقارية والعقود`, body: `مرافقة وتمثيل في صفقات البيع والشراء والاستثمار: فحص الحقوق، الصياغة والحماية التعاقدية، الضرائب، والكشف المبكر عن المخاطر قبل أن تتحول إلى تعرض.` },
       { title: `التجديد الحضري: تاما 38 والهدم وإعادة البناء`, body: `مرافقة أصحاب الشقق ولجان السكان في مشاريع معقدة: فحص اتفاقيات المطوّر، الضمانات، الجداول الزمنية وآليات الحسم، لتحقيق التوازن أمام المطوّر والوصول إلى اتفاق قابل للدفاع عنه.` },
+      { title: `الصفقات والعقارات في الخارج`, body: `مرافقة إسرائيلية إلى جانب المشتري والمستثمر خارج البلاد: بنية الصفقة وبنية الحيازة، والضرائب في البلدين، وما يشترطه القانون المحلي فعلاً، والعمل مع المحامي المحلي لا بدلاً عنه.` },
       { title: `العناية الواجبة وإدارة المخاطر`, body: `رسم خريطة التعرضات القانونية، حقوق البناء، إشارات التحذير، الضرائب والضمانات، وبناء هندسة صفقة صامدة تثبت حتى عند حدوث خلل.` },
       { title: `تحليل قائم على الذكاء الاصطناعي القانوني`, body: `تمسح أدوات الذكاء الاصطناعي مئات المستندات والملاحق والاتفاقيات، وتستخرج التناقضات والمخاطر، وتسرّع الفحص، دائماً تحت إشراف محامٍ وبموافقته.` },
     ],
@@ -545,7 +578,8 @@ const ar: { ai: Copy; realEstate: Copy } = {
       `قبل توقيع اتفاقية مع المطوّر في مشروع تاما 38 أو الهدم وإعادة البناء`,
       `عند تلقي اتفاقية أو رأي قانوني والرغبة في فحص مستقل`,
       `عند نشوء نزاع بين أصحاب الشقق أو لجنة السكان أو مع المطوّر`,
-      `قبل صفقة مقايضة أو صفقة عابرة للحدود`,
+      `قبل شراء عقار أو الاستثمار وراء البحر`,
+      `قبل صفقة مقايضة أو صفقة معقّدة أمام مطوّر`,
       `عند الحاجة إلى أساس موثق وقابل للدفاع عنه لاتخاذ القرار`,
     ],
     stepsH2: `ثلاث خطوات نحو رأي قابل للدفاع عنه`,
@@ -554,13 +588,14 @@ const ar: { ai: Copy; realEstate: Copy } = {
       { title: `رأي مستقل`, body: `نعيد فحص الصفقة بعين نقدية، بالجمع بين القانون والاقتصاد وأدوات الذكاء الاصطناعي القانوني لتحليل المستندات والمخاطر.` },
       { title: `خارطة طريق لإدارة المخاطر`, body: `نسلّم وثيقة مركزة وموثقة وقابلة للدفاع عنها، مع خطوات عملية لتقليل التعرض وتعزيز الموقف القانوني.` },
     ],
-    relatedH2: `مقالات في العقارات والتجديد الحضري والذكاء الاصطناعي القانوني`,
+    relatedH2: `مقالات في العقارات داخل البلاد وخارجها والتجديد الحضري والذكاء الاصطناعي القانوني`,
     faqH2: `استشارة ورأي ثانٍ في العقارات والتجديد الحضري`,
     faqs: [
       { q: `ماذا يشمل الرأي القانوني الثاني في صفقة عقارية؟`, a: `فحص مستقل لتسجيل الحقوق والحجوزات وإشارات التحذير، ومدى التطابق بين الوضع المسجل والوضع الفعلي، والالتزامات الضريبية، وحقوق البناء، والضمانات التي تؤمّن المقابل. الهدف ليس رصد مشكلة فحسب، بل بناء هندسة صفقة تثبت حتى عند حدوث خلل.` },
       { q: `متى يستحق الرأي الثاني في مشروع تاما 38 أو الهدم وإعادة البناء؟`, a: `قبل توقيع اتفاقية المطوّر، وعند نشوء خلاف بين أصحاب الشقق ولجنة السكان والمطوّر. تضم هذه المشاريع مئات أصحاب الحقوق وعقوداً معقدة، والفحص المستقل لصيغة الاتفاقية هو الحماية الأساسية أمام اختلال موازين القوى مع المطوّر.` },
       { q: `ماذا يُفحص في اتفاقية المطوّر في التجديد الحضري؟`, a: `متانة المطوّر المالية، والضمانات المستقلة الممنوحة لأصحاب الشقق، والجداول الزمنية وآليات التعويض عن التأخير، والمساواة في المقابل بين أصحاب الشقق، وآلية حسم الخلافات، وشروط الإلغاء وشطب إشارات التحذير.` },
       { q: `كيف يندمج الذكاء الاصطناعي القانوني في الفحص؟`, a: `تمسح أدوات الذكاء الاصطناعي مئات صفحات المستندات والملاحق والاتفاقيات في وقت قصير، وتستخرج التناقضات والبنود الناقصة والتعرضات، وتقاطعها مع الوضع القانوني والاقتصادي. التحليل الخوارزمي نقطة انطلاق فقط، وكل نتيجة يفحصها ويعتمدها محامٍ.` },
+      { q: `أشتري عقاراً في الخارج، فلماذا أحتاج محامياً إسرائيلياً أيضاً؟`, a: `المحامي المحلي يعرف قانونه هو، لا ما تُحدثه الصفقة لكم في إسرائيل: واجبات الإبلاغ، والازدواج الضريبي والاتفاقية التي تنظمه، وبنية الحيازة الملائمة لمقيم إسرائيلي، والتبعات اللاحقة عند البيع أو الميراث. كما أنه لا يمثلكم أمام البائع أو المطوّر بالقدر الذي يمثلكم به محامٍ أنتم عميله الوحيد. الدوران متكاملان، والإسرائيلي هو من يرى الصورة على جانبي الحدود.` },
       { q: `هل يحل الرأي الثاني محل المحامي المرافق للصفقة؟`, a: `لا. فهو يفحص الصفقة من الخارج ويكشف النقاط العمياء، وبذلك يعزز العميل والمستشار الممثل له معاً. الدوران متكاملان لا متنافسان.` },
       { q: `كم يستغرق الفحص؟`, a: `يعتمد ذلك على حجم المستندات ودرجة تعقيد الصفقة. يجري فحص صفقة عقار واحد عادة خلال أيام، بينما يتطلب مشروع تجديد حضري كامل وقتاً أطول، بحسب عدد الاتفاقيات والملاحق.` },
     ],
@@ -811,10 +846,11 @@ const COPY: Record<Lang, { ai: Copy; realEstate: Copy; mediation: Copy }> = {
   ar: { ...ar, mediation: mediationCopy.ar },
 };
 
-function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[] }): PillarPage {
+function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[]; secondary?: string }): PillarPage {
   return {
     path: shared.path,
     url: shared.url,
+    secondary: shared.secondary ?? "advisory",
     title: c.title,
     desc: c.desc,
     heroEyebrow: c.heroEyebrow,

@@ -19,6 +19,15 @@
 - Icons, favicons and Open Graph cards are all derived from that same artwork. Regeneration and geometry are documented in `lalum-app/brand/README.md`.
 - Every produced file (docx, html, pdf, images, posts, presentations) carries this logo and no other.
 
+## Two Focus Areas (PERMANENT)
+
+**LALUM leads with two areas, and only two: real estate and urban renewal (in Israel and abroad), and AI.**
+
+- AI means the full offering: advisory, ongoing accompaniment, and training. Not a second opinion alone.
+- Real estate covers both sides of the border: deals and urban renewal here, and property and investment abroad.
+- **Mediation and dispute resolution is not to be invested in from now on.** Its pages stay live and keep working, and it may be mentioned as a service the practice provides. Do not write new mediation articles, do not build it new pages, and do not spend promotion on it. The mediation cluster already holds 64 articles; it needs nothing more.
+- Anything produced for the site (articles, posts, pages, keywords, campaigns) serves one of the two areas.
+
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
 **Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**

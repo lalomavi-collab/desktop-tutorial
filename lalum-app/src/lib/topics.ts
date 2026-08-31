@@ -20,9 +20,20 @@ import type { Dict } from "./strings";
 //
 // Hebrew only, like the writing itself. These hubs claim no translated
 // alternates, for the same reason the articles do not.
+//
+// Real estate covers Israel and abroad in one topic rather than two. A reader
+// weighing a property overseas and a reader weighing one here are asking the
+// same question about the same practice, and splitting them left eight
+// articles alone on a page of their own.
 
 export type Topic = {
   slug: string;
+  // The two areas the practice leads with. They are listed first wherever
+  // topics are shown, which is a different order from the one below: that
+  // order decides which topic an article is classified into, and there
+  // mediation has to be tried first or every mediated urban renewal dispute
+  // would land under real estate.
+  lead?: boolean;
   name: string;
   title: string;
   desc: string;
@@ -44,30 +55,24 @@ export const TOPICS: Topic[] = [
     keywords: ["גישור", "מגשר", "בוררות", "בורר", "סכסוך", "סכסוכים", "מחלוקת", "הכרעה", "גישבור", "מדיאציה", "מגשרים", "יישוב סכסוכים"],
   },
   {
-    slug: "urban-renewal",
-    name: `נדל"ן והתחדשות עירונית`,
-    title: `נדל"ן, תמ"א 38 ופינוי-בינוי: מאמרים`,
-    desc: `מאמרים על עסקאות נדל"ן, התחדשות עירונית, תמ"א 38 ופינוי-בינוי: הסכמי יזם, בטוחות, זכויות בעלי דירות, בדיקת נאותות וניהול סיכונים בעסקה.`,
-    lede: `מה נבדק לפני חתימה, מה מגן על בעל הזכויות כשהפרויקט משתבש, ואיפה עוברת השורה בין סיכון מסחרי לחשיפה משפטית.`,
-    pillar: { path: "real-estate-legal-advisory", label: `ייעוץ וחוות דעת שנייה בנדל"ן` },
-    keywords: ["נדל", "דירה", "דירות", "מקרקעין", "תמ\"א", "פינוי", "התחדשות", "דייר", "דיירים", "יזם", "קבלן", "בנייה", "שכירות", "משכנתא", "קומבינציה", "נציגות", "בעלי הזכויות"],
+    slug: "real-estate",
+    lead: true,
+    name: `נדל"ן והתחדשות עירונית, בארץ ובחו"ל`,
+    title: `נדל"ן בארץ ובחו"ל, תמ"א 38 ופינוי-בינוי: מאמרים`,
+    desc: `מאמרים על עסקאות נדל"ן בארץ ובחו"ל, התחדשות עירונית, תמ"א 38 ופינוי-בינוי: הסכמי יזם, בטוחות, זכויות בעלי דירות, בדיקת נאותות וניהול סיכונים.`,
+    lede: `מה נבדק לפני חתימה, מה מגן על בעל הזכויות כשהפרויקט משתבש, ואיפה עוברת השורה בין סיכון מסחרי לחשיפה משפטית. וגם: מה שונה כשהנכס נמצא מעבר לים והדין החל אינו הדין שאתם מכירים.`,
+    pillar: { path: "real-estate-legal-advisory", label: `ייעוץ וחוות דעת שנייה בנדל"ן, בארץ ובחו"ל` },
+    keywords: ["נדל", "דירה", "דירות", "מקרקעין", "תמ\"א", "פינוי", "התחדשות", "דייר", "דיירים", "יזם", "קבלן", "בנייה", "שכירות", "משכנתא", "קומבינציה", "נציגות", "בעלי הזכויות", "מעבר לים", "פורטוגל", "יוון", "קפריסין", "דובאי", "נכס בחו"],
   },
   {
     slug: "ai-governance",
+    lead: true,
     name: `בינה מלאכותית וממשל סיכונים`,
     title: `ממשל בינה מלאכותית, EU AI Act וסיכון אלגוריתמי: מאמרים`,
     desc: `מאמרים על ממשל בינה מלאכותית, EU AI Act, אחריות אלגוריתמית, פרטיות ותיקון 13, וניהול סיכוני AI בארגון ובדירקטוריון.`,
     lede: `מה מוטל על הארגון שמפעיל מערכת אלגוריתמית, מי נושא באחריות כשהיא טועה, ואיך נראה תיעוד שמחזיק מול רגולטור.`,
     pillar: { path: "ai-legal-advisory", label: `ייעוץ וחוות דעת שנייה בנושא AI` },
     keywords: ["בינה מלאכותית", " ai", "ai ", "אלגורית", "eu ai act", "gpai", "llm", "מודל שפה", "אוטומטי", "פרטיות", "תיקון 13", "ממשל", "דירקטוריון", "רגולצי", "ציות", "סייבר", "נתונים"],
-  },
-  {
-    slug: "cross-border",
-    name: `עסקאות ונכסים בחו"ל`,
-    title: `נדל"ן והשקעות בחו"ל למשקיע הישראלי: מאמרים`,
-    desc: `מאמרים על רכישת נכסים והשקעות מעבר לים: מבנה העסקה, מיסוי, הדין הזר, ליווי משפטי ישראלי וסיכונים בעסקה חוצת גבולות.`,
-    lede: `מה שונה כשהעסקה נכתבת בשפה אחת ומתבצעת תחת דין אחר, ואיפה משקיע ישראלי מגלה מאוחר מדי שהמבנה לא התאים.`,
-    keywords: ["חו\"ל", "מעבר לים", "בינלאומ", "חוצה גבולות", "חוצי גבולות", "פורטוגל", "יוון", "קפריסין", "דובאי", "ארצות הברית", "אירופה", "משקיע הישראלי", "שווקים זרים", "דין זר"],
   },
   {
     slug: "contracts",
@@ -88,6 +93,11 @@ export const TOPICS: Topic[] = [
 ];
 
 export const topicBySlug = new Map(TOPICS.map((t) => [t.slug, t]));
+
+// Display order: the two areas the practice leads with, then the rest in the
+// order declared above. Stable, so the strip on the articles index and the
+// links in the static HTML always agree.
+export const TOPICS_IN_ORDER: Topic[] = [...TOPICS].sort((a, b) => Number(!!b.lead) - Number(!!a.lead));
 
 export type TopicArticle = { slug: string; title: string };
 
