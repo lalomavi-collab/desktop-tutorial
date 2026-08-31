@@ -13,7 +13,7 @@ import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskS
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
-import { TOPICS, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
+import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -25,7 +25,7 @@ const SITE = "https://lalumapp.com";
 const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
   { path: "ai-legal-advisory", title: "ייעוץ משפטי וחוות דעת שנייה בנושא AI לחברות | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה לחברות וארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים." },
-  { path: "real-estate-legal-advisory", title: "ייעוץ וחוות דעת שנייה בנדל״ן והתחדשות עירונית | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים, מבית LALUM." },
+  { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים." },
   { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל\"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
@@ -249,7 +249,7 @@ function insightsBodyHtml(title: string, desc: string): string {
   const items = blogMeta
     .map((m) => `        <li><a href="/insights/${esc(encodeURI(m.slug))}/">${esc(m.title)}</a></li>`)
     .join("\n");
-  const topics = TOPICS
+  const topics = TOPICS_IN_ORDER
     .map((t) => ({ t, n: articlesByTopic(strings.he).get(t.slug)?.length ?? 0 }))
     .filter((x) => x.n > 0)
     .map((x) => `<li><a href="${topicPath(x.t.slug)}/">${esc(x.t.name)}</a> (${x.n})</li>`)
@@ -542,7 +542,7 @@ function seoPrerender(): Plugin {
       // translated alternates.
       {
         const byTopic = articlesByTopic(strings.he);
-        for (const topic of TOPICS) {
+        for (const topic of TOPICS_IN_ORDER) {
           const rows = byTopic.get(topic.slug) ?? [];
           if (!rows.length) continue;
           const path = topicPath(topic.slug).slice(1);
@@ -645,7 +645,7 @@ function seoPrerender(): Plugin {
         // Add the language variants. They are real, indexable addresses, so a
         // crawler should find them in the sitemap and not only by following an
         // hreflang link from the Hebrew page.
-        const hubRows = TOPICS
+        const hubRows = TOPICS_IN_ORDER
           .filter((t) => (articlesByTopic(strings.he).get(t.slug)?.length ?? 0) > 0)
           .map((t) => `${SITE}${topicPath(t.slug)}/`)
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
