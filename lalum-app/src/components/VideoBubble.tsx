@@ -83,12 +83,22 @@ function prefersStill(): boolean {
 // string table.
 type Caption = { from: number; to: number; text: string; sub?: string };
 
-// The languages the clip's soundtrack actually speaks. The narration is in
-// Hebrew, so on every other page the clip plays silently with its on-screen
-// lines and offers no way to unmute: a French visitor reading French text while
-// a Hebrew voice talks over it is worse than no sound at all. Add a language
-// here only once a narration exists in it.
-const SPOKEN: string[] = ["he"];
+// One clip per language, where a language has one of its own.
+//
+// Hebrew gets the reel: the lines are part of the picture and the narration is
+// synced to them, so it needs no overlay and it is the only page where sound
+// belongs. Every other language falls back to the configured clip, played
+// silently under its own translated lines, because a French visitor reading
+// French while a Hebrew voice talks over burned-in Hebrew is worse than no
+// sound at all.
+//
+// `burnedIn` also decides what the collapsed bubble shows: a page of text is
+// nothing at all in a 54 pixel circle, so a reel stays on its poster there and
+// only loads when someone opens it.
+type Clip = { src: string; burnedIn?: boolean; spoken?: boolean };
+const CLIPS: Record<string, Clip> = {
+  he: { src: "/media/lalum-reel.mp4", burnedIn: true, spoken: true },
+};
 const SCRIPT: Record<string, Caption[]> = {
   he: [
     { from: 0.0, to: 4.95, text: "רוב הארגונים לא יודעים איפה הם חשופים" },
@@ -162,6 +172,15 @@ export function VideoBubble() {
   // disappear than to show a black circle where a face should be.
   const [broken, setBroken] = useState(false);
   const [still, setStill] = useState(prefersStill);
+
+  const clip = CLIPS[lang];
+  const src = clip?.src ?? videoBubbleSrc;
+  // A reel carries its own lines; anything else needs the overlay.
+  const lines = clip?.burnedIn ? undefined : SCRIPT[lang];
+  // Sound is offered only where the narration matches the page's language.
+  const spoken = clip?.spoken === true;
+  // A text reel in the small circle is a black dot, so it waits on its poster.
+  const preview = still || clip?.burnedIn === true;
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   // null until the file has been asked. `true` only on a positive answer, so a
@@ -216,7 +235,7 @@ export function VideoBubble() {
   useEffect(() => {
     const el = previewRef.current;
     if (!el) return;
-    if (open || still) {
+    if (open || preview) {
       el.pause();
       return;
     }
@@ -226,7 +245,7 @@ export function VideoBubble() {
     start();
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [open, still, visible, chatOpen]);
+  }, [open, preview, visible, chatOpen]);
 
   // Escape closes, and focus moves into the panel and back out again.
   useEffect(() => {
@@ -300,9 +319,6 @@ export function VideoBubble() {
 
   // The line on screen right now. Anything outside every window shows nothing,
   // so a clip longer than the script simply runs on without text.
-  const lines = SCRIPT[lang];
-  // Sound is offered only where the narration matches the page's language.
-  const spoken = SPOKEN.includes(lang);
   const caption = lines?.find((c) => progress >= c.from && progress < c.to) ?? null;
 
   const captions = videoBubbleCaptions ? (
@@ -321,9 +337,9 @@ export function VideoBubble() {
               <video
                 ref={previewRef}
                 className="vbub-orb-video"
-                src={videoBubbleSrc}
+                src={preview ? undefined : src}
                 poster={videoBubblePoster || undefined}
-                preload={still ? "none" : "metadata"}
+                preload={preview ? "none" : "metadata"}
                 loop
                 muted
                 playsInline
@@ -379,7 +395,7 @@ export function VideoBubble() {
           <video
             ref={fullRef}
             className="vbub-panel-video"
-            src={videoBubbleSrc}
+            src={src}
             poster={videoBubblePoster || undefined}
             playsInline
             onClick={togglePlay}
