@@ -37,6 +37,9 @@ The site is available in Hebrew (primary), English, Spanish, French, and Arabic.
 - The corporate trap, are your AI models leaking the organization's IP: https://lalumapp.com/insights/sovereignty/ . Feeding confidential contracts and client records into third-party models as a privacy and trade-secret breach, and zero-data-leakage architecture.
 - Board liability for algorithmic decisions: https://lalumapp.com/insights/board-liability/ . When automated decisions expose directors and officers personally, and the record that defends them.
 - Public sector AI and procurement: https://lalumapp.com/insights/procurement/ . Explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review.
+- Pinui-binui, a full owner guide: https://lalumapp.com/insights/pinui-binui-owner-guide/ . What owners need through an evacuate-and-rebuild urban renewal project: how it differs from TAMA 38, the stages, the required majority and the holdout owner, the guarantees (sale-law, rent, defects, registration), taxation, and independent legal representation.
+- TAMA 38/1 versus TAMA 38/2: https://lalumapp.com/insights/tama-38-1-vs-38-2-comparison/ . The difference between strengthening-and-adding (38/1) and demolition-and-rebuild (38/2), the practical trade-offs, feasibility, owner guarantees, and how to choose the right track for a building.
+- Amendment 13 data security guide: https://lalumapp.com/insights/amendment-13-data-security-guide/ . The data-security obligations under Israel's Privacy Protection Amendment 13: security levels by database sensitivity, technical and organizational controls, written procedures, access management, incident handling and reporting, audits, and staff training.
 
 ## Contact
 
