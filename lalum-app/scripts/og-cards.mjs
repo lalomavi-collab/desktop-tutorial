@@ -37,6 +37,13 @@ if (blurbs.length !== 3) {
 // out of the scoring model: a copy change there must not leave a card saying
 // something the site no longer says.
 const pillars = readFileSync(join(root, "src", "lib", "pillars.ts"), "utf8");
+
+// The name on every card comes out of the dictionary, for the same reason the
+// pillar copy does. Here it was typed in by hand, and it drifted: the cards
+// carried a form the rest of the site had already stopped using. A PNG is the
+// one surface the build checks cannot read.
+const NAME = (readFileSync(join(root, "src", "lib", "strings.ts"), "utf8").match(/founderName:\s*"(ד[^"]*ללום)"/) || [])[1];
+if (!NAME) { console.error("strings.ts: no Hebrew founderName found"); process.exit(1); }
 function hebrewPillar(key, until) {
   const he = pillars.slice(pillars.indexOf("const he:"), pillars.indexOf("const en:"));
   const from = he.indexOf(`  ${key}: {`);
@@ -118,7 +125,7 @@ function pillarCard(p) {
       <h1 class="head pillar">${p.head}</h1>
       <p class="covers">${p.cards.join(" · ")}</p>
     </div>
-    <div class="foot"><span>ד"ר אברהם ללום</span><span class="site" dir="ltr">lalumapp.com</span></div>
+    <div class="foot"><span>${NAME}</span><span class="site" dir="ltr">lalumapp.com</span></div>
   </div>`;
 }
 
@@ -131,7 +138,7 @@ function siteCard() {
       <h1>ייעוץ משפטי, טכנולוגי ואסטרטגי</h1>
       <p dir="ltr">Tech-Legal and AI Risk Governance</p>
     </div>
-    <div class="foot"><span>ד"ר אברהם ללום</span><span class="site" dir="ltr">lalumapp.com</span></div>
+    <div class="foot"><span>${NAME}</span><span class="site" dir="ltr">lalumapp.com</span></div>
   </div>`;
 }
 

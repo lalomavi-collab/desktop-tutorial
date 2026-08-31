@@ -190,7 +190,10 @@ const TITLED = /(?:(?:ד["״]ר|עו["״]ד|ו?דוקטורנט)(?:\s+למשפט
 let nameOff = 0;
 const nameSample = [];
 for (const p of pages) {
-  const h = readFileSync(p, "utf8").replace(/<script[\s\S]*?<\/script>/g, "");
+  // &quot; is decoded first. The prerender escapes an ASCII quote, so a name
+  // written "ד&quot;ר אברהם ללום" read as unmatched text and slipped past this
+  // check for as long as it has existed. Two meta descriptions carried it.
+  const h = readFileSync(p, "utf8").replace(/<script[\s\S]*?<\/script>/g, "").replace(/&quot;/g, '"');
   for (const m of h.matchAll(TITLED)) {
     if (m[0] !== CANON_NAME && m[0] !== SHORT_NAME) {
       nameOff++;
@@ -266,6 +269,33 @@ const medArticles = pages.filter((p) => {
 medArticles.length > MEDIATION_CAP
   ? fail("the mediation cluster does not grow", `${medArticles.length} articles, ${MEDIATION_CAP} allowed. Either a new mediation piece was written, which the positioning rules out, or a piece belonging to one of the two focus areas was classified into mediation and needs its title or its keywords looked at.`)
   : pass(`the mediation cluster does not grow (${medArticles.length}/${MEDIATION_CAP})`);
+
+// 11. Hebrew acronyms carry gershayim, not an ASCII double quote. The corpus
+//     held both forms of the same word, 1133 occurrences of one and 570 of the
+//     other, sometimes inside a single article: נדל"ן next to נדל״ן. It is the
+//     wrong character (a screen reader announces a quotation where the text
+//     means an abbreviation), and it hid a real defect: the prerender escapes
+//     an ASCII quote to &quot;, so "ד&quot;ר אברהם ללום" slipped past the name
+//     check above and sat in two meta descriptions.
+//
+//     A single letter followed by a two letter word is a prefix and an opening
+//     quotation mark (ש"יש), not an acronym, and is left alone. Every genuine
+//     one letter acronym takes exactly one letter after the marker: ד"ר, ת"א,
+//     ש"ח, מ"ר.
+const HEB = "\u05d0-\u05ea";
+const ASCII_GERSHAYIM = new RegExp(`(?<![${HEB}])([${HEB}]+)&quot;([${HEB}]{1,2})(?![${HEB}]|&quot;)`, "g");
+let gersh = 0;
+const gershSample = [];
+for (const p of pages) {
+  for (const m of readFileSync(p, "utf8").matchAll(ASCII_GERSHAYIM)) {
+    if (m[1].length === 1 && m[2].length === 2) continue;
+    gersh++;
+    if (gershSample.length < 3) gershSample.push(`${rel(p)}: ${m[1]}"${m[2]}`);
+  }
+}
+gersh
+  ? fail("Hebrew acronyms use gershayim", `${gersh} acronym(s) written with an ASCII quote, e.g. ${gershSample.join("; ")}`)
+  : pass("Hebrew acronyms use gershayim");
 
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
