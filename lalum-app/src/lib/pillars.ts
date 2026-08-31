@@ -18,6 +18,10 @@ export type PillarLink = { slug: string; title: string };
 export type PillarPage = {
   path: string;
   url: string;
+  // The share card for this page. Hebrew only: the card is set in Hebrew, and
+  // a Hebrew card under an English page promises the reader the wrong thing,
+  // so the other languages keep the general site card.
+  og?: string;
   // Where the secondary button in the hero goes. Defaults to the general
   // advisory page; the AI pillar sends the reader to the courses instead,
   // because on that page the training is one of the services and not a detour.
@@ -91,6 +95,7 @@ const SHARED = {
     url: "https://lalumapp.com/ai-legal-advisory",
     icons: ["scale", "brain", "shield", "gavel", "book"] as IconName[],
     secondary: "training",
+    og: "https://lalumapp.com/og/pillar-ai.png",
     related: [
       { slug: "second-opinion-revolution", title: `מהפכת הדעה השנייה: למה חוות דעת בלתי תלויה היא צעד של אחריות` },
       { slug: "ai-liability-ruling", title: `מי אחראי על מה שה-AI אומר? בין מינכן, וושינגטון וירושלים` },
@@ -117,6 +122,7 @@ const SHARED = {
     path: "real-estate-legal-advisory",
     url: "https://lalumapp.com/real-estate-legal-advisory",
     icons: ["scale", "gavel", "compass", "shield", "brain"] as IconName[],
+    og: "https://lalumapp.com/og/pillar-real-estate.png",
     related: [
       { slug: "urban-renewal-mistakes-guide", title: `המדריך לטעויות נפוצות בהתחדשות עירונית` },
       { slug: "urban-renewal-risk", title: `ניהול סיכונים בפרויקטי התחדשות עירונית` },
@@ -846,10 +852,11 @@ const COPY: Record<Lang, { ai: Copy; realEstate: Copy; mediation: Copy }> = {
   ar: { ...ar, mediation: mediationCopy.ar },
 };
 
-function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[]; secondary?: string }): PillarPage {
+function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: readonly IconName[]; related: readonly PillarLink[]; secondary?: string; og?: string }): PillarPage {
   return {
     path: shared.path,
     url: shared.url,
+    og: lang === "he" ? shared.og : undefined,
     secondary: shared.secondary ?? "advisory",
     title: c.title,
     desc: c.desc,

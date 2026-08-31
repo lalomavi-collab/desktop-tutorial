@@ -31,6 +31,28 @@ if (blurbs.length !== 3) {
   process.exit(1);
 }
 
+// The two areas the practice leads with get a card each, so a share of either
+// pillar page shows what the page is about instead of the generic site card.
+// The words come out of pillars.ts, for the same reason the track blurbs come
+// out of the scoring model: a copy change there must not leave a card saying
+// something the site no longer says.
+const pillars = readFileSync(join(root, "src", "lib", "pillars.ts"), "utf8");
+function hebrewPillar(key, until) {
+  const he = pillars.slice(pillars.indexOf("const he:"), pillars.indexOf("const en:"));
+  const from = he.indexOf(`  ${key}: {`);
+  const block = he.slice(from, until ? he.indexOf(`  ${until}: {`) : undefined);
+  const one = (field) => {
+    const m = block.match(new RegExp(`${field}: \`([^\`]+)\``));
+    if (!m) { console.error(`pillars.ts: no ${field} for ${key}`); process.exit(1); }
+    return m[1];
+  };
+  const cards = [...block.matchAll(/\{ title: `([^`]+)`, body:/g)].map((m) => m[1]);
+  if (cards.length < 3) { console.error(`pillars.ts: expected at least 3 cards for ${key}, found ${cards.length}`); process.exit(1); }
+  // The title doubles as the page's h1, so it can carry a subtitle after a
+  // colon. A card is not the place for it.
+  return { eyebrow: one("heroEyebrow"), head: one("title").split(":")[0].trim(), cards: cards.slice(0, 3).map((c) => c.split(":")[0].trim()) };
+}
+
 const BANDS = {
   low: { title: "מוכנות גבוהה", fg: "#0f5d52", bg: "#e2f1f1" },
   medium: { title: "מוכנות חלקית", fg: "#8a5a10", bg: "#f7edda" },
@@ -55,6 +77,8 @@ const CSS = `
   .hero h1 { font-family: "DejaVu Serif", serif; font-size: 52px; line-height: 1.25; color: #1a1815; }
   .hero p { font-size: 30px; color: #55514a; }
   .rule { width: 90px; height: 3px; background: #9c5b3f; }
+  .head.pillar { margin-top: 16px; font-size: 50px; max-width: 22ch; }
+  .covers { margin-top: 24px; font-size: 24px; line-height: 1.55; color: #55514a; max-width: 36ch; }
 `;
 
 function riskCard(track, band) {
@@ -82,6 +106,19 @@ function introCard() {
       <h1 class="head">כמה הארגון שלכם מוכן, באמת?</h1>
     </div>
     <div class="foot"><span>מבדק מוכנות Tech-Legal</span><span class="site" dir="ltr">lalumapp.com</span></div>
+  </div>`;
+}
+
+function pillarCard(p) {
+  return `<div class="card" dir="rtl" lang="he">
+    <div class="bar"></div>
+    <div class="logo">${WORDMARK}</div>
+    <div class="mid">
+      <p class="eyebrow">${p.eyebrow}</p>
+      <h1 class="head pillar">${p.head}</h1>
+      <p class="covers">${p.cards.join(" · ")}</p>
+    </div>
+    <div class="foot"><span>ד"ר אברהם ללום</span><span class="site" dir="ltr">lalumapp.com</span></div>
   </div>`;
 }
 
@@ -127,5 +164,7 @@ for (const [track] of blurbs) {
   for (const band of Object.keys(BANDS)) await shoot(riskCard(track, band), `og/risk-${track}-${band}.png`);
 }
 await shoot(introCard(), "og/risk-intro.png");
+await shoot(pillarCard(hebrewPillar("ai", "realEstate")), "og/pillar-ai.png");
+await shoot(pillarCard(hebrewPillar("realEstate")), "og/pillar-real-estate.png");
 await browser.close();
 console.log("done");

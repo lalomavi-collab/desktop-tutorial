@@ -22,10 +22,10 @@ const SITE = "https://lalumapp.com";
 // Kept here so the static HTML a non-JS crawler or a social scraper (WhatsApp,
 // Facebook, Telegram, LinkedIn) sees already carries the right title and
 // description, instead of the app-shell default.
-const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean }[] = [
+const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean; image?: string }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
-  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים." },
-  { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים." },
+  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים.", image: `${SITE}/og/pillar-ai.png` },
+  { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים.", image: `${SITE}/og/pillar-real-estate.png` },
   { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל\"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
@@ -441,7 +441,7 @@ function seoPrerender(): Plugin {
           blocks: a.blocks as ArticleBlock[],
         }));
       const routes = [
-        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, noindex: s.noindex, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
+        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, noindex: s.noindex, image: s.image, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
         ...blogMeta.map((m) => ({
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,

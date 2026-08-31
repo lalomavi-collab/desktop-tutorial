@@ -12,6 +12,20 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "gdpr-israeli-companies-ai",
+    "title": "GDPR לחברה ישראלית שמפעילה AI על מידע אירופי",
+    "excerpt": "מתי ה-GDPR חל בלי נוכחות באירופה, מה הבסיס החוקי לאימון מודל על מידע שנאסף למטרה אחרת, מה קורה בהעברה הלאה מישראל, ואילו זכויות מערכת אלגוריתמית מתקשה לספק.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/algorithmic-transparency.webp",
+  },
+  {
+    "slug": "overseas-property-due-diligence",
+    "title": "בדיקת נאותות לנכס בחו\"ל: מה בודקים כשאין נסח טאבו",
+    "excerpt": "מרשם זכויות מול מרשם עסקאות, מי באמת הבעלים וממי קיבל, אילו חובות עוברים עם הנכס, מה מותר לעשות בו, ואיזו בטוחה מגנה על הכסף עד להשלמת הרישום.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/intl-realestate-transactions.webp",
+  },
+  {
     "slug": "ai-due-diligence-tech-acquisition",
     "title": "בדיקת נאותות AI לפני השקעה או רכישת חברת טכנולוגיה",
     "excerpt": "מה בודקים בחברה שהמוצר שלה מבוסס בינה מלאכותית: מקורות נתוני האימון והזכויות בהם, בעלות על המודל ועל הפלט, סיווג הסיכון ברגולציה, ומה קורה כשהמערכת טועה.",
