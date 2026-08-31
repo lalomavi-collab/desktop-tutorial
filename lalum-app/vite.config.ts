@@ -5,7 +5,7 @@ import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
+import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
@@ -292,7 +292,7 @@ function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
   // the one page most likely to answer that search.
   out.push(`        <h2>${esc(h.founderName)}</h2>`);
   out.push(`        <p>${esc(h.founderCreds1)}. ${esc(h.founderBio)}</p>`);
-  out.push(`        <p>${esc(h.founderWorks)} <a href="/cv">${esc(h.founderCv)}</a></p>`);
+  out.push(`        <p>${esc(h.founderWorks)} <a href="${cvPath(lang)}">${esc(h.founderCv)}</a></p>`);
   out.push(`        <h2>${esc(h.whyH2)}</h2>`);
   out.push(`        <ul>${dict.data.why.map((w) => `<li>${esc(w.title)}: ${esc(w.body)}</li>`).join("")}</ul>`);
   for (const it of faqsForPath(dict, "/", lang)) {

@@ -20,6 +20,7 @@ import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
+import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
@@ -30,7 +31,7 @@ import { VoiceNote } from "../components/VoiceNote";
 import founderPhoto from "../assets/founder.webp";
 
 export function Home() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const h = t.home;
   const [faqOpen, setFaqOpen] = useState<number>(-1);
   const [faqShown, setFaqShown] = useState(false);
@@ -68,7 +69,7 @@ export function Home() {
           </div>
 
           {/* Founder portrait, clickable, opens the full CV */}
-          <a href="/cv" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
+          <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
             <img src={founderPhoto} alt={h.founderName} />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
@@ -303,7 +304,7 @@ export function Home() {
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.urgentOnly}</span>
               </a>
             </div>
-            <a href="/cv" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
+            <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
               <Icon name="file" size={16} /> {h.founderCv}
             </a>
           </div>
