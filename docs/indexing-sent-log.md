@@ -39,3 +39,13 @@
 | 2026-08-31 | https://lalumapp.com/fr/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/fr/advisory/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/fr/ai-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/real-estate-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/knowledge/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/book/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/fr/legal/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/ai-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/real-estate-legal-advisory/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/knowledge/ | נשלח |
+| 2026-08-31 | https://lalumapp.com/ar/book/ | נשלח |
