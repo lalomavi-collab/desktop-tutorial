@@ -297,6 +297,48 @@ gersh
   ? fail("Hebrew acronyms use gershayim", `${gersh} acronym(s) written with an ASCII quote, e.g. ${gershSample.join("; ")}`)
   : pass("Hebrew acronyms use gershayim");
 
+// 12. Structured data must parse, and every article must carry the markup that
+//     earns it a rich result: BlogPosting for the headline, author and date,
+//     BreadcrumbList for the trail Google prints under the title. A single
+//     malformed block silently drops a page out of rich results, and nothing
+//     visible on the page changes, so this is invisible without a parser.
+//
+//     The audit that led to this check first read the site as having no article
+//     markup at all: its regex assumed one attribute order and the documents use
+//     another. The lesson is in the pattern below, which does not care.
+const LD = /<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g;
+const collectTypes = (node, out = []) => {
+  if (Array.isArray(node)) { for (const n of node) collectTypes(n, out); return out; }
+  if (!node || typeof node !== "object") return out;
+  if (node["@type"]) out.push(...[].concat(node["@type"]));
+  for (const k of ["@graph", "mainEntity", "itemListElement"]) if (node[k]) collectTypes(node[k], out);
+  return out;
+};
+const malformed = [];
+const missingMarkup = [];
+let ldBlocks = 0, articleNodes = 0;
+for (const p of pages) {
+  const h = readFileSync(p, "utf8");
+  const r = rel(p);
+  const found = [];
+  for (const m of h.matchAll(LD)) {
+    ldBlocks++;
+    try { found.push(...collectTypes(JSON.parse(m[1]))); }
+    catch (e) { malformed.push(`${r}: ${e.message.slice(0, 60)}`); }
+  }
+  const isArticle = r.startsWith("/insights/") && !r.startsWith("/insights/topics/") && r !== "/insights/index.html";
+  if (isArticle) {
+    if (found.includes("BlogPosting") && found.includes("BreadcrumbList")) articleNodes++;
+    else missingMarkup.push(`${r} (has ${found.join(", ") || "nothing"})`);
+  }
+}
+malformed.length
+  ? fail("structured data parses", `${malformed.length} malformed block(s), e.g. ${malformed[0]}`)
+  : pass(`structured data parses (${ldBlocks} blocks)`);
+missingMarkup.length
+  ? fail("every article carries article markup", `${missingMarkup.length} article(s) without BlogPosting and BreadcrumbList, e.g. ${missingMarkup[0]}`)
+  : pass(`every article carries article markup (${articleNodes})`);
+
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
 console.log(`\n${results.length - fails.length} pass, ${fails.length} fail`);
