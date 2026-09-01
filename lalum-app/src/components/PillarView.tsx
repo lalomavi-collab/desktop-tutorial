@@ -22,15 +22,17 @@ export function PillarView({ P }: { P: PillarPage }) {
       <PageMeta title={`${P.title} | LALUM`} description={P.desc} image={P.og} path={`/${P.path}`} jsonLd={jsonLd} />
 
       {/* HERO */}
-      <section className="wrap section" style={{ maxWidth: 900, paddingTop: 72 }}>
-        <p className="eyebrow">{P.heroEyebrow}</p>
-        <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 46px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
-          {P.title}
-        </h1>
-        <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch" }}>{P.lede}        </p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
-          <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
-          <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
+      <section className="wrap section" style={{ maxWidth: 900, paddingTop: 60 }}>
+        <div className="pillar-hero">
+          <p className="eyebrow">{P.heroEyebrow}</p>
+          <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 46px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
+            {P.title}
+          </h1>
+          <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch", margin: 0 }}>{P.lede}</p>
+          <div className="pillar-hero-cta">
+            <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+            <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
+          </div>
         </div>
       </section>
 
@@ -40,10 +42,10 @@ export function PillarView({ P }: { P: PillarPage }) {
           <p className="eyebrow">{P.coversEyebrow}</p>
           <h2 className="h2">{P.coversH2}</h2>
         </div>
-        <div className="grid grid-2">
+        <div className="grid grid-2 pillar-cards">
           {P.cards.map((p) => (
             <div key={p.title} className="card">
-              <span className="icon-badge"><Icon name={p.icon} size={22} /></span>
+              <span className="pillar-card-icon"><Icon name={p.icon} size={22} /></span>
               <h3 className="h3" style={{ fontSize: 21, margin: "18px 0 10px" }}>{p.title}</h3>
               <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{p.body}</p>
             </div>
@@ -74,10 +76,10 @@ export function PillarView({ P }: { P: PillarPage }) {
           <p className="eyebrow">{P.stepsEyebrow}</p>
           <h2 className="h2">{P.stepsH2}</h2>
         </div>
-        <div className="grid grid-3">
+        <div className="grid grid-3 pillar-steps">
           {P.steps.map((s) => (
             <div key={s.n} className="card">
-              <div style={{ fontFamily: "var(--serif)", fontSize: 34, color: "var(--clay)", lineHeight: 1 }}>{s.n}</div>
+              <div className="pillar-step-n">{s.n}</div>
               <h3 className="h3" style={{ fontSize: 20, margin: "14px 0 8px" }}>{s.title}</h3>
               <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
             </div>
