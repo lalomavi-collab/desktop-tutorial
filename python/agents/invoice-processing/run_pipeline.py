@@ -79,13 +79,22 @@ def already_sent(month: str) -> dict | None:
     return None
 
 
+def content_hash(attachments: list) -> str:
+    """טביעת אצבע של תוכן השליחה: שמות הקבצים הממוינים."""
+    import hashlib
+    names = sorted(Path(str(a)).name for a in attachments)
+    return hashlib.sha256("|".join(names).encode("utf-8")).hexdigest()[:16]
+
+
 def mark_sent(month: str, result: dict):
     _sent_dir().mkdir(parents=True, exist_ok=True)
+    result = {**result, "content_hash": content_hash(result.get("attachments_sent", []))}
     _sent_marker(month).write_text(
         json.dumps({
             "when": datetime.now().isoformat(timespec="seconds"),
             "to": result.get("to"),
             "attachments": result.get("attachments_sent", []),
+            "content_hash": result["content_hash"],
         }, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
@@ -288,9 +297,19 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
     print_table(items)
 
     # שלב 4: הכנת טיוטה
-    from invoice_processing.reporting.finance_summary import build_finance_block
+    from invoice_processing.reporting.finance_summary import build_finance_block, summarize
     finance_block = build_finance_block(items, month)
-    summary = build_summary(items) + "\n\n" + finance_block
+    fin = summarize(items)
+    # בלוק הכספים נכנס לגוף המייל רק אם זוהה לפחות סכום אחד אמיתי.
+    # דוח "הכל 0.00" על חודש עם מסמכים הוא הצהרה כספית שגויה, גרוע
+    # מאי-דיווח, ולכן במקרה כזה הבלוק מוצג במסך בלבד עם אזהרה.
+    amounts_detected = fin["income_ils"] > 0 or bool(fin["expenses_by_currency"])
+    if amounts_detected:
+        summary = build_summary(items) + "\n\n" + finance_block
+    else:
+        summary = build_summary(items)
+        print("\n⚠️  לא זוהה אף סכום בפריטי החודש, בלוק החישובים לא ייכלל במייל")
+        print("   (נדרש חילוץ סכומים מה-PDF, ראה invoice_processing/accounting.py)")
     print(f"\n{finance_block}")
     draft = prepare_accounting_email(items, month, summary)
 
@@ -327,10 +346,27 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
         if draft["attachment_count"] == 0:
             print("\n❌ לא נשלח — אין קבצי PDF מצורפים. הורד קבצים לתיקייה ונסה שוב.")
             return draft
+        # מנעול שליחה מקדים: נכתב לפני ה-SMTP, לא אחריו. שתי הרצות בהפרש
+        # שניות (מה שקרה ב-30.8) ייחסמו גם אם הראשונה עוד באוויר.
+        lock = _sent_dir() / f"{month}.lock"
+        lock.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, datetime.now().isoformat(timespec="seconds").encode())
+            os.close(fd)
+        except FileExistsError:
+            print(f"\n🛑 שליחה לחודש {month} כבר מתבצעת ברגעים אלה (קיים {lock.name}).")
+            print("   אם ההרצה הקודמת קרסה באמצע, מחק את קובץ הנעילה ונסה שוב.")
+            return draft
         print("\n🚀 שולח...")
-        result = send_accounting_email(draft, confirm="true")
+        result = {"sent": False}
+        try:
+            result = send_accounting_email(draft, confirm="true")
+        finally:
+            if result.get("sent"):
+                mark_sent(month, result)
+            lock.unlink(missing_ok=True)
         if result["sent"]:
-            mark_sent(month, result)
             print(f"✅ נשלח ל-{result['to']}")
             print(f"   צרופות: {result['attachments_sent']}")
         else:
