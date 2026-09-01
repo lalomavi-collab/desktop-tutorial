@@ -84,6 +84,8 @@ def main():
     ap.add_argument("--send", action="store_true", help="שלח בפועל במקום טיוטה")
     ap.add_argument("--force", action="store_true", help="שלח גם אם החודש כבר נשלח")
     ap.add_argument("--no-mail", action="store_true", help="הפק דוח בלבד")
+    ap.add_argument("--no-collect", action="store_true",
+                    help="דלג על איסוף מהמיילים, קרא רק את מה שכבר בתיקייה")
     args = ap.parse_args()
 
     month = args.month or (previous_month() if args.prev else datetime.now().strftime("%Y-%m"))
@@ -91,6 +93,20 @@ def main():
     print("=" * 60)
     print(f"  דוח הנהלת חשבונות LALUM — {month}")
     print("=" * 60)
+
+    # שלב 0: איסוף מהמיילים לתיקיית החודש. השלב הזה חי בצינור הישן
+    # והדוח קורא רק את התיקייה, בלעדיו התיקייה לא מתמלאת מעולם.
+    if not args.no_collect:
+        try:
+            from invoice_processing.collectors.email_collector import collect_from_emails
+            collected = collect_from_emails(month)
+            if collected.get("error"):
+                print(f"⚠️  איסוף מהמיילים: {collected['error']}")
+                print("   ממשיך עם מה שכבר בתיקייה")
+            else:
+                print(f"📨 נאספו מהמיילים {collected.get('total', 0)} פריטים לתיקיית החודש")
+        except Exception as e:
+            print(f"⚠️  איסוף מהמיילים נכשל ({e}), ממשיך עם מה שכבר בתיקייה")
 
     result = build_month_report(month)
 
