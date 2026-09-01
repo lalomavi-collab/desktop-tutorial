@@ -24,6 +24,7 @@ from .collectors.month_path import HEBREW_MONTHS, resolve_month_folder
 
 VAT_RATES = (0.18, 0.17)
 INCOME_SUBFOLDER = "_הופק ללקוחות"
+BANK_SUBFOLDER = "_בנק"          # דפי בנק חסויים: לא נסרקים כחשבוניות, לא מצורפים למייל
 REPORT_PREFIX = "דוח-הנהלת-חשבונות"
 
 _NUM = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+\.\d{1,2}")
@@ -232,11 +233,25 @@ def classify(path: Path, text: str, is_income_folder: bool) -> tuple[str, str]:
     if _NOT_TAX_INVOICE_RE.search(text):
         return "expense_no_vat", "חשבון תקופתי — אינו חשבונית מס, ניכוי תשומות אסור לפני תשלום"
     if any(h in text for h in _NO_VAT_HINTS):
-        return "expense_no_vat", "ללא מע\"מ — אינו מזכה בניכוי תשומות"
+        # רמז בלבד, הנתון גובר: ב-build_rows, אם המסמך מציג שלשה תקינה
+        # עם מע"מ > 0, הסיווג חוזר ל-expense. OCR מלקט לעיתים מילים
+        # כמו "ארנונה" מגרפיקה ומטקסט שוליים, ואסור שמילה תמחק ניכוי.
+        # (בניגוד לחשבון תקופתי למעלה, שהוא איסור חוקי מוחלט.)
+        return "expense_no_vat_hint", "ללא מע\"מ — אינו מזכה בניכוי תשומות"
     return "expense", ""
 
 
 # ---------------------------------------------------------------- בנייה
+
+def _resolve_no_vat_hint(category: str, vat: float, note: str) -> tuple[str, str]:
+    """רמז 'ללא מע"מ' נסוג בפני הנתון: שלשה תקינה עם מע"מ גוברת על מילה."""
+    if category != "expense_no_vat_hint":
+        return category, note
+    if vat > 0:
+        return "expense", "זוהה מע\"מ במסמך — רמז 'ללא מע\"מ' בוטל לטובת הנתון"
+    return "expense_no_vat", note
+
+
 
 
 def build_rows(month: str) -> tuple[list[Row], Path]:
@@ -248,6 +263,8 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
     root_names = {p.name for p in folder.glob("*.pdf")}
 
     for path in sorted(folder.rglob("*.pdf")):
+        if BANK_SUBFOLDER in path.parts:
+            continue
         is_income = INCOME_SUBFOLDER in path.parts
         # אותו קובץ גם בשורש וגם ב"הופק ללקוחות" = מסמך ספק שהועתק בטעות.
         # השורש קובע, כדי לא לספור הוצאה כהכנסה.
@@ -262,6 +279,7 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             used_ocr = bool(text.strip())
         category, note = classify(path, text, is_income)
         net, vat, total, estimated = find_amounts(text)
+        category, note = _resolve_no_vat_hint(category, vat, note)
         currency = detect_currency(text)
 
         if total == 0:
@@ -292,6 +310,8 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
     for path in sorted(folder.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in image_exts:
             continue
+        if BANK_SUBFOLDER in path.parts:
+            continue
         is_income = INCOME_SUBFOLDER in path.parts
         # ניסיון OCR על התמונה עצמה: חשבונית מצולמת שהועלתה ידנית
         # מקבלת סכומים משוערים במקום להישאר עיוורת לגמרי.
@@ -299,6 +319,7 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
         net, vat, total, _ = find_amounts(text) if text.strip() else (0.0, 0.0, 0.0, True)
         if total > 0:
             category, note = classify(path, text, is_income)
+            category, note = _resolve_no_vat_hint(category, vat, note)
             note = note or "חשבונית מצולמת — סכומים חולצו ב-OCR, לאימות"
         else:
             category = "income" if is_income else "expense"

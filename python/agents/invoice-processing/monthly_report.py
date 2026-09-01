@@ -110,6 +110,14 @@ def main():
 
     result = build_month_report(month)
 
+    # התאמה כפולה מול דפי הבנק (תת-תיקיית _בנק). הדפים עצמם חסויים:
+    # לא נסרקים כחשבוניות ולא מצורפים למייל, רק תוצאת ההתאמה נכנסת לדוח.
+    from invoice_processing.bank_reconciliation import reconcile, build_reconciliation_block
+    from pathlib import Path as _P
+    rec = reconcile(result["rows"], _P(result["folder"]))
+    rec_block = build_reconciliation_block(rec)
+    result["body"] = result["body"] + "\n\n" + rec_block
+
     print(f"\n📁 {result['folder']}")
     print(f"   {len(result['rows'])} מסמכים\n")
     print(result["body"])
