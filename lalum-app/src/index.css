@@ -2482,19 +2482,92 @@ html.a11y-reduce-motion *::after {
   margin: 0;
   max-width: 46ch;
 }
+/* QR: a scannable jump to the app. Column of a framed code plus a "scan to
+   install" hint, so its purpose reads at a glance. Hidden on phones (below). */
 .footer-qr {
   flex: none;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 10px;
-  line-height: 0;
-  box-shadow: 0 10px 30px -18px rgba(60, 45, 30, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
 }
-.footer-qr img {
+.footer-qr-frame {
+  position: relative;
+  display: block;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  line-height: 0;
+  box-shadow: 0 12px 34px -18px rgba(60, 45, 30, 0.55);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+/* Corner marks: a focused "scanner" frame around the code. */
+.footer-qr-frame::before,
+.footer-qr-frame::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 2px solid var(--clay);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.footer-qr-frame::before {
+  clip-path: polygon(0 0, 34% 0, 34% 8%, 8% 8%, 8% 34%, 0 34%, 0 100%, 34% 100%, 34% 92%, 8% 92%, 8% 66%, 0 66%);
+}
+.footer-qr-frame::after {
+  clip-path: polygon(100% 0, 66% 0, 66% 8%, 92% 8%, 92% 34%, 100% 34%, 100% 100%, 66% 100%, 66% 92%, 92% 92%, 92% 66%, 100% 66%);
+}
+.footer-qr:hover .footer-qr-frame {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -18px rgba(60, 45, 30, 0.6);
+}
+.footer-qr-frame img {
   display: block;
   width: 112px;
   height: 112px;
+}
+.footer-qr-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--clay);
+}
+
+/* Install control: primary path on phones, offered on desktop only when the
+   browser exposes a native install prompt (.has-prompt). */
+.footer-install {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+.footer-install.has-prompt {
+  display: flex;
+}
+.footer-install-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-install-how {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 46ch;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+.footer-install-how p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--slate);
 }
 
 /* Social */
@@ -2814,13 +2887,18 @@ html.a11y-reduce-motion *::after {
     font-size: 12px;
     line-height: 1.45;
   }
+  /* On a phone the QR is useless (you cannot scan your own screen): hide it and
+     make the one-tap install button the path instead. */
   .footer-qr {
-    padding: 7px;
-    border-radius: 12px;
+    display: none;
   }
-  .footer-qr img {
-    width: 76px;
-    height: 76px;
+  .footer-install {
+    display: flex;
+    margin-top: 12px;
+  }
+  .footer-install-btn {
+    align-self: stretch;
+    justify-content: center;
   }
   .footer-inner {
     grid-template-columns: 1fr 1fr;

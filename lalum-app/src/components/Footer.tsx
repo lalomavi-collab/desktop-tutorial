@@ -5,6 +5,7 @@ import { LeumiMark, PaymentBrands } from "./BrandMarks";
 import { contactEmail, officePhone, directPhone, personalLine, socialLinks, websiteDisplay, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 import { Wordmark } from "./Wordmark";
+import { AppInstall } from "./AppInstall";
 
 function LinkedInIcon() {
   return (
@@ -49,16 +50,8 @@ export function Footer() {
 
   return (
     <footer className="site-footer">
-      {/* Download band: scan the QR to install the app. */}
-      <div className="wrap footer-download">
-        <div className="footer-download-text">
-          <h3 className="footer-download-title">{f.downloadTitle}</h3>
-          <p className="footer-download-sub">{f.downloadSub}</p>
-        </div>
-        <a className="footer-qr" href="https://lalumapp.com" aria-label={f.qrAlt}>
-          <img src="/download-qr.svg" alt={f.qrAlt} width={112} height={112} loading="lazy" decoding="async" />
-        </a>
-      </div>
+      {/* Download band: QR on desktop, one-tap install on phones. */}
+      <AppInstall />
 
       <div className="wrap footer-inner">
         <div className="footer-brand">
