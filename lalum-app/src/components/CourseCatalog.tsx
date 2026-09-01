@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { courses, courseFramework, courseSlug, instructorLine, courseDisclaimer, type Course } from "../lib/courses";
-import { academyPro, proCertificate } from "../lib/academyPro";
+import { academyPro, proCertificate, proCohort } from "../lib/academyPro";
 
 // LALUM Academy catalog: a dark premium, RTL band showing the flagship
 // executive programs. Content is Hebrew, so the whole section is forced RTL
@@ -48,6 +48,7 @@ export function CourseCatalog() {
             אותו מבנה, בקבוצה פתוחה ובלמידה מקוונת, לעורכי דין, לשמאי מקרקעין ולרואי חשבון ויועצי מס. שישה מפגשים, פרויקט גמר שנשאר אצלכם.
           </p>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "#A9A296", margin: "12px 0 0" }}>{proCertificate}</p>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#A9A296", margin: "6px 0 0" }}>{proCohort}</p>
         </div>
 
         <div className="academy-grid">
