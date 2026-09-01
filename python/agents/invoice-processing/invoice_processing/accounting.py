@@ -124,7 +124,7 @@ def extract_text_ocr(path: Path) -> str:
 
 # פורמט אלפים אירופאי: "1.000.00" (קארדקום) הוא 1,000.00. מזוהה לפי
 # נקודה כמפריד אלפים ואחריה נקודה עשרונית, ומנורמל לפני החילוץ.
-_EURO_NUM = re.compile(r"\b\d{1,3}(?:\.\d{3})+\.\d{2}\b")
+_EURO_NUM = re.compile(r"(?<![\d.])\d{1,3}(?:\.\d{3})+\.\d{2}(?!\d)")
 
 
 def _normalize_euro_thousands(text: str) -> str:
