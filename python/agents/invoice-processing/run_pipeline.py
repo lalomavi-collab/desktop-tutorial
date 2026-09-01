@@ -266,7 +266,10 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
     print_table(items)
 
     # שלב 4: הכנת טיוטה
-    summary = build_summary(items)
+    from invoice_processing.reporting.finance_summary import build_finance_block
+    finance_block = build_finance_block(items, month)
+    summary = build_summary(items) + "\n\n" + finance_block
+    print(f"\n{finance_block}")
     draft = prepare_accounting_email(items, month, summary)
 
     print(f"\n{'='*55}")
