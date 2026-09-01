@@ -565,8 +565,8 @@ const en = {
   },
   seo: {
     home: {
-      title: "LALUM, Law, Real Estate & AI",
-      desc: "A practice uniting law, real estate, and AI: guiding deals and buyers in Israel and abroad, representing owners and rights-holders, decision-oriented mediation, and AI risk governance with EU AI Act conformity.",
+      title: "Dr. Avraham Lalum, Adv. | Real Estate, Urban Renewal & AI",
+      desc: "Dr. Avraham Lalum, Adv.: counsel and second opinions in real estate and urban renewal, in Israel and abroad, and AI risk governance with EU AI Act.",
     },
     advisory: {
       title: "Real Estate, M&A & AI Governance Advisory | LALUM",
@@ -1632,8 +1632,8 @@ const he: Dict = {
   },
   seo: {
     home: {
-      title: "LALUM, משפט, נדל״ן ובינה מלאכותית",
-      desc: "משרד המשלב משפט, נדל״ן ובינה מלאכותית: ליווי עסקאות ורוכשים בארץ ובעולם, ייצוג בעלים ובעלי זכויות, גישור מכוון הכרעה, וממשל סיכונים ו-EU AI Act.",
+      title: "ד״ר עו״ד אברהם ללום | נדל״ן, התחדשות עירונית ו-AI",
+      desc: "ד״ר עו״ד אברהם ללום: ייעוץ וחוות דעת שנייה בנדל״ן ובהתחדשות עירונית, בארץ ובחו״ל, ובממשל בינה מלאכותית, כולל התאמה ל-EU AI Act.",
     },
     advisory: {
       title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM",
