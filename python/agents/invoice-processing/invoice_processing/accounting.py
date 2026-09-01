@@ -39,6 +39,11 @@ _CREDIT_HINTS = ("חשבונית זיכוי", "זיכוי מרכזת", "תעוד
 _PROFORMA_HINTS = ("חשבון עסקה", "חשבונית עסקה", "proforma", "pro forma")
 _NO_VAT_HINTS = ("ארנונה", "אגרה", "מס רכוש")
 
+# מסמך שאינו חשבונית מס — חשבון תקופתי של ספק תשתית (סלקום, חשמל, מים).
+# החוק אוסר ניכוי מס תשומות לפני שהחשבון שולם; חשבונית המס מונפקת רק
+# אחרי התשלום. ה-OCR מחליף לעיתים ב/כ בעברית, לכן שתי הצורות.
+_NOT_TAX_INVOICE_RE = re.compile(r"חש[בכ]ון תקופתי|אינו מהווה חש[בכ]ונית מס")
+
 
 @dataclass
 class Row:
@@ -211,6 +216,8 @@ def classify(path: Path, text: str, is_income_folder: bool) -> tuple[str, str]:
         return "credit", "חשבונית זיכוי — מקטינה את ההוצאה"
     if any(h in low for h in _PROFORMA_HINTS):
         return "proforma_in", "חשבון עסקה — אינו חשבונית מס, לא ניתן לנכות תשומות"
+    if _NOT_TAX_INVOICE_RE.search(text):
+        return "expense_no_vat", "חשבון תקופתי — אינו חשבונית מס, ניכוי תשומות אסור לפני תשלום"
     if any(h in text for h in _NO_VAT_HINTS):
         return "expense_no_vat", "ללא מע\"מ — אינו מזכה בניכוי תשומות"
     return "expense", ""
