@@ -15,6 +15,11 @@ export const proFramework = {
 };
 
 // Conditions for the participation certificate. Never described as accreditation.
+// Cohorts open according to demand, so the page states that instead of naming a
+// date it cannot keep. An enquiry is how someone gets told when one opens.
+export const proCohort =
+  "מחזורים נפתחים לפי היקף הביקוש. השאירו פרטים ונעדכן אתכם לקראת פתיחת המחזור הקרוב.";
+
 export const proCertificate =
   "תעודת השתתפות מוענקת בתום התוכנית למשתתפים שנכחו בחמישה מפגשים לפחות והגישו את פרויקט הגמר.";
 

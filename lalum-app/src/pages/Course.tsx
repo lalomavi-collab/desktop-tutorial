@@ -5,7 +5,7 @@ import { PageMeta } from "../components/PageMeta";
 import { NotFound } from "./NotFound";
 import { courseNode, pageJsonLd } from "../lib/schema";
 import { courses, courseFramework, courseSlug, instructorLine, courseDisclaimer } from "../lib/courses";
-import { academyPro, proCertificate } from "../lib/academyPro";
+import { academyPro, proCertificate, proCohort } from "../lib/academyPro";
 
 // One page per LALUM Academy program. The content is the same data the catalog
 // card renders, given a URL of its own so a program can be linked, shared and
@@ -69,7 +69,8 @@ export function Course() {
             ))}
           </ol>
 
-          {isPro && <p className="course-fineprint" style={{ marginBottom: 18 }}>{proCertificate}</p>}
+          {isPro && <p className="course-fineprint" style={{ marginBottom: 6 }}>{proCertificate}</p>}
+          {isPro && <p className="course-fineprint" style={{ marginBottom: 18 }}>{proCohort}</p>}
 
           <Link to={`/book?program=${slug}`} className="btn btn-clay course-cta">
             <Icon name="calendar" size={16} /> {c.ctaLabel ?? "תיאום קורס In-House לארגון"}
