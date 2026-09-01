@@ -3802,23 +3802,47 @@ html.a11y-reduce-motion *::after {
 }
 .riskcalc-step { font-size: 12.5px; color: var(--slate); margin: 0 0 22px; }
 .riskcalc-q { font-size: 19px; font-weight: 600; line-height: 1.4; color: var(--ink); margin: 0 0 18px; }
-.riskcalc-choices { display: flex; flex-direction: column; gap: 10px; }
+.riskcalc-choices { display: flex; flex-direction: column; gap: 12px; }
 .riskcalc-choice {
   inline-size: 100%;
   text-align: start;
-  padding: 15px 18px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
   background: var(--card);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 15.5px;
   line-height: 1.55;
   cursor: pointer;
-  transition: border-color 0.16s ease, background 0.16s ease;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, transform 0.1s ease;
 }
-.riskcalc-choice:hover { border-color: var(--clay-soft); }
-.riskcalc-choice.on { border-color: var(--clay); background: var(--clay-tint); }
+.riskcalc-choice-text { flex: 1; }
+/* The mark hint: a chevron on the picker, a check on answers. Muted until the
+   card is hovered or chosen. */
+.riskcalc-choice-mark {
+  flex: none;
+  display: inline-flex;
+  color: var(--line-strong);
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+.riskcalc-choice:hover {
+  border-color: var(--clay-soft);
+  box-shadow: 0 12px 30px -20px rgba(60, 45, 30, 0.55);
+  transform: translateY(-1px);
+}
+.riskcalc-choice:hover .riskcalc-choice-mark { color: var(--clay); }
+.riskcalc-choice.on {
+  border-color: var(--clay);
+  background: var(--clay-tint);
+  box-shadow: 0 12px 30px -20px rgba(193, 95, 60, 0.5);
+}
+.riskcalc-choice.on .riskcalc-choice-mark { color: var(--clay); transform: scale(1.12); }
+.riskcalc-nav { margin-top: 16px; }
 .riskcalc-badge {
   display: inline-block;
   padding: 8px 18px;
@@ -3831,6 +3855,39 @@ html.a11y-reduce-motion *::after {
 .riskcalc-badge.tone-ok { color: #2f6f4f; background: #eef6f1; border-color: #cfe3d8; }
 .riskcalc-badge.tone-warn { color: #8a6318; background: #fbf3e2; border-color: #ecdcbb; }
 .riskcalc-badge.tone-risk { color: #800020; background: #fbeef0; border-color: #eccfd5; }
+
+/* Exposure gauge: a speedometer whose needle points at the visitor's score. */
+.riskcalc-gauge {
+  max-inline-size: 300px;
+  margin: 4px 0 6px;
+  text-align: center;
+}
+.riskcalc-gauge svg { display: block; }
+.riskcalc-gauge-read { margin-top: 2px; }
+.riskcalc-gauge-score { font-family: var(--serif); font-size: 30px; font-weight: 600; line-height: 1; }
+.riskcalc-gauge-max { font-size: 17px; color: var(--slate); font-weight: 500; }
+.riskcalc-gauge-label { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); margin-top: 4px; }
+
+/* Conversion block on the result: value on the start, action on the end. */
+.riskcalc-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 6px 0 20px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  border: 1px solid var(--clay-soft);
+  background: linear-gradient(135deg, var(--clay-tint), var(--card));
+}
+.riskcalc-cta-text { flex: 1; min-inline-size: 18ch; }
+.riskcalc-cta-title { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--ink); margin: 0 0 5px; }
+.riskcalc-cta-sub { font-size: 14px; line-height: 1.6; color: var(--slate); margin: 0; max-inline-size: 46ch; }
+.riskcalc-cta-btn { flex: none; }
+@media (max-width: 560px) {
+  .riskcalc-cta-btn { inline-size: 100%; justify-content: center; }
+}
 .riskcalc-score { font-size: 13.5px; color: var(--slate); margin: 0 0 16px; }
 /* Where they scored worst. The total says how exposed; this says where, and it
    is the line that earns the meeting. */
