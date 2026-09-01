@@ -122,7 +122,20 @@ def extract_text_ocr(path: Path) -> str:
         return ""
 
 
+# פורמט אלפים אירופאי: "1.000.00" (קארדקום) הוא 1,000.00. מזוהה לפי
+# נקודה כמפריד אלפים ואחריה נקודה עשרונית, ומנורמל לפני החילוץ.
+_EURO_NUM = re.compile(r"\b\d{1,3}(?:\.\d{3})+\.\d{2}\b")
+
+
+def _normalize_euro_thousands(text: str) -> str:
+    def fix(m: re.Match) -> str:
+        whole, dec = m.group().rsplit(".", 1)
+        return whole.replace(".", "") + "." + dec
+    return _EURO_NUM.sub(fix, text)
+
+
 def _numbers(text: str) -> list[float]:
+    text = _normalize_euro_thousands(text)
     out = []
     for m in _NUM.finditer(text):
         try:
@@ -152,8 +165,10 @@ def find_amounts(text: str) -> tuple[float, float, float, bool]:
         for rate in VAT_RATES:
             vat = round(net * rate, 2)
             total = round(net + vat, 2)
-            # המסמכים הישראליים מעגלים את הסה"כ, לכן סובלנות של אגורות
-            if any(abs(vat - c) <= 0.02 for c in pool) and any(abs(total - c) <= 0.02 for c in pool):
+            # מע"מ בסובלנות אגורות, אך סה"כ בסובלנות של עד שקל שלם:
+            # מסמכים ישראליים מעגלים את הסה"כ לשקל (9,720+1,749.60=11,469.60
+            # מודפס 11,470.00) והשלשה עדיין תקפה.
+            if any(abs(vat - c) <= 0.02 for c in pool) and any(abs(total - c) <= 1.00 for c in pool):
                 if best is None or total > best[2]:
                     best = (net, vat, total)
     if best:
