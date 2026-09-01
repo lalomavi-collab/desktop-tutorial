@@ -47,13 +47,35 @@ def _sent_marker(month: str) -> Path:
 
 
 def already_sent(month: str) -> dict | None:
-    """מחזיר את פרטי השליחה הקודמת לחודש, או None אם טרם נשלח."""
-    for marker in (_sent_marker(month), LEGACY_SENT_DIR / f"{month}.json"):
-        if marker.exists():
+    """
+    מחזיר את פרטי השליחה הקודמת לחודש, או None אם טרם נשלח.
+    סמן שנמצא רק במיקום הישן (בריפו) מועתק אוטומטית למיקום הקבוע
+    ב-OneDrive, כך שמחיקת הריפו או התיקייה הישנה לא מוחקת את ההגנה.
+    """
+    primary = _sent_marker(month)
+    legacy = LEGACY_SENT_DIR / f"{month}.json"
+    for marker in (primary, legacy):
+        if not marker.exists():
+            continue
+        try:
+            data = json.loads(marker.read_text(encoding="utf-8"))
+        except Exception:
+            data = {"when": "unknown"}
+        # ביקורת: סמן תקין שנכתב על ידי המערכת מחזיק רשימת שמות קבצים.
+        atts = data.get("attachments")
+        if not isinstance(atts, list) or any(not str(a).lower().endswith(".pdf") for a in atts):
+            data["integrity_warning"] = (
+                "מבנה הסמן אינו תואם כתיבה של המערכת (ייתכן שנכתב ידנית), "
+                "מומלץ לאמת מול תיקיית פריטים שנשלחו בתיבת המייל"
+            )
+        if marker == legacy and not primary.exists():
             try:
-                return json.loads(marker.read_text(encoding="utf-8"))
+                primary.parent.mkdir(parents=True, exist_ok=True)
+                primary.write_text(json.dumps({**data, "migrated_from": str(legacy)},
+                                              ensure_ascii=False, indent=2), encoding="utf-8")
             except Exception:
-                return {"when": "unknown"}
+                pass
+        return data
     return None
 
 
@@ -298,6 +320,8 @@ def run(month: str | None = None, json_path: str | None = None, confirm_send: bo
         if prev and not force:
             print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}.")
             print(f"   {len(prev.get('attachments', []))} צרופות. לא נשלח שוב.")
+            if prev.get("integrity_warning"):
+                print(f"   ⚠️  {prev['integrity_warning']}")
             print("   לשליחה חוזרת מכוונת: --force")
             return draft
         if draft["attachment_count"] == 0:
