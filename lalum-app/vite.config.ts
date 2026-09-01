@@ -15,6 +15,8 @@ import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import type { ArticleBlock } from "./src/lib/content";
+import { courses, courseFramework, courseSlug } from "./src/lib/courses";
+import { academyPro } from "./src/lib/academyPro";
 
 const SITE = "https://lalumapp.com";
 
@@ -38,6 +40,17 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // One prerendered page per LALUM Academy program, In-House and Pro alike, so
+  // each program resolves to a real file with its own title and description
+  // instead of living only inside an accordion on the training page.
+  ...[...courses, ...academyPro].map((c) => {
+    const frame = c.frame ?? courseFramework;
+    return {
+      path: `training/${courseSlug(c)}`,
+      title: `${c.title} | LALUM`,
+      desc: `${c.audience} ${frame.sessions}, ${frame.hours}, ${frame.place}.`,
+    };
+  }),
 ];
 
 // String.replace treats $1, $&, $` and $' in a REPLACEMENT STRING as pattern

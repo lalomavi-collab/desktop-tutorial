@@ -1,5 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
+import { courses, courseSlug } from "../lib/courses";
+import { academyPro } from "../lib/academyPro";
 import { Link } from "../components/AppLink";
 import { PageMeta } from "../components/PageMeta";
 import { pageJsonLd } from "../lib/schema";
@@ -158,11 +160,19 @@ export function Book() {
     );
   }
 
+  const [params] = useSearchParams();
   const [day, setDay] = useState("");
   const [slot, setSlot] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [topic, setTopic] = useState("");
+  // A visitor who arrived from a course card carries the program slug in the
+  // query string. Prefilling the topic means the request that reaches the firm
+  // says which program it is about, instead of arriving anonymous.
+  const programSlug = (params.get("program") ?? "").trim().slice(0, 60);
+  const programTitle = programSlug
+    ? [...courses, ...academyPro].find((c) => courseSlug(c) === programSlug)?.title
+    : undefined;
+  const [topic, setTopic] = useState(programTitle ? `פנייה בנוגע לתוכנית: ${programTitle}` : "");
   const [busy, setBusy] = useState(false);
   const [consent, setConsent] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);

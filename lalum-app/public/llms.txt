@@ -41,6 +41,24 @@ The site is available in Hebrew (primary), English, Spanish, French, and Arabic.
 - TAMA 38/1 versus TAMA 38/2: https://lalumapp.com/insights/tama-38-1-vs-38-2-comparison/ . The difference between strengthening-and-adding (38/1) and demolition-and-rebuild (38/2), the practical trade-offs, feasibility, owner guarantees, and how to choose the right track for a building.
 - Amendment 13 data security guide: https://lalumapp.com/insights/amendment-13-data-security-guide/ . The data-security obligations under Israel's Privacy Protection Amendment 13: security levels by database sensitivity, technical and organizational controls, written procedures, access management, incident handling and reporting, audits, and staff training.
 
+## Training programs
+
+Six sessions of three hours each, 24 academic hours, with a practical capstone. Taught by Dr. Avraham Lalum, attorney, notary and Ph.D. in Law and Economics. The In-House line is delivered at the client's offices for organisations; the Academy Pro line is online, for individual professionals, and awards a participation certificate.
+
+- LALUM Academy: AI בעסקאות נדל״ן מורכב והתחדשות עירונית: https://lalumapp.com/training/lalum-academy-real-estate/ . נדל״ן והתחדשות עירונית. מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.
+- LALUM Academy: חוזים מורכבים, ממשל תאגידי ואוטומציה: https://lalumapp.com/training/lalum-academy-corporate/ . ממשל תאגידי וחוזים. יועצים משפטיים פנימיים (In-House), מנהלי סיכונים, קציני ציות (Compliance) ומנהלי עסקאות.
+- LALUM Academy: ליטיגציה, ראיות דיגיטליות, גישור ובוררות: https://lalumapp.com/training/lalum-academy-litigation/ . ליטיגציה ויישוב סכסוכים. ליטיגטורים, מנהלי מחלקות סכסוכים, בוררים, מגשרים ומנהלי סיכונים משפטיים.
+- LALUM Academy: AI Legal & Regulatory Engineering for Hi-Tech: https://lalumapp.com/training/lalum-academy-hitech/ . הייטק והנדסה רגולטורית. יועצים משפטיים בהייטק (GC), מנהלי מוצר (VP Product/CPO), סמנכ״לי טכנולוגיה (CTO) ומנהלי R&D.
+- LALUM Academy: AI לרשויות מקומיות ולמגזר הציבורי: https://lalumapp.com/training/lalum-academy-public-sector/ . רשויות מקומיות וגופים ציבוריים. מנהלי מחלקות ברשויות מקומיות, לשכות משפטיות ציבוריות, מבקרי פנים, ממוני חופש מידע וצוותי רגולציה.
+- LALUM Academy: AI המשפטי לתעשיית הרכב והניידות: https://lalumapp.com/training/lalum-academy-automotive/ . תעשיית הרכב וניידות. יועצים משפטיים ומנהלי רגולציה ביבואני ויצרני רכב, חברות ניידות, ביטוח רכב וניהול צי.
+- LALUM Academy: AI המשפטי לבריאות ולמדעי החיים: https://lalumapp.com/training/lalum-academy-healthcare/ . בריאות ומדעי החיים. יועצים משפטיים בקופות חולים, בתי חולים, חברות מכשור רפואי, פארמה ובריאות דיגיטלית.
+- LALUM Academy: AI המשפטי לפיננסים ולביטוח: https://lalumapp.com/training/lalum-academy-finance/ . פיננסים וביטוח. יועצים משפטיים וקציני ציות בבנקים, חברות ביטוח, בתי השקעות, פינטק וגופים מוסדיים.
+- LALUM Academy: AI המשפטי לאנרגיה, תשתיות ותעשייה: https://lalumapp.com/training/lalum-academy-energy/ . אנרגיה, תשתיות ותעשייה. יועצים משפטיים ומנהלי רגולציה בחברות אנרגיה, תשתיות, בנייה ותעשייה יצרנית.
+- LALUM Academy: AI המשפטי לסייבר והגנת מידע: https://lalumapp.com/training/lalum-academy-cyber/ . סייבר והגנת מידע. יועצים משפטיים, מנהלי אבטחת מידע (CISO), ממוני הגנת פרטיות (DPO) וצוותי ציות וניהול סיכונים.
+- LALUM Academy Pro: AI לעורך הדין העצמאי ולמשרד הבוטיק: https://lalumapp.com/training/lalum-academy-pro-law/ . עורכי דין. עורכי דין עצמאיים ומשרדי בוטיק שרוצים להטמיע כלי AI בעבודה היומיומית בלי לפגוע בחיסיון ובאחריות המקצועית.
+- LALUM Academy Pro: AI לשמאי המקרקעין: https://lalumapp.com/training/lalum-academy-pro-appraisal/ . שמאי מקרקעין. שמאי מקרקעין עצמאיים ומשרדי שמאות שרוצים לקצר את שלב איסוף הנתונים והניתוח בלי לפגוע באחריות המקצועית על השומה.
+- LALUM Academy Pro: AI לרואה החשבון וליועץ המס: https://lalumapp.com/training/lalum-academy-pro-accounting/ . רואי חשבון ויועצי מס. רואי חשבון, יועצי מס ומנהלי חשבונות בכירים שרוצים לקצר סיווג, הצלבה ואיתור חריגים בלי לוותר על בקרה.
+
 ## Contact
 
 - Email: avraham@lalum.co
