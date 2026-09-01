@@ -32,26 +32,33 @@ def previous_month() -> str:
     return last.strftime("%Y-%m")
 
 
-SENT_DIR = Path(__file__).parent / "data" / "sent"
+# סמני "נשלח" יושבים בתוך תיקיית החשבוניות הקבועה (OneDrive), לצד החומר
+# עצמו, כך שכל מצב המערכת חי במקום אחד ומסונכרן בין מחשבים.
+LEGACY_SENT_DIR = Path(__file__).parent / "data" / "sent"
+
+
+def _sent_dir() -> Path:
+    from invoice_processing.collectors.base_folder import get_base_folder
+    return get_base_folder() / "_מערכת" / "נשלח"
 
 
 def _sent_marker(month: str) -> Path:
-    return SENT_DIR / f"{month}.json"
+    return _sent_dir() / f"{month}.json"
 
 
 def already_sent(month: str) -> dict | None:
     """מחזיר את פרטי השליחה הקודמת לחודש, או None אם טרם נשלח."""
-    marker = _sent_marker(month)
-    if not marker.exists():
-        return None
-    try:
-        return json.loads(marker.read_text(encoding="utf-8"))
-    except Exception:
-        return {"when": "unknown"}
+    for marker in (_sent_marker(month), LEGACY_SENT_DIR / f"{month}.json"):
+        if marker.exists():
+            try:
+                return json.loads(marker.read_text(encoding="utf-8"))
+            except Exception:
+                return {"when": "unknown"}
+    return None
 
 
 def mark_sent(month: str, result: dict):
-    SENT_DIR.mkdir(parents=True, exist_ok=True)
+    _sent_dir().mkdir(parents=True, exist_ok=True)
     _sent_marker(month).write_text(
         json.dumps({
             "when": datetime.now().isoformat(timespec="seconds"),
