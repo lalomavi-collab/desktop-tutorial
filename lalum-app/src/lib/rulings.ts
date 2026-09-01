@@ -33,7 +33,7 @@ export type Ruling = {
   date: string;
   /** The date as it is written in Hebrew, e.g. "23.2.2025" or "יולי 2025". */
   dateLabel: string;
-  jurisdiction: "IL" | "US";
+  jurisdiction: "IL" | "US" | "CA" | "EU";
   areas: AreaId[];
   tags: string[];
   facts?: string;
