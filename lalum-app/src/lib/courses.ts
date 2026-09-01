@@ -17,7 +17,26 @@ export type Course = {
   icon: string; // id in the shared icon sprite (public/icons.svg)
   accent: string; // warm brand accent for the card
   image: string; // /courses/<id>.jpg, shown when present (graceful fallback otherwise)
+  // Optional. Present on the Academy Pro line, absent on the In-House line,
+  // so the existing ten programs keep their exact rendering.
+  track?: "inhouse" | "pro";
+  frame?: { sessions: string; hours: string; group: string; place: string };
+  tailoringLabel?: string;
+  ctaLabel?: string;
 };
+
+// The route slug of a course is its id. Kept as a helper so call sites read
+// clearly and a future rename touches one place.
+export function courseSlug(c: Course): string {
+  return c.id;
+}
+
+// Shown on every card and every course page. Dr. Lalum teaches all programs.
+export const instructorLine = "מועבר על ידי ד״ר אברהם ללום, עורך דין ונוטריון, דוקטור למשפט וכלכלה.";
+
+// Mandatory on every card and course page.
+export const courseDisclaimer =
+  "התוכנית היא הכשרה מקצועית ואינה מהווה ייעוץ משפטי, שמאי או חשבונאי בתיק מסוים.";
 
 // Shared framework, identical across every track.
 export const courseFramework = {

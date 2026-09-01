@@ -20,6 +20,7 @@ const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdviso
 const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
 const Topic = lazy(() => import("./pages/Topic").then((m) => ({ default: m.Topic })));
 const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m.Training })));
+const Course = lazy(() => import("./pages/Course").then((m) => ({ default: m.Course })));
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const Faq = lazy(() => import("./pages/Faq").then((m) => ({ default: m.Faq })));
@@ -73,6 +74,7 @@ export default function App() {
             <Route path="real-estate-legal-advisory" element={<RealEstateLegalAdvisory />} />
             <Route path="mediation-dispute-resolution" element={<MediationDisputeResolution />} />
             <Route path="training" element={<Training />} />
+            <Route path="training/:slug" element={<Course />} />
             {/* /courses is the public URL for the Academy; it is the same page
                 as /training (labelled "Courses" in the nav). Without this alias
                 a direct visit to /courses fell through to the catch-all Home. */}

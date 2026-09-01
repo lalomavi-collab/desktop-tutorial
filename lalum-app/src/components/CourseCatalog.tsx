@@ -1,16 +1,27 @@
 import { useState } from "react";
 import { Link } from "./AppLink";
 import { Icon } from "./Icon";
-import { courses, courseFramework, type Course } from "../lib/courses";
+import { courses, courseFramework, courseSlug, instructorLine, courseDisclaimer, type Course } from "../lib/courses";
+import { academyPro, proCertificate } from "../lib/academyPro";
 
-// LALUM Academy catalog: a dark premium, RTL band showing the four flagship
+// LALUM Academy catalog: a dark premium, RTL band showing the flagship
 // executive programs. Content is Hebrew, so the whole section is forced RTL
 // regardless of the app language. Each card carries a per-course banner image
 // (with a branded gradient fallback until an image is supplied), the shared
 // framework, the capstone highlight, and a collapsible six-session syllabus.
+// Two lines live here: the In-House organisational programs, unchanged, and
+// LALUM Academy Pro for individual professionals.
 export function CourseCatalog() {
   const [openId, setOpenId] = useState<string | undefined>();
   const [failed, setFailed] = useState<Set<string>>(new Set());
+
+  const cardProps = (c: Course) => ({
+    c,
+    open: openId === c.id,
+    onToggle: () => setOpenId(openId === c.id ? undefined : c.id),
+    failed: failed.has(c.id),
+    onImgError: () => setFailed((s) => new Set(s).add(c.id)),
+  });
 
   return (
     <section id="programs" dir="rtl" lang="he" className="academy">
@@ -21,18 +32,27 @@ export function CourseCatalog() {
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
             תוכניות דגל למגוון רחב של תעשיות, בהעברה פנים-ארגונית בבית העסק, המשלבות סטאק כלי AI, גבולות מותר ואסור, ופרויקט גמר מעשי המותאם לפעילות שלכם.
           </p>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#A9A296", margin: "12px 0 0" }}>{instructorLine}</p>
         </div>
 
         <div className="academy-grid">
           {courses.map((c) => (
-            <CourseCard
-              key={c.id}
-              c={c}
-              open={openId === c.id}
-              onToggle={() => setOpenId(openId === c.id ? undefined : c.id)}
-              failed={failed.has(c.id)}
-              onImgError={() => setFailed((s) => new Set(s).add(c.id))}
-            />
+            <CourseCard key={c.id} {...cardProps(c)} />
+          ))}
+        </div>
+
+        <div id="academy-pro" style={{ textAlign: "center", maxWidth: "62ch", margin: "72px auto 46px" }}>
+          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>LALUM Academy Pro</p>
+          <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות לבעלי מקצוע</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
+            אותו מבנה, בקבוצה פתוחה ובלמידה מקוונת, לעורכי דין, לשמאי מקרקעין ולרואי חשבון ויועצי מס. שישה מפגשים, פרויקט גמר שנשאר אצלכם.
+          </p>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: "#A9A296", margin: "12px 0 0" }}>{proCertificate}</p>
+        </div>
+
+        <div className="academy-grid">
+          {academyPro.map((c) => (
+            <CourseCard key={c.id} {...cardProps(c)} />
           ))}
         </div>
       </div>
@@ -40,8 +60,10 @@ export function CourseCatalog() {
   );
 }
 
-function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Course; open: boolean; onToggle: () => void; failed: boolean; onImgError: () => void }) {
+export function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Course; open: boolean; onToggle: () => void; failed: boolean; onImgError: () => void }) {
   const showImg = c.image && !failed;
+  const frame = c.frame ?? courseFramework;
+  const slug = courseSlug(c);
   return (
     <article className="course-card">
       <div className="course-banner" style={{ background: `linear-gradient(135deg, ${c.accent} 0%, #1b1b1b 120%)` }}>
@@ -51,18 +73,20 @@ function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Course; open
       </div>
 
       <div className="course-body">
-        <h3 className="course-title serif">{c.title}</h3>
+        <h3 className="course-title serif">
+          <Link to={`/training/${slug}`} className="course-title-link">{c.title}</Link>
+        </h3>
 
         <div className="course-frame">
-          <span><Icon name="calendar" size={14} /> {courseFramework.sessions}</span>
-          <span><Icon name="spark" size={14} /> {courseFramework.hours}</span>
-          <span><Icon name="user" size={14} /> {courseFramework.group}</span>
-          <span><Icon name="pin" size={14} /> {courseFramework.place}</span>
+          <span><Icon name="calendar" size={14} /> {frame.sessions}</span>
+          <span><Icon name="spark" size={14} /> {frame.hours}</span>
+          <span><Icon name="user" size={14} /> {frame.group}</span>
+          <span><Icon name="pin" size={14} /> {frame.place}</span>
         </div>
 
         <div className="course-meta">
           <div><span className="course-meta-k">קהל יעד:</span> {c.audience}</div>
-          <div><span className="course-meta-k">התאמה עסקית:</span> {c.tailoring}</div>
+          <div><span className="course-meta-k">{c.tailoringLabel ?? "התאמה עסקית:"}</span> {c.tailoring}</div>
         </div>
 
         <div className="course-capstone" style={{ borderColor: c.accent }}>
@@ -72,7 +96,7 @@ function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Course; open
         </div>
 
         <button type="button" className="course-syllabus-toggle" aria-expanded={open} onClick={onToggle}>
-          <span>{courseFramework.sessions} בתוכנית</span>
+          <span>{frame.sessions} בתוכנית</span>
           <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
         </button>
         {open && (
@@ -86,9 +110,12 @@ function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Course; open
           </ol>
         )}
 
-        <Link to="/book" className="btn btn-clay course-cta">
-          <Icon name="calendar" size={16} /> תיאום קורס In-House לארגון
+        <Link to={`/book?program=${slug}`} className="btn btn-clay course-cta">
+          <Icon name="calendar" size={16} /> {c.ctaLabel ?? "תיאום קורס In-House לארגון"}
         </Link>
+
+        <p className="course-fineprint">{instructorLine}</p>
+        <p className="course-fineprint">{courseDisclaimer}</p>
       </div>
     </article>
   );
