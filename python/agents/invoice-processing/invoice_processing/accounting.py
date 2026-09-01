@@ -127,6 +127,19 @@ def extract_text_ocr(path: Path) -> str:
         return ""
 
 
+def extract_text_image(path: Path) -> str:
+    """OCR לקובץ תמונה (חשבונית מצולמת שהועלתה ידנית לתיקייה)."""
+    try:
+        import pytesseract
+        from PIL import Image
+    except ImportError:
+        return ""
+    try:
+        return pytesseract.image_to_string(Image.open(path), lang="heb+eng")
+    except Exception:
+        return ""
+
+
 # פורמט אלפים אירופאי: "1.000.00" (קארדקום) הוא 1,000.00. מזוהה לפי
 # נקודה כמפריד אלפים ואחריה נקודה עשרונית, ומנורמל לפני החילוץ.
 _EURO_NUM = re.compile(r"(?<![\d.])\d{1,3}(?:\.\d{3})+\.\d{2}(?!\d)")
@@ -280,14 +293,24 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
         if not path.is_file() or path.suffix.lower() not in image_exts:
             continue
         is_income = INCOME_SUBFOLDER in path.parts
+        # ניסיון OCR על התמונה עצמה: חשבונית מצולמת שהועלתה ידנית
+        # מקבלת סכומים משוערים במקום להישאר עיוורת לגמרי.
+        text = extract_text_image(path)
+        net, vat, total, _ = find_amounts(text) if text.strip() else (0.0, 0.0, 0.0, True)
+        if total > 0:
+            category, note = classify(path, text, is_income)
+            note = note or "חשבונית מצולמת — סכומים חולצו ב-OCR, לאימות"
+        else:
+            category = "income" if is_income else "expense"
+            note = "🛑 חשבונית מצולמת (תמונה) — לא נקראה, נדרשת הזנה ידנית"
         rows.append(Row(
             file=path.name,
             path=str(path),
-            category="income" if is_income else "expense",
-            currency="ILS",
-            net=0.0, vat=0.0, total=0.0,
+            category=category,
+            currency=detect_currency(text) if text.strip() else "ILS",
+            net=net, vat=vat, total=total,
             estimated=True,
-            note="🛑 חשבונית מצולמת (תמונה) — לא נקראה, נדרשת הזנה ידנית",
+            note=note,
         ))
     return rows, folder
 
