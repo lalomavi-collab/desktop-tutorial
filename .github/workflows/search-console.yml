@@ -1,0 +1,82 @@
+name: Search Console pull
+
+# Fetches the site's own search performance and commits it to the repo.
+#
+# It runs here for the same reason IndexNow does, plus one more: Search Console
+# needs a credential. A credential must not live in a chat transcript or in a
+# temporary container, so it lives in GitHub Secrets, this workflow is the only
+# thing that reads it, and what lands in the repo is data with no key in it.
+#
+# The secret is GSC_SERVICE_ACCOUNT_JSON: the whole service-account key file,
+# pasted into Settings, Secrets and variables, Actions. Setup is written out in
+# docs/search-console-setup.md.
+#
+# Until that secret exists the job exits cleanly with a note, so the workflow
+# can be merged before the account is created without painting the repo red.
+
+on:
+  schedule:
+    # Daily, after Search Console has finalised the previous days. The data is
+    # always two to three days behind, so there is nothing to gain from running
+    # more often than once a day.
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: search-console
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check the secret is present
+        id: gate
+        env:
+          KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "GSC_SERVICE_ACCOUNT_JSON is not set. Nothing to pull yet; see docs/search-console-setup.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pull the search performance data
+        if: steps.gate.outputs.ready == 'true'
+        working-directory: lalum-app
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          # Set this as a repository variable only if the property is ever
+          # replaced by a domain property (sc-domain:lalumapp.com).
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
+        run: node scripts/search-console.mjs
+
+      - name: Print the report into the run log
+        if: steps.gate.outputs.ready == 'true'
+        working-directory: lalum-app
+        run: node scripts/search-console-report.mjs
+
+      - name: Commit the data
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/search-console
+          if git diff --cached --quiet; then
+            echo "No change in the data."
+          else
+            git commit -m "נתוני Search Console, $(date -u +%Y-%m-%d)"
+            git push
+          fi
