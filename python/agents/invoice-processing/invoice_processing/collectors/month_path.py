@@ -29,7 +29,9 @@ def resolve_month_folder(month: str = "", create: bool = True) -> Path:
     hebrew = HEBREW_MONTHS[int(mon)]
 
     base = get_base_folder()
-    candidates = [hebrew, f"{hebrew} {year}", month]
+    # מזהה כל מוסכמת שם קיימת כדי לא ליצור תיקייה כפולה לאותו חודש:
+    # "אוגוסט", "אוגוסט 2026", "2026-08", "2026-08 אוגוסט"
+    candidates = [hebrew, f"{hebrew} {year}", month, f"{month} {hebrew}"]
     for name in candidates:
         target = base / name
         if target.is_dir():
