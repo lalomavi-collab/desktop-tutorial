@@ -14,6 +14,7 @@ import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
+import { rulings, areaLabel, rulingTitle } from "./src/lib/rulings";
 import type { ArticleBlock } from "./src/lib/content";
 
 const SITE = "https://lalumapp.com";
@@ -29,6 +30,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל״ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורס AI לעורכי דין והכשרות בינה מלאכותית לארגונים | LALUM", desc: "קורס AI לעורכי דין ולמשרדי עורכי דין, והכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי לדירקטוריונים ולצוותי מוצר." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
+  { path: "rulings", title: "חיפוש פסקי דין: בינה מלאכותית, נדל״ן והתחדשות עירונית | LALUM", desc: "מאגר פסיקה בר חיפוש עם תמצית לכל פסק דין שהמשרד כתב עליו, בבינה מלאכותית ובחובות המקצוע, לצד שאילתות מוכנות למאגרים הרשמיים." },
   { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד״ר עו״ד אברהם ללום ומשרד LALUM." },
   { path: "faq", title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM." },
   { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד״ר עו״ד אברהם ללום, LALUM." },
@@ -270,6 +272,26 @@ function insightsBodyHtml(title: string, desc: string): string {
   ].join("\n");
 }
 
+// The case law page. Unlike the other marketing routes, this one has real
+// records behind it, so the static document carries them: a crawler that runs
+// no JavaScript reads the citation, the court, the date and what each ruling
+// held, which is the part anyone searching for a docket number is looking for.
+function rulingsBodyHtml(title: string, desc: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
+  for (const r of rulings) {
+    out.push(`        <h2>${esc(rulingTitle(r))}</h2>`);
+    out.push(`        <p>${esc(`${r.court}, ${r.dateLabel}${r.bench ? `, ${r.bench}` : ""}`)}</p>`);
+    if (r.issue) out.push(`        <p>${esc(`השאלה המשפטית: ${r.issue}`)}</p>`);
+    out.push(`        <p>${esc(`ההלכה למעשה: ${r.holding}`)}</p>`);
+    if (r.implications) out.push(`        <p>${esc(`השלכות מעשיות: ${r.implications}`)}</p>`);
+    out.push(`        <p>${esc(`תחומים: ${r.areas.map(areaLabel).join(", ")}`)}</p>`);
+    if (r.article) out.push(`        <p><a href="/insights/${esc(encodeURI(r.article))}/">${esc("להרחבה במאמר של המשרד")}</a></p>`);
+  }
+  out.push(`        <p>${esc("התמצית נכתבה בידי המשרד ואינה תחליף לקריאת פסק הדין במקור. אין באמור ייעוץ משפטי, והוא אינו מהווה חוות דעת מחייבת.")}</p>`);
+  return out.join("\n");
+}
+
 // The home page, built from the same dictionary the page component renders
 // from: the hero, the positioning paragraphs, the six AI and risk layers, the
 // reasons, and the Q&A the page already publishes. The root document is the one
@@ -497,6 +519,7 @@ function seoPrerender(): Plugin {
           const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
           const staticBody =
             r.path === "faq" ? faqBodyHtml()
+            : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
             : pillar ? pillarBodyHtml(pillar)
             : pageBodyHtml(r.title, r.desc, r.path);

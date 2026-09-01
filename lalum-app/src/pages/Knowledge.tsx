@@ -53,6 +53,7 @@ export function Knowledge() {
     { icon: "brain", title: k.coursesTitle, body: k.coursesBody, cta: k.coursesCta, href: undefined as string | undefined, to: "/training", accent: "#5a4f9a", tint: "#e8e5f3" },
     { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
     { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: undefined as string | undefined, to: "/faq", accent: "#a8482a", tint: "#f3e7de" },
+    { icon: "gavel", title: k.rulingsTitle, body: k.rulingsBody, cta: k.rulingsCta, href: undefined as string | undefined, to: "/rulings", accent: "#3f6f68", tint: "#e1ede9" },
   ];
 
   return (
