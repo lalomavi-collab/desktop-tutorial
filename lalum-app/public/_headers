@@ -29,4 +29,11 @@
   # SociableKit image host), and the NytroSEO plugin (public pages).
   # Outbound links (WhatsApp, Telegram, social profiles, legal citation sources)
   # are top-level navigations, which CSP does not restrict, so they need no entry.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com https://data.accentapi.com https://data-image.sociablekit.com; frame-src 'self' https://*.zoho.com https://*.zohobookings.com https://private.invoice4u.co.il https://widgets.sociablekit.com; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://plugin.nytsys.com https://*.nytsys.com https://widgets.sociablekit.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plugin.nytsys.com https://*.nytsys.com https://private.invoice4u.co.il https://fonts.googleapis.com https://fonts.gstatic.com https://api.pwnedpasswords.com https://widgets.sociablekit.com https://data.accentapi.com https://data-image.sociablekit.com; frame-src 'self' https://*.zoho.com https://*.zohobookings.com https://private.invoice4u.co.il https://widgets.sociablekit.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://private.invoice4u.co.il; frame-ancestors 'self'; upgrade-insecure-requests
+
+# The service worker must revalidate on every load so a new version ships
+# promptly instead of being pinned by an aggressive cache.
+/sw.js
+  Cache-Control: no-cache
+/.well-known/assetlinks.json
+  Content-Type: application/json

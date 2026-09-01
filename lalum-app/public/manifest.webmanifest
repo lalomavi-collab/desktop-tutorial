@@ -1,13 +1,33 @@
 {
-  "name": "LALUM",
-  "short_name": "LALUM",
-  "description": "LALUM, Tech-Legal and Strategic Advisory",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
+  "name": "LALUM, Tech-Legal and Strategic Advisory",
+  "short_name": "LALUM",
+  "description": "LALUM: Tech-Legal and strategic advisory for real estate, mergers and acquisitions, and AI governance. Guidance, second opinions, and Legal AI, led by Dr. Avraham Lalum.",
+  "lang": "he",
+  "dir": "rtl",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
   "background_color": "#f5f1e8",
   "theme_color": "#f5f1e8",
+  "categories": ["business", "productivity", "finance"],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/mobile-home.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "עמוד הבית של LALUM" },
+    { "src": "/screenshots/mobile-risk.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "מבדק המוכנות Tech-Legal" },
+    { "src": "/screenshots/desktop-home.png", "sizes": "1600x1000", "type": "image/png", "form_factor": "wide", "label": "עמוד הבית של LALUM" }
+  ],
+  "shortcuts": [
+    { "name": "קביעת פגישת ייעוץ", "short_name": "קביעת פגישה", "url": "/book", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "מבדק מוכנות Tech-Legal", "short_name": "מבדק מוכנות", "url": "/risk", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "מאמרים ותובנות", "short_name": "מאמרים", "url": "/insights", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "שאלות ותשובות", "short_name": "שאלות ותשובות", "url": "/faq", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
   ]
 }
