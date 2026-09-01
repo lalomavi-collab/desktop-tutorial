@@ -573,8 +573,8 @@ const en = {
       desc: "Legal advisory across real estate, M&A and international deals, urban renewal, mediation and arbitration, plus AI governance and EU AI Act conformity.",
     },
     training: {
-      title: "AI Governance Courses & Training for Legal and Business | LALUM",
-      desc: "Practical training in AI governance, the EU AI Act, and algorithmic risk management for lawyers, boards, and product teams. LALUM Academy.",
+      title: "AI Course for Lawyers and AI Governance Training | LALUM",
+      desc: "An AI course for lawyers and law firms, plus training in AI governance, the EU AI Act, and algorithmic risk management for boards and product teams.",
     },
     knowledge: {
       title: "Real Estate, M&A & AI Knowledge Hub | LALUM",
@@ -1640,8 +1640,8 @@ const he: Dict = {
       desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act.",
     },
     training: {
-      title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM",
-      desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM.",
+      title: "קורס AI לעורכי דין והכשרות בינה מלאכותית לארגונים | LALUM",
+      desc: "קורס AI לעורכי דין ולמשרדי עורכי דין, והכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי לדירקטוריונים ולצוותי מוצר.",
     },
     knowledge: {
       title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI",
