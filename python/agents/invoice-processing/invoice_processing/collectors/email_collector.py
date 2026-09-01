@@ -73,6 +73,9 @@ def collect_from_mailbox(
         _, msg_ids = conn.search(None, f'(SINCE "{since}" BEFORE "{before}")')
         ids = msg_ids[0].split()
 
+        bank_senders = [s.strip().lower() for s in
+                        os.environ.get("BANK_STATEMENT_SENDERS", "").split(",") if s.strip()]
+
         for mid in ids:
             _, data = conn.fetch(mid, "(RFC822)")
             msg = email.message_from_bytes(data[0][1])
@@ -80,6 +83,23 @@ def collect_from_mailbox(
             sender = msg.get("From", "")
             date_str = _parse_date(msg.get("Date", ""))
 
+            # דף חשבון מהבנק: מתויק אוטומטית לתת-תיקיית _בנק החסויה,
+            # לפני כל לוגיקת החשבוניות, כדי שלא יירשם בטעות כהוצאה.
+            if bank_senders and any(b in sender.lower() for b in bank_senders):
+                bank_dir = dest / "_בנק"
+                for part in msg.walk():
+                    fname = part.get_filename()
+                    if not fname:
+                        continue
+                    fname = _decode_str(fname)
+                    if not fname.lower().endswith((".pdf", ".csv", ".xlsx", ".xls")):
+                        continue
+                    bank_dir.mkdir(parents=True, exist_ok=True)
+                    safe = re.sub(r"[^\w\.\-]", "_", fname)
+                    target = bank_dir / safe
+                    if not target.exists():
+                        target.write_bytes(part.get_payload(decode=True))
+                continue
 
             # חיפוש צרופת PDF — רשומה אחת לכל מייל
             pdf_found = None
