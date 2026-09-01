@@ -711,6 +711,69 @@ a.card:focus-visible {
   outline: 2px solid var(--clay);
   outline-offset: 3px;
 }
+
+/* ---------- Pillar landing pages (advisory, AI, real estate) ---------- */
+/* Premium hero panel: an authoritative frame with a clay accent hairline and a
+   soft gradient, so the fold reads as a considered brand statement, not plain
+   text on paper. */
+.pillar-hero {
+  position: relative;
+  margin: 6px 0 4px;
+  padding: 40px clamp(22px, 5vw, 48px) 42px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(130% 150% at 100% 0%, var(--clay-tint), transparent 52%),
+    linear-gradient(180deg, var(--card), var(--paper));
+  overflow: hidden;
+}
+.pillar-hero::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 3px;
+  background: linear-gradient(90deg, var(--clay), var(--clay-soft));
+}
+.pillar-hero .eyebrow { color: var(--clay); }
+.pillar-hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+
+/* Apple-like service cards: airy, with a refined icon tile that inverts on
+   hover, so the grid reads as a premium product surface. */
+.pillar-cards .card { padding: 30px 28px; }
+.pillar-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 13px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  border: 1px solid var(--clay-soft);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.pillar-cards .card:hover .pillar-card-icon {
+  background: var(--clay);
+  color: var(--paper);
+  border-color: var(--clay);
+}
+
+/* Premium numbered process: a serif numeral in an outlined disc. */
+.pillar-steps .card { padding-top: 28px; }
+.pillar-step-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clay-soft);
+  color: var(--clay);
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
 /* ---------- founder voice note ---------- */
 .voice {
   display: flex;
