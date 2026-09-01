@@ -39,6 +39,35 @@
 - The other spellings (`אברהם ללום`, `אבי ללום`, `ד״ר ללום`) stay in the Person entity's `alternateName`. Those are what people type into a search box, and the entity needs them to resolve to one person. They are search variants, never display forms.
 - `npm run build` fails on any titled mention that is not the canonical form, including a doubled title.
 
+## More Than One Session Works Here (PERMANENT)
+
+**This repository is worked on by several Claude sessions and by scheduled automation at the same time. Before building anything, find out whether it is already being built.**
+
+The evidence that this matters: three sessions merged work into `main` within the same hour, and two roadmap edits had to be resolved by hand because two of them rewrote the same chapter.
+
+### Before starting non-trivial work
+
+1. `git fetch origin main` and start from it. Never build on a branch that is hours old.
+2. Look at the open pull requests and at the last day of commits on `main`. If someone is already in the same file or the same subject, do not start a second version of it.
+3. If the work is a new article, check the roadmap first (`docs/seo-content-roadmap.md`) and mark the item as taken the moment you begin, not when you finish. An unmarked item is an invitation for a second session to write the same piece.
+
+### Lanes
+
+Work is divided by kind, not by file, and each lane stays out of the others' way:
+
+- **The daily content task** writes the next article in the roadmap queue. It does not change structure, navigation, or positioning.
+- **Maintenance** covers fixes, quality checks, and removing what blocks promotion. It does not write articles.
+- **Design** changes how pages look. It does not change copy, because the copy is shared across five languages and the prerender.
+
+A session that needs to cross into another lane should do the smallest possible thing there and say so in the pull request.
+
+### Rules that prevent the collisions that actually happened
+
+- **One subject per pull request, merged the same session.** A branch that lives for a day collects conflicts.
+- **Never push to `main` directly.** A repository rule requires a pull request, and automation that tries to push is rejected. This is not a rule to work around: it is what stops two sessions overwriting each other.
+- **`data/search-console` is a data branch and is never merged into `main`.** It deliberately diverges. Do not open a pull request from it.
+- **Shared files are conflict-prone.** `docs/seo-content-roadmap.md`, `src/lib/strings.ts`, `src/lib/blogMeta.ts` and `CLAUDE.md` are edited by everyone. Touch the fewest lines that do the job, and re-fetch before pushing.
+
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
 **Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**
