@@ -30,6 +30,20 @@ jobs:
         with:
           ref: claude/wonderful-ritchie-5g8mje
 
+      - name: Verify the agent can actually run
+        # Without this the job was green every day while doing nothing. The
+        # scan step ran for one second (it needs minutes), crashed for want of
+        # ANTHROPIC_API_KEY, and `|| true` swallowed it. A workflow that
+        # reports success while accomplishing nothing is worse than one that
+        # fails, because nobody goes looking.
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY is not set, so the scan cannot run. Add the secret, or turn off this workflow's schedule."
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -79,5 +93,12 @@ jobs:
           git config user.name "Worker Agent"
           git config user.email "worker@lalum.co"
           git add job_agent/logs/ job_agent/applications/ || true
-          git diff --staged --quiet || git commit -m "Worker daily scan — $(date '+%Y-%m-%d')"
-          git push || true
+          if git diff --staged --quiet; then
+            echo "Nothing new to record."
+          else
+            git commit -m "Worker daily scan, $(date '+%Y-%m-%d')"
+            # Not swallowed. This branch is not main, so the repository's
+            # pull-request rule does not apply to it and a failure here is a
+            # real failure worth seeing.
+            git push
+          fi

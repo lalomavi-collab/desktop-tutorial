@@ -1,9 +1,21 @@
 name: Daily Legal Research Agent 🔍
 
+# The daily schedule is off, deliberately. Three findings, each on its own
+# enough:
+#
+#   1. It has never produced anything. daily-research/ is empty, and the agent
+#      has failed on every recorded run for want of ANTHROPIC_API_KEY.
+#   2. Its output would not reach the site anyway. It writes markdown into
+#      daily-research/<date>/, not into the article store the site renders from.
+#   3. Its topic seeds are real estate, the same ground the daily content task
+#      covers, so switching it on would create exactly the duplicate work the
+#      coordination rules in CLAUDE.md exist to prevent.
+#
+# Nothing is deleted. Re-enabling is uncommenting the two lines below, once the
+# secret exists and someone decides the output is wanted.
 on:
-  schedule:
-    # Runs every day at 06:00 Israel time (03:00 UTC)
-    - cron: "0 3 * * *"
+  # schedule:
+  #   - cron: "0 3 * * *"   # 06:00 Israel time
   workflow_dispatch:
     inputs:
       date_override:
