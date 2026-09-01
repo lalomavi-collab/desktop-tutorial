@@ -104,6 +104,24 @@ def extract_text(path: Path) -> str:
         return ""
 
 
+def extract_text_ocr(path: Path) -> str:
+    """
+    OCR עברית+אנגלית ל-PDF סרוק ללא שכבת טקסט (כמו קבלות Gett).
+    דורש: pip install pytesseract pdf2image ותוכנת Tesseract עם חבילת heb.
+    כשהתלויות חסרות מחזיר מחרוזת ריקה והקובץ נשאר מסומן לטיפול ידני.
+    """
+    try:
+        import pytesseract
+        from pdf2image import convert_from_path
+    except ImportError:
+        return ""
+    try:
+        pages = convert_from_path(str(path), dpi=300)
+        return "\n".join(pytesseract.image_to_string(p, lang="heb+eng") for p in pages)
+    except Exception:
+        return ""
+
+
 def _numbers(text: str) -> list[float]:
     out = []
     for m in _NUM.finditer(text):
@@ -202,6 +220,11 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             continue
 
         text = extract_text(path)
+        used_ocr = False
+        if not text.strip():
+            # אין שכבת טקסט (PDF מצולם/סרוק): ניסיון OCR לפני ויתור.
+            text = extract_text_ocr(path)
+            used_ocr = bool(text.strip())
         category, note = classify(path, text, is_income)
         net, vat, total, estimated = find_amounts(text)
         currency = detect_currency(text)
@@ -211,6 +234,10 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             # אסור שיישאר שקוף בדוח.
             note = "🛑 לא חולץ סכום מה-PDF — נדרשת הזנה ידנית"
             estimated = True
+        elif used_ocr:
+            # סכום שחולץ ב-OCR הוא לעולם משוער וטעון אימות אנושי.
+            estimated = True
+            note = note or "סכומים חולצו ב-OCR ממסמך סרוק — לאימות"
         elif category == "expense" and vat == 0 and currency == "ILS":
             category = "expense_no_vat"
             note = note or "לא זוהה מע\"מ במסמך — לאימות"
@@ -222,6 +249,23 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             currency=currency,
             net=net, vat=vat, total=total,
             estimated=estimated, note=note,
+        ))
+
+    # קבצי תמונה (חשבוניות מצולמות): לעולם לא שקופים. כל תמונה מקבלת
+    # שורה מסומנת שחוסמת שליחה אוטומטית עד טיפול ידני או OCR.
+    image_exts = {".jpg", ".jpeg", ".png", ".heic", ".tif", ".tiff", ".bmp", ".webp"}
+    for path in sorted(folder.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in image_exts:
+            continue
+        is_income = INCOME_SUBFOLDER in path.parts
+        rows.append(Row(
+            file=path.name,
+            path=str(path),
+            category="income" if is_income else "expense",
+            currency="ILS",
+            net=0.0, vat=0.0, total=0.0,
+            estimated=True,
+            note="🛑 חשבונית מצולמת (תמונה) — לא נקראה, נדרשת הזנה ידנית",
         ))
     return rows, folder
 

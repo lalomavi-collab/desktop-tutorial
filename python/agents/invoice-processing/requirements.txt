@@ -2,3 +2,6 @@ google-adk>=0.5.0
 python-dotenv>=1.0.0
 keyring>=25.0.0
 pypdf>=4.0.0
+# אופציונלי, ל-OCR של חשבוניות סרוקות/מצולמות:
+# pytesseract
+# pdf2image
