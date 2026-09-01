@@ -84,6 +84,7 @@ export function Footer() {
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
+          <Link to="/rulings">{L.rulings}</Link>
           <Link to="/faq">{L.qa}</Link>
         </nav>
 
