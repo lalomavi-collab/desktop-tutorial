@@ -35,6 +35,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # The data lands on its own branch, and committing onto a branch that
+          # is not the one checked out needs its history, which a shallow clone
+          # does not have.
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -68,15 +73,42 @@ jobs:
         working-directory: lalum-app
         run: node scripts/search-console-report.mjs
 
-      - name: Commit the data
+      - name: Commit the data to its own branch
         if: steps.gate.outputs.ready == 'true'
+        # Not to main. A repository rule requires every change to main to go
+        # through a pull request, which is right for the site's code and should
+        # not be weakened so a scheduled job can write a data file. The rule
+        # protects main only, so the data gets a branch of its own: no bypass,
+        # no daily pull request waiting to be merged, and nothing for a person
+        # to do. The analysis reads the data from this branch.
+        env:
+          BRANCH: data/search-console
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The freshly written data is untracked, and switching branches would
+          # refuse to overwrite it once the branch carries a file of the same
+          # name. Move it aside, switch, put it back.
+          tmp=$(mktemp -d)
+          cp -r data/search-console/. "$tmp"/
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+          else
+            echo "First run: creating $BRANCH."
+            git checkout -B "$BRANCH"
+          fi
+
+          mkdir -p data/search-console
+          cp -r "$tmp"/. data/search-console/
           git add data/search-console
           if git diff --cached --quiet; then
             echo "No change in the data."
           else
             git commit -m "נתוני Search Console, $(date -u +%Y-%m-%d)"
-            git push
+            git push -u origin "$BRANCH"
+            echo "Pushed to $BRANCH."
           fi

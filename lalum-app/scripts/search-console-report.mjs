@@ -99,11 +99,26 @@ for (const [name, b] of buckets) {
 }
 
 // 5. Published and invisible.
-const built = join(root, "lalum-app", "dist", "sitemap.xml");
-const smPath = existsSync(built) ? built : join(root, "lalum-app", "public", "sitemap.xml");
-if (existsSync(smPath)) {
-  const listed = [...readFileSync(smPath, "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/\/$/, ""));
-  const seen = new Set(pages.map((r) => r.keys[0].replace(/\/$/, "")));
+//
+// The sitemap comes from the live site when there is no local build. On a CI
+// runner nothing is built, and falling back to public/sitemap.xml counted 188
+// URLs against the 224 the site actually publishes: the build appends a row per
+// article, so every article was missing from the comparison entirely.
+async function sitemapUrls() {
+  const built = join(root, "lalum-app", "dist", "sitemap.xml");
+  if (existsSync(built)) return readFileSync(built, "utf8");
+  try {
+    const res = await fetch("https://lalumapp.com/sitemap.xml");
+    if (res.ok) return await res.text();
+  } catch { /* fall through to the static file */ }
+  const stat = join(root, "lalum-app", "public", "sitemap.xml");
+  return existsSync(stat) ? readFileSync(stat, "utf8") : "";
+}
+
+const xml = await sitemapUrls();
+if (xml) {
+  const listed = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/\/$/, ""));
+  const seen = new Set(pages.map((r) => r.keys[0].replace(/\/$/, "").replace(/\?.*$/, "")));
   const invisible = listed.filter((u) => !seen.has(u));
   console.log(`\nPUBLISHED AND INVISIBLE  (in the sitemap, no impressions in the window): ${invisible.length} of ${listed.length}`);
   for (const u of invisible.slice(0, 20)) console.log(`  ${u.replace(/^https?:\/\/[^/]+/, "")}`);
