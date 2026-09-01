@@ -5,6 +5,7 @@ import { AmbientBackground } from "../components/AmbientBackground";
 import { PageMeta } from "../components/PageMeta";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeHub } from "../components/PracticeHub";
+import { FocusAreas } from "../components/FocusAreas";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
@@ -34,6 +35,11 @@ export function Advisory() {
           </div>
         </div>
       </section>
+
+      {/* The two areas the practice leads with. The hub is what the top bar
+          and the phone tab bar point at, so the pair has to be reachable from
+          here and not only from the home page. */}
+      <FocusAreas />
 
       {/* SERVICES */}
       <section id="services" className="section-line">

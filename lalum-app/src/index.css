@@ -4188,3 +4188,18 @@ html.a11y-reduce-motion *::after {
     height: min(560px, calc(100vh - 190px));
   }
 }
+
+/* The spacer that holds the page's height while a code-split route chunk
+   loads. It was 70vh, which on a phone left the footer sitting at the bottom of
+   the first screen: the chunk then arrived, the page grew from 1967px to
+   9275px, and the footer jumped 7300px down. That single jump measured 0.22
+   CLS, twice Google's 0.1 threshold, on every article and pillar page.
+
+   100vh puts the footer below the fold to begin with, so there is nothing
+   visible left to shift. svh is the phone's smallest viewport height, used
+   where supported so an expanded browser chrome cannot shrink the spacer back
+   into the shifting range. */
+.route-pending {
+  min-height: 100vh;
+  min-height: 100svh;
+}

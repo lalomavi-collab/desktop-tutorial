@@ -19,7 +19,7 @@ export function PillarView({ P }: { P: PillarPage }) {
 
   return (
     <>
-      <PageMeta title={`${P.title} | LALUM`} description={P.desc} path={`/${P.path}`} jsonLd={jsonLd} />
+      <PageMeta title={`${P.title} | LALUM`} description={P.desc} image={P.og} path={`/${P.path}`} jsonLd={jsonLd} />
 
       {/* HERO */}
       <section className="wrap section" style={{ maxWidth: 900, paddingTop: 72 }}>

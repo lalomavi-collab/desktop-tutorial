@@ -5,7 +5,7 @@ import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
+import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
@@ -22,16 +22,16 @@ const SITE = "https://lalumapp.com";
 // Kept here so the static HTML a non-JS crawler or a social scraper (WhatsApp,
 // Facebook, Telegram, LinkedIn) sees already carries the right title and
 // description, instead of the app-shell default.
-const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean }[] = [
+const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean; image?: string }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
-  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים." },
-  { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים." },
-  { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל\"ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
+  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים.", image: `${SITE}/og/pillar-ai.png` },
+  { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים.", image: `${SITE}/og/pillar-real-estate.png` },
+  { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל״ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורסים והכשרות AI למשפטנים ולעסקים | LALUM", desc: "הכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי, לעורכי דין, דירקטוריונים וצוותי מוצר. תוכנית מעשית מבית LALUM." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
-  { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד\"ר אברהם ללום ומשרד LALUM." },
+  { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד״ר עו״ד אברהם ללום ומשרד LALUM." },
   { path: "faq", title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM." },
-  { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד\"ר אברהם ללום, LALUM." },
+  { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד״ר עו״ד אברהם ללום, LALUM." },
   { path: "legal", title: "מדיניות פרטיות ותנאי שימוש | LALUM", desc: "מדיניות הפרטיות ותנאי השימוש של אפליקציית LALUM." },
   // Prerendered so they resolve to a real file rather than falling through to
   // the SPA catch-all, but kept out of the index: a sign-in form and a private
@@ -165,7 +165,10 @@ function blocksToHtml(blocks: ArticleBlock[]): string {
 // "</div></body>"; the source template closes it before a <script>. Accept
 // either so the swap works against both shapes.
 const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/body>))/;
-const SITE_NAV = `<p><a href="/advisory/">ייעוץ וגישור</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/real-estate-legal-advisory/">ייעוץ נדל״ן</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
+// The two areas the practice leads with come first, matching the rendered
+// navigation. A crawler that does not run JavaScript reads this list on every
+// document, so the order is the site saying what it is about.
+const SITE_NAV = `<p><a href="/real-estate-legal-advisory/">ייעוץ נדל״ן והתחדשות עירונית</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/advisory/">ייעוץ משפטי</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
 
 function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
@@ -286,6 +289,13 @@ function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
   for (const p of dict.data.pillars) {
     out.push(`        <h3>${esc(p.title)}</h3>\n        <p>${esc(p.body)}</p>`);
   }
+  // The person, in the static body. The founder block renders for a reader but
+  // never reached the document a crawler without JavaScript reads, so the name
+  // people actually search for, and the treatises behind it, were missing from
+  // the one page most likely to answer that search.
+  out.push(`        <h2>${esc(h.founderName)}</h2>`);
+  out.push(`        <p>${esc(h.founderCreds1)}. ${esc(h.founderBio)}</p>`);
+  out.push(`        <p>${esc(h.founderWorks)} <a href="${cvPath(lang)}">${esc(h.founderCv)}</a></p>`);
   out.push(`        <h2>${esc(h.whyH2)}</h2>`);
   out.push(`        <ul>${dict.data.why.map((w) => `<li>${esc(w.title)}: ${esc(w.body)}</li>`).join("")}</ul>`);
   for (const it of faqsForPath(dict, "/", lang)) {
@@ -441,7 +451,7 @@ function seoPrerender(): Plugin {
           blocks: a.blocks as ArticleBlock[],
         }));
       const routes = [
-        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, noindex: s.noindex, image: undefined as string | undefined, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
+        ...STATIC_ROUTES.map((s) => ({ path: s.path, title: s.title, desc: s.desc, noindex: s.noindex, image: s.image, article: undefined as undefined | { slug: string; headline: string; date: string }, blocks: undefined as ArticleBlock[] | undefined })),
         ...blogMeta.map((m) => ({
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,

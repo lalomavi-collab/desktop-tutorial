@@ -8,6 +8,7 @@ import { SiteSearch } from "../components/SiteSearch";
 import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { PracticeAreas } from "../components/PracticeAreas";
+import { FocusAreas } from "../components/FocusAreas";
 import { MnaSpotlight } from "../components/MnaSpotlight";
 import { PreDealStrategy } from "../components/PreDealStrategy";
 import { PracticeFaq } from "../components/PracticeFaq";
@@ -20,6 +21,7 @@ import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
+import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
@@ -30,7 +32,7 @@ import { VoiceNote } from "../components/VoiceNote";
 import founderPhoto from "../assets/founder.webp";
 
 export function Home() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const h = t.home;
   const [faqOpen, setFaqOpen] = useState<number>(-1);
   const [faqShown, setFaqShown] = useState(false);
@@ -68,7 +70,7 @@ export function Home() {
           </div>
 
           {/* Founder portrait, clickable, opens the full CV */}
-          <a href="/cv" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
+          <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
             <img src={founderPhoto} alt={h.founderName} />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
@@ -158,33 +160,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* ADVISORY PILLARS: the two areas the practice leads with. Mediation has
-          its own page and is linked below the pair, as a service the practice
-          offers rather than a third headline. */}
-      <section className="wrap section section-line">
-        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
-          <p className="eyebrow">{h.advisoryPillarsEyebrow}</p>
-          <h2 className="h2">{h.advisoryPillarsH2}</h2>
-        </div>
-        <div className="grid grid-2">
-          <Link to="/ai-legal-advisory" className="card" aria-label={h.advisoryAiTitle}>
-            <span className="icon-badge"><Icon name="brain" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryAiBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
-          </Link>
-          <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
-            <span className="icon-badge"><Icon name="scale" size={23} /></span>
-            <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
-          </Link>
-        </div>
-        <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: "26px 0 0" }}>
-          {h.advisoryMediationLead}{" "}
-          <Link to="/mediation-dispute-resolution" style={{ color: "var(--clay)" }}>{h.advisoryMediationTitle}</Link>
-        </p>
-      </section>
+      {/* The two areas the practice leads with. Shared with /advisory. */}
+      <FocusAreas />
 
       {/* ENGINE */}
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
@@ -275,6 +252,11 @@ export function Home() {
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
+            {/* The treatises. They sat in the CV page alone, which carried no
+                structured data and was not in the sitemap, so the strongest
+                credential the practice holds for urban renewal was invisible
+                everywhere a reader or a crawler would look for it. */}
+            <p style={{ fontSize: 13, color: "var(--slate)", lineHeight: 1.6, margin: "10px auto 0", maxWidth: "36ch" }}>{h.founderWorks}</p>
             {/* His own voice, beside his own details. Nothing plays until it is
                 asked to. */}
             <VoiceNote />
@@ -298,7 +280,7 @@ export function Home() {
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.urgentOnly}</span>
               </a>
             </div>
-            <a href="/cv" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
+            <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
               <Icon name="file" size={16} /> {h.founderCv}
             </a>
           </div>

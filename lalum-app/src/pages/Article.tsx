@@ -3,6 +3,7 @@ import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
+import { cvPath } from "../lib/hreflang";
 import type { ArticleBlock } from "../lib/content";
 import { blogPosts } from "../lib/blogPosts";
 import { articleCorpus, relatedTo } from "../lib/related";
@@ -44,7 +45,7 @@ function Block({ block }: { block: ArticleBlock }) {
 
 export function Article() {
   const { slug } = useParams();
-  const { t, dir } = useLang();
+  const { t, dir, lang } = useLang();
   const article = t.data.articles.find((a) => a.slug === slug);
   const post = article ? undefined : blogPosts.find((b) => b.slug === slug);
   if (!article && !post) return <Navigate to="/insights" replace />;
@@ -143,7 +144,9 @@ export function Article() {
             <span style={{ fontFamily: "var(--serif)", fontSize: 26, color: "var(--clay)" }} dir="ltr">AL</span>
           </div>
           <div>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>{t.home.founderName}</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>
+              <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{t.home.founderName}</a>
+            </div>
             <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 4 }}>{t.ui.article.seal}</div>
           </div>
         </div>
