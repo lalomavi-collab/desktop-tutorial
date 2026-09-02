@@ -11,8 +11,16 @@ jobs:
       - name: "Send test message via WhatsApp Business API"
         run: |
           MESSAGE="WhatsApp Business API Test - $(date -u '+%d/%m/%Y %H:%M UTC') - if you received this the connection works"
+          # The WhatsApp Cloud API addresses a PHONE NUMBER ID, which is not a
+          # Facebook Page ID: they are different identifiers from different
+          # products that happen to live under the same Graph host. This step
+          # used to read FACEBOOK_PAGE_ID, and that same secret is what the
+          # campaign publishing uses as an actual page id when posting to
+          # /feed. One name cannot hold both values, so this one moved to a
+          # secret of its own. Set WHATSAPP_PHONE_NUMBER_ID to the phone number
+          # id from the WhatsApp product in the Meta app.
           RESPONSE=$(curl -s -X POST \
-            "https://graph.facebook.com/v18.0/${{ secrets.FACEBOOK_PAGE_ID }}/messages" \
+            "https://graph.facebook.com/v18.0/${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}/messages" \
             -H "Authorization: Bearer ${{ secrets.WHATSAPP_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
