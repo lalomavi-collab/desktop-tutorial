@@ -4,7 +4,7 @@
   "related": [
    "ai-governance-board-framework",
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-transparency-generative"
+   "israel-ai-regulation-policy"
   ]
  },
  "explainability": {
@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "israel-ai-regulation-policy": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-2026",
+   "saas-eu-compliance-israeli-companies"
+  ]
+ },
  "ip-value-collapse-ai-acquisition": {
   "topic": "ai-governance",
   "related": [
@@ -99,8 +107,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "shadow-it-law-firms",
-   "memory"
+   "memory",
+   "shadow-it-law-firms"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -354,9 +362,9 @@
  "decision-oriented-ai-law": {
   "topic": "ai-governance",
   "related": [
+   "israel-ai-regulation-policy",
    "algorithmic-transparency",
-   "ai-ethics-legal-risks",
-   "ai-legal-practice"
+   "ai-ethics-legal-risks"
   ]
  },
  "legal-algorist": {
@@ -883,8 +891,8 @@
   "topic": "real-estate",
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
-   "free-lawyer-illusion",
-   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה"
+   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
+   "free-lawyer-illusion"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
