@@ -610,12 +610,12 @@ const en = {
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     heroCreds: "20+ years · 150+ deals · TAMA 38 author · Notary & mediator",
-    audienceEyebrow: "A path for every audience",
-    audienceTitle: "Which one are you?",
-    audienceLede: "Pick who you are and get the route that speaks to you: what gets checked, where the exposure sits, and what happens next.",
+    audienceEyebrow: "Routes into the practice",
+    audienceTitle: "Entry by what you need, not by how the firm is organised",
+    audienceLede: "A homeowner, a company, a technology company and a public authority are not asking the same question. Each route opens on the four points that reader actually meets.",
     audiences: [
       {
-        icon: "home", label: "Private individual",
+        icon: "home", label: "Private clients",
         body: "A home, a property, or an agreement whose signature changes your life. Here we check what the other side checked long ago.",
         rubrics: [
           { label: "Urban renewal: TAMA 38 and evacuate-and-rebuild", body: "What to check in the developer's agreement, which collateral is required, and what happens when the project stalls.", to: "/real-estate-legal-advisory" },
@@ -1757,12 +1757,12 @@ const he: Dict = {
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     heroCreds: "20+ שנים · 150+ עסקאות · מחבר מדריך תמ״א 38 · נוטריון ומגשר",
-    audienceEyebrow: "מסלול לכל קהל",
-    audienceTitle: `לאיזה קהל אתם שייכים?`,
-    audienceLede: `בחרו את מי שאתם, ותקבלו את המסלול שנוגע בכם: מה נבדק, איפה נמצאת החשיפה, ולאן ממשיכים מכאן.`,
+    audienceEyebrow: `מסלולי ליווי`,
+    audienceTitle: `הכניסה לפי הצורך, לא לפי מבנה המשרד`,
+    audienceLede: `בעל דירה, חברה, חברת טכנולוגיה ורשות ציבורית אינם שואלים את אותה שאלה. כל מסלול נפתח בארבע הנקודות שבהן הוא באמת נתקל.`,
     audiences: [
       {
-        icon: "home", label: `אדם פרטי`,
+        icon: "home", label: `לקוחות פרטיים`,
         body: `דירה, נכס או הסכם שהחתימה עליו משנה את החיים. כאן נבדק מה שהצד השני כבר בדק מזמן.`,
         rubrics: [
           { label: `התחדשות עירונית: תמ״א 38 ופינוי-בינוי`, body: `מה נבדק בהסכם היזם, אילו בטוחות נדרשות, ומה קורה כשהפרויקט נעצר באמצע.`, to: "/real-estate-legal-advisory" },
@@ -1784,7 +1784,7 @@ const he: Dict = {
         cta: `למיפוי חשיפה ארגונית`, to: "/advisory",
       },
       {
-        icon: "brain", label: `חברות הייטק`,
+        icon: "brain", label: `חברות טכנולוגיה`,
         body: `מוצר שמריץ מודל, לקוחות באירופה, ורגולציה שנכנסה לתוקף לפני שהצוות הספיק לקרוא אותה.`,
         rubrics: [
           { label: `EU AI Act: סיווג סיכון וחובות`, body: `לאיזו קטגוריה המוצר שייך, מה נדרש ממנו, ומה מתוך זה נדרש כבר עכשיו.`, to: "/ai-legal-advisory" },
@@ -1795,7 +1795,7 @@ const he: Dict = {
         cta: `לייעוץ AI ורגולציה`, to: "/ai-legal-advisory",
       },
       {
-        icon: "shield", label: `גופים ציבוריים ורשויות`,
+        icon: "shield", label: `המגזר הציבורי ורשויות`,
         body: `החלטה מנהלית שמערכת ממליצה עליה צריכה להסביר את עצמה, גם שנתיים אחרי שהתקבלה.`,
         rubrics: [
           { label: `מערכות הכרעה אלגוריתמיות ברשות`, body: `פסיקת העליון על החלטה מנהלית שנשענה על מקורות שלא נבראו, הבהרת הרשות להגנת הפרטיות, ופרוטוקול בקרה אנושית.`, to: "/ai-legal-advisory/local-authorities" },
@@ -2901,12 +2901,12 @@ const es: Dict = {
     heroCtaAi: "Vea si la IA y el DOM se ajustan a su asunto",
     frameworksLabel: "Nuestra trayectoria",
     heroCreds: "Más de 20 años · Más de 150 operaciones · Autor de Tama 38 · Notario y mediador",
-    audienceEyebrow: "Un camino para cada perfil",
-    audienceTitle: "¿Cuál es el suyo?",
-    audienceLede: `Elija quién es y reciba el recorrido que le corresponde: qué se revisa, dónde está la exposición, y cómo se continúa desde aquí.`,
+    audienceEyebrow: "Rutas de acompañamiento",
+    audienceTitle: "La entrada según lo que necesita, no según cómo se organiza el despacho",
+    audienceLede: `Un propietario, una empresa, una empresa tecnológica y una autoridad pública no hacen la misma pregunta. Cada ruta se abre en los cuatro puntos que ese lector encuentra de verdad.`,
     audiences: [
       {
-        icon: "home", label: `Particular`,
+        icon: "home", label: `Clientes particulares`,
         body: `Una vivienda, un inmueble o un acuerdo cuya firma cambia la vida. Aquí se revisa lo que la otra parte revisó hace tiempo.`,
         rubrics: [
           { label: `Renovación urbana: Tama 38 y desalojo y reconstrucción`, body: `Qué revisar en el acuerdo con el promotor, qué garantías se exigen, y qué ocurre cuando el proyecto se detiene.`, to: "/real-estate-legal-advisory" },
@@ -4008,12 +4008,12 @@ const fr: Dict = {
     heroCtaAi: "Découvrez si l'IA et la DOM conviennent à votre dossier",
     frameworksLabel: "Notre bilan",
     heroCreds: "20+ ans · 150+ transactions · Auteur du Tama 38 · Notaire et médiateur",
-    audienceEyebrow: "Un parcours pour chaque profil",
-    audienceTitle: "Lequel êtes-vous ?",
-    audienceLede: `Choisissez qui vous êtes et recevez le parcours qui vous concerne : ce qui est vérifié, où se situe l'exposition, et comment poursuivre.`,
+    audienceEyebrow: `Parcours d’accompagnement`,
+    audienceTitle: `L’entrée par le besoin, non par l’organisation du cabinet`,
+    audienceLede: `Un propriétaire, une entreprise, une entreprise technologique et une collectivité ne posent pas la même question. Chaque parcours s’ouvre sur les quatre points que ce lecteur rencontre réellement.`,
     audiences: [
       {
-        icon: "home", label: `Particulier`,
+        icon: "home", label: `Clients particuliers`,
         body: `Un logement, un bien ou un accord dont la signature change une vie. Ici on vérifie ce que l'autre partie a vérifié depuis longtemps.`,
         rubrics: [
           { label: `Rénovation urbaine : Tama 38 et démolition-reconstruction`, body: `Ce qui se vérifie dans l'accord du promoteur, quelles garanties sont exigées, et ce qui arrive quand le projet s'arrête.`, to: "/real-estate-legal-advisory" },
@@ -5110,12 +5110,12 @@ const ar: Dict = {
     heroCtaAi: "تحققوا مما إذا كان الذكاء الاصطناعي وDOM يناسبان قضيتكم",
     frameworksLabel: "سجلنا الحافل",
     heroCreds: "أكثر من 20 عاماً · أكثر من 150 صفقة · مؤلف Tama 38 · موثّق ووسيط",
-    audienceEyebrow: "مسار لكل فئة",
-    audienceTitle: `أي فئة تمثّلونها؟`,
-    audienceLede: `اختاروا من أنتم لتصلوا إلى المسار الذي يخصكم: ما الذي يُفحص، وأين يقع التعرّض، وكيف نكمل من هنا.`,
+    audienceEyebrow: `مسارات المرافقة`,
+    audienceTitle: `الدخول بحسب الحاجة، لا بحسب بنية المكتب`,
+    audienceLede: `مالك الشقة والشركة وشركة التقنية والجهة العامة لا يطرحون السؤال نفسه. كل مسار يفتح على النقاط الأربع التي يواجهها ذلك القارئ فعلاً.`,
     audiences: [
       {
-        icon: "home", label: `أفراد`,
+        icon: "home", label: `العملاء الأفراد`,
         body: `شقة أو عقار أو اتفاقية يغيّر التوقيع عليها مجرى الحياة. هنا يُفحص ما فحصه الطرف الآخر منذ زمن.`,
         rubrics: [
           { label: `تجديد حضري: Tama 38 والإخلاء وإعادة البناء`, body: `ما الذي يُفحص في اتفاقية المطوّر، وأي ضمانات مطلوبة، وماذا يحدث حين يتوقف المشروع.`, to: "/real-estate-legal-advisory" },

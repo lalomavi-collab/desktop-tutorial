@@ -2820,164 +2820,178 @@ html.a11y-reduce-motion *::after {
   color: var(--ink);
 }
 
-/* Audience router: "which one are you?" as tabs over four panels of
-   rubrics. The band gets its own tinted ground so the choice reads as a
-   moment on the page rather than another section of cards. */
+/* The four routes into the practice. A four-column index on a wide screen,
+   two on a laptop, one on a phone. Nothing is hidden behind an interaction:
+   every entry is on the page, and the accent rule down the inline start edge
+   is what separates one route from the next rather than a box around each. */
 .audience-band {
-  background: linear-gradient(180deg, var(--clay-tint) 0%, transparent 78%);
-  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(120% 80% at 82% 0%, var(--clay-tint) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.022) 0%, transparent 40%);
 }
 .audience-head {
-  max-width: 58ch;
-  margin: 0 0 30px;
+  max-width: 60ch;
+  margin: 0 0 44px;
 }
 .audience-lede {
   font-size: 16.5px;
-  line-height: 1.65;
+  line-height: 1.68;
   color: var(--slate);
-  margin: 14px 0 0;
+  margin: 16px 0 0;
 }
-.audience-tabs {
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.audience-route {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 28px;
+  flex-direction: column;
+  padding: 4px 26px 0;
+  border-inline-start: 1px solid var(--line);
 }
-.audience-tab {
+.audience-route:first-child {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+.audience-route:last-child {
+  padding-inline-end: 0;
+}
+.audience-route-head {
+  padding-bottom: 18px;
+}
+.audience-route-icon {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 18px;
-  border-radius: 9999px;
-  border: 1px solid var(--line-strong);
-  background: var(--paper);
-  color: var(--slate);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-}
-.audience-tab:hover {
-  border-color: var(--clay-soft);
-  color: var(--ink);
-  transform: translateY(-1px);
-}
-.audience-tab-icon {
-  display: inline-flex;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--clay-tint);
   color: var(--clay);
+  margin-bottom: 16px;
 }
-.audience-tab.is-active {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-.audience-tab.is-active .audience-tab-icon {
-  color: var(--clay-soft);
-}
-.audience-panel-lede {
-  font-size: 17px;
-  line-height: 1.7;
+.audience-route-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
   color: var(--ink);
-  max-width: 62ch;
-  margin: 0 0 22px;
-  /* The panel changes under a heading that does not, so the eye needs a cue
-     that something moved. */
-  animation: audience-in 0.22s ease both;
+  margin: 0 0 8px;
+}
+.audience-route-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+  margin: 0;
 }
 .audience-rubrics {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  animation: audience-in 0.28s ease both;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+.audience-rubrics > li {
+  border-top: 1px solid var(--line);
 }
 .audience-rubric {
   position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 14px;
-  row-gap: 6px;
-  align-items: start;
-  padding: 22px 24px 34px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--paper);
+  display: block;
+  padding: 15px 0;
   text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-.audience-rubric:hover {
-  transform: translateY(-2px);
-  border-color: var(--clay-soft);
-  box-shadow: 0 16px 34px -22px rgba(0, 0, 0, 0.4);
-}
-.audience-rubric-n {
-  grid-row: 1 / span 2;
-  font-family: var(--serif);
-  font-size: 15px;
-  color: var(--clay);
-  opacity: 0.7;
-  padding-top: 2px;
+  transition: padding-inline-start 0.18s ease;
 }
 .audience-rubric-label {
-  font-family: var(--serif);
-  font-size: 18.5px;
-  line-height: 1.3;
+  display: block;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
   color: var(--ink);
+  margin-bottom: 4px;
 }
 .audience-rubric-body {
-  grid-column: 2;
-  font-size: 14.5px;
-  line-height: 1.58;
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.55;
   color: var(--slate);
 }
 .audience-rubric-go {
   position: absolute;
-  inset-inline-end: 20px;
-  inset-block-end: 14px;
-  font-size: 15px;
+  inset-block-start: 15px;
+  inset-inline-end: 0;
+  font-size: 14px;
   color: var(--clay);
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.18s ease;
 }
-/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
-   would point away from the link it belongs to. */
-[dir="rtl"] .audience-rubric-go {
-  transform: scaleX(-1);
+.audience-rubric:hover .audience-rubric-label,
+.audience-rubric:focus-visible .audience-rubric-label {
+  color: var(--clay);
+}
+.audience-rubric:hover,
+.audience-rubric:focus-visible {
+  padding-inline-start: 8px;
 }
 .audience-rubric:hover .audience-rubric-go,
 .audience-rubric:focus-visible .audience-rubric-go {
   opacity: 1;
 }
-.audience-panel-cta {
-  margin-top: 24px;
+.audience-route-cta {
+  display: inline-block;
+  margin-top: auto;
+  padding-block-start: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--clay);
+  text-decoration: none;
 }
-@keyframes audience-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
+.audience-route-cta:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
+   would point away from the link it belongs to. */
+[dir="rtl"] .audience-rubric-go,
+[dir="rtl"] .audience-route-cta span {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+@media (max-width: 1100px) {
+  .audience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 40px;
   }
-  to {
-    opacity: 1;
-    transform: none;
+  .audience-route:nth-child(odd) {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+  .audience-route:nth-child(even) {
+    padding-inline-end: 0;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .audience-panel-lede,
-  .audience-rubrics {
-    animation: none;
-  }
-}
-@media (max-width: 760px) {
-  .audience-rubrics {
+@media (max-width: 700px) {
+  .audience-grid {
     grid-template-columns: 1fr;
+    row-gap: 34px;
   }
-  .audience-tab {
-    padding: 10px 14px;
-    font-size: 14px;
+  .audience-route {
+    padding-inline: 0;
+    border-inline-start: 0;
   }
-  .audience-panel-cta {
-    width: 100%;
-    justify-content: center;
+  .audience-head {
+    margin-bottom: 32px;
+  }
+  .audience-rubric-body {
+    display: none;
+  }
+  .audience-rubric {
+    padding: 13px 0;
+  }
+  .audience-rubric-go {
+    inset-block-start: 13px;
   }
 }
 
@@ -3274,10 +3288,51 @@ html.a11y-reduce-motion *::after {
   .route-view .grid > *:nth-child(5) { animation-delay: 0.31s; }
   .route-view .grid > *:nth-child(6) { animation-delay: 0.38s; }
 }
+/* A tinted ground, for breaking a long run of pale sections. Paired with the
+   dark bands and the paper ones it gives the page three grounds to alternate
+   between instead of one. */
+.band-tint {
+  background: linear-gradient(180deg, var(--clay-tint) 0%, transparent 86%);
+}
+
+/* Section reveal on scroll. The classes are added by useScrollReveal, never
+   by the markup, so a document whose script never runs is fully visible: the
+   stylesheet alone can hide nothing. */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.reveal-in {
+  animation: lalum-reveal 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes lalum-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* A section that was never scrolled to would otherwise print blank. */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Respect users who ask for less motion: no lifts, no reveals, no drift. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
   .card:hover,
   .btn-clay:hover {

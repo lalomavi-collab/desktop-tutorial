@@ -175,8 +175,11 @@ export function Home() {
       </section>
 
       {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
-          at-a-glance trust signal (previously only on the Advisory page). */}
-      <section className="section-line">
+          at-a-glance trust signal (previously only on the Advisory page). It
+          carries the tint because below the dark engine chapter the page ran
+          six pale sections in a row, and a reader crossed from the reasons to
+          the proof to the founder with nothing marking any of the crossings. */}
+      <section className="section-line band-tint">
         <div className="wrap section">
           <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
             <p className="eyebrow">{t.advisory.testimonialsEyebrow}</p>

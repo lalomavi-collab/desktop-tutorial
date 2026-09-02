@@ -16,10 +16,13 @@ import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
 import { useLang } from "../context/LangContext";
+import { useScrollReveal } from "../lib/useScrollReveal";
 
 export function MarketingLayout() {
   const { pathname, hash } = useLocation();
   const { t } = useLang();
+
+  useScrollReveal(pathname);
 
   // Scroll to top on route change (unless the route targets an anchor).
   useEffect(() => {
