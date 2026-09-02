@@ -26,22 +26,49 @@
 
 ---
 
-## פייסבוק. זה החלק הקל
+## פייסבוק. הפקת הטוקן
 
-1. היכנס ל-developers.facebook.com, צור אפליקציה מסוג Business, וקשר אותה
-   לחשבון העסקי שמנהל את העמוד.
-2. פתח את **Graph API Explorer**, בחר את האפליקציה, ובחר את העמוד תחת
-   User or Page.
-3. סמן את ההרשאות: `pages_manage_posts`, `pages_read_engagement`,
-   `pages_show_list`. הראשונה היא זו שמפרסמת, בלעדיה כל השאר לא עוזר.
-4. לחץ Generate Access Token ואשר. מה שקיבלת הוא טוקן **משתמש**, קצר מועד.
-5. החלף אותו לטוקן ארוך מועד:
-   `GET /oauth/access_token?grant_type=fb_exchange_token&client_id=<APP_ID>&client_secret=<APP_SECRET>&fb_exchange_token=<הטוקן שקיבלת>`
-6. עם הטוקן הארוך, קרא `GET /me/accounts`. בתשובה מופיע העמוד: השדה `id` הוא
+**לפני הכול: לאפליקציה חייב להיות מוצר של Pages.** אם באפליקציה מוגדר רק
+WhatsApp, בורר ההרשאות ב-Graph API Explorer יציג אך ורק את ההרשאות של WhatsApp,
+וההרשאות של הדף לא יופיעו כלל. זו לא תקלה: הבורר מציג רק הרשאות ששייכות
+למוצרים שהוגדרו באפליקציה.
+
+1. היכנס ל-developers.facebook.com ובחר את האפליקציה, או צור אפליקציה מסוג
+   Business וקשר אותה לחשבון העסקי שמנהל את העמוד.
+2. הוסף את מוצר ה-Pages. בממשק החדש: Use cases, ואז "Manage everything on your
+   Page". בממשק הישן: Add Product, ואז Facebook Login. בתוך ה-use case לחץ Add
+   ליד `pages_show_list`, `pages_manage_posts` ו-`pages_read_engagement`, עד
+   ששלושתן מציגות "Ready for testing". זה Standard Access, ובאפליקציה במצב
+   Development הוא מספיק. אל תלחץ "Request Advanced Access" ואל תשלח App Review,
+   אין בהם צורך והם רק מאריכים את התהליך.
+3. פתח את **Graph API Explorer** ורענן את הדף (F5). בלי רענון הבורר ממשיך
+   להציג את רשימת ההרשאות שנטענה לפני שהמוצר נוסף.
+4. בשדה **User or Page** השאר **User Token**. אל תעבור כאן ל-Page Token. טוקן
+   הדף מגיע בשלב 7 מתוך `me/accounts`, וטוקן דף שמופק ישירות בבורר הוא קצר מועד
+   ויפוג תוך שעות.
+5. פתח "Add a Permission", היכנס לקטגוריה **Events Groups Pages** וסמן את
+   `pages_manage_posts`, `pages_read_engagement` ו-`pages_show_list`. הראשונה
+   היא זו שמפרסמת, בלעדיה כל השאר לא עוזר.
+6. לחץ Generate Access Token ואשר. מה שקיבלת הוא טוקן **משתמש** קצר מועד. החלף
+   אותו לטוקן ארוך מועד באחת משתי דרכים:
+   * ב-Access Token Debugger (`developers.facebook.com/tools/debug/accesstoken`)
+     הדבק את הטוקן ולחץ **Extend Access Token**.
+   * או בקריאה:
+     `GET /oauth/access_token?grant_type=fb_exchange_token&client_id=<APP_ID>&client_secret=<APP_SECRET>&fb_exchange_token=<הטוקן שקיבלת>`
+7. עם הטוקן הארוך הרץ בבורר את השאילתה
+   `me/accounts?fields=id,name,access_token`. בתשובה מופיע העמוד: השדה `id` הוא
    `FACEBOOK_PAGE_ID`, והשדה `access_token` שלו הוא `FACEBOOK_ACCESS_TOKEN`.
 
 טוקן עמוד שנגזר מטוקן משתמש ארוך מועד אינו פג מעצמו. הוא כן נשבר אם תשנה סיסמה,
 תסיר את האפליקציה, או תשנה הרשאות. אם הפרסום נכשל פתאום עם 190, זו הסיבה.
+
+**הטוקן הוא סוד.** העתק אותו ישירות לשדה ב-Settings של המאגר. אל תדביק אותו
+בצ'אט, בצילום מסך, בקובץ בתוך המאגר או בהודעה. אם טוקן נחשף, בטל אותו ב-Access
+Token Debugger והפק אחד חדש.
+
+**`FACEBOOK_PAGE_ID` אינו מזהה מספר הטלפון של WhatsApp.** אלה שני מזהים שונים
+משני מוצרים שונים. בדיקת החיבור של WhatsApp קוראת סוד נפרד בשם
+`WHATSAPP_PHONE_NUMBER_ID`.
 
 ---
 
