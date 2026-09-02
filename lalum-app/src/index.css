@@ -4423,3 +4423,35 @@ html.a11y-reduce-motion *::after {
 .course-fineprint + .course-fineprint {
   margin-top: 4px;
 }
+
+/* Printing a diagnostic result.
+   The tools let a reader take their own result away without adding a PDF
+   library and without sending anything to a server: the browser prints, and
+   this stylesheet leaves only the result on the page. `no-print` hides the
+   controls that make no sense on paper (the copy button, the print button
+   itself), and `print-target` is the card that survives. */
+@media print {
+  .no-print,
+  .site-header,
+  .site-footer,
+  .cookie-overlay,
+  .cookie-fixed,
+  .contact-rail,
+  .chat-dock,
+  .a11y-dock,
+  .tabbar,
+  [class^="vbub-"] { display: none !important; }
+
+  body { background: #fff; }
+
+  .print-target,
+  .print-target * { visibility: visible; }
+
+  .print-target .card {
+    border: 1px solid var(--line);
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  a[href]::after { content: ""; }
+}

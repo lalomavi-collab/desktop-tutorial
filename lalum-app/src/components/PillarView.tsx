@@ -106,6 +106,11 @@ export function PillarView({ P }: { P: PillarPage }) {
               </Link>
             ))}
           </div>
+          <p style={{ marginTop: 22 }}>
+            <Link to={P.sectorsUi.toolsHref} style={{ color: "var(--clay)", fontWeight: 600, fontSize: 15.5 }}>
+              {P.sectorsUi.toolsLabel} &rarr;
+            </Link>
+          </p>
         </section>
       ) : null}
 

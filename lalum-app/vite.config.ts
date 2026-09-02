@@ -10,6 +10,7 @@ import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
+import { LEGAL_TOOLS, TOOLS_PAGE } from "./src/lib/legalTools";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
@@ -48,6 +49,11 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // to a real document with their own title and description, not to the SPA
   // shell. Hebrew only, and so carrying no language alternates.
   ...SECTORS.map((s) => ({ path: s.path, title: `${s.title} | LALUM`, desc: s.desc })),
+  // The diagnostic tools. Prerendered so the page resolves to a real document
+  // with its own title and description, and so a crawler that runs no
+  // JavaScript still reads what each tool asks: the questions are the subject
+  // matter, and they are what someone searching for this arrives on.
+  { path: TOOLS_PAGE.path, title: `${TOOLS_PAGE.title} | LALUM`, desc: TOOLS_PAGE.desc },
   // One prerendered page per LALUM Academy program, In-House and Pro alike, so
   // each program resolves to a real file with its own title and description
   // instead of living only inside an accordion on the training page.
@@ -251,6 +257,7 @@ function pillarBodyHtml(p: PillarPage): string {
   if (p.sectors?.length && p.sectorsUi) {
     out.push(`        <h2>${esc(p.sectorsUi.h2)}</h2>`, `        <p>${esc(p.sectorsUi.lede)}</p>`);
     out.push(`        <ul>${p.sectors.map((s) => `<li><a href="/${esc(s.path)}/">${esc(s.title)}</a>: ${esc(s.body)}</li>`).join("")}</ul>`);
+    out.push(`        <p><a href="${esc(p.sectorsUi.toolsHref)}/">${esc(p.sectorsUi.toolsLabel)}</a></p>`);
   }
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
   out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
@@ -454,6 +461,19 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
   </main>
 </body>
 </html>`;
+}
+
+// The diagnostic tools page. The static copy carries each tool's questions,
+// because the questions are the content: they are what the page is about, and
+// a crawler that sees only a heading learns nothing about it.
+function toolsBodyHtml(): string {
+  const out = [`        <h1>${esc(TOOLS_PAGE.h1)}</h1>`, `        <p>${esc(TOOLS_PAGE.lede)}</p>`];
+  for (const tool of LEGAL_TOOLS) {
+    out.push(`        <h2>${esc(tool.title)}</h2>`, `        <p>${esc(tool.lede)}</p>`);
+    out.push(`        <ul>${tool.questions.map((q) => `<li>${esc(q.q)}</li>`).join("")}</ul>`);
+  }
+  out.push(`        <p>${esc(TOOLS_PAGE.disclaimer)}</p>`);
+  return out.join("\n");
 }
 
 // The articles index. Without this it fell to pageBodyHtml, which emits only a
@@ -736,7 +756,8 @@ function seoPrerender(): Plugin {
           const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
           const sector = SECTORS.find((x: Sector) => x.path === r.path);
           const staticBody =
-            sector ? sectorBodyHtml(sector)
+            r.path === TOOLS_PAGE.path ? toolsBodyHtml()
+            : sector ? sectorBodyHtml(sector)
             : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
@@ -926,8 +947,8 @@ function seoPrerender(): Plugin {
         // moment it is added to sectors.ts. They update as the case law and
         // the regulator's instructions do, hence weekly, and they carry the
         // pillar's own priority because they are where the outreach points.
-        const sectorRows = SECTORS
-          .map((x: Sector) => `${SITE}/${x.path}/`)
+        const sectorRows = [...SECTORS.map((x: Sector) => x.path), TOOLS_PAGE.path]
+          .map((path) => `${SITE}/${path}/`)
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
         if (sectorRows.length) xml = sub(xml, "</urlset>", () => `${sectorRows.join("\n")}\n</urlset>`);
