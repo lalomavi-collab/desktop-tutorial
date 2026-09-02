@@ -5,14 +5,8 @@ import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
-import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
-import { PracticeAreas } from "../components/PracticeAreas";
 import { FocusAreas } from "../components/FocusAreas";
-import { MnaSpotlight } from "../components/MnaSpotlight";
-import { PreDealStrategy } from "../components/PreDealStrategy";
-import { PracticeFaq } from "../components/PracticeFaq";
-import { PracticeHub } from "../components/PracticeHub";
 import { LinkedInFeed } from "../components/LinkedInFeed";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { AudiencePaths } from "../components/AudiencePaths";
@@ -80,41 +74,18 @@ export function Home() {
         </div>
       </section>
 
-      {/* ADVISORY CONSULTATION (moved below the hero) */}
-      <section className="section-line">
-        <div className="wrap" style={{ maxWidth: 720, padding: "64px 32px" }}>
-          <div className="card" style={{ padding: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
-              <span className="serif" style={{ fontSize: 20, lineHeight: 1.25 }}>{h.cardTitle}</span>
-              <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.advisoryBadge}</span>
-            </div>
-            <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{h.advisoryIntro}</p>
-            <div className="label" style={{ margin: "20px 0 12px" }}>{h.advisoryFormat}</div>
-            <div className="grid grid-2" style={{ gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryInPersonTitle}</div>
-                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryInPersonBody}</div>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryVirtualTitle}</div>
-                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryVirtualBody}</div>
-                </div>
-              </div>
-            </div>
-            <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
-              <Icon name="calendar" size={17} /> {h.advisoryCta}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* The router comes first, before any of the practice narrative: a visitor
+          who knows who they are should not have to read the positioning to find
+          the four entries written for them. */}
+      <AudiencePaths />
 
-      {/* AI GOVERNANCE narrative leads (positioning, then the AI risk pillars,
-          then the engine); the legal practice areas below are proof of execution. */}
+      {/* The two areas the practice leads with. Shared with /advisory. */}
+      <FocusAreas />
+
+      {/* Positioning, then the risk pillars, then the engine. The practice
+          areas, the deal work and the scenario hub used to sit here too, which
+          made the front door twenty sections deep; they live on /advisory now,
+          which is the page that exists to hold them. */}
 
       {/* ABOUT */}
       <section className="section-line">
@@ -160,9 +131,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* The two areas the practice leads with. Shared with /advisory. */}
-      <FocusAreas />
-
       {/* ENGINE */}
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
@@ -185,27 +153,6 @@ export function Home() {
           </div>
         </div>
       </section>
-
-      {/* Audience paths: let each visitor self-select their route into the site */}
-      <AudiencePaths />
-
-      {/* CORE LEGAL PRACTICE AREAS (proof of execution, below the AI pillars) */}
-      <PracticeAreas />
-
-      {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
-      <MnaSpotlight />
-
-      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
-      <PreDealStrategy />
-
-      {/* REPRESENTATIVE-SCENARIO HUB: filterable grid with detail modals */}
-      <PracticeHub />
-
-      {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
-      <PracticeFaq />
-
-      {/* CAPABILITIES */}
-      <Capabilities />
 
       {/* LALUM ACADEMY promo band */}
       <HomeAcademy />
