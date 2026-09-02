@@ -9,6 +9,8 @@ import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/href
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
+import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
+import { LEGAL_TOOLS, TOOLS_PAGE } from "./src/lib/legalTools";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
@@ -42,6 +44,16 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // One prerendered page per sector rubric under the AI pillar. These are the
+  // pages outreach points a body at instead of a PDF, so they have to resolve
+  // to a real document with their own title and description, not to the SPA
+  // shell. Hebrew only, and so carrying no language alternates.
+  ...SECTORS.map((s) => ({ path: s.path, title: `${s.title} | LALUM`, desc: s.desc })),
+  // The diagnostic tools. Prerendered so the page resolves to a real document
+  // with its own title and description, and so a crawler that runs no
+  // JavaScript still reads what each tool asks: the questions are the subject
+  // matter, and they are what someone searching for this arrives on.
+  { path: TOOLS_PAGE.path, title: `${TOOLS_PAGE.title} | LALUM`, desc: TOOLS_PAGE.desc },
   // One prerendered page per LALUM Academy program, In-House and Pro alike, so
   // each program resolves to a real file with its own title and description
   // instead of living only inside an accordion on the training page.
@@ -242,6 +254,11 @@ function pillarBodyHtml(p: PillarPage): string {
   out.push(`        <ul>${p.when.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.stepsH2)}</h2>`);
   for (const s of p.steps) out.push(`        <h3>${esc(s.title)}</h3>\n        <p>${esc(s.body)}</p>`);
+  if (p.sectors?.length && p.sectorsUi) {
+    out.push(`        <h2>${esc(p.sectorsUi.h2)}</h2>`, `        <p>${esc(p.sectorsUi.lede)}</p>`);
+    out.push(`        <ul>${p.sectors.map((s) => `<li><a href="/${esc(s.path)}/">${esc(s.title)}</a>: ${esc(s.body)}</li>`).join("")}</ul>`);
+    out.push(`        <p><a href="${esc(p.sectorsUi.toolsHref)}/">${esc(p.sectorsUi.toolsLabel)}</a></p>`);
+  }
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
   out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.faqH2)}</h2>`);
@@ -249,6 +266,218 @@ function pillarBodyHtml(p: PillarPage): string {
     out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
   }
   out.push(`        <h2>${esc(p.ctaH2)}</h2>`, `        <p>${esc(p.ctaBody)}</p>`, `        <p>${esc(p.disclaimer)}</p>`);
+  return out.join("\n");
+}
+
+// A sector rubric. The static copy carries the same three rubrics the rendered
+// page carries, because those are the reason the page exists: the case law
+// with its citations, the regulator's instructions with their sources, and the
+// protocol and checklist. Emitting only a heading here would leave a crawler
+// with a page that says it has all of this and shows none of it.
+function sectorBodyHtml(S: Sector): string {
+  const out = [`        <h1>${esc(S.h1)}</h1>`, `        <p>${esc(S.lede)}</p>`];
+
+  out.push(`        <h2>${esc(S.realityH2)}</h2>`, `        <p>${esc(S.realityLede)}</p>`);
+  out.push(`        <ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.casesH2)}</h2>`, `        <p>${esc(S.casesLede)}</p>`);
+  for (const { ruling, why } of sectorCases(S)) {
+    out.push(`        <h3>${esc(ruling.citation)}${ruling.caption ? ` ${esc(ruling.caption)}` : ""}</h3>`);
+    out.push(`        <p>${esc(ruling.court)}, ${esc(ruling.dateLabel)}${ruling.bench ? `, ${esc(ruling.bench)}` : ""}</p>`);
+    if (ruling.facts) out.push(`        <p>${esc(ruling.facts)}</p>`);
+    out.push(`        <p>${esc(ruling.holding)}</p>`);
+    if (ruling.quote) out.push(`        <blockquote><p>${esc(ruling.quote)}</p></blockquote>`);
+    out.push(`        <p>${esc(why)}</p>`);
+    // The sources belong in the static copy too. This page asks authorities to
+    // open an authority before relying on it; a crawlable version that shows
+    // the citation and hides where to read it asks for exactly the trust the
+    // page says not to extend.
+    out.push(`        <p>${ruling.sources.map((src) => `<a href="${esc(src.href)}" rel="nofollow noopener">${esc(src.label)}</a>`).join(" · ")}</p>`);
+    out.push(`        <p><a href="/rulings/">${esc(strings.he.rulings.title)}</a></p>`);
+  }
+
+  out.push(`        <h2>${esc(S.directivesH2)}</h2>`, `        <p>${esc(S.directivesLede)}</p>`);
+  for (const d of S.directives) {
+    out.push(`        <h3>${esc(d.title)}</h3>`, `        <p>${esc(d.body)}</p>`);
+    out.push(`        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    out.push(`        <p><a href="${esc(d.sourceHref)}" rel="nofollow noopener">${esc(d.sourceLabel)}</a></p>`);
+  }
+
+  out.push(`        <h2>${esc(S.toolsH2)}</h2>`, `        <p>${esc(S.toolsLede)}</p>`);
+  for (const tool of S.tools) {
+    out.push(`        <h3>${esc(tool.title)}</h3>`, `        <p>${esc(tool.intro)}</p>`);
+    out.push(`        <ul>${tool.items.map((it) => `<li>${esc(it.title)}: ${esc(it.body)}</li>`).join("")}</ul>`);
+    if (tool.note) out.push(`        <p>${esc(tool.note)}</p>`);
+  }
+
+  out.push(`        <h2>${esc(S.servicesH2)}</h2>`, `        <p>${esc(S.servicesLede)}</p>`);
+  for (const c of S.services) out.push(`        <h3>${esc(c.title)}</h3>\n        <p>${esc(c.body)}</p>`);
+
+  out.push(`        <h2>${esc(S.stepsH2)}</h2>`);
+  for (const st of S.steps) out.push(`        <h3>${esc(st.title)}</h3>\n        <p>${esc(st.body)}</p>`);
+
+  out.push(`        <h2>${esc(S.downloadsH2)}</h2>`, `        <p>${esc(S.downloadsLede)}</p>`);
+  out.push(`        <ul>${S.downloads.map((d) => `<li><a href="${esc(d.file)}">${esc(d.title)}</a>: ${esc(d.note)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.auditH2)}</h2>`, `        <p>${esc(S.auditLede)}</p>`);
+  out.push(`        <ul>${S.auditQuestions.map((q) => `<li>${esc(q.q)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.materialsH2)}</h2>`, `        <p>${esc(S.materialsLede)}</p>`);
+  out.push(`        <ul>${S.materials.map((m) => `<li><a href="${esc(encodeURI(m.href))}/">${esc(m.title)}</a>: ${esc(m.note)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.faqH2)}</h2>`);
+  for (const f of S.faqs) out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
+
+  out.push(`        <h2>${esc(S.ctaH2)}</h2>`, `        <p>${esc(S.ctaBody)}</p>`, `        <p>${esc(S.disclaimer)}</p>`);
+  return out.join("\n");
+}
+
+// The take-away booklet. A municipality that is approached wants something it
+// can forward and print, and until now that was a PDF produced by hand in a
+// design tool, which is how a brochure ends up carrying a quotation nobody
+// checked and a Latin phrase reversed by the bidi algorithm.
+//
+// So the booklet is generated here, from the same Sector the page renders
+// from: the citations, the holdings, the regulator's instructions, the
+// protocol and the checklist all have one source. It is emitted as a
+// self-contained, print-ready HTML document (A4, RTL, brand palette, the
+// wordmark artwork inlined), which scripts/build-booklet-pdf.mjs prints to the
+// PDF that ships in public/downloads.
+function sectorBookletHtml(S: Sector, wordmark: string): string {
+  const cases = sectorCases(S);
+  const rule = (t: string) => `<h2>${esc(t)}</h2>`;
+  const p = (t: string) => `<p>${esc(t)}</p>`;
+
+  const casesHtml = cases.map(({ ruling, why }) => `
+      <article class="case">
+        <p class="cite">${esc(ruling.citation)}</p>
+        <h3>${esc(ruling.caption ?? ruling.citation)}</h3>
+        <p class="meta">${esc(ruling.court)} · ${esc(ruling.dateLabel)}${ruling.bench ? `<br>${esc(ruling.bench)}` : ""}</p>
+        ${ruling.facts ? p(ruling.facts) : ""}
+        <h4>מה נפסק</h4>
+        ${p(ruling.holding)}
+        ${ruling.quote ? `<blockquote>${esc(ruling.quote)}</blockquote>` : ""}
+        <h4>למה זה נוגע לרשות</h4>
+        ${p(why)}
+        <p class="src">מקורות: ${ruling.sources.map((x) => esc(x.label)).join(" · ")}</p>
+      </article>`).join("");
+
+  const directivesHtml = S.directives.map((d) => `
+      <article class="block">
+        <h3>${esc(d.title)}</h3>
+        ${p(d.body)}
+        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <p class="src">מקור: ${esc(d.sourceLabel)}</p>
+      </article>`).join("");
+
+  const toolsHtml = S.tools.map((tool) => `
+      <article class="block tool">
+        <h3>${esc(tool.title)}</h3>
+        ${p(tool.intro)}
+        <ol class="${tool.kind}">
+          ${tool.items.map((it, i) => `<li><span class="marker">${tool.kind === "protocol" ? String(i + 1).padStart(2, "0") : "&#9744;"}</span><div><strong>${esc(it.title)}</strong><br>${esc(it.body)}</div></li>`).join("")}
+        </ol>
+        ${tool.note ? `<p class="note">${esc(tool.note)}</p>` : ""}
+      </article>`).join("");
+
+  return `<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>${esc(S.h1)} | LALUM</title>
+<!-- The print source for the PDF, not a page. It ships in the build output
+     because that is where the PDF script reads it from, so it is kept out of
+     the index: an unstyled second copy of the sector page at its own URL would
+     compete with the page it was made from. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Suez+One&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --ivory:#f5f1e8; --ink:#1a1815; --slate:#55514a; --clay:#a8482a; --line:#e3dccd; }
+  /* Hebrew prose here carries Latin and numeric tokens (LPR, EU AI Act, case
+     numbers, URLs). Without isolation the bidi algorithm reorders the run and
+     a reader gets a reversed brand name or a mangled address, which is the
+     exact defect this document exists to avoid repeating. */
+  span[dir="ltr"] { unicode-bidi: isolate; direction: ltr; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:Heebo,Arial,sans-serif; color:var(--ink); font-size:10.5pt; line-height:1.65; background:#fff; }
+  .cover { background:var(--ink); color:var(--ivory); padding:34mm 16mm; break-after:page; }
+  .cover .mark { width:52mm; display:block; margin:0 0 26mm; }
+  .cover .mark svg { width:100%; height:auto; }
+  .cover h1 { font-family:"Suez One",Georgia,serif; font-size:28pt; line-height:1.2; margin:0 0 8mm; font-weight:400; }
+  .cover .sub { font-size:12pt; line-height:1.6; color:#d8d2c4; margin:0 0 16mm; max-width:118mm; }
+  .cover .rule { height:2px; background:var(--clay); width:34mm; margin:0 0 10mm; }
+  .cover .foot { font-size:9.5pt; color:#b9b3a5; line-height:1.8; }
+  main { padding:0; }
+  h2 { font-family:"Suez One",Georgia,serif; font-weight:400; font-size:16pt; color:var(--ink); margin:12mm 0 4mm; padding-bottom:2mm; border-bottom:1px solid var(--line); break-after:avoid; }
+  h3 { font-size:12pt; margin:6mm 0 2mm; break-after:avoid; }
+  h4 { font-size:10pt; margin:4mm 0 1mm; color:var(--clay); break-after:avoid; }
+  p { margin:0 0 3mm; }
+  ul, ol { margin:0 0 4mm; padding-inline-start:6mm; }
+  li { margin:0 0 2mm; }
+  .lede { font-size:11.5pt; color:var(--slate); }
+  .case, .block { break-inside:avoid; border:1px solid var(--line); border-radius:3mm; padding:6mm; margin:0 0 5mm; background:var(--ivory); }
+  .cite { font-size:9pt; font-weight:700; letter-spacing:.04em; color:var(--clay); margin:0 0 1mm; }
+  .meta { font-size:9pt; color:var(--slate); margin:0 0 3mm; }
+  blockquote { margin:3mm 0; padding-inline-start:4mm; border-inline-start:2px solid var(--clay); font-size:10pt; }
+  .src { font-size:8.5pt; color:var(--slate); margin:3mm 0 0; }
+  .tool ol { list-style:none; padding:0; }
+  .tool li { display:flex; gap:3mm; align-items:flex-start; break-inside:avoid; }
+  .tool .marker { flex:0 0 8mm; font-weight:700; color:var(--clay); font-size:11pt; }
+  .note { background:#fff; border:1px dashed var(--line); border-radius:2mm; padding:3mm 4mm; font-size:9.5pt; margin:4mm 0 0; }
+  .end { margin-top:12mm; padding-top:4mm; border-top:2px solid var(--clay); }
+  .disclaimer { font-size:8.5pt; color:var(--slate); margin-top:6mm; }
+  .contact { font-size:9.5pt; color:var(--slate); margin-top:3mm; }
+</style>
+</head>
+<body>
+  <section class="cover">
+    <span class="mark">${wordmark}</span>
+    <div class="rule"></div>
+    <h1>${esc(S.h1)}</h1>
+    <p class="sub">${esc(S.desc)}</p>
+    <p class="foot">${esc(S.downloads[0]?.updated ?? "")}<br><span dir="ltr">lalumapp.com/${esc(S.path)}/</span><br>ד״ר עו״ד אברהם ללום</p>
+  </section>
+  <main>
+    ${rule(S.realityH2)}
+    <p class="lede">${esc(S.realityLede)}</p>
+    <ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+
+    ${rule(S.casesH2)}
+    <p class="lede">${esc(S.casesLede)}</p>
+    ${casesHtml}
+
+    ${rule(S.directivesH2)}
+    <p class="lede">${esc(S.directivesLede)}</p>
+    ${directivesHtml}
+
+    ${rule(S.toolsH2)}
+    <p class="lede">${esc(S.toolsLede)}</p>
+    ${toolsHtml}
+
+    <div class="end">
+      ${rule(S.ctaH2)}
+      ${p(S.ctaBody)}
+      <p class="contact"><span dir="ltr">lalum.co</span> · <span dir="ltr">avraham@lalum.co</span> · <span dir="ltr">lalumapp.com/${esc(S.path)}/</span></p>
+      <p class="disclaimer">${esc(S.disclaimer)}</p>
+    </div>
+  </main>
+</body>
+</html>`;
+}
+
+// The diagnostic tools page. The static copy carries each tool's questions,
+// because the questions are the content: they are what the page is about, and
+// a crawler that sees only a heading learns nothing about it.
+function toolsBodyHtml(): string {
+  const out = [`        <h1>${esc(TOOLS_PAGE.h1)}</h1>`, `        <p>${esc(TOOLS_PAGE.lede)}</p>`];
+  for (const tool of LEGAL_TOOLS) {
+    out.push(`        <h2>${esc(tool.title)}</h2>`, `        <p>${esc(tool.lede)}</p>`);
+    out.push(`        <ul>${tool.questions.map((q) => `<li>${esc(q.q)}</li>`).join("")}</ul>`);
+  }
+  out.push(`        <p>${esc(TOOLS_PAGE.disclaimer)}</p>`);
   return out.join("\n");
 }
 
@@ -530,8 +759,11 @@ function seoPrerender(): Plugin {
           // carry the Q&A they already publish as structured data.
           // The prerendered document is the Hebrew one, so the Hebrew copy.
           const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
+          const sector = SECTORS.find((x: Sector) => x.path === r.path);
           const staticBody =
-            r.path === "faq" ? faqBodyHtml()
+            r.path === TOOLS_PAGE.path ? toolsBodyHtml()
+            : sector ? sectorBodyHtml(sector)
+            : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
             : pillar ? pillarBodyHtml(pillar)
@@ -542,6 +774,18 @@ function seoPrerender(): Plugin {
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");
         written++;
+      }
+      // The take-away booklet for every sector, emitted as print-ready HTML.
+      // scripts/build-booklet-pdf.mjs turns it into the PDF that ships in
+      // public/downloads, so the file a municipality receives is generated
+      // from the same data as the page it came from.
+      {
+        const wordmark = readFileSync(join(process.cwd(), "public", "lalum-logo-inverse.svg"), "utf8");
+        for (const sec of SECTORS) {
+          const bf = join(outDir, "downloads", `${sec.slug}-booklet.html`);
+          mkdirSync(dirname(bf), { recursive: true });
+          writeFileSync(bf, sectorBookletHtml(sec, wordmark), "utf8");
+        }
       }
       // The readiness assessment and its shareable results. Each result is its
       // own prerendered document with its own Open Graph tags and preview
@@ -704,6 +948,15 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
         if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
+        // Auto-add every sector rubric, so a new one is in the sitemap the
+        // moment it is added to sectors.ts. They update as the case law and
+        // the regulator's instructions do, hence weekly, and they carry the
+        // pillar's own priority because they are where the outreach points.
+        const sectorRows = [...SECTORS.map((x: Sector) => x.path), TOOLS_PAGE.path]
+          .map((path) => `${SITE}/${path}/`)
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+        if (sectorRows.length) xml = sub(xml, "</urlset>", () => `${sectorRows.join("\n")}\n</urlset>`);
         // Auto-add every article from blogMeta, so a newly published /insights/
         // post is always in the sitemap without a manual edit. Slugs are
         // percent-encoded to match the canonical served URL (Hebrew slugs), and

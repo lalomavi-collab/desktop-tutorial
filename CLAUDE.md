@@ -39,6 +39,17 @@
 - The other spellings (`אברהם ללום`, `אבי ללום`, `ד״ר ללום`) stay in the Person entity's `alternateName`. Those are what people type into a search box, and the entity needs them to resolve to one person. They are search variants, never display forms.
 - `npm run build` fails on any titled mention that is not the canonical form, including a doubled title.
 
+## Case Law: Full Double Verification Before Publishing (PERMANENT)
+
+**A ruling goes on the site only after full verification against its own text, from two independent sources. When verification is incomplete, it does not go up at all.**
+
+- The bar is the ruling itself: the judgment as published by the court, or a full digest that reproduces its language. A news report is corroboration, never the basis.
+- Two independent sources, and they must agree on the docket number, the court, the date, the bench, and the outcome. One source is not enough, however reputable.
+- Everything a record asserts has to come from what was actually read. Do not fill in a bench, a date to the day, or facts by inference. `dateLabel` says what is known (`9.12.2025` or `דצמבר 2025`), and the record says nothing beyond it.
+- Separate what was decided from what was said around it. Obiter remarks, and a ruling given only on the principled level after the dispute settled, are not holdings, and presenting them as binding is its own failure.
+- A record with no citation, no court, no date and no public source does not belong in `lalum-app/src/data/rulings.json`, and the types make that a compile error rather than a review comment. Anything shown on a page reads from that corpus, so a citation has exactly one home.
+- Incomplete verification means it waits. A missing card is a gap; a card carrying a citation nobody opened is the exact failure the practice writes about, on the practice's own site.
+
 ## More Than One Session Works Here (PERMANENT)
 
 **This repository is worked on by several Claude sessions and by scheduled automation at the same time. Before building anything, find out whether it is already being built.**
