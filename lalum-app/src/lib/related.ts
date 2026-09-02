@@ -14,7 +14,8 @@
 // in ninety), and the best-scoring neighbours win. Ties fall back to corpus
 // order, so the result is stable between the runtime and the build.
 
-import { blogPosts } from "./blogPosts";
+import { blogMeta } from "./blogMeta";
+import articleIndex from "../data/articleIndex.json";
 import { blocksToText } from "./articleBlocks";
 import type { ArticleBlock } from "./content";
 import type { Dict } from "./strings";
@@ -40,13 +41,27 @@ function lead(text: string, chars = 1500): string {
   return text.length <= chars ? text : text.slice(0, chars);
 }
 
+// The scoring corpus, with the opening of every body in it. This is the
+// expensive form and it is why a content page used to download all 169 bodies.
+// It is now built once, in scripts/split-articles.mjs, which scores every pair
+// and writes the three neighbours per article to src/data/articleIndex.json.
+// Nothing in the app or in the build calls it.
+export function scoringCorpus(dict: Dict, posts: { slug: string; title: string; excerpt: string; body: string }[]): RelatedSource[] {
+  return [
+    ...dict.data.articles.map((a) => ({ slug: a.slug, title: a.title, text: `${a.dek} ${lead(blocksToText(a.blocks as ArticleBlock[]))}` })),
+    ...posts.map((p) => ({ slug: p.slug, title: p.title, text: `${p.excerpt} ${lead(p.body)}` })),
+  ];
+}
+
+// The corpus the pages use: slug and title only, in the same order, which is
+// all that is needed once the neighbours are known.
 const corpora = new WeakMap<object, RelatedSource[]>();
 export function articleCorpus(dict: Dict): RelatedSource[] {
   let c = corpora.get(dict);
   if (!c) {
     c = [
-      ...dict.data.articles.map((a) => ({ slug: a.slug, title: a.title, text: `${a.dek} ${lead(blocksToText(a.blocks as ArticleBlock[]))}` })),
-      ...blogPosts.map((p) => ({ slug: p.slug, title: p.title, text: `${p.excerpt} ${lead(p.body)}` })),
+      ...dict.data.articles.map((a) => ({ slug: a.slug, title: a.title })),
+      ...blogMeta.map((m) => ({ slug: m.slug, title: m.title })),
     ];
     corpora.set(dict, c);
   }
@@ -111,7 +126,9 @@ function analyse(corpus: RelatedSource[]) {
   return a;
 }
 
-export function relatedTo(slug: string, corpus: RelatedSource[], limit = 3): RelatedSource[] {
+// The scoring itself, over a corpus that carries text. Called once by the
+// generator; the pages read its result instead of recomputing it.
+export function scoreRelated(slug: string, corpus: RelatedSource[], limit = 3): RelatedSource[] {
   const { docs, w } = analyse(corpus);
   const i = corpus.findIndex((a) => a.slug === slug);
   if (i < 0) return corpus.filter((a) => a.slug !== slug).slice(0, limit);
@@ -131,4 +148,15 @@ export function relatedTo(slug: string, corpus: RelatedSource[], limit = 3): Rel
   // the same list.
   scored.sort((x, y) => (y.score - x.score) || (x.j - y.j));
   return scored.filter((s) => s.score > 0).slice(0, limit).map((s) => s.a);
+}
+
+// The three neighbours of an article, read from the precomputed index. Falls
+// back to corpus order for an article the index does not know, which is what
+// the scoring did for an unknown slug, so a newly written piece still ends with
+// three links while the index is regenerated.
+export function relatedTo(slug: string, corpus: RelatedSource[], limit = 3): RelatedSource[] {
+  const entry = (articleIndex as Record<string, { related: string[] }>)[slug];
+  if (!entry) return corpus.filter((a) => a.slug !== slug).slice(0, limit);
+  const bySlug = new Map(corpus.map((a) => [a.slug, a] as const));
+  return entry.related.map((s) => bySlug.get(s)).filter((a): a is RelatedSource => Boolean(a)).slice(0, limit);
 }

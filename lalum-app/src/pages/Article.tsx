@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
@@ -5,11 +6,21 @@ import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { cvPath } from "../lib/hreflang";
 import type { ArticleBlock } from "../lib/content";
-import { blogPosts } from "../lib/blogPosts";
+import { blogMeta } from "../lib/blogMeta";
 import { articleCorpus, relatedTo } from "../lib/related";
 import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
 import { toBlocks } from "../lib/articleBlocks";
+
+// One module per article body, so a page loads its own and nothing else. The
+// whole corpus used to arrive as one chunk on every content page, including the
+// index, which shows titles: 451KB gzipped to render one article and 451KB to
+// render a list of links to them.
+const bodies = import.meta.glob<{ body: string }>("../data/posts/*.ts");
+
+function bodyLoader(slug: string) {
+  return bodies[`../data/posts/${slug}.ts`];
+}
 
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
@@ -47,12 +58,27 @@ export function Article() {
   const { slug } = useParams();
   const { t, dir, lang } = useLang();
   const article = t.data.articles.find((a) => a.slug === slug);
-  const post = article ? undefined : blogPosts.find((b) => b.slug === slug);
+  const post = article ? undefined : blogMeta.find((b) => b.slug === slug);
+
+  // The body arrives on its own. Until it does the page renders its heading,
+  // standfirst and links, which are already in the prerendered HTML, so the
+  // reader sees the article's own page rather than a spinner and the crawler
+  // reads the full prose regardless.
+  const [body, setBody] = useState<string | null>(null);
+  useEffect(() => {
+    if (!slug || article) return;
+    let live = true;
+    const load = bodyLoader(slug);
+    if (!load) return;
+    void load().then((m) => { if (live) setBody(m.body); });
+    return () => { live = false; };
+  }, [slug, article]);
+
   if (!article && !post) return <Navigate to="/insights" replace />;
 
   const view = article
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
-    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(post!.body) };
+    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: body ? toBlocks(body) : [] };
 
   // Related reading: the three pieces closest to this one in subject, scored by
   // relatedTo over the whole corpus. These internal links keep readers (and

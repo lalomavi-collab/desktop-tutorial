@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "build-check": "node scripts/build-check.mjs",
     "postbuild": "node scripts/build-check.mjs",
-    "indexnow": "node scripts/indexnow.mjs"
+    "indexnow": "node scripts/indexnow.mjs",
+    "split-articles": "node scripts/split-articles.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
