@@ -91,6 +91,32 @@ export function normPath(path: string): string {
   return p === "" ? "/" : p + "/";
 }
 
+// Routes whose content is the Hebrew corpus itself, whatever language the
+// visitor chose. They are reachable under every language prefix, and a reader
+// who picked English got them rendered left to right: /en/faq measured 94 per
+// cent Hebrew, /en/insights 84, /en/rulings 81, and the local authorities
+// rubric 99, all of it flowing away from the margin it should start at. The
+// chrome stays in the reader's language; the page itself reads the way its
+// script reads.
+const HEBREW_CONTENT_ROOTS = ["/faq", "/insights", "/rulings", "/risk", "/training", "/courses"];
+
+export function hasHebrewOnlyContent(path: string): boolean {
+  const p = normPath(path);
+  if (HEBREW_CONTENT_ROOTS.some((r) => p.startsWith(`${r}/`))) return true;
+  // The sector rubrics and the diagnostic tools live under the AI pillar and
+  // are written for an Israeli readership alone. The pillar page above them is
+  // translated and is left as it is.
+  return p.startsWith("/ai-legal-advisory/") && p !== "/ai-legal-advisory/";
+}
+
+// A title drawn from the Hebrew corpus, shown on a page rendered in another
+// language, flows the wrong way unless the element says which script it holds.
+// The same is true in reverse for an English course or article title sitting in
+// a Hebrew page.
+export function scriptDir(text: string): { lang: "he" | "en"; dir: "rtl" | "ltr" } {
+  return /[\u05d0-\u05ea]/.test(text) ? { lang: "he", dir: "rtl" } : { lang: "en", dir: "ltr" };
+}
+
 export function isTranslatedRoute(path: string): boolean {
   return TRANSLATED_ROUTES.has(normPath(path));
 }

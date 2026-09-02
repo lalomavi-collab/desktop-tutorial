@@ -17,10 +17,13 @@ import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
+import { hasHebrewOnlyContent, stripLangPrefix } from "../lib/hreflang";
 
 export function MarketingLayout() {
   const { pathname, hash } = useLocation();
   const { t } = useLang();
+
+  const hebrewContent = hasHebrewOnlyContent(stripLangPrefix(pathname));
 
   useScrollReveal(pathname);
 
@@ -34,8 +37,16 @@ export function MarketingLayout() {
       <a href="#main" className="skip-link">{t.ui.skipToContent}</a>
       <Header />
       <main id="main">
-        {/* Keyed by path so each navigation replays the reveal (app-like page transition). */}
-        <div key={pathname} className="route-view">
+        {/* Keyed by path so each navigation replays the reveal (app-like page transition).
+            A route that carries the Hebrew corpus reads right to left even when
+            the chrome around it is English, Spanish or French: the alternative
+            was pages that are four fifths Hebrew starting at the left margin. */}
+        <div
+          key={pathname}
+          className="route-view"
+          dir={hebrewContent ? "rtl" : undefined}
+          lang={hebrewContent ? "he" : undefined}
+        >
           {/* Code-split routes suspend while their chunk loads. The spacer
               holds a full viewport, so the footer starts below the fold and
               nothing visible moves when the chunk arrives. See .route-pending. */}

@@ -3,6 +3,7 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
+import { scriptDir } from "../lib/hreflang";
 import { faqCategories } from "../lib/faq";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
@@ -56,7 +57,9 @@ export function Faq() {
                         and the Q&A gains real document structure. */}
                     <h3 className="faq-qh">
                       <button id={bid} type="button" className="faq-q" aria-expanded={isOpen} aria-controls={pid} onClick={() => setOpen(isOpen ? "" : key)}>
-                        <span>{it.q}</span>
+                        {/* A handful of questions are English lecture titles inside a
+                            Hebrew page; each states its own script. */}
+                        <span {...scriptDir(it.q)}>{it.q}</span>
                         <span className={"faq-chevron" + (isOpen ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
                       </button>
                     </h3>
