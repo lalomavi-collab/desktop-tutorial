@@ -686,7 +686,7 @@ function shortTitle(full: string, allowColonCut = true): string {
       const sp = t.lastIndexOf(" ");
       if (sp > 20) t = t.slice(0, sp);
     }
-    t = t.replace(/[\s,;:·|(–\-]+$/, "");
+    t = t.replace(/[\s,;:·|(–-]+$/, "");
   }
   return t + suffix;
 }

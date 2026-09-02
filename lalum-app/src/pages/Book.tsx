@@ -91,6 +91,30 @@ export function Book() {
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
   const [method, setMethod] = useState<MeetingKey>(meetingTypes[0].key);
 
+  // Every hook this component uses is declared here, above the branch below
+  // that returns the scheduling embed. React requires hooks to run in the same
+  // order on every render, and these nine sat after that early return: while
+  // `bookingBaseUrl` is empty the branch is never taken, so the defect was
+  // latent, and the day the Zoho links are pasted in it would have become
+  // "Rendered fewer hooks than expected" on the booking page. The manual form
+  // below reads them; the embed branch simply does not.
+  const [params] = useSearchParams();
+  const [day, setDay] = useState("");
+  const [slot, setSlot] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  // A visitor who arrived from a course card carries the program slug in the
+  // query string. Prefilling the topic means the request that reaches the firm
+  // says which program it is about, instead of arriving anonymous.
+  const programSlug = (params.get("program") ?? "").trim().slice(0, 60);
+  const programTitle = programSlug
+    ? [...courses, ...academyPro].find((c) => courseSlug(c) === programSlug)?.title
+    : undefined;
+  const [topic, setTopic] = useState(programTitle ? `פנייה בנוגע לתוכנית: ${programTitle}` : "");
+  const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
   // Real, instant scheduling via the connected calendar.
   if (SCHEDULING_URL) {
     const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
@@ -160,22 +184,6 @@ export function Book() {
     );
   }
 
-  const [params] = useSearchParams();
-  const [day, setDay] = useState("");
-  const [slot, setSlot] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  // A visitor who arrived from a course card carries the program slug in the
-  // query string. Prefilling the topic means the request that reaches the firm
-  // says which program it is about, instead of arriving anonymous.
-  const programSlug = (params.get("program") ?? "").trim().slice(0, 60);
-  const programTitle = programSlug
-    ? [...courses, ...academyPro].find((c) => courseSlug(c) === programSlug)?.title
-    : undefined;
-  const [topic, setTopic] = useState(programTitle ? `פנייה בנוגע לתוכנית: ${programTitle}` : "");
-  const [busy, setBusy] = useState(false);
-  const [consent, setConsent] = useState(false);
-  const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
