@@ -1,0 +1,34 @@
+name: Publish campaign post (manual, any number)
+
+# One reusable trigger for every future post, so a new post no longer needs its
+# own publish_NNN workflow file. Add the post text to
+# posts/campaign_sept_2026.json and its two cards to
+# lalum-app/public/og/<num>_<slug>_<lang>.png, then run this workflow and pass
+# the number. Manual only, on purpose: nothing reaches a live professional
+# audience without a person choosing to send it. Use dry_run first to build and
+# print without sending.
+on:
+  workflow_dispatch:
+    inputs:
+      number:
+        description: "Post number in posts/campaign_sept_2026.json (e.g. 015)"
+        required: true
+      dry_run:
+        description: "Dry run: build and print, send nothing"
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish post ${{ inputs.number }}
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+        run: |
+          python3 scripts/publish_post.py "${{ inputs.number }}" ${{ inputs.dry_run == true && '--dry-run' || '' }}
