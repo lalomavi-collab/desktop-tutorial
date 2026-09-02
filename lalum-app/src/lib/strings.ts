@@ -18,6 +18,13 @@ const en = {
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
     telegram: { aria: "Chat with us on Telegram" },
     quickActions: "Quick actions",
+    homePrompt: {
+      aria: "Compliance assessment",
+      close: "Close",
+      lead: "Do not guess your exposure.",
+      body: "Run a first EU AI Act compliance assessment, or have our diagnostic bot scan your deployment contract, and get an immediate readiness score report.",
+      cta: "Run the assessment",
+    },
     videoBubble: {
       open: "Watch a short introduction video",
       teaser: "A short introduction from Dr. Avraham Lalum",
@@ -1125,6 +1132,13 @@ const he: Dict = {
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
     telegram: { aria: "צ'אט מהיר בטלגרם" },
     quickActions: "פעולות מהירות",
+    homePrompt: {
+      aria: "אבחון ציות",
+      close: "סגירה",
+      lead: "אל תנחשו את מידת החשיפה שלכם.",
+      body: "הריצו עכשיו אבחון ציות ראשוני ל-EU AI Act, או סרקו את חוזה ההטמעה שלכם באמצעות בוט האבחון האוטומטי שלנו, וקבלו דוח ״ציון מוכנות״ מיידי.",
+      cta: "להרצת האבחון",
+    },
     videoBubble: {
       open: "צפייה בסרטון היכרות קצר",
       teaser: "רגע היכרות עם ד״ר עו״ד אברהם ללום",
@@ -2229,6 +2243,13 @@ const es: Dict = {
     whatsapp: { aria: "Chatear con nosotros por WhatsApp", msg: "Hola, llegué desde la aplicación de LALUM y me gustaría hablar." },
     telegram: { aria: "Chatear con nosotros por Telegram" },
     quickActions: "Acciones rápidas",
+    homePrompt: {
+      aria: "Diagnóstico de cumplimiento",
+      close: "Cerrar",
+      lead: "No adivine su nivel de exposición.",
+      body: "Realice un diagnóstico inicial de cumplimiento del EU AI Act, o deje que nuestro bot analice su contrato de implantación, y reciba de inmediato un informe con su puntuación de preparación.",
+      cta: "Realizar el diagnóstico",
+    },
     videoBubble: {
       open: "Ver un breve vídeo de presentación",
       teaser: "Una breve presentación del Dr. Avraham Lalum",
@@ -3297,6 +3318,13 @@ const fr: Dict = {
     whatsapp: { aria: "Discuter avec nous sur WhatsApp", msg: "Bonjour, je viens de l'application LALUM et j'aimerais échanger." },
     telegram: { aria: "Discuter avec nous sur Telegram" },
     quickActions: "Actions rapides",
+    homePrompt: {
+      aria: "Diagnostic de conformité",
+      close: "Fermer",
+      lead: "Ne devinez pas votre niveau d'exposition.",
+      body: "Lancez un premier diagnostic de conformité à l'EU AI Act, ou faites analyser votre contrat de déploiement par notre bot, et recevez immédiatement un rapport avec votre score de préparation.",
+      cta: "Lancer le diagnostic",
+    },
     videoBubble: {
       open: "Voir une courte vidéo de présentation",
       teaser: "Une courte présentation du Dr Avraham Lalum",
@@ -4356,6 +4384,13 @@ const ar: Dict = {
     whatsapp: { aria: "تواصلوا معنا عبر واتساب", msg: "مرحباً، لقد وصلت من تطبيق LALUM وأرغب في التحدث." },
     telegram: { aria: "تواصلوا معنا عبر تيليجرام" },
     quickActions: "إجراءات سريعة",
+    homePrompt: {
+      aria: "تشخيص الامتثال",
+      close: "إغلاق",
+      lead: "لا تخمّن مستوى تعرّضكم.",
+      body: "أجروا تشخيصًا أوليًا للامتثال لقانون الذكاء الاصطناعي الأوروبي، أو دعوا روبوت التشخيص لدينا يفحص عقد التطبيق لديكم، واحصلوا فورًا على تقرير بدرجة الجاهزية.",
+      cta: "إجراء التشخيص",
+    },
     videoBubble: {
       open: "مشاهدة فيديو تعريفي قصير",
       teaser: "تعريف قصير من د. أبراهام لالوم",
