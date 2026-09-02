@@ -184,8 +184,11 @@ def reconcile(rows: list[Row], month_folder: Path) -> Reconciliation:
     if not txs:
         return rec
 
+    # חשבון עסקה אינו אירוע תשלום ולכן אין לו תנועת בנק מקבילה. בלי
+    # הסינון הזה כל פרופורמה נספרת כ"מסמך ללא תנועה" ומרעישה את הדוח.
+    skip = {"proforma_in", "proforma_out"}
     for r in rows:
-        if r.currency != "ILS" or r.total <= 0:
+        if r.currency != "ILS" or r.total <= 0 or r.category in skip:
             continue
         hit = None
         for tx in txs:

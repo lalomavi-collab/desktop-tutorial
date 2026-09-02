@@ -116,7 +116,14 @@ def main():
     from pathlib import Path as _P
     rec = reconcile(result["rows"], _P(result["folder"]))
     rec_block = build_reconciliation_block(rec)
-    result["body"] = result["body"] + "\n\n" + rec_block
+    # ההתאמה היא כלי עבודה פנימי, לא הצהרה להנהלת החשבונות. ההתאמה כיום
+    # לפי סכום בלבד: _parse_csv לוקח את הסכום המספרי הראשון בשורה ואינו
+    # מבחין בין חובה לזכות, ולכן חשבונית הכנסה עשויה להיות מותאמת לחיוב
+    # באותו סכום. עד שיתווספו כיוון התנועה וחלון תאריכים, התוצאה מוצגת
+    # במסך ונכתבת לקובץ בתיקיית החודש, ואינה נכנסת לגוף המייל לרונית.
+    if rec.statements_found:
+        (_P(result["folder"]) / f"התאמת-בנק-{month}.md").write_text(
+            rec_block, encoding="utf-8")
 
     print(f"\n📁 {result['folder']}")
     print(f"   {len(result['rows'])} מסמכים\n")
