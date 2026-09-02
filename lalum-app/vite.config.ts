@@ -385,6 +385,11 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
 <head>
 <meta charset="utf-8">
 <title>${esc(S.h1)} | LALUM</title>
+<!-- The print source for the PDF, not a page. It ships in the build output
+     because that is where the PDF script reads it from, so it is kept out of
+     the index: an unstyled second copy of the sector page at its own URL would
+     compete with the page it was made from. -->
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Suez+One&display=swap" rel="stylesheet">
