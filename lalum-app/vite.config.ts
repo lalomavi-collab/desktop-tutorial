@@ -9,6 +9,7 @@ import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/href
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
+import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
@@ -42,6 +43,11 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // One prerendered page per sector rubric under the AI pillar. These are the
+  // pages outreach points a body at instead of a PDF, so they have to resolve
+  // to a real document with their own title and description, not to the SPA
+  // shell. Hebrew only, and so carrying no language alternates.
+  ...SECTORS.map((s) => ({ path: s.path, title: `${s.title} | LALUM`, desc: s.desc })),
   // One prerendered page per LALUM Academy program, In-House and Pro alike, so
   // each program resolves to a real file with its own title and description
   // instead of living only inside an accordion on the training page.
@@ -242,6 +248,10 @@ function pillarBodyHtml(p: PillarPage): string {
   out.push(`        <ul>${p.when.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.stepsH2)}</h2>`);
   for (const s of p.steps) out.push(`        <h3>${esc(s.title)}</h3>\n        <p>${esc(s.body)}</p>`);
+  if (p.sectors?.length && p.sectorsUi) {
+    out.push(`        <h2>${esc(p.sectorsUi.h2)}</h2>`, `        <p>${esc(p.sectorsUi.lede)}</p>`);
+    out.push(`        <ul>${p.sectors.map((s) => `<li><a href="/${esc(s.path)}/">${esc(s.title)}</a>: ${esc(s.body)}</li>`).join("")}</ul>`);
+  }
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
   out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.faqH2)}</h2>`);
@@ -249,6 +259,56 @@ function pillarBodyHtml(p: PillarPage): string {
     out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
   }
   out.push(`        <h2>${esc(p.ctaH2)}</h2>`, `        <p>${esc(p.ctaBody)}</p>`, `        <p>${esc(p.disclaimer)}</p>`);
+  return out.join("\n");
+}
+
+// A sector rubric. The static copy carries the same three rubrics the rendered
+// page carries, because those are the reason the page exists: the case law
+// with its citations, the regulator's instructions with their sources, and the
+// protocol and checklist. Emitting only a heading here would leave a crawler
+// with a page that says it has all of this and shows none of it.
+function sectorBodyHtml(S: Sector): string {
+  const out = [`        <h1>${esc(S.h1)}</h1>`, `        <p>${esc(S.lede)}</p>`];
+
+  out.push(`        <h2>${esc(S.realityH2)}</h2>`, `        <p>${esc(S.realityLede)}</p>`);
+  out.push(`        <ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.casesH2)}</h2>`, `        <p>${esc(S.casesLede)}</p>`);
+  for (const { ruling, why } of sectorCases(S)) {
+    out.push(`        <h3>${esc(ruling.citation)}${ruling.caption ? ` ${esc(ruling.caption)}` : ""}</h3>`);
+    out.push(`        <p>${esc(ruling.court)}, ${esc(ruling.dateLabel)}${ruling.bench ? `, ${esc(ruling.bench)}` : ""}</p>`);
+    out.push(`        <p>${esc(ruling.holding)}</p>`);
+    if (ruling.quote) out.push(`        <blockquote><p>${esc(ruling.quote)}</p></blockquote>`);
+    out.push(`        <p>${esc(why)}</p>`);
+    out.push(`        <p><a href="/rulings/">${esc(strings.he.rulings.title)}</a></p>`);
+  }
+
+  out.push(`        <h2>${esc(S.directivesH2)}</h2>`, `        <p>${esc(S.directivesLede)}</p>`);
+  for (const d of S.directives) {
+    out.push(`        <h3>${esc(d.title)}</h3>`, `        <p>${esc(d.body)}</p>`);
+    out.push(`        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+  }
+
+  out.push(`        <h2>${esc(S.toolsH2)}</h2>`, `        <p>${esc(S.toolsLede)}</p>`);
+  for (const tool of S.tools) {
+    out.push(`        <h3>${esc(tool.title)}</h3>`, `        <p>${esc(tool.intro)}</p>`);
+    out.push(`        <ul>${tool.items.map((it) => `<li>${esc(it.title)}: ${esc(it.body)}</li>`).join("")}</ul>`);
+    if (tool.note) out.push(`        <p>${esc(tool.note)}</p>`);
+  }
+
+  out.push(`        <h2>${esc(S.servicesH2)}</h2>`, `        <p>${esc(S.servicesLede)}</p>`);
+  for (const c of S.services) out.push(`        <h3>${esc(c.title)}</h3>\n        <p>${esc(c.body)}</p>`);
+
+  out.push(`        <h2>${esc(S.stepsH2)}</h2>`);
+  for (const st of S.steps) out.push(`        <h3>${esc(st.title)}</h3>\n        <p>${esc(st.body)}</p>`);
+
+  out.push(`        <h2>${esc(S.materialsH2)}</h2>`, `        <p>${esc(S.materialsLede)}</p>`);
+  out.push(`        <ul>${S.materials.map((m) => `<li><a href="${esc(encodeURI(m.href))}/">${esc(m.title)}</a>: ${esc(m.note)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.faqH2)}</h2>`);
+  for (const f of S.faqs) out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
+
+  out.push(`        <h2>${esc(S.ctaH2)}</h2>`, `        <p>${esc(S.ctaBody)}</p>`, `        <p>${esc(S.disclaimer)}</p>`);
   return out.join("\n");
 }
 
@@ -530,8 +590,10 @@ function seoPrerender(): Plugin {
           // carry the Q&A they already publish as structured data.
           // The prerendered document is the Hebrew one, so the Hebrew copy.
           const pillar = pillarPagesFor("he").find((p: PillarPage) => p.path === r.path);
+          const sector = SECTORS.find((x: Sector) => x.path === r.path);
           const staticBody =
-            r.path === "faq" ? faqBodyHtml()
+            sector ? sectorBodyHtml(sector)
+            : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
             : pillar ? pillarBodyHtml(pillar)
@@ -704,6 +766,15 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
         if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
+        // Auto-add every sector rubric, so a new one is in the sitemap the
+        // moment it is added to sectors.ts. They update as the case law and
+        // the regulator's instructions do, hence weekly, and they carry the
+        // pillar's own priority because they are where the outreach points.
+        const sectorRows = SECTORS
+          .map((x: Sector) => `${SITE}/${x.path}/`)
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+        if (sectorRows.length) xml = sub(xml, "</urlset>", () => `${sectorRows.join("\n")}\n</urlset>`);
         // Auto-add every article from blogMeta, so a newly published /insights/
         // post is always in the sitemap without a manual edit. Slugs are
         // percent-encoded to match the canonical served URL (Hebrew slugs), and

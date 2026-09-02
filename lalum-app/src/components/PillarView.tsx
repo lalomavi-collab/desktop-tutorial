@@ -87,6 +87,28 @@ export function PillarView({ P }: { P: PillarPage }) {
         </div>
       </section>
 
+      {/* SECTOR RUBRICS. Present on the AI pillar only, and only in Hebrew.
+          This is how a reader from a specific kind of body reaches the page
+          written for that body, and how a crawler finds it at all. */}
+      {P.sectors?.length && P.sectorsUi ? (
+        <section className="wrap section section-line">
+          <div style={{ maxWidth: "58ch", margin: "0 0 32px" }}>
+            <p className="eyebrow">{P.sectorsUi.eyebrow}</p>
+            <h2 className="h2">{P.sectorsUi.h2}</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{P.sectorsUi.lede}</p>
+          </div>
+          <div className="grid grid-2">
+            {P.sectors.map((s) => (
+              <Link key={s.path} to={`/${s.path}`} className="card" style={{ display: "block" }}>
+                <h3 className="h3" style={{ fontSize: 20, margin: "0 0 10px", lineHeight: 1.35 }}>{s.title}</h3>
+                <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
+                <span className="card-go">{P.sectorsUi!.go} &rarr;</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {/* RELATED READING (internal links) */}
       <section className="wrap section section-line">
         <div style={{ maxWidth: "58ch", margin: "0 0 32px" }}>
