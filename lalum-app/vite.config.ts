@@ -10,7 +10,7 @@ import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
-import { LEGAL_TOOLS, TOOLS_PAGE } from "./src/lib/legalTools";
+import { LEGAL_TOOLS, TOOLS_PAGE, type LegalTool } from "./src/lib/legalTools";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
@@ -332,63 +332,31 @@ function sectorBodyHtml(S: Sector): string {
   return out.join("\n");
 }
 
-// The take-away booklet. A municipality that is approached wants something it
-// can forward and print, and until now that was a PDF produced by hand in a
-// design tool, which is how a brochure ends up carrying a quotation nobody
-// checked and a Latin phrase reversed by the bidi algorithm.
+// The take-away booklets. A body that is approached wants something it can
+// forward and print, and until now that was a PDF produced by hand in a design
+// tool, which is how a brochure ends up carrying a quotation nobody checked and
+// a Latin phrase reversed by the bidi algorithm.
 //
-// So the booklet is generated here, from the same Sector the page renders
-// from: the citations, the holdings, the regulator's instructions, the
-// protocol and the checklist all have one source. It is emitted as a
-// self-contained, print-ready HTML document (A4, RTL, brand palette, the
-// wordmark artwork inlined), which scripts/build-booklet-pdf.mjs prints to the
-// PDF that ships in public/downloads.
-function sectorBookletHtml(S: Sector, wordmark: string): string {
-  const cases = sectorCases(S);
-  const rule = (t: string) => `<h2>${esc(t)}</h2>`;
-  const p = (t: string) => `<p>${esc(t)}</p>`;
+// So every booklet is generated here, from the same data the pages render from:
+// the citations, the holdings, the regulator's instructions, the questions and
+// the draft clause all have one source. They are emitted as self-contained,
+// print-ready HTML documents (A4, RTL, brand palette, the wordmark artwork
+// inlined), which scripts/build-booklet-pdf.mjs prints to the PDFs that ship in
+// public/downloads.
 
-  const casesHtml = cases.map(({ ruling, why }) => `
-      <article class="case">
-        <p class="cite">${esc(ruling.citation)}</p>
-        <h3>${esc(ruling.caption ?? ruling.citation)}</h3>
-        <p class="meta">${esc(ruling.court)} · ${esc(ruling.dateLabel)}${ruling.bench ? `<br>${esc(ruling.bench)}` : ""}</p>
-        ${ruling.facts ? p(ruling.facts) : ""}
-        <h4>מה נפסק</h4>
-        ${p(ruling.holding)}
-        ${ruling.quote ? `<blockquote>${esc(ruling.quote)}</blockquote>` : ""}
-        <h4>למה זה נוגע לרשות</h4>
-        ${p(why)}
-        <p class="src">מקורות: ${ruling.sources.map((x) => esc(x.label)).join(" · ")}</p>
-      </article>`).join("");
-
-  const directivesHtml = S.directives.map((d) => `
-      <article class="block">
-        <h3>${esc(d.title)}</h3>
-        ${p(d.body)}
-        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-        <p class="src">מקור: ${esc(d.sourceLabel)}</p>
-      </article>`).join("");
-
-  const toolsHtml = S.tools.map((tool) => `
-      <article class="block tool">
-        <h3>${esc(tool.title)}</h3>
-        ${p(tool.intro)}
-        <ol class="${tool.kind}">
-          ${tool.items.map((it, i) => `<li><span class="marker">${tool.kind === "protocol" ? String(i + 1).padStart(2, "0") : "&#9744;"}</span><div><strong>${esc(it.title)}</strong><br>${esc(it.body)}</div></li>`).join("")}
-        </ol>
-        ${tool.note ? `<p class="note">${esc(tool.note)}</p>` : ""}
-      </article>`).join("");
-
+// The shared document: page setup, palette, Hebrew faces, and the cover. Only
+// the body differs between a sector guide and a tool guide, so only the body is
+// passed in.
+function bookletShell(o: { wordmark: string; title: string; subtitle: string; updated: string; path: string; body: string; disclaimer: string }): string {
   return `<!doctype html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>${esc(S.h1)} | LALUM</title>
-<!-- The print source for the PDF, not a page. It ships in the build output
+<title>${esc(o.title)} | LALUM</title>
+<!-- The print source for a PDF, not a page. It ships in the build output
      because that is where the PDF script reads it from, so it is kept out of
-     the index: an unstyled second copy of the sector page at its own URL would
-     compete with the page it was made from. -->
+     the index: an unstyled second copy of a page at its own URL would compete
+     with the page it was made from. -->
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -399,7 +367,7 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
   /* Hebrew prose here carries Latin and numeric tokens (LPR, EU AI Act, case
      numbers, URLs). Without isolation the bidi algorithm reorders the run and
      a reader gets a reversed brand name or a mangled address, which is the
-     exact defect this document exists to avoid repeating. */
+     exact defect these documents exist to avoid repeating. */
   span[dir="ltr"] { unicode-bidi: isolate; direction: ltr; }
   * { box-sizing: border-box; }
   body { margin:0; font-family:Heebo,Arial,sans-serif; color:var(--ink); font-size:10.5pt; line-height:1.65; background:#fff; }
@@ -410,7 +378,6 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
   .cover .sub { font-size:12pt; line-height:1.6; color:#d8d2c4; margin:0 0 16mm; max-width:118mm; }
   .cover .rule { height:2px; background:var(--clay); width:34mm; margin:0 0 10mm; }
   .cover .foot { font-size:9.5pt; color:#b9b3a5; line-height:1.8; }
-  main { padding:0; }
   h2 { font-family:"Suez One",Georgia,serif; font-weight:400; font-size:16pt; color:var(--ink); margin:12mm 0 4mm; padding-bottom:2mm; border-bottom:1px solid var(--line); break-after:avoid; }
   h3 { font-size:12pt; margin:6mm 0 2mm; break-after:avoid; }
   h4 { font-size:10pt; margin:4mm 0 1mm; color:var(--clay); break-after:avoid; }
@@ -427,6 +394,7 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
   .tool li { display:flex; gap:3mm; align-items:flex-start; break-inside:avoid; }
   .tool .marker { flex:0 0 8mm; font-weight:700; color:var(--clay); font-size:11pt; }
   .note { background:#fff; border:1px dashed var(--line); border-radius:2mm; padding:3mm 4mm; font-size:9.5pt; margin:4mm 0 0; }
+  pre { white-space:pre-wrap; font:inherit; font-size:9.5pt; line-height:1.7; margin:0 0 3mm; }
   .end { margin-top:12mm; padding-top:4mm; border-top:2px solid var(--clay); }
   .disclaimer { font-size:8.5pt; color:var(--slate); margin-top:6mm; }
   .contact { font-size:9.5pt; color:var(--slate); margin-top:3mm; }
@@ -434,38 +402,139 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
 </head>
 <body>
   <section class="cover">
-    <span class="mark">${wordmark}</span>
+    <span class="mark">${o.wordmark}</span>
     <div class="rule"></div>
-    <h1>${esc(S.h1)}</h1>
-    <p class="sub">${esc(S.desc)}</p>
-    <p class="foot">${esc(S.downloads[0]?.updated ?? "")}<br><span dir="ltr">lalumapp.com/${esc(S.path)}/</span><br>ד״ר עו״ד אברהם ללום</p>
+    <h1>${esc(o.title)}</h1>
+    <p class="sub">${esc(o.subtitle)}</p>
+    <p class="foot">${esc(o.updated)}<br><span dir="ltr">lalumapp.com/${esc(o.path)}/</span><br>ד״ר עו״ד אברהם ללום</p>
   </section>
   <main>
-    ${rule(S.realityH2)}
-    <p class="lede">${esc(S.realityLede)}</p>
-    <ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
-
-    ${rule(S.casesH2)}
-    <p class="lede">${esc(S.casesLede)}</p>
-    ${casesHtml}
-
-    ${rule(S.directivesH2)}
-    <p class="lede">${esc(S.directivesLede)}</p>
-    ${directivesHtml}
-
-    ${rule(S.toolsH2)}
-    <p class="lede">${esc(S.toolsLede)}</p>
-    ${toolsHtml}
-
+${o.body}
     <div class="end">
-      ${rule(S.ctaH2)}
-      ${p(S.ctaBody)}
-      <p class="contact"><span dir="ltr">lalum.co</span> · <span dir="ltr">avraham@lalum.co</span> · <span dir="ltr">lalumapp.com/${esc(S.path)}/</span></p>
-      <p class="disclaimer">${esc(S.disclaimer)}</p>
+      <p class="contact"><span dir="ltr">lalum.co</span> · <span dir="ltr">avraham@lalum.co</span> · <span dir="ltr">lalumapp.com/${esc(o.path)}/</span></p>
+      <p class="disclaimer">${esc(o.disclaimer)}</p>
     </div>
   </main>
 </body>
 </html>`;
+}
+
+function sectorBookletHtml(S: Sector, wordmark: string): string {
+  const cases = sectorCases(S);
+  const rule = (t: string) => `<h2>${esc(t)}</h2>`;
+  const p = (t: string) => `<p>${esc(t)}</p>`;
+
+  const out: string[] = [];
+
+  out.push(rule(S.realityH2), `<p class="lede">${esc(S.realityLede)}</p>`);
+  out.push(`<ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>`);
+
+  out.push(rule(S.casesH2), `<p class="lede">${esc(S.casesLede)}</p>`);
+  for (const { ruling, why } of cases) {
+    out.push(`<article class="case">
+        <p class="cite">${esc(ruling.citation)}</p>
+        <h3>${esc(ruling.caption ?? ruling.citation)}</h3>
+        <p class="meta">${esc(ruling.court)} · ${esc(ruling.dateLabel)}${ruling.bench ? `<br>${esc(ruling.bench)}` : ""}</p>
+        ${ruling.facts ? p(ruling.facts) : ""}
+        <h4>מה נפסק</h4>
+        ${p(ruling.holding)}
+        ${ruling.quote ? `<blockquote>${esc(ruling.quote)}</blockquote>` : ""}
+        <h4>למה זה נוגע לרשות</h4>
+        ${p(why)}
+        <p class="src">מקורות: ${ruling.sources.map((x) => esc(x.label)).join(" · ")}</p>
+      </article>`);
+  }
+
+  out.push(rule(S.directivesH2), `<p class="lede">${esc(S.directivesLede)}</p>`);
+  for (const d of S.directives) {
+    out.push(`<article class="block">
+        <h3>${esc(d.title)}</h3>
+        ${p(d.body)}
+        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <p class="src">מקור: ${esc(d.sourceLabel)}</p>
+      </article>`);
+  }
+
+  out.push(rule(S.toolsH2), `<p class="lede">${esc(S.toolsLede)}</p>`);
+  for (const tool of S.tools) {
+    out.push(`<article class="block tool">
+        <h3>${esc(tool.title)}</h3>
+        ${p(tool.intro)}
+        <ol class="${tool.kind}">
+          ${tool.items.map((it, i) => `<li><span class="marker">${tool.kind === "protocol" ? String(i + 1).padStart(2, "0") : "&#9744;"}</span><div><strong>${esc(it.title)}</strong><br>${esc(it.body)}</div></li>`).join("")}
+        </ol>
+        ${tool.note ? `<p class="note">${esc(tool.note)}</p>` : ""}
+      </article>`);
+  }
+
+  out.push(rule(S.servicesH2), `<p class="lede">${esc(S.servicesLede)}</p>`);
+  for (const c of S.services) out.push(`<h3>${esc(c.title)}</h3>`, p(c.body));
+
+  out.push(rule(S.stepsH2));
+  for (const st of S.steps) out.push(`<h3>${esc(st.title)}</h3>`, p(st.body));
+
+  out.push(rule(S.ctaH2), p(S.ctaBody));
+
+  return bookletShell({
+    wordmark,
+    title: S.h1,
+    subtitle: S.desc,
+    updated: S.downloads[0]?.updated ?? "",
+    path: S.path,
+    body: out.map((x) => `    ${x}`).join("\n"),
+    disclaimer: S.disclaimer,
+  });
+}
+
+// A tool guide: the framing a printed document needs, then the tool's own
+// questions with the reasoning and the remedy behind each, then whatever the
+// tool produces at the end.
+function toolBookletHtml(tool: LegalTool, wordmark: string): string {
+  const p = (t: string) => `<p>${esc(t)}</p>`;
+  const out: string[] = [];
+
+  for (const c of tool.booklet.context) {
+    out.push(`<h2>${esc(c.h)}</h2>`, p(c.p));
+  }
+
+  out.push(`<h2>${esc(tool.title)}</h2>`, `<p class="lede">${esc(tool.booklet.closing)}</p>`);
+  for (const [i, q] of tool.questions.entries()) {
+    out.push(`<article class="block">
+        <p class="cite">שאלה ${i + 1}</p>
+        <h3>${esc(q.q)}</h3>
+        <h4>למה זה נשאל</h4>
+        ${p(q.why)}
+        <h4>מה עושים</h4>
+        ${p(q.fix)}
+      </article>`);
+  }
+
+  out.push(`<h2>איך לקרוא את התוצאה</h2>`);
+  for (const b of tool.bands) out.push(`<h3>${esc(b.label)}</h3>`, p(b.body));
+
+  if (tool.clause) {
+    out.push(`<h2>${esc(tool.clause.title)}</h2>`);
+    out.push(`<pre>${esc(tool.clause.body)}</pre>`);
+    out.push(`<p class="note">${esc(tool.clause.note)}</p>`);
+  }
+
+  if (tool.compare) {
+    out.push(`<h2>${esc(tool.compare.title)}</h2>`);
+    for (const col of [tool.compare.ours, tool.compare.court]) {
+      out.push(`<h3>${esc(col.label)}</h3>`);
+      out.push(`<ul>${col.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    }
+  }
+
+  return bookletShell({
+    wordmark,
+    title: tool.title,
+    subtitle: tool.booklet.subtitle,
+    updated: tool.booklet.updated,
+    path: `${TOOLS_PAGE.path}#${tool.slug}`,
+    body: out.map((x) => `    ${x}`).join("\n"),
+    disclaimer: TOOLS_PAGE.disclaimer,
+  });
 }
 
 // The diagnostic tools page. The static copy carries each tool's questions,
@@ -476,6 +545,7 @@ function toolsBodyHtml(): string {
   for (const tool of LEGAL_TOOLS) {
     out.push(`        <h2>${esc(tool.title)}</h2>`, `        <p>${esc(tool.lede)}</p>`);
     out.push(`        <ul>${tool.questions.map((q) => `<li>${esc(q.q)}</li>`).join("")}</ul>`);
+    out.push(`        <p><a href="${esc(tool.booklet.file)}">${esc(TOOLS_PAGE.downloadLabel)}: ${esc(tool.booklet.subtitle)}</a></p>`);
   }
   out.push(`        <p>${esc(TOOLS_PAGE.disclaimer)}</p>`);
   return out.join("\n");
@@ -775,17 +845,20 @@ function seoPrerender(): Plugin {
         writeFileSync(file, html, "utf8");
         written++;
       }
-      // The take-away booklet for every sector, emitted as print-ready HTML.
-      // scripts/build-booklet-pdf.mjs turns it into the PDF that ships in
-      // public/downloads, so the file a municipality receives is generated
-      // from the same data as the page it came from.
+      // Every take-away booklet, emitted as print-ready HTML: one per sector
+      // and one per diagnostic tool. scripts/build-booklet-pdf.mjs turns each
+      // into the PDF that ships in public/downloads, so a file a reader
+      // receives is generated from the same data as the page it came from and
+      // cannot contradict it.
       {
         const wordmark = readFileSync(join(process.cwd(), "public", "lalum-logo-inverse.svg"), "utf8");
-        for (const sec of SECTORS) {
-          const bf = join(outDir, "downloads", `${sec.slug}-booklet.html`);
+        const write = (slug: string, html: string) => {
+          const bf = join(outDir, "downloads", `${slug}-booklet.html`);
           mkdirSync(dirname(bf), { recursive: true });
-          writeFileSync(bf, sectorBookletHtml(sec, wordmark), "utf8");
-        }
+          writeFileSync(bf, html, "utf8");
+        };
+        for (const sec of SECTORS) write(sec.slug, sectorBookletHtml(sec, wordmark));
+        for (const tool of LEGAL_TOOLS) write(tool.slug, toolBookletHtml(tool, wordmark));
       }
       // The readiness assessment and its shareable results. Each result is its
       // own prerendered document with its own Open Graph tags and preview

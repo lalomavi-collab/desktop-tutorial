@@ -82,6 +82,11 @@ export function LegalTools() {
             <p className="eyebrow" style={{ marginTop: 16 }}>{tool.eyebrow}</p>
             <h2 className="h2">{tool.title}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{tool.lede}</p>
+            <p style={{ margin: "18px 0 0" }}>
+              <a className="btn btn-outline" href={tool.booklet.file} download>
+                <Icon name="file" size={16} /> {TOOLS_PAGE.downloadLabel}
+              </a>
+            </p>
           </div>
           <div className="print-target">
             <Diagnostic
