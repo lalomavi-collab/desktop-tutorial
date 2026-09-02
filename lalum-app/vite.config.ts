@@ -309,6 +309,12 @@ function sectorBodyHtml(S: Sector): string {
   out.push(`        <h2>${esc(S.stepsH2)}</h2>`);
   for (const st of S.steps) out.push(`        <h3>${esc(st.title)}</h3>\n        <p>${esc(st.body)}</p>`);
 
+  out.push(`        <h2>${esc(S.downloadsH2)}</h2>`, `        <p>${esc(S.downloadsLede)}</p>`);
+  out.push(`        <ul>${S.downloads.map((d) => `<li><a href="${esc(d.file)}">${esc(d.title)}</a>: ${esc(d.note)}</li>`).join("")}</ul>`);
+
+  out.push(`        <h2>${esc(S.auditH2)}</h2>`, `        <p>${esc(S.auditLede)}</p>`);
+  out.push(`        <ul>${S.auditQuestions.map((q) => `<li>${esc(q.q)}</li>`).join("")}</ul>`);
+
   out.push(`        <h2>${esc(S.materialsH2)}</h2>`, `        <p>${esc(S.materialsLede)}</p>`);
   out.push(`        <ul>${S.materials.map((m) => `<li><a href="${esc(encodeURI(m.href))}/">${esc(m.title)}</a>: ${esc(m.note)}</li>`).join("")}</ul>`);
 
@@ -317,6 +323,137 @@ function sectorBodyHtml(S: Sector): string {
 
   out.push(`        <h2>${esc(S.ctaH2)}</h2>`, `        <p>${esc(S.ctaBody)}</p>`, `        <p>${esc(S.disclaimer)}</p>`);
   return out.join("\n");
+}
+
+// The take-away booklet. A municipality that is approached wants something it
+// can forward and print, and until now that was a PDF produced by hand in a
+// design tool, which is how a brochure ends up carrying a quotation nobody
+// checked and a Latin phrase reversed by the bidi algorithm.
+//
+// So the booklet is generated here, from the same Sector the page renders
+// from: the citations, the holdings, the regulator's instructions, the
+// protocol and the checklist all have one source. It is emitted as a
+// self-contained, print-ready HTML document (A4, RTL, brand palette, the
+// wordmark artwork inlined), which scripts/build-booklet-pdf.mjs prints to the
+// PDF that ships in public/downloads.
+function sectorBookletHtml(S: Sector, wordmark: string): string {
+  const cases = sectorCases(S);
+  const rule = (t: string) => `<h2>${esc(t)}</h2>`;
+  const p = (t: string) => `<p>${esc(t)}</p>`;
+
+  const casesHtml = cases.map(({ ruling, why }) => `
+      <article class="case">
+        <p class="cite">${esc(ruling.citation)}</p>
+        <h3>${esc(ruling.caption ?? ruling.citation)}</h3>
+        <p class="meta">${esc(ruling.court)} · ${esc(ruling.dateLabel)}${ruling.bench ? `<br>${esc(ruling.bench)}` : ""}</p>
+        ${ruling.facts ? p(ruling.facts) : ""}
+        <h4>מה נפסק</h4>
+        ${p(ruling.holding)}
+        ${ruling.quote ? `<blockquote>${esc(ruling.quote)}</blockquote>` : ""}
+        <h4>למה זה נוגע לרשות</h4>
+        ${p(why)}
+        <p class="src">מקורות: ${ruling.sources.map((x) => esc(x.label)).join(" · ")}</p>
+      </article>`).join("");
+
+  const directivesHtml = S.directives.map((d) => `
+      <article class="block">
+        <h3>${esc(d.title)}</h3>
+        ${p(d.body)}
+        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+        <p class="src">מקור: ${esc(d.sourceLabel)}</p>
+      </article>`).join("");
+
+  const toolsHtml = S.tools.map((tool) => `
+      <article class="block tool">
+        <h3>${esc(tool.title)}</h3>
+        ${p(tool.intro)}
+        <ol class="${tool.kind}">
+          ${tool.items.map((it, i) => `<li><span class="marker">${tool.kind === "protocol" ? String(i + 1).padStart(2, "0") : "&#9744;"}</span><div><strong>${esc(it.title)}</strong><br>${esc(it.body)}</div></li>`).join("")}
+        </ol>
+        ${tool.note ? `<p class="note">${esc(tool.note)}</p>` : ""}
+      </article>`).join("");
+
+  return `<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>${esc(S.h1)} | LALUM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Suez+One&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --ivory:#f5f1e8; --ink:#1a1815; --slate:#55514a; --clay:#a8482a; --line:#e3dccd; }
+  /* Hebrew prose here carries Latin and numeric tokens (LPR, EU AI Act, case
+     numbers, URLs). Without isolation the bidi algorithm reorders the run and
+     a reader gets a reversed brand name or a mangled address, which is the
+     exact defect this document exists to avoid repeating. */
+  span[dir="ltr"] { unicode-bidi: isolate; direction: ltr; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:Heebo,Arial,sans-serif; color:var(--ink); font-size:10.5pt; line-height:1.65; background:#fff; }
+  .cover { background:var(--ink); color:var(--ivory); padding:34mm 16mm; break-after:page; }
+  .cover .mark { width:52mm; display:block; margin:0 0 26mm; }
+  .cover .mark svg { width:100%; height:auto; }
+  .cover h1 { font-family:"Suez One",Georgia,serif; font-size:28pt; line-height:1.2; margin:0 0 8mm; font-weight:400; }
+  .cover .sub { font-size:12pt; line-height:1.6; color:#d8d2c4; margin:0 0 16mm; max-width:118mm; }
+  .cover .rule { height:2px; background:var(--clay); width:34mm; margin:0 0 10mm; }
+  .cover .foot { font-size:9.5pt; color:#b9b3a5; line-height:1.8; }
+  main { padding:0; }
+  h2 { font-family:"Suez One",Georgia,serif; font-weight:400; font-size:16pt; color:var(--ink); margin:12mm 0 4mm; padding-bottom:2mm; border-bottom:1px solid var(--line); break-after:avoid; }
+  h3 { font-size:12pt; margin:6mm 0 2mm; break-after:avoid; }
+  h4 { font-size:10pt; margin:4mm 0 1mm; color:var(--clay); break-after:avoid; }
+  p { margin:0 0 3mm; }
+  ul, ol { margin:0 0 4mm; padding-inline-start:6mm; }
+  li { margin:0 0 2mm; }
+  .lede { font-size:11.5pt; color:var(--slate); }
+  .case, .block { break-inside:avoid; border:1px solid var(--line); border-radius:3mm; padding:6mm; margin:0 0 5mm; background:var(--ivory); }
+  .cite { font-size:9pt; font-weight:700; letter-spacing:.04em; color:var(--clay); margin:0 0 1mm; }
+  .meta { font-size:9pt; color:var(--slate); margin:0 0 3mm; }
+  blockquote { margin:3mm 0; padding-inline-start:4mm; border-inline-start:2px solid var(--clay); font-size:10pt; }
+  .src { font-size:8.5pt; color:var(--slate); margin:3mm 0 0; }
+  .tool ol { list-style:none; padding:0; }
+  .tool li { display:flex; gap:3mm; align-items:flex-start; break-inside:avoid; }
+  .tool .marker { flex:0 0 8mm; font-weight:700; color:var(--clay); font-size:11pt; }
+  .note { background:#fff; border:1px dashed var(--line); border-radius:2mm; padding:3mm 4mm; font-size:9.5pt; margin:4mm 0 0; }
+  .end { margin-top:12mm; padding-top:4mm; border-top:2px solid var(--clay); }
+  .disclaimer { font-size:8.5pt; color:var(--slate); margin-top:6mm; }
+  .contact { font-size:9.5pt; color:var(--slate); margin-top:3mm; }
+</style>
+</head>
+<body>
+  <section class="cover">
+    <span class="mark">${wordmark}</span>
+    <div class="rule"></div>
+    <h1>${esc(S.h1)}</h1>
+    <p class="sub">${esc(S.desc)}</p>
+    <p class="foot">${esc(S.downloads[0]?.updated ?? "")}<br><span dir="ltr">lalumapp.com/${esc(S.path)}/</span><br>ד״ר עו״ד אברהם ללום</p>
+  </section>
+  <main>
+    ${rule(S.realityH2)}
+    <p class="lede">${esc(S.realityLede)}</p>
+    <ul>${S.reality.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+
+    ${rule(S.casesH2)}
+    <p class="lede">${esc(S.casesLede)}</p>
+    ${casesHtml}
+
+    ${rule(S.directivesH2)}
+    <p class="lede">${esc(S.directivesLede)}</p>
+    ${directivesHtml}
+
+    ${rule(S.toolsH2)}
+    <p class="lede">${esc(S.toolsLede)}</p>
+    ${toolsHtml}
+
+    <div class="end">
+      ${rule(S.ctaH2)}
+      ${p(S.ctaBody)}
+      <p class="contact"><span dir="ltr">lalum.co</span> · <span dir="ltr">avraham@lalum.co</span> · <span dir="ltr">lalumapp.com/${esc(S.path)}/</span></p>
+      <p class="disclaimer">${esc(S.disclaimer)}</p>
+    </div>
+  </main>
+</body>
+</html>`;
 }
 
 // The articles index. Without this it fell to pageBodyHtml, which emits only a
@@ -611,6 +748,18 @@ function seoPrerender(): Plugin {
         mkdirSync(dirname(file), { recursive: true });
         writeFileSync(file, html, "utf8");
         written++;
+      }
+      // The take-away booklet for every sector, emitted as print-ready HTML.
+      // scripts/build-booklet-pdf.mjs turns it into the PDF that ships in
+      // public/downloads, so the file a municipality receives is generated
+      // from the same data as the page it came from.
+      {
+        const wordmark = readFileSync(join(process.cwd(), "public", "lalum-logo-inverse.svg"), "utf8");
+        for (const sec of SECTORS) {
+          const bf = join(outDir, "downloads", `${sec.slug}-booklet.html`);
+          mkdirSync(dirname(bf), { recursive: true });
+          writeFileSync(bf, sectorBookletHtml(sec, wordmark), "utf8");
+        }
       }
       // The readiness assessment and its shareable results. Each result is its
       // own prerendered document with its own Open Graph tags and preview

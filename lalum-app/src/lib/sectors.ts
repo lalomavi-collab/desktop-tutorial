@@ -69,6 +69,20 @@ export type SectorTool = {
 // instead of at a PDF, so the page has to be worth returning to. `note` says
 // what the item gives *this* audience, because a list of titles is a link dump
 // and not a rubric.
+// A file the reader takes away. The booklet is generated from this same
+// Sector at build time, so the document a municipality downloads and the page
+// it downloaded it from cannot drift apart. Nothing is hand-authored twice.
+export type SectorDownload = { title: string; note: string; file: string; updated: string };
+
+// The self-assessment. Five binary questions, each worth 20 points of exposure
+// when the answer is no, and each carrying the remedy it points at. The copy
+// stays on ground that can be defended: what the Supreme Court actually said
+// about an unreasoned, unchecked decision, and what the regulator is actually
+// empowered to do. A tool that overstates the law to frighten a CEO is the
+// same defect as a brochure that does it, and it is easier to check.
+export type AuditQuestion = { id: string; q: string; why: string; fix: string };
+export type AuditBand = { id: "low" | "medium" | "high"; upTo: number; label: string; body: string };
+
 export type MaterialKind = "article" | "course" | "check" | "ruling";
 export type SectorMaterial = { kind: MaterialKind; title: string; note: string; href: string; date: string };
 
@@ -110,6 +124,15 @@ export type Sector = {
   materialsH2: string;
   materialsLede: string;
   materials: SectorMaterial[];
+  downloadsEyebrow: string;
+  downloadsH2: string;
+  downloadsLede: string;
+  downloads: SectorDownload[];
+  auditEyebrow: string;
+  auditH2: string;
+  auditLede: string;
+  auditQuestions: AuditQuestion[];
+  auditBands: AuditBand[];
   faqEyebrow: string;
   faqH2: string;
   faqs: QA[];
@@ -411,6 +434,74 @@ const localAuthorities: Sector = {
     },
   ],
 
+  downloadsEyebrow: `להורדה`,
+  downloadsH2: `המדריך לרשות, כקובץ`,
+  downloadsLede: `אותו תוכן שבעמוד, ערוך כמסמך שאפשר לצרף למייל, להדפיס לישיבת הנהלה או להעביר ליועץ המשפטי. הוא נבנה מהעמוד עצמו בכל בנייה, ולכן אינו יכול להתיישן ביחס אליו. בלי הרשמה ובלי השארת פרטים.`,
+  downloads: [
+    {
+      title: `בינה מלאכותית ברשות המקומית: מדריך הפעלה`,
+      note: `הפסיקה על שימוש בלתי מבוקר ברשות מנהלית, ההנחיה על מצלמות LPR, חובות תיקון 13, פרוטוקול הבקרה האנושית וצ׳ק ליסט למנכ״ל. כולל מספרי ההליכים והמקורות, כדי שאפשר יהיה לבדוק כל קביעה במקור.`,
+      file: `/downloads/lalum-rashuyot-mekomiyot-ai.pdf`,
+      updated: `ספטמבר 2026`,
+    },
+  ],
+
+  auditEyebrow: `אבחון עצמי`,
+  auditH2: `חמש שאלות, ומפת פערים`,
+  auditLede: `חמש שאלות שנגזרות מפסיקת בית המשפט העליון בעניין עיריית רמת גן ומחובות תיקון 13. בלי להזין פרטים ובלי להעלות מסמכים, ובלי שהתשובות נשלחות לשום מקום. בסוף מתקבלת מפת הפערים ומה לעשות עם כל אחד מהם.`,
+  auditQuestions: [
+    {
+      id: "inventory",
+      q: `האם קיימת ברשות רשימה מעודכנת של כל מערכות הבינה המלאכותית הפועלות בה, כולל כלים שעובדים פתחו בעצמם?`,
+      why: `בלי רשימה אין מה להסדיר, ואי אפשר להשיב לבקשת חופש מידע או למבקר על מערכת שאיש אינו יודע שקיימת.`,
+      fix: `מיפוי של כל שימוש קיים, כולל שימוש לא מוסדר של עובדים ומערכות ספקים שכבר מותקנות. זה תמיד הצעד הראשון.`,
+    },
+    {
+      id: "human",
+      q: `האם קיים תיעוד שמראה שאדם מוסמך בחן את התיק לגופו, ולא רק אישר את המלצת המערכת?`,
+      why: `בעניין עיריית רמת גן נקבע שהחלטה המבוססת ברובה על הזיות קשה עד מאוד לראותה כמקיימת את חובת ההנמקה, ושיש בסיס לטענה שהיא לוקה בשרירות, שכן מהותית לא הופעל לגביה שיקול דעת כלל.`,
+      fix: `מטריצת החלטות ואישורים שקובעת מראש מה טעון הכרעת אדם, ותיעוד שמראה מה נבדק. שיעור ההמלצות שנדחו או שונו הוא הראיה המעשית שהבקרה אינה חותמת גומי.`,
+    },
+    {
+      id: "verify",
+      q: `האם כל אסמכתא במכתב שיוצא לתושב נפתחת במקור הרשמי ונקראת לפני השליחה?`,
+      why: `זו הנקודה שבה נכשלה העירייה, ושלוש פעמים: חוזר מנכ״ל שאינו קיים, ציטוטים שאינם בשום נוהל, ופסקי דין שלא נבראו. בית המשפט הבהיר שהחומרה גדולה יותר דווקא במגע הישיר מול האזרח, שאין ביכולתו לגלות זאת.`,
+      fix: `שלב אימות כתוב בנוהל: כל עובדה, תאריך, סעיף חוק, חוזר ופסק דין נפתחים במקור. עלות האימות היא דקות, והחלופה כבר תומחרה בבית המשפט.`,
+    },
+    {
+      id: "authority",
+      q: `האם לכל מערכת אכיפה אוטומטית ברשות נבדק מקור ההסמכה בדין, ולא רק הדיוק הטכני שלה?`,
+      why: `בעניין סייפר פלייס נקבע שאכיפת חניה במצלמות לזיהוי לוחיות רישוי אינה אפשרית ללא הסמכה מפורשת בדין, ושרשויות רבות פועלות כך לכאורה שלא כדין. פער סמכותי אינו נסגר בנוהל פנימי או בהסכם עם ספק.`,
+      fix: `בדיקת מקור ההסמכה לכל אכיפה אוטומטית: חניה, פיקוח בנייה, גבייה. בהיעדר הסמכה, הפסקה עד להסדרה, ולא המתנה לתביעה הראשונה.`,
+    },
+    {
+      id: "dpo",
+      q: `האם מונה ממונה הגנת פרטיות עצמאי, שאינו מנהל מערכות המידע ואינו ממונה אבטחת המידע?`,
+      why: `רשות מקומית היא גוף ציבורי, ותיקון 13 מחייב מינוי. לפי עמדת הרשות להגנת הפרטיות, מינוי מנהל מערכות המידע או ממונה אבטחת המידע לתפקיד מייצר ניגוד עניינים מובנה, וכך גם כפיפות לגורם שקובע את מדיניות עיבוד המידע.`,
+      fix: `מינוי בעל הכשרה מתאימה, עם מיקום ארגוני שמאפשר לו להתריע גם כלפי מעלה, ועם זמן ומשאבים בפועל ולא רק בכתב המינוי.`,
+    },
+  ],
+  auditBands: [
+    {
+      id: "low",
+      upTo: 20,
+      label: `בסיס מוסדר`,
+      body: `הבסיס קיים. מכאן העבודה היא תחזוקה: בדיקה חוזרת אחת לתקופה, כי גם המערכות וגם הדין ממשיכים לזוז, ווידוא שהנוהל מקוים בפועל ולא רק כתוב.`,
+    },
+    {
+      id: "medium",
+      upTo: 60,
+      label: `פערים שניתן לסגור`,
+      body: `הפערים שסומנו למטה הם ברובם עבודת נהלים ותיעוד, ולא שינוי מערכות. רשות שמתחילה מהם סוגרת את החשיפה המשמעותית בתוך רבעון, בלי לעצור שום שירות.`,
+    },
+    {
+      id: "high",
+      upTo: 100,
+      label: `חשיפה גבוהה`,
+      body: `במצב הזה החלטות שיוצאות לתושבים עלולות שלא לעמוד בביקורת שיפוטית, ובית המשפט העליון כבר אמר ששימוש בלתי מבוקר פותח פתח לביקורת מחמירה והדוקה יותר ולסעד משמעותי. לצד זאת עומדות סמכויות האכיפה של הרשות להגנת הפרטיות. ההתחלה היא במיפוי, לא בהחלפת מערכות.`,
+    },
+  ],
+
   faqEyebrow: `שאלות שנשאלות`,
   faqH2: `מה שרשויות שואלות לפני שהן מתחילות`,
   faqs: [
@@ -487,6 +578,20 @@ export const SECTORS_UI = {
   h2: `רובריקות מגזריות`,
   lede: `אותה חקיקה נראית אחרת בגוף ציבורי, בתאגיד ובמשרד. לכל מגזר שאנחנו מלווים יש עמוד משלו, עם החובות שחלות עליו בפועל ועם חומרים שמתעדכנים.`,
   go: `לרובריקה`,
+  download: `הורדת המדריך`,
+  auditStart: `להתחלת האבחון`,
+  auditYes: `כן`,
+  auditNo: `לא`,
+  auditBack: `שאלה קודמת`,
+  auditRestart: `אבחון מחדש`,
+  auditOf: `מתוך`,
+  auditScore: `מדד חשיפה`,
+  auditGaps: `הפערים שסומנו`,
+  auditNoGaps: `לא סומנו פערים`,
+  auditWhy: `למה זה נשאל`,
+  auditFix: `מה עושים`,
+  auditPrivacy: `התשובות נשארות בדפדפן ואינן נשלחות לשום מקום.`,
+  downloadHint: `PDF, עברית`,
   book: `לתיאום שיחה`,
   training: `להכשרה הייעודית`,
   trainingHref: `/training/lalum-academy-public-sector`,

@@ -2,6 +2,7 @@ import { Link } from "../components/AppLink";
 import { PageMeta } from "../components/PageMeta";
 import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
+import { SectorAudit } from "./SectorAudit";
 import { MATERIAL_LABEL, SECTORS_UI, sectorCases, type Sector } from "../lib/sectors";
 
 // One rendering for every sector rubric. Everything shown comes from the
@@ -171,6 +172,43 @@ export function SectorView({ S }: { S: Sector }) {
                 </p>
               ) : null}
             </article>
+          ))}
+        </div>
+      </section>
+
+      {/* SELF-ASSESSMENT. Placed after the tools, because it asks the reader
+          questions the protocol and the checklist have already taught them how
+          to answer, and before the services, because the gap map is what makes
+          the services concrete. */}
+      <section className="wrap section section-line" style={{ maxWidth: 900 }}>
+        <div style={{ maxWidth: "58ch", margin: "0 0 28px" }}>
+          <p className="eyebrow">{S.auditEyebrow}</p>
+          <h2 className="h2">{S.auditH2}</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{S.auditLede}</p>
+        </div>
+        <SectorAudit questions={S.auditQuestions} bands={S.auditBands} />
+      </section>
+
+      {/* DOWNLOAD */}
+      <section className="wrap section section-line" style={{ maxWidth: 900 }}>
+        <div style={{ maxWidth: "58ch", margin: "0 0 28px" }}>
+          <p className="eyebrow">{S.downloadsEyebrow}</p>
+          <h2 className="h2">{S.downloadsH2}</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{S.downloadsLede}</p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {S.downloads.map((d) => (
+            <div key={d.file} className="card" style={{ padding: "24px 22px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline" }}>
+                <span className="eyebrow" style={{ color: "var(--clay)" }}>{SECTORS_UI.downloadHint}</span>
+                <span style={{ fontSize: 12.5, color: "var(--slate)" }}>{d.updated}</span>
+              </div>
+              <h3 className="h3" style={{ fontSize: 20, margin: "10px 0 10px", lineHeight: 1.35 }}>{d.title}</h3>
+              <p style={{ ...cardBody, marginBottom: 18 }}>{d.note}</p>
+              <a className="btn btn-clay" href={d.file} download>
+                <Icon name="file" size={17} /> {SECTORS_UI.download}
+              </a>
+            </div>
           ))}
         </div>
       </section>
