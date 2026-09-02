@@ -17,7 +17,7 @@ export function norm(s: string): string {
     .replace(/[֑-ׇ]/g, "") // Hebrew niqqud and cantillation
     .replace(/[̀-ͯ]/g, "") // Latin combining marks
     .replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" }[c] as string))
-    .replace(/["'`׳״.,;:!?()\[\]{}<>\/\\|_+=~@#$%^&*־–—-]/g, " ")
+    .replace(/["'`׳״.,;:!?()[\]{}<>/\\|_+=~@#$%^&*־–—-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

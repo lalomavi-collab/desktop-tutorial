@@ -37,7 +37,12 @@ try {
 
 // The booklet file name carries the sector slug; the PDF carries the name the
 // page links to, so the two are matched here rather than guessed at either end.
-const NAMES = { "local-authorities": "lalum-rashuyot-mekomiyot-ai.pdf" };
+const NAMES = {
+  "local-authorities": "lalum-rashuyot-mekomiyot-ai.pdf",
+  "regulatory-readiness": "lalum-tikun-13-mukhanut.pdf",
+  "contract-shield": "lalum-hitkashrut-sapak-ai.pdf",
+  "algorithmic-dispute": "lalum-sikhsukh-algoritmi.pdf",
+};
 
 const pages = readdirSync(src).filter((f) => f.endsWith("-booklet.html"));
 if (!pages.length) {

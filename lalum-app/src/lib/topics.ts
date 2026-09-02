@@ -1,4 +1,5 @@
-import { blogPosts } from "./blogPosts";
+import { blogMeta } from "./blogMeta";
+import articleIndex from "../data/articleIndex.json";
 import { blocksToText } from "./articleBlocks";
 import type { ArticleBlock } from "./content";
 import type { Dict } from "./strings";
@@ -133,19 +134,42 @@ function topicFor(text: string): Topic {
 
 const grouped = new WeakMap<object, Map<string, TopicArticle[]>>();
 
-// Every article, grouped by topic, in corpus order. Memoised per dictionary so
-// the build can ask once per hub and the app once per render.
-export function articlesByTopic(dict: Dict): Map<string, TopicArticle[]> {
-  let g = grouped.get(dict);
-  if (g) return g;
-  g = new Map(TOPICS.map((t) => [t.slug, [] as TopicArticle[]]));
+// The classification itself, from the full text of every article. This is the
+// expensive form, and it is the reason a content page used to download the
+// body of all 169 articles. It now runs once, in scripts/split-articles.mjs,
+// which writes the result to src/data/articleIndex.json. Nothing in the app or
+// in the build calls it.
+export function classifyCorpus(dict: Dict, posts: { slug: string; title: string; excerpt: string; body: string }[]): Map<string, TopicArticle[]> {
+  const g = new Map(TOPICS.map((t) => [t.slug, [] as TopicArticle[]]));
   const all = [
     ...dict.data.articles.map((a) => ({ slug: a.slug, title: a.title, dek: a.dek, body: blocksToText(a.blocks as ArticleBlock[]) })),
-    ...blogPosts.map((p) => ({ slug: p.slug, title: p.title, dek: p.excerpt, body: p.body })),
+    ...posts.map((p) => ({ slug: p.slug, title: p.title, dek: p.excerpt, body: p.body })),
   ];
   for (const a of all) {
     const t = topicFor(classifyText(a.title, a.dek, a.body));
     g.get(t.slug)!.push({ slug: a.slug, title: a.title });
+  }
+  return g;
+}
+
+// Every article, grouped by topic, in corpus order, read from the precomputed
+// index. Same order and same membership as the classification above, because
+// the index is written from it. Memoised per dictionary so the build can ask
+// once per hub and the app once per render.
+export function articlesByTopic(dict: Dict): Map<string, TopicArticle[]> {
+  let g = grouped.get(dict);
+  if (g) return g;
+  g = new Map(TOPICS.map((t) => [t.slug, [] as TopicArticle[]]));
+  const titles = new Map<string, string>([
+    ...dict.data.articles.map((a) => [a.slug, a.title] as const),
+    ...blogMeta.map((m) => [m.slug, m.title] as const),
+  ]);
+  // Corpus order is the order the index was written in, which is the order the
+  // classification produced: the curated articles first, then the blog.
+  for (const [slug, entry] of Object.entries(articleIndex as Record<string, { topic: string | null }>)) {
+    const title = titles.get(slug);
+    if (!title || !entry.topic) continue;
+    g.get(entry.topic)?.push({ slug, title });
   }
   grouped.set(dict, g);
   return g;
