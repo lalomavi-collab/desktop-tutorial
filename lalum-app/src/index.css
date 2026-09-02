@@ -2820,10 +2820,10 @@ html.a11y-reduce-motion *::after {
   color: var(--ink);
 }
 
-/* The four routes into the practice. A four-column index on a wide screen,
-   two on a laptop, one on a phone. Nothing is hidden behind an interaction:
-   every entry is on the page, and the accent rule down the inline start edge
-   is what separates one route from the next rather than a box around each. */
+/* The routes into the practice, as keyword buttons. Each route is one line of
+   heading and a wrapping row of keys, so four routes and seventeen destinations
+   occupy a band a reader passes in a couple of seconds rather than a page of
+   prose they have to read to leave. */
 .audience-band {
   background:
     radial-gradient(120% 80% at 82% 0%, var(--clay-tint) 0%, transparent 62%),
@@ -2831,7 +2831,7 @@ html.a11y-reduce-motion *::after {
 }
 .audience-head {
   max-width: 60ch;
-  margin: 0 0 44px;
+  margin: 0 0 38px;
 }
 .audience-lede {
   font-size: 16.5px;
@@ -2841,157 +2841,98 @@ html.a11y-reduce-motion *::after {
 }
 .audience-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 52px;
 }
 .audience-route {
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
+}
+.audience-route-name {
   display: flex;
-  flex-direction: column;
-  padding: 4px 26px 0;
-  border-inline-start: 1px solid var(--line);
-}
-.audience-route:first-child {
-  padding-inline-start: 0;
-  border-inline-start: 0;
-}
-.audience-route:last-child {
-  padding-inline-end: 0;
-}
-.audience-route-head {
-  padding-bottom: 18px;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 16px;
 }
 .audience-route-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
   background: var(--clay-tint);
   color: var(--clay);
-  margin-bottom: 16px;
+  flex: none;
 }
-.audience-route-name {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.25;
-  color: var(--ink);
-  margin: 0 0 8px;
+.audience-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
 }
-.audience-route-body {
+.audience-key {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--paper);
   font-size: 14px;
-  line-height: 1.6;
-  color: var(--slate);
-  margin: 0;
-}
-.audience-rubrics {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  flex: 1;
-}
-.audience-rubrics > li {
-  border-top: 1px solid var(--line);
-}
-.audience-rubric {
-  position: relative;
-  display: block;
-  padding: 15px 0;
-  text-decoration: none;
-  transition: padding-inline-start 0.18s ease;
-}
-.audience-rubric-label {
-  display: block;
-  font-size: 15.5px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.2;
   color: var(--ink);
-  margin-bottom: 4px;
-}
-.audience-rubric-body {
-  display: block;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--slate);
-}
-.audience-rubric-go {
-  position: absolute;
-  inset-block-start: 15px;
-  inset-inline-end: 0;
-  font-size: 14px;
-  color: var(--clay);
-  opacity: 0;
-  transition: opacity 0.18s ease;
-}
-.audience-rubric:hover .audience-rubric-label,
-.audience-rubric:focus-visible .audience-rubric-label {
-  color: var(--clay);
-}
-.audience-rubric:hover,
-.audience-rubric:focus-visible {
-  padding-inline-start: 8px;
-}
-.audience-rubric:hover .audience-rubric-go,
-.audience-rubric:focus-visible .audience-rubric-go {
-  opacity: 1;
-}
-.audience-route-cta {
-  display: inline-block;
-  margin-top: auto;
-  padding-block-start: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-  width: 100%;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--clay);
   text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-.audience-route-cta:hover {
+.audience-key:hover,
+.audience-key:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+/* The route's own page, set apart from the keywords that lead into it. It
+   takes a row of its own: wrapped into the last row of keys it read as one
+   more keyword rather than as the way through to the page itself. */
+.audience-key-cta {
+  flex-basis: 100%;
+  border-color: transparent;
+  background: transparent;
+  color: var(--clay);
+  padding-inline: 6px;
+  margin-top: 4px;
+}
+.audience-key-cta:hover,
+.audience-key-cta:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  color: var(--clay);
   text-decoration: underline;
   text-underline-offset: 4px;
+  transform: none;
 }
 /* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
    would point away from the link it belongs to. */
-[dir="rtl"] .audience-rubric-go,
-[dir="rtl"] .audience-route-cta span {
+[dir="rtl"] .audience-key-cta span {
   display: inline-block;
   transform: scaleX(-1);
+  margin-inline-start: 5px;
 }
-@media (max-width: 1100px) {
-  .audience-grid {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 40px;
-  }
-  .audience-route:nth-child(odd) {
-    padding-inline-start: 0;
-    border-inline-start: 0;
-  }
-  .audience-route:nth-child(even) {
-    padding-inline-end: 0;
-  }
+[dir="ltr"] .audience-key-cta span {
+  margin-inline-start: 5px;
 }
-@media (max-width: 700px) {
+@media (max-width: 860px) {
   .audience-grid {
     grid-template-columns: 1fr;
-    row-gap: 34px;
-  }
-  .audience-route {
-    padding-inline: 0;
-    border-inline-start: 0;
+    gap: 26px;
   }
   .audience-head {
-    margin-bottom: 32px;
-  }
-  .audience-rubric-body {
-    display: none;
-  }
-  .audience-rubric {
-    padding: 13px 0;
-  }
-  .audience-rubric-go {
-    inset-block-start: 13px;
+    margin-bottom: 30px;
   }
 }
 
