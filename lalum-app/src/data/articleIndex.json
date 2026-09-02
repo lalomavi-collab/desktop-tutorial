@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ip-value-collapse-ai-acquisition": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-due-diligence-tech-acquisition",
+   "partnership-dissolution-ai-ownership",
+   "decision-oriented-ai-law"
+  ]
+ },
  "saas-eu-compliance-israeli-companies": {
   "topic": "ai-governance",
   "related": [
@@ -115,8 +123,8 @@
   "topic": "ai-governance",
   "related": [
    "gdpr-israeli-companies-ai",
-   "partnership-dissolution-ai-ownership",
-   "eu-ai-act-israeli-companies"
+   "ip-value-collapse-ai-acquisition",
+   "partnership-dissolution-ai-ownership"
   ]
  },
  "overseas-property-holding-structure": {
@@ -275,8 +283,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-workspace-encyclopedia",
-   "ai-hallucinations-citations"
+   "ai-hallucinations-citations",
+   "ai-workspace-encyclopedia"
   ]
  },
  "urban-renewal-risk": {
@@ -331,8 +339,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-turning-point-2026",
-   "decision-oriented-ai-law",
-   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai"
+   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
+   "decision-oriented-ai-law"
   ]
  },
  "algorithmic-transparency": {
@@ -450,8 +458,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "unfair-advantage-course",
    "transcription-tools-guide",
+   "unfair-advantage-course",
    "law-algorithm-era"
   ]
  },
@@ -842,8 +850,8 @@
  "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות",
    "behind-the-mask-mediation-language",
+   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות",
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות"
   ]
  },
@@ -972,7 +980,7 @@
   "related": [
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "shadow-it-law-firms"
+   "medicine-meets-law"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
