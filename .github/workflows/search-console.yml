@@ -91,8 +91,19 @@ jobs:
           # The freshly written data is untracked, and switching branches would
           # refuse to overwrite it once the branch carries a file of the same
           # name. Move it aside, switch, put it back.
+          #
+          # Copying to $tmp without removing the originals looked sufficient,
+          # and it was, for exactly one run: the first one, which creates the
+          # branch and takes the "else" path below with nothing to conflict
+          # with. From the second run on, checkout of the existing branch always
+          # found the same untracked files still sitting in the working tree
+          # and refused: "The following untracked working tree files would be
+          # overwritten by checkout". Every scheduled run since the branch was
+          # created failed here, silently, because a red run on a schedule
+          # nobody watches is invisible. The fix is the missing rm.
           tmp=$(mktemp -d)
           cp -r data/search-console/. "$tmp"/
+          rm -rf data/search-console
 
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             git fetch origin "$BRANCH"

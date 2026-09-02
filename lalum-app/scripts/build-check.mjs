@@ -339,6 +339,36 @@ missingMarkup.length
   ? fail("every article carries article markup", `${missingMarkup.length} article(s) without BlogPosting and BreadcrumbList, e.g. ${missingMarkup[0]}`)
   : pass(`every article carries article markup (${articleNodes})`);
 
+// 16. Every article carries its topic link and its three neighbours.
+//
+//     Both used to be computed from the article bodies while the page rendered,
+//     which is why a content page downloaded the body of all 169 articles to
+//     show a list of links. They are precomputed now, by
+//     scripts/split-articles.mjs, and an article written after the last run
+//     would silently lose both: no topic line, and fewer than three links at
+//     its foot. That is invisible on the page and expensive in internal
+//     linking, so it fails the build instead. The fix is to run
+//     `npm run split-articles` and rebuild.
+{
+  const orphanTopic = [];
+  const shortRelated = [];
+  for (const p of pages) {
+    const r = rel(p);
+    const isArticle = r.startsWith("/insights/") && !r.startsWith("/insights/topics/") && r !== "/insights/index.html";
+    if (!isArticle) continue;
+    const h = readFileSync(p, "utf8");
+    if (!/href="\/insights\/topics\/[a-z0-9-]+\/"/.test(h)) orphanTopic.push(r);
+    const links = [...h.matchAll(/<li><a href="\/insights\/([^"/]+)\/">/g)].length;
+    if (links < 3) shortRelated.push(`${r} (${links})`);
+  }
+  orphanTopic.length || shortRelated.length
+    ? fail(
+        "every article carries its topic and neighbours",
+        `${orphanTopic.length} without a topic link${orphanTopic[0] ? ` (e.g. ${orphanTopic[0]})` : ""}, ${shortRelated.length} with fewer than three neighbours${shortRelated[0] ? ` (e.g. ${shortRelated[0]})` : ""}. Run \`npm run split-articles\` and rebuild.`,
+      )
+    : pass("every article carries its topic and neighbours");
+}
+
 for (const r of results) console.log(`[${r.level === "pass" ? "PASS" : "FAIL"}] ${r.name}${r.msg ? ": " + r.msg : ""}`);
 const fails = results.filter((r) => r.level === "fail");
 console.log(`\n${results.length - fails.length} pass, ${fails.length} fail`);

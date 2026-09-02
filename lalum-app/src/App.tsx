@@ -17,6 +17,8 @@ const CommandBar = lazy(() => import("./components/CommandBar").then((m) => ({ d
 const Advisory = lazy(() => import("./pages/Advisory").then((m) => ({ default: m.Advisory })));
 const AiLegalAdvisory = lazy(() => import("./pages/AiLegalAdvisory").then((m) => ({ default: m.AiLegalAdvisory })));
 const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdvisory").then((m) => ({ default: m.RealEstateLegalAdvisory })));
+const Sector = lazy(() => import("./pages/Sector").then((m) => ({ default: m.Sector })));
+const LegalTools = lazy(() => import("./pages/LegalTools").then((m) => ({ default: m.LegalTools })));
 const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
 const Topic = lazy(() => import("./pages/Topic").then((m) => ({ default: m.Topic })));
 const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m.Training })));
@@ -72,6 +74,13 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />
             <Route path="ai-legal-advisory" element={<AiLegalAdvisory />} />
+            {/* Declared before the dynamic sector route so the literal
+                segment wins the match; otherwise "tools" would be looked up as
+                a sector slug and fall through to the 404. */}
+            <Route path="ai-legal-advisory/tools" element={<LegalTools />} />
+            {/* Sector rubrics live under the AI pillar, one route for all of
+                them: a new body is an entry in sectors.ts, not a new route. */}
+            <Route path="ai-legal-advisory/:sector" element={<Sector />} />
             <Route path="real-estate-legal-advisory" element={<RealEstateLegalAdvisory />} />
             <Route path="mediation-dispute-resolution" element={<MediationDisputeResolution />} />
             <Route path="training" element={<Training />} />

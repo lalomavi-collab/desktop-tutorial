@@ -1,6 +1,7 @@
 import type { IconName } from "./content";
 import type { Lang } from "./hreflang";
 import type { QA } from "./schema";
+import { SECTOR_TEASERS, SECTORS_UI, type SectorTeaser } from "./sectors";
 
 // Content for the two pillar landing pages, held as data rather than inline in
 // the page components for two reasons: the SEO prerender can emit the real page
@@ -49,6 +50,12 @@ export type PillarPage = {
   ctaH2: string;
   ctaBody: string;
   disclaimer: string;
+  // Sector rubrics that live under this pillar. Only the AI pillar has them
+  // today, and only in Hebrew: the rubrics are written for Israeli bodies and
+  // are not translated, so a link to them from an English rendering would
+  // promise the reader something the page does not deliver.
+  sectors?: SectorTeaser[];
+  sectorsUi?: typeof SECTORS_UI;
   ui: PillarUi;
 };
 
@@ -886,7 +893,8 @@ function build(lang: Lang, c: Copy, shared: { path: string; url: string; icons: 
 }
 
 export function aiPillarFor(lang: Lang): PillarPage {
-  return build(lang, COPY[lang].ai, SHARED.ai);
+  const page = build(lang, COPY[lang].ai, SHARED.ai);
+  return lang === "he" ? { ...page, sectors: SECTOR_TEASERS, sectorsUi: SECTORS_UI } : page;
 }
 
 export function realEstatePillarFor(lang: Lang): PillarPage {

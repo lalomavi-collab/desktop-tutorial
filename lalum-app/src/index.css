@@ -4424,6 +4424,38 @@ html.a11y-reduce-motion *::after {
   margin-top: 4px;
 }
 
+/* Printing a diagnostic result.
+   The tools let a reader take their own result away without adding a PDF
+   library and without sending anything to a server: the browser prints, and
+   this stylesheet leaves only the result on the page. `no-print` hides the
+   controls that make no sense on paper (the copy button, the print button
+   itself), and `print-target` is the card that survives. */
+@media print {
+  .no-print,
+  .site-header,
+  .site-footer,
+  .cookie-overlay,
+  .cookie-fixed,
+  .contact-rail,
+  .chat-dock,
+  .a11y-dock,
+  .tabbar,
+  [class^="vbub-"] { display: none !important; }
+
+  body { background: #fff; }
+
+  .print-target,
+  .print-target * { visibility: visible; }
+
+  .print-target .card {
+    border: 1px solid var(--line);
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  a[href]::after { content: ""; }
+}
+
 /* ============================================================
    Home entry prompt (components/HomePrompt.tsx)
    ------------------------------------------------------------
@@ -4534,21 +4566,20 @@ html.a11y-reduce-motion *::after {
   .hprompt {
     /* Clear of the bottom tab bar and of the accessibility button above it. */
     bottom: calc(154px + env(safe-area-inset-bottom, 0px));
-    inset-inline-start: 50%;
-    transform: translateX(50%);
+    /* Centred by pinning both edges and letting the margins share what is
+       left. The earlier version centred with a percentage inset plus a
+       translate, which put the circle half off the screen on a narrow phone
+       and needed a second rule to flip the sign in the Latin languages. Auto
+       margins need neither: they are direction agnostic, and they cannot be
+       lost by the entry animation, whose keyframes set a transform of their
+       own. */
+    inset-inline: 0;
+    margin-inline: auto;
     width: min(330px, calc(100vw - 32px));
     height: min(330px, calc(100vw - 32px));
     padding: 24px;
   }
-  /* The entry animation must not drop the centring transform. */
-  @media (prefers-reduced-motion: no-preference) {
-    .hprompt { animation: none; }
-  }
   .hprompt-lead { font-size: 18px; }
   .hprompt-body { font-size: 12.5px; }
   .hprompt-close { top: 40px; inset-inline-end: 40px; }
-}
-/* In LTR the same centring needs the opposite sign. */
-@media (max-width: 900px) {
-  html[dir="ltr"] .hprompt { transform: translateX(-50%); }
 }
