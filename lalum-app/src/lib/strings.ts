@@ -22,7 +22,7 @@ const en = {
       aria: "Compliance assessment",
       close: "Close",
       lead: "Do not guess your exposure.",
-      body: "Run a first EU AI Act compliance assessment, or have our diagnostic bot scan your deployment contract, and get an immediate readiness score report.",
+      body: "Run a first EU AI Act compliance assessment. Eight questions about how you actually operate, with no document to upload, and your readiness score comes back immediately.",
       cta: "Run the assessment",
     },
     videoBubble: {
@@ -1136,7 +1136,7 @@ const he: Dict = {
       aria: "אבחון ציות",
       close: "סגירה",
       lead: "אל תנחשו את מידת החשיפה שלכם.",
-      body: "הריצו עכשיו אבחון ציות ראשוני ל-EU AI Act, או סרקו את חוזה ההטמעה שלכם באמצעות בוט האבחון האוטומטי שלנו, וקבלו דוח ״ציון מוכנות״ מיידי.",
+      body: "הריצו עכשיו אבחון ציות ראשוני ל-EU AI Act. שמונה שאלות על ההתנהלות בפועל, בלי להעלות שום מסמך, וציון המוכנות שלכם מתקבל מיד.",
       cta: "להרצת האבחון",
     },
     videoBubble: {
@@ -2247,7 +2247,7 @@ const es: Dict = {
       aria: "Diagnóstico de cumplimiento",
       close: "Cerrar",
       lead: "No adivine su nivel de exposición.",
-      body: "Realice un diagnóstico inicial de cumplimiento del EU AI Act, o deje que nuestro bot analice su contrato de implantación, y reciba de inmediato un informe con su puntuación de preparación.",
+      body: "Realice un diagnóstico inicial de cumplimiento del EU AI Act. Ocho preguntas sobre su funcionamiento real, sin subir ningún documento, y su puntuación de preparación aparece de inmediato.",
       cta: "Realizar el diagnóstico",
     },
     videoBubble: {
@@ -3322,7 +3322,7 @@ const fr: Dict = {
       aria: "Diagnostic de conformité",
       close: "Fermer",
       lead: "Ne devinez pas votre niveau d'exposition.",
-      body: "Lancez un premier diagnostic de conformité à l'EU AI Act, ou faites analyser votre contrat de déploiement par notre bot, et recevez immédiatement un rapport avec votre score de préparation.",
+      body: "Lancez un premier diagnostic de conformité à l'EU AI Act. Huit questions sur votre fonctionnement réel, sans aucun document à téléverser, et votre score de préparation s'affiche immédiatement.",
       cta: "Lancer le diagnostic",
     },
     videoBubble: {
@@ -4388,7 +4388,7 @@ const ar: Dict = {
       aria: "تشخيص الامتثال",
       close: "إغلاق",
       lead: "لا تخمّن مستوى تعرّضكم.",
-      body: "أجروا تشخيصًا أوليًا للامتثال لقانون الذكاء الاصطناعي الأوروبي، أو دعوا روبوت التشخيص لدينا يفحص عقد التطبيق لديكم، واحصلوا فورًا على تقرير بدرجة الجاهزية.",
+      body: "أجروا تشخيصًا أوليًا للامتثال لقانون الذكاء الاصطناعي الأوروبي. ثمانية أسئلة عن طريقة عملكم الفعلية، دون رفع أي مستند، ودرجة الجاهزية تظهر فورًا.",
       cta: "إجراء التشخيص",
     },
     videoBubble: {
