@@ -1044,7 +1044,6 @@ function seoPrerender(): Plugin {
       } catch {
         // No sitemap in the build output; nothing to stamp.
       }
-      // eslint-disable-next-line no-console
       console.log(`[seo-prerender] wrote ${written} route HTML files (${STATIC_ROUTES.length} pages + ${blogMeta.length} articles + ${curated.length} curated)`);
     },
   };
