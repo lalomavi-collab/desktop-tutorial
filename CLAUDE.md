@@ -39,11 +39,13 @@
 - The other spellings (`אברהם ללום`, `אבי ללום`, `ד״ר ללום`) stay in the Person entity's `alternateName`. Those are what people type into a search box, and the entity needs them to resolve to one person. They are search variants, never display forms.
 - `npm run build` fails on any titled mention that is not the canonical form, including a doubled title.
 
-## Case Law: Full Double Verification Before Publishing (PERMANENT)
+## Sources: Full Double Verification Before Publishing (PERMANENT)
 
-**A ruling goes on the site only after full verification against its own text, from two independent sources. When verification is incomplete, it does not go up at all.**
+**A ruling, a statutory provision, a regulator's instruction or any other authority goes on the site only after full verification against its own text, from two independent sources. When verification is incomplete, it does not go up at all.**
 
-- The bar is the ruling itself: the judgment as published by the court, or a full digest that reproduces its language. A news report is corroboration, never the basis.
+- The bar is the instrument itself: the judgment as published by the court, the statute as published, the regulator's own instruction. A commentary that quotes it, however expert, is corroboration and a pointer to the source, never the basis. A news report is weaker still.
+- This binds every kind of assertion, not only case law. A fine amount, a duty, a date of entry into force, a section number and a threshold are each an assertion about the law, and each carries the same requirement. A number that could not be traced to the instrument does not get published, and a softer formulation that the sources do support is published instead.
+- The failure this prevents is specific and it already happened twice here: a ruling record published from a single news report was wrong in four fields, and a fine amount taken from a briefing document turned out to attach to an entirely different violation than the one it was cited for.
 - Two independent sources, and they must agree on the docket number, the court, the date, the bench, and the outcome. One source is not enough, however reputable.
 - Everything a record asserts has to come from what was actually read. Do not fill in a bench, a date to the day, or facts by inference. `dateLabel` says what is known (`9.12.2025` or `דצמבר 2025`), and the record says nothing beyond it.
 - Separate what was decided from what was said around it. Obiter remarks, and a ruling given only on the principled level after the dispute settled, are not holdings, and presenting them as binding is its own failure.
