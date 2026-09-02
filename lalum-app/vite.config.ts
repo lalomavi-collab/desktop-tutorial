@@ -277,9 +277,15 @@ function sectorBodyHtml(S: Sector): string {
   for (const { ruling, why } of sectorCases(S)) {
     out.push(`        <h3>${esc(ruling.citation)}${ruling.caption ? ` ${esc(ruling.caption)}` : ""}</h3>`);
     out.push(`        <p>${esc(ruling.court)}, ${esc(ruling.dateLabel)}${ruling.bench ? `, ${esc(ruling.bench)}` : ""}</p>`);
+    if (ruling.facts) out.push(`        <p>${esc(ruling.facts)}</p>`);
     out.push(`        <p>${esc(ruling.holding)}</p>`);
     if (ruling.quote) out.push(`        <blockquote><p>${esc(ruling.quote)}</p></blockquote>`);
     out.push(`        <p>${esc(why)}</p>`);
+    // The sources belong in the static copy too. This page asks authorities to
+    // open an authority before relying on it; a crawlable version that shows
+    // the citation and hides where to read it asks for exactly the trust the
+    // page says not to extend.
+    out.push(`        <p>${ruling.sources.map((src) => `<a href="${esc(src.href)}" rel="nofollow noopener">${esc(src.label)}</a>`).join(" · ")}</p>`);
     out.push(`        <p><a href="/rulings/">${esc(strings.he.rulings.title)}</a></p>`);
   }
 
@@ -287,6 +293,7 @@ function sectorBodyHtml(S: Sector): string {
   for (const d of S.directives) {
     out.push(`        <h3>${esc(d.title)}</h3>`, `        <p>${esc(d.body)}</p>`);
     out.push(`        <ul>${d.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    out.push(`        <p><a href="${esc(d.sourceHref)}" rel="nofollow noopener">${esc(d.sourceLabel)}</a></p>`);
   }
 
   out.push(`        <h2>${esc(S.toolsH2)}</h2>`, `        <p>${esc(S.toolsLede)}</p>`);
