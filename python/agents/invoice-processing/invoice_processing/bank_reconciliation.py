@@ -69,6 +69,44 @@ def _parse_amount(s: str) -> float | None:
     return -v if neg else v
 
 
+# זיהוי עמודות לפי שורת הכותרת של ייצוא בנק ישראלי (לאומי ודומיו)
+_HDR_DEBIT = ("חובה", "חיוב")
+_HDR_CREDIT = ("זכות", "זיכוי")
+_HDR_DESC = ("תיאור", "פרטים", "אסמכתא נגדית")
+_HDR_DATE = ("תאריך",)
+_HDR_SKIP = ("יתרה", "אסמכתא", "סימוכין")
+
+
+def _parse_csv_with_header(rows: list[list[str]], header: list[str], source: str) -> list[BankTx]:
+    """פרסינג לפי כותרות: חובה = יציאה (שלילי), זכות = כניסה (חיובי)."""
+    def col(names) -> int | None:
+        for i, h in enumerate(header):
+            hs = h.strip()
+            if any(n in hs for n in names) and not any(s in hs for s in _HDR_SKIP if s not in names):
+                return i
+        return None
+
+    debit_i, credit_i = col(_HDR_DEBIT), col(_HDR_CREDIT)
+    desc_i = col(_HDR_DESC)
+    date_i = col(_HDR_DATE)
+    txs = []
+    for cells in rows:
+        if len(cells) <= max(x for x in (debit_i, credit_i) if x is not None):
+            continue
+        debit = _parse_amount(cells[debit_i]) if debit_i is not None and cells[debit_i].strip() else None
+        credit = _parse_amount(cells[credit_i]) if credit_i is not None and cells[credit_i].strip() else None
+        amount = credit if credit else (-abs(debit) if debit else None)
+        if amount is None:
+            continue
+        txs.append(BankTx(
+            amount=amount,
+            description=(cells[desc_i].strip() if desc_i is not None and desc_i < len(cells) else "")[:60],
+            date=(cells[date_i].strip() if date_i is not None and date_i < len(cells) else ""),
+            source_file=source,
+        ))
+    return txs
+
+
 def _parse_csv(path: Path) -> list[BankTx]:
     txs = []
     for enc in ("utf-8-sig", "cp1255", "utf-8"):
@@ -79,7 +117,16 @@ def _parse_csv(path: Path) -> list[BankTx]:
             continue
     else:
         return txs
-    for row in csv.reader(lines):
+
+    parsed = list(csv.reader(lines))
+    # מסלול מדויק: שורת כותרת עם עמודות חובה/זכות (הייצוא הישראלי המקובל).
+    # בלעדיה, נפילה לחיפוש ההיוריסטי הישן.
+    for idx, row in enumerate(parsed[:5]):
+        joined = ",".join(row)
+        if any(h in joined for h in _HDR_DEBIT) and any(h in joined for h in _HDR_CREDIT):
+            return _parse_csv_with_header(parsed[idx + 1:], row, path.name)
+
+    for row in parsed:
         cells = [c.strip() for c in row if c.strip()]
         if len(cells) < 2:
             continue
