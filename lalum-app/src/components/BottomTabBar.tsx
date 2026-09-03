@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { officePhone } from "../lib/content";
+import { OPEN_SOS_EVENT } from "./SosMenu";
 
 // Fixed bottom navigation, shown on phones only (see .tabbar in index.css).
 // This is the signature "native app" chrome: primary destinations always in
@@ -28,6 +29,15 @@ export function BottomTabBar() {
           <span>{labels[tb.key]}</span>
         </NavLink>
       ))}
+      <button
+        type="button"
+        className="tabbar-item tabbar-sos"
+        onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
+        aria-label={t.ui.sos.aria}
+      >
+        <span className="tabbar-sos-badge">{t.ui.sos.open}</span>
+        <span>{t.ui.sos.tab}</span>
+      </button>
       <a href={`tel:${officePhone.tel}`} className="tabbar-item tabbar-bot" aria-label={t.ui.botCall.aria}>
         <Icon name="headset" size={21} />
         <span>{labels.assistant}</span>

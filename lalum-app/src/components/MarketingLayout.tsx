@@ -12,6 +12,7 @@ import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
+import { SosMenu } from "./SosMenu";
 import { useLang } from "../context/LangContext";
 
 export function MarketingLayout() {
@@ -48,6 +49,7 @@ export function MarketingLayout() {
       <CookieConsent />
       <PrivacyUpdateNotice />
       <UserGuide />
+      <SosMenu />
     </>
   );
 }
