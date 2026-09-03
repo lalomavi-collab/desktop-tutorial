@@ -12,9 +12,170 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "israel-ai-regulation-policy",
+    "title": "רגולציית בינה מלאכותית בישראל: הגישה, מה חל היום, ומה צפוי",
+    "excerpt": "מדריך לגישה הישראלית לרגולציית בינה מלאכותית: גישה מבוססת עקרונות וסקטוריאלית ולא חוק כולל אחד, מה כבר חל מכוח הדין הקיים, השפעת הרגולציה האירופית על חברות ישראליות, ומה צפוי, עם המלצה לבנות ממשל AI כבר עכשיו.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/digital-lawyers-2026.webp"
+  },
+  {
+    "slug": "ip-value-collapse-ai-acquisition",
+    "title": "מקרה בוחן: קריסת שווי קניין רוחני בעסקת רכישה בגלל דליפת קוד לסוכני AI",
+    "excerpt": "תרחיש אנונימי ממאפיינים טיפוסיים: חברת טכנולוגיה עמדה בפני עסקת רכישה, ובבדיקת הנאותות התגלה שקוד ונתונים קנייניים דלפו לסוכני AI ולמאגרי האימון של ספק המודל. איך אובדן בלעדיות ה-IP הפחית את שווי העסקה ופגע בתמריצי המייסדים, ומה היה מונע זאת.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-ethics-legal-risks.webp"
+  },
+  {
+    "slug": "saas-eu-compliance-israeli-companies",
+    "title": "ציות לחברות SaaS ישראליות המוכרות לשוק האירופי: מפת החובות",
+    "excerpt": "מדריך ציות לחברת SaaS ישראלית שמוכרת לשוק האירופי: מתי הדין האירופי חל, חובות GDPR, מנגנוני העברת מידע חוצת גבולות, הסכם עיבוד נתונים מול לקוחות וספקי משנה, ההצטלבות עם EU AI Act, וצעדים לבניית מפת ציות.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/international-trade-guide-2026.webp"
+  },
+  {
+    "slug": "amendment-13-dpo-appointment",
+    "title": "תיקון 13: מתי חובה למנות ממונה הגנת פרטיות (DPO)",
+    "excerpt": "מדריך למינוי ממונה הגנת פרטיות (DPO) תחת תיקון 13 לחוק הגנת הפרטיות: מי חייב למנות, מה תפקידו וסמכויותיו, דרישת העצמאות והמיקום הארגוני, ממונה פנימי מול חיצוני, וההשלכות של אי-מינוי. צעדים מעשיים לארגון.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-legal-departments-talent.webp"
+  },
+  {
+    "slug": "attorney-client-privilege-ai",
+    "title": "חיסיון עורך דין לקוח בעידן ה-AI: מה קורה כשמזינים תיק לכלי בינה מלאכותית",
+    "excerpt": "מה קורה לחיסיון עורך דין לקוח ולחובת הסודיות המקצועית כשמזינים חומרי לקוח לכלי בינה מלאכותית. מדריך למשרדים: הסיכון לוויתור על חיסיון, ההבחנה בין כלי שמאמן על המידע לכלי שלא, וצעדים מעשיים לאימוץ AI בלי לפגוע בחיסיון.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-legal-departments-talent.webp"
+  },
+  {
+    "slug": "partnership-dissolution-ai-ownership",
+    "title": "פירוק שותפות בעידן ה-AI: מי הבעלים של סוכני הבינה המלאכותית של המשרד",
+    "excerpt": "כשמשרד או פירמה מתפרקים, מי מקבל את סוכני ה-AI שהותאמו ואומנו על התיקים והידע של הפירמה. מדריך לנכס החדש שהסכמי שותפות אינם מכסים: בעלות על מודל שעבר Fine-Tuning, אי-חלוקוּת של המודל והנתונים, אשליית הרישיון, ממד החיסיון, והצורך בנספח AI מפורט בהסכם.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-legal-practice.webp"
+  },
+  {
+    "slug": "gdpr-israeli-companies-ai",
+    "title": "GDPR לחברה ישראלית שמפעילה AI על מידע אירופי",
+    "excerpt": "מתי ה-GDPR חל בלי נוכחות באירופה, מה הבסיס החוקי לאימון מודל על מידע שנאסף למטרה אחרת, מה קורה בהעברה הלאה מישראל, ואילו זכויות מערכת אלגוריתמית מתקשה לספק.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/algorithmic-transparency.webp",
+  },
+  {
+    "slug": "overseas-property-due-diligence",
+    "title": "בדיקת נאותות לנכס בחו״ל: מה בודקים כשאין נסח טאבו",
+    "excerpt": "מרשם זכויות מול מרשם עסקאות, מי באמת הבעלים וממי קיבל, אילו חובות עוברים עם הנכס, מה מותר לעשות בו, ואיזו בטוחה מגנה על הכסף עד להשלמת הרישום.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/intl-realestate-transactions.webp",
+  },
+  {
+    "slug": "ai-due-diligence-tech-acquisition",
+    "title": "בדיקת נאותות AI לפני השקעה או רכישת חברת טכנולוגיה",
+    "excerpt": "מה בודקים בחברה שהמוצר שלה מבוסס בינה מלאכותית: מקורות נתוני האימון והזכויות בהם, בעלות על המודל ועל הפלט, סיווג הסיכון ברגולציה, ומה קורה כשהמערכת טועה.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-realestate-risk-management.webp",
+  },
+  {
+    "slug": "overseas-property-holding-structure",
+    "title": "רכישת נכס בחו״ל: על שם מי לרשום אותו, ומה מדווחים בישראל",
+    "excerpt": "שלוש דרכי ההחזקה בנכס מעבר לים, שם פרטי, חברה מקומית ונאמנות, מה כל אחת עושה למס ולהורשה, ואילו דיווחים חלים בישראל גם בשנה בלי הכנסה.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/overseas-property-holding.webp",
+  },
+  {
+    "slug": "amendment-13-data-security-guide",
+    "title": "תיקון 13: מדריך אבטחת מידע ונהלים לארגון",
+    "excerpt": "מדריך מעשי לחובות אבטחת המידע תחת תיקון 13 ותקנות הגנת הפרטיות (אבטחת מידע): רמות האבטחה לפי רגישות המאגר, בקרות טכניות וארגוניות, נהלים כתובים, ניהול הרשאות, טיפול באירוע אבטחה ודיווח, ביקורות והדרכת עובדים.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/law-algorithm-era.webp"
+  },
+  {
+    "slug": "pinui-binui-owner-guide",
+    "title": "פינוי-בינוי: מדריך מלא לבעלי דירות",
+    "excerpt": "מדריך מקיף לבעלי דירות בפרויקט פינוי-בינוי: מה זה, במה זה נבדל מתמ״א 38, שלבי התהליך מהתארגנות ועד קבלת הדירה החדשה, הרוב הדרוש והדייר הסרבן, בטוחות, מיסוי, וכיצד לבחור ליווי משפטי עצמאי.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/homeowners-iron-dome.webp"
+  },
+  {
+    "slug": "tama-38-1-vs-38-2-comparison",
+    "title": "תמ״א 38/1 מול תמ״א 38/2: מה ההבדל ומה מתאים לבניין שלכם",
+    "excerpt": "השוואה מעשית בין תמ״א 38/1 (חיזוק ותוספת) לבין תמ״א 38/2 (הריסה ובנייה מחדש): מה כל מסלול כולל, יתרונות וחסרונות, שיקולי כדאיות, בטוחות והגנות לבעלי הדירות, ואיך בוחרים את המסלול הנכון לבניין.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/tenant-urban-renewal-guide.webp"
+  },
+  {
+    "slug": "ai-governance-board-framework",
+    "title": "ממשל בינה מלאכותית: מסגרת עבודה לדירקטוריון",
+    "excerpt": "כיצד דירקטוריון מפקח על בינה מלאכותית בלי להפוך לוועדה טכנולוגית: מי אחראי, אילו דיווחים צריכים להגיע לשולחן, באיזו תדירות, ומהן ארבע השאלות שכל ישיבה צריכה לענות עליהן.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-turning-point-2026.webp"
+  },
+  {
+    "slug": "directors-liability-ai-era",
+    "title": "אחריות דירקטורים ונושאי משרה בעידן הבינה המלאכותית",
+    "excerpt": "מה קורה לחובת הזהירות של דירקטור כשהארגון מטמיע בינה מלאכותית, מדוע כלל שיקול הדעת העסקי אינו מגן על החלטה שלא התקבלה, ומה דירקטוריון צריך לתעד כדי שההגנה תעמוד לו.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-liability-ruling.webp"
+  },
+  {
+    "slug": "ai-use-policy-organization",
+    "title": "מדיניות שימוש בבינה מלאכותית בארגון: מה חייב להיות בה",
+    "excerpt": "מדיניות שימוש ב-AI היא המסמך שקובע מה מותר, איזה מידע אסור להזין, מתי נדרשת בקרה אנושית ומי אחראי לפלט. מה חייב להיכלל בה, ולמה מדיניות שאוסרת הכול היא הכישלון הנפוץ ביותר.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-legal-practice.webp"
+  },
+  {
+    "slug": "ai-risk-frameworks-iso-42001-nist",
+    "title": "מסגרות לניהול סיכוני AI: ISO 42001 מול NIST AI RMF",
+    "excerpt": "השוואה מעשית בין שתי המסגרות המובילות לניהול סיכוני בינה מלאכותית: מה כל אחת נותנת, מה ההבדל בין תקן שניתן להסמכה למסגרת התנדבותית, כיצד הן מתייחסות לחוק ה-AI האירופי, ובאיזו מהן כדאי להתחיל.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-workspace-encyclopedia.webp"
+  },
+  {
+    "slug": "eu-ai-act-transparency-generative",
+    "title": "EU AI Act: חובות שקיפות למערכות ג'נרטיביות ולמודלי יסוד",
+    "excerpt": "מאוגוסט 2026 חלות חובות השקיפות של חוק ה-AI האירופי: מתי חובה לומר למשתמש שהוא מדבר עם מכונה, מתי חובה לסמן תוכן מסונתז, מה נדרש מספקי מודלי יסוד, ומה כל זה אומר לחברה ישראלית שמוכרת לאירופה.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-presentation-tools.webp"
+  },
+  {
+    "slug": "eu-ai-act-high-risk-classification",
+    "title": "כיצד לדעת אם מערכת ה-AI שלכם היא בסיכון גבוה לפי EU AI Act",
+    "excerpt": "מדריך מעשי לסיווג מערכת בינה מלאכותית כבעלת סיכון גבוה תחת חוק ה-AI האירופי: שני המסלולים לסיווג, תחומי השימוש הרגישים, שאלות לבדיקה עצמית, החובות שמופעלות, וחשיבות תיעוד ההחלטה.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-legal-departments-talent.webp"
+  },
+  {
+    "slug": "privacy-law-amendment-13-guide",
+    "title": "תיקון 13 לחוק הגנת הפרטיות: מדריך היערכות לארגונים ולעסקים",
+    "excerpt": "מה משנה תיקון 13 לחוק הגנת הפרטיות, מי חייב להיערך, מתי נדרש ממונה הגנת פרטיות (DPO), ואילו צעדים מעשיים לנקוט: מיפוי מידע, מזעור, אבטחה, זכויות נושאי מידע והצטלבות עם ממשל AI.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-ethics-legal-risks.webp"
+  },
+  {
+    "slug": "second-opinion-real-estate-urban-renewal",
+    "title": "חוות דעת שנייה בעסקת נדל״ן ובהתחדשות עירונית: מתי, למה, ואיך Legal AI מחזק אותה",
+    "excerpt": "מדריך לחוות דעת משפטית שנייה בעסקאות נדל״ן ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי): מתי כדאי, מה בודקים, וכיצד כלי Legal AI מזרזים בדיקת נאותות וניהול סיכונים, בפיקוח עורך דין.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/urban-renewal-risk.webp"
+  },
+  {
+    "slug": "eu-ai-act-israeli-companies",
+    "title": "חוק ה-AI האירופי (EU AI Act): מה חברות ישראליות חייבות לדעת",
+    "excerpt": "מדריך לחברות ישראליות: מתי EU AI Act חל עליכן גם בלי נוכחות באירופה, מדרג הסיכון, חובות מערכות בסיכון גבוה, שקיפות למודלים ג'נרטיביים, ההצטלבות עם תיקון 13, ובניית ממשל AI.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-turning-point-2026.webp"
+  },
+  {
+    "slug": "shadow-it-law-firms",
+    "title": "סכנת ה-Shadow IT במשרדי עורכי דין: למה אסור להדביק חוזים לכלים חינמיים",
+    "excerpt": "מדריך לעורכי דין ולמנהלי ציות: מהי סכנת ה-Shadow IT, מדוע הדבקת חוזים לכלי בינה מלאכותית חינמיים מסכנת את חיסיון הלקוח, ואילו סטנדרטים (DPA, אפס שמירת מידע, אנונימיזציה) חובה לדרוש מספק AI משפטי.",
+    "date": "אוגוסט 2026",
+    "cover": "/images/covers/ai-ethics-legal-risks.webp"
+  },
+  {
     "slug": "portugal-investment-guide",
     "title": "השקעות בפורטוגל: המדריך המשפטי למשקיע הישראלי",
-    "excerpt": "מדריך משפטי מקיף למשקיע הישראלי בפורטוגל: נדל\"ן, תושבות ו-Golden Visa, מיסוי ומשטר ה-NHR לאחר הרפורמות, בדיקת נאותות, סיכונים ויישוב סכסוכים חוצה גבולות.",
+    "excerpt": "מדריך משפטי מקיף למשקיע הישראלי בפורטוגל: נדל״ן, תושבות ו-Golden Visa, מיסוי ומשטר ה-NHR לאחר הרפורמות, בדיקת נאותות, סיכונים ויישוב סכסוכים חוצה גבולות.",
     "date": "יולי 2026",
     "cover": "/images/portugal-investment.svg"
   },
@@ -30,644 +191,644 @@ export const blogMeta: BlogMeta[] = [
     "title": "גישור מותאם בידי lalum: גישור בהתאמה אישית",
     "excerpt": "גישור בהתאמה אישית לכל סכסוך: מקצועי, מהיר ורגיש, לשמירה על יחסים ועל הערך הכלכלי.",
     "date": "יוני 2026",
-    "cover": "/images/covers/custom-mediation.png"
+    "cover": "/images/covers/custom-mediation.webp"
   },
   {
     "slug": "real-estate-arbitration",
-    "title": "תהליכי בוררות נדל\"ן: פתרון סכסוכי נדל\"ן חוקיים",
+    "title": "תהליכי בוררות נדל״ן: פתרון סכסוכי נדל״ן חוקיים",
     "excerpt": "מדוע בוררות היא הפתרון המועדף לסכסוכי נדל״ן: מהירה, חסכונית ומקצועית.",
     "date": "יוני 2026",
-    "cover": "/images/covers/real-estate-arbitration.png"
+    "cover": "/images/covers/real-estate-arbitration.webp"
   },
   {
     "slug": "business-arbitration",
     "title": "בוררות יעילה בסכסוכים עסקיים",
     "excerpt": "בוררות עסקית כפתרון מהיר, חסוי ומחייב לסכסוכים מסחריים, בלי שנים בבית משפט.",
     "date": "יוני 2026",
-    "cover": "/images/covers/business-arbitration.png"
+    "cover": "/images/covers/business-arbitration.webp"
   },
   {
     "slug": "ai-liability-ruling",
     "title": "מי אחראי על מה שה-AI אומר? בין מינכן, וושינגטון וירושלים (דעה אישית)",
     "excerpt": "פסק דין תקדימי במינכן נגד גוגל חושף פער: העולם מטיל אחריות על פלט ה-AI, ובישראל מנסים לחסום את הכלי.",
     "date": "יוני 2026",
-    "cover": "/images/covers/ai-liability-ruling.jpg"
+    "cover": "/images/covers/ai-liability-ruling.webp"
   },
   {
     "slug": "urban-renewal-risk",
-    "title": "ניהול משברים ואסטרטגיית הכרעה בהתחדשות עירונית: ניתוח סיכונים בענף הנדל\"ן התנודתי",
+    "title": "ניהול משברים ואסטרטגיית הכרעה בהתחדשות עירונית: ניתוח סיכונים בענף הנדל״ן התנודתי",
     "excerpt": "ניתוח סיכונים אלגוריתמי וניהול משברים בהתחדשות עירונית בשוק נדל״ן תנודתי, עם מודל ה-DOM.",
     "date": "יוני 2026",
-    "cover": "/images/covers/urban-renewal-risk.png"
+    "cover": "/images/covers/urban-renewal-risk.webp"
   },
   {
     "slug": "business-mediation-relations",
     "title": "גישור לשיפור יחסים עסקיים: הדרך להשגת פתרונות מוסכמים",
     "excerpt": "גישור כדרך מהירה ומכבדת לפתור סכסוכים עסקיים ולשמור על יחסים, במקום מאבקים משפטיים.",
     "date": "יוני 2026",
-    "cover": "/images/covers/business-mediation-relations.png"
+    "cover": "/images/covers/business-mediation-relations.webp"
   },
   {
     "slug": "ai-turning-point-2026",
-    "title": "2026: שנת המפנה של הבינה המלאכותית במשפט, בנדל\"ן וביישוב סכסוכים",
+    "title": "2026: שנת המפנה של הבינה המלאכותית במשפט, בנדל״ן וביישוב סכסוכים",
     "excerpt": "שנת 2026 מסמנת מעבר מעידן החדשנות בבינה מלאכותית לעידן של אחריות משפטית, רגולציה ופיקוח בתחומי המשפט והנדל״ן.",
     "date": "יוני 2026",
-    "cover": "/images/covers/ai-turning-point-2026.png"
+    "cover": "/images/covers/ai-turning-point-2026.webp"
   },
   {
     "slug": "ai-hallucinations-citations",
     "title": "⚖️ כשהמודל מציע \"פסיקה\": מי בעצם מאמת?",
     "excerpt": "הזיות בינה מלאכותית בכתבי טענות הפכו לסיכון מקצועי ממשי, ופסיקה בישראל ובעולם כבר מטילה סנקציות על עורכי דין שלא אימתו.",
     "date": "יוני 2026",
-    "cover": "/images/covers/ai-hallucinations-citations.png"
+    "cover": "/images/covers/ai-hallucinations-citations.webp"
   },
   {
     "slug": "international-trade-guide-2026",
     "title": "מדריך עסקאות בינלאומיות בישראל 2026: מהם הסיכונים המשפטיים שצריך לדעת",
     "excerpt": "מדריך מעשי לעסקאות מסחר בינלאומיות בישראל 2026: סיכונים מרכזיים, בדיקת נאותות, תנאי חוזה ודרישות ציות.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/international-trade-guide-2026.png"
+    "cover": "/images/covers/international-trade-guide-2026.webp"
   },
   {
     "slug": "real-estate-dispute-arbitration",
-    "title": "פתרון סכסוכים בנדל\"ן: החשיבות של בוררות בתחום הנדל\"ן",
+    "title": "פתרון סכסוכים בנדל״ן: החשיבות של בוררות בתחום הנדל״ן",
     "excerpt": "מדוע בוררות היא הכלי היעיל, המהיר והחסוי לפתרון סכסוכי נדל״ן, ושמירה על יחסים עסקיים.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/real-estate-dispute-arbitration.png"
+    "cover": "/images/covers/real-estate-dispute-arbitration.webp"
   },
   {
     "slug": "ai-ethics-legal-risks",
     "title": "AI ethics legal risks: בין משפט, בינה מלאכותית והצורך הדחוף במסגרת רגולטורית",
     "excerpt": "מדוע היעדר מסגרת רגולטורית לבינה מלאכותית מגדיל את הסיכונים המשפטיים, עם הרכב האוטונומי כמקרה מבחן לאחריות אלגוריתמית.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/ai-ethics-legal-risks.png"
+    "cover": "/images/covers/ai-ethics-legal-risks.webp"
   },
   {
     "slug": "algorithmic-transparency",
     "title": "שקיפות אלגוריתמית: האתיקה של הבינה המלאכותית במרחב המשפטי-כלכלי החדש",
     "excerpt": "שקיפות אלגוריתמית ככלי אתי ואסטרטגי: מדוע גילוי נאות על השימוש בבינה מלאכותית בונה אמון ומנהל סיכונים בעסקאות מורכבות.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/algorithmic-transparency.png"
+    "cover": "/images/covers/algorithmic-transparency.webp"
   },
   {
     "slug": "decision-oriented-ai-law",
     "title": "🧠 Decision-Oriented AI Law: משפט  מבוסס בינה מלאכותית מוכוון הכרעה בעידן של אי־ודאות משפטית",
     "excerpt": "תחום משפטי חדש שבו הבינה המלאכותית אינה רק מנתחת אלא מובילה להכרעה, בניתוח סיכונים, נדל״ן ויישוב סכסוכים.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/decision-oriented-ai-law.png"
+    "cover": "/images/covers/decision-oriented-ai-law.webp"
   },
   {
     "slug": "legal-algorist",
     "title": "הָאַלְגּוֹרִיסְט הַמִּשְׁפָּטִי: האם אתם מנהיגים את המכונה או הופכים לסטטיסטיקה שלה?",
     "excerpt": "המעבר מעורך דין שמשתמש בטכנולוגיה לאלגוריסט משפטי ששולט בלוגיקת המכונה ומונע הטיית אוטומציה ורשלנות מקצועית.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/legal-algorist.png"
+    "cover": "/images/covers/legal-algorist.webp"
   },
   {
     "slug": "legal-mediation-benefits",
     "title": "היתרונות של גישור משפטי בסכסוכים עסקיים: עלויות נמוכות יותר וזמן פתרון מהיר",
     "excerpt": "גישור משפטי כפתרון זול ומהיר לסכסוכים עסקיים, ששומר על סודיות ועל יחסים עסקיים ומאפשר פתרונות יצירתיים.",
     "date": "אפריל 2026",
-    "cover": "/images/covers/legal-mediation-benefits.png"
+    "cover": "/images/covers/legal-mediation-benefits.webp"
   },
   {
     "slug": "lalum-mediation-arbitration",
     "title": "lalum ללום: שירותי גישור ובוררות מקצועיים",
     "excerpt": "סקירה של שירותי גישור ובוררות מקצועיים כאלטרנטיבה מהירה, חסויה וחסכונית להליכים משפטיים ממושכים.",
     "date": "מרץ 2026",
-    "cover": "/images/covers/lalum-mediation-arbitration.png"
+    "cover": "/images/covers/lalum-mediation-arbitration.webp"
   },
   {
     "slug": "three-minute-legal-check",
-    "title": "בדיקה משפטית ב-3 דקות – ולמה עדיין חשוב לקבל חוות דעת מקצועית(הקליניקה המשפטית: LALUM)",
+    "title": "בדיקה משפטית ב-3 דקות, ולמה עדיין חשוב לקבל חוות דעת מקצועית(הקליניקה המשפטית: LALUM)",
     "excerpt": "בדיקה משפטית ראשונית בבינה מלאכותית היא כלי מועיל, אך אינה מחליפה חוות דעת מקצועית וניתוח סיכונים בעסקאות נדל״ן משמעותיות.",
     "date": "מרץ 2026",
-    "cover": "/images/covers/three-minute-legal-check.png"
+    "cover": "/images/covers/three-minute-legal-check.webp"
   },
   {
     "slug": "ai-presentation-tools",
     "title": "אימוץ אסטרטגי של כלי AI ליצירת מצגות מאפשר חיסכון של כ-8 שעות עבודה שבועיות, תוך מעבר ממודל של \"ייצור תוכן\" למודל של \"בקרה וניהול סיכונים\"",
     "excerpt": "ניתוח השוואתי של כלי AI מובילים ליצירת מצגות ומחקר משפטי, עם דגש על תמיכה בעברית RTL ומניעת הזיות.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/ai-presentation-tools.jpg"
+    "cover": "/images/covers/ai-presentation-tools.webp"
   },
   {
     "slug": "ai-workspace-encyclopedia",
     "title": "האנציקלופדיה של סביבת העבודה ב-AI: המדריך השלם למקצוען ב-2026",
     "excerpt": "מדריך שלם לבניית אקו-סיסטם של כלי AI למקצוענים ב-2026: תשתיות ידע, מנועי חשיבה, מחקר, פרודוקטיביות ואוטומציה.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/ai-workspace-encyclopedia.jpg"
+    "cover": "/images/covers/ai-workspace-encyclopedia.webp"
   },
   {
     "slug": "transcription-tools-guide",
     "title": "לא רק מילים: מדריך יישומי לבחירת כלי תמלול מבוססי AI למשרד המודרני",
     "excerpt": "מדריך מעשי לבחירת כלי תמלול מבוססי בינה מלאכותית למשרד משפטי ונדל״ן, לפי דיוק, תמחור ותמיכה בעברית.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/transcription-tools-guide.jpg"
+    "cover": "/images/covers/transcription-tools-guide.webp"
   },
   {
     "slug": "timeless-meeting-revolution",
-    "title": "המהפכה השקטה בחדר הישיבות: המדריך האסטרטגי לאימוץ Timeless בעולמות המשפט, הנדל\"ן והעסקים",
+    "title": "המהפכה השקטה בחדר הישיבות: המדריך האסטרטגי לאימוץ Timeless בעולמות המשפט, הנדל״ן והעסקים",
     "excerpt": "מדריך אסטרטגי להטמעת פלטפורמת Timeless לתמלול, ניתוח וסיכום פגישות בעולמות המשפט, הנדל״ן והעסקים.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/timeless-meeting-revolution.jpg"
+    "cover": "/images/covers/timeless-meeting-revolution.webp"
   },
   {
     "slug": "legal-ai-chatbots-analysis",
     "title": "המהפכה האלגוריתמית: ניתוח רב-ממדי של שילוב צ'אט-בוטים ובינה מלאכותית גנרטיבית בעולם המשפט המודרני ובמערכת המשפט הישראלית",
     "excerpt": "ניתוח רב-ממדי של שילוב צ׳אט-בוטים ובינה מלאכותית גנרטיבית בעולם המשפט, כולל השוק הישראלי, כלכלה, רגולציה ואתיקה.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/legal-ai-chatbots-analysis.png"
+    "cover": "/images/covers/legal-ai-chatbots-analysis.webp"
   },
   {
     "slug": "building-ai-agents-realestate",
-    "title": "המדריך המלא לבניית סוכני AI אוטונומיים בענף הנדל\"ן: מהתיאוריה האקדמית לפרקטיקה המשפטית והעסקית",
+    "title": "המדריך המלא לבניית סוכני AI אוטונומיים בענף הנדל״ן: מהתיאוריה האקדמית לפרקטיקה המשפטית והעסקית",
     "excerpt": "מדריך לבניית סוכני AI אוטונומיים לענף הנדל״ן: השוואה בין Google Gems ל-OpenAI GPTs ושבעה כללי יסוד לבניית סוכן.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/building-ai-agents-realestate.png"
+    "cover": "/images/covers/building-ai-agents-realestate.webp"
   },
   {
     "slug": "claude-guide-realestate-law",
-    "title": "המדריך המקיף ל-Claude  מתיאוריה לפרקטיקה למקצועני נדל\"ן ומשפט",
+    "title": "המדריך המקיף ל-Claude  מתיאוריה לפרקטיקה למקצועני נדל״ן ומשפט",
     "excerpt": "מדריך מקיף ליכולות Claude למקצועני נדל״ן ומשפט: ניהול ידע, ניתוח מסמכים, מחקר, כלים ויזואליים ואוטומציה.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/claude-guide-realestate-law.png"
+    "cover": "/images/covers/claude-guide-realestate-law.webp"
   },
   {
     "slug": "ai-elite-realestate",
-    "title": "אסטרטגיות בינה מלאכותית למאיון העליון בנדל\"ן: כשמחקר אקדמי פוגש את השטח ",
+    "title": "אסטרטגיות בינה מלאכותית למאיון העליון בנדל״ן: כשמחקר אקדמי פוגש את השטח ",
     "excerpt": "מתודולוגיית LALUM לשימוש אסטרטגי בבינה מלאכותית בנדל״ן, עם חלוקת משימות בין אוטומציה להובלה אנושית וניהול סיכונים.",
     "date": "פברואר 2026",
-    "cover": "/images/covers/ai-elite-realestate.jpg"
+    "cover": "/images/covers/ai-elite-realestate.webp"
   },
   {
     "slug": "lawyer-wakeup-call",
     "title": "השעון המעורר של עורכי הדין: למה המודל העסקי שלכם עומד להתרסק (ומה יחליף אותו)",
     "excerpt": "מדוע מודל שעות החיוב מתפורר, ולמה עורכי דין עוברים לתמחור מבוסס ערך ולתפקיד של מנהלי סיכונים בעידן ה-AI.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/lawyer-wakeup-call.png"
+    "cover": "/images/covers/lawyer-wakeup-call.webp"
   },
   {
     "slug": "digital-lawyers-2026",
     "title": "המעבר לעורכי דין דיגיטליים: כיצד AI משנה את פני המקצוע ב-2026",
     "excerpt": "כיצד סוכני AI אוטונומיים הופכים את עורך הדין ל״בלש דיגיטלי״ בבדיקות נאותות, בזיהוי סיכונים חבויים ובגישור, תחת אחריות אנושית.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/digital-lawyers-2026.png"
+    "cover": "/images/covers/digital-lawyers-2026.webp"
   },
   {
     "slug": "claude-cowork-agent",
     "title": "עידן הסוכן האוטונומי: ניתוח השלכות מערכת \"Claude Co-Work\" על ניהול מידע, התייעלות ארגונית וניהול סיכונים",
     "excerpt": "ניתוח השלכות מערכת Claude Co-Work והמעבר לבינה פועלת על ניהול מידע, התייעלות ארגונית וניהול סיכונים במשרד.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/claude-cowork-agent.png"
+    "cover": "/images/covers/claude-cowork-agent.webp"
   },
   {
     "slug": "notebooklm-focus",
     "title": "אמנות המיקוד הדיגיטלי: מדוע NotebookLM הוא \"המוח החיצוני\" שהמשרד שלכם חייב לאמץ (וכל השאר: רעש רקע)",
     "excerpt": "מדוע מיקוד בכלי אחד מבוסס מקורות כמו NotebookLM מייעל תיקי נדל״ן מורכבים ומונע הזיות ועומס קוגניטיבי.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/notebooklm-focus.png"
+    "cover": "/images/covers/notebooklm-focus.webp"
   },
   {
     "slug": "why-realestate-needs-ai",
-    "title": "מדוע עולם הנדל\"ן מחויב ל-AI? ",
+    "title": "מדוע עולם הנדל״ן מחויב ל-AI? ",
     "excerpt": "מדוע שילוב בינה מלאכותית בנדל״ן הפך לתנאי סף לניהול סיכונים ולמניעת רשלנות מקצועית, במודל היברידי של אדם ומכונה.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/why-realestate-needs-ai.png"
+    "cover": "/images/covers/why-realestate-needs-ai.webp"
   },
   {
     "slug": "gemini-guide-law",
-    "title": "המדריך המלא לשימוש ב-Gemini בעולם המשפט, הנדל\"ן והניהול: מתיאוריה אקדמית לפרקטיקה בשטח",
+    "title": "המדריך המלא לשימוש ב-Gemini בעולם המשפט, הנדל״ן והניהול: מתיאוריה אקדמית לפרקטיקה בשטח",
     "excerpt": "מדריך מקיף לשימוש ב-Gemini בעולם המשפט, הנדל״ן והניהול: מחקר עומק, יצירת תוכן, אוטומציה וסוכנים אישיים.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/gemini-guide-law.png"
+    "cover": "/images/covers/gemini-guide-law.webp"
   },
   {
     "slug": "digital-toolbox-part1",
-    "title": "ארגז הכלים הדיגיטלי: כלי AI שחייבים להכיר בעולם המשפט והנדל\"ן",
+    "title": "ארגז הכלים הדיגיטלי: כלי AI שחייבים להכיר בעולם המשפט והנדל״ן",
     "excerpt": "מבוא לארגז כלי AI לעולם הנדל״ן והמשפט, מנקודת מבט מקצועית ויישומית, בחלוקה לקטגוריות עבודה מרכזיות.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/digital-toolbox-part1.png"
+    "cover": "/images/covers/digital-toolbox-part1.webp"
   },
   {
     "slug": "unfair-advantage-course",
-    "title": "היתרון הבלתי הוגן: כך תפצחו עסקאות נדל\"ן בעזרת AI ושפת גוף",
+    "title": "היתרון הבלתי הוגן: כך תפצחו עסקאות נדל״ן בעזרת AI ושפת גוף",
     "excerpt": "שילוב בינה מלאכותית עם שפת גוף וניהול סכסוכים כיתרון מכריע בסגירת עסקאות נדל״ן, במתכונת סדנת עבודה מעשית.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/unfair-advantage-course.png"
+    "cover": "/images/covers/unfair-advantage-course.webp"
   },
   {
     "slug": "ai-legal-departments-talent",
     "title": "בינה מלאכותית במחלקות המשפט: איך להפוך איום להזדמנות ולשמר כישרונות",
     "excerpt": "כיצד מחלקות משפטיות יכולות להפוך את הבינה המלאכותית מאיום להזדמנות, לשמר כישרונות ולבנות מודל אנושי-טכנולוגי.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/ai-legal-departments-talent.png"
+    "cover": "/images/covers/ai-legal-departments-talent.webp"
   },
   {
     "slug": "integrated-toolbox-israel",
-    "title": "ארגז כלים משולב: עורכי דין ונדל\"ן (ישראל 2026)",
+    "title": "ארגז כלים משולב: עורכי דין ונדל״ן (ישראל 2026)",
     "excerpt": "ארגז כלים משולב של AI לעורכי דין ואנשי נדל״ן בישראל 2026, עם דגש על התאמה לעברית, רגולציה, פרטיות וחתימות.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/integrated-toolbox-israel.jpg"
+    "cover": "/images/covers/integrated-toolbox-israel.webp"
   },
   {
     "slug": "realestate-master-course",
-    "title": "🎓 מאסטר בעסקאות נדל\"ן: המשולש המנצח",
+    "title": "🎓 מאסטר בעסקאות נדל״ן: המשולש המנצח",
     "excerpt": "קורס מאסטר בעסקאות נדל״ן המשלב פרקטיקה משפטית, בינה מלאכותית ופסיכולוגיה עסקית בשישה מפגשים אינטנסיביים.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/realestate-master-course.png"
+    "cover": "/images/covers/realestate-master-course.webp"
   },
   {
     "slug": "tenant-urban-renewal-guide",
     "title": "המדריך המקוצר לדייר: כך תהפכו את פרויקט ההתחדשות העירונית ממלכודת נדל\"נית למקפצה כלכלית: כל הסודות שקבלנים לא מספרים לכם",
     "excerpt": "מדריך מקיף לדיירים בהתחדשות עירונית, בחירת נציגות ועורך דין עצמאי, ערבויות, מפרט טכני והגנה מפני מוקשים משפטיים.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/tenant-urban-renewal-guide.png"
+    "cover": "/images/covers/tenant-urban-renewal-guide.webp"
   },
   {
     "slug": "free-lawyer-illusion",
     "title": "אל תדאגו, אני משלם לכם על עורך הדין.",
     "excerpt": "מדוע מודל שכר הטרחה של עורכי דין בהתחדשות עירונית יוצר ניגוד עניינים, ומדוע חוות דעת שנייה בלתי תלויה היא הפתרון.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/free-lawyer-illusion.png"
+    "cover": "/images/covers/free-lawyer-illusion.webp"
   },
   {
     "slug": "overseas-property-holding",
     "title": "חולמים על נכס מעבר לים? זו הטעות הקריטית שעלולה לעלות לכם ביוקר",
-    "excerpt": "ניתוח אסטרטגי של מבני החזקות בנדל\"ן בינלאומי בין פורטוגל, קפריסין וישראל, כולל סיכוני מוסד קבע וחוקי חברה נשלטת זרה.",
+    "excerpt": "ניתוח אסטרטגי של מבני החזקות בנדל״ן בינלאומי בין פורטוגל, קפריסין וישראל, כולל סיכוני מוסד קבע וחוקי חברה נשלטת זרה.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/overseas-property-holding.png"
+    "cover": "/images/covers/overseas-property-holding.webp"
   },
   {
     "slug": "realestate-second-opinion",
     "title": "מה עסקת חייכם חייבת 'חוות דעת שנייה'? (בדיוק כמו ברפואה)",
-    "excerpt": "מדוע כדאי לקבל חוות דעת משפטית שנייה ובלתי תלויה לפני חתימה על עסקת נדל\"ן, בדיוק כמו בהחלטה רפואית.",
+    "excerpt": "מדוע כדאי לקבל חוות דעת משפטית שנייה ובלתי תלויה לפני חתימה על עסקת נדל״ן, בדיוק כמו בהחלטה רפואית.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/realestate-second-opinion.jpg"
+    "cover": "/images/covers/realestate-second-opinion.webp"
   },
   {
     "slug": "portugal-realestate-investment",
     "title": "השקעות נדלן פורטוגל: כך תשקעו חכם בשוק אירופי צומח ",
-    "excerpt": "מדריך להשקעות נדל\"ן בפורטוגל, מסלולי השקעה בליסבון ובפורטו, מיסוי, תשואות, מימון וויזות שהייה.",
+    "excerpt": "מדריך להשקעות נדל״ן בפורטוגל, מסלולי השקעה בליסבון ובפורטו, מיסוי, תשואות, מימון וויזות שהייה.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/portugal-realestate-investment.png"
+    "cover": "/images/covers/portugal-realestate-investment.webp"
   },
   {
     "slug": "contract-review-before-signing",
     "title": "בדיקת חוזה לפני חתימה: כך מקבלים החלטה משפטית נכונה",
     "excerpt": "מדוע בדיקת חוזה לפני חתימה היא רגע של קבלת החלטה משפטית מחייבת, ולא פעולה טכנית של קריאת סעיפים.",
     "date": "ינואר 2026",
-    "cover": "/images/covers/contract-review-before-signing.png"
+    "cover": "/images/covers/contract-review-before-signing.webp"
   },
   {
     "slug": "overseas-partnership-guide",
-    "title": "המדריך השלם לרכישת נדל\"ן בחו\"ל בשותפות: אסטרטגיות התאגדות, הגנה משפטית וניהול סיכונים",
-    "excerpt": "מדריך לרכישת נדל\"ן בחו\"ל בשותפות, מבני התאגדות, הסכם שותפות, מיסוי בינלאומי וניהול סיכונים.",
+    "title": "המדריך השלם לרכישת נדל״ן בחו״ל בשותפות: אסטרטגיות התאגדות, הגנה משפטית וניהול סיכונים",
+    "excerpt": "מדריך לרכישת נדל״ן בחו״ל בשותפות, מבני התאגדות, הסכם שותפות, מיסוי בינלאומי וניהול סיכונים.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/overseas-partnership-guide.png"
+    "cover": "/images/covers/overseas-partnership-guide.webp"
   },
   {
     "slug": "second-opinion-revolution",
-    "title": "המדריך האסטרטגי לנדל\"ן והתחדשות עירונית: המהפכה של \"הדעה השנייה\"",
-    "excerpt": "כיצד חוות דעת שנייה בלתי תלויה מגנה על דיירים ומשקיעים מפני ניגודי עניינים בעסקאות התחדשות עירונית ונדל\"ן.",
+    "title": "המדריך האסטרטגי לנדל״ן והתחדשות עירונית: המהפכה של \"הדעה השנייה\"",
+    "excerpt": "כיצד חוות דעת שנייה בלתי תלויה מגנה על דיירים ומשקיעים מפני ניגודי עניינים בעסקאות התחדשות עירונית ונדל״ן.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/second-opinion-revolution.png"
+    "cover": "/images/covers/second-opinion-revolution.webp"
   },
   {
     "slug": "law-algorithm-era",
     "title": "משפט בעידן האלגוריתם: כיצד שוק עריכת הדין מסתגל לחוזי AI ואינטרסים מורכבים",
-    "excerpt": "כיצד כלי בינה מלאכותית משנים ניסוח ובדיקת חוזים, ומדוע חוות דעת שנייה הופכת לסטנדרט הכרחי בעסקאות נדל\"ן.",
+    "excerpt": "כיצד כלי בינה מלאכותית משנים ניסוח ובדיקת חוזים, ומדוע חוות דעת שנייה הופכת לסטנדרט הכרחי בעסקאות נדל״ן.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/law-algorithm-era.png"
+    "cover": "/images/covers/law-algorithm-era.webp"
   },
   {
     "slug": "the-code-realestate",
-    "title": "הקוד: אסטרטגיה, טכנולוגיה ופסיכולוגיה בעולם הנדל\"ן החדש",
-    "excerpt": "מדריך לעוסקי נדל\"ן המשלב בינה מלאכותית, אסטרטגיה ואינטליגנציה רגשית לניהול עסקאות מורכבות ומשא ומתן.",
+    "title": "הקוד: אסטרטגיה, טכנולוגיה ופסיכולוגיה בעולם הנדל״ן החדש",
+    "excerpt": "מדריך לעוסקי נדל״ן המשלב בינה מלאכותית, אסטרטגיה ואינטליגנציה רגשית לניהול עסקאות מורכבות ומשא ומתן.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/the-code-realestate.png"
+    "cover": "/images/covers/the-code-realestate.webp"
   },
   {
     "slug": "combination-deals-architecture",
     "title": "עסקאות קומבינציה והתחדשות עירונית: הארכיטקטורה המשפטית של ללום ",
     "excerpt": "השיטה הקלינית של ללום לעסקאות קומבינציה ופינוי בינוי, בטוחות, ערבויות וניהול סיכונים משפטי.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/combination-deals-architecture.png"
+    "cover": "/images/covers/combination-deals-architecture.webp"
   },
   {
     "slug": "legal-clinic-business-realestate",
-    "title": "הקליניקה המשפטית לעסקים ונדל\"ן: המדריך המלא לניהול סיכונים, מיסוי והשבחת נכסים ",
+    "title": "הקליניקה המשפטית לעסקים ונדל״ן: המדריך המלא לניהול סיכונים, מיסוי והשבחת נכסים ",
     "excerpt": "מדריך מקיף לניהול סיכונים משפטיים, מיסוי מקרקעין, בדיקות נאותות והשבחת נכסים לעסקים ומשקיעים.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/legal-clinic-business-realestate.png"
+    "cover": "/images/covers/legal-clinic-business-realestate.webp"
   },
   {
     "slug": "israeli-realestate-abroad",
-    "title": "גשם של כסף בחו\"ל: אסטרטגיות ורגולציה עבור ענקיות הנדל\"ן הישראליות המפנות משאבים לשווקים בינלאומיים",
-    "excerpt": "אסטרטגיות ורגולציה לחברות נדל\"ן ישראליות המשקיעות בשווקים בינלאומיים, מבני אחזקות, מיסוי וניהול סיכונים.",
+    "title": "גשם של כסף בחו״ל: אסטרטגיות ורגולציה עבור ענקיות הנדל״ן הישראליות המפנות משאבים לשווקים בינלאומיים",
+    "excerpt": "אסטרטגיות ורגולציה לחברות נדל״ן ישראליות המשקיעות בשווקים בינלאומיים, מבני אחזקות, מיסוי וניהול סיכונים.",
     "date": "דצמבר 2025",
-    "cover": "/images/covers/israeli-realestate-abroad.png"
+    "cover": "/images/covers/israeli-realestate-abroad.webp"
   },
   {
     "slug": "war-end-scenarios-analysis",
     "title": "\"בדיוק על סף הסכנה: ניתוח מעשי של תרחישי סיום המלחמה: מתי קיפאון הופך להזדמנות היסטורית?\"",
     "excerpt": "ניתוח מעשי של ארבעת החסמים להסכם שלום באוקראינה, מודל דחיית ההכרעה וההזדמנויות הכלכליות בתרחיש הקיפאון.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/war-end-scenarios-analysis.jpg"
+    "cover": "/images/covers/war-end-scenarios-analysis.webp"
   },
   {
     "slug": "homeowners-iron-dome",
     "title": "כיפת הברזל של בעלי הדירות ",
     "excerpt": "מודל הקליניקה המשפטית הבלתי תלויה בהתחדשות עירונית, בקרת איכות חיצונית ותו תקן להסכמי פינוי בינוי.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/homeowners-iron-dome.jpg"
+    "cover": "/images/covers/homeowners-iron-dome.webp"
   },
   {
     "slug": "medicine-meets-law",
     "title": "כשעולם הרפואה פוגש את עולם המשפט:",
     "excerpt": "כיצד קליניקות משפטיות פרטיות מציעות חוות דעת שנייה לפני חתימה על עסקאות, בדומה למודל הרפואי.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/medicine-meets-law.png"
+    "cover": "/images/covers/medicine-meets-law.webp"
   },
   {
     "slug": "lalum-clinic-experience",
     "title": "LALUM | הקליניקה המשפטית: ניסיון שמוביל לפתרון",
     "excerpt": "מודל הקליניקה המשפטית של LALUM, חוות דעת שנייה, ניתוח סיכונים וגישור מכוון הכרעה לפני שסכסוך הופך להליך משפטי.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/lalum-clinic-experience.png"
+    "cover": "/images/covers/lalum-clinic-experience.webp"
   },
   {
     "slug": "quiet-legal-revolution",
     "title": "המהפכה השקטה בעולם המשפט: חוות דעת משפטית שנייה",
     "excerpt": "מדוע חוות דעת משפטית שנייה בלתי תלויה לפני חתימה היא צעד של אחריות, המחזק גם את הלקוח וגם את עורך הדין המייצג.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/quiet-legal-revolution.png"
+    "cover": "/images/covers/quiet-legal-revolution.webp"
   },
   {
     "slug": "lalum-clinic-realestate-advice",
     "title": "קליניקת LALUM : ייעוץ משפטי וחוות דעת שנייה לעסקאות נדל״ן בארץ ובעולם",
-    "excerpt": "קליניקה משפטית בינלאומית המעניקה חוות דעת שנייה וייעוץ לעסקאות נדל\"ן, התחדשות עירונית ונדל\"ן בינלאומי.",
+    "excerpt": "קליניקה משפטית בינלאומית המעניקה חוות דעת שנייה וייעוץ לעסקאות נדל״ן, התחדשות עירונית ונדל״ן בינלאומי.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/lalum-clinic-realestate-advice.png"
+    "cover": "/images/covers/lalum-clinic-realestate-advice.webp"
   },
   {
     "slug": "urban-renewal-mistakes-guide",
     "title": "המדריך שמונע טעויות חוזרות בהתחדשות עירונית",
     "excerpt": "מדוע נדרשת חוות דעת מתכללת אחת בהתחדשות עירונית, וכיצד ריבוי חוות דעת חלקיות משתק פרויקטים.",
     "date": "נובמבר 2025",
-    "cover": ""
+    "cover": "/images/covers/urban-renewal-risk.webp"
   },
   {
     "slug": "four-opinions-one-agreement",
     "title": "“ארבע חוות דעת, הסכם אחד: ומחלוקת שנמשכה מעל שנה\"",
     "excerpt": "סיפור מקרה על ארבע חוות דעת סותרות על אותו הסכם התחדשות עירונית, ומדוע נדרשת חוות דעת מתכללת אחת.",
     "date": "נובמבר 2025",
-    "cover": ""
+    "cover": "/images/covers/decision-oriented-mediation-benefits.webp"
   },
   {
     "slug": "lalum-investment-model-launch",
     "title": "LALUM משיקה מודל השקעה חדש לצמצום סיכונים בשוק הנדל״ן הבינלאומי: אירוע חשיפה ב־27 בנובמבר",
-    "excerpt": "LALUM משיקה מודל השקעה לרכישת נכסים מוכנים בלבד בחו\"ל, עם ניהול סיכונים, שקיפות ובקרה משפטית.",
+    "excerpt": "LALUM משיקה מודל השקעה לרכישת נכסים מוכנים בלבד בחו״ל, עם ניהול סיכונים, שקיפות ובקרה משפטית.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/lalum-investment-model-launch.png"
+    "cover": "/images/covers/lalum-investment-model-launch.webp"
   },
   {
     "slug": "intl-realestate-transactions",
     "title": "ליווי עסקאות נדל״ן בינלאומיות: המפתח להשקעה בטוחה בעולם משתנה",
-    "excerpt": "כיצד ליווי משפטי מקצועי לעסקאות נדל\"ן בינלאומיות מצמצם סיכונים רגולטוריים, חוזיים ומיסוייים למשקיע הישראלי.",
+    "excerpt": "כיצד ליווי משפטי מקצועי לעסקאות נדל״ן בינלאומיות מצמצם סיכונים רגולטוריים, חוזיים ומיסוייים למשקיע הישראלי.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/intl-realestate-transactions.png"
+    "cover": "/images/covers/intl-realestate-transactions.webp"
   },
   {
     "slug": "lalum-together",
     "title": "Lalum Together",
-    "excerpt": "ניתוח מודל Lalum Together לרכישה קבוצתית של נכסים מוכנים בחו\"ל, הפחתת עלויות בדיקות נאותות ובעלות ישירה.",
+    "excerpt": "ניתוח מודל Lalum Together לרכישה קבוצתית של נכסים מוכנים בחו״ל, הפחתת עלויות בדיקות נאותות ובעלות ישירה.",
     "date": "נובמבר 2025",
-    "cover": "/images/covers/lalum-together.jpg"
+    "cover": "/images/covers/lalum-together.webp"
   },
   {
     "slug": "portugal-realestate-legal-guide",
-    "title": "השקעות נדל\"ן בפורטוגל – פתיחה ומבט כללי",
-    "excerpt": "מדריך מקיף להשקעות נדל\"ן בפורטוגל, שלבי הרכישה מ-NIF ועד Deed, מיסוי, תכניות ממשלתיות וליווי משפטי בינלאומי.",
+    "title": "השקעות נדל״ן בפורטוגל: פתיחה ומבט כללי",
+    "excerpt": "מדריך מקיף להשקעות נדל״ן בפורטוגל, שלבי הרכישה מ-NIF ועד Deed, מיסוי, תכניות ממשלתיות וליווי משפטי בינלאומי.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/portugal-realestate-legal-guide.png"
+    "cover": "/images/covers/portugal-realestate-legal-guide.webp"
   },
   {
     "slug": "ai-realestate-risk-management",
-    "title": "בינה מלאכותית והעתיד של ניהול סיכונים בנדל\"ן",
-    "excerpt": "מודל מחקרי המשלב למידה עמוקה ובינה מלאכותית מוסברת לניהול סיכונים ולחיזוי שלבי פרויקטים בענף הנדל\"ן.",
+    "title": "בינה מלאכותית והעתיד של ניהול סיכונים בנדל״ן",
+    "excerpt": "מודל מחקרי המשלב למידה עמוקה ובינה מלאכותית מוסברת לניהול סיכונים ולחיזוי שלבי פרויקטים בענף הנדל״ן.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/ai-realestate-risk-management.png"
+    "cover": "/images/covers/ai-realestate-risk-management.webp"
   },
   {
     "slug": "body-language-ai-future",
     "title": "שפת הגוף תחת עין מלאכותית: העתיד של פרטיות, תעסוקה וביטחון לפני 2030",
     "excerpt": "מאמר על השפעת בינה מלאכותית המנתחת שפת גוף והבעות פנים על תעסוקה, פרטיות וביטחון ציבורי עד 2030.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/body-language-ai-future.png"
+    "cover": "/images/covers/body-language-ai-future.webp"
   },
   {
     "slug": "decision-oriented-mediation-benefits",
-    "title": "גלו את היתרונות של גישור מכוון-הכרעה",
-    "excerpt": "יתרונות הגישור מכוון-ההכרעה כחלופה מהירה, חסכונית וחסויה להליכים משפטיים ארוכים בסכסוכים עסקיים ופרטיים.",
+    "title": "גישור כפתרון משפטי: למי הוא מתאים ומה הוא חוסך",
+    "excerpt": "מה גישור מאפשר שהליך משפטי לא: פרטיות, שליטה בתוצאה וגמישות בתנאי ההסכם, ולאילו סוגי סכסוכים, עסקיים, משפחתיים וחוזיים, הוא מתאים.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/decision-oriented-mediation-benefits.png"
+    "cover": "/images/covers/decision-oriented-mediation-benefits.webp"
   },
   {
     "slug": "mediation-benefits-conflicts",
-    "title": "היתרונות של גישור מכוון הכרעה בקונפליקטים",
-    "excerpt": "יתרונות הגישור מכוון-ההכרעה כשילוב בין גישור לבוררות, המאזן שליטה בתהליך עם הכרעה מקצועית מחייבת.",
+    "title": "בין גישור לבוררות: שליטה בתהליך עם הכרעה מחייבת",
+    "excerpt": "גישור מכוון הכרעה מאזן בין שליטת הצדדים בתהליך לבין הכרעה מקצועית מחייבת. מה זה נותן לעסק, ללקוח הפרטי ולעורך הדין, ואיך זה עובד בפועל.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/mediation-benefits-conflicts.png"
+    "cover": "/images/covers/mediation-benefits-conflicts.webp"
   },
   {
     "slug": "understanding-mediation-process",
-    "title": "הבנת תהליכי גישור מכוון הכרעה",
-    "excerpt": "הסבר על תהליך הגישור מכוון-ההכרעה, שלביו והיתרונות שלו כחלופה מהירה לפתרון סכסוכים מורכבים.",
+    "title": "איך מתנהל הליך גישור מכוון הכרעה, שלב אחר שלב",
+    "excerpt": "מהפגישה הראשונה ועד ההסכם המחייב: מה קורה בכל שלב, ומה עושה המגשר כשהצדדים אינם מצליחים להגיע להסכמה בכוחות עצמם.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/understanding-mediation-process.png"
+    "cover": "/images/covers/understanding-mediation-process.webp"
   },
   {
     "slug": "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
-    "title": "הדרך לאיזון, תהליכי גישור מכוון הכרעה",
-    "excerpt": "כשאני מתמודד עם סכסוך מורכב, אני מחפש פתרון שיביא לאיזון אמיתי בין הצדדים. לא תמיד הליכים משפטיים ארוכים הם התשובה הטובה ביותר. כאן נכנס...",
+    "title": "איזון בין הצדדים: האינטרסים שמאחורי העמדות",
+    "excerpt": "תהליך גישור מקצועי אינו הכרעה בין עמדות אלא חשיפה של האינטרסים שמתחתן. איך זה נראה בסכסוך בין שותפים, ולמה זה מייצר פתרון שמחזיק.",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה.png"
+    "cover": "/images/covers/הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
     "title": "מעבר למילים: גישור מכוון הכרעה עם רגשות, שפת גוף וטכנולוגיה חכמה",
     "excerpt": "מודל חדשני המשלב כלים פסיכולוגיים וטכנולוגיים כדי לקצר הליכים ולהשיג תוצאות יציבות מבוא העולם המשפטי מצוי בעומס תמידי. בתי המשפט מתמודדים...",
     "date": "אוקטובר 2025",
-    "cover": "/images/covers/מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה.png"
+    "cover": "/images/covers/מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה.webp"
   },
   {
     "slug": "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
     "title": "השקעות נדל״ן בחו״ל: בין חלום למציאות, האם אפשר באמת לחשב את הסיכון?",
     "excerpt": "על פיתוי, סיכון ומציאות מורכבת, מדוע אין נוסחת קסם, ואיך בכל זאת אפשר להיערך נכון לפני שקונים נכס מעבר לים. בין חלום למציאות, מבוא...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון.png"
+    "cover": "/images/covers/השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון.webp"
   },
   {
     "slug": "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
     "title": "השקעות נדל״ן של ישראלים וגופים מוסדיים בחו״ל, בין תמרורי אזהרה במערב אירופה להזדמנויות זהירות במזרח",
-    "excerpt": "בין חיפוש תשואה לאחריות ציבורית השקעה בנדל\"ן מחוץ לגבולות ישראל נתפסת בעיני רבים כאטרקטיבית ומבטיחה. שילוב של שוק מקומי יקר ומוגבל בהיצע,...",
+    "excerpt": "בין חיפוש תשואה לאחריות ציבורית השקעה בנדל״ן מחוץ לגבולות ישראל נתפסת בעיני רבים כאטרקטיבית ומבטיחה. שילוב של שוק מקומי יקר ומוגבל בהיצע,...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח.png"
+    "cover": "/images/covers/השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח.webp"
   },
   {
     "slug": "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות",
     "title": "שפת גוף ועסקאות בינלאומיות, המימד הסמוי במשא ומתן חוצה גבולות",
     "excerpt": "המילה שמאחורי המחווה במשא ומתן בינלאומי, המילים חותמות את העסקה, אבל שפת הגוף היא זו שפותחת את הדלת. בעולם העסקאות הבינלאומיות, אנו...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות.png"
+    "cover": "/images/covers/שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות.webp"
   },
   {
     "slug": "למה-לבחור-בגישור-מכוון-הכרעה",
-    "title": "למה לבחור בגישור מכוון הכרעה?",
-    "excerpt": "כשמתמודדים עם סכסוך, בין אם עסקי או אישי, הדרך לפתרון יכולה להיות ארוכה ומייגעת. הליכים משפטיים מסורתיים לעיתים קרובות גוזלים זמן רב,...",
+    "title": "לסיים סכסוך בלי קצוות פתוחים: היתרון של הכרעה מחייבת",
+    "excerpt": "בגישור רגיל הצדדים עלולים לצאת עם אי-ודאות. גישור מכוון הכרעה בנוי לסיים את הסכסוך חד-משמעית, בתוך שבועות, בלי להשאיר פתחי מחלוקת.",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/למה-לבחור-בגישור-מכוון-הכרעה.png"
+    "cover": "/images/covers/למה-לבחור-בגישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "behind-the-mask-mediation-language",
     "title": "Behind the Mask: Decoding the Unspoken Language of Mediationהגישה של אברהם ללום, מעבר למילים: האמת שמאחורי הפנים בחדר הגישור",
     "excerpt": "הפנים שמאחורי המילים, מדוע המסכה קיימת? מאז ומעולם בני אדם ידעו להסתיר. המסכה אינה רק אמצעי תיאטרלי או אביזר של תרבות עתיקה; היא חלק...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/behind-the-mask-mediation-language.png"
+    "cover": "/images/covers/behind-the-mask-mediation-language.webp"
   },
   {
     "slug": "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
     "title": "מעבר לים, מאחורי הדלתות הסגורות: גישור בסכסוכי גבולות ועמלות שיווק בעולם הביטחוני",
     "excerpt": "הצצה נדירה לעולם שבו הסכמים ברורים נפגשים עם סכסוכים סמויים, והגישור הופך לכלי קריטי לשימור אמון ההזמנה לעולם הסגור מאחורי כל חוזה...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני.png"
+    "cover": "/images/covers/מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני.webp"
   },
   {
     "slug": "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה",
     "title": "הרגע שבו הכול נקבע, רושם ראשוני בגישור מכוון הכרעה",
     "excerpt": "פרק 1: הרגע שבו הכול נקבע, רושם ראשוני בגישור מכוון הכרעה הדלת נפתחת. שני הצדדים נכנסים בזה אחר זה, כמעט מבלי להביט זה בזה. לא נאמרת...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה.png"
+    "cover": "/images/covers/הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק",
     "title": "גישור מכוון-הכרעה, פתיחה והמסגרת התיאורטית הרגע שבו מבינים שהמשפט לבדו אינו מספיק",
     "excerpt": "בכל אולם משפטי, בין אם בישראל או מעבר לים, מתנגשים שני עולמות. מצד אחד, האמונה של עורכי הדין והלקוחות בכוחו של החוק, בתקדים, בסעיף החוזה...",
     "date": "ספטמבר 2025",
-    "cover": "/images/covers/גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק.jpg"
+    "cover": "/images/covers/גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק.webp"
   },
   {
     "slug": "mediator-tools-body-language-field-experience",
     "title": "כלים למגשר לגישור מוצלח AI, שפת גוף וניסיון שדה, מארג אחד שמוביל להסכמות מהירות, איכותיות ובר־קיימא",
     "excerpt": "הצלחה בגישור איננה תוצר של “כישרון מולד” בלבד, אלא של תמהיל מדויק: ידע פרקטי, כלים טכנולוגיים חכמים, ועבודה מודעת עם שפת גוף ועם הדינמיקה...",
     "date": "אוגוסט 2025",
-    "cover": "/images/covers/mediator-tools-body-language-field-experience.png"
+    "cover": "/images/covers/mediator-tools-body-language-field-experience.webp"
   },
   {
     "slug": "מהאינדיקציה-להחלטה-פרוטוקול-bl-לגישור-מתקדם-גישור-מכוון-הכרעה",
     "title": "מהאינדיקציה להחלטה: פרוטוקול BL לגישור מתקדם, גישור מכוון־הכרעה",
-    "excerpt": "מאת עו״ד ודוקטורנט אברהם ללום, מגשר, מומחה לשפת גוף ומייסד הגישה “גישור מכוון־הכרעה” (De-Escalation-Oriented Mediation), משרד LALUM...",
+    "excerpt": "מאת ד״ר עו״ד אברהם ללום, מגשר, מומחה לשפת גוף ומייסד הגישה “גישור מכוון־הכרעה” (De-Escalation-Oriented Mediation), משרד LALUM...",
     "date": "אוגוסט 2025",
-    "cover": "/images/covers/מהאינדיקציה-להחלטה-פרוטוקול-bl-לגישור-מתקדם-גישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/מהאינדיקציה-להחלטה-פרוטוקול-bl-לגישור-מתקדם-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור",
     "title": "למה לעו״ד בהתחדשות עירונית חייב להיות הסכם שכ״ט כתוב עם סעיף גישור",
     "excerpt": "בתיקי התחדשות עירונית (פינוי־בינוי/תמ״א) מעורבים לוחות זמנים ארוכים, ריבוי צדדים ומודלים מיוחדים לשכר־טרחה (למשל: מימון השכ״ט לדיירים...",
     "date": "אוגוסט 2025",
-    "cover": "/images/covers/למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור.jpg"
+    "cover": "/images/covers/למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור.webp"
   },
   {
     "slug": "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025",
     "title": "לא מתזמנים שוק, בונים החלטה נכונה: מסגרת פרקטית להשקעות נדל״ן 2025",
     "excerpt": "השקעות נדל״ן 2026, מסגרת החלטה תקציר מנהלים: אל תנסו לתזמן את השוק, תזמנו את ההחלטה. שלבו כניסה מדורגת, פיזור חכם, בדיקת נאותות...",
     "date": "אוגוסט 2025",
-    "cover": "/images/covers/לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025.png"
+    "cover": "/images/covers/לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025.webp"
   },
   {
     "slug": "משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה",
     "title": "גישור וליטיגציה בעידן של אי־ודאות",
     "excerpt": "תקציר בשנתיים האחרונות ראיתי כיצד אי־ודאות תפעולית, כלכלית וחברתית מחלחלת אל חדרי הדיונים, אל שולחנות הגישור ואל בתי המשפט. הליטיגציה...",
     "date": "אוגוסט 2025",
-    "cover": "/images/covers/משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות",
     "title": "פגרת הקיץ: עיתוי אסטרטגי לגישור מחלוקות",
     "excerpt": "פגרת הקיץ נתפסת לעיתים קרובות כתקופה שבה מערכות ציבוריות ומשפטיות יוצאות להפסקה זמנית, המאופיינת בהאטה ובהפחתת פעילות. עם זאת, בשנים...",
     "date": "יולי 2025",
-    "cover": "/images/covers/פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות.png"
+    "cover": "/images/covers/פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות.webp"
   },
   {
     "slug": "סכסוך-שותפים-בין-עורכי-דין-למה-גישור-מכוון-הכרעה-הוא-המסלול-שנשכח-והנכון-הקדמה-סכסוכים-בין-שותפי",
     "title": "סכסוך שותפים בין עורכי דין: למה גישור מכוון הכרעה הוא המסלול שנשכח, והנכון הקדמה: סכסוכים בין שותפים משפטיים, נקודת רתיחה במערכת עדינה",
     "excerpt": "במרכזם של משרדי עורכי דין מצליחים עומדים לעיתים קרובות יחסי אמון עמוקים, חזון משותף, וחיבור אישי-מקצועי שמתורגם לעסק צומח ומוערך. אולם...",
     "date": "יולי 2025",
-    "cover": "/images/covers/סכסוך-שותפים-בין-עורכי-דין-למה-גישור-מכוון-הכרעה-הוא-המסלול-שנשכח-והנכון-הקדמה-סכסוכים-בין-שותפי.jpg"
+    "cover": "/images/covers/סכסוך-שותפים-בין-עורכי-דין-למה-גישור-מכוון-הכרעה-הוא-המסלול-שנשכח-והנכון-הקדמה-סכסוכים-בין-שותפי.webp"
   },
   {
     "slug": "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
-    "title": "העתיד של ניהול סיכונים בהשקעות נדל\"ן: הצגת מודל RECIR מבוסס AI",
+    "title": "העתיד של ניהול סיכונים בהשקעות נדל״ן: הצגת מודל RECIR מבוסס AI",
     "excerpt": "אני גאה להודיע על מאמרי הבא, שיתפרסם באוגוסט 2025 בכתב העת המדעי Mathematics (MDPI) . המאמר מציג את RECIR (Real Estate Construction...",
     "date": "יולי 2025",
-    "cover": "/images/covers/העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai.png"
+    "cover": "/images/covers/העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai.webp"
   },
   {
     "slug": "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי",
     "title": "שני שכנים, נציגות אחת, וחזית שבורה, איך גישור פתח דרך להסכמה מקרה אמיתי של סכסוך שכנים בעקבות נזקי מלחמה לבניין מגורים, ופתרון שהושג בגישור ממוקד תוך שעות, בלי בית משפט, בלי הקצנה, ועם הרבה הקשבה.",
     "excerpt": "הבניין נפגע באחת מתקיפות הרקטות האחרונות. לא פגיעה ישירה, למרבה המזל, אבל רסיסים שניתזו מפגיעת יירוט גרמו להתקלפות חמורה של הטיח בחזית...",
     "date": "יולי 2025",
-    "cover": "/images/covers/שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי.png"
+    "cover": "/images/covers/שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי.webp"
   },
   {
     "slug": "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
     "title": "מה עושים כשאין מנגנון מוסכם מראש?",
-    "excerpt": "מה עושים כשאין מנגנון מוסכם מראש למימון גישור / בוררות בהסכם? דרכים מעשיות למימון הליך גישור בפרויקט התחדשות עירונית עו\"ד אברהם ללום |...",
+    "excerpt": "מה עושים כשאין מנגנון מוסכם מראש למימון גישור / בוררות בהסכם? דרכים מעשיות למימון הליך גישור בפרויקט התחדשות עירונית ד״ר עו״ד אברהם ללום |...",
     "date": "יוני 2025",
-    "cover": "/images/covers/מה-עושים-כשאין-מנגנון-מוסכם-מראש.jpg"
+    "cover": "/images/covers/מה-עושים-כשאין-מנגנון-מוסכם-מראש.webp"
   },
   {
     "slug": "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
     "title": "🎥 גישור מכוון הכרעה, פתרון מתוך הקשבה, הובלה והכרעה",
-    "excerpt": "עו״ד אברהם ללום | מגשר מוסמך | מומחה ליישוב סכסוכים בנדל\"ן ועסקים. במהלך השנים האחרונות ליוויתי מאות סכסוכים, בתחום הנדל\"ן, בעסקים חובקי...",
+    "excerpt": "ד״ר עו״ד אברהם ללום | מגשר מוסמך | מומחה ליישוב סכסוכים בנדל״ן ועסקים. במהלך השנים האחרונות ליוויתי מאות סכסוכים, בתחום הנדל״ן, בעסקים חובקי...",
     "date": "יוני 2025",
-    "cover": "/images/covers/גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה.png"
+    "cover": "/images/covers/גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה.webp"
   },
   {
     "slug": "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
-    "title": "עו\"ד אברהם ללום, מגשר, בורר ומומחה לנדל\"ן ויישוב סכסוכים",
-    "excerpt": "עו\"ד אברהם ללום, מגשר, בורר ומומחה לנדל\"ן ויישוב סכסוכים היכרות עם אחד מהשמות המובילים בישראל בתחום הגישור, הבוררות והנדל\"ן עו\"ד אברהם...",
+    "title": "ד״ר עו״ד אברהם ללום, מגשר, בורר ומומחה לנדל״ן ויישוב סכסוכים",
+    "excerpt": "ד״ר עו״ד אברהם ללום, מגשר, בורר ומומחה לנדל״ן ויישוב סכסוכים היכרות עם אחד מהשמות המובילים בישראל בתחום הגישור, הבוררות והנדל״ן עו״ד אברהם...",
     "date": "יוני 2025",
-    "cover": "/images/covers/עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים.png"
+    "cover": "/images/covers/עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים.webp"
   },
   {
     "slug": "גישור-בימי-חירום-הדרך-למנוע-קריסה-עסקית-כשבתי-המשפט-לא-זמינים",
     "title": "גישור בימי חירום: הדרך למנוע קריסה עסקית כשבתי המשפט לא זמינים",
     "excerpt": "מה עושים כשמרכז הסכסוך במדינה זרה, בתי המשפט בישראל לא רלוונטיים, ואי הפעולה עלולה להביא לקריסה עסקית הדדית? 🟩 גישור בימי חירום: הדרך למנוע קריסה עסקית כשבתי המשפט לא זמינים מציאות חירום משפטית בעת חירום, כמו המלחמה שבשבועות אלה פוקדת את ישראל, נדמה שהכול עוצר. בתי המשפט פועלים במתכונת מצומצמת, דיונים נדחים, החלטות מתעכבות, והציבור מאבד גישה אל מנגנוני ההכרעה.אבל בזירה העסקית, הזמן לא עוצר. סכסוכים ממשיכים להתגבש. לחצים מתעצמים. ודווקא ברגעים כאלה, עולה השאלה הקריטית: האם לפעול מיד...",
     "date": "יוני 2025",
-    "cover": "/images/covers/גישור-בימי-חירום-הדרך-למנוע-קריסה-עסקית-כשבתי-המשפט-לא-זמינים.jpg"
+    "cover": "/images/covers/גישור-בימי-חירום-הדרך-למנוע-קריסה-עסקית-כשבתי-המשפט-לא-זמינים.webp"
   },
   {
     "slug": "מה-קורה-כשיזם-פושט-רגל-באמצע-פינוי-בינוי-ואיך-מגשר-מלווה-יכול-להציל-את-הפרויקט",
     "title": "מה קורה כשיזם פושט רגל באמצע פינוי־בינוי, ואיך מגשר מלווה יכול להציל את הפרויקט?",
-    "excerpt": "מה קורה כשיזם פושט רגל באמצע פינוי־בינוי, ואיך מגשר מלווה יכול להציל את הפרויקט? עו״ד אברהם ללום, דוקטורנט למשפטים, מגשר מוסמך, מומחה...",
+    "excerpt": "מה קורה כשיזם פושט רגל באמצע פינוי־בינוי, ואיך מגשר מלווה יכול להציל את הפרויקט? ד״ר עו״ד אברהם ללום, דוקטורנט למשפטים, מגשר מוסמך, מומחה...",
     "date": "יוני 2025",
-    "cover": "/images/covers/מה-קורה-כשיזם-פושט-רגל-באמצע-פינוי-בינוי-ואיך-מגשר-מלווה-יכול-להציל-את-הפרויקט.png"
+    "cover": "/images/covers/מה-קורה-כשיזם-פושט-רגל-באמצע-פינוי-בינוי-ואיך-מגשר-מלווה-יכול-להציל-את-הפרויקט.webp"
   },
   {
     "slug": "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים",
     "title": "מדריך מקצועי למתווכים, רפורמת התיווך במקרקעין של משרד המשפטים",
-    "excerpt": "להלן מדריך מסודר ומקורי המאגד את עיקרי הרפורמה החדשה בתחום תיווך הנדל\"ן, בתוקף- 9.3.2025: 1. עקרונות יסוד מקצועיות ושקיפות הגינות מול...",
+    "excerpt": "להלן מדריך מסודר ומקורי המאגד את עיקרי הרפורמה החדשה בתחום תיווך הנדל״ן, בתוקף- 9.3.2025: 1. עקרונות יסוד מקצועיות ושקיפות הגינות מול...",
     "date": "יוני 2025",
-    "cover": "/images/covers/מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים.jpg"
+    "cover": "/images/covers/מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים.webp"
   },
   {
     "slug": "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
     "title": "❗ סיפור חובה למתווכים, עורכי דין ורוכשי דירות:",
-    "excerpt": "כשמתווך נדל\"ן כפה על רוכש לעבוד עם אשתו כעורכת דין, והעסקה כמעט קרסה מאמר מתוך מקרה אמיתי בגישור מכוון הכרעה / עו\"ד אברהם ללום \"הכול...",
+    "excerpt": "כשמתווך נדל״ן כפה על רוכש לעבוד עם אשתו כעורכת דין, והעסקה כמעט קרסה מאמר מתוך מקרה אמיתי בגישור מכוון הכרעה / ד״ר עו״ד אברהם ללום \"הכול...",
     "date": "יוני 2025",
-    "cover": "/images/covers/סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות.jpg"
+    "cover": "/images/covers/סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות.webp"
   },
   {
     "slug": "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות",
@@ -681,14 +842,14 @@ export const blogMeta: BlogMeta[] = [
     "title": "לפרוץ את תקרת הזכוכית, מבלי להתרסק בדרך, כיצד One Board מסייעת לחברות לצמוח נכון ולהימנע ממשברים מיותרים",
     "excerpt": "לפרוץ את תקרת הזכוכית, מבלי להתרסק בדרך כיצד One Board מסייעת לחברות לצמוח נכון ולהימנע ממשברים מיותרים מבוא: הצמיחה שמסתירה את המשבר...",
     "date": "מאי 2025",
-    "cover": "/images/covers/לפרוץ-את-תקרת-הזכוכית-מבלי-להתרסק-בדרך-כיצד-one-board-מסייעת-לחברות-לצמוח-נכון-ולהימנע-ממשברים-מ.png"
+    "cover": "/images/covers/לפרוץ-את-תקרת-הזכוכית-מבלי-להתרסק-בדרך-כיצד-one-board-מסייעת-לחברות-לצמוח-נכון-ולהימנע-ממשברים-מ.webp"
   },
   {
     "slug": "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
     "title": "One Board, הדלת לעולם חדש של ליווי אסטרטגי אישי לעסקים ועמותות",
     "excerpt": "שקט ניהולי. אחריות אישית. החלטות חכמות. לא עוד לבד בעולם העסקי של היום, אין כמעט מקום לטעויות. החלטה אחת לא נכונה, דחייה של יום אחד, חוזה...",
     "date": "מאי 2025",
-    "cover": "/images/covers/one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות.png"
+    "cover": "/images/covers/one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות.webp"
   },
   {
     "slug": "the-decision-room-החדר-שבו-נולדה-ההכרעה",
@@ -700,302 +861,295 @@ export const blogMeta: BlogMeta[] = [
   {
     "slug": "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
     "title": "יישוב סכסוכים בהתחדשות עירונית: בין חזון עירוני למציאות משפטית",
-    "excerpt": "עו\"ד אברהם ללום, מומחה בגישור מכוון-הכרעה והתחדשות עירונית \"רצינו להתחדש, ומצאנו את עצמנו בבית משפט\" אין הרבה תחומים בישראל שבהם הפער...",
+    "excerpt": "ד״ר עו״ד אברהם ללום, מומחה בגישור מכוון-הכרעה והתחדשות עירונית \"רצינו להתחדש, ומצאנו את עצמנו בבית משפט\" אין הרבה תחומים בישראל שבהם הפער...",
     "date": "מאי 2025",
-    "cover": "/images/covers/יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית.jpg"
+    "cover": "/images/covers/יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית.webp"
   },
   {
     "slug": "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
     "title": "חוות דעת משפטית אובייקטיבית כתחליף להליך משפטי: ניתוח, המלצה ופתרון מחוץ לכותלי בית המשפט",
-    "excerpt": "עו\"ד אברהם ללום | מומחה לגישור, נדל\"ן וסכסוכים מסחריים הקדמה: לא כל סכסוך צריך להיגרר לבית המשפט עולם המשפט משתנה. לקוחות פרטיים, גופים...",
+    "excerpt": "ד״ר עו״ד אברהם ללום | מומחה לגישור, נדל״ן וסכסוכים מסחריים הקדמה: לא כל סכסוך צריך להיגרר לבית המשפט עולם המשפט משתנה. לקוחות פרטיים, גופים...",
     "date": "מאי 2025",
-    "cover": "/images/covers/חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט.jpg"
+    "cover": "/images/covers/חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט.webp"
   },
   {
     "slug": "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
     "title": "פגישת ייעוץ משפטי וחוות דעת חיצונית: מתי נכון לפנות לעורך דין מומחה, ומהם הדגשים שחשוב לדעת",
-    "excerpt": "עו\"ד אברהם ללום | מומחה לנדל\"ן, פתרון סכסוכים וחוות דעת משפטיות הקדמה: לא כל בעיה מחייבת תביעה, אבל כן מחייבת הבנה עמוקה לקוחות רבים...",
+    "excerpt": "ד״ר עו״ד אברהם ללום | מומחה לנדל״ן, פתרון סכסוכים וחוות דעת משפטיות הקדמה: לא כל בעיה מחייבת תביעה, אבל כן מחייבת הבנה עמוקה לקוחות רבים...",
     "date": "מאי 2025",
-    "cover": "/images/covers/פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת.png"
+    "cover": "/images/covers/פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת.webp"
   },
   {
     "slug": "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-    "title": "למה חשוב שעורך דין ישראלי ילווה אותך בעסקת נדל\"ן מחוץ לישראל, גם אם הוא לא נותן ייעוץ לפי הדין הזר",
-    "excerpt": "עו\"ד אברהם ללום | מומחה לנדל\"ן בינלאומי ועסקאות חוצות גבולות הקדמה: הגבול המשפטי, והצורך שמעבר לו ישראלים רבים משקיעים בנדל\"ן במדינות...",
+    "title": "למה חשוב שעורך דין ישראלי ילווה אותך בעסקת נדל״ן מחוץ לישראל, גם אם הוא לא נותן ייעוץ לפי הדין הזר",
+    "excerpt": "ד״ר עו״ד אברהם ללום | מומחה לנדל״ן בינלאומי ועסקאות חוצות גבולות הקדמה: הגבול המשפטי, והצורך שמעבר לו ישראלים רבים משקיעים בנדל״ן במדינות...",
     "date": "מאי 2025",
-    "cover": "/images/covers/למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר.jpg"
+    "cover": "/images/covers/למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר.webp"
   },
   {
     "slug": "גישור-שמבוסס-על-ניסיון-לא-רק-על-כוונות-טובות",
     "title": "גישור שמבוסס על ניסיון, לא רק על כוונות טובות",
-    "excerpt": "מבוא: החלטה מקצועית יוצאת דופן אחרי עשרים שנות פרקטיקה משפטית ענפה, שכללה ניהול אחד המשרדים המובילים בישראל בתחום הנדל\"ן, החלטתי לעצור....",
+    "excerpt": "מבוא: החלטה מקצועית יוצאת דופן אחרי עשרים שנות פרקטיקה משפטית ענפה, שכללה ניהול אחד המשרדים המובילים בישראל בתחום הנדל״ן, החלטתי לעצור....",
     "date": "מאי 2025",
-    "cover": "/images/covers/גישור-שמבוסס-על-ניסיון-לא-רק-על-כוונות-טובות.png"
+    "cover": "/images/covers/גישור-שמבוסס-על-ניסיון-לא-רק-על-כוונות-טובות.webp"
   },
   {
     "slug": "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
     "title": "מהמשבר לשותפות חדשה: איך סכסוך עסקי הביא להבנה עמוקה יותר, בזכות גישור מכוון הכרעה",
     "excerpt": "לאן זה הולך? זו הייתה שיחת טלפון קצרה, כמעט טכנית. \"יש סכסוך בין שני שותפים בפרויקט מגורים גדול במזרח אירופה. הם הפסיקו לדבר. אתה יכול...",
     "date": "מאי 2025",
-    "cover": "/images/covers/מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה.png"
+    "cover": "/images/covers/מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן",
     "title": "מהצד השני של השולחן, הדרך החדשה התחילה מהאולם הישן",
     "excerpt": "\"סיפור אישי וגישור\" הוא לא רק נרטיב מקצועי. הוא רגע שבו העמדה המשפטית מתמזגת עם חוויה אנושית. רגע שבו אדם שהיה רגיל להכריע, מוצא את עצמו...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן.png"
+    "cover": "/images/covers/מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן.webp"
   },
   {
     "slug": "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה",
     "title": "בין החלטה לרגע של אמת: תובנות אישיות ממגשר בגישור עסקי מכוון הכרעה",
     "excerpt": "המהלך החשוב ביותר בגישור לא קורה על השולחן, הוא קורה בלב של הצדדים, כשמשהו משתנה. כשאני נכנס לחדר גישור, אני לא שוכח לרגע שהצדדים שמולי...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה.png"
+    "cover": "/images/covers/בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה.webp"
   },
   {
     "slug": "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
     "title": "גישבור וגישור מכוון הכרעה: גבולות ההבחנה, יתרונות השילוב ואתגרי היישום",
     "excerpt": "פתיחה: בין גישור לבוררות, האם יש רק שתי דרכים? בשנים האחרונות הולכת ומתחזקת ההבנה שבפתרון סכסוכים עסקיים אין תשובה אחת. מודלים קלאסיים...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום.png"
+    "cover": "/images/covers/גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום.webp"
   },
   {
     "slug": "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה",
-    "title": "סכסוכים בינלאומיים וגישור מכוון הכרעה: בין תרבות להסכמה",
-    "excerpt": "\"בין שפה לתרבות, בין הסכם לאי-הבנה, מגשר מקצועי הוא מי שמחבר בין עולמות.\" פתיחה: כשהעולם מצטמצם, הסכסוכים מסתבכים בעולם שבו עסקים חוצים...",
+    "title": "בין תרבות להסכמה: פערי שפה ותרבות בגישור חוצה גבולות",
+    "excerpt": "כשהסכם נכתב בשפה אחת ומובן בתרבות אחרת: איך פערי שפה, נורמות עסקיות וציפיות שונות הופכים למחלוקת, ומה תפקיד המגשר בגישור ביניהן.",
     "date": "אפריל 2025",
-    "cover": "/images/covers/סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה.png"
+    "cover": "/images/covers/סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה.webp"
   },
   {
     "slug": "מגשרים-ישראלים-בזירה-הבינלאומית-מקצוענות-חוצה-גבולות-בין-גישור-מסורתי-לגישור-מכוון-הכרעה",
     "title": "מגשרים ישראלים בזירה הבינלאומית: מקצוענות חוצה גבולות, בין גישור מסורתי לגישור מכוון הכרעה",
     "excerpt": "בשנים האחרונות הפך הגישור הישראלי, ובעיקר מודל הגישור מכוון ההכרעה, לשחקן מוערך גם בזירה הבינלאומית. לא רק בזכות תעודות, אלא בזכות דרך....",
     "date": "אפריל 2025",
-    "cover": "/images/covers/מגשרים-ישראלים-בזירה-הבינלאומית-מקצוענות-חוצה-גבולות-בין-גישור-מסורתי-לגישור-מכוון-הכרעה.png"
+    "cover": "/images/covers/מגשרים-ישראלים-בזירה-הבינלאומית-מקצוענות-חוצה-גבולות-בין-גישור-מסורתי-לגישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית",
     "title": "גישור בהתחדשות עירונית: פתרונות סכסוכים בדרך יצירתית",
     "excerpt": "\"ערים משתנות בקצב הדחפורים, אבל הקונפליקטים, הם תמיד לפי הקצב האנושי.\" ההתחדשות העירונית בישראל היא מהלך חברתי, כלכלי, תכנוני ורגשי...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית.png"
+    "cover": "/images/covers/גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית.webp"
   },
   {
     "slug": "עקרונות-או-שליטה-איך-מזהים-מה-באמת-עומד-מאחורי-העמדה-הקשוחה",
     "title": "עקרונות או שליטה? איך מזהים מה באמת עומד מאחורי העמדה הקשוחה",
     "excerpt": "\"זה לא הכסף, זה העיקרון!\" כך פתח דני את דבריו בפגישת הגישור הראשונה. קולו היה יציב, גבו זקוף, והוא דיבר בנימוס, אך בתקיפות. הוא היה האח...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/עקרונות-או-שליטה-איך-מזהים-מה-באמת-עומד-מאחורי-העמדה-הקשוחה.png"
+    "cover": "/images/covers/עקרונות-או-שליטה-איך-מזהים-מה-באמת-עומד-מאחורי-העמדה-הקשוחה.webp"
   },
   {
     "slug": "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
     "title": "הסכמה מתוך עייפות, האם זו באמת הסכמה?",
     "excerpt": "כשאחד מוותר, רק כדי שזה ייגמר הם נכנסו לחדר הגישור לאחר חודשים ארוכים של סכסוך עסקי מתיש. שני שותפים, לשעבר חברים קרובים, שניהלו יחד...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה.png"
+    "cover": "/images/covers/הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה.webp"
   },
   {
     "slug": "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה",
     "title": "הדייר שסירב לחתום: מה עושים כשמתחייבים לפרויקט, ומאבדים שליטה?",
-    "excerpt": "\"המפה התכנונית לא תמיד משקפת את המפה האנושית, ובנדל\"ן, כמו בחיים, הכול תלוי בזווית ההסתכלות.\" שיחת טלפון אחת באמצע יום עבודה הטלפון...",
+    "excerpt": "\"המפה התכנונית לא תמיד משקפת את המפה האנושית, ובנדל״ן, כמו בחיים, הכול תלוי בזווית ההסתכלות.\" שיחת טלפון אחת באמצע יום עבודה הטלפון...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה.png"
-  },
-  {
-    "slug": "הכישלון-שלא-התביישתי-ללמוד-ממנו-על-המקרה-שלא-נגמר-בהסכם-אבל-כן-פתח-לי-את-העיניים",
-    "title": "הכישלון שלא התביישתי ללמוד ממנו, על המקרה שלא נגמר בהסכם, אבל כן פתח לי את העיניים",
-    "excerpt": "הפגישה הראשונה, ושני קווי אש מקבילים. ישבתי מולם. שניהם הגיעו בזמן, עניבה מהודקת, חליפות כהות, מבט קפוא. הם נראו כמו שני מנכ\"לים בדרך...",
-    "date": "אפריל 2025",
-    "cover": "/images/covers/הכישלון-שלא-התביישתי-ללמוד-ממנו-על-המקרה-שלא-נגמר-בהסכם-אבל-כן-פתח-לי-את-העיניים.png"
+    "cover": "/images/covers/הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה.webp"
   },
   {
     "slug": "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
     "title": "תפקיד ההסכמה החוזית בגישור מכוון הכרעה: בין עקרונות פורמליים להבנות בלתי כתובות",
     "excerpt": "הפגישה הראשונה, ושני קווי אש מקבילים. ישבתי מולם. שניהם הגיעו בזמן, עניבה מהודקת, חליפות כהות, מבט קפוא. הם נראו כמו שני מנכ\"לים בדרך...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות.png"
+    "cover": "/images/covers/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות.webp"
   },
   {
     "slug": "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
     "title": "הסוד שבזמן הנכון, ומה שבאמת קובע",
     "excerpt": "\"האמנות שבגישור אינה רק בהצעת פתרון, אלא בידיעה מתי הזמן הנכון להציע אותו.\" מי שמכיר אותי יודע: אני מאמין בשיתוף ידע, בחיבורים בין...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/הסוד-שבזמן-הנכון-ומה-שבאמת-קובע.jpg"
+    "cover": "/images/covers/הסוד-שבזמן-הנכון-ומה-שבאמת-קובע.webp"
   },
   {
     "slug": "מהו-הליך-הגישור-וכיצד-הוא-מסייע-בפתרון-סכסוכים",
     "title": "מהו הליך הגישור וכיצד הוא מסייע בפתרון סכסוכים?",
     "excerpt": "הליך הגישור הוא דרך אלטרנטיבית, חוקית ומכובדת ליישוב סכסוכים מחוץ לכותלי בית המשפט. מדובר בתהליך שבו צד שלישי נייטרלי, המגשר, מסייע...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/מהו-הליך-הגישור-וכיצד-הוא-מסייע-בפתרון-סכסוכים.jpg"
+    "cover": "/images/covers/מהו-הליך-הגישור-וכיצד-הוא-מסייע-בפתרון-סכסוכים.webp"
   },
   {
     "slug": "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור",
     "title": "המגשר בגישור מכוון הכרעה כאורח במסגרת הלילך הגישור",
     "excerpt": "מי הוא האורח בחדר? בכל הליך גישור מתקיים מפגש אנושי רב־שכבתי. הצדדים הם נשוא הסכסוך, נשאי הרגש, ולעיתים גם נושאי העבר המכביד. אך יש גם...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור.jpg"
+    "cover": "/images/covers/המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור.webp"
   },
   {
     "slug": "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
     "title": "הצעת מגשר המשמעות במסגרת גישור מכוון הכרעה כעוגן להסדר או מרחב תמרון לסיום הליך",
     "excerpt": "האם המגשר צריך להציע? במרכזו של גישור מכוון הכרעה עומדת נקודה רגישה, האם, מתי ואיך על המגשר להציע פתרון קונקרטי? האם עצם הצעתו הופכת...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך.jpg"
+    "cover": "/images/covers/הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך.webp"
   },
   {
     "slug": "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה",
     "title": "טכניקות חדשניות ודינמיות ליישוב סכסוכים בגישור מכוון הכרעה",
     "excerpt": "מגישור ניטרלי לגישור מתערב, שינוי כללי המשחק בעולם הסכסוכים המודרני, הפתרונות הקלאסיים כבר אינם מספקים. ההתדיינות המשפטית הפורמלית הפכה...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
     "title": "שינוי פני הגישור והמשפט: טכניקות ליישוב סכסוכים בין סמכות להסכמה",
     "excerpt": "כשהשולחן העגול מחליף את דוכן העדים העולם המשפטי משתנה, לא תמיד במהירות, אך באופן עמוק. בעוד בעבר נתפס המשפט ככלי של אכיפה, סמכות וכפייה,...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה.jpg"
+    "cover": "/images/covers/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה.webp"
   },
   {
     "slug": "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה",
     "title": "גבולות ההתערבות השיפוטית בהסדרי גישור, בין גישור מסורתי לגישור מכוון הכרעה",
     "excerpt": "האם בית המשפט צריך להציל את הצדדים מעצמם? יש רגעים בליבת עבודתי כמגשר שבהם אני מתבונן מהצד, בשקט, כמעט בלי לנשום. הצדדים יושבים מולי, ...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי",
-    "title": "פתרון סכסוך בין יזם לקבלן באמצעות גישור מכוון הכרעה בפרויקט נדל\"ן: תיאור מקרה מעשי",
-    "excerpt": "רקע: משבר בפרויקט נדל\"ן בשל תביעה בין היזם לקבלן המבצע באמצע עבודות הבנייה של פרויקט מגורים רחב היקף במרכז הארץ, נקלעו היזם והקבלן המבצע...",
+    "title": "פתרון סכסוך בין יזם לקבלן באמצעות גישור מכוון הכרעה בפרויקט נדל״ן: תיאור מקרה מעשי",
+    "excerpt": "רקע: משבר בפרויקט נדל״ן בשל תביעה בין היזם לקבלן המבצע באמצע עבודות הבנייה של פרויקט מגורים רחב היקף במרכז הארץ, נקלעו היזם והקבלן המבצע...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי.jpg"
+    "cover": "/images/covers/פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי.webp"
   },
   {
     "slug": "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה",
     "title": "הכנה לגישור מכוון הכרעה: טיפים להצלחה",
     "excerpt": "מבוסס על סיפור אמיתי בתחום שותפות עסקית מורכבת בין יזמים מהארץ ומעבר לים. פרק 1: למה בכלל להתכונן לגישור מכוון הכרעה? בעולם של סכסוכים...",
     "date": "אפריל 2025",
-    "cover": "/images/covers/הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה.jpg"
+    "cover": "/images/covers/הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה.webp"
   },
   {
     "slug": "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-    "title": "החלטת בנק ישראל והשלכותיה על מערכת היחסים החוזית בענף הנדל\"ן: בחינה משפטית של גישור מכוון הכרעה כמודל לפתרון סכסוכים",
+    "title": "החלטת בנק ישראל והשלכותיה על מערכת היחסים החוזית בענף הנדל״ן: בחינה משפטית של גישור מכוון הכרעה כמודל לפתרון סכסוכים",
     "excerpt": "מבוא במרץ 2025, פרסם בנק ישראל שורת מגבלות חדשות המכוונות להצר את השימוש הנרחב במבצעי מכירה פרואקטיביים של קבלנים, ובפרט עסקאות “80/20”...",
     "date": "מרץ 2025",
-    "cover": "/images/covers/החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד.jpg"
+    "cover": "/images/covers/החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד.webp"
   },
   {
     "slug": "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים",
     "title": "האם גישור מכוון הכרעה חוסך זמן וכסף לעומת הליכים משפטיים מסורתיים?",
     "excerpt": "בעלי עסקים, יזמים ושותפים עסקיים יודעים שהזמן הוא המשאב היקר ביותר, והשקעתו בהתנהלות משפטית מתמשכת עלולה לגבות מחיר גבוה, כלכלית ונפשית...",
     "date": "מרץ 2025",
-    "cover": "/images/covers/האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים.jpg"
+    "cover": "/images/covers/האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים.webp"
   },
   {
     "slug": "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
     "title": "הכרעה בגישור עסקי מכוון תוצאה: האם היא מחייבת, ואיך מגדירים אותה נכון?",
     "excerpt": "בעידן שבו ההתנהלות העסקית נעשית מהירה, מורכבת ולעיתים בלתי צפויה, פתרון סכסוכים מסחריים אינו רק עניין טכני אלא החלטה אסטרטגית. גישור...",
     "date": "מרץ 2025",
-    "cover": "/images/covers/האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה.jpg"
+    "cover": "/images/covers/האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה.webp"
   },
   {
     "slug": "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות",
     "title": "העתיד של גישור מכוון הכרעה בישראל: מגמות ותחזיות",
     "excerpt": "המערכת המשפטית בישראל מתמודדת עם לחצים כבדים. לצד ההשפעות הישירות של מגפת הקורונה והמלחמה, אנו עדים להאטה ממושכת במינוי שופטים, הארכת...",
     "date": "מרץ 2025",
-    "cover": "/images/covers/העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות.jpg"
+    "cover": "/images/covers/העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות.webp"
   },
   {
     "slug": "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
     "title": "האם כל מגשר מוסמך יכול לנהל הליך גישור מכוון הכרעה?",
     "excerpt": "מהו גישור מכוון הכרעה ולמה הוא תופס תאוצה? גישור מכוון הכרעה הוא מודל ייחודי ליישוב סכסוכים שמיועד למקרים בהם דרושה לא רק הקשבה, אלא גם...",
     "date": "מרץ 2025",
-    "cover": "/images/covers/האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים",
-    "title": "גישור מכוון-הכרעה: פתרון חדשני ליישוב סכסוכים",
-    "excerpt": "הקדמה בעולם המשפט המודרני, חיפוש אחר חלופות ליישוב סכסוכים מחוץ לכותלי בית המשפט הפך לנפוץ יותר ויותר. אחת השיטות החדשניות והיעילות ביותר...",
+    "title": "כשאין הסכמה, המגשר מכריע: סמכות, סודיות ושלבי ההליך",
+    "excerpt": "מה מסמיך את המגשר להכריע כשהצדדים אינם מגיעים להסכמה, איך נשמרת הסודיות בדלתיים סגורות, ומהם שלבי ההליך מהסכמת הצדדים ועד ההכרעה.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים.jpg"
+    "cover": "/images/covers/גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים.webp"
   },
   {
     "slug": "האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים",
     "title": "האם גישור מכוון הכרעה מתאים לכל סוגי הסכסוכים?",
     "excerpt": "גישור מכוון הכרעה הוא כלי מצוין לפתרון סכסוכים אזרחיים ועסקיים.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים.jpg"
+    "cover": "/images/covers/האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים.webp"
   },
   {
     "slug": "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
     "title": "משרדי גישור מול משרדי עורכי דין: מה מתאים יותר לסכסוך שלך? כיצד בחרו הצדדים בגישור מכוון הכרעה, ומה למדנו על ההבדל בין משרד גישור למשרד עורכי דין",
     "excerpt": "יזמות ובנייה הן תחומים שמחייבים שיתופי פעולה בין גורמים רבים: יזמים, קבלנים, מתכננים, מבצעים ויועצים.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה.jpg"
+    "cover": "/images/covers/משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה.webp"
   },
   {
     "slug": "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
-    "title": "סכסוכים בינלאומיים וגישור מכוון הכרעה: אתגרים ופתרונות",
-    "excerpt": "עולם העסקים בן זמננו חוצה גבולות, תרבויות ושפות. יזמים ישראלים פועלים היום בשווקים זרים, משתפים פעולה עם גורמים מקומיים במדינות שונות, ונכנסים להסכמים מורכבים ש",
+    "title": "יזמים ישראלים בשווקים זרים: אתגרים ופתרונות בסכסוך",
+    "excerpt": "יזמים ישראלים בשווקים זרים נכנסים להסכמים מורכבים מול שותפים מקומיים. מה משתבש בסכסוך חוצה גבולות, ואיך גישור מכוון הכרעה מקצר את הדרך.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות.jpg"
+    "cover": "/images/covers/סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות.webp"
   },
   {
     "slug": "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
     "title": "כיצד לבחור מגשר מוסמך מטעם בית המשפט להליכי גישור מכוון הכרעה?",
-    "excerpt": "שני יזמים ותיקים, בעלי תיק נכסים מניב רחב היקף בארץ ובחו\"ל, הגיעו למשבר מהותי ביחסי השותפות ביניהם.",
+    "excerpt": "שני יזמים ותיקים, בעלי תיק נכסים מניב רחב היקף בארץ ובחו״ל, הגיעו למשבר מהותי ביחסי השותפות ביניהם.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה.jpg"
+    "cover": "/images/covers/כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה.webp"
   },
   {
     "slug": "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
     "title": "בוררות מואצת, גישור מכוון הכרעה מצריך לפעמים הכרעה משפטית מהירה ויעילה",
     "excerpt": "בוררות מואצת, הכרעה משפטית מהירה ויעילה במקרים דחופים המחייבים סעד דחוף בוררות מואצת היא מנגנון אלטרנטיבי ליישוב סכסוכים, המבוסס על עקרונות הבוררות המסורתית, אך",
     "date": "מרץ 2025",
-    "cover": "/images/covers/בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה.jpg"
+    "cover": "/images/covers/בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה.webp"
   },
   {
     "slug": "מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי",
     "title": "מהו גישור מכוון הכרעה וכיצד הוא שונה מגישור מסורתי?",
-    "excerpt": "מהניסיון שלי כמגשר, נתקלתי במקרים רבים בהם סכסוכים מאיימים לטרפד עסקאות נדל\"ן ולגרור את הצדדים להליכים משפטיים ממושכים.",
+    "excerpt": "מהניסיון שלי כמגשר, נתקלתי במקרים רבים בהם סכסוכים מאיימים לטרפד עסקאות נדל״ן ולגרור את הצדדים להליכים משפטיים ממושכים.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי.jpg"
+    "cover": "/images/covers/מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי.webp"
   },
   {
     "slug": "business-mediation-strategic-dispute-resolution",
-    "title": "גישור עסקי בעולם המודרני: פתרון אסטרטגי לניהול סכסוכים מאת: עו\"ד ד\"ר יצחק לקס",
+    "title": "גישור עסקי בעולם המודרני: פתרון אסטרטגי לניהול סכסוכים מאת: עו״ד ד״ר יצחק לקס",
     "excerpt": "בעולם העסקי הדינמי של ימינו, המאופיין בתחרותיות גבוהה, גלובליזציה ושינויים מהירים, סכסוכים עסקיים הם תופעה שכיחה ולעיתים בלתי נמנעת.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/business-mediation-strategic-dispute-resolution.jpg"
+    "cover": "/images/covers/business-mediation-strategic-dispute-resolution.webp"
   },
   {
     "slug": "גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים",
-    "title": "גישור מכוון הכרעה, מודל חדשני לפתרון סכסוכים",
-    "excerpt": "מבוא גישור הפך לאחד הכלים המרכזיים ליישוב סכסוכים מחוץ לכותלי בית המשפט, אך שיטות מסורתיות של גישור מבוססות לרוב על שכנוע והגעה להסכמות הדדיות בין הצדדים.",
+    "title": "הערכת סיכויים מבוססת תקדימים בגישור מכוון הכרעה",
+    "excerpt": "המגשר מנתח את ההיבטים המשפטיים, המסחריים והכלכליים של הסכסוך, ומציג לצדדים הערכה מבוססת תקדימים על מה שהיה קורה אם ההליך היה מגיע לבית המשפט.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים.jpg"
+    "cover": "/images/covers/גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים.webp"
   },
   {
     "slug": "זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית",
     "title": "זכויות בנייה במקרקעין, סוגיית הבעלות על רקע פסיקה עדכנית",
     "excerpt": "מבוא סוגיית הבעלות על זכויות הבנייה בנכסים הינה סוגיה מרכזית בדיני המקרקעין בישראל, והיא עולה ביתר שאת כאשר מדובר בחוכרים לדורות מול בעלי הזכויות הרשומים.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית.jpg"
+    "cover": "/images/covers/זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית.webp"
   },
   {
     "slug": "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-    "title": "השפעת מגמות הכלכלה העולמית ושוק הנדל\"ן הישראלי לאחר משבר הקורונה",
-    "excerpt": "מבוא משבר הקורונה הותיר את חותמו על שוק הנדל\"ן בישראל, אך עם ההתאוששות הכלכלית והסתגלות לענפים פיננסיים משתנים, השוק מציג מגמות חדשות.",
+    "title": "השפעת מגמות הכלכלה העולמית ושוק הנדל״ן הישראלי לאחר משבר הקורונה",
+    "excerpt": "מבוא משבר הקורונה הותיר את חותמו על שוק הנדל״ן בישראל, אך עם ההתאוששות הכלכלית והסתגלות לענפים פיננסיים משתנים, השוק מציג מגמות חדשות.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה.jpg"
+    "cover": "/images/covers/השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה.webp"
   },
   {
     "slug": "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
-    "title": "לקחים בעניין מימון פרויקטים של נדל\"ן לאור משבר הקורונה",
+    "title": "לקחים בעניין מימון פרויקטים של נדל״ן לאור משבר הקורונה",
     "excerpt": "מבוא משברים כלכליים ואירועים בלתי צפויים, הידועים כ\"ברבורים שחורים\", הם חלק בלתי נפרד מהמציאות העסקית.",
     "date": "מרץ 2025",
-    "cover": "/images/covers/לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה.jpg"
+    "cover": "/images/covers/לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה.webp"
   }
 ];

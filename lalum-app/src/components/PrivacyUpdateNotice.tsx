@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { useDialogA11y } from "../lib/useDialogA11y";
 import { cookieConsentResolved, COOKIE_RESOLVED_EVENT } from "./CookieConsent";

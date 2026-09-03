@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
+import { TOPICS_IN_ORDER, articlesByTopic, topicPath } from "../lib/topics";
 
 // A warm, brand-cohesive palette. Each article card takes the next accent so
 // the grid reads as one family, gently varied, rather than a flat wall of
@@ -43,6 +44,10 @@ export function Insights() {
     slug: b.slug, title: b.title, dek: b.excerpt, category: t.insights.fromBlog, date: b.date, cover: b.cover,
   }));
   const cards = [...curated, ...imported];
+  // The subjects, ahead of the list. 160 articles in one undifferentiated grid
+  // asks every reader to scroll past five subjects to reach theirs.
+  const byTopic = articlesByTopic(t);
+  const topics = TOPICS_IN_ORDER.map((x) => ({ ...x, count: byTopic.get(x.slug)?.length ?? 0 })).filter((x) => x.count > 0);
 
   return (
     <>
@@ -55,6 +60,22 @@ export function Insights() {
             {ins.heroH1a} <span className="italic-clay">{ins.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{ins.heroLede}</p>
+        </div>
+      </section>
+
+      {/* TOPICS */}
+      <section className="wrap" style={{ paddingBottom: 40 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+          {topics.map((x) => (
+            <Link
+              key={x.slug}
+              to={topicPath(x.slug)}
+              className="btn btn-outline"
+              style={{ padding: "9px 16px", fontSize: 14.5 }}
+            >
+              {x.name} <span style={{ color: "var(--slate)" }}>{x.count}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -79,7 +100,7 @@ export function Insights() {
                   </div>
                 )}
                 <div className="article-card-body">
-                  <h3 className="serif article-card-title">{c.title}</h3>
+                  <h2 className="serif article-card-title">{c.title}</h2>
                   <p className="article-card-dek">{c.dek}</p>
                   <div className="article-card-meta">
                     <span>{c.date}</span>{c.read ? <><span style={{ color: p.accent }}>·</span><span>{c.read}</span></> : null}

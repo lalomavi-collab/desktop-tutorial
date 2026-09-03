@@ -1,5 +1,8 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { courses, courseSlug } from "../lib/courses";
+import { academyPro } from "../lib/academyPro";
+import { Link } from "../components/AppLink";
 import { PageMeta } from "../components/PageMeta";
 import { pageJsonLd } from "../lib/schema";
 import { howToForPath } from "../lib/pageHowTos";
@@ -11,12 +14,15 @@ import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
 import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
+import type { Lang } from "../lib/hreflang";
+import { TRACKS, BANDS, MAX_SCORE, resultFor, type BandId } from "../lib/riskScore";
 
-// When a Calendly link is configured, booking is REAL and instant: the visitor
-// gets an email confirmation plus a calendar invite, and the meeting lands on
-// the connected Outlook calendar automatically. The manual request form below
-// is only a fallback for when scheduling is not yet connected.
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || bookingBaseUrl;
+// When a scheduling link is configured (Zoho Bookings), booking is REAL and
+// instant: the visitor gets an email confirmation plus a calendar invite, and
+// the meeting lands on the connected Outlook calendar automatically. The
+// manual request form below is only a fallback for when scheduling is not yet
+// connected (no link configured yet).
+const SCHEDULING_URL = import.meta.env.VITE_SCHEDULING_URL || bookingBaseUrl;
 // Clay / ivory palette to match the light brand (hex without '#').
 const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
 
@@ -24,12 +30,22 @@ const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
 type DayOption = { key: string; wd: string; dm: string };
 
-function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
+// Short weekday labels, one terse glyph/abbreviation per day, matching the
+// original design's compact date-button width. Hand-picked per language
+// rather than pulled from Intl so the layout stays exactly as designed.
+const WEEKDAYS: Record<Lang, string[]> = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  he: ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"],
+  es: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+  fr: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+  ar: ["أحد", "اثن", "ثلا", "أرب", "خمی", "جمع", "سبت"],
+};
+
+function nextBusinessDays(count: number, lang: Lang): DayOption[] {
   const out: DayOption[] = [];
   const d = new Date();
-  const wdEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const wdHe = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
   const mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const wd = WEEKDAYS[lang];
   const pad = (n: number) => (n < 10 ? "0" + n : "" + n);
   let guard = 0;
   while (out.length < count && guard < 30) {
@@ -37,12 +53,36 @@ function nextBusinessDays(count: number, lang: "en" | "he"): DayOption[] {
     guard++;
     const day = d.getDay();
     if (day === 5 || day === 6) continue;
-    out.push({ key: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, wd: lang === "he" ? wdHe[day] : wdEn[day], dm: `${mo[d.getMonth()]} ${d.getDate()}` });
+    out.push({ key: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, wd: wd[day], dm: `${mo[d.getMonth()]} ${d.getDate()}` });
   }
   return out;
 }
 
 const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+
+// Someone arriving from the readiness assessment already answered eight
+// questions. Repeating none of it would make the meeting start from a blank
+// page, so the result is read back from the query string the assessment sets.
+// Nothing here trusts the values: an unknown track or band renders nothing.
+function FromAssessment() {
+  const [params] = useSearchParams();
+  if (params.get("from") !== "risk") return null;
+  const track = TRACKS.find((x) => x.id === params.get("track"));
+  const band = BANDS.includes(params.get("band") as BandId) ? (params.get("band") as BandId) : null;
+  const score = Number(params.get("score"));
+  if (!track || !band || !Number.isInteger(score) || score < 0 || score > MAX_SCORE) return null;
+  const r = resultFor(track.id, band);
+  return (
+    <div className="from-risk">
+      <span className={"riskcalc-badge tone-" + r.tone}>{r.title}</span>
+      <p>
+        הגעתם ממבדק המוכנות בתחום {track.blurb}, עם {score} מתוך {MAX_SCORE} נקודות חשיפה.
+        נתחיל את הפגישה מהפער שסימנתם.
+      </p>
+    </div>
+  );
+}
 
 export function Book() {
   const { t, lang } = useLang();
@@ -51,18 +91,48 @@ export function Book() {
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
   const [method, setMethod] = useState<MeetingKey>(meetingTypes[0].key);
 
+  // Every hook this component uses is declared here, above the branch below
+  // that returns the scheduling embed. React requires hooks to run in the same
+  // order on every render, and these nine sat after that early return: while
+  // `bookingBaseUrl` is empty the branch is never taken, so the defect was
+  // latent, and the day the Zoho links are pasted in it would have become
+  // "Rendered fewer hooks than expected" on the booking page. The manual form
+  // below reads them; the embed branch simply does not.
+  const [params] = useSearchParams();
+  const [day, setDay] = useState("");
+  const [slot, setSlot] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  // A visitor who arrived from a course card carries the program slug in the
+  // query string. Prefilling the topic means the request that reaches the firm
+  // says which program it is about, instead of arriving anonymous.
+  const programSlug = (params.get("program") ?? "").trim().slice(0, 60);
+  const programTitle = programSlug
+    ? [...courses, ...academyPro].find((c) => courseSlug(c) === programSlug)?.title
+    : undefined;
+  const [topic, setTopic] = useState(programTitle ? `פנייה בנוגע לתוכנית: ${programTitle}` : "");
+  const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
   // Real, instant scheduling via the connected calendar.
-  if (CALENDLY_URL) {
+  if (SCHEDULING_URL) {
     const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
-    const activeUrl = active.url || CALENDLY_URL;
+    const activeUrl = active.url || SCHEDULING_URL;
+    // Horizontal padding is left to the responsive `.wrap` rule (32px desktop,
+    // 20px ≤900, 16px ≤560) instead of a fixed inline 32px, so on phones the
+    // frame stays wide enough for the 320px-min scheduling embed and never clips
+    // its (LTR) left edge inside the RTL page.
     return (
-      <section className="wrap" style={{ maxWidth: 880, padding: "80px 32px 110px" }}>
+      <section className="wrap" style={{ maxWidth: 880, paddingTop: 80, paddingBottom: 110 }}>
         <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" jsonLd={pageJsonLd([howToForPath(t, "/book")])} />
         <div style={{ textAlign: "center", maxWidth: "58ch", margin: "0 auto 26px" }}>
           <p className="eyebrow">{B.eyebrow}</p>
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitleLive}</p>
         </div>
+
+        <FromAssessment />
 
         {/* Quick payment: accepted-method logos plus a one-tap route into the
             secure payment flow, for clients who already agreed on a fee. */}
@@ -79,8 +149,8 @@ export function Book() {
           </Link>
         )}
 
-        {/* Meeting format: each choice loads the matching Calendly event, which
-            is wired to the right conferencing/location and to the calendar. */}
+        {/* Meeting format: each choice loads the matching Zoho Bookings service,
+            which is wired to the right conferencing/location and to the calendar. */}
         <div style={{ textAlign: "center", marginBottom: 12 }}>
           <span className="label">{B.meetingLabel}</span>
         </div>
@@ -103,7 +173,7 @@ export function Book() {
             <span className="book-frame-secure"><Icon name="shield" size={15} /> {B.secureNote}</span>
             <span className="book-frame-logos">
               <ZoomMark size={20} />
-              <span className="book-frame-cal"><Icon name="calendar" size={14} /> Calendly</span>
+              <span className="book-frame-cal"><Icon name="calendar" size={14} /> Zoho Bookings</span>
             </span>
           </div>
           <div style={{ padding: 8 }}>
@@ -114,14 +184,6 @@ export function Book() {
     );
   }
 
-  const [day, setDay] = useState("");
-  const [slot, setSlot] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [topic, setTopic] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [consent, setConsent] = useState(false);
-  const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -148,13 +210,18 @@ export function Book() {
   }
 
   return (
-    <section className="wrap" style={{ maxWidth: 760, padding: "80px 32px 120px" }}>
+    <section className="wrap" style={{ maxWidth: 760, paddingTop: 80, paddingBottom: 120 }}>
       <PageMeta title={t.seo.book.title} description={t.seo.book.desc} path="/book" jsonLd={pageJsonLd([howToForPath(t, "/book")])} />
       <div style={{ textAlign: "center", maxWidth: "56ch", margin: "0 auto 36px" }}>
         <p className="eyebrow">{B.eyebrow}</p>
         <h1 className="serif" style={{ fontSize: "clamp(30px, 7vw, 42px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 12px" }}>{B.title}</h1>
         <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--slate)", margin: 0 }}>{B.subtitle}</p>
       </div>
+
+      {/* Also on the manual path: which of the two forms is on screen depends on
+          whether scheduling is connected, and the visitor's answers are just as
+          relevant either way. */}
+      <FromAssessment />
 
       <div className="card" style={{ padding: 34 }}>
         <form onSubmit={submit}>

@@ -8,6 +8,79 @@
 - Instead use a comma, period, colon, or parentheses.
 - Allowed: a hyphen that is an integral part of a word, term, identifier, date, URL, or email (e.g. `פינוי-בינוי`, `תמ"א`, `UTF-8`, `2026-06-22`, `test@lalum.legal`). These are not separators and stay as-is.
 
+## Logo: Single Source (PERMANENT)
+
+**Only the current logo may represent LALUM, in the app and in every deliverable.**
+
+- The logo is the LALUM wordmark supplied in `lalum-app/brand/LALUM-LOGO.pdf`. It is artwork, not text.
+- Never set the name in a typeface as a substitute, and never reuse a retired mark (the cream seal, the serif LALUM, the L in a circle, the gold dot).
+- Inside the app use the `Wordmark` component (`lalum-app/src/components/Wordmark.tsx`), which inherits the surrounding colour.
+- Outside the app use `public/lalum-logo.svg` on light backgrounds, `public/lalum-logo-inverse.svg` on dark ones, and `public/lalum-logo.png` only where SVG is rejected (email).
+- Icons, favicons and Open Graph cards are all derived from that same artwork. Regeneration and geometry are documented in `lalum-app/brand/README.md`.
+- Every produced file (docx, html, pdf, images, posts, presentations) carries this logo and no other.
+
+## Two Focus Areas (PERMANENT)
+
+**LALUM leads with two areas, and only two: real estate and urban renewal (in Israel and abroad), and AI.**
+
+- AI means the full offering: advisory, ongoing accompaniment, and training. Not a second opinion alone.
+- Real estate covers both sides of the border: deals and urban renewal here, and property and investment abroad.
+- **Mediation and dispute resolution is not to be invested in from now on.** Its pages stay live and keep working, and it may be mentioned as a service the practice provides. Do not write new mediation articles, do not build it new pages, and do not spend promotion on it. The mediation cluster already holds 64 articles; it needs nothing more.
+- Anything produced for the site (articles, posts, pages, keywords, campaigns) serves one of the two areas.
+- Before writing a new article, check it does not compete with one that exists. `npm run build` fails on two articles whose titles are variations of each other, and on two pages sharing a meta description. Both defects reached production and neither was visible without looking for it.
+
+## The Name (PERMANENT)
+
+**In Hebrew the name is always `ד״ר עו״ד אברהם ללום`, in that order, wherever the app or the site speaks.**
+
+- One form in the interface, in headings, in bylines, in article metadata and in the site's own prose. Before this rule the app said `ד״ר אברהם ללום` and the article metadata said `עו״ד אברהם ללום`, so the same person carried two different titles depending on which page you landed on.
+- Full form on the first mention in a piece; `ד״ר ללום` on every mention after it. Repeating the full form in every sentence is not consistency, it is unreadable Hebrew. Untitled mentions stay as they are.
+- In English and the other languages the name carries both titles too: `Dr. Avraham Lalum, Adv.` The Latin form keeps English word order rather than mirroring the Hebrew one, because `Dr. Adv.` reads as a mistake to a reader abroad, and abroad is half of one of the two focus areas.
+- The other spellings (`אברהם ללום`, `אבי ללום`, `ד״ר ללום`) stay in the Person entity's `alternateName`. Those are what people type into a search box, and the entity needs them to resolve to one person. They are search variants, never display forms.
+- `npm run build` fails on any titled mention that is not the canonical form, including a doubled title.
+
+## Sources: Full Double Verification Before Publishing (PERMANENT)
+
+**A ruling, a statutory provision, a regulator's instruction or any other authority goes on the site only after full verification against its own text, from two independent sources. When verification is incomplete, it does not go up at all.**
+
+- The bar is the instrument itself: the judgment as published by the court, the statute as published, the regulator's own instruction. A commentary that quotes it, however expert, is corroboration and a pointer to the source, never the basis. A news report is weaker still.
+- This binds every kind of assertion, not only case law. A fine amount, a duty, a date of entry into force, a section number and a threshold are each an assertion about the law, and each carries the same requirement. A number that could not be traced to the instrument does not get published, and a softer formulation that the sources do support is published instead.
+- The failure this prevents is specific and it already happened twice here: a ruling record published from a single news report was wrong in four fields, and a fine amount taken from a briefing document turned out to attach to an entirely different violation than the one it was cited for.
+- Two independent sources, and they must agree on the docket number, the court, the date, the bench, and the outcome. One source is not enough, however reputable.
+- Everything a record asserts has to come from what was actually read. Do not fill in a bench, a date to the day, or facts by inference. `dateLabel` says what is known (`9.12.2025` or `דצמבר 2025`), and the record says nothing beyond it.
+- Separate what was decided from what was said around it. Obiter remarks, and a ruling given only on the principled level after the dispute settled, are not holdings, and presenting them as binding is its own failure.
+- A record with no citation, no court, no date and no public source does not belong in `lalum-app/src/data/rulings.json`, and the types make that a compile error rather than a review comment. Anything shown on a page reads from that corpus, so a citation has exactly one home.
+- Incomplete verification means it waits. A missing card is a gap; a card carrying a citation nobody opened is the exact failure the practice writes about, on the practice's own site.
+
+## More Than One Session Works Here (PERMANENT)
+
+**This repository is worked on by several Claude sessions and by scheduled automation at the same time. Before building anything, find out whether it is already being built.**
+
+The evidence that this matters: three sessions merged work into `main` within the same hour, and two roadmap edits had to be resolved by hand because two of them rewrote the same chapter.
+
+### Before starting non-trivial work
+
+1. `git fetch origin main` and start from it. Never build on a branch that is hours old.
+2. Look at the open pull requests and at the last day of commits on `main`. If someone is already in the same file or the same subject, do not start a second version of it.
+3. If the work is a new article, check the roadmap first (`docs/seo-content-roadmap.md`) and mark the item as taken the moment you begin, not when you finish. An unmarked item is an invitation for a second session to write the same piece.
+
+### Lanes
+
+Work is divided by kind, not by file, and each lane stays out of the others' way:
+
+- **The daily content task** writes the next article in the roadmap queue. It does not change structure, navigation, or positioning.
+- **Maintenance** covers fixes, quality checks, and removing what blocks promotion. It does not write articles.
+- **Design** changes how pages look. It does not change copy, because the copy is shared across five languages and the prerender.
+
+A session that needs to cross into another lane should do the smallest possible thing there and say so in the pull request.
+
+### Rules that prevent the collisions that actually happened
+
+- **One subject per pull request, merged the same session.** A branch that lives for a day collects conflicts.
+- **Never push to `main` directly.** A repository rule requires a pull request, and automation that tries to push is rejected. This is not a rule to work around: it is what stops two sessions overwriting each other.
+- **`data/search-console` is a data branch and is never merged into `main`.** It deliberately diverges. Do not open a pull request from it.
+- **Shared files are conflict-prone.** `docs/seo-content-roadmap.md`, `src/lib/strings.ts`, `src/lib/blogMeta.ts` and `CLAUDE.md` are edited by everyone. Touch the fewest lines that do the job, and re-fetch before pushing.
+
 ## Hebrew Documents - Quality Standards (PERMANENT)
 
 **Applies to every file produced for the user (docx, html, pdf, posts), in all actions.**

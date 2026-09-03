@@ -1,0 +1,162 @@
+import { Link } from "../components/AppLink";
+import { scriptDir } from "../lib/hreflang";
+import { PageMeta } from "../components/PageMeta";
+import { Icon } from "../components/Icon";
+import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
+import type { PillarPage } from "../lib/pillars";
+
+// One rendering for all three pillar landing pages. The AI page and the real
+// estate page were the same 120 lines of JSX twice over, differing only in
+// which pillar they read and which path they declared, and a third copy for
+// mediation would have made every future change a three-file edit.
+//
+// Everything the page shows comes from the PillarPage it is handed, so the copy
+// and its five languages stay in pillars.ts, where the SEO prerender reads the
+// same data to write the static HTML.
+
+export function PillarView({ P }: { P: PillarPage }) {
+  const faqs = P.faqs;
+  const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
+
+  return (
+    <>
+      <PageMeta title={`${P.title} | LALUM`} description={P.desc} image={P.og} path={`/${P.path}`} jsonLd={jsonLd} />
+
+      {/* HERO */}
+      <section className="wrap section" style={{ maxWidth: 900, paddingTop: 60 }}>
+        <div className="pillar-hero">
+          <p className="eyebrow">{P.heroEyebrow}</p>
+          <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 46px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
+            {P.title}
+          </h1>
+          <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch", margin: 0 }}>{P.lede}</p>
+          <div className="pillar-hero-cta">
+            <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+            <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT WE COVER */}
+      <section className="wrap section section-line">
+        <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+          <p className="eyebrow">{P.coversEyebrow}</p>
+          <h2 className="h2">{P.coversH2}</h2>
+        </div>
+        <div className="grid grid-2 pillar-cards">
+          {P.cards.map((p) => (
+            <div key={p.title} className="card">
+              <span className="pillar-card-icon"><Icon name={p.icon} size={22} /></span>
+              <h3 className="h3" style={{ fontSize: 21, margin: "18px 0 10px" }}>{p.title}</h3>
+              <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* WHEN A SECOND OPINION */}
+      <section className="wrap section section-line">
+        <div style={{ maxWidth: "58ch", margin: "0 0 32px" }}>
+          <p className="eyebrow">{P.whenEyebrow}</p>
+          <h2 className="h2">{P.whenH2}</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{P.whenLede}          </p>
+        </div>
+        <div className="grid grid-2">
+          {P.when.map((w) => (
+            <div key={w} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+              <span style={{ color: "var(--clay)", flexShrink: 0, marginTop: 2 }}><Icon name="check" size={18} /></span>
+              <span style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)" }}>{w}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PROCESS */}
+      <section className="wrap section section-line">
+        <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+          <p className="eyebrow">{P.stepsEyebrow}</p>
+          <h2 className="h2">{P.stepsH2}</h2>
+        </div>
+        <div className="grid grid-3 pillar-steps">
+          {P.steps.map((s) => (
+            <div key={s.n} className="card">
+              <div className="pillar-step-n">{s.n}</div>
+              <h3 className="h3" style={{ fontSize: 20, margin: "14px 0 8px" }}>{s.title}</h3>
+              <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTOR RUBRICS. Present on the AI pillar only, and only in Hebrew.
+          This is how a reader from a specific kind of body reaches the page
+          written for that body, and how a crawler finds it at all. */}
+      {P.sectors?.length && P.sectorsUi ? (
+        <section className="wrap section section-line">
+          <div style={{ maxWidth: "58ch", margin: "0 0 32px" }}>
+            <p className="eyebrow">{P.sectorsUi.eyebrow}</p>
+            <h2 className="h2">{P.sectorsUi.h2}</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{P.sectorsUi.lede}</p>
+          </div>
+          <div className="grid grid-2">
+            {P.sectors.map((s) => (
+              <Link key={s.path} to={`/${s.path}`} className="card" style={{ display: "block" }}>
+                <h3 className="h3" style={{ fontSize: 20, margin: "0 0 10px", lineHeight: 1.35 }}>{s.title}</h3>
+                <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
+                <span className="card-go">{P.sectorsUi!.go} &rarr;</span>
+              </Link>
+            ))}
+          </div>
+          <p style={{ marginTop: 22 }}>
+            <Link to={P.sectorsUi.toolsHref} style={{ color: "var(--clay)", fontWeight: 600, fontSize: 15.5 }}>
+              {P.sectorsUi.toolsLabel} &rarr;
+            </Link>
+          </p>
+        </section>
+      ) : null}
+
+      {/* RELATED READING (internal links) */}
+      <section className="wrap section section-line">
+        <div style={{ maxWidth: "58ch", margin: "0 0 32px" }}>
+          <p className="eyebrow">{P.relatedEyebrow}</p>
+          <h2 className="h2">{P.relatedH2}</h2>
+        </div>
+        <div className="grid grid-3">
+          {P.related.map((r) => (
+            <Link key={r.slug} to={`/insights/${r.slug}`} className="card" style={{ display: "block" }}>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)" }}>{P.ui.articleLabel}</span>
+              {/* The corpus is Hebrew and these pages are not, so the title
+                  states its own script rather than inheriting the page's. */}
+              <h3 className="h3" style={{ fontSize: 18, margin: "10px 0 0", lineHeight: 1.35 }} {...scriptDir(r.title)}>{r.title}</h3>
+              <span className="card-go">{P.ui.read} &rarr;</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ (feeds the FAQPage schema above) */}
+      <section className="wrap section section-line" style={{ maxWidth: 820 }}>
+        <div style={{ margin: "0 0 28px" }}>
+          <p className="eyebrow">{P.faqEyebrow}</p>
+          <h2 className="h2">{P.faqH2}</h2>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {faqs.map((f) => (
+            <div key={f.q} className="card" style={{ padding: "20px 22px" }}>
+              <h3 style={{ fontSize: 17.5, fontWeight: 700, margin: "0 0 8px", color: "var(--ink)" }}>{f.q}</h3>
+              <p style={{ fontSize: 15.5, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="wrap section" style={{ maxWidth: 760, textAlign: "center" }}>
+        <h2 className="serif" style={{ fontSize: "clamp(26px, 5.5vw, 36px)", lineHeight: 1.2, margin: "0 0 14px" }}>{P.ctaH2}        </h2>
+        <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "0 auto 24px", maxWidth: "52ch" }}>{P.ctaBody}        </p>
+        <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+        <p style={{ fontSize: 13, color: "var(--slate)", marginTop: 20 }}>{P.disclaimer}        </p>
+      </section>
+    </>
+  );
+}

@@ -18,17 +18,53 @@ LALUM brings law, real estate, and AI together in one practice. On the real esta
 
 ## Languages
 
-The site is available in Hebrew (primary) and English. Every page renders in both; the English rendering of any page is reachable by adding ?lang=en to its address.
+The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Every page renders in all five; the non-Hebrew rendering of any page is reachable by adding ?lang=en, ?lang=es, ?lang=fr, or ?lang=ar to its address.
 
 ## Key pages
 
 - Home: https://lalumapp.com/
-- Advisory and Mediation: https://lalumapp.com/advisory
-- Training and courses: https://lalumapp.com/training
-- Knowledge center: https://lalumapp.com/knowledge
-- Insights and articles: https://lalumapp.com/insights
-- Questions and answers: https://lalumapp.com/faq
-- Book a consultation: https://lalumapp.com/book
+- Advisory and Mediation: https://lalumapp.com/advisory/
+- Training and courses: https://lalumapp.com/training/
+- Knowledge center: https://lalumapp.com/knowledge/
+- Insights and articles: https://lalumapp.com/insights/
+- Questions and answers: https://lalumapp.com/faq/
+- Book a consultation: https://lalumapp.com/book/
+- AI for Israeli local authorities (sector rubric, Hebrew): https://lalumapp.com/ai-legal-advisory/local-authorities/ . A standing rubric for municipalities and their legal advisors: the Israeli Supreme Court ruling on an authority's uncontrolled use of AI (עע״מ 63194-08-25, Ben Cohen v. Ramat Gan Municipality, 22.3.2026), the Privacy Protection Authority's clarification barring LPR cameras for parking enforcement, the public-body duties under Privacy Protection Amendment 13, and two working tools: a human-oversight protocol and a CEO readiness checklist.
+
+## Featured articles
+
+- The EU AI Act is here, what Israeli leadership must do now: https://lalumapp.com/insights/eu-ai-act-2026/ . The AI Act already applies; how boards and Israeli companies operating in Europe should map exposure, classify systems (prohibited, transparency, GPAI, high-risk), anchor human accountability, and keep a defensible evidence file.
+- The black box fallacy, why unexplainable AI is a legal liability: https://lalumapp.com/insights/explainability/ . Accuracy without the ability to reason is exposure; the governance controls a board must be able to evidence on demand.
+- The corporate trap, are your AI models leaking the organization's IP: https://lalumapp.com/insights/sovereignty/ . Feeding confidential contracts and client records into third-party models as a privacy and trade-secret breach, and zero-data-leakage architecture.
+- Board liability for algorithmic decisions: https://lalumapp.com/insights/board-liability/ . When automated decisions expose directors and officers personally, and the record that defends them.
+- Public sector AI and procurement: https://lalumapp.com/insights/procurement/ . Explainable, bias-audited decision systems that withstand administrative petitions and State Comptroller review.
+- Pinui-binui, a full owner guide: https://lalumapp.com/insights/pinui-binui-owner-guide/ . What owners need through an evacuate-and-rebuild urban renewal project: how it differs from TAMA 38, the stages, the required majority and the holdout owner, the guarantees (sale-law, rent, defects, registration), taxation, and independent legal representation.
+- TAMA 38/1 versus TAMA 38/2: https://lalumapp.com/insights/tama-38-1-vs-38-2-comparison/ . The difference between strengthening-and-adding (38/1) and demolition-and-rebuild (38/2), the practical trade-offs, feasibility, owner guarantees, and how to choose the right track for a building.
+- AI regulation in Israel, the approach, what already applies, and what is expected: https://lalumapp.com/insights/israel-ai-regulation-policy/ . Israel's principles-based, sectoral approach rather than one comprehensive AI law, what already binds through existing law (privacy and Amendment 13, anti-discrimination, consumer protection, tort, IP), the practical pull of the EU AI Act on Israeli companies, the likely direction, and why to build AI governance now rather than wait for a statute.
+- Case study, IP value collapse in an acquisition from AI code leakage: https://lalumapp.com/insights/ip-value-collapse-ai-acquisition/ . An anonymized composite scenario where a tech company's proprietary code and data leaked to an AI vendor's training set through unmanaged AI agents, so due diligence found the loss of IP exclusivity irreversible, cutting deal value sharply and unwinding founder earn-out incentives, and the governance, tool-choice and contractual layers that would have prevented it.
+- Compliance for Israeli SaaS companies selling to the EU: https://lalumapp.com/insights/saas-eu-compliance-israeli-companies/ . The compliance map for an Israeli SaaS vendor selling into Europe: when EU law applies, GDPR duties, cross-border data-transfer mechanisms, data processing agreements with customers and sub-processors, the intersection with the EU AI Act, and building a compliance map before due diligence forces it.
+- Amendment 13, when a DPO appointment is mandatory: https://lalumapp.com/insights/amendment-13-dpo-appointment/ . Who must appoint a Data Protection Officer under Israel's Privacy Protection Amendment 13, the DPO's role and powers, the independence and organizational-placement requirement, in-house versus external DPO, the consequences of failing to appoint, and practical steps.
+- Attorney-client privilege in the AI era: https://lalumapp.com/insights/attorney-client-privilege-ai/ . What happens to attorney-client privilege and professional confidentiality when a lawyer feeds client material into an AI tool: the waiver risk, the decisive distinction between a tool that trains on the data and one contractually bound not to, professional-ethics duties, and practical steps for a firm to adopt AI without breaking privilege.
+- Partnership dissolution in the AI era, who owns the firm's AI agents: https://lalumapp.com/insights/partnership-dissolution-ai-ownership/ . When a professional partnership dissolves, who gets the fine-tuned AI agents trained on the firm's files and know-how: the new asset partnership agreements ignore, the indivisibility of a trained model and its data, the licensing illusion, the client-confidentiality dimension, and why the fix is a dedicated AI annex to the partnership agreement.
+- Amendment 13 data security guide: https://lalumapp.com/insights/amendment-13-data-security-guide/ . The data-security obligations under Israel's Privacy Protection Amendment 13: security levels by database sensitivity, technical and organizational controls, written procedures, access management, incident handling and reporting, audits, and staff training.
+
+## Training programs
+
+Six sessions of three hours each, 24 academic hours, with a practical capstone. Taught by Dr. Avraham Lalum, attorney, notary and Ph.D. in Law and Economics. The In-House line is delivered at the client's offices for organisations; the Academy Pro line is online, for individual professionals, and awards a participation certificate.
+
+- LALUM Academy: AI בעסקאות נדל״ן מורכב והתחדשות עירונית: https://lalumapp.com/training/lalum-academy-real-estate/ . נדל״ן והתחדשות עירונית. מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.
+- LALUM Academy: חוזים מורכבים, ממשל תאגידי ואוטומציה: https://lalumapp.com/training/lalum-academy-corporate/ . ממשל תאגידי וחוזים. יועצים משפטיים פנימיים (In-House), מנהלי סיכונים, קציני ציות (Compliance) ומנהלי עסקאות.
+- LALUM Academy: ליטיגציה, ראיות דיגיטליות, גישור ובוררות: https://lalumapp.com/training/lalum-academy-litigation/ . ליטיגציה ויישוב סכסוכים. ליטיגטורים, מנהלי מחלקות סכסוכים, בוררים, מגשרים ומנהלי סיכונים משפטיים.
+- LALUM Academy: AI Legal & Regulatory Engineering for Hi-Tech: https://lalumapp.com/training/lalum-academy-hitech/ . הייטק והנדסה רגולטורית. יועצים משפטיים בהייטק (GC), מנהלי מוצר (VP Product/CPO), סמנכ״לי טכנולוגיה (CTO) ומנהלי R&D.
+- LALUM Academy: AI לרשויות מקומיות ולמגזר הציבורי: https://lalumapp.com/training/lalum-academy-public-sector/ . רשויות מקומיות וגופים ציבוריים. מנהלי מחלקות ברשויות מקומיות, לשכות משפטיות ציבוריות, מבקרי פנים, ממוני חופש מידע וצוותי רגולציה.
+- LALUM Academy: AI המשפטי לתעשיית הרכב והניידות: https://lalumapp.com/training/lalum-academy-automotive/ . תעשיית הרכב וניידות. יועצים משפטיים ומנהלי רגולציה ביבואני ויצרני רכב, חברות ניידות, ביטוח רכב וניהול צי.
+- LALUM Academy: AI המשפטי לבריאות ולמדעי החיים: https://lalumapp.com/training/lalum-academy-healthcare/ . בריאות ומדעי החיים. יועצים משפטיים בקופות חולים, בתי חולים, חברות מכשור רפואי, פארמה ובריאות דיגיטלית.
+- LALUM Academy: AI המשפטי לפיננסים ולביטוח: https://lalumapp.com/training/lalum-academy-finance/ . פיננסים וביטוח. יועצים משפטיים וקציני ציות בבנקים, חברות ביטוח, בתי השקעות, פינטק וגופים מוסדיים.
+- LALUM Academy: AI המשפטי לאנרגיה, תשתיות ותעשייה: https://lalumapp.com/training/lalum-academy-energy/ . אנרגיה, תשתיות ותעשייה. יועצים משפטיים ומנהלי רגולציה בחברות אנרגיה, תשתיות, בנייה ותעשייה יצרנית.
+- LALUM Academy: AI המשפטי לסייבר והגנת מידע: https://lalumapp.com/training/lalum-academy-cyber/ . סייבר והגנת מידע. יועצים משפטיים, מנהלי אבטחת מידע (CISO), ממוני הגנת פרטיות (DPO) וצוותי ציות וניהול סיכונים.
+- LALUM Academy Pro: AI לעורך הדין העצמאי ולמשרד הבוטיק: https://lalumapp.com/training/lalum-academy-pro-law/ . עורכי דין. עורכי דין עצמאיים ומשרדי בוטיק שרוצים להטמיע כלי AI בעבודה היומיומית בלי לפגוע בחיסיון ובאחריות המקצועית.
+- LALUM Academy Pro: AI לשמאי המקרקעין: https://lalumapp.com/training/lalum-academy-pro-appraisal/ . שמאי מקרקעין. שמאי מקרקעין עצמאיים ומשרדי שמאות שרוצים לקצר את שלב איסוף הנתונים והניתוח בלי לפגוע באחריות המקצועית על השומה.
+- LALUM Academy Pro: AI לרואה החשבון וליועץ המס: https://lalumapp.com/training/lalum-academy-pro-accounting/ . רואי חשבון ויועצי מס. רואי חשבון, יועצי מס ומנהלי חשבונות בכירים שרוצים לקצר סיווג, הצלבה ואיתור חריגים בלי לוותר על בקרה.
 
 ## Contact
 

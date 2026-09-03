@@ -11,8 +11,9 @@ on:
         description: 'שלח מייל לאחר איסוף? (true/false)'
         required: false
         default: 'false'
-  schedule:
-    - cron: '0 6 1 * *'  # ראשון לכל חודש בשעה 09:00 ישראל
+  # התזמון החודשי הוסר בכוונה: ההרצה החודשית הרשמית היא המשימה המתוזמנת
+  # במחשב (schedule_monthly.bat), שאוספת לתיקייה הקבועה ב-OneDrive ושולחת
+  # לרונית עם הגנת כפילות. ה-workflow נשאר להרצה ידנית בלבד (workflow_dispatch).
 
 jobs:
   collect-and-notify:

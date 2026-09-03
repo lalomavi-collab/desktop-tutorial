@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
@@ -53,6 +53,7 @@ export function Knowledge() {
     { icon: "brain", title: k.coursesTitle, body: k.coursesBody, cta: k.coursesCta, href: undefined as string | undefined, to: "/training", accent: "#5a4f9a", tint: "#e8e5f3" },
     { icon: "book", title: k.articlesTitle, body: k.articlesBody, cta: k.articlesCta, href: undefined as string | undefined, to: "/insights", accent: "#9a7328", tint: "#f1e9d6" },
     { icon: "search", title: k.qaTitle, body: k.qaBody, cta: k.qaCta, href: undefined as string | undefined, to: "/faq", accent: "#a8482a", tint: "#f3e7de" },
+    { icon: "gavel", title: k.rulingsTitle, body: k.rulingsBody, cta: k.rulingsCta, href: undefined as string | undefined, to: "/rulings", accent: "#3f6f68", tint: "#e1ede9" },
   ];
 
   return (
@@ -76,7 +77,7 @@ export function Knowledge() {
             const inner = (
               <>
                 <span style={badge(c.accent, c.tint)}><Icon name={c.icon} size={20} /></span>
-                <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h3>
+                <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{c.title}</h2>
                 <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{c.body}</p>
                 <span style={cta(c.accent)}>{c.cta} <Icon name="chevron-l" size={15} /></span>
               </>
@@ -89,7 +90,7 @@ export function Knowledge() {
           })}
           <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))} style={accented("#8a3f45")}>
             <span style={badge("#8a3f45", "#f3e4e4")}><Icon name="compass" size={20} /></span>
-            <h3 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h3>
+            <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{k.guidesTitle}</h2>
             <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: 0, flex: 1 }}>{k.guidesBody}</p>
             <span style={cta("#8a3f45")}>{k.guidesCta} <Icon name="chevron-l" size={15} /></span>
           </button>

@@ -2,24 +2,10 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
+import { norm } from "../lib/hebrewSearch";
+import { rulings, rulingTitle } from "../lib/rulings";
 
 type Hit = { title: string; sub: string; to?: string; href?: string; keywords?: string };
-
-// Normalise a string for tolerant matching: lowercase, strip Hebrew niqqud and
-// punctuation, and fold Hebrew final letters to their base form so a query like
-// "תשלום" also matches text that ends a word with "ם". Latin diacritics are
-// folded too. The result is a clean, space-separated token stream.
-function norm(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[֑-ׇ]/g, "") // Hebrew niqqud / cantillation
-    .replace(/[̀-ͯ]/g, "") // Latin combining marks
-    .replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" }[c] as string))
-    .replace(/["'`׳״.,;:!?()\[\]{}<>\/\\|_+=~@#$%^&*־–—-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 // Bilingual synonym groups. If a query token belongs to a group, every other
 // term in the group is also treated as matching, so "לשלם" finds the payment
@@ -33,6 +19,7 @@ const SYNONYMS: string[][] = [
   ["מסמכים", "קבצים", "תיקייה", "העלאה", "documents", "files", "upload", "portal", "לקוחות", "client"],
   ["הדרכה", "קורס", "סדנה", "הרצאה", "training", "course", "workshop", "lecture"],
   ["מאמר", "מאמרים", "תובנות", "בלוג", "מדריך", "מדריכים", "ידע", "insight", "insights", "article", "guide", "knowledge", "faq", "שאלות"],
+  ["פסיקה", "פסק", "פסקי", "דין", "הלכה", "תקדים", "בגץ", "עליון", "ruling", "rulings", "case law", "judgment", "precedent"],
 ];
 
 function expand(tokens: string[]): string[] {
@@ -69,7 +56,18 @@ export function SiteSearch() {
       { title: t.ui.bookPage.navCta, sub: t.ui.bookPage.subtitleLive, to: "/book", keywords: "פגישה תיאום שיחה זום טימס טלפון פרונטלי meeting book call zoom teams phone" },
       { title: t.ui.clientLogin, sub: t.ui.footer.client, to: "/login", keywords: "כניסה התחברות פורטל מסמכים תשלום לשלם client login portal documents pay payment" },
     ];
+    items.push({ title: t.rulings.title, sub: t.rulings.sub, to: "/rulings", keywords: "פסיקה פסקי דין הלכה תקדים מאגר case law rulings judgment" });
     for (const a of t.data.articles) items.push({ title: a.title, sub: a.dek, to: `/insights/${a.slug}`, keywords: `${a.category} מאמר article` });
+    // Every ruling is its own destination, so a docket number typed into the
+    // site-wide box lands on the case law page rather than on nothing.
+    for (const r of rulings) {
+      items.push({
+        title: rulingTitle(r),
+        sub: r.court,
+        to: `/rulings?q=${encodeURIComponent(r.citation)}`,
+        keywords: `${r.tags.join(" ")} פסק דין פסיקה ruling`,
+      });
+    }
     for (const s of t.data.advisoryServices) items.push({ title: s.title, sub: s.body, to: "/advisory", keywords: "ייעוץ advisory" });
     items.push({ title: t.ui.footerLinks.qa, sub: t.faqPage.lede, to: "/faq", keywords: "שאלות ותשובות faq q&a knowledge" });
     return items;

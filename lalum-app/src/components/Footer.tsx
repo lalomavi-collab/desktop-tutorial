@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { LeumiMark, PaymentBrands } from "./BrandMarks";
 import { contactEmail, officePhone, directPhone, personalLine, socialLinks, websiteDisplay, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
+import { Wordmark } from "./Wordmark";
+import { AppInstall } from "./AppInstall";
 
 function LinkedInIcon() {
   return (
@@ -48,20 +50,12 @@ export function Footer() {
 
   return (
     <footer className="site-footer">
-      {/* Download band: scan the QR to install the app. */}
-      <div className="wrap footer-download">
-        <div className="footer-download-text">
-          <h3 className="footer-download-title">{f.downloadTitle}</h3>
-          <p className="footer-download-sub">{f.downloadSub}</p>
-        </div>
-        <a className="footer-qr" href="https://lalumapp.com" aria-label={f.qrAlt}>
-          <img src="/download-qr.svg" alt={f.qrAlt} width={112} height={112} loading="lazy" decoding="async" />
-        </a>
-      </div>
+      {/* Download band: QR on desktop, one-tap install on phones. */}
+      <AppInstall />
 
       <div className="wrap footer-inner">
         <div className="footer-brand">
-          <img src="/lalum-logo.png" alt="LALUM" className="footer-logo" loading="lazy" decoding="async" />
+          <Wordmark height={24} className="footer-logo" />
           <p className="footer-tagline">{f.tagline}</p>
           <div className="footer-social" aria-label={f.follow}>
             <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label={f.linkedin} className="footer-social-link"><LinkedInIcon /></a>
@@ -80,10 +74,17 @@ export function Footer() {
         <nav className="footer-col" aria-label={f.explore}>
           <div className="footer-head">{f.explore}</div>
           <Link to="/">{L.home}</Link>
+          {/* The two areas the practice leads with come first here, as they do
+              in the top bar and on the home page. The advisory hub follows, and
+              mediation after it: live, linked, and not led with. */}
+          <Link to="/real-estate-legal-advisory">{L.advisoryRe}</Link>
+          <Link to="/ai-legal-advisory">{L.advisoryAi}</Link>
           <Link to="/advisory">{L.advisory}</Link>
+          <Link to="/mediation-dispute-resolution">{L.advisoryMediation}</Link>
           <Link to="/training">{L.training}</Link>
           <Link to="/insights">{L.insights}</Link>
           <Link to="/knowledge">{L.knowledge}</Link>
+          <Link to="/rulings">{L.rulings}</Link>
           <Link to="/faq">{L.qa}</Link>
         </nav>
 

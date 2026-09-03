@@ -19,6 +19,11 @@
       "command": "python",
       "args": ["notebooklm/mcp_server.py"],
       "description": "NotebookLM integration – enrich conversations, create marketing assets, build a second brain"
+    },
+    "data-gov-il": {
+      "command": "npx",
+      "args": ["-y", "data-gov-il-mcp"],
+      "description": "Israeli open data portal (data.gov.il), used for real estate comparable transactions in the israeli-property-appraisal skill. Requires outbound network access to data.gov.il, so it only works when run locally, not from a remote sandboxed environment."
     }
   }
 }

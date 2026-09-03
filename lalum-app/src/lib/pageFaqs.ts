@@ -10,6 +10,8 @@
 import type { Dict } from "./strings";
 import { faqCategories } from "./faq";
 import type { QA } from "./schema";
+import type { Lang } from "./hreflang";
+import { aiPillarFor, mediationPillarFor, realEstatePillarFor } from "./pillars";
 
 // The general homepage FAQ (rendered in the Home FAQ section).
 function homeFaqs(t: Dict): QA[] {
@@ -30,11 +32,29 @@ function faqPageFaqs(): QA[] {
 // Exact-path FAQ sets. A page emits ONE FAQPage built from its entry here.
 // Home combines both visible FAQ blocks (general + practice) into a single page
 // FAQPage rather than emitting two competing blocks.
-function exactSets(t: Dict): Record<string, QA[]> {
+// Pillar page Q&A. The copy lives with the rest of that page's content in
+// pillars.ts, in all five languages, so the visible accordion and the
+// FAQPage schema are built from one source and cannot drift.
+function aiLegalAdvisoryFaqs(lang: Lang): QA[] {
+  return aiPillarFor(lang).faqs;
+}
+
+function realEstateAdvisoryFaqs(lang: Lang): QA[] {
+  return realEstatePillarFor(lang).faqs;
+}
+
+function mediationFaqs(lang: Lang): QA[] {
+  return mediationPillarFor(lang).faqs;
+}
+
+function exactSets(t: Dict, lang: Lang): Record<string, QA[]> {
   return {
     "/": [...homeFaqs(t), ...practiceFaqs(t)],
     "/advisory": practiceFaqs(t),
     "/faq": faqPageFaqs(),
+    "/ai-legal-advisory": aiLegalAdvisoryFaqs(lang),
+    "/real-estate-legal-advisory": realEstateAdvisoryFaqs(lang),
+    "/mediation-dispute-resolution": mediationFaqs(lang),
   };
 }
 
@@ -48,9 +68,12 @@ function prefixSets(_t: Dict): Record<string, QA[]> {
 
 // Resolve the Q&A visible on `path`. Returns [] when the page has no associated
 // FAQ, so buildFaqPage() then skips the block entirely.
-export function faqsForPath(t: Dict, path: string): QA[] {
+// `lang` selects the pillar-page copy, which is the only per-language set
+// here; everything else is read off the passed Dict. Defaults to Hebrew so the
+// build-time callers that already pass strings.he keep working unchanged.
+export function faqsForPath(t: Dict, path: string, lang: Lang = "he"): QA[] {
   const clean = path.replace(/\/+$/, "") || "/";
-  const exact = exactSets(t);
+  const exact = exactSets(t, lang);
   if (clean in exact) return exact[clean];
 
   const prefixes = prefixSets(t);

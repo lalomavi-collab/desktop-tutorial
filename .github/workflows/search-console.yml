@@ -1,0 +1,125 @@
+name: Search Console pull
+
+# Fetches the site's own search performance and commits it to the repo.
+#
+# It runs here for the same reason IndexNow does, plus one more: Search Console
+# needs a credential. A credential must not live in a chat transcript or in a
+# temporary container, so it lives in GitHub Secrets, this workflow is the only
+# thing that reads it, and what lands in the repo is data with no key in it.
+#
+# The secret is GSC_SERVICE_ACCOUNT_JSON: the whole service-account key file,
+# pasted into Settings, Secrets and variables, Actions. Setup is written out in
+# docs/search-console-setup.md.
+#
+# Until that secret exists the job exits cleanly with a note, so the workflow
+# can be merged before the account is created without painting the repo red.
+
+on:
+  schedule:
+    # Daily, after Search Console has finalised the previous days. The data is
+    # always two to three days behind, so there is nothing to gain from running
+    # more often than once a day.
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: search-console
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # The data lands on its own branch, and committing onto a branch that
+          # is not the one checked out needs its history, which a shallow clone
+          # does not have.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check the secret is present
+        id: gate
+        env:
+          KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "GSC_SERVICE_ACCOUNT_JSON is not set. Nothing to pull yet; see docs/search-console-setup.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pull the search performance data
+        if: steps.gate.outputs.ready == 'true'
+        working-directory: lalum-app
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          # Set this as a repository variable only if the property is ever
+          # replaced by a domain property (sc-domain:lalumapp.com).
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
+        run: node scripts/search-console.mjs
+
+      - name: Print the report into the run log
+        if: steps.gate.outputs.ready == 'true'
+        working-directory: lalum-app
+        run: node scripts/search-console-report.mjs
+
+      - name: Commit the data to its own branch
+        if: steps.gate.outputs.ready == 'true'
+        # Not to main. A repository rule requires every change to main to go
+        # through a pull request, which is right for the site's code and should
+        # not be weakened so a scheduled job can write a data file. The rule
+        # protects main only, so the data gets a branch of its own: no bypass,
+        # no daily pull request waiting to be merged, and nothing for a person
+        # to do. The analysis reads the data from this branch.
+        env:
+          BRANCH: data/search-console
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The freshly written data is untracked, and switching branches would
+          # refuse to overwrite it once the branch carries a file of the same
+          # name. Move it aside, switch, put it back.
+          #
+          # Copying to $tmp without removing the originals looked sufficient,
+          # and it was, for exactly one run: the first one, which creates the
+          # branch and takes the "else" path below with nothing to conflict
+          # with. From the second run on, checkout of the existing branch always
+          # found the same untracked files still sitting in the working tree
+          # and refused: "The following untracked working tree files would be
+          # overwritten by checkout". Every scheduled run since the branch was
+          # created failed here, silently, because a red run on a schedule
+          # nobody watches is invisible. The fix is the missing rm.
+          tmp=$(mktemp -d)
+          cp -r data/search-console/. "$tmp"/
+          rm -rf data/search-console
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+          else
+            echo "First run: creating $BRANCH."
+            git checkout -B "$BRANCH"
+          fi
+
+          mkdir -p data/search-console
+          cp -r "$tmp"/. data/search-console/
+          git add data/search-console
+          if git diff --cached --quiet; then
+            echo "No change in the data."
+          else
+            git commit -m "נתוני Search Console, $(date -u +%Y-%m-%d)"
+            git push -u origin "$BRANCH"
+            echo "Pushed to $BRANCH."
+          fi

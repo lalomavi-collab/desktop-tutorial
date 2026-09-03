@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; background: #1B1B1B; overflow: hidden;
+         font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', Georgia, serif; }
+  .container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; }
+  .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+  .glow { position: absolute; inset-inline-start: -130px; bottom: -170px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(128,0,32,0.4), transparent 66%); }
+  .content { position: relative; padding: 52px 76px; width: 100%; }
+  .label { color: #D4AF37; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 22px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; }
+  h1 { color: #FFFDD0; font-size: 44px; font-weight: 400; line-height: 1.26; margin-bottom: 26px; }
+  h1 em { color: #D4AF37; font-style: normal; }
+  .sub { color: #FFFDD0; opacity: 0.62; font-size: 19px; line-height: 1.55; max-inline-size: 46ch; margin-bottom: 30px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; }
+  .triad { display: flex; gap: 24px; margin-bottom: 32px; }
+  .t { flex: 1; border-top: 2px solid rgba(212,175,55,0.5); padding-top: 15px; }
+  .t-n { color: #D4AF37; font-size: 15px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; letter-spacing: 2px; margin-bottom: 8px; }
+  .t-x { color: #FFFDD0; font-size: 17px; line-height: 1.45; opacity: 0.85; }
+  .chain { display: flex; flex-direction: column; gap: 11px; margin-bottom: 30px; }
+  .c { display: flex; gap: 14px; align-items: baseline; }
+  .c-n { color: #D4AF37; font-size: 15px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; flex: none; width: 26px; }
+  .c-x { color: #FFFDD0; font-size: 19px; line-height: 1.45; opacity: 0.88; }
+  .strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .cta { background: #D4AF37; color: #1B1B1B; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; font-size: 16px; font-weight: 700; padding: 13px 24px; border-radius: 4px; }
+  .brand { color: #D4AF37; font-size: 17px; letter-spacing: 3px; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; direction: ltr; display: inline-flex; align-items: center; }
+  .url { color: #FFFDD0; font-size: 14px; opacity: 0.55; font-family: 'Heebo', Arial, 'Arial Hebrew', sans-serif; direction: ltr; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+  <div class="content">
+    <div class="label">מי אחראי כשה-AI טועה · 2 מתוך 5</div>
+    <h1>החשיפה שלכם<br><em>לא נמצאת במודל.</em></h1>
+    <div class="triad"><div class="t"><div class="t-n">הנתונים</div><div class="t-x">מי הכניס אותם, מאיפה הגיעו, והאם הייתה רשות.</div></div><div class="t"><div class="t-n">ההחלטה</div><div class="t-x">המערכת המליצה, מישהו קיבל, איש לא רשם על סמך מה.</div></div><div class="t"><div class="t-n">החוזה</div><div class="t-x">הסכם הספק מעביר אליכם את האחריות לפלט. בשקט.</div></div></div>
+    <div class="strip">
+      <div class="cta">מבדק חשיפה · שתי דקות · בחינם</div>
+      <div><div class="brand"><svg class="brand-logo" viewBox="0 0 442.1429 70.759" width="76.2" height="12.2" role="img" aria-label="LALUM" fill="currentColor"><g transform="translate(-76.5661,-264.58572)"><path transform="matrix(1,0,0,-1,76.5661,264.58573)" d="M0 0H8.753V-62.253H58.945V-69.986H0Z"/><path transform="matrix(1,0,0,-1,190.7157,272.31913)" d="M0 0-21.703-39.73H21.702ZM-5.448 7.733H5.448L43.851-62.252H33.937L25.899-47.463H-25.9L-33.937-62.252H-43.851Z"/><path transform="matrix(1,0,0,-1,249.6595,264.58573)" d="M0 0H8.753V-62.253H58.945V-69.986H0Z"/><path transform="matrix(1,0,0,-1,323.1606,264.58573)" d="M0 0H8.752V-52.296C8.752-53.973 8.932-55.485 9.289-56.84 9.646-58.193 10.329-59.321 11.343-60.222 12.355-61.126 13.768-61.818 15.585-62.301 17.401-62.784 19.796-63.025 22.774-63.025H53.139C56.116-63.025 58.512-62.784 60.329-62.301 62.144-61.818 63.558-61.126 64.57-60.222 65.582-59.321 66.267-58.193 66.624-56.84 66.982-55.485 67.161-53.973 67.161-52.296V0H75.913V-52.393C75.913-55.937 75.48-58.886 74.618-61.237 73.754-63.59 72.4-65.476 70.554-66.892 68.708-68.31 66.326-69.308 63.41-69.889 60.492-70.469 56.979-70.759 52.871-70.759H23.042C18.934-70.759 15.42-70.469 12.503-69.889 9.586-69.308 7.203-68.31 5.359-66.892 3.513-65.476 2.157-63.59 1.295-61.237 .431-58.886 0-55.937 0-52.393Z"/><path transform="matrix(1,0,0,-1,415.825,264.58573)" d="M0 0H13.665L51.442-58.676 89.22 0H102.884V-69.986H94.132V-8.506H93.953L54.568-69.986H48.316L8.931-8.506H8.752V-69.986H0Z"/></g></svg></div><div class="url">lalumapp.com/risk</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

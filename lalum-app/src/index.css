@@ -17,6 +17,11 @@
   --line: #e3dccd;
   --line-strong: #d3c9b5;
   --success: #3f8f5f;
+  /* Brand green darkened to meet WCAG AA (4.5:1) for white text on a green fill.
+     Use ONLY where white text sits on a green background (badges, pills); the
+     lighter brand green stays for decorative lines, icons, and borders. White on
+     #00aa77 is 2.99:1 (fail); white on #00855d is 4.65:1 (pass). */
+  --brand-green-on-white: #00855d;
   --danger: #b3402f;
   --warning: #b8842a;
 
@@ -80,6 +85,47 @@ html[lang="he"] h3.serif {
 html[lang="he"] .italic-clay {
   font-style: normal;
   font-weight: 400;
+}
+
+/* Arabic swaps to complex-script fonts for the same reason as Hebrew: the
+   default Latin faces (Hanken Grotesk/Newsreader) have no Arabic glyphs, so
+   without this the browser falls back to a generic system font with the
+   Latin display's negative tracking still applied, which breaks Arabic's
+   connected letterforms. Cairo is a modern Arabic sans for body/UI; Markazi
+   Text is an Arabic-native serif with real display weight for headings. */
+html[lang="ar"] {
+  --sans: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  --serif: "Markazi Text", "Traditional Arabic", Georgia, serif;
+}
+html[lang="ar"] body {
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+html[lang="ar"] .btn {
+  line-height: 1.2;
+}
+html[lang="ar"] .eyebrow {
+  letter-spacing: 0;
+}
+/* Latin negative tracking thins and disconnects Arabic letterforms just like
+   it does Hebrew, so it's neutralised the same way here. */
+html[lang="ar"] .h1,
+html[lang="ar"] h1.serif {
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+html[lang="ar"] .h2,
+html[lang="ar"] h2.serif {
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+html[lang="ar"] .h3,
+html[lang="ar"] h3.serif {
+  letter-spacing: 0;
+}
+html[lang="ar"] .italic-clay {
+  font-style: normal;
+  font-weight: 600;
 }
 
 *,
@@ -572,6 +618,49 @@ article p {
 .btn-ghost:hover {
   color: var(--clay);
 }
+/* The second call to action. It carries its own opaque surface, so whatever
+   the hero paints behind it stops at the button's edge instead of running
+   under the words. Quieter than .btn-clay, and still unmistakably a button:
+   the ghost style it replaced read as a line of text. */
+.btn-outline {
+  background: var(--paper);
+  color: var(--clay);
+  border: 1.5px solid var(--clay-soft);
+  /* Tighter than the primary so the pair still fits one row in the hero: the
+     pill's own padding is what pushed them onto two. */
+  padding-inline: 20px;
+}
+.btn-outline:hover {
+  background: var(--card);
+  border-color: var(--clay);
+}
+/* Each line sits in the same grid cell, so the button is as wide as the
+   longest one and holds still while the text rolls. */
+.btn-roll {
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  block-size: 1.5em;
+}
+.btn-roll > span {
+  grid-area: 1 / 1;
+  display: block;
+  transform: translateY(110%);
+  opacity: 0;
+}
+.btn-roll > span.on {
+  transform: translateY(0);
+  opacity: 1;
+}
+.btn-roll > span.out {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn-roll > span {
+    transition: transform 0.5s cubic-bezier(0.22, 0.9, 0.28, 1), opacity 0.5s ease;
+  }
+}
 .btn-sm {
   height: var(--ctrl-h, 40px);
   padding: 0 20px;
@@ -621,6 +710,245 @@ a.card {
 a.card:focus-visible {
   outline: 2px solid var(--clay);
   outline-offset: 3px;
+}
+
+/* ---------- Pillar landing pages (advisory, AI, real estate) ---------- */
+/* Premium hero panel: an authoritative frame with a clay accent hairline and a
+   soft gradient, so the fold reads as a considered brand statement, not plain
+   text on paper. */
+.pillar-hero {
+  position: relative;
+  margin: 6px 0 4px;
+  padding: 40px clamp(22px, 5vw, 48px) 42px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(130% 150% at 100% 0%, var(--clay-tint), transparent 52%),
+    linear-gradient(180deg, var(--card), var(--paper));
+  overflow: hidden;
+}
+.pillar-hero::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 3px;
+  background: linear-gradient(90deg, var(--clay), var(--clay-soft));
+}
+.pillar-hero .eyebrow { color: var(--clay); }
+.pillar-hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+
+/* Apple-like service cards: airy, with a refined icon tile that inverts on
+   hover, so the grid reads as a premium product surface. */
+.pillar-cards .card { padding: 30px 28px; }
+.pillar-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 13px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  border: 1px solid var(--clay-soft);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.pillar-cards .card:hover .pillar-card-icon {
+  background: var(--clay);
+  color: var(--paper);
+  border-color: var(--clay);
+}
+
+/* Premium numbered process: a serif numeral in an outlined disc. */
+.pillar-steps .card { padding-top: 28px; }
+.pillar-step-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--clay-soft);
+  color: var(--clay);
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
+/* ---------- founder voice note ---------- */
+.voice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px auto 0;
+  max-inline-size: 36ch;
+  padding: 10px 12px;
+  border: 1px solid var(--clay-soft);
+  border-radius: 999px;
+  background: var(--paper);
+  text-align: start;
+}
+.voice-btn {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--clay);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+  transition: background 0.16s ease;
+}
+.voice-btn:hover { background: var(--clay-hover); }
+.voice-btn:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
+/* The triangle means play in every writing direction, so it must not flip. */
+.voice-btn svg { transform: translateX(1px); }
+.voice-body {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.voice-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.voice-seek {
+  inline-size: 100%;
+  accent-color: var(--clay);
+  block-size: 4px;
+  cursor: pointer;
+}
+.voice-seek:disabled { cursor: default; opacity: 0.55; }
+.voice-time {
+  font-size: 11.5px;
+  color: var(--slate);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+/* ---------- practice layers (the AI layer section) ---------- */
+/* The section is named for a layer, so it is built as one: six bands that sit
+   flush against each other, each with its own colour along the inside edge.
+   The previous grid of six identical cards gave the eye nowhere to start. */
+.pillar-layers {
+  display: flex;
+  flex-direction: column;
+}
+.pillar-band {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--clay);
+  color: inherit;
+  text-decoration: none;
+}
+/* Flush bands share their rules: only the outer edges are rounded, and no
+   band repeats the line its neighbour already drew. */
+.pillar-band + .pillar-band {
+  border-block-start: 0;
+}
+.pillar-band:first-child {
+  border-start-start-radius: 14px;
+  border-start-end-radius: 14px;
+}
+.pillar-band:last-child {
+  border-end-start-radius: 14px;
+  border-end-end-radius: 14px;
+}
+/* Warm brand tones in rotation, so the stack reads as one family rather than
+   six unrelated colours. */
+.pillar-band:nth-child(6n + 2) { border-inline-start-color: #9a7328; }
+.pillar-band:nth-child(6n + 3) { border-inline-start-color: #8a3f45; }
+.pillar-band:nth-child(6n + 4) { border-inline-start-color: var(--success); }
+.pillar-band:nth-child(6n + 5) { border-inline-start-color: var(--clay-bright); }
+.pillar-band:nth-child(6n) { border-inline-start-color: #9a7328; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pillar-band {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-inline-start-width 0.18s ease;
+  }
+}
+.pillar-band:hover,
+.pillar-band:focus-visible {
+  /* Toward the reader in both directions: the inline axis flips with the
+     writing mode, the translation should not. */
+  transform: translateX(var(--pillar-nudge, -4px));
+  box-shadow: 0 14px 30px -18px rgba(26, 24, 21, 0.5);
+  border-inline-start-width: 7px;
+  z-index: 1;
+}
+[dir="ltr"] .pillar-band:hover,
+[dir="ltr"] .pillar-band:focus-visible {
+  --pillar-nudge: 4px;
+}
+.pillar-mark {
+  inline-size: 42px;
+  block-size: 42px;
+  border-radius: 11px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.pillar-txt {
+  min-inline-size: 0;
+}
+/* Title and tag share a line, which is what makes six bands scannable in a
+   glance instead of six blocks to read. */
+.pillar-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pillar-title {
+  font-size: 20px;
+  line-height: 1.3;
+  margin: 0;
+}
+.pillar-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.pillar-body {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--slate);
+  margin: 6px 0 0;
+  /* A band is as wide as the page, and a line that wide is unreadable. The
+     cap keeps the measure near where the eye can still track it. */
+  max-inline-size: 74ch;
+}
+.pillar-go {
+  font-size: 19px;
+  color: var(--clay);
+  flex: none;
+}
+@media (max-width: 860px) {
+  .pillar-band {
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding: 18px 18px;
+  }
+  /* The arrow is decoration next to a title that already links; on a narrow
+     screen it only costs width. */
+  .pillar-go {
+    display: none;
+  }
 }
 .card-go {
   display: inline-flex;
@@ -1238,12 +1566,6 @@ a.caps-item:focus-visible .caps-go {
   font-weight: 500;
   font-size: 17px;
 }
-.brand-word {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 21px;
-  letter-spacing: -0.01em;
-}
 /* Header controls share one height so the bar reads as a single toolbar. */
 :root {
   --ctrl-h: 40px;
@@ -1391,7 +1713,10 @@ a.caps-item:focus-visible .caps-go {
   align-items: center;
   gap: 12px;
 }
+/* Rendered as an <h2> for document structure. Font is set here, so only the
+   browser's default heading margin needs zeroing to keep the row aligned. */
 .faq-cat-badge {
+  margin: 0;
   font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
@@ -1417,6 +1742,12 @@ a.caps-item:focus-visible .caps-go {
 }
 .faq-item:hover {
   border-color: var(--clay-soft);
+}
+/* Heading wrapper around each accordion control. It exists for structure only,
+   so it must not introduce any of a heading's own box or type. */
+.faq-qh {
+  margin: 0;
+  font: inherit;
 }
 .faq-q {
   width: 100%;
@@ -2214,19 +2545,92 @@ html.a11y-reduce-motion *::after {
   margin: 0;
   max-width: 46ch;
 }
+/* QR: a scannable jump to the app. Column of a framed code plus a "scan to
+   install" hint, so its purpose reads at a glance. Hidden on phones (below). */
 .footer-qr {
   flex: none;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 10px;
-  line-height: 0;
-  box-shadow: 0 10px 30px -18px rgba(60, 45, 30, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
 }
-.footer-qr img {
+.footer-qr-frame {
+  position: relative;
+  display: block;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  line-height: 0;
+  box-shadow: 0 12px 34px -18px rgba(60, 45, 30, 0.55);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+/* Corner marks: a focused "scanner" frame around the code. */
+.footer-qr-frame::before,
+.footer-qr-frame::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 2px solid var(--clay);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.footer-qr-frame::before {
+  clip-path: polygon(0 0, 34% 0, 34% 8%, 8% 8%, 8% 34%, 0 34%, 0 100%, 34% 100%, 34% 92%, 8% 92%, 8% 66%, 0 66%);
+}
+.footer-qr-frame::after {
+  clip-path: polygon(100% 0, 66% 0, 66% 8%, 92% 8%, 92% 34%, 100% 34%, 100% 100%, 66% 100%, 66% 92%, 92% 92%, 92% 66%, 100% 66%);
+}
+.footer-qr:hover .footer-qr-frame {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -18px rgba(60, 45, 30, 0.6);
+}
+.footer-qr-frame img {
   display: block;
   width: 112px;
   height: 112px;
+}
+.footer-qr-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--clay);
+}
+
+/* Install control: primary path on phones, offered on desktop only when the
+   browser exposes a native install prompt (.has-prompt). */
+.footer-install {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+.footer-install.has-prompt {
+  display: flex;
+}
+.footer-install-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-install-how {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 46ch;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+.footer-install-how p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--slate);
 }
 
 /* Social */
@@ -2362,6 +2766,190 @@ html.a11y-reduce-motion *::after {
   gap: 8px;
   flex-wrap: wrap;
 }
+/* On phones the fixed bottom tab bar owns the very bottom edge, and the page's
+   primary CTA sits in the first screens. Dock the cookie banner just above the
+   tab bar and keep it compact (one tight row), so it no longer covers the nav or
+   hides the main action. */
+@media (max-width: 900px) {
+  .cookie-banner {
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+    inset-inline: 8px;
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .cookie-banner-text {
+    font-size: 12.5px;
+    line-height: 1.4;
+    min-width: 0;
+  }
+  .cookie-banner-actions {
+    gap: 6px;
+  }
+  .cookie-banner-actions .btn {
+    padding: 0 12px;
+  }
+}
+/* Anonymous engagement-scenario card (sector, challenge, what we did, outcome). */
+.scenario-card {
+  display: flex;
+  flex-direction: column;
+}
+.scenario-rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.scenario-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.scenario-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.scenario-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* The routes into the practice, as keyword buttons. Each route is one line of
+   heading and a wrapping row of keys, so four routes and seventeen destinations
+   occupy a band a reader passes in a couple of seconds rather than a page of
+   prose they have to read to leave. */
+.audience-band {
+  background:
+    radial-gradient(120% 80% at 82% 0%, var(--clay-tint) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.022) 0%, transparent 40%);
+}
+.audience-head {
+  max-width: 60ch;
+  margin: 0 0 38px;
+}
+.audience-lede {
+  font-size: 16.5px;
+  line-height: 1.68;
+  color: var(--slate);
+  margin: 16px 0 0;
+}
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 52px;
+}
+.audience-route {
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
+}
+.audience-route-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+.audience-route-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--clay-tint);
+  color: var(--clay);
+  flex: none;
+}
+.audience-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.audience-key {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.audience-key:hover,
+.audience-key:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+/* The route's own page, set apart from the keywords that lead into it. It
+   takes a row of its own: wrapped into the last row of keys it read as one
+   more keyword rather than as the way through to the page itself. */
+.audience-key-cta {
+  flex-basis: 100%;
+  border-color: transparent;
+  background: transparent;
+  color: var(--clay);
+  padding-inline: 6px;
+  margin-top: 4px;
+}
+.audience-key-cta:hover,
+.audience-key-cta:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  color: var(--clay);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transform: none;
+}
+/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
+   would point away from the link it belongs to. */
+[dir="rtl"] .audience-key-cta span {
+  display: inline-block;
+  transform: scaleX(-1);
+  margin-inline-start: 5px;
+}
+[dir="ltr"] .audience-key-cta span {
+  margin-inline-start: 5px;
+}
+@media (max-width: 860px) {
+  .audience-grid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .audience-head {
+    margin-bottom: 30px;
+  }
+}
+
+/* Small spinner for the scheduling embed's loading state. */
+.embed-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--clay);
+  border-radius: 50%;
+  animation: embed-spin 0.8s linear infinite;
+}
+@keyframes embed-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .cookie-overlay {
   position: fixed;
   inset: 0;
@@ -2435,13 +3023,18 @@ html.a11y-reduce-motion *::after {
     font-size: 12px;
     line-height: 1.45;
   }
+  /* On a phone the QR is useless (you cannot scan your own screen): hide it and
+     make the one-tap install button the path instead. */
   .footer-qr {
-    padding: 7px;
-    border-radius: 12px;
+    display: none;
   }
-  .footer-qr img {
-    width: 76px;
-    height: 76px;
+  .footer-install {
+    display: flex;
+    margin-top: 12px;
+  }
+  .footer-install-btn {
+    align-self: stretch;
+    justify-content: center;
   }
   .footer-inner {
     grid-template-columns: 1fr 1fr;
@@ -2636,10 +3229,51 @@ html.a11y-reduce-motion *::after {
   .route-view .grid > *:nth-child(5) { animation-delay: 0.31s; }
   .route-view .grid > *:nth-child(6) { animation-delay: 0.38s; }
 }
+/* A tinted ground, for breaking a long run of pale sections. Paired with the
+   dark bands and the paper ones it gives the page three grounds to alternate
+   between instead of one. */
+.band-tint {
+  background: linear-gradient(180deg, var(--clay-tint) 0%, transparent 86%);
+}
+
+/* Section reveal on scroll. The classes are added by useScrollReveal, never
+   by the markup, so a document whose script never runs is fully visible: the
+   stylesheet alone can hide nothing. */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.reveal-in {
+  animation: lalum-reveal 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes lalum-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* A section that was never scrolled to would otherwise print blank. */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Respect users who ask for less motion: no lifts, no reveals, no drift. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
   .card:hover,
   .btn-clay:hover {
@@ -2648,6 +3282,7 @@ html.a11y-reduce-motion *::after {
   .ambient-blob,
   .ambient-grain,
   .ambient-sweep,
+  .clause-sweep,
   .route-view,
   .route-view .grid > * {
     animation: none !important;
@@ -2671,6 +3306,79 @@ html.a11y-reduce-motion *::after {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+}
+/* ---------- clause scan: contract lines read by a passing light ---------- */
+.clause-doc {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 6%;
+  padding: 6% 7%;
+  align-content: center;
+}
+.clause-para {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.clause-line {
+  block-size: 7px;
+  border-radius: 4px;
+  background: var(--ink);
+  opacity: 0.055;
+}
+.clause-line.flagged {
+  background: var(--clay);
+  opacity: 0.14;
+}
+/* The light travels from the inline start, so it reads as a pass over the text
+   in the direction the page is read. */
+.clause-sweep {
+  position: absolute;
+  inset-block: -10%;
+  inline-size: 26%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85) 45%, rgba(232, 201, 168, 0.5) 62%, transparent);
+  filter: blur(6px);
+  animation: clause-sweep 11s linear infinite;
+}
+@keyframes clause-sweep {
+  from { transform: translateX(140%); }
+  to { transform: translateX(-420%); }
+}
+/* On a phone the two columns collapse to one, so the block stays a paragraph
+   rather than two crowded stacks. */
+@media (max-width: 640px) {
+  .clause-doc {
+    grid-template-columns: 1fr;
+    padding: 10% 9%;
+  }
+  .clause-doc .clause-para:last-child { display: none; }
+  /* One column on a narrow screen is a short block in a tall hero, so the
+     rhythm opens up and the lines carry slightly more weight to stay read. */
+  .clause-para { gap: 17px; }
+  .clause-line { block-size: 6px; opacity: 0.07; }
+  .clause-line.flagged { opacity: 0.17; }
+  .clause-sweep { inline-size: 42%; }
+}
+.ambient-canvas {
+
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Drawn variants have to stay visible through the scrim, so they keep the veil
+   light. The warm blobs need the heavier one; lines do not. */
+.ambient-lattice .ambient-scrim,
+.ambient-clauses .ambient-scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(245, 241, 232, 0.12) 0%,
+    rgba(245, 241, 232, 0.26) 58%,
+    rgba(245, 241, 232, 0.72) 100%
+  );
 }
 .ambient-blob {
   position: absolute;
@@ -3339,4 +4047,740 @@ html.a11y-reduce-motion *::after {
 @keyframes mic-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(168, 72, 42, 0.45); }
   50% { box-shadow: 0 0 0 5px rgba(168, 72, 42, 0); }
+}
+
+/* ---------- Tech-Legal readiness self-assessment ---------- */
+.riskcalc-progress {
+  block-size: 6px;
+  background: var(--line);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin: 22px 0 10px;
+}
+.riskcalc-progress-fill {
+  display: block;
+  block-size: 100%;
+  background: var(--clay);
+  border-radius: 9999px;
+  transition: inline-size 0.35s ease;
+}
+.riskcalc-step { font-size: 12.5px; color: var(--slate); margin: 0 0 22px; }
+.riskcalc-q { font-size: 19px; font-weight: 600; line-height: 1.4; color: var(--ink); margin: 0 0 18px; }
+.riskcalc-choices { display: flex; flex-direction: column; gap: 12px; }
+.riskcalc-choice {
+  inline-size: 100%;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.55;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, transform 0.1s ease;
+}
+.riskcalc-choice-text { flex: 1; }
+/* The mark hint: a chevron on the picker, a check on answers. Muted until the
+   card is hovered or chosen. */
+.riskcalc-choice-mark {
+  flex: none;
+  display: inline-flex;
+  color: var(--line-strong);
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+.riskcalc-choice:hover {
+  border-color: var(--clay-soft);
+  box-shadow: 0 12px 30px -20px rgba(60, 45, 30, 0.55);
+  transform: translateY(-1px);
+}
+.riskcalc-choice:hover .riskcalc-choice-mark { color: var(--clay); }
+.riskcalc-choice.on {
+  border-color: var(--clay);
+  background: var(--clay-tint);
+  box-shadow: 0 12px 30px -20px rgba(193, 95, 60, 0.5);
+}
+.riskcalc-choice.on .riskcalc-choice-mark { color: var(--clay); transform: scale(1.12); }
+.riskcalc-nav { margin-top: 16px; }
+.riskcalc-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 6px 0 10px;
+  border: 1px solid;
+}
+.riskcalc-badge.tone-ok { color: #2f6f4f; background: #eef6f1; border-color: #cfe3d8; }
+.riskcalc-badge.tone-warn { color: #8a6318; background: #fbf3e2; border-color: #ecdcbb; }
+.riskcalc-badge.tone-risk { color: #800020; background: #fbeef0; border-color: #eccfd5; }
+
+/* Exposure gauge: a speedometer whose needle points at the visitor's score. */
+.riskcalc-gauge {
+  max-inline-size: 300px;
+  margin: 4px 0 6px;
+  text-align: center;
+}
+.riskcalc-gauge svg { display: block; }
+.riskcalc-gauge-read { margin-top: 2px; }
+.riskcalc-gauge-score { font-family: var(--serif); font-size: 30px; font-weight: 600; line-height: 1; }
+.riskcalc-gauge-max { font-size: 17px; color: var(--slate); font-weight: 500; }
+.riskcalc-gauge-label { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate); margin-top: 4px; }
+
+/* Conversion block on the result: value on the start, action on the end. */
+.riskcalc-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 6px 0 20px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  border: 1px solid var(--clay-soft);
+  background: linear-gradient(135deg, var(--clay-tint), var(--card));
+}
+.riskcalc-cta-text { flex: 1; min-inline-size: 18ch; }
+.riskcalc-cta-title { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--ink); margin: 0 0 5px; }
+.riskcalc-cta-sub { font-size: 14px; line-height: 1.6; color: var(--slate); margin: 0; max-inline-size: 46ch; }
+.riskcalc-cta-btn { flex: none; }
+@media (max-width: 560px) {
+  .riskcalc-cta-btn { inline-size: 100%; justify-content: center; }
+}
+.riskcalc-score { font-size: 13.5px; color: var(--slate); margin: 0 0 16px; }
+/* Where they scored worst. The total says how exposed; this says where, and it
+   is the line that earns the meeting. */
+/* The line that greets someone arriving from the assessment. */
+.from-risk {
+  max-inline-size: 640px;
+  margin: 0 auto 30px;
+  padding: 16px 20px;
+  border: 1px solid var(--clay-soft);
+  background: var(--clay-tint);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.from-risk p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  flex: 1;
+  min-inline-size: 16ch;
+}
+.riskcalc-gap {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--clay-tint);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.riskcalc-gap strong { color: var(--clay); }
+.riskcalc-body { font-size: 16px; line-height: 1.72; color: var(--ink); margin: 0 0 14px; max-inline-size: 60ch; }
+.riskcalc-next { font-size: 15.5px; line-height: 1.7; color: var(--slate); margin: 0 0 24px; max-inline-size: 60ch; }
+.riskcalc-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+/* Outlined, not filled: the assessment exists to start a conversation, and a
+   solid brand-blue block next to the clay call to action wins the eye from it.
+   The blue stays as the mark of where the link goes. */
+.btn-linkedin { background: var(--paper); border: 1.5px solid #0A66C2; color: #0A66C2; }
+.btn-linkedin:hover { background: #0A66C2; color: #fff; }
+.riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
+.riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }
+
+/* ============================================================
+   Floating video bubble (components/VideoBubble.tsx)
+   ------------------------------------------------------------
+   Deep navy and royal gold, the Tech-Legal premium pairing, kept
+   deliberately apart from the clay/ivory page palette so the
+   bubble reads as an invitation laid over the site rather than a
+   piece of it. The four values below are the whole palette: swap
+   them here and the bubble follows.
+   Positioning is logical (inset-inline-*), so the dock lands on
+   the correct side in Hebrew and Arabic (RTL) as well as in the
+   Latin languages, and it sits stacked above the chat button in
+   the same column rather than in a corner of its own.
+   ============================================================ */
+.vbub-dock {
+  /* Warm near-black rather than navy: the player stays dark, which is right
+     for video, but in the site's own family instead of a second brand. */
+  --vbub-navy: #17140f;
+  --vbub-navy-soft: #221d16;
+  --vbub-gold: var(--clay-bright);
+  --vbub-gold-soft: var(--clay-soft);
+
+  position: fixed;
+  /* Clear of the chat button (60px) that sits at bottom: 24px. */
+  bottom: 98px;
+  inset-inline-end: 24px;
+  z-index: 82;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+/* Expanded, the player takes the whole corner: it covers the chat button, so
+   there is no reason to keep the gap above it. */
+.vbub-dock.is-open {
+  bottom: 24px;
+}
+
+.vbub-orb-wrap {
+  position: relative;
+  display: flex;
+}
+
+/* The invitation. One control: the clip's thumbnail, the question it answers,
+   and how long it takes. The old bubble kept its caption behind :hover, which
+   on a phone means it never appeared at all, so the thing in the corner was a
+   floating face with nothing saying what tapping it would do. */
+.vbub-invite {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-inline-size: min(300px, calc(100vw - 40px));
+  /* Logical padding: the thumbnail sits at the inline start, so the tighter
+     side has to follow the writing direction rather than being pinned left. */
+  padding-block: 10px;
+  padding-inline-start: 10px;
+  padding-inline-end: 18px;
+  border: 1px solid var(--clay-soft);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
+  cursor: pointer;
+  text-align: start;
+  font: inherit;
+}
+.vbub-invite:hover {
+  border-color: var(--clay);
+  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
+}
+.vbub-invite:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-invite {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    animation: vbub-arrive 0.5s cubic-bezier(0.22, 0.9, 0.28, 1) both;
+  }
+  .vbub-invite:hover {
+    transform: translateY(-2px);
+  }
+}
+@keyframes vbub-arrive {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.vbub-orb {
+  position: relative;
+  inline-size: 54px;
+  block-size: 54px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+  background: var(--vbub-navy);
+  border: 2px solid var(--clay-soft);
+}
+.vbub-orb-video {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  /* The clip is a vertical portrait, so a centred crop lands on the chest.
+     Pulling the frame up puts the face in the circle. */
+  object-position: 50% 22%;
+  display: block;
+}
+/* A play chip, always present: it is what marks the thumbnail as a video
+   rather than a photo of somebody. */
+.vbub-orb-play {
+  position: absolute;
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.vbub-orb-play svg {
+  /* The glyph is a right-pointing triangle, and it means "play" in every
+     direction, so it must not flip with the page. */
+  transform: translateX(1px);
+}
+
+.vbub-invite-txt {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vbub-invite-line {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.vbub-invite-meta {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--slate);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Quiet: closing is not the action being offered. */
+.vbub-dismiss {
+  position: absolute;
+  inset-block-start: -7px;
+  inset-inline-end: -7px;
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--slate);
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.vbub-dismiss:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+}
+
+/* ---------- expanded player ---------- */
+.vbub-panel {
+  position: relative;
+  width: 330px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 130px);
+  background: var(--vbub-navy);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 34px 70px -28px rgba(10, 25, 47, 0.8);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-panel { animation: vbub-rise 0.28s ease; }
+}
+@keyframes vbub-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.vbub-panel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--vbub-navy);
+  cursor: pointer;
+}
+
+/* The message, over the clip. The speaker is silent, so this is the voice:
+   large enough to read on a phone at arm's length, and lifted off the picture
+   by a gradient rather than a box, so it does not cover the face. */
+/* Read by assistive technology, never painted: the visible lines move too
+   fast to follow, so the message is also present once, whole. */
+.vbub-script-full {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.vbub-script {
+  position: absolute;
+  inset-inline: 0;
+  /* Under the tool row and well clear of the footer, which already covers the
+     bottom third of the player with the name and the two buttons. */
+  inset-block-start: 0;
+  padding: 54px 22px 34px;
+  background: linear-gradient(to bottom, rgba(23, 20, 15, 0.9) 42%, rgba(23, 20, 15, 0.6) 72%, rgba(23, 20, 15, 0));
+  pointer-events: none;
+  text-align: center;
+}
+.vbub-script-line {
+  margin: 0;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-wrap: balance;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbub-script { animation: vbub-caption 0.32s ease both; }
+}
+@keyframes vbub-caption {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.vbub-panel-tools {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.vbub-tool {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(10, 25, 47, 0.75);
+  color: #ffffff;
+  font-size: 17px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.vbub-tool:hover {
+  color: var(--vbub-gold);
+  border-color: var(--vbub-gold);
+}
+
+/* The metadata and calls to action, over a navy fade so the text stays readable
+   whatever frame is behind it. */
+.vbub-panel-foot {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 74px 18px 18px;
+  background: linear-gradient(to top, var(--vbub-navy) 42%, rgba(10, 25, 47, 0.72) 72%, rgba(10, 25, 47, 0));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vbub-seek {
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  accent-color: var(--vbub-gold);
+  cursor: pointer;
+}
+.vbub-seek:disabled { opacity: 0.4; cursor: default; }
+
+.vbub-meta { text-align: start; }
+.vbub-badge {
+  display: inline-block;
+  background: var(--vbub-gold);
+  color: var(--vbub-navy);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.vbub-name {
+  margin: 7px 0 0;
+  color: #ffffff;
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.vbub-tagline {
+  margin: 5px 0 0;
+  color: #cfd6e2;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.vbub-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vbub-cta-gold,
+.vbub-cta-ghost {
+  display: block;
+  text-align: center;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+.vbub-cta-gold {
+  background: var(--vbub-gold);
+  color: var(--vbub-navy);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 14px;
+  box-shadow: 0 10px 24px -12px rgba(212, 175, 55, 0.9);
+}
+.vbub-cta-gold:hover {
+  background: var(--vbub-gold-soft);
+  transform: translateY(-1px);
+}
+.vbub-cta-ghost {
+  background: rgba(17, 34, 64, 0.85);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 14px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+.vbub-cta-ghost:hover {
+  background: var(--vbub-navy-soft);
+  border-color: var(--vbub-gold);
+}
+
+/* Keyboard focus has to stay obvious against a dark, moving background. */
+.vbub-orb:focus-visible,
+.vbub-dismiss:focus-visible,
+.vbub-tool:focus-visible,
+.vbub-seek:focus-visible,
+.vbub-cta-gold:focus-visible,
+.vbub-cta-ghost:focus-visible {
+  outline: 3px solid var(--vbub-gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .vbub-dock {
+    /* The chat button is itself lifted above the bottom tab bar on phones. */
+    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
+    inset-inline-end: 16px;
+  }
+  .vbub-dock.is-open {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  }
+  .vbub-orb {
+    width: 72px;
+    height: 72px;
+    border-width: 2px;
+  }
+  .vbub-panel {
+    height: min(560px, calc(100vh - 190px));
+  }
+}
+
+/* The spacer that holds the page's height while a code-split route chunk
+   loads. It was 70vh, which on a phone left the footer sitting at the bottom of
+   the first screen: the chunk then arrived, the page grew from 1967px to
+   9275px, and the footer jumped 7300px down. That single jump measured 0.22
+   CLS, twice Google's 0.1 threshold, on every article and pillar page.
+
+   100vh puts the footer below the fold to begin with, so there is nothing
+   visible left to shift. svh is the phone's smallest viewport height, used
+   where supported so an expanded browser chrome cannot shrink the spacer back
+   into the shifting range. */
+.route-pending {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+
+/* Course card: the title links to the course page, and the fine print carries
+   the instructor line and the mandatory training disclaimer. */
+.course-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.course-title-link:hover,
+.course-title-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.course-fineprint {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #9c958a;
+}
+.course-fineprint + .course-fineprint {
+  margin-top: 4px;
+}
+
+/* Printing a diagnostic result.
+   The tools let a reader take their own result away without adding a PDF
+   library and without sending anything to a server: the browser prints, and
+   this stylesheet leaves only the result on the page. `no-print` hides the
+   controls that make no sense on paper (the copy button, the print button
+   itself), and `print-target` is the card that survives. */
+@media print {
+  .no-print,
+  .site-header,
+  .site-footer,
+  .cookie-overlay,
+  .cookie-fixed,
+  .contact-rail,
+  .chat-dock,
+  .a11y-dock,
+  .tabbar,
+  [class^="vbub-"] { display: none !important; }
+
+  body { background: #fff; }
+
+  .print-target,
+  .print-target * { visibility: visible; }
+
+  .print-target .card {
+    border: 1px solid var(--line);
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  a[href]::after { content: ""; }
+}
+
+/* ============================================================
+   Home entry prompt (components/HomePrompt.tsx)
+   ------------------------------------------------------------
+   A round panel, in the same navy and gold as the video bubble
+   so the two overlays read as one system rather than two
+   competing promos.
+   It sits on the inline-start edge: in Hebrew and Arabic that is
+   the right, where only the accessibility button lives, and in
+   the Latin languages the left. The chat, the contact rail and
+   the video bubble all occupy the opposite edge, so nothing
+   overlaps at any breakpoint.
+   ============================================================ */
+.hprompt {
+  --hp-navy: #0a192f;
+  --hp-navy-soft: #112240;
+  --hp-gold: #d4af37;
+  --hp-gold-soft: #c5a880;
+
+  position: fixed;
+  bottom: 96px;
+  inset-inline-start: 24px;
+  z-index: 84;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, var(--hp-navy-soft), var(--hp-navy) 72%);
+  border: 2px solid var(--hp-gold);
+  box-shadow: 0 22px 50px -18px rgba(10, 25, 47, 0.7), 0 0 0 8px rgba(212, 175, 55, 0.08);
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hprompt { animation: hprompt-in 0.4s cubic-bezier(0.2, 0.7, 0.3, 1); }
+}
+@keyframes hprompt-in {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* A circle wastes its corners, so the text is held to the square that
+   actually fits inside it. Without this the lines run to the curved edge and
+   the last word of each one falls off the shape. */
+.hprompt-inner {
+  width: 74%;
+  text-align: center;
+}
+.hprompt-lead {
+  color: var(--hp-gold);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.35;
+  margin: 0 0 10px;
+}
+.hprompt-body {
+  color: #e8ecf3;
+  font-size: 13px;
+  line-height: 1.62;
+  margin: 0 0 16px;
+}
+.hprompt-cta {
+  display: inline-block;
+  background: var(--hp-gold);
+  color: var(--hp-navy);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.hprompt-cta:hover {
+  background: var(--hp-gold-soft);
+  transform: translateY(-1px);
+}
+.hprompt-close {
+  position: absolute;
+  /* A corner inset that works on a square lands outside a circle. The arc at
+     45 degrees sits about 0.29 of the radius in from the bounding box, so the
+     button is pushed that far to land on the edge rather than float beside it. */
+  top: 44px;
+  inset-inline-end: 44px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(10, 25, 47, 0.9);
+  color: #d8d3c8;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.hprompt-close:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+.hprompt-cta:focus-visible,
+.hprompt-close:focus-visible {
+  outline: 3px solid var(--hp-gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .hprompt {
+    /* Clear of the bottom tab bar and of the accessibility button above it. */
+    bottom: calc(154px + env(safe-area-inset-bottom, 0px));
+    /* Centred by pinning both edges and letting the margins share what is
+       left. The earlier version centred with a percentage inset plus a
+       translate, which put the circle half off the screen on a narrow phone
+       and needed a second rule to flip the sign in the Latin languages. Auto
+       margins need neither: they are direction agnostic, and they cannot be
+       lost by the entry animation, whose keyframes set a transform of their
+       own. */
+    inset-inline: 0;
+    margin-inline: auto;
+    width: min(330px, calc(100vw - 32px));
+    height: min(330px, calc(100vw - 32px));
+    padding: 24px;
+  }
+  .hprompt-lead { font-size: 18px; }
+  .hprompt-body { font-size: 12.5px; }
+  .hprompt-close { top: 40px; inset-inline-end: 40px; }
 }

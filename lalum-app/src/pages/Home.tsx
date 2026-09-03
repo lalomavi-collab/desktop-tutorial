@@ -1,29 +1,32 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { SiteSearch } from "../components/SiteSearch";
-import { Capabilities } from "../components/Capabilities";
 import { HomeAcademy } from "../components/HomeAcademy";
-import { PracticeAreas } from "../components/PracticeAreas";
-import { MnaSpotlight } from "../components/MnaSpotlight";
-import { PreDealStrategy } from "../components/PreDealStrategy";
-import { PracticeFaq } from "../components/PracticeFaq";
-import { PracticeHub } from "../components/PracticeHub";
+import { FocusAreas } from "../components/FocusAreas";
 import { LinkedInFeed } from "../components/LinkedInFeed";
+import { ScenarioCard } from "../components/ScenarioCard";
+import { AudiencePaths } from "../components/AudiencePaths";
 import { officePhone, directPhone, personalLine } from "../lib/content";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
+import { cvPath } from "../lib/hreflang";
+import { Wordmark } from "../components/Wordmark";
+import { RotatingCta } from "../components/RotatingCta";
+import { VoiceNote } from "../components/VoiceNote";
 // Imported so Vite emits a content-hashed filename: swapping the photo always
-// busts any browser or CDN cache instead of serving a stale /founder.jpg.
-import founderPhoto from "../assets/founder.jpg";
+// busts any browser or CDN cache instead of serving a stale /founder.webp.
+// WebP, resized to 944px (2x the on-page display width) for a sharp retina
+// portrait at a fraction of the original JPEG weight.
+import founderPhoto from "../assets/founder.webp";
 
 export function Home() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const h = t.home;
   const [faqOpen, setFaqOpen] = useState<number>(-1);
   const [faqShown, setFaqShown] = useState(false);
@@ -48,7 +51,7 @@ export function Home() {
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <Link to="/book" className="btn btn-clay">{t.practice.riskCalc.cta}</Link>
-              <Link to="/advisory" className="btn btn-ghost">{h.heroCtaAi}</Link>
+              <RotatingCta to="/advisory" label={h.heroCtaAi} />
             </div>
             {/* Framework trust strip: an at-a-glance credibility signal, and the
                 multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
@@ -61,7 +64,7 @@ export function Home() {
           </div>
 
           {/* Founder portrait, clickable, opens the full CV */}
-          <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
+          <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
             <img src={founderPhoto} alt={h.founderName} />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
@@ -71,53 +74,18 @@ export function Home() {
         </div>
       </section>
 
-      {/* ADVISORY CONSULTATION (moved below the hero) */}
-      <section className="section-line">
-        <div className="wrap" style={{ maxWidth: 720, padding: "64px 32px" }}>
-          <div className="card" style={{ padding: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
-              <span className="serif" style={{ fontSize: 20, lineHeight: 1.25 }}>{h.cardTitle}</span>
-              <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{h.advisoryBadge}</span>
-            </div>
-            <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{h.advisoryIntro}</p>
-            <div className="label" style={{ margin: "20px 0 12px" }}>{h.advisoryFormat}</div>
-            <div className="grid grid-2" style={{ gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryInPersonTitle}</div>
-                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryInPersonBody}</div>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{h.advisoryVirtualTitle}</div>
-                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{h.advisoryVirtualBody}</div>
-                </div>
-              </div>
-            </div>
-            <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
-              <Icon name="calendar" size={17} /> {h.advisoryCta}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* The router comes first, before any of the practice narrative: a visitor
+          who knows who they are should not have to read the positioning to find
+          the four entries written for them. */}
+      <AudiencePaths />
 
-      {/* CORE LEGAL PRACTICE AREAS (prominent, above the AI pillars) */}
-      <PracticeAreas />
+      {/* The two areas the practice leads with. Shared with /advisory. */}
+      <FocusAreas />
 
-      {/* M&A spotlight: mergers and acquisitions featured as a headline practice */}
-      <MnaSpotlight />
-
-      {/* PRE-DEAL / PRE-LITIGATION STRATEGIC ADVISORY + interactive risk calculator */}
-      <PreDealStrategy />
-
-      {/* REPRESENTATIVE-SCENARIO HUB: filterable grid with detail modals */}
-      <PracticeHub />
-
-      {/* PRACTICE-AREA FAQ with FAQPage schema for rich snippets */}
-      <PracticeFaq />
+      {/* Positioning, then the risk pillars, then the engine. The practice
+          areas, the deal work and the scenario hub used to sit here too, which
+          made the front door twenty sections deep; they live on /advisory now,
+          which is the page that exists to hold them. */}
 
       {/* ABOUT */}
       <section className="section-line">
@@ -136,26 +104,28 @@ export function Home() {
         </div>
       </section>
 
-      {/* CAPABILITIES */}
-      <Capabilities />
-
-      {/* LALUM ACADEMY promo band */}
-      <HomeAcademy />
-
-      {/* PRACTICE */}
+      {/* PRACTICE (AI + risk-governance pillars) */}
       <section id="practice" className="wrap section">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
           <p className="eyebrow">{h.pillarsEyebrow}</p>
           <h2 className="h2">{h.pillarsH2}</h2>
         </div>
-        <div className="grid grid-3">
+        {/* Layers, not a grid of cards. The section is named for a layer, and
+            six identical boxes said nothing of the sort: these are bands that
+            stack, each with its own edge colour, so the six read as one system
+            and the eye can run down them. */}
+        <div className="pillar-layers">
           {t.data.pillars.map((p) => (
-            <Link key={p.title} to="/advisory" className="card" aria-label={p.title}>
-              <span className="icon-badge"><Icon name={p.icon} size={23} /></span>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)", margin: "20px 0 6px" }}>{p.tag}</div>
-              <h3 className="h3" style={{ fontSize: 23, margin: "0 0 12px", lineHeight: 1.25 }}>{p.title}</h3>
-              <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{p.body}</p>
-              <span className="card-go">{h.pillarsGo} &rarr;</span>
+            <Link key={p.title} to="/advisory" className="pillar-band" aria-label={p.title}>
+              <span className="pillar-mark" aria-hidden="true"><Icon name={p.icon} size={20} /></span>
+              <span className="pillar-txt">
+                <span className="pillar-line">
+                  <h3 className="h3 pillar-title">{p.title}</h3>
+                  <span className="pillar-tag">{p.tag}</span>
+                </span>
+                <p className="pillar-body">{p.body}</p>
+              </span>
+              <span className="pillar-go" aria-hidden="true">&rarr;</span>
             </Link>
           ))}
         </div>
@@ -184,6 +154,9 @@ export function Home() {
         </div>
       </section>
 
+      {/* LALUM ACADEMY promo band */}
+      <HomeAcademy />
+
       {/* WHY */}
       <section className="wrap section">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
@@ -202,8 +175,11 @@ export function Home() {
       </section>
 
       {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
-          at-a-glance trust signal (previously only on the Advisory page). */}
-      <section className="section-line">
+          at-a-glance trust signal (previously only on the Advisory page). It
+          carries the tint because below the dark engine chapter the page ran
+          six pale sections in a row, and a reader crossed from the reasons to
+          the proof to the founder with nothing marking any of the crossings. */}
+      <section className="section-line band-tint">
         <div className="wrap section">
           <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
             <p className="eyebrow">{t.advisory.testimonialsEyebrow}</p>
@@ -211,12 +187,7 @@ export function Home() {
           </div>
           <div className="grid grid-3">
             {t.data.testimonials.map((tm) => (
-              <div key={tm.attr} className="card" style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ color: "var(--clay)", opacity: 0.6 }}><Icon name="quote" size={26} /></span>
-                <p style={{ fontFamily: "var(--serif)", fontSize: 20, lineHeight: 1.5, color: "var(--ink)", margin: "18px 0 24px", flex: 1 }}>{tm.quote}</p>
-                <div style={{ height: 1, background: "var(--line)", marginBottom: 16 }} />
-                <div style={{ fontSize: 13, color: "var(--slate)" }}>{tm.attr}</div>
-              </div>
+              <ScenarioCard key={tm.sector} s={tm} />
             ))}
           </div>
         </div>
@@ -227,10 +198,18 @@ export function Home() {
         <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
           <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
-            <img src="/lalum-logo.png" alt={h.logoAlt} loading="lazy" decoding="async" style={{ display: "block", height: 34, width: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
+            <Wordmark height={34} label={h.logoAlt} style={{ display: "block", height: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
             <div style={{ fontSize: 14, color: "var(--slate)", marginTop: 6, lineHeight: 1.55 }}>{h.founderCreds1}<br />{h.founderCreds2}</div>
             <p style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.62, margin: "16px auto 0", maxWidth: "36ch" }}>{h.founderBio}</p>
+            {/* The treatises. They sat in the CV page alone, which carried no
+                structured data and was not in the sitemap, so the strongest
+                credential the practice holds for urban renewal was invisible
+                everywhere a reader or a crawler would look for it. */}
+            <p style={{ fontSize: 13, color: "var(--slate)", lineHeight: 1.6, margin: "10px auto 0", maxWidth: "36ch" }}>{h.founderWorks}</p>
+            {/* His own voice, beside his own details. Nothing plays until it is
+                asked to. */}
+            <VoiceNote />
             <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
               <a href={`tel:${officePhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
@@ -251,7 +230,7 @@ export function Home() {
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.urgentOnly}</span>
               </a>
             </div>
-            <a href="/cv.html" target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
+            <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="btn btn-clay btn-sm" style={{ justifyContent: "center", width: "100%", marginTop: 20 }}>
               <Icon name="file" size={16} /> {h.founderCv}
             </a>
           </div>

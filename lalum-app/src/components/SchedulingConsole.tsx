@@ -3,6 +3,7 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "./Icon";
 import { createEvent, findConflicts, freeSlots, loadEvents, type CalEvent, type EventKind, type Slot } from "../lib/scheduling";
+import { bcp47For } from "../lib/hreflang";
 
 type Task = { id: string; title: string; estimate_minutes: number; status: string; scheduled_event_id: string | null };
 
@@ -11,7 +12,7 @@ const HORIZON_DAYS = 14;
 export function SchedulingConsole() {
   const { t, lang } = useLang();
   const S = t.ui.schedule;
-  const locale = lang === "he" ? "he-IL" : "en-US";
+  const locale = bcp47For(lang);
   const TZ = "Asia/Jerusalem"; // the firm operates from Herzliya; show Israel time to any viewer
 
   const [events, setEvents] = useState<CalEvent[]>([]);

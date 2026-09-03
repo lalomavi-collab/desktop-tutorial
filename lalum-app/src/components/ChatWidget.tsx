@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { extractText } from "../lib/extractText";
-import { OPEN_CHAT_EVENT } from "./chatEvents";
+import { OPEN_CHAT_EVENT, emitChatState } from "./chatEvents";
+import { bcp47For } from "../lib/hreflang";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
@@ -21,7 +22,7 @@ export function ChatWidget() {
   const { t, lang } = useLang();
   const { user } = useAuth();
   const C = t.ui.chat;
-  const speechLang = lang === "he" ? "he-IL" : "en-US";
+  const speechLang = bcp47For(lang);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -102,6 +103,13 @@ export function ChatWidget() {
     window.addEventListener(OPEN_CHAT_EVENT, openChat);
     return () => window.removeEventListener(OPEN_CHAT_EVENT, openChat);
   }, []);
+
+  // Tell the other corner controls whether the chat panel is showing, so the
+  // video bubble can step aside instead of sitting on top of it.
+  useEffect(() => {
+    emitChatState(open);
+    return () => emitChatState(false);
+  }, [open]);
 
   async function send() {
     const text = input.trim();

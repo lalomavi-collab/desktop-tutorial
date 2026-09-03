@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLang } from "../context/LangContext";
-import { langUrl, alternatesFor } from "../lib/hreflang";
+import { langUrl, alternatesFor, bcp47For } from "../lib/hreflang";
 import { syncLangParam } from "../lib/langParam";
 
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
@@ -24,7 +24,15 @@ function setMeta(attr: "name" | "property", key: string, content: string) {
 // Keep exactly one <link rel="alternate" hreflang="X"> per language in the
 // head, updating hrefs on navigation so they always match the current route.
 function setAlternates(path: string) {
-  for (const a of alternatesFor(path)) {
+  const alts = alternatesFor(path);
+  // A route with no translation makes no language claim. Any set left over
+  // from a previous route must go, or a Hebrew-only article would inherit the
+  // alternates of the translated page the visitor came from.
+  const keep = new Set(alts.map((a) => a.hreflang));
+  document.head.querySelectorAll("link[rel=\"alternate\"][hreflang]").forEach((el) => {
+    if (!keep.has(el.getAttribute("hreflang") || "")) el.remove();
+  });
+  for (const a of alts) {
     const sel = `link[rel="alternate"][hreflang="${a.hreflang}"]`;
     let el = document.head.querySelector(sel) as HTMLLinkElement | null;
     if (!el) {
@@ -57,7 +65,7 @@ export function PageMeta({ title, description, image, path, jsonLd, noindex }: P
     setMeta("property", "og:title", title);
     setMeta("name", "twitter:title", title);
     setMeta("property", "og:url", url);
-    setMeta("property", "og:locale", lang === "he" ? "he_IL" : "en_US");
+    setMeta("property", "og:locale", bcp47For(lang).replace("-", "_"));
     if (description) {
       setMeta("name", "description", description);
       setMeta("property", "og:description", description);

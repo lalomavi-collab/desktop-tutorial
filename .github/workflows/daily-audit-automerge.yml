@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: write
+  # Merging through a pull request needs to be able to open one.
+  pull-requests: write
 
 concurrency:
   group: daily-audit-automerge
@@ -41,11 +43,22 @@ jobs:
         working-directory: lalum-app
         run: npm run seo-check
 
-      - name: Merge to main
+      - name: Merge to main, through a pull request
+        # Not a direct push. A repository rule requires every change to main to
+        # go through a pull request, so the `git push origin main` that used to
+        # be here would have been rejected on the first run this workflow ever
+        # had. It has never run, so nothing was lost, but the daily audit's
+        # fixes would have sat on their branch behind a red workflow that
+        # nobody was watching.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git checkout main
-          git merge --no-ff "$GITHUB_SHA" -m "Auto-merge daily audit: ${GITHUB_REF_NAME}"
-          git push origin main
+          set -euo pipefail
+          branch="${GITHUB_REF_NAME}"
+          # A pull request may already exist from an earlier push to the same
+          # branch. That is not an error: the new commits are already on it.
+          gh pr create --base main --head "$branch" \
+            --title "Auto-merge daily audit: $branch" \
+            --body "הבנייה ובדיקת ה-SEO עברו על הענף הזה, וזה השער שמכניס אותו ל-main." \
+            || echo "A pull request for $branch already exists."
+          gh pr merge "$branch" --squash --delete-branch

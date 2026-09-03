@@ -33,6 +33,27 @@ const COPY = {
     card: "Followers are first to get legal analysis, regulatory updates, and insights on AI in law.",
     cta: "Follow me on LinkedIn",
   },
+  es: {
+    eyebrow: "LinkedIn",
+    title: "Desde mi LinkedIn",
+    sub: "Actualizaciones e ideas profesionales, directamente desde el perfil.",
+    card: "Los seguidores reciben primero análisis legal, actualizaciones regulatorias e ideas sobre la IA en el derecho.",
+    cta: "Sígueme en LinkedIn",
+  },
+  fr: {
+    eyebrow: "LinkedIn",
+    title: "Depuis mon LinkedIn",
+    sub: "Mises à jour et analyses professionnelles, directement depuis le profil.",
+    card: "Les abonnés reçoivent en premier des analyses juridiques, des mises à jour réglementaires et des réflexions sur l'IA dans le droit.",
+    cta: "Suivez-moi sur LinkedIn",
+  },
+  ar: {
+    eyebrow: "LinkedIn",
+    title: "من صفحتي على LinkedIn",
+    sub: "تحديثات ورؤى مهنية، مباشرة من الملف الشخصي.",
+    card: "يحصل المتابعون أولاً على التحليلات القانونية والتحديثات التنظيمية والرؤى حول الذكاء الاصطناعي في مجال القانون.",
+    cta: "تابعني على LinkedIn",
+  },
 } as const;
 
 export function LinkedInFeed() {

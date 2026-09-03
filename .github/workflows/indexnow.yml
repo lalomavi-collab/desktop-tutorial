@@ -1,0 +1,77 @@
+name: IndexNow submit
+
+# IndexNow tells Bing, Yandex, Seznam and Naver that the site's URLs changed.
+# It runs here rather than from a developer machine for one reason: the
+# submission is an outbound HTTPS POST to api.indexnow.org, and a GitHub runner
+# has open egress while sandboxed environments usually do not.
+#
+# Authentication is the key file public/<hexkey>.txt, which deploys with the
+# site and is public by design. No secret, token or credential is used here.
+#
+# Google does not participate in IndexNow. Its sitemap is discovered from
+# robots.txt or submitted in Search Console, and both ping endpoints (Google's
+# and Bing's) were retired, so there is nothing to call for Google.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lalum-app/**"
+      # The workflow's own file, so a change to the submission itself is
+      # exercised on merge instead of waiting for the next content change.
+      - ".github/workflows/indexnow.yml"
+  workflow_dispatch:
+  schedule:
+    # Safety net. IndexNow verifies a new key asynchronously and answers 403
+    # SiteVerificationNotCompleted until it finishes, so a daily run completes
+    # a submission that was still queued, and keeps the crawlers current.
+    - cron: "17 4 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build (produces dist/sitemap.xml, the source of the URL list)
+        working-directory: lalum-app
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Wait for the Cloudflare Pages deploy
+        # A push to main triggers the Pages build too. Submitting before that
+        # finishes would point the crawlers at the previous revision, so give
+        # the deploy a head start. Skipped on a manual run, where the live site
+        # is already current.
+        if: github.event_name == 'push'
+        run: sleep 180
+
+      - name: Verify the key file is live
+        # IndexNow rejects the submission if the key is not reachable at the
+        # site root, so fail early and loudly rather than sending into a 404.
+        working-directory: lalum-app
+        run: |
+          key=$(ls public | grep -E '^[a-f0-9]{16,128}\.txt$' | head -1)
+          echo "key file: $key"
+          code=$(curl -sS -o /tmp/key.txt -w '%{http_code}' "https://lalumapp.com/$key")
+          echo "HTTP $code, body: $(cat /tmp/key.txt)"
+          test "$code" = "200"
+          test "$(cat /tmp/key.txt | tr -d '[:space:]')" = "${key%.txt}"
+
+      - name: Submit to IndexNow
+        working-directory: lalum-app
+        run: npm run indexnow

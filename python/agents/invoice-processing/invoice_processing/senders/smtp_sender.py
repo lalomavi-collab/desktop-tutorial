@@ -10,6 +10,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
+from ..utils.credentials import get_secret, missing_secrets
+
 
 def prepare_accounting_email(items: list[dict], month: str, summary_text: str) -> dict:
     """
@@ -60,14 +62,27 @@ def send_accounting_email(draft: dict, confirm: str = "false") -> dict:
     if not draft.get("attachments"):
         return {"sent": False, "reason": "אין קבצי PDF מצורפים — הסוכן לא שולח ללא צרופות"}
 
-    missing_vars = [v for v in ("SMTP_HOST", "SMTP_USER", "SMTP_PASS") if not os.environ.get(v)]
-    if missing_vars:
-        return {"sent": False, "error": f"חסרים משתני .env: {', '.join(missing_vars)}"}
+    # ברירת מחדל: שליחה דרך Outlook Desktop, בלי סיסמה.
+    # SEND_MODE=smtp מחזיר למסלול SMTP עם סיסמה מהכספת.
+    if os.environ.get("SEND_MODE", "outlook_com").strip().lower() != "smtp":
+        from .outlook_com_sender import send_via_outlook
+
+        return send_via_outlook(draft, from_account=os.environ.get("SMTP_USER"))
+
+    missing_cfg = [v for v in ("SMTP_HOST", "SMTP_USER") if not os.environ.get(v)]
+    missing_pw = missing_secrets(("SMTP_PASS",))
+    if missing_cfg or missing_pw:
+        parts = []
+        if missing_cfg:
+            parts.append(f"חסרים ב-.env: {', '.join(missing_cfg)}")
+        if missing_pw:
+            parts.append("חסרה סיסמת SMTP בכספת — הרץ setup_credentials.bat")
+        return {"sent": False, "error": ". ".join(parts)}
 
     smtp_host = os.environ["SMTP_HOST"]
     smtp_port = int(os.environ.get("SMTP_PORT", 587))
     smtp_user = os.environ["SMTP_USER"]
-    smtp_pass = os.environ["SMTP_PASS"]
+    smtp_pass = get_secret("SMTP_PASS")
 
     msg = MIMEMultipart()
     msg["From"] = smtp_user

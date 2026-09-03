@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { LangProvider } from "./context/LangContext";
+import { LangProvider, langBasename } from "./context/LangContext";
 import { AuthProvider } from "./context/AuthContext";
 import { MarketingLayout } from "./components/MarketingLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -15,10 +15,20 @@ const CommandBar = lazy(() => import("./components/CommandBar").then((m) => ({ d
 // code split, so heavy pages (the ~1MB blog content behind Insights and
 // Article) load only when visited, keeping the initial bundle small.
 const Advisory = lazy(() => import("./pages/Advisory").then((m) => ({ default: m.Advisory })));
+const AiLegalAdvisory = lazy(() => import("./pages/AiLegalAdvisory").then((m) => ({ default: m.AiLegalAdvisory })));
+const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdvisory").then((m) => ({ default: m.RealEstateLegalAdvisory })));
+const Sector = lazy(() => import("./pages/Sector").then((m) => ({ default: m.Sector })));
+const LegalTools = lazy(() => import("./pages/LegalTools").then((m) => ({ default: m.LegalTools })));
+const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
+const Topic = lazy(() => import("./pages/Topic").then((m) => ({ default: m.Topic })));
 const Training = lazy(() => import("./pages/Training").then((m) => ({ default: m.Training })));
+const Course = lazy(() => import("./pages/Course").then((m) => ({ default: m.Course })));
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
+const Rulings = lazy(() => import("./pages/Rulings").then((m) => ({ default: m.Rulings })));
 const Faq = lazy(() => import("./pages/Faq").then((m) => ({ default: m.Faq })));
+const Risk = lazy(() => import("./pages/Risk").then((m) => ({ default: m.Risk })));
+const RiskResult = lazy(() => import("./pages/Risk").then((m) => ({ default: m.RiskResult })));
 const Article = lazy(() => import("./pages/Article").then((m) => ({ default: m.Article })));
 const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal })));
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
@@ -53,7 +63,7 @@ export default function App() {
   return (
     <LangProvider>
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={langBasename()}>
         <NytroLoader />
         <ScrollToHash />
         <Suspense fallback={null}>
@@ -63,15 +73,30 @@ export default function App() {
           <Route element={<MarketingLayout />}>
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />
+            <Route path="ai-legal-advisory" element={<AiLegalAdvisory />} />
+            {/* Declared before the dynamic sector route so the literal
+                segment wins the match; otherwise "tools" would be looked up as
+                a sector slug and fall through to the 404. */}
+            <Route path="ai-legal-advisory/tools" element={<LegalTools />} />
+            {/* Sector rubrics live under the AI pillar, one route for all of
+                them: a new body is an entry in sectors.ts, not a new route. */}
+            <Route path="ai-legal-advisory/:sector" element={<Sector />} />
+            <Route path="real-estate-legal-advisory" element={<RealEstateLegalAdvisory />} />
+            <Route path="mediation-dispute-resolution" element={<MediationDisputeResolution />} />
             <Route path="training" element={<Training />} />
+            <Route path="training/:slug" element={<Course />} />
             {/* /courses is the public URL for the Academy; it is the same page
                 as /training (labelled "Courses" in the nav). Without this alias
                 a direct visit to /courses fell through to the catch-all Home. */}
             <Route path="courses" element={<Training />} />
             <Route path="insights" element={<Insights />} />
+            <Route path="insights/topics/:topic" element={<Topic />} />
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
+            <Route path="rulings" element={<Rulings />} />
             <Route path="faq" element={<Faq />} />
+            <Route path="risk" element={<Risk />} />
+            <Route path="risk/:track/:band" element={<RiskResult />} />
             <Route path="legal" element={<Legal />} />
             <Route path="book" element={<Book />} />
             <Route path="login" element={<Login />} />

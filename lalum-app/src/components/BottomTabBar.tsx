@@ -1,13 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "./AppLink";
 import { Icon } from "./Icon";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
-import { officePhone } from "../lib/content";
 import { OPEN_SOS_EVENT } from "./SosMenu";
 
 // Fixed bottom navigation, shown on phones only (see .tabbar in index.css).
 // This is the signature "native app" chrome: primary destinations always in
-// reach, with the active route highlighted.
+// reach, with the active route highlighted. It stays otherwise navigational:
+// the plain phone-call action is NOT repeated here because the top header
+// already shows it on phones, and duplicating a single visible action across
+// two bars is exactly the clutter we want to avoid. SOS is the one deliberate
+// exception: it is a safety-critical action (call, WhatsApp, or Telegram in
+// one tap), not a single channel, so it earns its own always-reachable tab.
 const TABS = [
   { to: "/", end: true, icon: "home", key: "home" },
   { to: "/advisory", end: false, icon: "gavel", key: "advisory" },
@@ -38,10 +42,6 @@ export function BottomTabBar() {
         <span className="tabbar-sos-badge">{t.ui.sos.open}</span>
         <span>{t.ui.sos.tab}</span>
       </button>
-      <a href={`tel:${officePhone.tel}`} className="tabbar-item tabbar-bot" aria-label={t.ui.botCall.aria}>
-        <Icon name="headset" size={21} />
-        <span>{labels.assistant}</span>
-      </a>
       <NavLink to={user ? "/portal" : "/login"} className={({ isActive }) => "tabbar-item" + (isActive ? " active" : "")}>
         <Icon name="user" size={21} />
         <span>{labels.client}</span>

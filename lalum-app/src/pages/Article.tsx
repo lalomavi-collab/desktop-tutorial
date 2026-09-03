@@ -1,38 +1,25 @@
-import { Link, useParams, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Navigate } from "react-router-dom";
+import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
+import { cvPath } from "../lib/hreflang";
 import type { ArticleBlock } from "../lib/content";
-import { blogPosts } from "../lib/blogPosts";
 import { blogMeta } from "../lib/blogMeta";
+import { articleCorpus, relatedTo } from "../lib/related";
+import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
+import { toBlocks } from "../lib/articleBlocks";
 
-// Blog post bodies come in two shapes. Imported posts are one plain-text run
-// with no line breaks: those are grouped into readable paragraphs by sentence.
-// Authored posts use "## " on their own line for section headings and blank
-// lines between paragraphs: those render with real headings for a uniform,
-// professional structure. Both are handled by the same splitter.
-function toBlocks(body: string): ArticleBlock[] {
-  const blocks: ArticleBlock[] = [];
-  for (const raw of body.split(/\n+/)) {
-    const seg = raw.trim();
-    if (!seg) continue;
-    if (seg.startsWith("## ")) {
-      blocks.push({ type: "h2", text: seg.slice(3).trim() });
-      continue;
-    }
-    const sentences = seg.split(/(?<=[.!?])\s+/);
-    let cur: string[] = [];
-    for (const s of sentences) {
-      cur.push(s);
-      if (cur.join(" ").length > 300) {
-        blocks.push({ type: "p", text: cur.join(" ") });
-        cur = [];
-      }
-    }
-    if (cur.length) blocks.push({ type: "p", text: cur.join(" ") });
-  }
-  return blocks;
+// One module per article body, so a page loads its own and nothing else. The
+// whole corpus used to arrive as one chunk on every content page, including the
+// index, which shows titles: 451KB gzipped to render one article and 451KB to
+// render a list of links to them.
+const bodies = import.meta.glob<{ body: string }>("../data/posts/*.ts");
+
+function bodyLoader(slug: string) {
+  return bodies[`../data/posts/${slug}.ts`];
 }
 
 function Block({ block }: { block: ArticleBlock }) {
@@ -58,27 +45,50 @@ function Block({ block }: { block: ArticleBlock }) {
           ))}
         </ul>
       );
+    case "cta":
+      return (
+        <p style={{ margin: "8px 0 28px" }}>
+          <Link to={block.to} className="btn btn-clay" style={{ display: "inline-flex" }}>{block.text}</Link>
+        </p>
+      );
   }
 }
 
 export function Article() {
   const { slug } = useParams();
-  const { t, dir } = useLang();
+  const { t, dir, lang } = useLang();
   const article = t.data.articles.find((a) => a.slug === slug);
-  const post = article ? undefined : blogPosts.find((b) => b.slug === slug);
+  const post = article ? undefined : blogMeta.find((b) => b.slug === slug);
+
+  // The body arrives on its own. Until it does the page renders its heading,
+  // standfirst and links, which are already in the prerendered HTML, so the
+  // reader sees the article's own page rather than a spinner and the crawler
+  // reads the full prose regardless.
+  const [body, setBody] = useState<string | null>(null);
+  useEffect(() => {
+    if (!slug || article) return;
+    let live = true;
+    const load = bodyLoader(slug);
+    if (!load) return;
+    void load().then((m) => { if (live) setBody(m.body); });
+    return () => { live = false; };
+  }, [slug, article]);
+
   if (!article && !post) return <Navigate to="/insights" replace />;
 
   const view = article
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
-    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(post!.body) };
+    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: body ? toBlocks(body) : [] };
 
-  // Related reading: the same curated-then-imported ordering the Insights list
-  // uses, minus the current piece. These internal links keep readers (and
-  // crawlers) moving between articles instead of dead-ending after one.
-  const related = [
-    ...t.data.articles.map((a) => ({ slug: a.slug, title: a.title })),
-    ...blogMeta.map((b) => ({ slug: b.slug, title: b.title })),
-  ].filter((a) => a.slug !== slug).slice(0, 3);
+  // Related reading: the three pieces closest to this one in subject, scored by
+  // relatedTo over the whole corpus. These internal links keep readers (and
+  // crawlers) moving between articles instead of dead-ending after one, and
+  // being topical is what makes them worth following in either role.
+  const related = relatedTo(slug ?? "", articleCorpus(t));
+  // The subject this piece belongs to. Shown as a link so a reader who wants
+  // more of the same has somewhere to go, and so the topic hubs are reachable
+  // from the articles rather than only from the index.
+  const topic = topicOfArticle(t, slug ?? "");
 
   // schema.org datePublished must be ISO 8601. The visible date stays the
   // human string; the structured-data field gets a parsed ISO date, or is
@@ -116,15 +126,15 @@ export function Article() {
                 name: "LALUM",
                 logo: { "@type": "ImageObject", url: "https://lalumapp.com/icon-512.png" },
               },
-              mainEntityOfPage: `https://lalumapp.com/insights/${slug}`,
+              mainEntityOfPage: `https://lalumapp.com/insights/${slug}/`,
               image: view.cover || "https://lalumapp.com/og-card-v2.png",
             },
             {
               "@type": "BreadcrumbList",
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: "https://lalumapp.com/" },
-                { "@type": "ListItem", position: 2, name: "Insights", item: "https://lalumapp.com/insights" },
-                { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}` },
+                { "@type": "ListItem", position: 2, name: "Insights", item: "https://lalumapp.com/insights/" },
+                { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}/` },
               ],
             },
           ],
@@ -160,11 +170,22 @@ export function Article() {
             <span style={{ fontFamily: "var(--serif)", fontSize: 26, color: "var(--clay)" }} dir="ltr">AL</span>
           </div>
           <div>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>{t.home.founderName}</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 19, fontWeight: 500 }}>
+              <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{t.home.founderName}</a>
+            </div>
             <div style={{ fontSize: 13, color: "var(--slate)", marginTop: 4 }}>{t.ui.article.seal}</div>
           </div>
         </div>
       </div>
+
+      {topic && (
+        <section className="wrap" style={{ maxWidth: 760, padding: "0 32px" }}>
+          <p style={{ fontSize: 14.5, color: "var(--slate)", margin: 0 }}>
+            {t.insights.heroPill}:{" "}
+            <Link to={topicPath(topic.slug)} style={{ color: "var(--clay)" }}>{topic.name}</Link>
+          </p>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="section-line">

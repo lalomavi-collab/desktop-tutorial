@@ -1,8 +1,8 @@
 """חישוב נתיב תיקיית החודש בתוך התיקייה הכללית.
 
-המוסכמה במשרד: תיקייה לכל חודש בשם עברי (למשל "יולי").
-הפונקציה מזהה גם תיקיות קיימות בפורמטים אחרים ("יולי 2026", "2026-07")
-כדי לא ליצור כפילות, ויוצרת בשם העברי אם אין תיקייה קיימת.
+המוסכמה במשרד: תיקייה לכל חודש בפורמט "YYYY-MM שם" (למשל "2026-07 יולי").
+הפונקציה מזהה גם מוסכמות ישנות ("יולי", "יולי 2026", "2026-07") כדי לא
+ליצור כפילות, ויוצרת במוסכמה הנוכחית אם אין תיקייה קיימת.
 """
 
 from datetime import datetime
@@ -20,8 +20,8 @@ HEBREW_MONTHS = {
 def resolve_month_folder(month: str = "", create: bool = True) -> Path:
     """
     מחזיר את תיקיית החודש. month בפורמט "YYYY-MM", ריק = החודש הנוכחי.
-    מחפש תיקייה קיימת לפי: שם עברי, "שם עברי שנה", "YYYY-MM".
-    אם אין — יוצר תיקייה בשם העברי (create=True).
+    מחפש תיקייה קיימת בכל המוסכמות שהיו בשימוש, ואם אין — יוצר
+    במוסכמה הנוכחית "YYYY-MM שם" (create=True).
     """
     if not month.strip():
         month = datetime.now().strftime("%Y-%m")
@@ -29,13 +29,17 @@ def resolve_month_folder(month: str = "", create: bool = True) -> Path:
     hebrew = HEBREW_MONTHS[int(mon)]
 
     base = get_base_folder()
-    candidates = [hebrew, f"{hebrew} {year}", month]
+    # מזהה כל מוסכמת שם קיימת כדי לא ליצור תיקייה כפולה לאותו חודש:
+    # "אוגוסט", "אוגוסט 2026", "2026-08", "2026-08 אוגוסט"
+    candidates = [hebrew, f"{hebrew} {year}", month, f"{month} {hebrew}"]
     for name in candidates:
         target = base / name
         if target.is_dir():
             return target
 
-    target = base / hebrew
+    # יצירה במוסכמה הנוכחית. יצירה בשם העברי בלבד הייתה מייצרת תיקייה
+    # שנייה לאותו חודש לצד תיקיות "YYYY-MM שם" הקיימות, והמסמכים היו מתפצלים.
+    target = base / f"{month} {hebrew}"
     if create:
         target.mkdir(parents=True, exist_ok=True)
     return target

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { ZoomMark, TeamsMark, MeetMark, WhatsAppMark, TelegramMark, GPayMark, LeumiMark } from "./BrandMarks";

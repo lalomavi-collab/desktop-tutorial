@@ -11,6 +11,9 @@ from datetime import datetime
 from email.header import decode_header
 from pathlib import Path
 
+from ..utils.credentials import get_secret, missing_secrets
+from .filters import is_expense_document
+from .outlook_com_collector import collect_from_outlook_com
 from .base_folder import get_base_folder
 from .month_path import resolve_month_folder
 
@@ -28,15 +31,6 @@ def _decode_str(value: str) -> str:
 
 def _month_folder(base: Path, month: str) -> Path:
     return resolve_month_folder(month)
-
-
-def _is_invoice_subject(subject: str) -> bool:
-    keywords = [
-        "חשבונית", "invoice", "receipt", "קבלה", "פקטורה",
-        "חשבון עסקה", "google ads", "gett", "anthropic", "justificante",
-    ]
-    s = subject.lower()
-    return any(k in s for k in keywords)
 
 
 def _parse_date(date_str: str) -> str:
@@ -79,6 +73,9 @@ def collect_from_mailbox(
         _, msg_ids = conn.search(None, f'(SINCE "{since}" BEFORE "{before}")')
         ids = msg_ids[0].split()
 
+        bank_senders = [s.strip().lower() for s in
+                        os.environ.get("BANK_STATEMENT_SENDERS", "").split(",") if s.strip()]
+
         for mid in ids:
             _, data = conn.fetch(mid, "(RFC822)")
             msg = email.message_from_bytes(data[0][1])
@@ -86,7 +83,22 @@ def collect_from_mailbox(
             sender = msg.get("From", "")
             date_str = _parse_date(msg.get("Date", ""))
 
-            if not _is_invoice_subject(subject):
+            # דף חשבון מהבנק: מתויק אוטומטית לתת-תיקיית _בנק החסויה,
+            # לפני כל לוגיקת החשבוניות, כדי שלא יירשם בטעות כהוצאה.
+            if bank_senders and any(b in sender.lower() for b in bank_senders):
+                bank_dir = dest / "_בנק"
+                for part in msg.walk():
+                    fname = part.get_filename()
+                    if not fname:
+                        continue
+                    fname = _decode_str(fname)
+                    if not fname.lower().endswith((".pdf", ".csv", ".xlsx", ".xls")):
+                        continue
+                    bank_dir.mkdir(parents=True, exist_ok=True)
+                    safe = re.sub(r"[^\w\.\-]", "_", fname)
+                    target = bank_dir / safe
+                    if not target.exists():
+                        target.write_bytes(part.get_payload(decode=True))
                 continue
 
             # חיפוש צרופת PDF — רשומה אחת לכל מייל
@@ -112,6 +124,9 @@ def collect_from_mailbox(
                     pdf_found = {"filename": safe_name, "path": str(dest_path)}
                     break  # רק צרופה ראשונה
 
+            if not is_expense_document(subject, sender, has_pdf=pdf_found is not None):
+                continue
+
             collected.append({
                 "filename": pdf_found["filename"] if pdf_found else None,
                 "path": pdf_found["path"] if pdf_found else None,
@@ -136,44 +151,37 @@ def collect_from_mailbox(
 
 def collect_from_emails(month: str) -> dict:
     """
-    אוסף חשבוניות משתי תיבות המייל (Outlook + Gmail).
-    מוריד PDFs לתיקיית ~/Desktop/LALUM/חשבוניות/YYYY-MM/.
+    אוסף הוצאות מתיבת Outlook בלבד.
+
+    האיסוף עובר דרך פרופיל Outlook Desktop ב-COM, בלי סיסמאות ובלי OAuth.
+    מיקרוסופט חסמה IMAP בסיסמה ב-Exchange Online, ולכן זה גם המסלול היחיד
+    שעובד מול התיבה הזו.
+
+    MAIL_MODE=imap מפעיל מסלול IMAP חלופי לאותה תיבה, עם סיסמה מהכספת.
     """
     base = get_base_folder()
+    errors = []
+    all_items = []
 
-    required = ["IMAP1_HOST", "IMAP1_USER", "IMAP1_PASS", "IMAP2_HOST", "IMAP2_USER", "IMAP2_PASS"]
-    missing = [v for v in required if not os.environ.get(v)]
-    if missing:
-        return {
-            "month": month,
-            "total": 0,
-            "items": [],
-            "error": f"חסרים משתני .env: {', '.join(missing)}. העתק את .env.example לקובץ .env ומלא את הפרטים.",
-        }
+    if os.environ.get("MAIL_MODE", "outlook_com").strip().lower() == "imap":
+        host, user = os.environ.get("IMAP1_HOST"), os.environ.get("IMAP1_USER")
+        pw = get_secret("IMAP1_PASS")
+        if not host or not user:
+            errors.append("חסרים IMAP1_HOST/IMAP1_USER ב-.env")
+        elif not pw:
+            errors.append("חסרה סיסמת IMAP בכספת — הרץ setup_credentials.bat")
+        else:
+            all_items += collect_from_mailbox(host, int(os.environ.get("IMAP1_PORT", 993)),
+                                              user, pw, month, base, "Outlook")
+    else:
+        all_items += collect_from_outlook_com(month)
 
-    outlook_items = collect_from_mailbox(
-        host=os.environ["IMAP1_HOST"],
-        port=int(os.environ.get("IMAP1_PORT", 993)),
-        user=os.environ["IMAP1_USER"],
-        password=os.environ["IMAP1_PASS"],
-        month=month,
-        base_folder=base,
-        label="Outlook",
-    )
+    for it in list(all_items):
+        if it.get("error"):
+            errors.append(f"{it.get('source')}: {it['error']}")
+            all_items.remove(it)
 
-    gmail_items = collect_from_mailbox(
-        host=os.environ["IMAP2_HOST"],
-        port=int(os.environ.get("IMAP2_PORT", 993)),
-        user=os.environ["IMAP2_USER"],
-        password=os.environ["IMAP2_PASS"],
-        month=month,
-        base_folder=base,
-        label="Gmail",
-    )
-
-    all_items = outlook_items + gmail_items
-    return {
-        "month": month,
-        "total": len(all_items),
-        "items": all_items,
-    }
+    result = {"month": month, "total": len(all_items), "items": all_items}
+    if errors:
+        result["error"] = " | ".join(errors)
+    return result

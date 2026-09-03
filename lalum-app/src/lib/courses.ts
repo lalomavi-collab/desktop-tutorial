@@ -17,7 +17,26 @@ export type Course = {
   icon: string; // id in the shared icon sprite (public/icons.svg)
   accent: string; // warm brand accent for the card
   image: string; // /courses/<id>.jpg, shown when present (graceful fallback otherwise)
+  // Optional. Present on the Academy Pro line, absent on the In-House line,
+  // so the existing ten programs keep their exact rendering.
+  track?: "inhouse" | "pro";
+  frame?: { sessions: string; hours: string; group: string; place: string };
+  tailoringLabel?: string;
+  ctaLabel?: string;
 };
+
+// The route slug of a course is its id. Kept as a helper so call sites read
+// clearly and a future rename touches one place.
+export function courseSlug(c: Course): string {
+  return c.id;
+}
+
+// Shown on every card and every course page. Dr. Lalum teaches all programs.
+export const instructorLine = "מועבר על ידי ד״ר אברהם ללום, עורך דין ונוטריון, דוקטור למשפט וכלכלה.";
+
+// Mandatory on every card and course page.
+export const courseDisclaimer =
+  "התוכנית היא הכשרה מקצועית ואינה מהווה ייעוץ משפטי, שמאי או חשבונאי בתיק מסוים.";
 
 // Shared framework, identical across every track.
 export const courseFramework = {
@@ -32,10 +51,10 @@ export const courseFramework = {
 export const courses: Course[] = [
   {
     id: "lalum-academy-real-estate",
-    category: "נדל\"ן והתחדשות עירונית",
-    title: "LALUM Academy: AI בעסקאות נדל\"ן מורכב והתחדשות עירונית",
-    audience: "מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל\"ן.",
-    tailoring: "התאמה לסוג הפרויקטים של החברה (תמ\"א 38, פינוי-בינוי, מכר מסחרי, עסקאות קומבינציה).",
+    category: "נדל״ן והתחדשות עירונית",
+    title: "LALUM Academy: AI בעסקאות נדל״ן מורכב והתחדשות עירונית",
+    audience: "מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.",
+    tailoring: "התאמה לסוג הפרויקטים של החברה (תמ״א 38, פינוי-בינוי, מכר מסחרי, עסקאות קומבינציה).",
     capstoneName: "Smart Real Estate Due-Diligence Engine",
     capstoneDesc: "סוכן AI פנימי הסורק טיוטות הסכמים, מזהה חשיפות מיסוי, בוחן הוגנות תמורות (יחסית מול אחידה לאור פסיקות עדכניות) ומפיק מפת סיכונים.",
     icon: "pin",
@@ -64,7 +83,7 @@ export const courses: Course[] = [
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, System Prompts וארכיטקטורת מודלים לעבודה חוזית ותאגידית" },
       { n: 2, title: "הכלים בפעולה: אוטומציה של ניתוח אסימטריה בחוזים מסחריים והגבלות אחריות" },
-      { n: 3, title: "מה מותר ומה אסור, חיסיון עו\"ד-לקוח מול AI (הלכת Heppner), תוצרי עבודה ודיני עבודה" },
+      { n: 3, title: "מה מותר ומה אסור, חיסיון עו״ד-לקוח מול AI (הלכת Heppner), תוצרי עבודה ודיני עבודה" },
       { n: 4, title: "ממשל תאגידי, בעיית הקופסה השחורה ואחריות תאגידים באלגוריתמים אוטונומיים" },
       { n: 5, title: "סדנת פיתוח מעשית, בניית סוכן ניהול המשא ומתן והסיכונים של הארגון" },
       { n: 6, title: "הצגת הפרויקטים, גיבוש תקנון ציות פנימי (Internal AI Policy) והטמעה" },
@@ -75,7 +94,7 @@ export const courses: Course[] = [
     category: "ליטיגציה ויישוב סכסוכים",
     title: "LALUM Academy: ליטיגציה, ראיות דיגיטליות, גישור ובוררות",
     audience: "ליטיגטורים, מנהלי מחלקות סכסוכים, בוררים, מגשרים ומנהלי סיכונים משפטיים.",
-    tailoring: "התאמה לסוג הסכסוכים האופייני לחברה (אזרחי-מסחרי, נדל\"ן, תאגידי).",
+    tailoring: "התאמה לסוג הסכסוכים האופייני לחברה (אזרחי-מסחרי, נדל״ן, תאגידי).",
     capstoneName: "Litigation & Dispute Strategy Suite",
     capstoneDesc: "כלי המנתח כתבי טענות של הצד שכנגד, מזהה פערים ראייתיים, ומכין חקירות נגדיות וסעיפי בוררות או גישור.",
     icon: "scale",
@@ -94,7 +113,7 @@ export const courses: Course[] = [
     id: "lalum-academy-hitech",
     category: "הייטק והנדסה רגולטורית",
     title: "LALUM Academy: AI Legal & Regulatory Engineering for Hi-Tech",
-    audience: "יועצים משפטיים בהייטק (GC), מנהלי מוצר (VP Product/CPO), סמנכ\"לי טכנולוגיה (CTO) ומנהלי R&D.",
+    audience: "יועצים משפטיים בהייטק (GC), מנהלי מוצר (VP Product/CPO), סמנכ״לי טכנולוגיה (CTO) ומנהלי R&D.",
     tailoring: "התאמה לארכיטקטורת המוצר של החברה, לשווקי היעד ולדרישות הרגולטוריות שלה.",
     capstoneName: "AI Product Governance Framework & Risk Engine",
     capstoneDesc: "סוכן AI המבצע סקירת מוצר, מזהה חשיפות IP ורגולציה (EU AI Act/FTC), ומפיק מפת ציות אוטומטית.",

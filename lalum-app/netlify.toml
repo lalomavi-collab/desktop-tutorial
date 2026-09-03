@@ -2,8 +2,7 @@
   command = "npm run build"
   publish = "dist"
 
-# SPA fallback: serve index.html for any client-side route.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# All redirect rules (legacy Wix paths -> new app, plus the SPA fallback) live in
+# public/_redirects, evaluated top to bottom. They are intentionally NOT declared
+# here: netlify.toml redirects are processed before the _redirects file, so a
+# catch-all here would shadow the specific /post/ and page rules in _redirects.

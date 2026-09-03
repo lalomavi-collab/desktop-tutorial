@@ -54,7 +54,12 @@ export function howToNode(name: string, steps: Step[]): object | null {
 // Course node (schema.org/Course). Use on a training/course page. Returns null
 // without a name. Always carries a provider and a CourseInstance so the block
 // meets Google's Course requirements.
-export function courseNode(name: string, description: string, workload = "PT24H"): object | null {
+export function courseNode(
+  name: string,
+  description: string,
+  workload = "PT24H",
+  mode: "onsite" | "online" = "onsite"
+): object | null {
   const n = (name ?? "").trim();
   if (!n) return null;
   const d = (description ?? "").trim();
@@ -63,7 +68,13 @@ export function courseNode(name: string, description: string, workload = "PT24H"
     name: n,
     ...(d ? { description: d } : {}),
     provider: { "@type": "Organization", name: "LALUM", url: "https://lalumapp.com/" },
-    hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", courseWorkload: workload },
+    instructor: {
+      "@type": "Person",
+      name: "Dr. Avraham Lalum",
+      jobTitle: "Attorney, Notary and Ph.D. in Law and Economics",
+      url: "https://lalumapp.com/",
+    },
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: mode, courseWorkload: workload },
   };
 }
 

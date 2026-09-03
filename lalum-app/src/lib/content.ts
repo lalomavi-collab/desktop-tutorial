@@ -32,7 +32,10 @@ export type Why = { icon: IconName; title: string; body: string };
 export type Faq = { q: string; a: string };
 export type Service = { icon: IconName; title: string; body: string };
 export type Module = { icon: IconName; title: string; body: string };
-export type Testimonial = { quote: string; attr: string };
+// Anonymous, detailed engagement scenarios (no invented names, quotes, or
+// logos): sector, the challenge, what we did, and the outcome. Stronger and more
+// honest than an unattributed testimonial for Enterprise positioning.
+export type Testimonial = { sector: string; challenge: string; work: string; outcome: string };
 export type Plan = {
   name: string;
   tagline: string;
@@ -42,13 +45,29 @@ export type Plan = {
   cta: string;
 };
 export type Audience = { icon: IconName; title: string; body: string; points: string[] };
+
+// A homepage "which one are you?" path: a named audience, a one-line value, and
+// a link to where that audience is served.
+// One audience on the home page router. The rubrics are the point: a visitor
+// who says who they are gets four entries written for them, each pointing at a
+// page that already exists, instead of one card pointing at the practice hub.
+export type AudienceRubric = { label: string; body: string; to: string };
+export type AudiencePath = {
+  icon: IconName;
+  label: string;
+  body: string;
+  rubrics: AudienceRubric[];
+  cta: string;
+  to: string;
+};
 export type Format = { meta: string; title: string; body: string };
 
 export type ArticleBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
   | { type: "quote"; text: string }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  | { type: "cta"; text: string; to: string };
 
 export type Article = {
   slug: string;
@@ -85,17 +104,21 @@ export const telegramUrl = "https://t.me/Lalumbot";
 // Portal billing area, and only while payments are switched on below.
 export const accountingUrl = "https://private.invoice4u.co.il/newsite/he/dashboard";
 
-// Meeting formats offered on the Book page. Each maps to a Calendly event type
-// wired in Calendly to the right conferencing (Zoom / Microsoft Teams) or
-// location (phone / in-person) and to the firm's Outlook calendar. Teams is the
-// second video option (it works with Outlook, unlike Google Meet). A blank
-// `url` falls back to the base link.
-export const bookingBaseUrl = "https://calendly.com/lalomavi/30min";
+// Meeting formats offered on the Book page. Each maps to a Zoho Bookings
+// service, wired in Zoho to the right conferencing (Zoom / Microsoft Teams) or
+// location (phone / in-person) and synced to the firm's Outlook calendar. A
+// blank `url` falls back to the base link; when both are blank, Book.tsx shows
+// the manual request form instead of a broken embed.
+//
+// TODO: paste the real Zoho Bookings service links here once created (see
+// docs/INFRASTRUCTURE.md, "Embedded scheduling"). Until then these stay blank
+// on purpose, so the site never embeds a dead link.
+export const bookingBaseUrl = "";
 export const meetingTypes = [
-  { key: "zoom", icon: "video", url: "https://calendly.com/lalomavi/zoom" },
-  { key: "teams", icon: "video", url: "https://calendly.com/lalomavi/teams" },
-  { key: "phone", icon: "phone", url: "https://calendly.com/lalomavi/phone" },
-  { key: "inperson", icon: "pin", url: "https://calendly.com/lalomavi/in-person" },
+  { key: "zoom", icon: "video", url: "" },
+  { key: "teams", icon: "video", url: "" },
+  { key: "phone", icon: "phone", url: "" },
+  { key: "inperson", icon: "pin", url: "" },
 ] as const;
 export type MeetingKey = (typeof meetingTypes)[number]["key"];
 
@@ -155,5 +178,8 @@ export const externalLinks = {
 export const officeAddress = {
   en: ["Herzliya Business Park, Building G", "85 Medinat HaYehudim St., 3rd Floor", "Herzliya Pituach 4676670, Israel"],
   he: ["פארק עסקים הרצליה, בניין G", "רחוב מדינת היהודים 85, קומה 3", "הרצליה פיתוח 4676670"],
+  es: ["Parque Empresarial Herzliya, Edificio G", "Calle Medinat HaYehudim 85, 3.ª planta", "Herzliya Pituach 4676670, Israel"],
+  fr: ["Parc d'affaires de Herzliya, Bâtiment G", "85 rue Medinat HaYehudim, 3e étage", "Herzliya Pituach 4676670, Israël"],
+  ar: ["مجمع هرتسليا التجاري، مبنى G", "85 Medinat HaYehudim St.، الطابق 3", "هرتسليا بيتواح 4676670، إسرائيل"],
   full: "85 Medinat HaYehudim St, Herzliya Pituach 4676670, Israel",
 };
