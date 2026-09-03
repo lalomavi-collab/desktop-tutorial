@@ -4,6 +4,9 @@ import { ContactCTA } from "../components/ContactCTA";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { PageMeta } from "../components/PageMeta";
 import { PreDealStrategy } from "../components/PreDealStrategy";
+import { PracticeAreas } from "../components/PracticeAreas";
+import { MnaSpotlight } from "../components/MnaSpotlight";
+import { Capabilities } from "../components/Capabilities";
 import { PracticeHub } from "../components/PracticeHub";
 import { FocusAreas } from "../components/FocusAreas";
 import { PracticeFaq } from "../components/PracticeFaq";
@@ -61,6 +64,12 @@ export function Advisory() {
           </div>
         </div>
       </section>
+
+      {/* CORE LEGAL PRACTICE AREAS */}
+      <PracticeAreas />
+
+      {/* M&A spotlight: mergers and acquisitions as a headline practice */}
+      <MnaSpotlight />
 
       {/* PRE-DEAL STRATEGY + interactive risk calculator */}
       <PreDealStrategy />
@@ -134,6 +143,44 @@ export function Advisory() {
           </div>
         </div>
       </section>
+
+      {/* CONSULTATION FORMAT. It sat on the home page, which meant the one place
+          that explained how a meeting actually happens was the page a reader
+          leaves first. It belongs beside the engagement plans. */}
+      <section className="section-line">
+        <div className="wrap" style={{ maxWidth: 720, padding: "64px 32px" }}>
+          <div className="card" style={{ padding: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
+              <span className="serif" style={{ fontSize: 20, lineHeight: 1.25 }}>{t.home.cardTitle}</span>
+              <span style={{ flex: "none", fontSize: 12, color: "var(--clay)", fontWeight: 600, background: "var(--clay-tint)", padding: "4px 10px", borderRadius: 9999 }}>{t.home.advisoryBadge}</span>
+            </div>
+            <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--slate)", margin: "16px 0 4px" }}>{t.home.advisoryIntro}</p>
+            <div className="label" style={{ margin: "20px 0 12px" }}>{t.home.advisoryFormat}</div>
+            <div className="grid grid-2" style={{ gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="user" size={19} /></span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{t.home.advisoryInPersonTitle}</div>
+                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{t.home.advisoryInPersonBody}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
+                <span className="icon-badge" style={{ width: 38, height: 38, borderRadius: 11, flex: "none" }}><Icon name="spark" size={19} /></span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{t.home.advisoryVirtualTitle}</div>
+                  <div style={{ fontSize: 13.5, color: "var(--slate)", lineHeight: 1.5 }}>{t.home.advisoryVirtualBody}</div>
+                </div>
+              </div>
+            </div>
+            <Link to="/book" className="btn btn-clay" style={{ width: "100%", justifyContent: "center", marginTop: 22 }}>
+              <Icon name="calendar" size={17} /> {t.home.advisoryCta}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CAPABILITIES */}
+      <Capabilities />
 
       {/* PRACTICE-AREA FAQ with FAQPage schema */}
       <PracticeFaq />

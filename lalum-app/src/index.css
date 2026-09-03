@@ -2820,46 +2820,119 @@ html.a11y-reduce-motion *::after {
   color: var(--ink);
 }
 
-/* Audience paths: "which one are you?" cards, each a link to where that
-   audience is served. */
+/* The routes into the practice, as keyword buttons. Each route is one line of
+   heading and a wrapping row of keys, so four routes and seventeen destinations
+   occupy a band a reader passes in a couple of seconds rather than a page of
+   prose they have to read to leave. */
+.audience-band {
+  background:
+    radial-gradient(120% 80% at 82% 0%, var(--clay-tint) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.022) 0%, transparent 40%);
+}
+.audience-head {
+  max-width: 60ch;
+  margin: 0 0 38px;
+}
+.audience-lede {
+  font-size: 16.5px;
+  line-height: 1.68;
+  color: var(--slate);
+  margin: 16px 0 0;
+}
 .audience-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 52px;
 }
-/* .card.audience-card beats the a.card { display: block } base rule. */
-.card.audience-card {
+.audience-route {
+  padding-top: 20px;
+  border-top: 1px solid var(--line-strong);
+}
+.audience-route-name {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-.audience-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--clay-soft);
-  box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
-}
-.audience-label {
+  align-items: center;
+  gap: 10px;
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
   color: var(--ink);
+  margin: 0 0 16px;
 }
-.audience-body {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--slate);
-  flex: 1;
-}
-.audience-cta {
-  font-size: 13.5px;
-  font-weight: 700;
+.audience-route-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--clay-tint);
   color: var(--clay);
+  flex: none;
+}
+.audience-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.audience-key {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.audience-key:hover,
+.audience-key:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+/* The route's own page, set apart from the keywords that lead into it. It
+   takes a row of its own: wrapped into the last row of keys it read as one
+   more keyword rather than as the way through to the page itself. */
+.audience-key-cta {
+  flex-basis: 100%;
+  border-color: transparent;
+  background: transparent;
+  color: var(--clay);
+  padding-inline: 6px;
   margin-top: 4px;
 }
-@media (max-width: 700px) {
+.audience-key-cta:hover,
+.audience-key-cta:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  color: var(--clay);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transform: none;
+}
+/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
+   would point away from the link it belongs to. */
+[dir="rtl"] .audience-key-cta span {
+  display: inline-block;
+  transform: scaleX(-1);
+  margin-inline-start: 5px;
+}
+[dir="ltr"] .audience-key-cta span {
+  margin-inline-start: 5px;
+}
+@media (max-width: 860px) {
   .audience-grid {
     grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .audience-head {
+    margin-bottom: 30px;
   }
 }
 
@@ -3156,10 +3229,51 @@ html.a11y-reduce-motion *::after {
   .route-view .grid > *:nth-child(5) { animation-delay: 0.31s; }
   .route-view .grid > *:nth-child(6) { animation-delay: 0.38s; }
 }
+/* A tinted ground, for breaking a long run of pale sections. Paired with the
+   dark bands and the paper ones it gives the page three grounds to alternate
+   between instead of one. */
+.band-tint {
+  background: linear-gradient(180deg, var(--clay-tint) 0%, transparent 86%);
+}
+
+/* Section reveal on scroll. The classes are added by useScrollReveal, never
+   by the markup, so a document whose script never runs is fully visible: the
+   stylesheet alone can hide nothing. */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.reveal-in {
+  animation: lalum-reveal 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes lalum-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* A section that was never scrolled to would otherwise print blank. */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Respect users who ask for less motion: no lifts, no reveals, no drift. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
   .card:hover,
   .btn-clay:hover {

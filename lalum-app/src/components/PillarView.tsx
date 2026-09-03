@@ -1,4 +1,5 @@
 import { Link } from "../components/AppLink";
+import { scriptDir } from "../lib/hreflang";
 import { PageMeta } from "../components/PageMeta";
 import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
@@ -124,7 +125,9 @@ export function PillarView({ P }: { P: PillarPage }) {
           {P.related.map((r) => (
             <Link key={r.slug} to={`/insights/${r.slug}`} className="card" style={{ display: "block" }}>
               <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--clay)" }}>{P.ui.articleLabel}</span>
-              <h3 className="h3" style={{ fontSize: 18, margin: "10px 0 0", lineHeight: 1.35 }}>{r.title}</h3>
+              {/* The corpus is Hebrew and these pages are not, so the title
+                  states its own script rather than inheriting the page's. */}
+              <h3 className="h3" style={{ fontSize: 18, margin: "10px 0 0", lineHeight: 1.35 }} {...scriptDir(r.title)}>{r.title}</h3>
               <span className="card-go">{P.ui.read} &rarr;</span>
             </Link>
           ))}

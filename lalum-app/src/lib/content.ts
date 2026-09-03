@@ -48,7 +48,18 @@ export type Audience = { icon: IconName; title: string; body: string; points: st
 
 // A homepage "which one are you?" path: a named audience, a one-line value, and
 // a link to where that audience is served.
-export type AudiencePath = { label: string; body: string; to: string; cta: string };
+// One audience on the home page router. The rubrics are the point: a visitor
+// who says who they are gets four entries written for them, each pointing at a
+// page that already exists, instead of one card pointing at the practice hub.
+export type AudienceRubric = { label: string; body: string; to: string };
+export type AudiencePath = {
+  icon: IconName;
+  label: string;
+  body: string;
+  rubrics: AudienceRubric[];
+  cta: string;
+  to: string;
+};
 export type Format = { meta: string; title: string; body: string };
 
 export type ArticleBlock =

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { scriptDir } from "../lib/hreflang";
 import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { courses, courseFramework, courseSlug, instructorLine, courseDisclaimer, type Course } from "../lib/courses";
@@ -75,7 +76,7 @@ export function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Cours
 
       <div className="course-body">
         <h3 className="course-title serif">
-          <Link to={`/training/${slug}`} className="course-title-link">{c.title}</Link>
+          <Link to={`/training/${slug}`} className="course-title-link" {...scriptDir(c.title)}>{c.title}</Link>
         </h3>
 
         <div className="course-frame">

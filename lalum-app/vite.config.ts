@@ -615,6 +615,15 @@ function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
   const out = [
     `        <h1>${esc(`${h.heroH1a} ${h.heroH1b}`)}</h1>`,
     `        <p>${esc(h.heroLede)}</p>`,
+    // The audience router, flattened. On screen it is four tabs over four
+    // panels of rubrics; without this, the page a crawler reads never says who
+    // the practice serves or where each of those readers is supposed to go.
+    `        <h2>${esc(h.audienceTitle)}</h2>`,
+    ...h.audiences.flatMap((a) => [
+      `        <h3>${esc(a.label)}</h3>`,
+      `        <p>${esc(a.body)}</p>`,
+      `        <ul>${a.rubrics.map((r) => `<li><a href="${r.to}/">${esc(r.label)}</a>: ${esc(r.body)}</li>`).join("")}</ul>`,
+    ]),
     `        <h2>${esc(`${h.aboutH2a} ${h.aboutH2b}`)}</h2>`,
     `        <p>${esc(h.aboutP1)}</p>`,
     `        <p>${esc(h.aboutP2)}</p>`,

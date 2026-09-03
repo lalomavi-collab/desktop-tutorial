@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { scriptDir } from "../lib/hreflang";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
@@ -40,7 +41,9 @@ function RulingCard({ r }: { r: Ruling }) {
   return (
     <article style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 18, padding: "26px 28px", borderTop: "3px solid #9a7328" }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "baseline", justifyContent: "space-between" }}>
-        <h2 className="serif" style={{ fontSize: 21, fontWeight: 500, margin: 0 }}>{rulingTitle(r)}</h2>
+        {/* Foreign captions and courts sit in a Hebrew page. Without their own
+            direction the citation dot and the date land on the wrong side. */}
+        <h2 className="serif" style={{ fontSize: 21, fontWeight: 500, margin: 0 }} {...scriptDir(rulingTitle(r))}>{rulingTitle(r)}</h2>
         <button
           type="button"
           className="btn btn-outline"
@@ -56,8 +59,12 @@ function RulingCard({ r }: { r: Ruling }) {
         </button>
       </div>
 
+      {/* The court is usually English and the date label is Hebrew, so the
+          direction belongs on each part and not on the line that holds both:
+          marking the whole line by the court left six Hebrew dates flowing the
+          wrong way. */}
       <p className="muted" style={{ fontSize: 13.5, margin: "8px 0 0" }}>
-        {r.court} · {r.dateLabel}
+        <span {...scriptDir(r.court)}>{r.court}</span> · <span {...scriptDir(r.dateLabel)}>{r.dateLabel}</span>
         {r.bench ? ` · ${c.bench}: ${r.bench}` : ""}
       </p>
 
@@ -104,7 +111,7 @@ function ExternalPanel({ title, body, terms, q }: { title: string; body: string;
 
   return (
     <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 18, padding: "26px 28px" }}>
-      <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }}>{title}</h2>
+      <h2 className="serif" style={{ fontSize: 22, fontWeight: 500, margin: 0 }} {...scriptDir(title)}>{title}</h2>
       {body && <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: "10px 0 0" }}>{body}</p>}
 
       <ul style={{ listStyle: "none", padding: 0, margin: "18px 0 0", display: "flex", flexDirection: "column", gap: 14 }}>
