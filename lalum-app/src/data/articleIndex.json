@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "eu-ai-act-roles-obligations": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-high-risk-classification",
+   "ai-governance-board-framework"
+  ]
+ },
  "ai-product-liability-eu": {
   "topic": "ai-governance",
   "related": [
@@ -84,7 +92,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "decision-oriented-ai-law"
+   "ai-use-policy-organization"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -202,8 +210,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-governance-board-framework",
    "ai-use-policy-organization",
+   "ai-governance-board-framework",
    "eu-ai-act-2026"
   ]
  },
@@ -219,8 +227,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-transparency-generative",
-   "gdpr-israeli-companies-ai"
+   "eu-ai-act-roles-obligations",
+   "eu-ai-act-transparency-generative"
   ]
  },
  "privacy-law-amendment-13-guide": {
@@ -244,7 +252,7 @@
   "related": [
    "eu-ai-act-high-risk-classification",
    "saas-eu-compliance-israeli-companies",
-   "eu-ai-act-transparency-generative"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "shadow-it-law-firms": {
@@ -899,8 +907,8 @@
   "topic": "real-estate",
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
-   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "free-lawyer-illusion"
+   "free-lawyer-illusion",
+   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
