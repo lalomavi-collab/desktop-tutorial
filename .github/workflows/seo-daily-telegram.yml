@@ -45,7 +45,16 @@ jobs:
           CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
           TEXT: ${{ steps.rep.outputs.text }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
+          if [ -z "$BOT" ] || [ -z "$CHAT" ]; then
+            echo "::error::TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID secret is missing, so the report cannot be sent. Add the secret in Settings, Secrets and variables, Actions."
+            exit 1
+          fi
+          RESPONSE="$(curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
             --data-urlencode "chat_id=${CHAT}" \
             --data-urlencode "text=${TEXT}" \
-            --data-urlencode "disable_web_page_preview=true"
+            --data-urlencode "disable_web_page_preview=true")"
+          echo "$RESPONSE"
+          if ! echo "$RESPONSE" | grep -q '"ok":true'; then
+            echo "::error::Telegram rejected the message, so the report was not delivered: $RESPONSE"
+            exit 1
+          fi
