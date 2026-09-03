@@ -11,7 +11,7 @@ import os
 
 SERVICE = "LALUM-invoice-agent"
 
-SECRET_KEYS = ("IMAP1_PASS", "IMAP2_PASS", "SMTP_PASS")
+SECRET_KEYS = ("IMAP1_PASS", "SMTP_PASS")
 
 
 def get_secret(name: str) -> str | None:
