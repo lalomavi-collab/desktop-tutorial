@@ -15,6 +15,7 @@ import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
+import { HomePrompt } from "./HomePrompt";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
 import { hasHebrewOnlyContent, stripLangPrefix } from "../lib/hreflang";
@@ -66,6 +67,14 @@ export function MarketingLayout() {
       <BottomTabBar />
       <AccessibilityMenu />
       <A11yWidget />
+      {/* The entry prompt belongs to the home page, but it is mounted HERE and
+          not inside the page component. Anything position:fixed rendered inside
+          a route is laid out against .route-view rather than the viewport,
+          because that element carries an animation whose keyframes set a
+          transform, and a transformed ancestor becomes the containing block for
+          fixed descendants. Inside the page it scrolled away with the content;
+          out here it stays where it was put. */}
+      {pathname === "/" && <HomePrompt />}
       <CookieConsent />
       <PrivacyUpdateNotice />
       <UserGuide />
