@@ -4573,9 +4573,13 @@ html.a11y-reduce-motion *::after {
 /* ============================================================
    Home entry prompt (components/HomePrompt.tsx)
    ------------------------------------------------------------
-   A round panel, in the same navy and gold as the video bubble
+   A compact card, in the same navy and gold as the video bubble
    so the two overlays read as one system rather than two
    competing promos.
+   It was a 340px circle at first, which on a phone ran nearly
+   edge to edge and covered the hero it was meant to sit beside.
+   A card at the video bubble's own scale (that invite tops out at
+   300px wide) says the same thing without taking over the screen.
    It sits on the inline-start edge: in Hebrew and Arabic that is
    the right, where only the accessibility button lives, and in
    the Latin languages the left. The chat, the contact rail and
@@ -4592,53 +4596,48 @@ html.a11y-reduce-motion *::after {
   bottom: 96px;
   inset-inline-start: 24px;
   z-index: 84;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%, var(--hp-navy-soft), var(--hp-navy) 72%);
-  border: 2px solid var(--hp-gold);
-  box-shadow: 0 22px 50px -18px rgba(10, 25, 47, 0.7), 0 0 0 8px rgba(212, 175, 55, 0.08);
-  display: grid;
-  place-items: center;
-  padding: 30px;
+  width: min(272px, calc(100vw - 48px));
+  border-radius: 18px;
+  background: radial-gradient(circle at 24% 20%, var(--hp-navy-soft), var(--hp-navy) 72%);
+  border: 1.5px solid var(--hp-gold);
+  box-shadow: 0 18px 40px -18px rgba(10, 25, 47, 0.65), 0 0 0 6px rgba(212, 175, 55, 0.07);
+  padding: 20px;
 }
 @media (prefers-reduced-motion: no-preference) {
   .hprompt { animation: hprompt-in 0.4s cubic-bezier(0.2, 0.7, 0.3, 1); }
 }
 @keyframes hprompt-in {
-  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
   to { opacity: 1; transform: none; }
 }
 
-/* A circle wastes its corners, so the text is held to the square that
-   actually fits inside it. Without this the lines run to the curved edge and
-   the last word of each one falls off the shape. */
 .hprompt-inner {
-  width: 74%;
-  text-align: center;
+  /* Room for the close button in the corner, so the lead line does not run
+     under it. */
+  padding-inline-end: 22px;
 }
 .hprompt-lead {
   color: var(--hp-gold);
   font-family: var(--serif);
-  font-size: 19px;
-  line-height: 1.35;
-  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.3;
+  margin: 0 0 8px;
 }
 .hprompt-body {
   color: #e8ecf3;
-  font-size: 13px;
-  line-height: 1.62;
-  margin: 0 0 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  margin: 0 0 14px;
 }
 .hprompt-cta {
   display: inline-block;
   background: var(--hp-gold);
   color: var(--hp-navy);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 10px;
+  padding: 8px 16px;
+  border-radius: 9px;
   transition: background 0.18s ease, transform 0.18s ease;
 }
 .hprompt-cta:hover {
@@ -4647,18 +4646,15 @@ html.a11y-reduce-motion *::after {
 }
 .hprompt-close {
   position: absolute;
-  /* A corner inset that works on a square lands outside a circle. The arc at
-     45 degrees sits about 0.29 of the radius in from the bounding box, so the
-     button is pushed that far to land on the edge rather than float beside it. */
-  top: 44px;
-  inset-inline-end: 44px;
-  width: 26px;
-  height: 26px;
+  top: 10px;
+  inset-inline-end: 10px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 1px solid rgba(212, 175, 55, 0.45);
   background: rgba(10, 25, 47, 0.9);
   color: #d8d3c8;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -4681,19 +4677,12 @@ html.a11y-reduce-motion *::after {
     /* Clear of the bottom tab bar and of the accessibility button above it. */
     bottom: calc(154px + env(safe-area-inset-bottom, 0px));
     /* Centred by pinning both edges and letting the margins share what is
-       left. The earlier version centred with a percentage inset plus a
-       translate, which put the circle half off the screen on a narrow phone
-       and needed a second rule to flip the sign in the Latin languages. Auto
-       margins need neither: they are direction agnostic, and they cannot be
-       lost by the entry animation, whose keyframes set a transform of their
-       own. */
+       left. A percentage inset plus a translate needs a second rule to flip
+       the sign in the Latin languages; auto margins need neither, and they
+       cannot be lost by the entry animation, whose keyframes set a transform
+       of their own. */
     inset-inline: 0;
     margin-inline: auto;
-    width: min(330px, calc(100vw - 32px));
-    height: min(330px, calc(100vw - 32px));
-    padding: 24px;
+    width: min(260px, calc(100vw - 40px));
   }
-  .hprompt-lead { font-size: 18px; }
-  .hprompt-body { font-size: 12.5px; }
-  .hprompt-close { top: 40px; inset-inline-end: 40px; }
 }
