@@ -1,8 +1,12 @@
 name: "🤖 Telegram Bot"
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
+  # Scheduled polling is disabled: the TELEGRAM_BOT_TOKEN secret is not set, so
+  # every five-minute run returned a 404 from Telegram getUpdates and failed,
+  # burning Actions minutes and raising a failure on each poll. Restore the
+  # schedule below once the secret is configured. Manual runs still work.
+  # schedule:
+  #   - cron: '*/5 * * * *'
   workflow_dispatch:
 
 # Never let two poller runs overlap: overlapping runs can each fetch the same
