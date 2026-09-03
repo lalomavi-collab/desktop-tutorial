@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "./AppLink";
-import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 
 // A pill that appears once when someone lands on the home page and takes
@@ -90,7 +89,11 @@ export function HomePrompt() {
           truncates both lines to fit, and a reader who hovers or a screen
           reader (via the region's own aria-label above) still gets it whole. */}
       <Link to="/risk" className="hprompt-pill" onClick={dismiss} title={`${P.lead} ${P.body}`}>
-        <span className="hprompt-orb" aria-hidden="true"><Icon name="scale" size={17} /></span>
+        {/* The firm's own mark, not a generic icon. Same rule as everywhere
+            else in the app: only the supplied artwork represents LALUM, never
+            a stand-in glyph. This is the square crop already used for the
+            favicon and the app icon, proven legible at exactly this size. */}
+        <img className="hprompt-orb" src="/favicon.svg" alt="" width={36} height={36} aria-hidden="true" />
         <span className="hprompt-txt">
           <span className="hprompt-lead">{P.lead}</span>
           <span className="hprompt-body">{P.body}</span>

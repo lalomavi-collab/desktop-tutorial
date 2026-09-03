@@ -4636,16 +4636,17 @@ html.a11y-reduce-motion *::after {
   outline: 3px solid var(--hp-gold);
   outline-offset: 3px;
 }
+/* The favicon's own square carries a black ground already, so cropping it to
+   a circle needs only the border and the clip, not a background of our own:
+   an underlying gradient would show at the corners the image does not, and
+   there are none once it is round. */
 .hprompt-orb {
   flex: none;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--hp-gold);
-  background: radial-gradient(circle at 30% 25%, var(--hp-navy-soft), var(--hp-navy) 80%);
+  display: block;
+  object-fit: cover;
   border: 2px solid var(--hp-gold);
 }
 .hprompt-txt {
