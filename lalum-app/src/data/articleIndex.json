@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-product-liability-eu": {
+  "topic": "ai-governance",
+  "related": [
+   "saas-eu-compliance-israeli-companies",
+   "eu-ai-act-israeli-companies",
+   "israel-ai-regulation-policy"
+  ]
+ },
  "israel-ai-regulation-policy": {
   "topic": "ai-governance",
   "related": [
@@ -347,8 +355,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-turning-point-2026",
-   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
-   "decision-oriented-ai-law"
+   "decision-oriented-ai-law",
+   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai"
   ]
  },
  "algorithmic-transparency": {
@@ -466,8 +474,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "unfair-advantage-course",
+   "transcription-tools-guide",
    "law-algorithm-era"
   ]
  },
@@ -604,7 +612,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -988,7 +996,7 @@
   "related": [
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "medicine-meets-law"
+   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1091,8 +1099,8 @@
   "topic": "mediation",
   "related": [
    "למה-לבחור-בגישור-מכוון-הכרעה",
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני"
   ]
  },
  "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום": {
