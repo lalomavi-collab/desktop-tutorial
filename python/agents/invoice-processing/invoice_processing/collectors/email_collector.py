@@ -151,52 +151,30 @@ def collect_from_mailbox(
 
 def collect_from_emails(month: str) -> dict:
     """
-    אוסף הוצאות משתי התיבות, כל אחת במסלול שעובד עבורה.
+    אוסף הוצאות מתיבת Outlook בלבד.
 
-    Outlook (Exchange): דרך Outlook Desktop ב-COM. מיקרוסופט חסמה IMAP
-    בסיסמה ב-Exchange Online, ולכן אין מסלול סיסמה. COM לא דורש כלום.
+    האיסוף עובר דרך פרופיל Outlook Desktop ב-COM, בלי סיסמאות ובלי OAuth.
+    מיקרוסופט חסמה IMAP בסיסמה ב-Exchange Online, ולכן זה גם המסלול היחיד
+    שעובד מול התיבה הזו.
 
-    Gmail: IMAP עם App Password מהכספת. חשבון ה-IMAP של Gmail בתוך Outlook
-    נכשל בחיבור (0x800CCC0E) ולכן אי אפשר להישען עליו.
-
-    MAIL_MODE=imap מכריח את שתי התיבות למסלול IMAP.
+    MAIL_MODE=imap מפעיל מסלול IMAP חלופי לאותה תיבה, עם סיסמה מהכספת.
     """
     base = get_base_folder()
     errors = []
     all_items = []
-    mode = os.environ.get("MAIL_MODE", "outlook_com").strip().lower()
 
-    # --- תיבה 1: Outlook ---
-    if mode == "imap":
-        host, user, pw = os.environ.get("IMAP1_HOST"), os.environ.get("IMAP1_USER"), get_secret("IMAP1_PASS")
-        if host and user and pw:
+    if os.environ.get("MAIL_MODE", "outlook_com").strip().lower() == "imap":
+        host, user = os.environ.get("IMAP1_HOST"), os.environ.get("IMAP1_USER")
+        pw = get_secret("IMAP1_PASS")
+        if not host or not user:
+            errors.append("חסרים IMAP1_HOST/IMAP1_USER ב-.env")
+        elif not pw:
+            errors.append("חסרה סיסמת IMAP בכספת — הרץ setup_credentials.bat")
+        else:
             all_items += collect_from_mailbox(host, int(os.environ.get("IMAP1_PORT", 993)),
                                               user, pw, month, base, "Outlook")
-        else:
-            errors.append("Outlook: חסרים פרטי IMAP או סיסמה")
     else:
         all_items += collect_from_outlook_com(month)
-
-    # --- תיבה 2: Gmail ---
-    # כשהיא מכובה, זו החלטה מודעת ולא תקלה, ולכן היא לא נספרת כשגיאה
-    # ולא חוסמת את השליחה האוטומטית החודשית.
-    gmail_on = os.environ.get("GMAIL_ENABLED", "true").strip().lower() not in ("0", "false", "no")
-    if not gmail_on:
-        print("ℹ️  תיבת Gmail מכובה בהגדרות (GMAIL_ENABLED=false). נאסף רק מ-Outlook.")
-        host = user = pw = None
-
-    host = os.environ.get("IMAP2_HOST") if gmail_on else None
-    user = os.environ.get("IMAP2_USER") if gmail_on else None
-    pw = get_secret("IMAP2_PASS") if gmail_on else None
-    if not gmail_on:
-        pass
-    elif not host or not user:
-        errors.append("Gmail: חסרים IMAP2_HOST/IMAP2_USER ב-.env")
-    elif not pw:
-        errors.append("Gmail: חסרה סיסמת אפליקציה בכספת — הרץ setup_credentials.bat")
-    else:
-        all_items += collect_from_mailbox(host, int(os.environ.get("IMAP2_PORT", 993)),
-                                          user, pw, month, base, "Gmail")
 
     for it in list(all_items):
         if it.get("error"):

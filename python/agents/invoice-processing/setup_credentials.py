@@ -6,7 +6,6 @@ Prompts are in English on purpose: cmd.exe renders Hebrew right-to-left text
 reversed, which made the previous version unreadable.
 
   setup_credentials.bat            all secrets
-  setup_credentials.bat --gmail    Gmail app password only
   setup_credentials.bat --check    show what is stored
   setup_credentials.bat --delete   wipe everything
 """
@@ -26,9 +25,8 @@ from invoice_processing.utils.credentials import (
 )
 
 LABELS = {
-    "IMAP1_PASS": "Outlook IMAP password (avraham@lalum.co) - NOT NEEDED, press Enter",
-    "IMAP2_PASS": "Gmail APP PASSWORD (lalomavi@gmail.com), 16 characters - PASTE HERE",
-    "SMTP_PASS": "SMTP send password - NOT NEEDED, press Enter",
+    "IMAP1_PASS": "Outlook IMAP password (avraham@lalum.co) - only for MAIL_MODE=imap",
+    "SMTP_PASS": "SMTP send password - only for SEND_MODE=smtp",
 }
 
 
@@ -63,16 +61,6 @@ def main():
     print("=" * 62)
     print("  LALUM invoice agent - credential setup")
     print("=" * 62)
-
-    if "--gmail" in sys.argv:
-        print("Gmail app password only. Nothing else is asked.")
-        ok = ask("IMAP2_PASS")
-        check()
-        if ok:
-            print("Done. The Gmail mailbox will now be scanned.")
-        else:
-            print("Nothing was entered. Run again and paste the 16 characters.")
-        return
 
     print("Typing is hidden. Empty Enter = skip, existing value is kept.")
     for key in SECRET_KEYS:
