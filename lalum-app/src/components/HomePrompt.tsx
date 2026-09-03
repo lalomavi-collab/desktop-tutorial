@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
+// Imported, not referenced as "/favicon.svg": that path is also the browser
+// tab icon, and browsers cache a favicon far more stubbornly than an ordinary
+// asset, sometimes for the life of the profile, regardless of what a fresh
+// deploy serves at that URL. A visitor whose browser had cached an old icon
+// from before this rebrand saw that old icon here too, because it was
+// genuinely the same request. Importing the file gives Vite a content-hashed
+// filename instead, so this image is never the same URL as the tab icon and
+// never inherits its caching.
+import lalumMark from "../assets/lalum-mark.svg";
 
 // A pill that appears once when someone lands on the home page and takes
 // itself away after half a minute.
@@ -91,9 +100,10 @@ export function HomePrompt() {
       <Link to="/risk" className="hprompt-pill" onClick={dismiss} title={`${P.lead} ${P.body}`}>
         {/* The firm's own mark, not a generic icon. Same rule as everywhere
             else in the app: only the supplied artwork represents LALUM, never
-            a stand-in glyph. This is the square crop already used for the
-            favicon and the app icon, proven legible at exactly this size. */}
-        <img className="hprompt-orb" src="/favicon.svg" alt="" width={36} height={36} aria-hidden="true" />
+            a stand-in glyph. This is the same square crop used for the
+            favicon and the app icon, proven legible at exactly this size,
+            served from its own imported URL (see the import above). */}
+        <img className="hprompt-orb" src={lalumMark} alt="" width={36} height={36} aria-hidden="true" />
         <span className="hprompt-txt">
           <span className="hprompt-lead">{P.lead}</span>
           <span className="hprompt-body">{P.body}</span>
