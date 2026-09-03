@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "./AppLink";
+import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 
-// A round prompt that appears once when someone lands on the home page and
-// takes itself away after half a minute.
+// A pill that appears once when someone lands on the home page and takes
+// itself away after half a minute.
+//
+// It was a 340px circle at first, then a card at the video bubble's own
+// scale. Both still sat tall enough to compete with the hero. This version
+// takes the video bubble's own shape too, an orb beside a line of text, so
+// the whole thing is one thin strip rather than a block of its own.
 //
 // Three things about the timing are deliberate:
 //
@@ -80,14 +86,20 @@ export function HomePrompt() {
       onFocus={() => setHeld(true)}
       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setHeld(false); }}
     >
+      {/* The full sentence still lives in the title attribute: the strip
+          truncates both lines to fit, and a reader who hovers or a screen
+          reader (via the region's own aria-label above) still gets it whole. */}
+      <Link to="/risk" className="hprompt-pill" onClick={dismiss} title={`${P.lead} ${P.body}`}>
+        <span className="hprompt-orb" aria-hidden="true"><Icon name="scale" size={17} /></span>
+        <span className="hprompt-txt">
+          <span className="hprompt-lead">{P.lead}</span>
+          <span className="hprompt-body">{P.body}</span>
+        </span>
+        <span className="hprompt-go" aria-hidden="true">&rarr;</span>
+      </Link>
       <button type="button" className="hprompt-close" onClick={dismiss} aria-label={P.close} title={P.close}>
         <span aria-hidden="true">×</span>
       </button>
-      <div className="hprompt-inner">
-        <p className="hprompt-lead">{P.lead}</p>
-        <p className="hprompt-body">{P.body}</p>
-        <Link to="/risk" className="hprompt-cta" onClick={dismiss}>{P.cta}</Link>
-      </div>
     </div>
   );
 }
