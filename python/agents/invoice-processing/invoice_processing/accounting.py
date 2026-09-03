@@ -25,6 +25,11 @@ from .collectors.month_path import HEBREW_MONTHS, resolve_month_folder
 VAT_RATES = (0.18, 0.17)
 INCOME_SUBFOLDER = "_הופק ללקוחות"
 BANK_SUBFOLDER = "_בנק"          # דפי בנק חסויים: לא נסרקים כחשבוניות, לא מצורפים למייל
+
+# מסמכים שהמשרד הפיק ללקוחות. הם נכנסים לחישוב ההכנסות והמע"מ, אך אינם
+# מצורפים למייל: הנהלת החשבונות מקבלת אותם ישירות מ-invoice4u, וצירופם
+# יוצר כפילות בספרים.
+OUTGOING_CATEGORIES = ("income", "proforma_out")
 REPORT_PREFIX = "דוח-הנהלת-חשבונות"
 
 _NUM = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+\.\d{1,2}")
@@ -460,7 +465,9 @@ def render_email_body(t: Totals, rows: list[Row], attach_count: int) -> str:
     L = [
         "שלום רונית,",
         "",
-        f"מצורפים מסמכי הנהלת החשבונות של LALUM לחודש {title}, יחד עם חישוב מקדים.",
+        f"מצורפים מסמכי ההוצאות של LALUM לחודש {title}, יחד עם חישוב מקדים.",
+        "החישוב כולל גם את החשבוניות שהפקנו ללקוחות, אך הן אינן מצורפות -",
+        "הן מגיעות אלייך ישירות מ-invoice4u.",
         "",
         "תקציר:",
         f"  הכנסות לפני מע\"מ:        {_ils(t.income_net)}   ({n('income')} מסמכים)",
@@ -483,7 +490,7 @@ def render_email_body(t: Totals, rows: list[Row], attach_count: int) -> str:
             L.append(f"  • {r.file} — {r.note or 'סכום לאימות'}")
     L += [
         "",
-        f"מצורפים {attach_count} קבצים, וכן דוח מפורט בקובץ Markdown.",
+        f"מצורפים {attach_count} קבצי הוצאה, וכן דוח מפורט בקובץ Markdown.",
         "החישוב מקדים ונועד לחסוך זמן — הקובע הוא הרישום בספרים.",
         "",
         "בברכה,",
@@ -509,7 +516,7 @@ def build_month_report(month: str) -> dict:
     if folder.is_dir():
         report_path.write_text(report, encoding="utf-8")
 
-    attachments = [r.path for r in rows]
+    attachments = [r.path for r in rows if r.category not in OUTGOING_CATEGORIES]
     if report_path.exists():
         attachments.append(str(report_path))
 
