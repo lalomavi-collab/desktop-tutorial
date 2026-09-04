@@ -3670,6 +3670,28 @@ html.a11y-reduce-motion *::after {
     color: var(--clay);
     background: var(--clay-tint);
   }
+  /* SOS is a <button>, not a link, so it needs its own reset on top of the
+     shared .tabbar-item layout. */
+  .tabbar-sos {
+    background: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    color: var(--danger);
+  }
+  .tabbar-sos-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 21px;
+    height: 21px;
+    border-radius: 9999px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
   /* Keep the footer (last scrollable content) clear of the fixed tab bar and
      the floating chat / accessibility buttons that sit just above it. */
   .site-footer {
@@ -3739,6 +3761,21 @@ html.a11y-reduce-motion *::after {
 .tb-btn.tb-pay:hover {
   filter: brightness(1.1);
   color: var(--paper);
+}
+/* Urgent contact is the one action nobody should have to search for, so it
+   gets its own alarm color (unused elsewhere in the app) instead of sharing
+   the clay/burgundy accents already claimed by the other header buttons. */
+.tb-btn.tb-sos {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.tb-btn.tb-sos:hover {
+  filter: brightness(1.1);
+  color: #fff;
 }
 .tabbar-bot { color: var(--clay); }
 .tb-lang {
@@ -3926,6 +3963,56 @@ html.a11y-reduce-motion *::after {
   border-radius: 10px;
   padding: 10px 12px;
   margin: 16px 0 0;
+}
+
+/* ---------- SOS urgent-contact sheet (shares .guide-overlay/.guide-sheet) ---------- */
+.sos-sheet {
+  max-width: 420px;
+}
+.sos-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.sos-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.sos-action:hover {
+  border-color: var(--danger);
+  background: rgba(179, 64, 47, 0.06);
+  transform: translateY(-1px);
+}
+.sos-action-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background: var(--danger);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sos-action-c {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.sos-action-c span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate);
 }
 
 /* ---------- Marketing consent (opt-in checkbox) ---------- */

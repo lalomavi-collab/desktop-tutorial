@@ -5,6 +5,7 @@ import { useLang } from "../context/LangContext";
 import { ShareButton } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
+import { OPEN_SOS_EVENT } from "./SosMenu";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
@@ -54,6 +55,19 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
+          {/* The urgent-contact button: always visible, first in the row, so
+              it is never lost among the other tools. Opens a small sheet with
+              every fast channel (call, WhatsApp, Telegram) instead of picking
+              one action for the client. */}
+          <button
+            type="button"
+            className="tb-btn tb-sos"
+            onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
+            aria-label={t.ui.sos.aria}
+            title={t.ui.sos.aria}
+          >
+            {t.ui.sos.open}
+          </button>
           {/* On phones payment lives in the header (which has room there); on
               desktop it lives in the floating ContactRail, so the two never
               show at once. */}

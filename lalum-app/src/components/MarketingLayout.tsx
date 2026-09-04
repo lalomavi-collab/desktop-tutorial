@@ -15,6 +15,7 @@ import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
+import { SosMenu } from "./SosMenu";
 import { HomePrompt } from "./HomePrompt";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
@@ -78,6 +79,7 @@ export function MarketingLayout() {
       <CookieConsent />
       <PrivacyUpdateNotice />
       <UserGuide />
+      <SosMenu />
     </>
   );
 }
