@@ -54,7 +54,7 @@ The site is available in Hebrew (primary), English, Spanish, French, and Arabic.
 
 Six sessions of three hours each, 24 academic hours, with a practical capstone. Taught by Dr. Avraham Lalum, attorney, notary and Ph.D. in Law and Economics. The In-House line is delivered at the client's offices for organisations; the Academy Pro line is online, for individual professionals, and awards a participation certificate.
 
-- LALUM Academy: AI בעסקאות נדל״ן מורכב והתחדשות עירונית: https://lalumapp.com/training/lalum-academy-real-estate/ . נדל״ן והתחדשות עירונית. מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.
+- LALUM Academy: AI בעסקאות נדל״ן מורכבות והתחדשות עירונית: https://lalumapp.com/training/lalum-academy-real-estate/ . נדל״ן והתחדשות עירונית. מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.
 - LALUM Academy: חוזים מורכבים, ממשל תאגידי ואוטומציה: https://lalumapp.com/training/lalum-academy-corporate/ . ממשל תאגידי וחוזים. יועצים משפטיים פנימיים (In-House), מנהלי סיכונים, קציני ציות (Compliance) ומנהלי עסקאות.
 - LALUM Academy: ליטיגציה, ראיות דיגיטליות, גישור ובוררות: https://lalumapp.com/training/lalum-academy-litigation/ . ליטיגציה ויישוב סכסוכים. ליטיגטורים, מנהלי מחלקות סכסוכים, בוררים, מגשרים ומנהלי סיכונים משפטיים.
 - LALUM Academy: AI Legal & Regulatory Engineering for Hi-Tech: https://lalumapp.com/training/lalum-academy-hitech/ . הייטק והנדסה רגולטורית. יועצים משפטיים בהייטק (GC), מנהלי מוצר (VP Product/CPO), סמנכ״לי טכנולוגיה (CTO) ומנהלי R&D.

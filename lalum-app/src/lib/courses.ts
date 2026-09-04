@@ -52,7 +52,7 @@ export const courses: Course[] = [
   {
     id: "lalum-academy-real-estate",
     category: "נדל״ן והתחדשות עירונית",
-    title: "LALUM Academy: AI בעסקאות נדל״ן מורכב והתחדשות עירונית",
+    title: "LALUM Academy: AI בעסקאות נדל״ן מורכבות והתחדשות עירונית",
     audience: "מחלקות משפטיות, חברות יזמיות, משרדי עורכי דין ומנהלי פרויקטים בנדל״ן.",
     tailoring: "התאמה לסוג הפרויקטים של החברה (תמ״א 38, פינוי-בינוי, מכר מסחרי, עסקאות קומבינציה).",
     capstoneName: "Smart Real Estate Due-Diligence Engine",
