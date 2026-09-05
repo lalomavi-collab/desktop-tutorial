@@ -2768,23 +2768,35 @@ html.a11y-reduce-motion *::after {
 }
 /* On phones the fixed bottom tab bar owns the very bottom edge, and the page's
    primary CTA sits in the first screens. Dock the cookie banner just above the
-   tab bar and keep it compact (one tight row), so it no longer covers the nav or
-   hides the main action. */
+   tab bar, so it no longer covers the nav or hides the main action.
+   The row layout that works on desktop cannot hold a full sentence next to
+   three buttons on a phone width. The old rule tried anyway, forcing the text
+   into the same row as the actions and zeroing its min-width so it would not
+   push them off. The browser honoured that literally: with no floor to stop
+   it, the sentence shrank to whatever the three buttons left over, a handful
+   of pixels, and wrapped one word per line into a banner tall enough to cover
+   most of the screen and everything behind it, tab bar included. Stacking the
+   text above the actions gives each its own full-width row, which is what
+   "compact" actually looks like at this width. */
 @media (max-width: 900px) {
   .cookie-banner {
     bottom: calc(66px + env(safe-area-inset-bottom, 0px));
     inset-inline: 8px;
     padding: 10px 12px;
-    gap: 8px;
+    gap: 10px;
     border-radius: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
   .cookie-banner-text {
     font-size: 12.5px;
     line-height: 1.4;
     min-width: 0;
+    flex: none;
   }
   .cookie-banner-actions {
     gap: 6px;
+    justify-content: flex-end;
   }
   .cookie-banner-actions .btn {
     padding: 0 12px;
