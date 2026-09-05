@@ -2768,23 +2768,35 @@ html.a11y-reduce-motion *::after {
 }
 /* On phones the fixed bottom tab bar owns the very bottom edge, and the page's
    primary CTA sits in the first screens. Dock the cookie banner just above the
-   tab bar and keep it compact (one tight row), so it no longer covers the nav or
-   hides the main action. */
+   tab bar, so it no longer covers the nav or hides the main action.
+   The row layout that works on desktop cannot hold a full sentence next to
+   three buttons on a phone width. The old rule tried anyway, forcing the text
+   into the same row as the actions and zeroing its min-width so it would not
+   push them off. The browser honoured that literally: with no floor to stop
+   it, the sentence shrank to whatever the three buttons left over, a handful
+   of pixels, and wrapped one word per line into a banner tall enough to cover
+   most of the screen and everything behind it, tab bar included. Stacking the
+   text above the actions gives each its own full-width row, which is what
+   "compact" actually looks like at this width. */
 @media (max-width: 900px) {
   .cookie-banner {
     bottom: calc(66px + env(safe-area-inset-bottom, 0px));
     inset-inline: 8px;
     padding: 10px 12px;
-    gap: 8px;
+    gap: 10px;
     border-radius: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
   .cookie-banner-text {
     font-size: 12.5px;
     line-height: 1.4;
     min-width: 0;
+    flex: none;
   }
   .cookie-banner-actions {
     gap: 6px;
+    justify-content: flex-end;
   }
   .cookie-banner-actions .btn {
     padding: 0 12px;
@@ -3750,7 +3762,10 @@ html.a11y-reduce-motion *::after {
    header reads as a single consistent set that matches the app's palette. Only
    the Telegram plane icon needs a small nudge to look optically centred. */
 .tb-tg svg { margin-inline-end: 2px; }
-/* Fit six round controls plus the brand on small phones. */
+/* Fit the surviving controls (payment, when it shows, and the "more" button
+   below) plus the brand on small phones. Below 900px that is at most two
+   round buttons: the six-icon row that used to be here at every width has
+   already moved into the menu by then. */
 @media (max-width: 480px) {
   .header-tools { gap: 6px; }
   .header-tools .tb-btn,
@@ -3766,6 +3781,97 @@ html.a11y-reduce-motion *::after {
     width: 31px;
     height: 31px;
   }
+}
+
+/* ---------- header "more" menu (phones) ---------- */
+/* The desktop row: guide, call, WhatsApp, Telegram, share, language. Visible
+   down to 900px, the width where the primary nav already leaves the header
+   for the bottom tab bar; below it the row would otherwise have to keep
+   shrinking icons to avoid riding over the wordmark, which is the crowding
+   this menu replaces. */
+.header-util-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-more-wrap {
+  display: none;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .header-util-group {
+    display: none;
+  }
+  .header-more-wrap {
+    display: inline-flex;
+  }
+}
+.header-more-menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  z-index: 41;
+  padding: 8px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* One row per action: icon then label, so a control that used to be an
+   unlabelled round glyph finally carries its own name. The sheet has the
+   width a header icon never did, so there is no reason to make a visitor
+   guess from a tooltip they cannot see on a touch screen anyway. */
+.header-more-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.header-more-item:hover,
+.header-more-item:focus-visible {
+  background: var(--clay-tint);
+}
+.header-more-item svg {
+  flex: none;
+  color: var(--clay);
+}
+.header-more-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 6px 4px;
+}
+.header-more-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 4px 2px;
+}
+.header-more-lang {
+  padding: 7px 13px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.header-more-lang.active {
+  background: var(--clay-tint);
+  border-color: var(--clay-soft);
+  font-weight: 700;
 }
 
 .guide-overlay {

@@ -2,12 +2,16 @@ import { useState } from "react";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 
-// Round share button. On devices with the Web Share API it opens the native
-// share sheet (WhatsApp, Telegram, mail, ...); elsewhere it copies the link and
-// shows a short confirmation. Always shares the canonical production address.
+// Always shares the canonical production address.
 const SHARE_URL = "https://lalumapp.com";
 
-export function ShareButton() {
+// The share action itself, apart from any one button's markup: on devices
+// with the Web Share API it opens the native share sheet (WhatsApp, Telegram,
+// mail, ...); elsewhere it copies the link and reports back so the caller can
+// show its own confirmation. Shared between the round header button and the
+// header's mobile "more" menu, which needs the same action with a label next
+// to it instead of a floating toast.
+export function useShare() {
   const { t } = useLang();
   const s = t.ui.share;
   const [copied, setCopied] = useState(false);
@@ -30,9 +34,18 @@ export function ShareButton() {
     }
   }
 
+  return { share: () => void share(), copied };
+}
+
+// Round share button, used in the desktop header row.
+export function ShareButton() {
+  const { t } = useLang();
+  const s = t.ui.share;
+  const { share, copied } = useShare();
+
   return (
     <div className="share-wrap">
-      <button type="button" className="share-btn" onClick={() => void share()} aria-label={s.aria} title={s.aria}>
+      <button type="button" className="share-btn" onClick={share} aria-label={s.aria} title={s.aria}>
         <Icon name="share" size={16} />
         <span className="share-ring" aria-hidden="true" />
       </button>
