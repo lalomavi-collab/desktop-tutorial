@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
-import { ShareButton } from "./ShareButton";
+import { ShareButton, useShare } from "./ShareButton";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
@@ -13,7 +13,9 @@ export function Header() {
   const { user } = useAuth();
   const { t, lang, setLang } = useLang();
   const [langOpen, setLangOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+  const { share, copied: shareCopied } = useShare();
 
   // The top bar names the two areas the practice leads with, then the advisory
   // hub, courses and the Knowledge hub. It used to open with two anchors into
@@ -67,84 +69,159 @@ export function Header() {
               <Icon name="card" size={18} />
             </Link>
           )}
-          <button
-            type="button"
-            className="tb-btn hdr-secondary"
-            onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
-            aria-label={t.ui.guide.open}
-            title={t.ui.guide.open}
-          >
-            <Icon name="compass" size={18} />
-          </button>
-          <a
-            className="tb-btn tb-bot"
-            href={`tel:${officePhone.tel}`}
-            aria-label={t.ui.botCall.aria}
-            title={t.ui.botCall.aria}
-          >
-            <Icon name="headset" size={19} />
-          </a>
-          <a
-            className="tb-btn"
-            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t.ui.whatsapp.aria}
-            title={t.ui.whatsapp.aria}
-          >
-            <Icon name="whatsapp" size={19} />
-          </a>
-          <a
-            className="tb-btn tb-tg"
-            href={telegramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t.ui.telegram.aria}
-            title={t.ui.telegram.aria}
-          >
-            <Icon name="telegram" size={18} />
-          </a>
-          <ShareButton />
-          <div className="tb-lang-wrap" style={{ position: "relative" }}>
+          {/* The full icon row. It only has room next to the wordmark from
+              here up: below 900px (the width where the nav already moves into
+              the bottom tab bar) it hides in favour of the single "more"
+              button below, so the two never show at once and the row never
+              has to shrink icons down to squeeze six of them past the logo. */}
+          <div className="header-util-group">
             <button
               type="button"
-              onClick={() => setLangOpen((v) => !v)}
-              className="tb-btn tb-lang"
-              aria-label="Switch language"
-              aria-haspopup="listbox"
-              aria-expanded={langOpen}
-              title={current.autonym}
+              className="tb-btn hdr-secondary"
+              onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
+              aria-label={t.ui.guide.open}
+              title={t.ui.guide.open}
             >
-              {current.code.toUpperCase()}
+              <Icon name="compass" size={18} />
             </button>
-            {langOpen && (
+            <a
+              className="tb-btn tb-bot"
+              href={`tel:${officePhone.tel}`}
+              aria-label={t.ui.botCall.aria}
+              title={t.ui.botCall.aria}
+            >
+              <Icon name="headset" size={19} />
+            </a>
+            <a
+              className="tb-btn"
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t.ui.whatsapp.aria}
+              title={t.ui.whatsapp.aria}
+            >
+              <Icon name="whatsapp" size={19} />
+            </a>
+            <a
+              className="tb-btn tb-tg"
+              href={telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t.ui.telegram.aria}
+              title={t.ui.telegram.aria}
+            >
+              <Icon name="telegram" size={18} />
+            </a>
+            <ShareButton />
+            <div className="tb-lang-wrap" style={{ position: "relative" }}>
+              <button
+                type="button"
+                onClick={() => setLangOpen((v) => !v)}
+                className="tb-btn tb-lang"
+                aria-label="Switch language"
+                aria-haspopup="listbox"
+                aria-expanded={langOpen}
+                title={current.autonym}
+              >
+                {current.code.toUpperCase()}
+              </button>
+              {langOpen && (
+                <>
+                  {/* Backdrop closes the menu on outside click without a global listener. */}
+                  <div onClick={() => setLangOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                  <ul
+                    role="listbox"
+                    className="card"
+                    style={{ position: "absolute", insetInlineEnd: 0, top: "calc(100% + 8px)", zIndex: 41, listStyle: "none", margin: 0, padding: 6, minWidth: 140, display: "flex", flexDirection: "column", gap: 2 }}
+                  >
+                    {LANGS.map((l) => (
+                      <li key={l.code}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={l.code === lang}
+                          onClick={() => { setLang(l.code); setLangOpen(false); }}
+                          dir={l.dir}
+                          style={{
+                            width: "100%", textAlign: l.dir === "rtl" ? "right" : "left", padding: "9px 12px", borderRadius: 8, border: "none",
+                            background: l.code === lang ? "var(--clay-tint)" : "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 14.5,
+                            fontWeight: l.code === lang ? 700 : 500,
+                          }}
+                        >
+                          {l.autonym}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Phones: the six controls above collapse into one button, so the
+              header never has more than the logo, this button and (when it
+              applies) the one-tap payment icon next to it. The sheet gives
+              each action a label, which a bare row of round icons never had
+              room for anyway. */}
+          <div className="header-more-wrap">
+            <button
+              type="button"
+              className="tb-btn header-more-btn"
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-label={t.ui.quickActions}
+              aria-haspopup="menu"
+              aria-expanded={moreOpen}
+            >
+              <Icon name="menu" size={19} />
+            </button>
+            {moreOpen && (
               <>
-                {/* Backdrop closes the menu on outside click without a global listener. */}
-                <div onClick={() => setLangOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                <ul
-                  role="listbox"
-                  className="card"
-                  style={{ position: "absolute", insetInlineEnd: 0, top: "calc(100% + 8px)", zIndex: 41, listStyle: "none", margin: 0, padding: 6, minWidth: 140, display: "flex", flexDirection: "column", gap: 2 }}
-                >
-                  {LANGS.map((l) => (
-                    <li key={l.code}>
+                <div onClick={() => setMoreOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                <div role="menu" aria-label={t.ui.quickActions} className="card header-more-menu">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="header-more-item"
+                    onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
+                  >
+                    <Icon name="compass" size={18} /> {t.ui.guide.open}
+                  </button>
+                  <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
+                    <Icon name="headset" size={18} /> {t.ui.botCall.aria}
+                  </a>
+                  <a
+                    role="menuitem"
+                    className="header-more-item"
+                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
+                  </a>
+                  <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
+                    <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
+                  </a>
+                  <button type="button" role="menuitem" className="header-more-item" onClick={share}>
+                    <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
+                  </button>
+                  <div className="header-more-divider" role="separator" />
+                  <div className="header-more-langs">
+                    {LANGS.map((l) => (
                       <button
+                        key={l.code}
                         type="button"
-                        role="option"
-                        aria-selected={l.code === lang}
-                        onClick={() => { setLang(l.code); setLangOpen(false); }}
+                        role="menuitemradio"
+                        aria-checked={l.code === lang}
+                        onClick={() => { setLang(l.code); setMoreOpen(false); }}
                         dir={l.dir}
-                        style={{
-                          width: "100%", textAlign: l.dir === "rtl" ? "right" : "left", padding: "9px 12px", borderRadius: 8, border: "none",
-                          background: l.code === lang ? "var(--clay-tint)" : "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 14.5,
-                          fontWeight: l.code === lang ? 700 : 500,
-                        }}
+                        className={"header-more-lang" + (l.code === lang ? " active" : "")}
                       >
                         {l.autonym}
                       </button>
-                    </li>
-                  ))}
-                </ul>
+                    ))}
+                  </div>
+                </div>
               </>
             )}
           </div>
