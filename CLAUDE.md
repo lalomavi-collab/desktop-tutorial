@@ -28,6 +28,7 @@
 - **Mediation and dispute resolution is not to be invested in from now on.** Its pages stay live and keep working, and it may be mentioned as a service the practice provides. Do not write new mediation articles, do not build it new pages, and do not spend promotion on it. The mediation cluster already holds 64 articles; it needs nothing more.
 - Anything produced for the site (articles, posts, pages, keywords, campaigns) serves one of the two areas.
 - Before writing a new article, check it does not compete with one that exists. `npm run build` fails on two articles whose titles are variations of each other, and on two pages sharing a meta description. Both defects reached production and neither was visible without looking for it.
+- The navigation names both areas "AI & Law" and "Real Estate," and also names three more things: Clinic, Engine, and Decision Room. **These three are the practice's operating model, layered over the two areas, not a third and fourth area.** Clinic is the existing advisory hub (`/advisory`), Engine is the home page's own `#engine` section, and Decision Room is the existing readiness quiz (`/risk`), each carrying only a new name, not a new page or a new URL. Do not write Clinic articles, do not give Engine or Decision Room their own topic cluster, and do not add a fourth nav item at the same level as the two areas: everything still resolves to AI & Law or to Real Estate underneath.
 
 ## The Name (PERMANENT)
 

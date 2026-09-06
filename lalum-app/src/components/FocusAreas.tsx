@@ -22,6 +22,10 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
         <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
           <p className="eyebrow">{h.advisoryPillarsEyebrow}</p>
           <h2 className="h2">{h.advisoryPillarsH2}</h2>
+          {/* Plain styled, not `.lede`: the global `.section p` rule justifies
+              body copy, which stretches an ugly gap into a one-line tagline.
+              Left start-aligned to match the eyebrow and heading above it. */}
+          <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--slate)", margin: "14px 0 0", textAlign: "start" }}>{h.advisoryPillarsLede}</p>
         </div>
       )}
       <div className="grid grid-2">
