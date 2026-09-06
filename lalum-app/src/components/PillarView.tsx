@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "../components/AppLink";
 import { scriptDir } from "../lib/hreflang";
 import { PageMeta } from "../components/PageMeta";
@@ -17,6 +18,9 @@ import type { PillarPage } from "../lib/pillars";
 export function PillarView({ P }: { P: PillarPage }) {
   const faqs = P.faqs;
   const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
+  // Single open question at a time, same as PracticeFaq. Empty string is
+  // "none open", not a valid question text, so it never collides with a q.
+  const [openFaq, setOpenFaq] = useState("");
 
   return (
     <>
@@ -61,9 +65,12 @@ export function PillarView({ P }: { P: PillarPage }) {
           <h2 className="h2">{P.whenH2}</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{P.whenLede}          </p>
         </div>
+        {/* Was a bare 2-column grid of icon+text pairs, the one section on
+            this page with no card at all. Same content, now a module like
+            every other section here. */}
         <div className="grid grid-2">
           {P.when.map((w) => (
-            <div key={w} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <div key={w} className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "20px 22px" }}>
               <span style={{ color: "var(--clay)", flexShrink: 0, marginTop: 2 }}><Icon name="check" size={18} /></span>
               <span style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)" }}>{w}</span>
             </div>
@@ -99,8 +106,12 @@ export function PillarView({ P }: { P: PillarPage }) {
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{P.sectorsUi.lede}</p>
           </div>
           <div className="grid grid-2">
+            {/* This section exists on the AI pillar only (sector rubrics have
+                no Real Estate counterpart), so a brighter accent here gives
+                AI a touch more visual weight without anything for the Real
+                Estate page to mirror. */}
             {P.sectors.map((s) => (
-              <Link key={s.path} to={`/${s.path}`} className="card" style={{ display: "block" }}>
+              <Link key={s.path} to={`/${s.path}`} className="card pillar-sector-card" style={{ display: "block" }}>
                 <h3 className="h3" style={{ fontSize: 20, margin: "0 0 10px", lineHeight: 1.35 }}>{s.title}</h3>
                 <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
                 <span className="card-go">{P.sectorsUi!.go} &rarr;</span>
@@ -140,13 +151,26 @@ export function PillarView({ P }: { P: PillarPage }) {
           <p className="eyebrow">{P.faqEyebrow}</p>
           <h2 className="h2">{P.faqH2}</h2>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {faqs.map((f) => (
-            <div key={f.q} className="card" style={{ padding: "20px 22px" }}>
-              <h3 style={{ fontSize: 17.5, fontWeight: 700, margin: "0 0 8px", color: "var(--ink)" }}>{f.q}</h3>
-              <p style={{ fontSize: 15.5, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{f.a}</p>
-            </div>
-          ))}
+        {/* Was always-expanded cards, a static wall of text. Same mechanic as
+            PracticeFaq.tsx's accordion (grid-rows 0fr -> 1fr, so the answer
+            stays in the DOM, CSS-collapsed rather than unmounted, and nothing
+            is lost for the FAQPage JSON-LD above or for a crawler). */}
+        <div className="pfaq-list">
+          {faqs.map((f, i) => {
+            const key = `${P.path}-faq-${i}`;
+            const on = openFaq === key;
+            return (
+              <div key={f.q} className={"pfaq-item" + (on ? " on" : "")}>
+                <button type="button" className="pfaq-q" id={`${key}-b`} aria-expanded={on} aria-controls={`${key}-p`} onClick={() => setOpenFaq(on ? "" : key)}>
+                  <span>{f.q}</span>
+                  <span className="pfaq-chev" aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
+                </button>
+                <div className="pfaq-a" id={`${key}-p`} role="region" aria-labelledby={`${key}-b`}>
+                  <div><p>{f.a}</p></div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
