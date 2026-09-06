@@ -59,7 +59,19 @@ function ExposureGauge({ score, title, tone }: { score: number; title: string; t
   );
 }
 
+// The three tracks fall under the site's own two domains: "tech" and "legal"
+// are both AI & Law (a company building AI, or a firm using it), and
+// "realestate" is Real Estate on its own. The quiz opens on that choice
+// first, not the track list, so "what are you dealing with" (the same
+// question the Decision Room nav item now stands for) precedes the more
+// specific "which kind of tech/legal practice" question, instead of putting
+// three unlike things in one list. Real estate has only one track behind it,
+// so choosing it skips straight to the questions instead of a list of one.
+type Domain = "ai" | "realestate";
+const AI_TRACKS = TRACKS.filter((t) => t.id !== "realestate");
+
 export function TechLegalCalculator() {
+  const [domain, setDomain] = useState<Domain | null>(null);
   const [track, setTrack] = useState<TrackId | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [step, setStep] = useState<Step>(-1);
@@ -88,6 +100,13 @@ export function TechLegalCalculator() {
     window.setTimeout(() => setStep(0), 240);
   }
 
+  function chooseDomain(d: Domain) {
+    setDomain(d);
+    // Real estate has one track: pick it immediately rather than showing a
+    // list with a single item to tap through.
+    if (d === "realestate") chooseTrack("realestate");
+  }
+
   function chooseAnswer(qIndex: number, points: number) {
     setAnswers((prev) => {
       const a = [...prev];
@@ -103,12 +122,15 @@ export function TechLegalCalculator() {
   function back() {
     if (step === "result") { setStep(QUESTIONS_PER_TRACK - 1); return; }
     const s = step as number;
+    // From the track list, back goes further up to the domain choice; from
+    // the first question, back goes only as far as the track list.
+    if (s === -1) { setDomain(null); setTrack(null); setAnswers([]); return; }
     if (s <= 0) { setStep(-1); setTrack(null); setAnswers([]); return; }
     setStep(s - 1);
   }
 
   function restart() {
-    setTrack(null); setAnswers([]); setStep(-1);
+    setDomain(null); setTrack(null); setAnswers([]); setStep(-1);
   }
 
   async function copyLink() {
@@ -129,7 +151,25 @@ export function TechLegalCalculator() {
         </p>
       </div>
 
-      {step !== "result" ? (
+      {domain === null ? (
+        <div>
+          <h4 className="riskcalc-q">מה אתם מטפלים בו?</h4>
+          <div className="riskcalc-choices" role="group" aria-label="תחום ראשי">
+            <button type="button" aria-pressed={false}
+              className="riskcalc-choice"
+              onClick={() => chooseDomain("ai")}>
+              <span className="riskcalc-choice-text">AI ומשפט</span>
+              <span className="riskcalc-choice-mark" aria-hidden="true"><Icon name="chevron-l" size={16} /></span>
+            </button>
+            <button type="button" aria-pressed={false}
+              className="riskcalc-choice"
+              onClick={() => chooseDomain("realestate")}>
+              <span className="riskcalc-choice-text">נדל״ן</span>
+              <span className="riskcalc-choice-mark" aria-hidden="true"><Icon name="chevron-l" size={16} /></span>
+            </button>
+          </div>
+        </div>
+      ) : step !== "result" ? (
         <div>
           <div className="riskcalc-progress" aria-hidden="true">
             <span className="riskcalc-progress-fill" style={{ inlineSize: `${progress}%` }} />
@@ -138,9 +178,9 @@ export function TechLegalCalculator() {
 
           {step === -1 ? (
             <>
-              <h4 className="riskcalc-q">מהו תחום הפעילות המרכזי שלכם?</h4>
+              <h4 className="riskcalc-q">איזה מהבאים הכי קרוב אליכם?</h4>
               <div className="riskcalc-choices" role="group" aria-label="תחום פעילות">
-                {TRACKS.map((tk) => (
+                {AI_TRACKS.map((tk) => (
                   <button key={tk.id} type="button" aria-pressed={track === tk.id}
                     className={"riskcalc-choice" + (track === tk.id ? " on" : "")}
                     onClick={() => chooseTrack(tk.id)}>
@@ -169,13 +209,13 @@ export function TechLegalCalculator() {
             </>
           )}
 
-          {step !== -1 && (
-            <div className="riskcalc-nav">
-              <button type="button" className="btn btn-ghost btn-sm" onClick={back}>
-                <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><Icon name="chevron-l" size={15} /></span> חזרה
-              </button>
-            </div>
-          )}
+          {/* Always shown now: even at the track list (step -1) there is
+              somewhere to go back to, the domain choice above it. */}
+          <div className="riskcalc-nav">
+            <button type="button" className="btn btn-ghost btn-sm" onClick={back}>
+              <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><Icon name="chevron-l" size={15} /></span> חזרה
+            </button>
+          </div>
         </div>
       ) : (
         <div className="riskcalc-result" aria-live="polite">

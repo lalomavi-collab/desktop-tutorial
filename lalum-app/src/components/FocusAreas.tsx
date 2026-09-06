@@ -33,12 +33,18 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
           <span className="icon-badge"><Icon name="brain" size={23} /></span>
           <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryAiBody}</p>
+          {/* The capabilities under this domain, named rather than left to the
+              body paragraph to imply: governance, regulation, risk and legal
+              intelligence are each their own line of work inside AI & Law,
+              not one blurred offering. */}
+          <p className="pillar-tagline">{h.advisoryAiTags}</p>
           <span className="card-go">{h.advisoryMore} &rarr;</span>
         </Link>
         <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
           <span className="icon-badge"><Icon name="scale" size={23} /></span>
           <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
+          <p className="pillar-tagline">{h.advisoryReTags}</p>
           <span className="card-go">{h.advisoryMore} &rarr;</span>
         </Link>
       </div>

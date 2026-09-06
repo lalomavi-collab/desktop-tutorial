@@ -950,6 +950,18 @@ a.card:focus-visible {
     display: none;
   }
 }
+/* The dot-separated capability line under each FocusAreas card body: smaller
+   and quieter than the body copy, a label for what sits inside the domain
+   rather than another sentence about it. */
+.pillar-tagline {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--clay);
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
 .card-go {
   display: inline-flex;
   align-items: center;

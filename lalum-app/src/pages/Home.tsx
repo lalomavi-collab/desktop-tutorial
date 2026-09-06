@@ -142,6 +142,10 @@ export function Home() {
             <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
+            {/* Names what "Engine" is made of, the same way the FocusAreas
+                cards and the Clinic hero now do: a quiet capability line, not
+                another sentence about the same thing. */}
+            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-soft)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
           <div className="grid grid-3">
             {t.data.frameworks.map((f) => (
