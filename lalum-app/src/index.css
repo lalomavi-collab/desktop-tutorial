@@ -416,6 +416,9 @@ article p {
 }
 .pre-deal-note svg { color: var(--clay-soft); flex: none; margin-top: 2px; }
 .pre-deal-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+/* Same translucent-glass treatment as .pre-deal-note just above: a plain row
+   of icon+text here read as a leftover list on an otherwise premium dark
+   panel, so each point gets the same card shell the note already has. */
 .pre-deal-points li {
   display: flex;
   align-items: flex-start;
@@ -423,6 +426,10 @@ article p {
   font-size: 15px;
   line-height: 1.55;
   color: var(--paper);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 12px;
+  padding: 12px 14px;
 }
 .pre-deal-points li svg { color: var(--clay-soft); flex: none; margin-top: 3px; }
 
@@ -1544,45 +1551,33 @@ a.caps-item:focus-visible .caps-go {
   padding-top: 16px;
   padding-bottom: 16px;
 }
-/* Header CTAs collapse to icon-only round buttons when the bar gets tight, so
-   nothing ever wraps or overflows. */
+/* Header CTAs collapse to icon-only round buttons so nothing ever wraps or
+   overflows. This used to be gated to a "tight" viewport band below 1080px,
+   which was right when the nav carried fewer, shorter pills. It stopped
+   being right once "AI & Law", "Decision Room" and the rest made six pills
+   the norm: `.wrap` caps at `--maxw` (1180px), so the header's interior is
+   exactly as tight at a 1920px window as at an 1180px one, and English (the
+   language whose labels run longest) started clipping "Decision Room" mid
+   word with the Insights pill scrolled fully out of view, on perfectly
+   ordinary desktop widths that this rule's old gate never covered. Below,
+   applied unconditionally rather than re-gated to some other guessed
+   breakpoint, since the constraint the icon-only fallback exists for is
+   constant for any viewport at or above the cap, not just "narrow" ones. */
 .header-cta {
   gap: 7px;
+  width: var(--ctrl-h);
+  padding: 0;
+  justify-content: center;
 }
-@media (max-width: 1080px) {
-  .header-cta {
-    width: var(--ctrl-h);
-    padding: 0;
-    justify-content: center;
-    gap: 0;
-  }
-  .header-cta-label {
-    display: none;
-  }
+.header-cta-label {
+  display: none;
 }
-/* Tight desktop range (small laptops, tablet landscape): keep the single row
-   comfortable so nav never touches the tools. */
-@media (max-width: 1120px) {
-  .header-inner {
-    gap: 12px;
-  }
-  .nav-pill {
-    padding: 0 12px;
-    font-size: 13.5px;
-  }
-}
-@media (max-width: 1040px) {
-  /* Drop the secondary guide icon to guarantee clearance. */
-  .header-tools .hdr-secondary {
-    display: none;
-  }
-}
-@media (max-width: 980px) {
-  /* In the tightest desktop band before the mobile tab bar takes over, drop the
-     share icon too so the nav pills never touch the tools. */
-  .header-tools .share-btn {
-    display: none;
-  }
+/* Drop the secondary guide icon and the share icon too, for the same reason:
+   both existed as tight-viewport relief valves that never fired once the
+   nav grew past what fit in the capped-width header at any viewport. */
+.header-tools .hdr-secondary,
+.header-tools .share-btn {
+  display: none;
 }
 .brand {
   display: flex;
@@ -1661,6 +1656,24 @@ a.caps-item:focus-visible .caps-go {
   color: var(--paper);
   background: var(--clay);
   border-color: var(--clay);
+}
+/* Tight desktop range (small laptops, tablet landscape, below the header's
+   own 1180px cap): tighten further still. This block must stay AFTER the
+   base .nav-pill/.nav-pills rules above: a media query has no specificity
+   edge over an unconditional rule of the same selector, so placed earlier
+   in the file (as it used to be) it silently lost every override to the
+   later, unconditional base rule and never took effect at all. */
+@media (max-width: 1120px) {
+  .header-inner {
+    gap: 12px;
+  }
+  .nav-pills {
+    gap: 4px;
+  }
+  .nav-pill {
+    padding: 0 10px;
+    font-size: 13px;
+  }
 }
 
 /* ---------- forms ---------- */
@@ -3608,6 +3621,9 @@ html.a11y-reduce-motion *::after {
   flex-direction: column;
   gap: 14px;
 }
+/* Same translucent-glass card shell used for .pre-deal-points and the Home
+   Engine tiles, so a plain checklist row reads as a module on this dark
+   panel instead of a leftover list next to the copy and the CTA. */
 .mna-points li {
   display: flex;
   align-items: flex-start;
@@ -3615,6 +3631,10 @@ html.a11y-reduce-motion *::after {
   font-size: 16px;
   line-height: 1.6;
   color: var(--paper);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 14px;
+  padding: 14px 16px;
 }
 .mna-check {
   flex: none;
