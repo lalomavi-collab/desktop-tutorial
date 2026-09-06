@@ -721,6 +721,27 @@ article p {
     padding: 28px 24px;
   }
 }
+/* One of the three founder phone links: was a bare inline-flex row stacked
+   directly on the ones beside it, with only a top border marking the whole
+   group. A light fill and its own radius turns each number into its own
+   small module instead of one more line in a list. */
+.founder-phone-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--clay-soft);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.founder-phone-row:hover {
+  border-color: var(--clay);
+  background: var(--card);
+}
 /* A card that is itself a link: reset anchor styling and reveal a "go" cue. */
 a.card {
   display: block;

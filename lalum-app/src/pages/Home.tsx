@@ -229,20 +229,23 @@ export function Home() {
             {/* His own voice, beside his own details. Nothing plays until it is
                 asked to. */}
             <VoiceNote />
-            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={`tel:${officePhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+            {/* Three phone numbers used to sit as plain stacked links under one
+                border. Same numbers, same badges, now each its own light row
+                so the block reads as three modules, not a list. */}
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 8 }}>
+              <a href={`tel:${officePhone.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderOffice}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{officePhone.display}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phoneAi}</span>
               </a>
-              <a href={`tel:${personalLine.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+              <a href={`tel:${personalLine.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderPersonal}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{personalLine.display}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phonePersonal}</span>
               </a>
-              <a href={`tel:${directPhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+              <a href={`tel:${directPhone.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderDirect}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{directPhone.display}</span>
@@ -256,8 +259,14 @@ export function Home() {
           <div>
             <p className="eyebrow">{h.storyEyebrow}</p>
             <h2 className="serif" style={{ fontSize: 36, lineHeight: 1.22, letterSpacing: "-0.015em", margin: "0 0 20px" }}>{h.storyH2}</h2>
-            <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{h.storyP1}</p>
-            <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{h.storyP2}</p>
+            {/* Same two paragraphs as before, in the same panel treatment as
+                the About section above, so the founder's story reads as a
+                module beside the info card rather than bare text filling
+                the column. */}
+            <div className="prose-panel" style={{ padding: "32px 36px" }}>
+              <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{h.storyP1}</p>
+              <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{h.storyP2}</p>
+            </div>
           </div>
         </div>
       </section>
