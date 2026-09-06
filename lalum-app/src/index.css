@@ -700,6 +700,20 @@ article p {
   transform: translateY(-3px);
   box-shadow: 0 22px 44px -30px rgba(60, 45, 30, 0.5);
 }
+/* A static text panel, not a card: same shell (border, radius, background)
+   but no hover lift, since nothing here is clickable and a floating effect
+   on plain prose would be a stray animation rather than an affordance. */
+.prose-panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 40px 44px;
+}
+@media (max-width: 560px) {
+  .prose-panel {
+    padding: 28px 24px;
+  }
+}
 /* A card that is itself a link: reset anchor styling and reveal a "go" cue. */
 a.card {
   display: block;
@@ -757,6 +771,17 @@ a.card:focus-visible {
   background: var(--clay);
   color: var(--paper);
   border-color: var(--clay);
+}
+
+/* The AI pillar's sector-rubric cards (no Real Estate counterpart), a shade
+   brighter than the shared --clay used everywhere else on this page: a small,
+   deliberate accent for the domain the practice is growing fastest in, on a
+   section that only ever renders on that one page. */
+.pillar-sector-card {
+  border-top: 3px solid var(--clay-bright);
+}
+.pillar-sector-card:hover {
+  border-color: var(--clay-bright);
 }
 
 /* Premium numbered process: a serif numeral in an outlined disc. */
