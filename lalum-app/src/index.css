@@ -1573,7 +1573,7 @@ a.caps-item:focus-visible .caps-go {
 .nav-pills {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: var(--ctrl-h);
   flex: 0 1 auto;
   min-width: 0;
@@ -1587,16 +1587,22 @@ a.caps-item:focus-visible .caps-go {
   display: none;
 }
 /* Each nav item is its own framed button, matching the round tool buttons, so
-   the bar reads as one clean set of controls. */
+   the bar reads as one clean set of controls.
+   Padding and size are a notch tighter than they used to be: the bar grew a
+   sixth pill (the Insights menu) and two of the remaining labels are two
+   words (AI & Law, Decision Room) rather than one, so the same comfortable
+   17px padding at 14px no longer left "everything fits" true at the header's
+   own 1180px cap, regardless of viewport, and two pills silently scrolled out
+   of view with no visible affordance. */
 .nav-pill {
   display: inline-flex;
   align-items: center;
   height: var(--ctrl-h);
-  padding: 0 17px;
+  padding: 0 14px;
   border-radius: 9999px;
   border: 1px solid var(--line);
   background: var(--card);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--slate);
   white-space: nowrap;
@@ -3841,6 +3847,13 @@ html.a11y-reduce-motion *::after {
 .header-more-item:hover,
 .header-more-item:focus-visible {
   background: var(--clay-tint);
+}
+/* The Insights dropdown reuses this same row style for its three links
+   (Articles, Knowledge, Courses) and marks whichever one is the current
+   route, the same way an active nav pill is marked. */
+.header-more-item.active {
+  background: var(--clay-tint);
+  font-weight: 700;
 }
 .header-more-item svg {
   flex: none;

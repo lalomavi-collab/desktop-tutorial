@@ -74,13 +74,17 @@ export function Home() {
         </div>
       </section>
 
-      {/* The router comes first, before any of the practice narrative: a visitor
-          who knows who they are should not have to read the positioning to find
-          the four entries written for them. */}
-      <AudiencePaths />
-
-      {/* The two areas the practice leads with. Shared with /advisory. */}
+      {/* The two areas the practice leads with, first: a visitor should see
+          the whole shape of the practice, AI & Law and Real Estate, in one
+          glance right under the headline, before anything more granular.
+          Shared with /advisory. */}
       <FocusAreas />
+
+      {/* The finer-grained router comes second, once the two areas are
+          established: a visitor who knows who they are (a tech company, a
+          public body, a private client) picks their own entry from here
+          without having to read the rest of the positioning first. */}
+      <AudiencePaths />
 
       {/* Positioning, then the risk pillars, then the engine. The practice
           areas, the deal work and the scenario hub used to sit here too, which

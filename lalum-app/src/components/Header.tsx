@@ -14,24 +14,31 @@ export function Header() {
   const { t, lang, setLang } = useLang();
   const [langOpen, setLangOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [insightsOpen, setInsightsOpen] = useState(false);
   const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
   const { share, copied: shareCopied } = useShare();
 
-  // The top bar names the two areas the practice leads with, then the advisory
-  // hub, courses and the Knowledge hub. It used to open with two anchors into
-  // the home page (practice areas, pre-deal strategy) and a single "Advisory"
-  // pill, so neither focus area had a link anywhere in the navigation: the two
-  // pages carrying the positioning were reachable only from the footer and from
-  // the middle of the home page. Both anchors still sit on the home page, and
-  // pre-deal strategy is a section of /advisory as well, so nothing lost an
-  // address. Payment is a one-tap action from the floating ContactRail.
+  // The two areas the practice leads with, first and named as domains: AI &
+  // Law, then Real Estate. Clinic is the existing advisory hub under a name
+  // that matches how the practice already describes its own operating model
+  // (see the FAQ on "Clinic and Engine"); Engine is the home page's own
+  // #engine section, reachable from anywhere via the cross-page hash scroll
+  // in App.tsx; Decision Room is the existing readiness quiz. None of these
+  // three is a new page or a new URL, only a new name for one already live.
+  // Training and Knowledge have no slot of their own in this shape: they, and
+  // Articles, live inside the Insights dropdown below instead of three more
+  // pills competing with the five domain/model links for space.
   const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
-    { to: "/", label: t.ui.nav.home, end: true },
-    { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate, end: false },
     { to: "/ai-legal-advisory", label: t.ui.nav.ai, end: false },
-    { to: "/advisory", label: t.ui.nav.advisory, end: false },
-    { to: "/training", label: t.ui.nav.training, end: false },
-    { to: "/knowledge", label: t.ui.nav.knowledge, end: false },
+    { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate, end: false },
+    { to: "/advisory", label: t.ui.nav.clinic, end: false },
+    { to: "/#engine", label: t.ui.nav.engine, end: false, hash: true },
+    { to: "/risk", label: t.ui.nav.decisionRoom, end: false },
+  ];
+  const insightsLinks = [
+    { to: "/insights", label: t.ui.nav.insights },
+    { to: "/knowledge", label: t.ui.nav.knowledge },
+    { to: "/training", label: t.ui.nav.training },
   ];
 
   return (
@@ -53,6 +60,40 @@ export function Header() {
               </NavLink>
             )
           )}
+          {/* Articles, Knowledge and Courses, folded under one pill: three
+              destinations that all answer "I want to read/learn something,"
+              none of which is one of the two domains or the operating-model
+              links above, so they share a menu instead of each claiming a
+              pill of their own. */}
+          <div style={{ position: "relative" }}>
+            <button
+              type="button"
+              onClick={() => setInsightsOpen((v) => !v)}
+              className={"nav-pill" + (insightsOpen ? " active" : "")}
+              aria-haspopup="menu"
+              aria-expanded={insightsOpen}
+            >
+              {t.ui.nav.insightsMenu}
+            </button>
+            {insightsOpen && (
+              <>
+                <div onClick={() => setInsightsOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                <div role="menu" aria-label={t.ui.nav.insightsMenu} className="card" style={{ position: "absolute", insetInlineStart: 0, top: "calc(100% + 8px)", zIndex: 41, padding: 6, minWidth: 160, display: "flex", flexDirection: "column", gap: 2 }}>
+                  {insightsLinks.map((l) => (
+                    <NavLink
+                      key={l.to}
+                      to={l.to}
+                      role="menuitem"
+                      onClick={() => setInsightsOpen(false)}
+                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                    >
+                      {l.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </nav>
 
         <div className="header-tools">
@@ -225,9 +266,15 @@ export function Header() {
               </>
             )}
           </div>
-          {/* The assessment CTA lives in the page body (hero, advisory card,
-              closing CTA), not the top bar, so the header stays uncluttered.
-              Only the client login/portal button remains here. */}
+          {/* A dedicated "Start" pill was tried here and dropped: the toolbar
+              already carries six round controls plus the client login link,
+              and one more rigid, non-shrinking pill pushed the nav-pills row
+              below what six domain/model links need, forcing two of them
+              into a scroll with no visible affordance. The practice's primary
+              CTA (/book) already anchors the hero, FocusAreas, and every
+              closing section, so nothing was actually missing an entry
+              point. Only the client login/portal button remains here, so the
+              header stays uncluttered. */}
           <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm header-cta hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
