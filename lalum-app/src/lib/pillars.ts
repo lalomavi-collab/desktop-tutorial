@@ -134,7 +134,11 @@ const SHARED = {
       { slug: "urban-renewal-mistakes-guide", title: `המדריך לטעויות נפוצות בהתחדשות עירונית` },
       { slug: "urban-renewal-risk", title: `ניהול סיכונים בפרויקטי התחדשות עירונית` },
       { slug: "tenant-urban-renewal-guide", title: `מדריך לדייר בהתחדשות עירונית` },
-      { slug: "combination-deals-architecture", title: `ארכיטקטורת עסקאות קומבינציה` },
+      // The page's own hero and "covers" card promise both sides of the
+      // border ("בארץ ובחו״ל"), but none of these six slots pointed abroad
+      // until now. Swapped the narrowest of the four urban-renewal links for
+      // the one general (not country-specific) overseas-transactions guide.
+      { slug: "intl-realestate-transactions", title: `ליווי עסקאות נדל״ן בינלאומיות` },
       { slug: "ai-realestate-risk-management", title: `ניהול סיכונים בנדל״ן מבוסס בינה מלאכותית` },
       { slug: "contract-review-before-signing", title: `בדיקת חוזה לפני חתימה` },
     ],
