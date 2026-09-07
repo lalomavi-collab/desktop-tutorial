@@ -37,6 +37,19 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /insights/האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים  /insights/decision-oriented-mediation-benefits  301
 /insights/האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים/  /insights/decision-oriented-mediation-benefits/  301
 
+# --- Portugal real estate cluster consolidation ---
+# Three articles targeted the same search intent (Portugal real estate
+# investment for the Israeli investor): portugal-realestate-investment,
+# portugal-realestate-legal-guide, and portugal-investment-guide. Search
+# Console showed the whole cluster stuck on page 3+ for every query variant,
+# 0% click-through, the classic cannibalization signature of one intent split
+# three ways. Kept portugal-investment-guide (the most recent and most
+# complete of the three); the other two now point straight at it.
+/insights/portugal-realestate-investment  /insights/portugal-investment-guide  301
+/insights/portugal-realestate-investment/  /insights/portugal-investment-guide/  301
+/insights/portugal-realestate-legal-guide  /insights/portugal-investment-guide  301
+/insights/portugal-realestate-legal-guide/  /insights/portugal-investment-guide/  301
+
 # --- Legacy Wix blog index -> new articles hub ---
 /post   /insights   301
 

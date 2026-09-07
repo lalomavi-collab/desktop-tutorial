@@ -66,9 +66,9 @@
  "portugal-porto-vs-lisbon": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-legal-guide",
    "portugal-real-estate-financing",
-   "portugal-realestate-investment"
+   "portugal-real-estate-taxation",
+   "israeli-realestate-abroad"
   ]
  },
  "portugal-real-estate-taxation": {
@@ -91,8 +91,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-porto-vs-lisbon",
-   "tama-38-1-vs-38-2-comparison",
-   "portugal-real-estate-taxation"
+   "portugal-real-estate-taxation",
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -228,7 +228,7 @@
   "related": [
    "eu-ai-act-2026",
    "ai-use-policy-organization",
-   "directors-liability-ai-era"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "directors-liability-ai-era": {
@@ -306,9 +306,9 @@
  "portugal-investment-guide": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-legal-guide",
-   "portugal-realestate-investment",
-   "intl-realestate-transactions"
+   "intl-realestate-transactions",
+   "israeli-realestate-abroad",
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "ai-legal-practice": {
@@ -355,8 +355,8 @@
   "topic": "real-estate",
   "related": [
    "free-lawyer-illusion",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
-   "combination-deals-architecture"
+   "combination-deals-architecture",
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
   ]
  },
  "business-mediation-relations": {
@@ -628,7 +628,7 @@
   "related": [
    "overseas-partnership-guide",
    "israeli-realestate-abroad",
-   "portugal-real-estate-taxation"
+   "portugal-investment-guide"
   ]
  },
  "realestate-second-opinion": {
@@ -637,14 +637,6 @@
    "lalum-clinic-realestate-advice",
    "homeowners-iron-dome",
    "quiet-legal-revolution"
-  ]
- },
- "portugal-realestate-investment": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-legal-guide",
-   "intl-realestate-transactions",
-   "israeli-realestate-abroad"
   ]
  },
  "contract-review-before-signing": {
@@ -699,24 +691,24 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "homeowners-iron-dome"
   ]
  },
  "israeli-realestate-abroad": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "intl-realestate-transactions",
-   "portugal-realestate-legal-guide"
+   "overseas-property-holding",
+   "portugal-investment-guide"
   ]
  },
  "war-end-scenarios-analysis": {
   "topic": "mediation",
   "related": [
    "lalum-investment-model-launch",
-   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה",
-   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק"
+   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק",
+   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה"
   ]
  },
  "homeowners-iron-dome": {
@@ -786,9 +778,9 @@
  "intl-realestate-transactions": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "lalum-investment-model-launch",
-   "portugal-realestate-legal-guide"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
+   "israeli-realestate-abroad"
   ]
  },
  "lalum-together": {
@@ -797,14 +789,6 @@
    "lalum-investment-model-launch",
    "overseas-partnership-guide",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
-  ]
- },
- "portugal-realestate-legal-guide": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-investment",
-   "portugal-porto-vs-lisbon",
-   "intl-realestate-transactions"
   ]
  },
  "ai-realestate-risk-management": {
@@ -860,7 +844,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-partnership-guide",
-   "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
+   "lalum-investment-model-launch"
   ]
  },
  "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח": {
@@ -964,7 +948,7 @@
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "decision-oriented-mediation-benefits",
-   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
+   "legal-mediation-benefits"
   ]
  },
  "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai": {
@@ -1076,7 +1060,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "free-lawyer-illusion",
-   "tenant-urban-renewal-guide"
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט": {
@@ -1380,7 +1364,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "urban-renewal-risk"
+   "ai-realestate-risk-management"
   ]
  }
 }

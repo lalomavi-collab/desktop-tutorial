@@ -516,13 +516,6 @@ export const blogMeta: BlogMeta[] = [
     "cover": "/images/covers/realestate-second-opinion.webp"
   },
   {
-    "slug": "portugal-realestate-investment",
-    "title": "השקעות נדלן פורטוגל: כך תשקעו חכם בשוק אירופי צומח ",
-    "excerpt": "מדריך להשקעות נדל״ן בפורטוגל, מסלולי השקעה בליסבון ובפורטו, מיסוי, תשואות, מימון וויזות שהייה.",
-    "date": "ינואר 2026",
-    "cover": "/images/covers/portugal-realestate-investment.webp"
-  },
-  {
     "slug": "contract-review-before-signing",
     "title": "בדיקת חוזה לפני חתימה: כך מקבלים החלטה משפטית נכונה",
     "excerpt": "מדוע בדיקת חוזה לפני חתימה היא רגע של קבלת החלטה משפטית מחייבת, ולא פעולה טכנית של קריאת סעיפים.",
@@ -654,13 +647,6 @@ export const blogMeta: BlogMeta[] = [
     "excerpt": "ניתוח מודל Lalum Together לרכישה קבוצתית של נכסים מוכנים בחו״ל, הפחתת עלויות בדיקות נאותות ובעלות ישירה.",
     "date": "נובמבר 2025",
     "cover": "/images/covers/lalum-together.webp"
-  },
-  {
-    "slug": "portugal-realestate-legal-guide",
-    "title": "השקעות נדל״ן בפורטוגל: פתיחה ומבט כללי",
-    "excerpt": "מדריך מקיף להשקעות נדל״ן בפורטוגל, שלבי הרכישה מ-NIF ועד Deed, מיסוי, תכניות ממשלתיות וליווי משפטי בינלאומי.",
-    "date": "אוקטובר 2025",
-    "cover": "/images/covers/portugal-realestate-legal-guide.webp"
   },
   {
     "slug": "ai-realestate-risk-management",
