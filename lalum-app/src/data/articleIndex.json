@@ -266,9 +266,9 @@
  "portugal-investment-guide": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-legal-guide",
-   "portugal-realestate-investment",
-   "intl-realestate-transactions"
+   "intl-realestate-transactions",
+   "israeli-realestate-abroad",
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "ai-legal-practice": {
@@ -599,14 +599,6 @@
    "quiet-legal-revolution"
   ]
  },
- "portugal-realestate-investment": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-legal-guide",
-   "intl-realestate-transactions",
-   "israeli-realestate-abroad"
-  ]
- },
  "contract-review-before-signing": {
   "topic": "contracts",
   "related": [
@@ -666,9 +658,9 @@
  "israeli-realestate-abroad": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "intl-realestate-transactions",
-   "portugal-realestate-legal-guide"
+   "overseas-property-holding",
+   "portugal-investment-guide"
   ]
  },
  "war-end-scenarios-analysis": {
@@ -746,9 +738,9 @@
  "intl-realestate-transactions": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "lalum-investment-model-launch",
-   "portugal-realestate-legal-guide"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
+   "israeli-realestate-abroad"
   ]
  },
  "lalum-together": {
@@ -757,14 +749,6 @@
    "lalum-investment-model-launch",
    "overseas-partnership-guide",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
-  ]
- },
- "portugal-realestate-legal-guide": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-investment",
-   "intl-realestate-transactions",
-   "portugal-investment-guide"
   ]
  },
  "ai-realestate-risk-management": {
@@ -1058,8 +1042,8 @@
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
   "topic": "real-estate",
   "related": [
-   "lalum-clinic-realestate-advice",
    "intl-realestate-transactions",
+   "lalum-clinic-realestate-advice",
    "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
@@ -1180,7 +1164,7 @@
   "related": [
    "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
    "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך": {
