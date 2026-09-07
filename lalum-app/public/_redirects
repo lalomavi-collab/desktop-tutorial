@@ -233,6 +233,50 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /thedecisionroom  /advisory  301
 /valuation  /book  301
 
+# --- Historical language-prefixed URLs for Hebrew-only routes (SEO 404 cleanup) ---
+# Only the seven core pages are translated. faq, insights, training, rulings and
+# risk have no /<lang>/ variant, only the Hebrew canonical, but Google still
+# holds these prefixed paths from an earlier structure and reports them as 404
+# ("not found"). A 404 cannot be indexed or promoted; a 301 to the Hebrew
+# canonical clears the error and keeps the signal. These specific rules are
+# matched before the prefixed-path-falls-to-404 behavior described below, and
+# they never touch the seven real translated pages (advisory, ai-legal-advisory,
+# real-estate-legal-advisory, knowledge, book, legal, home).
+/en/insights/*  /insights/:splat  301
+/es/insights/*  /insights/:splat  301
+/fr/insights/*  /insights/:splat  301
+/ar/insights/*  /insights/:splat  301
+/en/insights  /insights/  301
+/es/insights  /insights/  301
+/fr/insights  /insights/  301
+/ar/insights  /insights/  301
+/en/rulings/*  /rulings/:splat  301
+/es/rulings/*  /rulings/:splat  301
+/fr/rulings/*  /rulings/:splat  301
+/ar/rulings/*  /rulings/:splat  301
+/en/rulings  /rulings/  301
+/es/rulings  /rulings/  301
+/fr/rulings  /rulings/  301
+/ar/rulings  /rulings/  301
+/en/faq  /faq/  301
+/es/faq  /faq/  301
+/fr/faq  /faq/  301
+/ar/faq  /faq/  301
+/en/training  /training/  301
+/es/training  /training/  301
+/fr/training  /training/  301
+/ar/training  /training/  301
+/en/risk  /risk/  301
+/es/risk  /risk/  301
+/fr/risk  /risk/  301
+/ar/risk  /risk/  301
+
+# --- Legacy /articles blog index -> new articles hub ---
+# An old path that never existed in the current app. Send it, and anything
+# under it, to the articles hub rather than to 404.
+/articles  /insights/  301
+/articles/*  /insights/  301
+
 # --- Language prefixes ---
 # /en, /es, /fr and /ar are now REAL paths: the build prerenders a document per
 # language for every translated route, each with its own canonical. The old
