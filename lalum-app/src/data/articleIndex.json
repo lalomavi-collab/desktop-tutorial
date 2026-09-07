@@ -63,6 +63,46 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "portugal-porto-vs-lisbon": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-financing",
+   "portugal-real-estate-taxation",
+   "israeli-realestate-abroad"
+  ]
+ },
+ "portugal-real-estate-taxation": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-financing",
+   "overseas-property-holding-structure",
+   "portugal-legal-due-diligence"
+  ]
+ },
+ "portugal-purchase-contract": {
+  "topic": "contracts",
+  "related": [
+   "portugal-legal-due-diligence",
+   "portugal-real-estate-financing",
+   "portugal-real-estate-taxation"
+  ]
+ },
+ "portugal-real-estate-financing": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-porto-vs-lisbon",
+   "portugal-real-estate-taxation",
+   "tama-38-1-vs-38-2-comparison"
+  ]
+ },
+ "portugal-legal-due-diligence": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-purchase-contract",
+   "overseas-property-due-diligence",
+   "second-opinion-real-estate-urban-renewal"
+  ]
+ },
  "eu-ai-act-roles-obligations": {
   "topic": "ai-governance",
   "related": [
@@ -92,7 +132,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-use-policy-organization"
+   "decision-oriented-ai-law"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -123,8 +163,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "memory",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "memory"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -138,9 +178,9 @@
  "overseas-property-due-diligence": {
   "topic": "real-estate",
   "related": [
+   "portugal-legal-due-diligence",
    "overseas-property-holding-structure",
-   "ai-due-diligence-tech-acquisition",
-   "second-opinion-real-estate-urban-renewal"
+   "ai-due-diligence-tech-acquisition"
   ]
  },
  "ai-due-diligence-tech-acquisition": {
@@ -156,7 +196,7 @@
   "related": [
    "overseas-property-due-diligence",
    "overseas-partnership-guide",
-   "ai-governance-board-framework"
+   "portugal-real-estate-taxation"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -179,8 +219,8 @@
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "tenant-urban-renewal-guide",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "portugal-real-estate-financing",
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-governance-board-framework": {
@@ -188,7 +228,7 @@
   "related": [
    "eu-ai-act-2026",
    "ai-use-policy-organization",
-   "directors-liability-ai-era"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "directors-liability-ai-era": {
@@ -210,8 +250,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-governance-board-framework",
    "ai-use-policy-organization",
+   "ai-governance-board-framework",
    "eu-ai-act-2026"
   ]
  },
@@ -242,9 +282,9 @@
  "second-opinion-real-estate-urban-renewal": {
   "topic": "real-estate",
   "related": [
+   "portugal-legal-due-diligence",
    "realestate-second-opinion",
-   "quiet-legal-revolution",
-   "combination-deals-architecture"
+   "quiet-legal-revolution"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -315,8 +355,8 @@
   "topic": "real-estate",
   "related": [
    "free-lawyer-illusion",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-   "combination-deals-architecture"
+   "combination-deals-architecture",
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
   ]
  },
  "business-mediation-relations": {
@@ -340,7 +380,7 @@
   "related": [
    "quiet-legal-revolution",
    "ai-liability-ruling",
-   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה"
+   "digital-lawyers-2026"
   ]
  },
  "international-trade-guide-2026": {
@@ -371,8 +411,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "why-realestate-needs-ai",
-   "the-code-realestate"
+   "the-code-realestate",
+   "why-realestate-needs-ai"
   ]
  },
  "decision-oriented-ai-law": {
@@ -482,8 +522,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "unfair-advantage-course",
    "transcription-tools-guide",
+   "unfair-advantage-course",
    "law-algorithm-era"
   ]
  },
@@ -507,8 +547,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "shadow-it-law-firms",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "shadow-it-law-firms"
   ]
  },
  "why-realestate-needs-ai": {
@@ -612,7 +652,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
+   "overseas-property-holding-structure"
   ]
  },
  "second-opinion-revolution": {
@@ -667,8 +707,8 @@
   "topic": "mediation",
   "related": [
    "lalum-investment-model-launch",
-   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה",
-   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק"
+   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק",
+   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה"
   ]
  },
  "homeowners-iron-dome": {
@@ -804,7 +844,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-partnership-guide",
-   "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
+   "lalum-investment-model-launch"
   ]
  },
  "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח": {
@@ -884,7 +924,7 @@
   "related": [
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "portugal-investment-guide",
-   "israeli-realestate-abroad"
+   "portugal-real-estate-taxation"
   ]
  },
  "משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה": {
@@ -908,7 +948,7 @@
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "decision-oriented-mediation-benefits",
-   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
+   "legal-mediation-benefits"
   ]
  },
  "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai": {
@@ -1020,7 +1060,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "free-lawyer-illusion",
-   "tenant-urban-renewal-guide"
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט": {
@@ -1042,8 +1082,8 @@
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
   "topic": "real-estate",
   "related": [
-   "intl-realestate-transactions",
    "lalum-clinic-realestate-advice",
+   "intl-realestate-transactions",
    "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
@@ -1060,7 +1100,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1210,9 +1250,9 @@
  "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה": {
   "topic": "mediation",
   "related": [
-   "lalum-clinic-experience",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות"
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
+   "lalum-clinic-experience"
   ]
  },
  "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד": {
@@ -1324,7 +1364,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "urban-renewal-risk"
+   "ai-realestate-risk-management"
   ]
  }
 }
