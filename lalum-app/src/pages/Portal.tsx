@@ -9,6 +9,7 @@ import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { bcp47For, type Lang } from "../lib/hreflang";
+import { topicBySlug } from "../lib/topics";
 
 // When set, an embedded scheduling widget (Zoho Bookings) replaces the manual
 // day/time picker.
@@ -60,6 +61,18 @@ type MsgRow = {
   handled: boolean;
   created_at: string;
   user_email: string | null;
+};
+
+type DiscussionRow = {
+  id: string;
+  topic: string;
+  question: string;
+  asker_name: string | null;
+  asker_email: string | null;
+  status: "pending" | "answered" | "rejected";
+  reply: string | null;
+  answered_at: string | null;
+  created_at: string;
 };
 
 type Milestone = {
@@ -172,6 +185,13 @@ export function Portal() {
   const [openInboxClient, setOpenInboxClient] = useState<string | undefined>();
   const [openCaller, setOpenCaller] = useState<string | undefined>();
 
+  // Public "Discussions" review queue (firm only). A question submitted from
+  // the DiscussionsPanel on the site sits here as 'pending', invisible to
+  // everyone but an admin, until it is answered or rejected below.
+  const [discussions, setDiscussions] = useState<DiscussionRow[]>([]);
+  const [discussionDrafts, setDiscussionDrafts] = useState<Record<string, string>>({});
+  const [discussionBusy, setDiscussionBusy] = useState<Record<string, "send" | "reject" | undefined>>({});
+
   const loadAdminDocs = useCallback(async () => {
     if (!supabase) return;
     setDocsState("loading");
@@ -245,8 +265,44 @@ export function Portal() {
         .order("created_at", { ascending: false })
         .limit(50);
       if (callRes.data) setCalls(callRes.data as unknown as CallRow[]);
+      const discRes = await supabase.from("lalum_discussions").select("*").order("created_at", { ascending: false }).limit(150);
+      if (discRes.data) setDiscussions(discRes.data as DiscussionRow[]);
     }
   }, [user]);
+
+  // Answer (or reject) a pending public question. Once answered it becomes
+  // visible in the DiscussionsPanel for anyone browsing that topic.
+  async function replyDiscussion(id: string) {
+    if (!supabase) return;
+    const text = (discussionDrafts[id] ?? "").trim();
+    if (!text) return;
+    setDiscussionBusy((b) => ({ ...b, [id]: "send" }));
+    try {
+      const { error } = await supabase.from("lalum_discussions")
+        .update({ reply: text, status: "answered", answered_at: new Date().toISOString() }).eq("id", id);
+      if (error) throw error;
+      setDiscussions((rows) => rows.map((r) => (r.id === id ? { ...r, reply: text, status: "answered", answered_at: new Date().toISOString() } : r)));
+      setDiscussionDrafts((d) => { const n = { ...d }; delete n[id]; return n; });
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "הפרסום נכשל");
+    } finally {
+      setDiscussionBusy((b) => ({ ...b, [id]: undefined }));
+    }
+  }
+
+  async function rejectDiscussion(id: string) {
+    if (!supabase) return;
+    setDiscussionBusy((b) => ({ ...b, [id]: "reject" }));
+    try {
+      const { error } = await supabase.from("lalum_discussions").update({ status: "rejected" }).eq("id", id);
+      if (error) throw error;
+      setDiscussions((rows) => rows.map((r) => (r.id === id ? { ...r, status: "rejected" } : r)));
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "הפעולה נכשלה");
+    } finally {
+      setDiscussionBusy((b) => ({ ...b, [id]: undefined }));
+    }
+  }
 
   // One-click: turn a billable call into a payment request, reusing the amount
   // the voice billing already computed (gross, VAT included).
@@ -832,6 +888,73 @@ export function Portal() {
                 </div>
               )}
             </>
+          )}
+        </div>
+      )}
+
+      {/* DISCUSSIONS REVIEW QUEUE (firm only): public questions asked from the
+          real-estate and AI pillar pages. Nothing here is visible on the site
+          until answered, so this is the one gate that content passes through. */}
+      {isAdmin && (
+        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <span className="icon-badge"><Icon name="quote" size={20} /></span>
+            <h2 className="h3" style={{ fontSize: 22 }}>דיונים ציבוריים</h2>
+            {discussions.filter((d) => d.status === "pending").length > 0 && (
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>
+                {discussions.filter((d) => d.status === "pending").length} ממתינות
+              </span>
+            )}
+          </div>
+          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>
+            שאלות מהפאנל הציבורי בעמודי הנדל״ן וה-AI. שאלה מתפרסמת רק אחרי שנענתה כאן.
+          </p>
+          {discussions.filter((d) => d.status !== "rejected").length === 0 ? (
+            <p className="muted" style={{ fontSize: 14 }}>אין שאלות עדיין.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {discussions.filter((d) => d.status !== "rejected").map((d) => {
+                const busy = discussionBusy[d.id];
+                const pending = d.status === "pending";
+                return (
+                  <div key={d.id} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>
+                        {topicBySlug.get(d.topic)?.name ?? d.topic}
+                      </span>
+                      {pending
+                        ? <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>ממתינה</span>
+                        : <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>פורסמה ✓</span>}
+                      {(d.asker_name || d.asker_email) && (
+                        <span className="muted" style={{ fontSize: 12 }} dir="ltr">{d.asker_name}{d.asker_name && d.asker_email ? " · " : ""}{d.asker_email}</span>
+                      )}
+                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{new Date(d.created_at).toLocaleDateString(bcp47For(lang))}</span>
+                    </div>
+                    <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{d.question}</p>
+                    {pending ? (
+                      <>
+                        <textarea className="field" rows={3} value={discussionDrafts[d.id] ?? ""}
+                          onChange={(e) => setDiscussionDrafts((dr) => ({ ...dr, [d.id]: e.target.value }))}
+                          placeholder="כתבו תשובה לפרסום…" style={{ resize: "vertical", marginBottom: 10 }} />
+                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                          <button type="button" className="btn btn-clay btn-sm" disabled={!!busy || !(discussionDrafts[d.id] ?? "").trim()} onClick={() => replyDiscussion(d.id)}>
+                            <Icon name="send" size={15} /> {busy === "send" ? "מפרסם…" : "פרסום תשובה"}
+                          </button>
+                          <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => rejectDiscussion(d.id)} style={{ color: "var(--clay)" }}>
+                            {busy === "reject" ? "…" : "דחייה, ללא פרסום"}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 12 }}>
+                        <div className="label" style={{ color: "var(--clay)", fontSize: 11 }}>התשובה שפורסמה</div>
+                        <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14 }}>{d.reply}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       )}
