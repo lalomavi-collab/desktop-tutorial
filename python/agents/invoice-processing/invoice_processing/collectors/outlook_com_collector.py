@@ -120,6 +120,56 @@ def _scan_inbox(inbox, start, end, dest, label, collected, seen):
             continue
 
 
+# תיקיות שאין בהן מסמכים חשבונאיים, ואין טעם לסרוק
+_SKIP_FOLDERS = (
+    "פריטים שנמחקו", "deleted items", "דואר זבל", "junk",
+    "טיוטות", "drafts", "לוח שנה", "calendar", "אנשי קשר", "contacts",
+    "פריטים שנשלחו", "sent items", "בעיות סינכרון", "sync issues",
+    "outbox", "דואר יוצא", "rss",
+)
+
+
+def _folders_to_scan(store, inbox, store_name: str, max_depth: int = 2):
+    """
+    מחזיר (תיקייה, תווית) לדואר הנכנס, לתיקיות המשנה שלו, ולארכיון.
+    """
+    out = [(inbox, store_name)]
+
+    def walk(parent, prefix, depth):
+        if depth > max_depth:
+            return
+        try:
+            subs = list(parent.Folders)
+        except Exception:
+            return
+        for f in subs:
+            try:
+                fname = f.Name or ""
+            except Exception:
+                continue
+            if any(sk in fname.lower() for sk in _SKIP_FOLDERS):
+                continue
+            out.append((f, f"{prefix}/{fname}"))
+            walk(f, f"{prefix}/{fname}", depth + 1)
+
+    walk(inbox, store_name, 1)
+
+    # הארכיון יושב לצד הדואר הנכנס, לא בתוכו
+    try:
+        for f in inbox.Parent.Folders:
+            fname = f.Name or ""
+            low = fname.lower()
+            if any(sk in low for sk in _SKIP_FOLDERS):
+                continue
+            if "ארכיון" in fname or "archive" in low:
+                out.append((f, f"{store_name}/{fname}"))
+                walk(f, f"{store_name}/{fname}", 1)
+    except Exception:
+        pass
+
+    return out
+
+
 def collect_from_outlook_com(month: str) -> list[dict]:
     """
     סורק את תיבות הדואר הנכנס של כל החשבונות בפרופיל Outlook לחודש הנתון,
@@ -158,7 +208,12 @@ def collect_from_outlook_com(month: str) -> list[dict]:
                 inbox = store.GetDefaultFolder(OL_FOLDER_INBOX)
             except Exception:
                 continue
-            _scan_inbox(inbox, start, end, dest, name, collected, seen)
+
+            # סריקת הדואר הנכנס, תיקיות המשנה שלו, והארכיון. מסמך שתויק
+            # לתיקייה ("הנה\"ח מאי 2026") היה נעלם מהדוח לחלוטין כשנסרק
+            # השורש בלבד, וזו בדיוק התמונה החלקית שהדוח אמור למנוע.
+            for folder, label in _folders_to_scan(store, inbox, name):
+                _scan_inbox(folder, start, end, dest, label, collected, seen)
     except Exception as e:
         collected.append({
             "error": str(e), "source": "Outlook", "has_attachment": False,
