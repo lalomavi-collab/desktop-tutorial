@@ -17,15 +17,17 @@ create index if not exists lalum_group_chat_messages_created_idx
 alter table public.lalum_group_chat_messages enable row level security;
 
 -- Every signed-in user reads the whole room (it is a shared, open chat, not a
--- per-client thread like lalum_client_messages).
+-- per-client thread like lalum_client_messages). auth.uid() is wrapped in a
+-- select, matching this project's rls_initplan_wrap_auth_in_select fix, so
+-- Postgres evaluates it once per statement rather than once per row.
 drop policy if exists lalum_group_chat_read on public.lalum_group_chat_messages;
 create policy lalum_group_chat_read on public.lalum_group_chat_messages
-  for select using (auth.uid() is not null);
+  for select using ((select auth.uid()) is not null);
 
 -- Everyone can post, only ever as themselves.
 drop policy if exists lalum_group_chat_insert on public.lalum_group_chat_messages;
 create policy lalum_group_chat_insert on public.lalum_group_chat_messages
-  for insert with check (user_id = auth.uid());
+  for insert with check (user_id = (select auth.uid()));
 
 -- No update/delete policy: messages are permanent once posted, matching the
 -- rest of the portal's audit-friendly, append-only tables.
