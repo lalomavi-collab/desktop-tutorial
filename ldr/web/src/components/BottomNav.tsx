@@ -4,13 +4,12 @@
 
 type Tab =
   | "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms"
-  | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin" | "discussions";
+  | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
 const ITEMS: { tab: Tab; icon: string; label: string }[] = [
   { tab: "map", icon: "🗺", label: "מפה" },
   { tab: "lab", icon: "⚖️", label: "שו״ת כללי" },
   { tab: "feed", icon: "✨", label: "התחבר" },
-  { tab: "discussions", icon: "💬", label: "דיונים" },
   { tab: "cases", icon: "💼", label: "הזדמנויות" },
   { tab: "profile", icon: "👤", label: "אזור אישי" },
 ];
@@ -20,7 +19,6 @@ const CLIENT_ITEMS: { tab: Tab; icon: string; label: string }[] = [
   { tab: "feed", icon: "🏠", label: "בית" },
   { tab: "map", icon: "🗺", label: "מצא עו״ד" },
   { tab: "cases", icon: "📩", label: "הבקשות שלי" },
-  { tab: "discussions", icon: "💬", label: "דיונים" },
   { tab: "profile", icon: "👤", label: "פרופיל" },
 ];
 

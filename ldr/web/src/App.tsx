@@ -15,7 +15,6 @@ import Referrals from "./components/Referrals";
 import Feed from "./components/Feed";
 import ProfilePage from "./components/Profile";
 import QA from "./components/QA";
-import Discussions from "./components/Discussions";
 import AnalyzerLab from "./components/AnalyzerLab";
 import { rankFor } from "./lib/reputation";
 import VerificationGate from "./components/VerificationGate";
@@ -30,7 +29,7 @@ import BottomNav from "./components/BottomNav";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import NotificationsBell from "./components/NotificationsBell";
 
-type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin" | "discussions";
+type Tab = "feed" | "room" | "new" | "find" | "map" | "gigs" | "cases" | "rooms" | "referrals" | "qa" | "lab" | "board" | "profile" | "invite" | "admin";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -148,8 +147,6 @@ export default function App() {
             <PublicMap />
           ) : tab === "cases" ? (
             <CaseBoard profile={profile} notify={notify} />
-          ) : tab === "discussions" ? (
-            <Discussions profile={profile} notify={notify} />
           ) : tab === "profile" ? (
             <ProfilePage profile={profile} notify={notify} onChange={setProfile}
               onSignOut={async () => { await supabase.auth.signOut(); }} />
@@ -189,8 +186,6 @@ export default function App() {
           <Referrals profile={profile} notify={notify} />
         ) : tab === "qa" ? (
           <QA profile={profile} notify={notify} />
-        ) : tab === "discussions" ? (
-          <Discussions profile={profile} notify={notify} />
         ) : tab === "lab" ? (
           <AnalyzerLab profile={profile} notify={notify} />
         ) : tab === "board" ? (
@@ -218,7 +213,6 @@ const PRIMARY_TABS: { tab: Tab; label: string }[] = [
   { tab: "lab", label: "שאלות תשובות כללי" },
 ];
 const MORE_TABS: { tab: Tab; label: string }[] = [
-  { tab: "discussions", label: "💬 דיונים" },
   { tab: "room", label: "חדר ההחלטות" },
   { tab: "gigs", label: "Legal Gigs" },
   { tab: "cases", label: "📩 תיקים מלקוחות" },
@@ -248,7 +242,6 @@ function Header({
               <button className={tab === "feed" ? "active" : ""} onClick={() => setTab("feed")}>בית</button>
               <button className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>🗺 מצא עו״ד</button>
               <button className={tab === "cases" ? "active" : ""} onClick={() => setTab("cases")}>📩 הבקשות שלי</button>
-              <button className={tab === "discussions" ? "active" : ""} onClick={() => setTab("discussions")}>💬 דיונים</button>
               <button className={tab === "profile" ? "active" : ""} onClick={() => setTab("profile")}>פרופיל</button>
             </nav>
             <div className="nav-actions">
