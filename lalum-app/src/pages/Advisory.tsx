@@ -31,7 +31,11 @@ export function Advisory() {
           <h1 className="serif" style={{ fontSize: "clamp(32px, 8vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "18ch" }}>
             {a.heroH1a} <span className="italic-clay">{a.heroH1b}</span>
           </h1>
-          <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 36px" }}>{a.heroLede}</p>
+          <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 14px" }}>{a.heroLede}</p>
+          {/* Names what "Clinic" is made of: strategy, law, risk, judgment,
+              the operating model the site's own nav now calls it by. Small
+              and quiet, not a second headline next to the real one. */}
+          <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay)", margin: "0 auto 30px" }}>{a.heroTagline}</p>
           <div style={{ display: "flex", gap: 14, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
             <Link to="/book" className="btn btn-clay">{t.ui.bookPage.navCta}</Link>
             <a href="#mediation" className="btn btn-ghost">{a.heroCta2}</a>

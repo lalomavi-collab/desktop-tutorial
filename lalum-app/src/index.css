@@ -416,6 +416,9 @@ article p {
 }
 .pre-deal-note svg { color: var(--clay-soft); flex: none; margin-top: 2px; }
 .pre-deal-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+/* Same translucent-glass treatment as .pre-deal-note just above: a plain row
+   of icon+text here read as a leftover list on an otherwise premium dark
+   panel, so each point gets the same card shell the note already has. */
 .pre-deal-points li {
   display: flex;
   align-items: flex-start;
@@ -423,6 +426,10 @@ article p {
   font-size: 15px;
   line-height: 1.55;
   color: var(--paper);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 12px;
+  padding: 12px 14px;
 }
 .pre-deal-points li svg { color: var(--clay-soft); flex: none; margin-top: 3px; }
 
@@ -700,6 +707,41 @@ article p {
   transform: translateY(-3px);
   box-shadow: 0 22px 44px -30px rgba(60, 45, 30, 0.5);
 }
+/* A static text panel, not a card: same shell (border, radius, background)
+   but no hover lift, since nothing here is clickable and a floating effect
+   on plain prose would be a stray animation rather than an affordance. */
+.prose-panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 40px 44px;
+}
+@media (max-width: 560px) {
+  .prose-panel {
+    padding: 28px 24px;
+  }
+}
+/* One of the three founder phone links: was a bare inline-flex row stacked
+   directly on the ones beside it, with only a top border marking the whole
+   group. A light fill and its own radius turns each number into its own
+   small module instead of one more line in a list. */
+.founder-phone-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--clay-soft);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.founder-phone-row:hover {
+  border-color: var(--clay);
+  background: var(--card);
+}
 /* A card that is itself a link: reset anchor styling and reveal a "go" cue. */
 a.card {
   display: block;
@@ -757,6 +799,17 @@ a.card:focus-visible {
   background: var(--clay);
   color: var(--paper);
   border-color: var(--clay);
+}
+
+/* The AI pillar's sector-rubric cards (no Real Estate counterpart), a shade
+   brighter than the shared --clay used everywhere else on this page: a small,
+   deliberate accent for the domain the practice is growing fastest in, on a
+   section that only ever renders on that one page. */
+.pillar-sector-card {
+  border-top: 3px solid var(--clay-bright);
+}
+.pillar-sector-card:hover {
+  border-color: var(--clay-bright);
 }
 
 /* Premium numbered process: a serif numeral in an outlined disc. */
@@ -949,6 +1002,18 @@ a.card:focus-visible {
   .pillar-go {
     display: none;
   }
+}
+/* The dot-separated capability line under each FocusAreas card body: smaller
+   and quieter than the body copy, a label for what sits inside the domain
+   rather than another sentence about it. */
+.pillar-tagline {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--clay);
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
 }
 .card-go {
   display: inline-flex;
@@ -1507,45 +1572,33 @@ a.caps-item:focus-visible .caps-go {
   padding-top: 16px;
   padding-bottom: 16px;
 }
-/* Header CTAs collapse to icon-only round buttons when the bar gets tight, so
-   nothing ever wraps or overflows. */
+/* Header CTAs collapse to icon-only round buttons so nothing ever wraps or
+   overflows. This used to be gated to a "tight" viewport band below 1080px,
+   which was right when the nav carried fewer, shorter pills. It stopped
+   being right once "AI & Law", "Decision Room" and the rest made six pills
+   the norm: `.wrap` caps at `--maxw` (1180px), so the header's interior is
+   exactly as tight at a 1920px window as at an 1180px one, and English (the
+   language whose labels run longest) started clipping "Decision Room" mid
+   word with the Insights pill scrolled fully out of view, on perfectly
+   ordinary desktop widths that this rule's old gate never covered. Below,
+   applied unconditionally rather than re-gated to some other guessed
+   breakpoint, since the constraint the icon-only fallback exists for is
+   constant for any viewport at or above the cap, not just "narrow" ones. */
 .header-cta {
   gap: 7px;
+  width: var(--ctrl-h);
+  padding: 0;
+  justify-content: center;
 }
-@media (max-width: 1080px) {
-  .header-cta {
-    width: var(--ctrl-h);
-    padding: 0;
-    justify-content: center;
-    gap: 0;
-  }
-  .header-cta-label {
-    display: none;
-  }
+.header-cta-label {
+  display: none;
 }
-/* Tight desktop range (small laptops, tablet landscape): keep the single row
-   comfortable so nav never touches the tools. */
-@media (max-width: 1120px) {
-  .header-inner {
-    gap: 12px;
-  }
-  .nav-pill {
-    padding: 0 12px;
-    font-size: 13.5px;
-  }
-}
-@media (max-width: 1040px) {
-  /* Drop the secondary guide icon to guarantee clearance. */
-  .header-tools .hdr-secondary {
-    display: none;
-  }
-}
-@media (max-width: 980px) {
-  /* In the tightest desktop band before the mobile tab bar takes over, drop the
-     share icon too so the nav pills never touch the tools. */
-  .header-tools .share-btn {
-    display: none;
-  }
+/* Drop the secondary guide icon and the share icon too, for the same reason:
+   both existed as tight-viewport relief valves that never fired once the
+   nav grew past what fit in the capped-width header at any viewport. */
+.header-tools .hdr-secondary,
+.header-tools .share-btn {
+  display: none;
 }
 .brand {
   display: flex;
@@ -1573,7 +1626,7 @@ a.caps-item:focus-visible .caps-go {
 .nav-pills {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: var(--ctrl-h);
   flex: 0 1 auto;
   min-width: 0;
@@ -1587,16 +1640,22 @@ a.caps-item:focus-visible .caps-go {
   display: none;
 }
 /* Each nav item is its own framed button, matching the round tool buttons, so
-   the bar reads as one clean set of controls. */
+   the bar reads as one clean set of controls.
+   Padding and size are a notch tighter than they used to be: the bar grew a
+   sixth pill (the Insights menu) and two of the remaining labels are two
+   words (AI & Law, Decision Room) rather than one, so the same comfortable
+   17px padding at 14px no longer left "everything fits" true at the header's
+   own 1180px cap, regardless of viewport, and two pills silently scrolled out
+   of view with no visible affordance. */
 .nav-pill {
   display: inline-flex;
   align-items: center;
   height: var(--ctrl-h);
-  padding: 0 17px;
+  padding: 0 14px;
   border-radius: 9999px;
   border: 1px solid var(--line);
   background: var(--card);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--slate);
   white-space: nowrap;
@@ -1618,6 +1677,24 @@ a.caps-item:focus-visible .caps-go {
   color: var(--paper);
   background: var(--clay);
   border-color: var(--clay);
+}
+/* Tight desktop range (small laptops, tablet landscape, below the header's
+   own 1180px cap): tighten further still. This block must stay AFTER the
+   base .nav-pill/.nav-pills rules above: a media query has no specificity
+   edge over an unconditional rule of the same selector, so placed earlier
+   in the file (as it used to be) it silently lost every override to the
+   later, unconditional base rule and never took effect at all. */
+@media (max-width: 1120px) {
+  .header-inner {
+    gap: 12px;
+  }
+  .nav-pills {
+    gap: 4px;
+  }
+  .nav-pill {
+    padding: 0 10px;
+    font-size: 13px;
+  }
 }
 
 /* ---------- forms ---------- */
@@ -2768,23 +2845,35 @@ html.a11y-reduce-motion *::after {
 }
 /* On phones the fixed bottom tab bar owns the very bottom edge, and the page's
    primary CTA sits in the first screens. Dock the cookie banner just above the
-   tab bar and keep it compact (one tight row), so it no longer covers the nav or
-   hides the main action. */
+   tab bar, so it no longer covers the nav or hides the main action.
+   The row layout that works on desktop cannot hold a full sentence next to
+   three buttons on a phone width. The old rule tried anyway, forcing the text
+   into the same row as the actions and zeroing its min-width so it would not
+   push them off. The browser honoured that literally: with no floor to stop
+   it, the sentence shrank to whatever the three buttons left over, a handful
+   of pixels, and wrapped one word per line into a banner tall enough to cover
+   most of the screen and everything behind it, tab bar included. Stacking the
+   text above the actions gives each its own full-width row, which is what
+   "compact" actually looks like at this width. */
 @media (max-width: 900px) {
   .cookie-banner {
     bottom: calc(66px + env(safe-area-inset-bottom, 0px));
     inset-inline: 8px;
     padding: 10px 12px;
-    gap: 8px;
+    gap: 10px;
     border-radius: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
   .cookie-banner-text {
     font-size: 12.5px;
     line-height: 1.4;
     min-width: 0;
+    flex: none;
   }
   .cookie-banner-actions {
     gap: 6px;
+    justify-content: flex-end;
   }
   .cookie-banner-actions .btn {
     padding: 0 12px;
@@ -3553,6 +3642,9 @@ html.a11y-reduce-motion *::after {
   flex-direction: column;
   gap: 14px;
 }
+/* Same translucent-glass card shell used for .pre-deal-points and the Home
+   Engine tiles, so a plain checklist row reads as a module on this dark
+   panel instead of a leftover list next to the copy and the CTA. */
 .mna-points li {
   display: flex;
   align-items: flex-start;
@@ -3560,6 +3652,10 @@ html.a11y-reduce-motion *::after {
   font-size: 16px;
   line-height: 1.6;
   color: var(--paper);
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 14px;
+  padding: 14px 16px;
 }
 .mna-check {
   flex: none;
@@ -3787,7 +3883,10 @@ html.a11y-reduce-motion *::after {
    header reads as a single consistent set that matches the app's palette. Only
    the Telegram plane icon needs a small nudge to look optically centred. */
 .tb-tg svg { margin-inline-end: 2px; }
-/* Fit six round controls plus the brand on small phones. */
+/* Fit the surviving controls (payment, when it shows, and the "more" button
+   below) plus the brand on small phones. Below 900px that is at most two
+   round buttons: the six-icon row that used to be here at every width has
+   already moved into the menu by then. */
 @media (max-width: 480px) {
   .header-tools { gap: 6px; }
   .header-tools .tb-btn,
@@ -3803,6 +3902,104 @@ html.a11y-reduce-motion *::after {
     width: 31px;
     height: 31px;
   }
+}
+
+/* ---------- header "more" menu (phones) ---------- */
+/* The desktop row: guide, call, WhatsApp, Telegram, share, language. Visible
+   down to 900px, the width where the primary nav already leaves the header
+   for the bottom tab bar; below it the row would otherwise have to keep
+   shrinking icons to avoid riding over the wordmark, which is the crowding
+   this menu replaces. */
+.header-util-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-more-wrap {
+  display: none;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .header-util-group {
+    display: none;
+  }
+  .header-more-wrap {
+    display: inline-flex;
+  }
+}
+.header-more-menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  z-index: 41;
+  padding: 8px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* One row per action: icon then label, so a control that used to be an
+   unlabelled round glyph finally carries its own name. The sheet has the
+   width a header icon never did, so there is no reason to make a visitor
+   guess from a tooltip they cannot see on a touch screen anyway. */
+.header-more-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.header-more-item:hover,
+.header-more-item:focus-visible {
+  background: var(--clay-tint);
+}
+/* The Insights dropdown reuses this same row style for its three links
+   (Articles, Knowledge, Courses) and marks whichever one is the current
+   route, the same way an active nav pill is marked. */
+.header-more-item.active {
+  background: var(--clay-tint);
+  font-weight: 700;
+}
+.header-more-item svg {
+  flex: none;
+  color: var(--clay);
+}
+.header-more-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 6px 4px;
+}
+.header-more-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 4px 2px;
+}
+.header-more-lang {
+  padding: 7px 13px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.header-more-lang.active {
+  background: var(--clay-tint);
+  border-color: var(--clay-soft);
+  font-weight: 700;
 }
 
 .guide-overlay {
@@ -4660,9 +4857,17 @@ html.a11y-reduce-motion *::after {
 /* ============================================================
    Home entry prompt (components/HomePrompt.tsx)
    ------------------------------------------------------------
-   A round panel, in the same navy and gold as the video bubble
-   so the two overlays read as one system rather than two
-   competing promos.
+   A strip, not a block: an orb beside one line of text, the same
+   shape the video bubble's own invite already uses. It was a
+   340px circle at first, then a 272px card, and both still stood
+   tall enough to compete with the hero. A strip does not: it is
+   shorter than either predecessor by more than half, so it reads
+   as a passing invitation instead of a panel the page has to make
+   room for.
+   The pill itself is paper, not navy: the video bubble already
+   owns the dark orb-on-navy look on the opposite corner, and two
+   dark shapes on the same page would read as one system split in
+   two rather than two distinct invitations.
    It sits on the inline-start edge: in Hebrew and Arabic that is
    the right, where only the accessibility button lives, and in
    the Latin languages the left. The chat, the contact rail and
@@ -4679,85 +4884,117 @@ html.a11y-reduce-motion *::after {
   bottom: 96px;
   inset-inline-start: 24px;
   z-index: 84;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%, var(--hp-navy-soft), var(--hp-navy) 72%);
-  border: 2px solid var(--hp-gold);
-  box-shadow: 0 22px 50px -18px rgba(10, 25, 47, 0.7), 0 0 0 8px rgba(212, 175, 55, 0.08);
-  display: grid;
-  place-items: center;
-  padding: 30px;
+  display: flex;
+  align-items: center;
 }
 @media (prefers-reduced-motion: no-preference) {
   .hprompt { animation: hprompt-in 0.4s cubic-bezier(0.2, 0.7, 0.3, 1); }
 }
 @keyframes hprompt-in {
-  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
 }
 
-/* A circle wastes its corners, so the text is held to the square that
-   actually fits inside it. Without this the lines run to the curved edge and
-   the last word of each one falls off the shape. */
-.hprompt-inner {
-  width: 74%;
-  text-align: center;
+.hprompt-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(248px, calc(100vw - 76px));
+  background: var(--paper);
+  border: 1px solid var(--hp-gold-soft);
+  border-radius: 9999px;
+  padding: 7px 14px 7px 7px;
+  box-shadow: 0 14px 30px -18px rgba(26, 24, 21, 0.4);
+  text-decoration: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+[dir="rtl"] .hprompt-pill {
+  padding: 7px 7px 7px 14px;
+}
+.hprompt-pill:hover {
+  border-color: var(--hp-gold);
+  box-shadow: 0 18px 36px -18px rgba(26, 24, 21, 0.48);
+  transform: translateY(-1px);
+}
+.hprompt-pill:focus-visible {
+  outline: 3px solid var(--hp-gold);
+  outline-offset: 3px;
+}
+/* The favicon's own square carries a black ground already, so cropping it to
+   a circle needs only the border and the clip, not a background of our own:
+   an underlying gradient would show at the corners the image does not, and
+   there are none once it is round. */
+.hprompt-orb {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+  border: 2px solid var(--hp-gold);
+}
+.hprompt-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* One line each, truncated: a strip this short has room for a headline and a
+   hint of what it leads to, not the whole sentence. The full text is still on
+   the link's title attribute for anyone who hovers, and in the region's own
+   aria-label for anyone using a screen reader. */
+.hprompt-lead,
+.hprompt-body {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .hprompt-lead {
-  color: var(--hp-gold);
-  font-family: var(--serif);
-  font-size: 19px;
-  line-height: 1.35;
-  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 .hprompt-body {
-  color: #e8ecf3;
-  font-size: 13px;
-  line-height: 1.62;
-  margin: 0 0 16px;
+  color: var(--slate);
+  font-size: 10.5px;
+  line-height: 1.3;
 }
-.hprompt-cta {
+.hprompt-go {
+  flex: none;
+  color: var(--hp-gold-soft);
+  font-size: 15px;
+}
+/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
+   would point away from the link it belongs to. */
+[dir="rtl"] .hprompt-go {
   display: inline-block;
-  background: var(--hp-gold);
-  color: var(--hp-navy);
-  font-size: 14px;
-  font-weight: 800;
-  text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  transition: background 0.18s ease, transform 0.18s ease;
-}
-.hprompt-cta:hover {
-  background: var(--hp-gold-soft);
-  transform: translateY(-1px);
+  transform: scaleX(-1);
 }
 .hprompt-close {
   position: absolute;
-  /* A corner inset that works on a square lands outside a circle. The arc at
-     45 degrees sits about 0.29 of the radius in from the bounding box, so the
-     button is pushed that far to land on the edge rather than float beside it. */
-  top: 44px;
-  inset-inline-end: 44px;
-  width: 26px;
-  height: 26px;
+  top: -7px;
+  inset-inline-end: -7px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(10, 25, 47, 0.9);
-  color: #d8d3c8;
-  font-size: 16px;
+  border: 1px solid var(--hp-gold-soft);
+  background: var(--paper);
+  color: var(--slate);
+  font-size: 13px;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 4px 10px -4px rgba(26, 24, 21, 0.35);
   transition: background 0.15s ease, color 0.15s ease;
 }
 .hprompt-close:hover {
   background: var(--danger);
+  border-color: var(--danger);
   color: #ffffff;
 }
-.hprompt-cta:focus-visible,
 .hprompt-close:focus-visible {
   outline: 3px solid var(--hp-gold);
   outline-offset: 3px;
@@ -4767,20 +5004,8 @@ html.a11y-reduce-motion *::after {
   .hprompt {
     /* Clear of the bottom tab bar and of the accessibility button above it. */
     bottom: calc(154px + env(safe-area-inset-bottom, 0px));
-    /* Centred by pinning both edges and letting the margins share what is
-       left. The earlier version centred with a percentage inset plus a
-       translate, which put the circle half off the screen on a narrow phone
-       and needed a second rule to flip the sign in the Latin languages. Auto
-       margins need neither: they are direction agnostic, and they cannot be
-       lost by the entry animation, whose keyframes set a transform of their
-       own. */
-    inset-inline: 0;
-    margin-inline: auto;
-    width: min(330px, calc(100vw - 32px));
-    height: min(330px, calc(100vw - 32px));
-    padding: 24px;
   }
-  .hprompt-lead { font-size: 18px; }
-  .hprompt-body { font-size: 12.5px; }
-  .hprompt-close { top: 40px; inset-inline-end: 40px; }
+  .hprompt-pill {
+    max-width: min(230px, calc(100vw - 76px));
+  }
 }

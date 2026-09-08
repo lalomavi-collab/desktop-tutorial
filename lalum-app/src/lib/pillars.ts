@@ -118,7 +118,7 @@ const SHARED = {
     icons: ["gavel", "scale", "settings", "shield"] as IconName[],
     related: [
       { slug: "מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי", title: `מהו גישור מכוון הכרעה וכיצד הוא שונה מגישור מסורתי?` },
-      { slug: "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים", title: `האם גישור מכוון הכרעה חוסך זמן וכסף לעומת הליכים משפטיים?` },
+      { slug: "decision-oriented-mediation-benefits", title: `גישור כפתרון משפטי: למי הוא מתאים ומה הוא חוסך` },
       { slug: "סכסוך-שותפים-בין-עורכי-דין-למה-גישור-מכוון-הכרעה-הוא-המסלול-שנשכח-והנכון-הקדמה-סכסוכים-בין-שותפי", title: `סכסוך שותפים בין עורכי דין: למה גישור מכוון הכרעה הוא המסלול שנשכח` },
       { slug: "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי", title: `פתרון סכסוך בין יזם לקבלן באמצעות גישור מכוון הכרעה: תיאור מקרה` },
       { slug: "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה", title: `כיצד לבחור מגשר מוסמך מטעם בית המשפט להליכי גישור מכוון הכרעה?` },
@@ -134,7 +134,11 @@ const SHARED = {
       { slug: "urban-renewal-mistakes-guide", title: `המדריך לטעויות נפוצות בהתחדשות עירונית` },
       { slug: "urban-renewal-risk", title: `ניהול סיכונים בפרויקטי התחדשות עירונית` },
       { slug: "tenant-urban-renewal-guide", title: `מדריך לדייר בהתחדשות עירונית` },
-      { slug: "combination-deals-architecture", title: `ארכיטקטורת עסקאות קומבינציה` },
+      // The page's own hero and "covers" card promise both sides of the
+      // border ("בארץ ובחו״ל"), but none of these six slots pointed abroad
+      // until now. Swapped the narrowest of the four urban-renewal links for
+      // the one general (not country-specific) overseas-transactions guide.
+      { slug: "intl-realestate-transactions", title: `ליווי עסקאות נדל״ן בינלאומיות` },
       { slug: "ai-realestate-risk-management", title: `ניהול סיכונים בנדל״ן מבוסס בינה מלאכותית` },
       { slug: "contract-review-before-signing", title: `בדיקת חוזה לפני חתימה` },
     ],

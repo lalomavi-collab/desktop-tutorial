@@ -63,6 +63,62 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "portugal-porto-vs-lisbon": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-financing",
+   "portugal-real-estate-taxation",
+   "israeli-realestate-abroad"
+  ]
+ },
+ "portugal-real-estate-taxation": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-financing",
+   "overseas-property-holding-structure",
+   "portugal-legal-due-diligence"
+  ]
+ },
+ "portugal-purchase-contract": {
+  "topic": "contracts",
+  "related": [
+   "portugal-legal-due-diligence",
+   "portugal-real-estate-financing",
+   "portugal-real-estate-taxation"
+  ]
+ },
+ "portugal-real-estate-financing": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-porto-vs-lisbon",
+   "portugal-real-estate-taxation",
+   "tama-38-1-vs-38-2-comparison"
+  ]
+ },
+ "portugal-legal-due-diligence": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-purchase-contract",
+   "overseas-property-due-diligence",
+   "second-opinion-real-estate-urban-renewal"
+  ]
+ },
+ "eu-ai-act-roles-obligations": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-high-risk-classification",
+   "ai-governance-board-framework"
+  ]
+ },
+ "ai-product-liability-eu": {
+  "topic": "ai-governance",
+  "related": [
+   "saas-eu-compliance-israeli-companies",
+   "eu-ai-act-israeli-companies",
+   "israel-ai-regulation-policy"
+  ]
+ },
  "israel-ai-regulation-policy": {
   "topic": "ai-governance",
   "related": [
@@ -107,8 +163,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "memory",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "memory"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -122,9 +178,9 @@
  "overseas-property-due-diligence": {
   "topic": "real-estate",
   "related": [
+   "portugal-legal-due-diligence",
    "overseas-property-holding-structure",
-   "ai-due-diligence-tech-acquisition",
-   "second-opinion-real-estate-urban-renewal"
+   "ai-due-diligence-tech-acquisition"
   ]
  },
  "ai-due-diligence-tech-acquisition": {
@@ -140,7 +196,7 @@
   "related": [
    "overseas-property-due-diligence",
    "overseas-partnership-guide",
-   "ai-governance-board-framework"
+   "portugal-real-estate-taxation"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -163,8 +219,8 @@
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "tenant-urban-renewal-guide",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "portugal-real-estate-financing",
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-governance-board-framework": {
@@ -172,7 +228,7 @@
   "related": [
    "eu-ai-act-2026",
    "ai-use-policy-organization",
-   "directors-liability-ai-era"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "directors-liability-ai-era": {
@@ -194,8 +250,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-governance-board-framework",
    "ai-use-policy-organization",
+   "ai-governance-board-framework",
    "eu-ai-act-2026"
   ]
  },
@@ -211,8 +267,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-transparency-generative",
-   "gdpr-israeli-companies-ai"
+   "eu-ai-act-roles-obligations",
+   "eu-ai-act-transparency-generative"
   ]
  },
  "privacy-law-amendment-13-guide": {
@@ -226,9 +282,9 @@
  "second-opinion-real-estate-urban-renewal": {
   "topic": "real-estate",
   "related": [
+   "portugal-legal-due-diligence",
    "realestate-second-opinion",
-   "quiet-legal-revolution",
-   "combination-deals-architecture"
+   "quiet-legal-revolution"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -236,7 +292,7 @@
   "related": [
    "eu-ai-act-high-risk-classification",
    "saas-eu-compliance-israeli-companies",
-   "eu-ai-act-transparency-generative"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "shadow-it-law-firms": {
@@ -244,15 +300,15 @@
   "related": [
    "attorney-client-privilege-ai",
    "partnership-dissolution-ai-ownership",
-   "ai-use-policy-organization"
+   "sovereignty"
   ]
  },
  "portugal-investment-guide": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-legal-guide",
-   "portugal-realestate-investment",
-   "intl-realestate-transactions"
+   "intl-realestate-transactions",
+   "israeli-realestate-abroad",
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "ai-legal-practice": {
@@ -275,8 +331,8 @@
   "topic": "mediation",
   "related": [
    "business-arbitration",
-   "business-mediation-relations",
-   "lalum-mediation-arbitration"
+   "lalum-mediation-arbitration",
+   "business-mediation-relations"
   ]
  },
  "business-arbitration": {
@@ -299,16 +355,16 @@
   "topic": "real-estate",
   "related": [
    "free-lawyer-illusion",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-   "combination-deals-architecture"
+   "combination-deals-architecture",
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
   ]
  },
  "business-mediation-relations": {
   "topic": "mediation",
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
-   "למה-לבחור-בגישור-מכוון-הכרעה",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "decision-oriented-mediation-benefits"
   ]
  },
  "ai-turning-point-2026": {
@@ -355,8 +411,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "why-realestate-needs-ai",
-   "the-code-realestate"
+   "the-code-realestate",
+   "why-realestate-needs-ai"
   ]
  },
  "decision-oriented-ai-law": {
@@ -388,7 +444,7 @@
   "related": [
    "legal-mediation-benefits",
    "decision-oriented-mediation-benefits",
-   "mediation-benefits-conflicts"
+   "real-estate-arbitration"
   ]
  },
  "three-minute-legal-check": {
@@ -420,7 +476,7 @@
   "related": [
    "timeless-meeting-revolution",
    "lawyer-wakeup-call",
-   "unfair-advantage-course"
+   "ai-presentation-tools"
   ]
  },
  "timeless-meeting-revolution": {
@@ -491,8 +547,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "shadow-it-law-firms",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "shadow-it-law-firms"
   ]
  },
  "why-realestate-needs-ai": {
@@ -583,14 +639,6 @@
    "quiet-legal-revolution"
   ]
  },
- "portugal-realestate-investment": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-legal-guide",
-   "intl-realestate-transactions",
-   "israeli-realestate-abroad"
-  ]
- },
  "contract-review-before-signing": {
   "topic": "contracts",
   "related": [
@@ -650,17 +698,17 @@
  "israeli-realestate-abroad": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "intl-realestate-transactions",
-   "portugal-realestate-legal-guide"
+   "overseas-property-holding",
+   "portugal-investment-guide"
   ]
  },
  "war-end-scenarios-analysis": {
   "topic": "mediation",
   "related": [
    "lalum-investment-model-launch",
-   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה",
-   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק"
+   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק",
+   "טכניקות-חדשניות-ודינמיות-ליישוב-סכסוכים-בגישור-מכוון-הכרעה"
   ]
  },
  "homeowners-iron-dome": {
@@ -684,7 +732,7 @@
   "related": [
    "understanding-mediation-process",
    "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
-   "mediation-benefits-conflicts"
+   "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן"
   ]
  },
  "quiet-legal-revolution": {
@@ -730,9 +778,9 @@
  "intl-realestate-transactions": {
   "topic": "real-estate",
   "related": [
-   "portugal-realestate-investment",
    "lalum-investment-model-launch",
-   "portugal-realestate-legal-guide"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
+   "israeli-realestate-abroad"
   ]
  },
  "lalum-together": {
@@ -743,20 +791,12 @@
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
   ]
  },
- "portugal-realestate-legal-guide": {
-  "topic": "real-estate",
-  "related": [
-   "portugal-realestate-investment",
-   "intl-realestate-transactions",
-   "portugal-investment-guide"
-  ]
- },
  "ai-realestate-risk-management": {
   "topic": "ai-governance",
   "related": [
    "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
    "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
-   "urban-renewal-risk"
+   "real-estate-dispute-arbitration"
   ]
  },
  "body-language-ai-future": {
@@ -775,20 +815,12 @@
    "legal-mediation-benefits"
   ]
  },
- "mediation-benefits-conflicts": {
-  "topic": "mediation",
-  "related": [
-   "understanding-mediation-process",
-   "lalum-mediation-arbitration",
-   "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה"
-  ]
- },
  "understanding-mediation-process": {
   "topic": "mediation",
   "related": [
-   "mediation-benefits-conflicts",
-   "למה-לבחור-בגישור-מכוון-הכרעה",
-   "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה"
+   "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
+   "decision-oriented-mediation-benefits",
+   "lalum-mediation-arbitration"
   ]
  },
  "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה": {
@@ -812,7 +844,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-partnership-guide",
-   "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח"
+   "lalum-investment-model-launch"
   ]
  },
  "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח": {
@@ -829,14 +861,6 @@
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה",
    "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה",
    "behind-the-mask-mediation-language"
-  ]
- },
- "למה-לבחור-בגישור-מכוון-הכרעה": {
-  "topic": "mediation",
-  "related": [
-   "understanding-mediation-process",
-   "business-mediation-relations",
-   "business-arbitration"
   ]
  },
  "behind-the-mask-mediation-language": {
@@ -900,7 +924,7 @@
   "related": [
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "portugal-investment-guide",
-   "israeli-realestate-abroad"
+   "portugal-real-estate-taxation"
   ]
  },
  "משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה": {
@@ -924,7 +948,7 @@
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "decision-oriented-mediation-benefits",
-   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
+   "legal-mediation-benefits"
   ]
  },
  "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai": {
@@ -947,8 +971,8 @@
   "topic": "mediation",
   "related": [
    "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
-   "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים",
-   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה"
+   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה": {
@@ -988,15 +1012,15 @@
   "related": [
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "medicine-meets-law"
+   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
   "topic": "real-estate",
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
-   "free-lawyer-illusion",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "free-lawyer-illusion"
   ]
  },
  "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות": {
@@ -1012,7 +1036,7 @@
   "related": [
    "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות",
    "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
-   "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים"
+   "ai-governance-board-framework"
   ]
  },
  "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות": {
@@ -1036,15 +1060,15 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "free-lawyer-illusion",
-   "tenant-urban-renewal-guide"
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט": {
   "topic": "mediation",
   "related": [
    "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
-   "גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים",
-   "business-arbitration"
+   "business-arbitration",
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת": {
@@ -1076,7 +1100,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1090,17 +1114,17 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "למה-לבחור-בגישור-מכוון-הכרעה",
    "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
  "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום": {
   "topic": "mediation",
   "related": [
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים",
-   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק"
+   "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק",
+   "understanding-mediation-process"
   ]
  },
  "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה": {
@@ -1124,7 +1148,7 @@
   "related": [
    "urban-renewal-mistakes-guide",
    "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
-   "free-lawyer-illusion"
+   "מה-עושים-כשאין-מנגנון-מוסכם-מראש"
   ]
  },
  "עקרונות-או-שליטה-איך-מזהים-מה-באמת-עומד-מאחורי-העמדה-הקשוחה": {
@@ -1154,8 +1178,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי"
   ]
  },
@@ -1171,8 +1195,8 @@
   "topic": "mediation",
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
-   "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים",
-   "legal-mediation-benefits"
+   "legal-mediation-benefits",
+   "business-arbitration"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
@@ -1180,7 +1204,7 @@
   "related": [
    "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
    "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך": {
@@ -1226,9 +1250,9 @@
  "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה": {
   "topic": "mediation",
   "related": [
-   "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים",
-   "lalum-clinic-experience",
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
+   "lalum-clinic-experience"
   ]
  },
  "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד": {
@@ -1239,44 +1263,28 @@
    "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
   ]
  },
- "האם-גישור-מכוון-הכרעה-חוסך-זמן-וכסף-לעומת-הליכים-משפטיים-מסורתיים": {
-  "topic": "mediation",
-  "related": [
-   "legal-mediation-benefits",
-   "למה-לבחור-בגישור-מכוון-הכרעה",
-   "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום"
-  ]
- },
  "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה": {
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים",
-   "understanding-mediation-process"
+   "understanding-mediation-process",
+   "real-estate-arbitration"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
   "topic": "mediation",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "legal-mediation-benefits"
+   "legal-mediation-benefits",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
    "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות",
-   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "understanding-mediation-process"
-  ]
- },
- "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים": {
-  "topic": "mediation",
-  "related": [
-   "mediation-benefits-conflicts",
-   "גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים",
-   "lalum-mediation-arbitration"
+   "understanding-mediation-process",
+   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
   ]
  },
  "האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים": {
@@ -1292,7 +1300,7 @@
   "related": [
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
    "האם-גישור-מכוון-הכרעה-מתאים-לכל-סוגי-הסכסוכים",
-   "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה"
+   "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה"
   ]
  },
  "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות": {
@@ -1331,16 +1339,8 @@
   "topic": "mediation",
   "related": [
    "business-mediation-relations",
-   "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים",
-   "legal-mediation-benefits"
-  ]
- },
- "גישור-מכוון-הכרעה-מודל-חדשני-לפתרון-סכסוכים": {
-  "topic": "mediation",
-  "related": [
-   "גישור-מכוון-הכרעה-פתרון-חדשני-ליישוב-סכסוכים",
-   "business-mediation-relations",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
+   "legal-mediation-benefits",
+   "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה"
   ]
  },
  "זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית": {
@@ -1364,7 +1364,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "urban-renewal-risk"
+   "ai-realestate-risk-management"
   ]
  }
 }

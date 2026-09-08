@@ -74,13 +74,17 @@ export function Home() {
         </div>
       </section>
 
-      {/* The router comes first, before any of the practice narrative: a visitor
-          who knows who they are should not have to read the positioning to find
-          the four entries written for them. */}
-      <AudiencePaths />
-
-      {/* The two areas the practice leads with. Shared with /advisory. */}
+      {/* The two areas the practice leads with, first: a visitor should see
+          the whole shape of the practice, AI & Law and Real Estate, in one
+          glance right under the headline, before anything more granular.
+          Shared with /advisory. */}
       <FocusAreas />
+
+      {/* The finer-grained router comes second, once the two areas are
+          established: a visitor who knows who they are (a tech company, a
+          public body, a private client) picks their own entry from here
+          without having to read the rest of the positioning first. */}
+      <AudiencePaths />
 
       {/* Positioning, then the risk pillars, then the engine. The practice
           areas, the deal work and the scenario hub used to sit here too, which
@@ -94,13 +98,20 @@ export function Home() {
           <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
             {h.aboutH2a} <span className="italic-clay">{h.aboutH2b}</span>
           </h2>
-          {/* Centered to match the centered eyebrow and heading above. This block
-              carries the `.section` class, so without an explicit center here the
-              global `.section p` rule would justify the body (and fall back to
-              right alignment on mobile), leaving a centered heading over a
-              right-aligned body. Centering keeps the whole block aligned as one. */}
-          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto 18px", maxWidth: "62ch", textAlign: "center" }}>{h.aboutP1}</p>
-          <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 auto", maxWidth: "62ch", textAlign: "center" }}>{h.aboutP2}</p>
+          {/* Same two paragraphs as before, now inside a panel instead of
+              sitting as bare text between two modules (FocusAreas above,
+              the pillar bands below). Not `.card`: that class's hover lift
+              signals something clickable, and this text goes nowhere.
+              Centered to match the centered eyebrow and heading above. This
+              block carries the `.section` class, so without an explicit
+              center here the global `.section p` rule would justify the body
+              (and fall back to right alignment on mobile), leaving a centered
+              heading over a right-aligned body. Centering keeps the whole
+              block aligned as one. */}
+          <div className="prose-panel" style={{ margin: "0 auto", maxWidth: "68ch", textAlign: "center" }}>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 0 18px", textAlign: "center" }}>{h.aboutP1}</p>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: 0, textAlign: "center" }}>{h.aboutP2}</p>
+          </div>
         </div>
       </section>
 
@@ -138,6 +149,10 @@ export function Home() {
             <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
+            {/* Names what "Engine" is made of, the same way the FocusAreas
+                cards and the Clinic hero now do: a quiet capability line, not
+                another sentence about the same thing. */}
+            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-soft)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
           <div className="grid grid-3">
             {t.data.frameworks.map((f) => (
@@ -163,9 +178,13 @@ export function Home() {
           <p className="eyebrow">{h.whyEyebrow}</p>
           <h2 className="h2">{h.whyH2}</h2>
         </div>
+        {/* Was an icon list, four items with no border, shadow or hover: they
+            read as a single stacked-icon paragraph, not four reasons. Same
+            `.card` shell as the rest of the site, padding scaled down for a
+            four-up grid. */}
         <div className="grid grid-4">
           {t.data.why.map((w) => (
-            <div key={w.title}>
+            <div key={w.title} className="card" style={{ padding: "26px 24px" }}>
               <span className="icon-badge" style={{ width: 44, height: 44, marginBottom: 16 }}><Icon name={w.icon} size={22} /></span>
               <h3 className="h3" style={{ fontSize: 19, margin: "0 0 8px" }}>{w.title}</h3>
               <p style={{ fontSize: 15, lineHeight: 1.62, color: "var(--slate)", margin: 0 }}>{w.body}</p>
@@ -210,20 +229,23 @@ export function Home() {
             {/* His own voice, beside his own details. Nothing plays until it is
                 asked to. */}
             <VoiceNote />
-            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={`tel:${officePhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+            {/* Three phone numbers used to sit as plain stacked links under one
+                border. Same numbers, same badges, now each its own light row
+                so the block reads as three modules, not a list. */}
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--clay-soft)", display: "flex", flexDirection: "column", gap: 8 }}>
+              <a href={`tel:${officePhone.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderOffice}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{officePhone.display}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phoneAi}</span>
               </a>
-              <a href={`tel:${personalLine.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+              <a href={`tel:${personalLine.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderPersonal}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{personalLine.display}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.phonePersonal}</span>
               </a>
-              <a href={`tel:${directPhone.tel}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 9, fontSize: 14, color: "var(--ink)" }}>
+              <a href={`tel:${directPhone.tel}`} className="founder-phone-row">
                 <span style={{ color: "var(--clay)", display: "inline-flex" }}><Icon name="phone" size={15} /></span>
                 <span style={{ color: "var(--slate)" }}>{h.founderDirect}</span>
                 <span dir="ltr" style={{ fontWeight: 600 }}>{directPhone.display}</span>
@@ -237,8 +259,14 @@ export function Home() {
           <div>
             <p className="eyebrow">{h.storyEyebrow}</p>
             <h2 className="serif" style={{ fontSize: 36, lineHeight: 1.22, letterSpacing: "-0.015em", margin: "0 0 20px" }}>{h.storyH2}</h2>
-            <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{h.storyP1}</p>
-            <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{h.storyP2}</p>
+            {/* Same two paragraphs as before, in the same panel treatment as
+                the About section above, so the founder's story reads as a
+                module beside the info card rather than bare text filling
+                the column. */}
+            <div className="prose-panel" style={{ padding: "32px 36px" }}>
+              <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{h.storyP1}</p>
+              <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{h.storyP2}</p>
+            </div>
           </div>
         </div>
       </section>
