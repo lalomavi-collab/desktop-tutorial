@@ -43,7 +43,60 @@ _RATE_NOISE = {18.0, 17.0}
 # סיווג לפי תוכן המסמך. הבדיקה לפי הסדר, הראשון שמתאים קובע.
 _CREDIT_HINTS = ("חשבונית זיכוי", "זיכוי מרכזת", "תעודת זיכוי")
 _PROFORMA_HINTS = ("חשבון עסקה", "חשבונית עסקה", "proforma", "pro forma")
-_NO_VAT_HINTS = ("ארנונה", "אגרה", "מס רכוש")
+_NO_VAT_HINTS = (
+    "ארנונה", "אגרה", "מס רכוש",
+    # תשלומי חובה ואגרות: אין בהם מע\"מ ולכן אין תשומות לנכות
+    "ביטוח לאומי", "מס בריאות",
+    "אגרת רשם", "אגרה שנתית", "רשם החברות", "רשם המשכונות",
+    "אגרת בית משפט", "אגרת בית הדין", "אגרת הוצאה לפועל",
+    "לשכת עורכי הדין", "דמי חבר",
+    # פרמיות ביטוח פטורות ממע\"מ
+    "פרמיית ביטוח", "דמי ביטוח", "פוליסת ביטוח",
+)
+
+# המסמך קובע מפורשות שאין בו מע\"מ. זו קביעה של הספק, לא כשל קריאה,
+# ולכן היא אינה מסומנת "לאימות".
+_EXPLICIT_NO_VAT_RE = re.compile(
+    r'לא\s*חייב\s*במע["\']?מ|פטור\s*ממע["\']?מ|עוסק\s*פטור|מע["\']?מ\s*0%'
+)
+
+# קבלה בלבד, ללא חשבונית מס. אינה מזכה בניכוי תשומות מכוח סעיף 38 לחוק,
+# גם אם שולם מע\"מ בפועל. גם זו קביעה ולא כשל קריאה.
+_RECEIPT_ONLY_RE = re.compile(r"קבלה")
+_TAX_INVOICE_RE = re.compile(r"חשבונית\s*מס")
+
+# ---------------------------------------------------------------------------
+# הוצאות בית מעורבות: חשמל, מים וארנונה של הדירה. מוכרות בשיעור חלקי בלבד.
+# השיעור חל גם על ההוצאה וגם על מס התשומות (ניכוי יחסי).
+# חל מהחודש שנקבע ואילך בלבד, כדי לא לשנות חודשים שכבר דווחו.
+# ---------------------------------------------------------------------------
+HOME_UTILITY_RATE = 0.25
+HOME_UTILITY_FROM = "2026-09"
+_HOME_UTILITY_HINTS = (
+    "ארנונה", "חשמל", "חברת החשמל", "חברת חשמל",
+    "מקורות", "תאגיד מים", "מי ", "צריכת מים",
+)
+
+
+def _both_ways(text: str) -> str:
+    """
+    חלק מקובצי ה-PDF מחלצים עברית בסדר הפוך ("הלבק" במקום "קבלה").
+    כדי לא לפספס אותם, כל בדיקת מחרוזת נעשית על הטקסט ועל היפוכו.
+    """
+    return f"{text}\n{text[::-1]}"
+
+
+def _has(text: str, needles) -> bool:
+    blob = _both_ways(text)
+    return any(n in blob for n in needles)
+
+
+def _search(pattern, text: str):
+    return pattern.search(_both_ways(text))
+
+
+def _is_home_utility(text: str, filename: str) -> bool:
+    return _has(f"{text} {filename}", _HOME_UTILITY_HINTS)
 
 # מסמך שאינו חשבונית מס — חשבון תקופתי של ספק תשתית (סלקום, חשמל, מים).
 # החוק אוסר ניכוי מס תשומות לפני שהחשבון שולם; חשבונית המס מונפקת רק
@@ -63,6 +116,7 @@ class Row:
     total: float = 0.0
     estimated: bool = False
     note: str = ""
+    recognized_rate: float = 1.0   # 1.0 = מוכר במלואו; 0.25 = הוצאת בית מעורבת
 
     @property
     def sign(self) -> int:
@@ -78,6 +132,9 @@ class Totals:
     expense_net: float = 0.0
     expense_vat: float = 0.0
     expense_no_vat: float = 0.0
+    home_net: float = 0.0          # החלק המוכר של הוצאות הבית, לפני מע"מ
+    home_vat: float = 0.0          # החלק המוכר של מס התשומות על הוצאות הבית
+    home_full_total: float = 0.0   # הסכום המלא ששולם, לשקיפות
     foreign: dict = field(default_factory=dict)   # {"USD": 100.0, "EUR": 78.67}
     excluded: list = field(default_factory=list)  # שורות שלא נכנסו לחישוב
 
@@ -92,12 +149,12 @@ class Totals:
     @property
     def profit(self) -> float:
         """רווח גולמי: הכנסות לפני מע"מ פחות כלל ההוצאות לפני מע"מ (כולל אלה ללא תשומות)."""
-        return self.income_net - (self.expense_net + self.expense_no_vat)
+        return self.income_net - (self.expense_net + self.expense_no_vat + self.home_net)
 
     @property
     def vat_due(self) -> float:
         """מע"מ לתשלום: מע"מ עסקאות פחות מע"מ תשומות. שלילי = החזר."""
-        return self.income_vat - self.expense_vat
+        return self.income_vat - (self.expense_vat + self.home_vat)
 
 
 # ---------------------------------------------------------------- חילוץ
@@ -297,8 +354,34 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             estimated = True
             note = note or "סכומים חולצו ב-OCR ממסמך סרוק — לאימות"
         elif category == "expense" and vat == 0 and currency == "ILS":
+            # שלוש סיבות שונות לאפס מע\"מ. רק האחרונה היא כשל קריאה,
+            # ורק היא מסומנת לאימות. ערבוב ביניהן מנפח את רשימת הבדיקה
+            # ומטביע בתוכה את הפריט שבאמת דורש עין.
             category = "expense_no_vat"
-            note = note or "לא זוהה מע\"מ במסמך — לאימות"
+            if _search(_EXPLICIT_NO_VAT_RE, text):
+                note = note or "המסמך מציין מפורשות שאינו חייב במע\"מ"
+            elif _search(_RECEIPT_ONLY_RE, text) and not _search(_TAX_INVOICE_RE, text):
+                note = note or "קבלה בלבד, ללא חשבונית מס — אינה מזכה בניכוי תשומות"
+            else:
+                note = note or "לא זוהה מע\"מ במסמך — לאימות"
+
+        # הכרעה ודאית אינה "לאימות". מסמך שקובע בעצמו שאין בו מע\"מ, קבלה
+        # ללא חשבונית מס, או תשלום חובה מזוהה — כולם ודאיים. הדגל נשמר רק
+        # כשהסכום עצמו הגיע מ-OCR, או כשלא הצלחנו לקרוא את מצב המע\"מ.
+        if (category == "expense_no_vat" and total > 0 and not used_ocr
+                and "לא זוהה" not in note):
+            estimated = False
+
+        # הוצאת בית מעורבת: מוכרת בשיעור חלקי, על ההוצאה ועל התשומות כאחד
+        recognized_rate = 1.0
+        if (category in ("expense", "expense_no_vat")
+                and currency == "ILS"
+                and month >= HOME_UTILITY_FROM
+                and _is_home_utility(text, path.name)):
+            category = "expense_home"
+            recognized_rate = HOME_UTILITY_RATE
+            pct = int(HOME_UTILITY_RATE * 100)
+            note = f"הוצאת בית מעורבת — מוכרת {pct}%" + (f" ({note})" if note else "")
 
         rows.append(Row(
             file=path.name,
@@ -307,6 +390,7 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             currency=currency,
             net=net, vat=vat, total=total,
             estimated=estimated, note=note,
+            recognized_rate=recognized_rate,
         ))
 
     # קבצי תמונה (חשבוניות מצולמות): לעולם לא שקופים. כל תמונה מקבלת
@@ -345,7 +429,7 @@ def compute(rows: list[Row], month: str) -> Totals:
     t = Totals(month=month)
     for r in rows:
         if r.currency != "ILS":
-            if r.category in ("expense", "expense_no_vat"):
+            if r.category in ("expense", "expense_no_vat", "expense_home"):
                 t.foreign[r.currency] = round(t.foreign.get(r.currency, 0.0) + r.total, 2)
             continue
         if r.category == "income":
@@ -359,10 +443,16 @@ def compute(rows: list[Row], month: str) -> Totals:
             t.expense_vat -= r.vat
         elif r.category == "expense_no_vat":
             t.expense_no_vat += r.total
+        elif r.category == "expense_home":
+            # ניכוי יחסי: אותו שיעור על ההוצאה ועל מס התשומות
+            t.home_net += (r.net or r.total) * r.recognized_rate
+            t.home_vat += r.vat * r.recognized_rate
+            t.home_full_total += r.total
         else:  # proforma_in / proforma_out
             t.excluded.append(r)
 
-    for f in ("income_net", "income_vat", "expense_net", "expense_vat", "expense_no_vat"):
+    for f in ("income_net", "income_vat", "expense_net", "expense_vat",
+              "expense_no_vat", "home_net", "home_vat", "home_full_total"):
         setattr(t, f, round(getattr(t, f), 2))
     return t
 
@@ -414,6 +504,14 @@ def render_report(rows: list[Row], t: Totals, folder: Path) -> str:
         f"• **הכנסות לפני מע\"מ:** {_ils(t.income_net)}  (מע\"מ עסקאות {_ils(t.income_vat)})",
         f"• **הוצאות מוכרות לפני מע\"מ:** {_ils(t.expense_net)}  (מע\"מ תשומות {_ils(t.expense_vat)})",
         f"• **הוצאות ללא תשומות:** {_ils(t.expense_no_vat)}",
+    ]
+    if t.home_full_total:
+        pct = int(HOME_UTILITY_RATE * 100)
+        L.append(
+            f"• **הוצאות בית מעורבות:** שולמו {_ils(t.home_full_total)}, "
+            f"מוכר {pct}% = {_ils(t.home_net)} (מע\"מ תשומות {_ils(t.home_vat)})"
+        )
+    L += [
         f"• **רווח גולמי:** {_ils(t.profit)}",
         f"• **מע\"מ לתשלום:** {_ils(t.vat_due)}" + ("  _(שלילי = החזר)_" if t.vat_due < 0 else ""),
     ]
@@ -424,6 +522,7 @@ def render_report(rows: list[Row], t: Totals, folder: Path) -> str:
           "| רכיב | סכום |", "|------|------|",
           f"| מע\"מ עסקאות (על הכנסות) | {_ils(t.income_vat)} |",
           f"| מע\"מ תשומות (על הוצאות) | {_ils(t.expense_vat)} |",
+          f"| מע\"מ תשומות (הוצאות בית, חלק מוכר) | {_ils(t.home_vat)} |",
           f"| **מע\"מ לתשלום** | **{_ils(t.vat_due)}** |", "",
           "חישוב הרווח:", "",
           "| רכיב | סכום |", "|------|------|",
@@ -437,6 +536,8 @@ def render_report(rows: list[Row], t: Totals, folder: Path) -> str:
     L += _table(by("expense"))
     L += ["### זיכויים"]
     L += _table(by("credit"))
+    L += ["### הוצאות בית מעורבות (מוכר חלקית)"]
+    L += _table(by("expense_home"))
     L += ["### הוצאות ללא ניכוי תשומות"]
     L += _table(by("expense_no_vat"))
     L += ["### מחוץ לחישוב — חשבונות עסקה"]
@@ -475,6 +576,8 @@ def render_email_body(t: Totals, rows: list[Row], attach_count: int) -> str:
         f"  הוצאות מוכרות לפני מע\"מ: {_ils(t.expense_net)}   ({n('expense')} מסמכים, {n('credit')} זיכויים)",
         f"  מע\"מ תשומות:             {_ils(t.expense_vat)}",
         f"  הוצאות ללא תשומות:       {_ils(t.expense_no_vat)}   ({n('expense_no_vat')} מסמכים)",
+        f"  הוצאות בית, חלק מוכר:    {_ils(t.home_net)}   ({n('expense_home')} מסמכים, "
+        f"{int(HOME_UTILITY_RATE*100)}% מתוך {_ils(t.home_full_total)})",
         "",
         f"  רווח גולמי:              {_ils(t.profit)}",
         f"  מע\"מ לתשלום:             {_ils(t.vat_due)}",
