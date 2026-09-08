@@ -8,6 +8,7 @@ import { SchedulingEmbed } from "../components/SchedulingEmbed";
 import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
+import { GroupChat } from "../components/GroupChat";
 import { bcp47For, type Lang } from "../lib/hreflang";
 import { topicBySlug } from "../lib/topics";
 
@@ -724,6 +725,11 @@ export function Portal() {
       </div>
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
+
+      {/* SHARED GROUP CHAT: one open room for everyone signed in, client and
+          firm alike, meant to replace the firm's WhatsApp group so the
+          conversation is saved and can later be searched or analysed. */}
+      <GroupChat />
 
       {/* ADMIN AT A GLANCE (firm only): headline counts across the whole desk. */}
       {isAdmin && (
