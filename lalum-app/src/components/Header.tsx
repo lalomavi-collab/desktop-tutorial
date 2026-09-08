@@ -3,6 +3,7 @@ import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
 import { ShareButton, useShare } from "./ShareButton";
+import { DownloadIcon, useInstall } from "./AppInstall";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
@@ -18,6 +19,11 @@ export function Header() {
   const [insightsOpen, setInsightsOpen] = useState(false);
   const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
   const { share, copied: shareCopied } = useShare();
+  // One-tap desktop install (Chrome/Edge). canPrompt is false everywhere the
+  // browser has no native prompt (Safari, Firefox), so this stays invisible
+  // there instead of adding a seventh permanent icon to a row already at its
+  // documented limit of six.
+  const { installed: appInstalled, canPrompt: canInstall, promptInstall } = useInstall();
 
   // The two areas the practice leads with, first and named as domains: AI &
   // Law, then Real Estate. Clinic is the existing advisory hub under a name
@@ -168,6 +174,20 @@ export function Header() {
               <Icon name="telegram" size={18} />
             </a>
             <ShareButton />
+            {/* One-tap install: only rendered where the browser can actually
+                offer it (a real beforeinstallprompt fired), so it never sits
+                here inert on Safari/Firefox as a seventh dead icon. */}
+            {canInstall && !appInstalled && (
+              <button
+                type="button"
+                className="tb-btn"
+                onClick={() => void promptInstall()}
+                aria-label={t.ui.footer.installApp}
+                title={t.ui.footer.installApp}
+              >
+                <DownloadIcon size={17} />
+              </button>
+            )}
             <div className="tb-lang-wrap" style={{ position: "relative" }}>
               <button
                 type="button"
@@ -260,6 +280,16 @@ export function Header() {
                   <button type="button" role="menuitem" className="header-more-item" onClick={share}>
                     <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
                   </button>
+                  {canInstall && !appInstalled && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="header-more-item"
+                      onClick={() => { void promptInstall(); setMoreOpen(false); }}
+                    >
+                      <DownloadIcon size={18} /> {t.ui.footer.installApp}
+                    </button>
+                  )}
                   <div className="header-more-divider" role="separator" />
                   <div className="header-more-langs">
                     {LANGS.map((l) => (
