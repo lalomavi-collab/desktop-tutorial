@@ -36,12 +36,15 @@ create index if not exists lalum_discussions_topic_status_idx
 alter table public.lalum_discussions enable row level security;
 
 -- Public read: answered rows only. Admins additionally see everything, so the
--- review queue (pending) is reachable from the LALUM portal.
+-- review queue (pending) is reachable from the LALUM portal. auth.uid() is
+-- wrapped in a select, matching this project's rls_initplan_wrap_auth_in_select
+-- fix (see 0004_lalum_group_chat.sql), so Postgres evaluates it once per
+-- statement rather than once per row.
 drop policy if exists lalum_discussions_public_read on public.lalum_discussions;
 create policy lalum_discussions_public_read on public.lalum_discussions
   for select using (
     status = 'answered'
-    or exists (select 1 from public.lalum_profiles p where p.id = auth.uid() and p.is_admin = true)
+    or exists (select 1 from public.lalum_profiles p where p.id = (select auth.uid()) and p.is_admin = true)
   );
 -- No insert policy: only the service-role Edge Function inserts.
 
@@ -49,7 +52,7 @@ create policy lalum_discussions_public_read on public.lalum_discussions
 drop policy if exists lalum_discussions_admin_update on public.lalum_discussions;
 create policy lalum_discussions_admin_update on public.lalum_discussions
   for update to authenticated using (
-    exists (select 1 from public.lalum_profiles p where p.id = auth.uid() and p.is_admin = true)
+    exists (select 1 from public.lalum_profiles p where p.id = (select auth.uid()) and p.is_admin = true)
   ) with check (
-    exists (select 1 from public.lalum_profiles p where p.id = auth.uid() and p.is_admin = true)
+    exists (select 1 from public.lalum_profiles p where p.id = (select auth.uid()) and p.is_admin = true)
   );
