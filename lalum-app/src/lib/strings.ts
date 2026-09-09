@@ -25,6 +25,11 @@ const en = {
       body: "Run a first EU AI Act compliance assessment. Eight questions about how you actually operate, with no document to upload, and your readiness score comes back immediately.",
       cta: "Run the assessment",
     },
+    inAppBrowser: {
+      message: "You're viewing this inside another app's browser. For the full experience and to install the app, open this page in Safari or Chrome.",
+      how: "Tap the menu (⋯ or ⋮) and choose 'Open in Browser'.",
+      close: "Close",
+    },
     videoBubble: {
       open: "Watch a short introduction video",
       teaser: "A short introduction from Dr. Avraham Lalum",
@@ -1210,6 +1215,11 @@ const he: Dict = {
       body: "הריצו עכשיו אבחון ציות ראשוני ל-EU AI Act. שמונה שאלות על ההתנהלות בפועל, בלי להעלות שום מסמך, וציון המוכנות שלכם מתקבל מיד.",
       cta: "להרצת האבחון",
     },
+    inAppBrowser: {
+      message: "אתם צופים בעמוד בתוך דפדפן של אפליקציה אחרת. לחוויה המלאה ולהתקנת האפליקציה, פתחו את העמוד ב-Safari או Chrome.",
+      how: "הקישו על התפריט (⋯ או ⋮) ובחרו 'פתיחה בדפדפן'.",
+      close: "סגירה",
+    },
     videoBubble: {
       open: "צפייה בסרטון היכרות קצר",
       teaser: "רגע היכרות עם ד״ר עו״ד אברהם ללום",
@@ -2392,6 +2402,11 @@ const es: Dict = {
       body: "Realice un diagnóstico inicial de cumplimiento del EU AI Act. Ocho preguntas sobre su funcionamiento real, sin subir ningún documento, y su puntuación de preparación aparece de inmediato.",
       cta: "Realizar el diagnóstico",
     },
+    inAppBrowser: {
+      message: "Está viendo esta página dentro del navegador de otra aplicación. Para la experiencia completa e instalar la aplicación, ábrala en Safari o Chrome.",
+      how: "Toque el menú (⋯ o ⋮) y elija 'Abrir en el navegador'.",
+      close: "Cerrar",
+    },
     videoBubble: {
       open: "Ver un breve vídeo de presentación",
       teaser: "Una breve presentación del Dr. Avraham Lalum",
@@ -3538,6 +3553,11 @@ const fr: Dict = {
       body: "Lancez un premier diagnostic de conformité à l'EU AI Act. Huit questions sur votre fonctionnement réel, sans aucun document à téléverser, et votre score de préparation s'affiche immédiatement.",
       cta: "Lancer le diagnostic",
     },
+    inAppBrowser: {
+      message: "Vous consultez cette page dans le navigateur d'une autre application. Pour l'expérience complète et pour installer l'application, ouvrez cette page dans Safari ou Chrome.",
+      how: "Appuyez sur le menu (⋯ ou ⋮) et choisissez 'Ouvrir dans le navigateur'.",
+      close: "Fermer",
+    },
     videoBubble: {
       open: "Voir une courte vidéo de présentation",
       teaser: "Une courte présentation du Dr Avraham Lalum",
@@ -4674,6 +4694,11 @@ const ar: Dict = {
       lead: "لا تخمّن مستوى تعرّضكم.",
       body: "أجروا تشخيصًا أوليًا للامتثال لقانون الذكاء الاصطناعي الأوروبي. ثمانية أسئلة عن طريقة عملكم الفعلية، دون رفع أي مستند، ودرجة الجاهزية تظهر فورًا.",
       cta: "إجراء التشخيص",
+    },
+    inAppBrowser: {
+      message: "أنتم تشاهدون هذه الصفحة داخل متصفح تطبيق آخر. للتجربة الكاملة ولتثبيت التطبيق، افتحوا الصفحة في Safari أو Chrome.",
+      how: "اضغطوا على القائمة (⋯ أو ⋮) واختاروا 'فتح في المتصفح'.",
+      close: "إغلاق",
     },
     videoBubble: {
       open: "مشاهدة فيديو تعريفي قصير",
