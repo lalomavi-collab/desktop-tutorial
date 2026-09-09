@@ -5002,8 +5002,14 @@ html.a11y-reduce-motion *::after {
 
 @media (max-width: 900px) {
   .hprompt {
-    /* Clear of the bottom tab bar and of the accessibility button above it. */
-    bottom: calc(154px + env(safe-area-inset-bottom, 0px));
+    /* Clear of the bottom tab bar and of the accessibility button above it —
+       and, since the video bubble sits in the opposite corner at almost the
+       same height (.vbub-dock: bottom 164px, ~94px tall on this
+       breakpoint), clear of that too. Below 900px the two pills are wide
+       enough together (300px + 230px max) to overlap any phone-width
+       viewport if they share a row, so this stacks the prompt above the
+       bubble's full height instead of beside it. */
+    bottom: calc(270px + env(safe-area-inset-bottom, 0px));
   }
   .hprompt-pill {
     max-width: min(230px, calc(100vw - 76px));
