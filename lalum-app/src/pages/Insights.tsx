@@ -11,7 +11,7 @@ import { TOPICS_IN_ORDER, articlesByTopic, topicPath } from "../lib/topics";
 // the grid reads as one family, gently varied, rather than a flat wall of
 // identical clay cards. Pairs are {accent, tint} tuned to sit on the paper.
 const PALETTE = [
-  { accent: "#34406b", tint: "#eceff5" }, // clay
+  { accent: "#a8482a", tint: "#f6e6de" }, // clay
   { accent: "#9a7328", tint: "#f3ecd6" }, // ochre / gold
   { accent: "#8a3f45", tint: "#f3e3e4" }, // wine
   { accent: "#3f6f68", tint: "#e1ede9" }, // teal

@@ -58,7 +58,7 @@ export const courses: Course[] = [
     capstoneName: "Smart Real Estate Due-Diligence Engine",
     capstoneDesc: "סוכן AI פנימי הסורק טיוטות הסכמים, מזהה חשיפות מיסוי, בוחן הוגנות תמורות (יחסית מול אחידה לאור פסיקות עדכניות) ומפיק מפת סיכונים.",
     icon: "pin",
-    accent: "#34406b",
+    accent: "#a8482a",
     image: "/courses/lalum-academy-real-estate.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת Legal-AI בעולמות המקרקעין והנדסת פרומפטים מתקדמת" },
