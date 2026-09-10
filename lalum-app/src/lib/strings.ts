@@ -18,6 +18,7 @@ const en = {
     whatsapp: { aria: "Chat with us on WhatsApp", msg: "Hello, I came from the LALUM app and would like to talk." },
     telegram: { aria: "Chat with us on Telegram" },
     quickActions: "Quick actions",
+    quickAccess: { open: "Open quick actions", close: "Close" },
     homePrompt: {
       aria: "Compliance assessment",
       close: "Close",
@@ -1208,6 +1209,7 @@ const he: Dict = {
     whatsapp: { aria: "צ'אט מהיר בוואטסאפ", msg: "שלום, הגעתי דרך אפליקציית LALUM ואשמח לדבר." },
     telegram: { aria: "צ'אט מהיר בטלגרם" },
     quickActions: "פעולות מהירות",
+    quickAccess: { open: "פתיחת פעולות מהירות", close: "סגירה" },
     homePrompt: {
       aria: "אבחון ציות",
       close: "סגירה",
@@ -2395,6 +2397,7 @@ const es: Dict = {
     whatsapp: { aria: "Chatear con nosotros por WhatsApp", msg: "Hola, llegué desde la aplicación de LALUM y me gustaría hablar." },
     telegram: { aria: "Chatear con nosotros por Telegram" },
     quickActions: "Acciones rápidas",
+    quickAccess: { open: "Abrir acciones rápidas", close: "Cerrar" },
     homePrompt: {
       aria: "Diagnóstico de cumplimiento",
       close: "Cerrar",
@@ -3546,6 +3549,7 @@ const fr: Dict = {
     whatsapp: { aria: "Discuter avec nous sur WhatsApp", msg: "Bonjour, je viens de l'application LALUM et j'aimerais échanger." },
     telegram: { aria: "Discuter avec nous sur Telegram" },
     quickActions: "Actions rapides",
+    quickAccess: { open: "Ouvrir les actions rapides", close: "Fermer" },
     homePrompt: {
       aria: "Diagnostic de conformité",
       close: "Fermer",
@@ -4688,6 +4692,7 @@ const ar: Dict = {
     whatsapp: { aria: "تواصلوا معنا عبر واتساب", msg: "مرحباً، لقد وصلت من تطبيق LALUM وأرغب في التحدث." },
     telegram: { aria: "تواصلوا معنا عبر تيليجرام" },
     quickActions: "إجراءات سريعة",
+    quickAccess: { open: "فتح الإجراءات السريعة", close: "إغلاق" },
     homePrompt: {
       aria: "تشخيص الامتثال",
       close: "إغلاق",

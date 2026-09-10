@@ -4,26 +4,27 @@ import { useLocation } from "react-router-dom";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { CHAT_STATE_EVENT } from "./chatEvents";
+import { OPEN_VIDEO_EVENT } from "./quickAccessEvents";
+import { QUIET_ROUTES } from "../lib/quietRoutes";
 import { bcp47For } from "../lib/hreflang";
 
-// A floating video bubble: a small circle in the corner of every marketing page
-// playing a silent looping preview, which expands into a vertical player with
-// sound and two calls to action.
+// The video panel: opened on request from the quick-access dot
+// (QuickAccessDot.tsx, via OPEN_VIDEO_EVENT) rather than inviting itself —
+// visitors found the old auto-popping teaser bubble intrusive, and paired
+// with the home-page prompt it collided on a phone (see git history on
+// .vbub-invite/.hprompt). This component now renders nothing until asked.
 //
 // It is asset driven. With VITE_VIDEO_BUBBLE_SRC unset the component renders
 // nothing at all, so the site never ships an empty player or a 404 request for a
 // clip that was never uploaded.
 //
-// Three rules shape the rest of this file:
-//   1. One panel per corner. The chat lives in the same corner, so the bubble
+// Two rules shape the rest of this file:
+//   1. One panel per corner. The chat lives in the same corner, so the panel
 //      steps aside while the chat is open (CHAT_STATE_EVENT) instead of
 //      stacking two dialogs on the same 24px.
-//   2. Nothing plays behind the visitor's back. A visitor who asked for reduced
-//      motion, or whose browser is in data-saver mode, gets a still poster and
-//      an explicit play control, never an autoplaying loop.
-//   3. Everything the mouse can do, the keyboard can do: real buttons, an
-//      accessible name on each, Escape to close, and focus handed back to the
-//      bubble on the way out.
+//   2. Everything the mouse can do, the keyboard can do: real buttons, an
+//      accessible name on each, Escape to close, and focus handed back to
+//      whatever opened the panel on the way out.
 
 // The clip itself. An asset in public/ ("/media/lalum-intro.mp4") or an
 // absolute CDN URL; empty means the feature is off and nothing renders. The
@@ -35,41 +36,6 @@ import { bcp47For } from "../lib/hreflang";
 const videoBubbleSrc = import.meta.env.VITE_VIDEO_BUBBLE_SRC ?? "";
 const videoBubblePoster = import.meta.env.VITE_VIDEO_BUBBLE_POSTER ?? "";
 const videoBubbleCaptions = import.meta.env.VITE_VIDEO_BUBBLE_CAPTIONS ?? "";
-
-const DISMISS_KEY = "lalum_video_bubble_hidden_at";
-// A visitor who closed the bubble should not meet it again on the next page, or
-// the next visit. A month is long enough to read as "it listened", short enough
-// that a returning client still meets a new clip.
-const DISMISS_DAYS = 30;
-
-// Where a marketing video would interrupt rather than invite: the sign-in form
-// and the private client area, which people reach with a task already in mind.
-const QUIET_ROUTES = /^\/(login|portal)(\/|$)/;
-
-function hiddenByVisitor(): boolean {
-  try {
-    const at = Number(localStorage.getItem(DISMISS_KEY));
-    return Number.isFinite(at) && at > 0 && Date.now() - at < DISMISS_DAYS * 86400000;
-  } catch {
-    return false;
-  }
-}
-
-// Three ways a visitor says "do not start a video on your own": the operating
-// system's reduced-motion setting, the site's own accessibility menu (which puts
-// .a11y-reduce-motion on <html>), and a browser in data-saver mode. Any one of
-// them turns the loop into a still poster with a play control.
-function prefersStill(): boolean {
-  try {
-    if (document.documentElement.classList.contains("a11y-reduce-motion")) return true;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
-    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    return conn?.saveData === true;
-  } catch {
-    return false;
-  }
-}
-
 
 // What the clip says, in text, because the clip itself says nothing.
 //
@@ -86,15 +52,10 @@ type Caption = { from: number; to: number; text: string; sub?: string };
 // One clip per language, where a language has one of its own.
 //
 // Hebrew gets the reel: the lines are part of the picture and the narration is
-// synced to them, so it needs no overlay and it is the only page where sound
-// belongs. Every other language falls back to the configured clip, played
-// silently under its own translated lines, because a French visitor reading
-// French while a Hebrew voice talks over burned-in Hebrew is worse than no
-// sound at all.
-//
-// `burnedIn` also decides what the collapsed bubble shows: a page of text is
-// nothing at all in a 54 pixel circle, so a reel stays on its poster there and
-// only loads when someone opens it.
+// synced to them, so it needs no overlay. Every other language falls back to
+// the configured clip, played silently under its own translated lines, because
+// a French visitor reading French while a Hebrew voice talks over burned-in
+// Hebrew is worse than no sound at all.
 type Clip = { src: string; burnedIn?: boolean; spoken?: boolean };
 const CLIPS: Record<string, Clip> = {
   he: { src: "/media/lalum-reel.mp4", burnedIn: true, spoken: true },
@@ -132,9 +93,6 @@ const SCRIPT: Record<string, Caption[]> = {
   ],
 };
 
-// The clip's length, as m:ss. Shown on the invitation so "short" is a number
-// rather than a promise, and read from the file at runtime so it stays true
-// when the clip is replaced.
 // Whether the file carries an audio track at all. No browser exposes this the
 // same way, so: Firefox answers directly, Chromium and Safari only once some
 // audio has been decoded, and the standard `audioTracks` list is missing in
@@ -151,27 +109,16 @@ function audioPresence(el: HTMLVideoElement): boolean | null {
   return null;
 }
 
-function clock(seconds: number): string | null {
-  // A browser that cannot decode the file reports NaN or Infinity, and a
-  // stream reports something absurd. Anything outside a plausible clip length
-  // prints nothing rather than a wrong promise.
-  if (!Number.isFinite(seconds) || seconds < 1 || seconds > 3600) return null;
-  const total = Math.round(seconds);
-  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
-}
-
 export function VideoBubble() {
   const { t, lang } = useLang();
   const V = t.ui.videoBubble;
   const { pathname } = useLocation();
 
-  const [visible, setVisible] = useState(() => !hiddenByVisitor());
   const [open, setOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   // The clip failed to load (wrong path, unsupported codec, offline). Better to
   // disappear than to show a black circle where a face should be.
   const [broken, setBroken] = useState(false);
-  const [still, setStill] = useState(prefersStill);
 
   const clip = CLIPS[lang];
   const src = clip?.src ?? videoBubbleSrc;
@@ -179,8 +126,6 @@ export function VideoBubble() {
   const lines = clip?.burnedIn ? undefined : SCRIPT[lang];
   // Sound is offered only where the narration matches the page's language.
   const spoken = clip?.spoken === true;
-  // A text reel in the small circle is a black dot, so it waits on its poster.
-  const preview = still || clip?.burnedIn === true;
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   // null until the file has been asked. `true` only on a positive answer, so a
@@ -189,16 +134,39 @@ export function VideoBubble() {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const previewRef = useRef<HTMLVideoElement>(null);
   const fullRef = useRef<HTMLVideoElement>(null);
-  const orbRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  // Whatever opened the panel (the quick-access dot's button) — focus returns
+  // there on close, so the visitor lands back exactly where they started
+  // instead of at the top of the page.
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   const close = useCallback(() => {
     setOpen(false);
     fullRef.current?.pause();
   }, []);
+
+  const expand = useCallback(() => {
+    // flushSync so the player exists before play() is called, keeping the call
+    // inside the click that triggered it. Browsers only allow audio to start on
+    // a user gesture, and an effect a tick later no longer counts as one.
+    flushSync(() => setOpen(true));
+    const el = fullRef.current;
+    if (!el) return;
+    el.currentTime = 0;
+    // The clip carries a voiceover recorded for it, so opening the player asks
+    // for sound where that voice matches the page: the click is the gesture
+    // browsers require. A refusal falls back to muted with the control
+    // showing, rather than a player that sits there doing nothing.
+    el.muted = !spoken;
+    setMuted(el.muted);
+    void el.play().catch(() => {
+      el.muted = true;
+      setMuted(true);
+      void el.play().catch(() => setPlaying(false));
+    });
+  }, [spoken]);
 
   // The chat owns the corner while it is open.
   useEffect(() => {
@@ -211,41 +179,24 @@ export function VideoBubble() {
     return () => window.removeEventListener(CHAT_STATE_EVENT, onChat);
   }, [close]);
 
+  // Requested from the quick-access dot. Ignored on quiet routes / while
+  // broken, same as the dot's own menu already arranges for.
+  useEffect(() => {
+    const onOpenRequest = (e: Event) => {
+      if (!videoBubbleSrc || broken || QUIET_ROUTES.test(pathname)) return;
+      const trigger = (e as CustomEvent<{ trigger?: HTMLElement | null }>).detail?.trigger ?? null;
+      returnFocusRef.current = trigger;
+      expand();
+    };
+    window.addEventListener(OPEN_VIDEO_EVENT, onOpenRequest);
+    return () => window.removeEventListener(OPEN_VIDEO_EVENT, onOpenRequest);
+  }, [broken, pathname, expand]);
+
   // Leaving the page (usually by tapping one of the calls to action) closes the
   // player, so a video never floats over the page the visitor just asked for.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-
-  // Either setting can be flipped mid-visit: the accessibility menu is one click
-  // away on every page, so watch for it rather than reading the preference once.
-  useEffect(() => {
-    const recheck = () => setStill(prefersStill());
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    mq.addEventListener("change", recheck);
-    const obs = new MutationObserver(recheck);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => {
-      mq.removeEventListener("change", recheck);
-      obs.disconnect();
-    };
-  }, []);
-
-  // The silent preview only runs while it is on screen and the tab is in front.
-  useEffect(() => {
-    const el = previewRef.current;
-    if (!el) return;
-    if (open || preview) {
-      el.pause();
-      return;
-    }
-    el.muted = true;
-    const start = () => { void el.play().catch(() => { /* autoplay refused; the poster stands in */ }); };
-    const onVisibility = () => (document.hidden ? el.pause() : start());
-    start();
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [open, preview, visible, chatOpen]);
 
   // Escape closes, and focus moves into the panel and back out again.
   useEffect(() => {
@@ -261,35 +212,11 @@ export function VideoBubble() {
     return () => {
       cancelAnimationFrame(raf);
       document.removeEventListener("keydown", onKey, true);
-      orbRef.current?.focus();
+      returnFocusRef.current?.focus();
     };
   }, [open, close]);
 
-  if (!videoBubbleSrc || broken || !visible || chatOpen || QUIET_ROUTES.test(pathname)) return null;
-
-  function expand() {
-    // flushSync so the player exists before play() is called, keeping the call
-    // inside the click that triggered it. Browsers only allow audio to start on
-    // a user gesture, and an effect a tick later no longer counts as one.
-    flushSync(() => setOpen(true));
-    previewRef.current?.pause();
-    const el = fullRef.current;
-    if (!el) return;
-    el.currentTime = 0;
-    // The clip carries a voiceover recorded for it, so opening the player asks
-    // for sound where that voice matches the page: the click is the gesture
-    // browsers require. A refusal falls back to muted with the control showing,
-    // rather than a player that sits there doing nothing. The collapsed preview
-    // stays silent either way, since nothing should make noise before it is
-    // asked to.
-    el.muted = !spoken;
-    setMuted(el.muted);
-    void el.play().catch(() => {
-      el.muted = true;
-      setMuted(true);
-      void el.play().catch(() => setPlaying(false));
-    });
-  }
+  if (!open || !videoBubbleSrc || broken || chatOpen || QUIET_ROUTES.test(pathname)) return null;
 
   function togglePlay() {
     const el = fullRef.current;
@@ -312,11 +239,6 @@ export function VideoBubble() {
     setProgress(seconds);
   }
 
-  function hideForGood() {
-    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch { /* private mode */ }
-    setVisible(false);
-  }
-
   // The line on screen right now. Anything outside every window shows nothing,
   // so a clip longer than the script simply runs on without text.
   const caption = lines?.find((c) => progress >= c.from && progress < c.to) ?? null;
@@ -326,137 +248,93 @@ export function VideoBubble() {
   ) : null;
 
   return (
-    <div className={"vbub-dock" + (open ? " is-open" : "")}>
-      {!open && (
-        <div className="vbub-orb-wrap">
-          {/* One control, not a circle plus a caption that only appears on
-              hover. A phone has no hover, so the old bubble was a floating face
-              with nothing saying what tapping it would do. */}
-          <button ref={orbRef} type="button" className="vbub-invite" onClick={expand} aria-label={V.open} title={V.open}>
-            <span className="vbub-orb">
-              <video
-                ref={previewRef}
-                className="vbub-orb-video"
-                src={preview ? undefined : src}
-                poster={videoBubblePoster || undefined}
-                preload={preview ? "none" : "metadata"}
-                loop
-                muted
-                playsInline
-                tabIndex={-1}
-                aria-hidden="true"
-                onLoadedMetadata={(e) => {
-                  setDuration(e.currentTarget.duration || 0);
-                  setHasAudio(audioPresence(e.currentTarget));
-                }}
-                onError={() => setBroken(true)}
-              />
-              <span className="vbub-orb-play" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-              </span>
-            </span>
-            <span className="vbub-invite-txt" aria-hidden="true">
-              <span className="vbub-invite-line">{V.teaser}</span>
-              {/* The runtime knows how long the clip is, so the promise is
-                  measured rather than guessed. */}
-              <span className="vbub-invite-meta">{V.open}{clock(duration) ? ` · ${clock(duration)}` : ""}</span>
-            </span>
-          </button>
-
-          <button type="button" className="vbub-dismiss" onClick={hideForGood} aria-label={V.hide} title={V.hide}>
+    <div className="vbub-dock is-open">
+      <div ref={panelRef} className="vbub-panel" role="dialog" aria-label={V.open}>
+        <div className="vbub-panel-tools">
+          <button ref={closeRef} type="button" className="vbub-tool" onClick={close} aria-label={V.close} title={V.close}>
             <span aria-hidden="true">×</span>
           </button>
-        </div>
-      )}
-
-      {open && (
-        <div ref={panelRef} className="vbub-panel" role="dialog" aria-label={V.open}>
-          <div className="vbub-panel-tools">
-            <button ref={closeRef} type="button" className="vbub-tool" onClick={close} aria-label={V.close} title={V.close}>
-              <span aria-hidden="true">×</span>
-            </button>
-            <button type="button" className="vbub-tool" onClick={togglePlay} aria-label={playing ? V.pause : V.play} title={playing ? V.pause : V.play}>
-              {playing ? (
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
-              ) : (
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
-              )}
-            </button>
-            {hasAudio !== false && spoken && (
-            <button type="button" className="vbub-tool" onClick={toggleMute} aria-label={muted ? V.unmute : V.mute} title={muted ? V.unmute : V.mute}>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M11 5 6 9H2v6h4l5 4z" />
-                {muted ? <path d="m17 9 4 6M21 9l-4 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
-              </svg>
-            </button>
+          <button type="button" className="vbub-tool" onClick={togglePlay} aria-label={playing ? V.pause : V.play} title={playing ? V.pause : V.play}>
+            {playing ? (
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
             )}
+          </button>
+          {hasAudio !== false && spoken && (
+          <button type="button" className="vbub-tool" onClick={toggleMute} aria-label={muted ? V.unmute : V.mute} title={muted ? V.unmute : V.mute}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M11 5 6 9H2v6h4l5 4z" />
+              {muted ? <path d="m17 9 4 6M21 9l-4 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
+            </svg>
+          </button>
+          )}
+        </div>
+
+        <video
+          ref={fullRef}
+          className="vbub-panel-video"
+          src={src}
+          poster={videoBubblePoster || undefined}
+          playsInline
+          onClick={togglePlay}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => setPlaying(false)}
+          onLoadedMetadata={(e) => {
+            // The element has to be captured here: React clears
+            // `currentTarget` once the handler returns, and the updater below
+            // runs during the next render, where it would already be null.
+            const el = e.currentTarget;
+            setDuration(el.duration || 0);
+            setHasAudio((known) => (known === true ? true : audioPresence(el)));
+          }}
+          onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
+          onError={() => { setBroken(true); setOpen(false); }}
+        >
+          {captions}
+        </video>
+
+        {/* The lines change every few seconds, which no screen reader can
+            follow, so the whole message is offered once, in order, and the
+            moving copy is marked decorative. */}
+        {lines && (
+          <p className="vbub-script-full">{lines.map((c) => c.text).join(". ")}</p>
+        )}
+
+        {caption && (
+          <div className="vbub-script" aria-hidden="true">
+            <p className="vbub-script-line">{caption.text}</p>
+          </div>
+        )}
+
+        <div className="vbub-panel-foot">
+          <input
+            className="vbub-seek"
+            type="range"
+            min={0}
+            max={duration || 0}
+            step={0.1}
+            value={Math.min(progress, duration || 0)}
+            onChange={(e) => seek(Number(e.target.value))}
+            aria-label={V.seek}
+            disabled={!duration}
+          />
+
+          <div className="vbub-meta">
+            <span className="vbub-badge">{V.badge}</span>
+            <h3 className="vbub-name">{t.home.founderName}</h3>
+            <p className="vbub-tagline">{V.tagline}</p>
           </div>
 
-          <video
-            ref={fullRef}
-            className="vbub-panel-video"
-            src={src}
-            poster={videoBubblePoster || undefined}
-            playsInline
-            onClick={togglePlay}
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-            onEnded={() => setPlaying(false)}
-            onLoadedMetadata={(e) => {
-              // The element has to be captured here: React clears
-              // `currentTarget` once the handler returns, and the updater below
-              // runs during the next render, where it would already be null.
-              const el = e.currentTarget;
-              setDuration(el.duration || 0);
-              setHasAudio((known) => (known === true ? true : audioPresence(el)));
-            }}
-            onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
-            onError={() => { setBroken(true); setOpen(false); }}
-          >
-            {captions}
-          </video>
-
-          {/* The lines change every few seconds, which no screen reader can
-              follow, so the whole message is offered once, in order, and the
-              moving copy is marked decorative. */}
-          {lines && (
-            <p className="vbub-script-full">{lines.map((c) => c.text).join(". ")}</p>
-          )}
-
-          {caption && (
-            <div className="vbub-script" aria-hidden="true">
-              <p className="vbub-script-line">{caption.text}</p>
-            </div>
-          )}
-
-          <div className="vbub-panel-foot">
-            <input
-              className="vbub-seek"
-              type="range"
-              min={0}
-              max={duration || 0}
-              step={0.1}
-              value={Math.min(progress, duration || 0)}
-              onChange={(e) => seek(Number(e.target.value))}
-              aria-label={V.seek}
-              disabled={!duration}
-            />
-
-            <div className="vbub-meta">
-              <span className="vbub-badge">{V.badge}</span>
-              <h3 className="vbub-name">{t.home.founderName}</h3>
-              <p className="vbub-tagline">{V.tagline}</p>
-            </div>
-
-            <div className="vbub-ctas">
-              <Link to="/book" className="vbub-cta-gold" onClick={close}>{V.primaryCta}</Link>
-              <Link to="/risk" className="vbub-cta-ghost" onClick={close}>
-                {V.secondaryCta} <span aria-hidden="true">⚖️</span>
-              </Link>
-            </div>
+          <div className="vbub-ctas">
+            <Link to="/book" className="vbub-cta-gold" onClick={close}>{V.primaryCta}</Link>
+            <Link to="/risk" className="vbub-cta-ghost" onClick={close}>
+              {V.secondaryCta} <span aria-hidden="true">⚖️</span>
+            </Link>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
