@@ -64,7 +64,7 @@ export const academyPro: Course[] = [
     capstoneDesc:
       "מנוע איסוף וניתוח עסקאות השוואה שמפיק טיוטת פרק נתונים עם מקור לכל שורה, לבדיקת השמאי.",
     icon: "pin",
-    accent: "#a8482a",
+    accent: "#34406b",
     image: "",
     track: "pro",
     frame: proFramework,
