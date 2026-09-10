@@ -190,6 +190,29 @@ body {
 .tabbar-item:focus-visible {
   outline-offset: 3px;
 }
+/* Fixed-width digits everywhere numbers actually appear (credentials line,
+   article dates, phone numbers, prices) — Hebrew text mixes constantly with
+   Latin numerals, and tabular figures keep them from jittering in width as
+   the surrounding text reflows. Purely a digit-rendering property; it has
+   no effect on Hebrew letterforms. */
+body {
+  font-variant-numeric: tabular-nums;
+}
+/* Chrome that reads as an app control, not a text page: nav, buttons and
+   badges aren't meant to be selected/copied the way body prose is. Contact
+   info (phone/email links) is deliberately excluded — those ARE meant to be
+   selectable. */
+.nav-pills .nav-pill,
+.tabbar-item,
+.btn,
+.tb-btn,
+.pill,
+.eyebrow,
+.header-more-item,
+.qad-item {
+  user-select: none;
+  -webkit-user-select: none;
+}
 /* Long tokens (emails, urls) wrap instead of pushing a box wider than the app. */
 p,
 li,
