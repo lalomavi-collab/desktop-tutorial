@@ -13,7 +13,7 @@ import { trainingEmail } from "../lib/content";
 // Warm accents and icons cycled across the delivery-format cards so the section
 // reads with colour and variety instead of flat centred text.
 const FMT_ACCENTS = [
-  { c: "#a8482a", t: "#f3e7de" },
+  { c: "#34406b", t: "#eef0f6" },
   { c: "#9a7328", t: "#f1e9d6" },
   { c: "#8a3f45", t: "#f3e4e4" },
 ];

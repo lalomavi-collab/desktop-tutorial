@@ -10,7 +10,7 @@ import { whatsappNumber, officePhone } from "../lib/content";
 // and jumps to the matching part of the app.
 const ICONS = ["headset", "video", "calendar", "shield", "folder", "whatsapp", "book", "search"];
 const ACCENTS = [
-  { c: "#a8482a", t: "#f3e7de" },
+  { c: "#34406b", t: "#eef0f6" },
   { c: "#9a7328", t: "#f1e9d6" },
   { c: "#8a3f45", t: "#f3e4e4" },
   { c: "#3f8f5f", t: "#e2f0e7" },
