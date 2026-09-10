@@ -22,6 +22,8 @@
   .serif { font-family:"Newsreader",Georgia,"Times New Roman",serif; }
   .sheet { max-width:900px; margin:0 auto; background:var(--paper); }
   header.top { background:#0f0f10; color:#fbf7ea; padding:52px 44px; }
+  header.top .header-inner { display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap-reverse; }
+  header.top .photo { flex:none; width:132px; height:132px; border-radius:50%; object-fit:cover; border:3px solid var(--clay); }
   header.top .name { font-size:38px; font-weight:500; letter-spacing:-0.01em; margin:0; }
   header.top .title { color:#d9d3c4; font-size:17px; margin:10px 0 4px; }
   header.top .focus { color:#d4af37; font-size:14px; letter-spacing:0.04em; margin:6px 0 18px; }
@@ -44,25 +46,27 @@
   .block { margin-bottom:22px; }
   .print { text-align:center; padding:22px; }
   .print a { display:inline-flex; align-items:center; gap:8px; background:var(--clay); color:#fff; text-decoration:none; padding:12px 24px; border-radius:9999px; font-weight:700; font-size:14px; }
-  @media (max-width:640px){ header.top,main{padding-left:22px;padding-right:22px;} .grid{grid-template-columns:1fr;} }
+  @media (max-width:640px){ header.top,main{padding-left:22px;padding-right:22px;} .grid{grid-template-columns:1fr;} header.top .photo{width:96px;height:96px;} }
   header.top .name-he { font-size:27px; font-weight:400; color:#cfc7b4; margin:2px 0 10px; }
   @media print { body{background:#fff;} .print{display:none;} header.top{background:#0f0f10 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;} }
-
-  body { font-family:"Segoe UI","Arial Hebrew",Arial,sans-serif; }
-  .serif { font-family:"Frank Ruhl Libre",Georgia,"Times New Roman",serif; }
 </style>
 </head>
 <body>
   <div class="sheet">
     <header class="top">
-      <h1 class="name serif">ד״ר עו״ד אברהם ללום</h1>
-      <div class="name-he serif" dir="ltr" lang="en">Dr. Avraham (Avi) Lalum, Adv.</div>
-      <div class="title">עורך דין, נוטריון ובורר · Ph.D. במשפט וכלכלה</div>
-      <div class="focus">Legal AI</div>
-      <div class="contact">
-        <a href="mailto:avraham@lalum.co" dir="ltr">avraham@lalum.co</a> &nbsp;·&nbsp;
-        <a href="tel:+972522490420" dir="ltr">+972-52-249-0420</a> &nbsp;·&nbsp;
-        <a href="https://lalumapp.com" dir="ltr">lalumapp.com</a> &nbsp;·&nbsp; <span dir="ltr">ORCID 0009-0003-8542-5357</span>
+      <div class="header-inner">
+        <div>
+          <h1 class="name serif">ד״ר עו״ד אברהם ללום</h1>
+          <div class="name-he serif" dir="ltr" lang="en">Dr. Avraham (Avi) Lalum, Adv.</div>
+          <div class="title">עורך דין, נוטריון ובורר · Ph.D. במשפט וכלכלה</div>
+          <div class="focus">Legal AI</div>
+          <div class="contact">
+            <a href="mailto:avraham@lalum.co" dir="ltr">avraham@lalum.co</a> &nbsp;·&nbsp;
+            <a href="tel:+972522490420" dir="ltr">+972-52-249-0420</a> &nbsp;·&nbsp;
+            <a href="https://lalumapp.com" dir="ltr">lalumapp.com</a> &nbsp;·&nbsp; <span dir="ltr">ORCID 0009-0003-8542-5357</span>
+          </div>
+        </div>
+        <img class="photo" src="/founder.webp" alt="ד״ר עו״ד אברהם ללום" width="132" height="132" />
       </div>
     </header>
 
