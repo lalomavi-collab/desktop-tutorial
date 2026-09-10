@@ -1,28 +1,21 @@
 /* ============================================================
-   LALUM governance-blue design system (light brand direction)
-   A cooler, institutional palette replacing the earlier warm clay/ivory
-   system: deep indigo in place of terracotta, a cooled paper/ivory ground.
-   The token NAMES stay as they were (--clay, --ivory, ...) — every
-   component reads them by name, and the whole point of a token system is
-   that a palette swap is a values-only change here, nothing to touch
-   downstream. Contrast re-checked against WCAG AA at this swap: white on
-   --clay (#34406b) is ~10:1, --clay text on --paper is ~8.8:1 — both
-   comfortably past 4.5:1.
+   LALUM clay/ivory design system (light brand direction)
+   Ported from the Home-en / Training Claude Design sources.
    ============================================================ */
 
 :root {
-  --ivory: #eef0f6;
-  --paper: #f6f5f1;
+  --ivory: #f5f1e8;
+  --paper: #fbf9f3;
   --card: #ffffff;
-  --ink: #1a1c22;
-  --slate: #52565f;
-  --clay: #34406b;
-  --clay-hover: #283253;
-  --clay-bright: #4a5686;
-  --clay-soft: #dfe3ee;
-  --clay-tint: #eef0f6;
-  --line: #e1e1e6;
-  --line-strong: #c8cad6;
+  --ink: #1a1815;
+  --slate: #55514a;
+  --clay: #a8482a;
+  --clay-hover: #8c3b20;
+  --clay-bright: #c15f3c;
+  --clay-soft: #e4c7b7;
+  --clay-tint: #f3e7de;
+  --line: #e3dccd;
+  --line-strong: #d3c9b5;
   --success: #3f8f5f;
   /* Brand green darkened to meet WCAG AA (4.5:1) for white text on a green fill.
      Use ONLY where white text sits on a green background (badges, pills); the
@@ -38,21 +31,21 @@
   --maxw: 1180px;
 }
 
-/* Hebrew swaps to complex-script fonts while keeping the governance-blue look.
-   Heebo is a clean, modern Hebrew grotesk for body; Frank Ruhl Libre is a
-   classic Hebrew literary serif for headings, giving the display type a
-   institutional, editorial voice — cooler and more formal than the previous
-   Suez One slab. David/Georgia serif faces are fallbacks. Slightly more
-   line-height so Hebrew descenders never clip. */
+/* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
+   Assistant is a modern, crisp Hebrew sans for body; Suez One is a modern Hebrew
+   editorial slab-serif for headings, giving the display type real weight and a
+   premium, authoritative voice. David/Georgia serif faces are fallbacks. Slightly
+   more line-height so Hebrew descenders never clip. */
 html[lang="he"] {
-  --sans: "Heebo", "Assistant", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
-  --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+  --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
+  --serif: "Suez One", "David Libre", Georgia, serif;
 }
-/* Unlike the single-weight Suez One this replaced, Frank Ruhl Libre ships real
-   400/500/700 faces (loaded in index.html), so weight synthesis is never
-   actually invoked for Hebrew headings — this just keeps that guarantee
-   explicit. Body text (Heebo/Assistant) also carries real weights, so
-   nothing here is ever synthesised either way. */
+/* Suez One ships a single (already heavy) weight. Various heading classes across
+   the app request 500/700, which the browser would fake as a smeared bold on a
+   display face. Disabling weight synthesis makes every Hebrew heading render
+   Suez One's true weight, so the display type is uniform on every page. Body
+   text is unaffected: Assistant carries real 400-800 faces, so nothing there is
+   ever synthesised. Hierarchy comes from size, as it should for a display face. */
 html[lang="he"] {
   font-synthesis-weight: none;
 }
@@ -67,26 +60,26 @@ html[lang="he"] .btn {
 html[lang="he"] .eyebrow {
   letter-spacing: 0.04em;
 }
-/* Hebrew display type. Frank Ruhl Libre's regular weight reads as delicate
-   next to the site's bold body copy, so headings pull its real 700 face
-   instead — a genuine bold, not a synthesised one. Latin negative tracking
-   is neutralised (it thins Hebrew letterforms), and the accent line uses
-   colour instead of italic, which Hebrew has no genuine form of. */
+/* Hebrew display type. Suez One is a single-weight editorial slab, already heavy
+   and confident, so the headings use its natural weight (400) rather than a faux
+   bold, which would smear a display face. Latin negative tracking is neutralised
+   (it thins Hebrew letterforms), and the accent line uses colour instead of
+   italic, which Hebrew has no genuine form of. */
 html[lang="he"] .h1,
 html[lang="he"] h1.serif {
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 html[lang="he"] .h2,
 html[lang="he"] h2.serif {
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 html[lang="he"] .h3,
 html[lang="he"] h3.serif {
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0;
 }
 html[lang="he"] .italic-clay {
@@ -1045,7 +1038,7 @@ a.card:hover .card-go {
   border-top-width: 3px;
 }
 .grid-3 > .card:nth-child(3n + 1) {
-  border-top-color: #34406b;
+  border-top-color: #a8482a;
 }
 .grid-3 > .card:nth-child(3n + 2) {
   border-top-color: #9a7328;
