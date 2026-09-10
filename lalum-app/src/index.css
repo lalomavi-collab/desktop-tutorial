@@ -4844,6 +4844,86 @@ html.a11y-reduce-motion *::after {
   }
 }
 
+/* ---------- bottom sheets (phones) ---------- */
+/* Two menus — the header's mobile "more" menu and the quick-access menu —
+   are small anchored dropdown cards on desktop, which is exactly the
+   "website" tell on a phone: a native app slides these up from the screen
+   edge instead. Below 900px both get the same treatment: fixed to the
+   bottom edge, full width, a drag handle, a dimmed backdrop and a slide-in
+   entrance. Desktop keeps the original anchored card untouched — only the
+   rules inside this query change anything. */
+.header-more-backdrop,
+.qad-backdrop {
+  position: fixed;
+  inset: 0;
+}
+.header-more-backdrop {
+  z-index: 40;
+}
+.qad-backdrop {
+  z-index: 81;
+}
+.sheet-handle {
+  display: none;
+}
+@media (max-width: 900px) {
+  .header-more-backdrop,
+  .qad-backdrop {
+    z-index: 95;
+    background: rgba(26, 24, 21, 0.32);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-more-backdrop,
+    .qad-backdrop {
+      animation: sheet-backdrop-in 0.18s ease both;
+    }
+  }
+  .header-more-menu,
+  .qad-menu {
+    position: fixed;
+    inset-inline: 0;
+    top: auto;
+    bottom: 0;
+    z-index: 96;
+    width: auto;
+    min-width: 0;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+    max-height: 82vh;
+    overflow-y: auto;
+    box-shadow: 0 -20px 50px -20px rgba(26, 24, 21, 0.45);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-more-menu,
+    .qad-menu {
+      /* Overrides each menu's own fade-in-place animation at this width —
+         later in source order wins at equal specificity — so the sheet
+         slides up from the edge instead of fading in mid-air. */
+      animation: sheet-in 0.22s cubic-bezier(0.32, 0.72, 0.35, 1) both;
+    }
+  }
+  /* The grab handle a real bottom sheet shows above its content; purely
+     decorative (the backdrop and Escape key already close it), so it is
+     aria-hidden in markup and only ever shown at this width. */
+  .sheet-handle {
+    display: block;
+    flex: none;
+    width: 36px;
+    height: 4px;
+    margin: 2px auto 8px;
+    border-radius: 999px;
+    background: var(--line);
+  }
+}
+@keyframes sheet-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
 /* In-app browser notice (WhatsApp/Instagram/Facebook WebViews). Sits in
    normal flow ahead of the sticky header — see the component comment for why
    this is never `position: fixed`. */

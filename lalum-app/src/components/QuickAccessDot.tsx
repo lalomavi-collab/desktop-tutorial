@@ -5,6 +5,7 @@ import { useLang } from "../context/LangContext";
 import { useInstall } from "./AppInstall";
 import { emitOpenVideo } from "./quickAccessEvents";
 import { QUIET_ROUTES } from "../lib/quietRoutes";
+import { useScrollLock } from "../lib/useScrollLock";
 import lalumMark from "../assets/lalum-mark.svg";
 
 // One quiet control in the corner, replacing two auto-popping invitations
@@ -52,6 +53,9 @@ export function QuickAccessDot() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+  // Below 900px this menu is a bottom sheet (see index.css) — lock the page
+  // behind it for the same reason the header's mobile menu does.
+  useScrollLock(open);
 
   // Closing on navigation matches every other floating control on the page —
   // a menu open on the page a visitor just left is a menu open by accident.
@@ -80,8 +84,9 @@ export function QuickAccessDot() {
       {open && (
         <>
           {/* Backdrop closes the menu on outside click without a global listener. */}
-          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 81 }} />
+          <div onClick={() => setOpen(false)} className="qad-backdrop" />
           <div className="qad-menu" role="menu" aria-label={Q.open}>
+            <span className="sheet-handle" aria-hidden="true" />
             {videoBubbleSrc && (
               <button type="button" role="menuitem" className="qad-item" onClick={openVideo}>
                 <span className="qad-item-icon"><VideoIcon /></span>

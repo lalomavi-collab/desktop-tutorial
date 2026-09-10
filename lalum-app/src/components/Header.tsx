@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
@@ -10,6 +10,7 @@ import { OPEN_SOS_EVENT } from "./SosMenu";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
+import { useScrollLock } from "../lib/useScrollLock";
 
 export function Header() {
   const { user } = useAuth();
@@ -24,6 +25,23 @@ export function Header() {
   // there instead of adding a seventh permanent icon to a row already at its
   // documented limit of six.
   const { installed: appInstalled, canPrompt: canInstall, promptInstall } = useInstall();
+
+  // Below 900px the "more" menu becomes a bottom sheet (see index.css); a
+  // sheet that only closes by tapping its own backdrop reads as broken on a
+  // phone, and locking the page behind it keeps the body from scrolling out
+  // from under a surface that is meant to feel anchored to the screen edge.
+  useEffect(() => {
+    if (!moreOpen && !langOpen && !insightsOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMoreOpen(false);
+      setLangOpen(false);
+      setInsightsOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [moreOpen, langOpen, insightsOpen]);
+  useScrollLock(moreOpen);
 
   // The two areas the practice leads with, first and named as domains: AI &
   // Law, then Real Estate. Clinic is the existing advisory hub under a name
@@ -251,8 +269,9 @@ export function Header() {
             </button>
             {moreOpen && (
               <>
-                <div onClick={() => setMoreOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+                <div onClick={() => setMoreOpen(false)} className="header-more-backdrop" />
                 <div role="menu" aria-label={t.ui.quickActions} className="card header-more-menu">
+                  <span className="sheet-handle" aria-hidden="true" />
                   <button
                     type="button"
                     role="menuitem"
