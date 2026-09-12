@@ -34,6 +34,7 @@ const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })));
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
+const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.LegalOS })));
 const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
 
 // Scroll to a #hash target after navigation, including cross-page links like
@@ -70,6 +71,11 @@ export default function App() {
           <CommandBar />
         </Suspense>
         <Routes>
+          {/* LALUM OS: a standalone, full-screen app surface (the assistant),
+              deliberately outside MarketingLayout so it carries no site header
+              or footer and reads as an application. It shares the site's brain
+              (the lalum-assistant edge function) and links back into the site. */}
+          <Route path="os" element={<Suspense fallback={null}><LegalOS /></Suspense>} />
           <Route element={<MarketingLayout />}>
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />
