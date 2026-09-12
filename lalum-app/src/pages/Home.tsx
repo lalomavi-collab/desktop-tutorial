@@ -19,11 +19,10 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
-// Imported so Vite emits a content-hashed filename: swapping the photo always
-// busts any browser or CDN cache instead of serving a stale /founder.webp.
-// WebP, resized to 944px (2x the on-page display width) for a sharp retina
-// portrait at a fraction of the original JPEG weight.
-import founderPhoto from "../assets/founder.webp";
+// The founder's own photo is deliberately not on this page: it lives only on
+// the CV (public/cv.html, public/cv-en.html), which is what this hero card
+// links to. Here the card carries the firm mark instead, so the front door
+// reads as the practice's brand, not a headshot.
 
 export function Home() {
   const { t, lang } = useLang();
@@ -63,9 +62,12 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* Founder portrait, clickable, opens the full CV */}
+          {/* Firm mark, clickable, opens the full CV. The photo stays on the
+              CV itself; this card is the practice's identity, not a face. */}
           <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            <img src={founderPhoto} alt={h.founderName} />
+            <span className="founder-hero-mark">
+              <Wordmark height={40} label={h.logoAlt} />
+            </span>
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>

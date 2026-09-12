@@ -2154,15 +2154,21 @@ a.caps-item:focus-visible .caps-go {
   border: 1px solid var(--line);
   box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
 }
-.founder-hero img {
+.founder-hero-mark {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 50% 12%;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
   transition: transform 0.5s ease;
 }
-.founder-hero:hover img {
+.founder-hero-mark svg {
+  width: 62%;
+  height: auto;
+}
+.founder-hero:hover .founder-hero-mark {
   transform: scale(1.03);
 }
 .founder-hero-cap {
