@@ -278,6 +278,42 @@ export function Header() {
                 <div onClick={() => setMoreOpen(false)} className="header-more-backdrop" />
                 <div role="menu" aria-label={t.ui.quickActions} className="card header-more-menu">
                   <span className="sheet-handle" aria-hidden="true" />
+                  {/* Primary site nav, first: below 900px .nav-pills is hidden
+                      and the bottom tab bar only covers 2 of these 5 (advisory,
+                      training/knowledge live there too) — the rest had no
+                      reachable nav entry point on phones at all. Same `nav` /
+                      `insightsLinks` arrays as the desktop pills, so the two
+                      never drift apart. */}
+                  {nav.map((n) =>
+                    n.hash ? (
+                      <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                        {n.label}
+                      </Link>
+                    ) : (
+                      <NavLink
+                        key={n.to}
+                        to={n.to}
+                        end={n.end}
+                        role="menuitem"
+                        onClick={() => setMoreOpen(false)}
+                        className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                      >
+                        {n.label}
+                      </NavLink>
+                    )
+                  )}
+                  {insightsLinks.map((l) => (
+                    <NavLink
+                      key={l.to}
+                      to={l.to}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                    >
+                      {l.label}
+                    </NavLink>
+                  ))}
+                  <div className="header-more-divider" role="separator" />
                   <button
                     type="button"
                     role="menuitem"
