@@ -122,13 +122,16 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
-          {/* The urgent-contact button: always visible, first in the row, so
-              it is never lost among the other tools. Opens a small sheet with
-              every fast channel (call, WhatsApp, Telegram) instead of picking
-              one action for the client. */}
+          {/* The urgent-contact button: always visible on desktop, first in
+              the row, so it is never lost among the other tools. Opens a
+              small sheet with every fast channel (call, WhatsApp, Telegram)
+              instead of picking one action for the client. On phones it
+              drops out here (hide-mobile): the bottom tab bar already carries
+              its own always-reachable SOS tab, and showing both crowded the
+              top bar for no benefit — one reachable SOS is enough. */}
           <button
             type="button"
-            className="tb-btn tb-sos"
+            className="tb-btn tb-sos hide-mobile"
             onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
             aria-label={t.ui.sos.aria}
             title={t.ui.sos.aria}
