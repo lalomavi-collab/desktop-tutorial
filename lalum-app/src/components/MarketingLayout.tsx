@@ -17,7 +17,6 @@ import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
 import { SosMenu } from "./SosMenu";
-import { QuickAccessDot } from "./QuickAccessDot";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
 import { hasHebrewOnlyContent, stripLangPrefix } from "../lib/hreflang";
@@ -66,7 +65,6 @@ export function MarketingLayout() {
       <Suspense fallback={null}>
         <VideoBubble />
       </Suspense>
-      <QuickAccessDot />
       <ContactRail />
       <BottomTabBar />
       <AccessibilityMenu />

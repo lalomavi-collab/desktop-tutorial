@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
-import { ShareButton, useShare } from "./ShareButton";
+import { useShare } from "./ShareButton";
 import { DownloadIcon, useInstall } from "./AppInstall";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
@@ -11,14 +11,25 @@ import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../li
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
 import { useScrollLock } from "../lib/useScrollLock";
+import lalumMark from "../assets/lalum-mark.svg";
 
 export function Header() {
   const { user } = useAuth();
   const { t, lang, setLang } = useLang();
-  const [langOpen, setLangOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [insightsOpen, setInsightsOpen] = useState(false);
-  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+  // The full menu renders as a bottom sheet only below 900px; above it, it is a
+  // small anchored dropdown. Scroll-lock the page behind the sheet, but not
+  // behind the desktop dropdown (which closes on any outside click) so the page
+  // does not freeze under a small card.
+  const [isSheet, setIsSheet] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const update = () => setIsSheet(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
   const { share, copied: shareCopied } = useShare();
   // One-tap desktop install (Chrome/Edge). canPrompt is false everywhere the
   // browser has no native prompt (Safari, Firefox), so this stays invisible
@@ -31,17 +42,16 @@ export function Header() {
   // phone, and locking the page behind it keeps the body from scrolling out
   // from under a surface that is meant to feel anchored to the screen edge.
   useEffect(() => {
-    if (!moreOpen && !langOpen && !insightsOpen) return;
+    if (!moreOpen && !insightsOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setMoreOpen(false);
-      setLangOpen(false);
       setInsightsOpen(false);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [moreOpen, langOpen, insightsOpen]);
-  useScrollLock(moreOpen);
+  }, [moreOpen, insightsOpen]);
+  useScrollLock(moreOpen && isSheet);
 
   // The two areas the practice leads with, first and named as domains: AI &
   // Law, then Real Estate. Clinic is the existing advisory hub under a name
@@ -154,124 +164,23 @@ export function Header() {
               ₪
             </Link>
           )}
-          {/* The full icon row. It only has room next to the wordmark from
-              here up: below 900px (the width where the nav already moves into
-              the bottom tab bar) it hides in favour of the single "more"
-              button below, so the two never show at once and the row never
-              has to shrink icons down to squeeze six of them past the logo. */}
-          <div className="header-util-group">
-            <button
-              type="button"
-              className="tb-btn hdr-secondary"
-              onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
-              aria-label={t.ui.guide.open}
-              title={t.ui.guide.open}
-            >
-              <Icon name="compass" size={18} />
-            </button>
-            <a
-              className="tb-btn tb-bot"
-              href={`tel:${officePhone.tel}`}
-              aria-label={t.ui.botCall.aria}
-              title={t.ui.botCall.aria}
-            >
-              <Icon name="headset" size={19} />
-            </a>
-            <a
-              className="tb-btn"
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t.ui.whatsapp.aria}
-              title={t.ui.whatsapp.aria}
-            >
-              <Icon name="whatsapp" size={19} />
-            </a>
-            <a
-              className="tb-btn tb-tg"
-              href={telegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t.ui.telegram.aria}
-              title={t.ui.telegram.aria}
-            >
-              <Icon name="telegram" size={18} />
-            </a>
-            <ShareButton />
-            {/* One-tap install: only rendered where the browser can actually
-                offer it (a real beforeinstallprompt fired), so it never sits
-                here inert on Safari/Firefox as a seventh dead icon. */}
-            {canInstall && !appInstalled && (
-              <button
-                type="button"
-                className="tb-btn"
-                onClick={() => void promptInstall()}
-                aria-label={t.ui.footer.installApp}
-                title={t.ui.footer.installApp}
-              >
-                <DownloadIcon size={17} />
-              </button>
-            )}
-            <div className="tb-lang-wrap" style={{ position: "relative" }}>
-              <button
-                type="button"
-                onClick={() => setLangOpen((v) => !v)}
-                className="tb-btn tb-lang"
-                aria-label="Switch language"
-                aria-haspopup="listbox"
-                aria-expanded={langOpen}
-                title={current.autonym}
-              >
-                {current.code.toUpperCase()}
-              </button>
-              {langOpen && (
-                <>
-                  {/* Backdrop closes the menu on outside click without a global listener. */}
-                  <div onClick={() => setLangOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                  <ul
-                    role="listbox"
-                    className="card"
-                    style={{ position: "absolute", insetInlineEnd: 0, top: "calc(100% + 8px)", zIndex: 41, listStyle: "none", margin: 0, padding: 6, minWidth: 140, display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    {LANGS.map((l) => (
-                      <li key={l.code}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={l.code === lang}
-                          onClick={() => { setLang(l.code); setLangOpen(false); }}
-                          dir={l.dir}
-                          style={{
-                            width: "100%", textAlign: l.dir === "rtl" ? "right" : "left", padding: "9px 12px", borderRadius: 8, border: "none",
-                            background: l.code === lang ? "var(--clay-tint)" : "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 14.5,
-                            fontWeight: l.code === lang ? 700 : 500,
-                          }}
-                        >
-                          {l.autonym}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Phones: the six controls above collapse into one button, so the
-              header never has more than the logo, this button and (when it
-              applies) the one-tap payment icon next to it. The sheet gives
-              each action a label, which a bare row of round icons never had
-              room for anyway. */}
+          {/* One entry to everything, on every width: the LALUM mark opens a
+              single menu carrying the full site nav, the reading menu, every
+              contact and utility action, and the language switch. It replaces
+              the old right-side icon row and the separate language dropdown,
+              and the floating quick-access dot that used to sit in the corner,
+              so there is one place to look instead of three. Each action gets a
+              label the bare round icons never had room for. */}
           <div className="header-more-wrap">
             <button
               type="button"
-              className="tb-btn header-more-btn"
+              className="tb-btn header-more-btn header-lalum-btn"
               onClick={() => setMoreOpen((v) => !v)}
               aria-label={t.ui.quickActions}
               aria-haspopup="menu"
               aria-expanded={moreOpen}
             >
-              <Icon name="menu" size={19} />
+              <img src={lalumMark} alt="" aria-hidden="true" className="header-lalum-mark" />
             </button>
             {moreOpen && (
               <>
@@ -351,6 +260,17 @@ export function Header() {
                       <DownloadIcon size={18} /> {t.ui.footer.installApp}
                     </button>
                   )}
+                  {/* Client login/portal: visible on desktop as its own pill,
+                      but the mobile header never carried it — now every width
+                      reaches it from the one menu. */}
+                  <Link
+                    to={user ? "/portal" : "/login"}
+                    role="menuitem"
+                    className="header-more-item"
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
+                  </Link>
                   <div className="header-more-divider" role="separator" />
                   <div className="header-more-langs">
                     {LANGS.map((l) => (
