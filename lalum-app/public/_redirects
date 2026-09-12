@@ -242,17 +242,31 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # matched before the prefixed-path-falls-to-404 behavior described below, and
 # they never touch the seven real translated pages (advisory, ai-legal-advisory,
 # real-estate-legal-advisory, knowledge, book, legal, home).
+# A single article segment (the shape Google actually holds, with no trailing
+# slash) redirects straight to the trailing-slash canonical in one hop, via a
+# :slug placeholder. The `*` rule stays below it as the fallback for a bare
+# directory or a path already ending in a slash, where it lands on the
+# canonical in one hop as well; the placeholder just spares the common article
+# path the extra trailing-slash hop it used to take.
+/en/insights/:slug  /insights/:slug/  301
 /en/insights/*  /insights/:splat  301
+/es/insights/:slug  /insights/:slug/  301
 /es/insights/*  /insights/:splat  301
+/fr/insights/:slug  /insights/:slug/  301
 /fr/insights/*  /insights/:splat  301
+/ar/insights/:slug  /insights/:slug/  301
 /ar/insights/*  /insights/:splat  301
 /en/insights  /insights/  301
 /es/insights  /insights/  301
 /fr/insights  /insights/  301
 /ar/insights  /insights/  301
+/en/rulings/:slug  /rulings/:slug/  301
 /en/rulings/*  /rulings/:splat  301
+/es/rulings/:slug  /rulings/:slug/  301
 /es/rulings/*  /rulings/:splat  301
+/fr/rulings/:slug  /rulings/:slug/  301
 /fr/rulings/*  /rulings/:splat  301
+/ar/rulings/:slug  /rulings/:slug/  301
 /ar/rulings/*  /rulings/:splat  301
 /en/rulings  /rulings/  301
 /es/rulings  /rulings/  301
