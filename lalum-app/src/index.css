@@ -3914,28 +3914,34 @@ html.a11y-reduce-motion *::after {
   }
 }
 
-/* ---------- header "more" menu (phones) ---------- */
-/* The desktop row: guide, call, WhatsApp, Telegram, share, language. Visible
-   down to 900px, the width where the primary nav already leaves the header
-   for the bottom tab bar; below it the row would otherwise have to keep
-   shrinking icons to avoid riding over the wordmark, which is the crowding
-   this menu replaces. */
-.header-util-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ---------- header menu (all widths) ---------- */
+/* One trigger for everything, on every width: the LALUM mark. The old
+   right-side icon row and separate language dropdown are gone, folded into
+   the menu this button opens, so the header carries the wordmark, the primary
+   nav pills, this mark, and the login pill, and nothing has to shrink to fit. */
 .header-more-wrap {
-  display: none;
+  display: inline-flex;
   position: relative;
 }
-@media (max-width: 900px) {
-  .header-util-group {
-    display: none;
-  }
-  .header-more-wrap {
-    display: inline-flex;
-  }
+/* The trigger is the LALUM mark itself: a solid-black square (with the
+   wordmark in white) cropped into the round control, so it reads as the black
+   LALUM circle it replaced in the corner. The image fills the button, so the
+   neutral .tb-btn fill never shows; only the ring and hover accent remain. */
+.header-lalum-btn {
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  border-color: var(--clay-soft);
+}
+.header-lalum-btn:hover {
+  background: #000;
+  color: var(--ink);
+}
+.header-lalum-mark {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .header-more-menu {
   position: absolute;
