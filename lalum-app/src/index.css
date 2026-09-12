@@ -4016,6 +4016,16 @@ html.a11y-reduce-motion *::after {
   flex: none;
   color: var(--clay);
 }
+/* The app entry gets a faint accent so it reads as the one destination that
+   leaves the marketing site for the assistant application. */
+.header-more-os {
+  font-weight: 700;
+  background: var(--clay-tint);
+}
+.header-more-os:hover,
+.header-more-os:focus-visible {
+  background: var(--clay-soft);
+}
 .header-more-divider {
   height: 1px;
   background: var(--line);

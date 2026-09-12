@@ -44,6 +44,10 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // LALUM OS: the standalone assistant app. Prerendered only so a direct hit
+  // resolves to a real document, noindex because it is an application surface,
+  // not a marketing page (the same treatment login and portal get).
+  { path: "os", title: "LALUM LEGAL OS", desc: "עוזר ה-AI של LALUM: הנדסת משפט וארכיטקטורת סיכונים.", noindex: true },
   // One prerendered page per sector rubric under the AI pillar. These are the
   // pages outreach points a body at instead of a PDF, so they have to resolve
   // to a real document with their own title and description, not to the SPA

@@ -134,6 +134,12 @@ export function Header() {
                 onMouseLeave={scheduleAutoClose}
               >
                 <span className="sheet-handle" aria-hidden="true" />
+                {/* Entry into the standalone assistant app, so the site and the
+                    app reach each other. The label is the product name, one form
+                    in every language, so it needs no translation string. */}
+                <Link to="/os" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
+                  <Icon name="spark" size={18} /> LALUM OS
+                </Link>
                 {nav.map((n) =>
                   n.hash ? (
                     <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
