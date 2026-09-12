@@ -137,7 +137,10 @@ export function Header() {
           </button>
           {/* On phones payment lives in the header (which has room there); on
               desktop it lives in the floating ContactRail, so the two never
-              show at once. */}
+              show at once. A bare card icon reads as decoration on a
+              touch screen with no hover to reveal the title, so — like the
+              SOS button beside it — this one carries its own short visible
+              label instead of relying on an icon alone. */}
           {paymentsEnabled && (
             <Link
               to={user ? "/portal" : "/login"}
@@ -145,7 +148,7 @@ export function Header() {
               aria-label={t.ui.bookPage.quickPayTitle}
               title={t.ui.bookPage.quickPayTitle}
             >
-              <Icon name="card" size={18} />
+              ₪
             </Link>
           )}
           {/* The full icon row. It only has room next to the wordmark from
