@@ -11,7 +11,6 @@ import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../li
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
 import { useScrollLock } from "../lib/useScrollLock";
-import lalumMark from "../assets/lalum-mark.svg";
 
 export function Header() {
   const { user } = useAuth();
@@ -47,7 +46,9 @@ export function Header() {
   const scheduleAutoClose = () => {
     if (isSheet) return;
     cancelAutoClose();
-    closeTimer.current = window.setTimeout(() => setMoreOpen(false), 320);
+    // A generous grace period so the menu does not vanish the instant the
+    // pointer drifts off it; long enough to glance away and come back.
+    closeTimer.current = window.setTimeout(() => setMoreOpen(false), 900);
   };
   useEffect(() => () => cancelAutoClose(), []);
   const { share, copied: shareCopied } = useShare();
@@ -102,6 +103,132 @@ export function Header() {
         <Link to="/" className="brand">
           <Wordmark height={19} />
         </Link>
+
+        {/* The one menu, right beside the wordmark: a labelled control that
+            opens a single panel with the full site nav, the reading menu,
+            every contact and utility action, and the language switch. It shows
+            on every width (the nav pills hide on phones, this does not), so
+            there is one obvious place that reaches everything, and it closes on
+            its own once the pointer leaves it (see scheduleAutoClose). */}
+        <div className="header-more-wrap">
+          <button
+            type="button"
+            className="header-menu-btn"
+            onClick={() => setMoreOpen((v) => !v)}
+            onMouseEnter={cancelAutoClose}
+            onMouseLeave={scheduleAutoClose}
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
+          >
+            <Icon name="menu" size={17} />
+            <span>{t.ui.nav.menu}</span>
+          </button>
+          {moreOpen && (
+            <>
+              <div onClick={() => setMoreOpen(false)} className="header-more-backdrop" />
+              <div
+                role="menu"
+                aria-label={t.ui.nav.menu}
+                className="card header-more-menu"
+                onMouseEnter={cancelAutoClose}
+                onMouseLeave={scheduleAutoClose}
+              >
+                <span className="sheet-handle" aria-hidden="true" />
+                {nav.map((n) =>
+                  n.hash ? (
+                    <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                      {n.label}
+                    </Link>
+                  ) : (
+                    <NavLink
+                      key={n.to}
+                      to={n.to}
+                      end={n.end}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                    >
+                      {n.label}
+                    </NavLink>
+                  )
+                )}
+                {insightsLinks.map((l) => (
+                  <NavLink
+                    key={l.to}
+                    to={l.to}
+                    role="menuitem"
+                    onClick={() => setMoreOpen(false)}
+                    className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                  >
+                    {l.label}
+                  </NavLink>
+                ))}
+                <div className="header-more-divider" role="separator" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="header-more-item"
+                  onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
+                >
+                  <Icon name="compass" size={18} /> {t.ui.guide.open}
+                </button>
+                <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
+                  <Icon name="headset" size={18} /> {t.ui.botCall.aria}
+                </a>
+                <a
+                  role="menuitem"
+                  className="header-more-item"
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMoreOpen(false)}
+                >
+                  <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
+                </a>
+                <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
+                  <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
+                </a>
+                <button type="button" role="menuitem" className="header-more-item" onClick={share}>
+                  <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
+                </button>
+                {canInstall && !appInstalled && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="header-more-item"
+                    onClick={() => { void promptInstall(); setMoreOpen(false); }}
+                  >
+                    <DownloadIcon size={18} /> {t.ui.footer.installApp}
+                  </button>
+                )}
+                <Link
+                  to={user ? "/portal" : "/login"}
+                  role="menuitem"
+                  className="header-more-item"
+                  onClick={() => setMoreOpen(false)}
+                >
+                  <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
+                </Link>
+                <div className="header-more-divider" role="separator" />
+                <div className="header-more-langs">
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={l.code === lang}
+                      onClick={() => { setLang(l.code); setMoreOpen(false); }}
+                      dir={l.dir}
+                      className={"header-more-lang" + (l.code === lang ? " active" : "")}
+                    >
+                      {l.autonym}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         <nav className="nav-pills">
           {nav.map((n) =>
@@ -184,141 +311,6 @@ export function Header() {
               ₪
             </Link>
           )}
-          {/* One entry to everything, on every width: the LALUM mark opens a
-              single menu carrying the full site nav, the reading menu, every
-              contact and utility action, and the language switch. It replaces
-              the old right-side icon row and the separate language dropdown,
-              and the floating quick-access dot that used to sit in the corner,
-              so there is one place to look instead of three. Each action gets a
-              label the bare round icons never had room for. */}
-          <div className="header-more-wrap">
-            <button
-              type="button"
-              className="tb-btn header-more-btn header-lalum-btn"
-              onClick={() => setMoreOpen((v) => !v)}
-              onMouseEnter={cancelAutoClose}
-              onMouseLeave={scheduleAutoClose}
-              aria-label={t.ui.quickActions}
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-            >
-              <img src={lalumMark} alt="" aria-hidden="true" className="header-lalum-mark" />
-            </button>
-            {moreOpen && (
-              <>
-                <div onClick={() => setMoreOpen(false)} className="header-more-backdrop" />
-                <div
-                  role="menu"
-                  aria-label={t.ui.quickActions}
-                  className="card header-more-menu"
-                  onMouseEnter={cancelAutoClose}
-                  onMouseLeave={scheduleAutoClose}
-                >
-                  <span className="sheet-handle" aria-hidden="true" />
-                  {/* Primary site nav, first: below 900px .nav-pills is hidden
-                      and the bottom tab bar only covers 2 of these 5 (advisory,
-                      training/knowledge live there too) — the rest had no
-                      reachable nav entry point on phones at all. Same `nav` /
-                      `insightsLinks` arrays as the desktop pills, so the two
-                      never drift apart. */}
-                  {nav.map((n) =>
-                    n.hash ? (
-                      <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
-                        {n.label}
-                      </Link>
-                    ) : (
-                      <NavLink
-                        key={n.to}
-                        to={n.to}
-                        end={n.end}
-                        role="menuitem"
-                        onClick={() => setMoreOpen(false)}
-                        className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
-                      >
-                        {n.label}
-                      </NavLink>
-                    )
-                  )}
-                  {insightsLinks.map((l) => (
-                    <NavLink
-                      key={l.to}
-                      to={l.to}
-                      role="menuitem"
-                      onClick={() => setMoreOpen(false)}
-                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
-                    >
-                      {l.label}
-                    </NavLink>
-                  ))}
-                  <div className="header-more-divider" role="separator" />
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="header-more-item"
-                    onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
-                  >
-                    <Icon name="compass" size={18} /> {t.ui.guide.open}
-                  </button>
-                  <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
-                    <Icon name="headset" size={18} /> {t.ui.botCall.aria}
-                  </a>
-                  <a
-                    role="menuitem"
-                    className="header-more-item"
-                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
-                  </a>
-                  <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
-                    <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
-                  </a>
-                  <button type="button" role="menuitem" className="header-more-item" onClick={share}>
-                    <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
-                  </button>
-                  {canInstall && !appInstalled && (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className="header-more-item"
-                      onClick={() => { void promptInstall(); setMoreOpen(false); }}
-                    >
-                      <DownloadIcon size={18} /> {t.ui.footer.installApp}
-                    </button>
-                  )}
-                  {/* Client login/portal: visible on desktop as its own pill,
-                      but the mobile header never carried it — now every width
-                      reaches it from the one menu. */}
-                  <Link
-                    to={user ? "/portal" : "/login"}
-                    role="menuitem"
-                    className="header-more-item"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
-                  </Link>
-                  <div className="header-more-divider" role="separator" />
-                  <div className="header-more-langs">
-                    {LANGS.map((l) => (
-                      <button
-                        key={l.code}
-                        type="button"
-                        role="menuitemradio"
-                        aria-checked={l.code === lang}
-                        onClick={() => { setLang(l.code); setMoreOpen(false); }}
-                        dir={l.dir}
-                        className={"header-more-lang" + (l.code === lang ? " active" : "")}
-                      >
-                        {l.autonym}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
           {/* A dedicated "Start" pill was tried here and dropped: the toolbar
               already carries six round controls plus the client login link,
               and one more rigid, non-shrinking pill pushed the nav-pills row
