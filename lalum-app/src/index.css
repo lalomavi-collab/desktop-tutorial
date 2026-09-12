@@ -3848,11 +3848,15 @@ html.a11y-reduce-motion *::after {
   color: var(--paper);
 }
 /* Quick payment carries the brand burgundy so it stands apart from the clay
-   contact button and reads as the pay action, one tap from the top bar. */
+   contact button and reads as the pay action, one tap from the top bar. It
+   shows the shekel sign rather than a bare card icon — like .tb-sos below,
+   a short visible glyph reads correctly with no hover to fall back on. */
 .tb-btn.tb-pay {
   background: #800020;
   border-color: #800020;
   color: var(--paper);
+  font-size: 17px;
+  font-weight: 700;
 }
 .tb-btn.tb-pay:hover {
   filter: brightness(1.1);

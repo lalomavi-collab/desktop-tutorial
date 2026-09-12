@@ -1,7 +1,6 @@
 import { Link } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
-import { Icon } from "./Icon";
 import { paymentsEnabled } from "../lib/content";
 
 // A small floating side rail for promoted, recently added actions, so the top
@@ -22,7 +21,7 @@ export function ContactRail() {
         aria-label={t.ui.bookPage.quickPayTitle}
         title={t.ui.bookPage.quickPayTitle}
       >
-        <Icon name="card" size={20} />
+        ₪
       </Link>
     </aside>
   );
