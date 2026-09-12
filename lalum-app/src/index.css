@@ -3923,29 +3923,55 @@ html.a11y-reduce-motion *::after {
   display: inline-flex;
   position: relative;
 }
-/* The trigger is the LALUM mark itself: a solid-black square (with the
-   wordmark in white) cropped into the round control, so it reads as the black
-   LALUM circle it replaced in the corner. The image fills the button, so the
-   neutral .tb-btn fill never shows; only the ring and hover accent remain. */
-.header-lalum-btn {
-  padding: 0;
-  overflow: hidden;
-  background: #000;
-  border-color: var(--clay-soft);
-}
-.header-lalum-btn:hover {
-  background: #000;
+/* The trigger is a labelled control, not a bare glyph: a menu icon and the
+   word "Menu" in a pill beside the wordmark, so it plainly reads as the way to
+   open the menu rather than as a second logo. It carries the clay accent on
+   hover like the primary quick-contact actions. */
+.header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  /* Above the menu's own full-screen click-catcher backdrop (z-index 40), so
+     opening the menu never paints the backdrop over the button and fires a
+     false mouseleave that would auto-close it while the pointer still rests on
+     the trigger. */
+  position: relative;
+  z-index: 42;
+  height: var(--ctrl-h);
+  padding: 0 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
   color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.header-lalum-mark {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.header-menu-btn svg {
+  flex: none;
+  color: var(--clay);
+  transition: color 0.15s ease;
+}
+.header-menu-btn:hover {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: var(--paper);
+  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+}
+.header-menu-btn:hover svg {
+  color: var(--paper);
+}
+.header-menu-btn[aria-expanded="true"] {
+  background: var(--clay-tint);
+  border-color: var(--clay-soft);
 }
 .header-more-menu {
   position: absolute;
-  inset-inline-end: 0;
+  /* Anchored to the logo side now that the trigger sits beside the wordmark. */
+  inset-inline-start: 0;
   top: calc(100% + 8px);
   z-index: 41;
   padding: 8px;
