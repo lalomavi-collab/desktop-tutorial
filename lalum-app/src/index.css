@@ -1564,6 +1564,12 @@ a.caps-item:focus-visible .caps-go {
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
+/* While the menu is open the header lifts above every floating surface (chat
+   dock, accessibility dock, cookie banner, bottom tab bar), so the full-screen
+   mobile panel inside it covers them instead of letting them poke through. */
+.site-header.nav-open {
+  z-index: 400;
+}
 .header-inner {
   display: flex;
   align-items: center;
@@ -4965,6 +4971,65 @@ html.a11y-reduce-motion *::after {
     margin: 2px auto 8px;
     border-radius: 999px;
     background: var(--line);
+  }
+}
+/* The header's own menu is the exception to the partial bottom sheet above: on
+   phones it is a FULL-SCREEN panel. A partial sheet leaves the floating chat
+   and accessibility buttons and the bottom tab bar (all above z-index 200)
+   poking through its lower edge; a full overlay above them (z-index 300) reads
+   as one focused surface. Its header row (wordmark + close) replaces the drag
+   handle, and the rows get phone-sized tap targets. */
+.header-more-head {
+  display: none;
+}
+@media (max-width: 900px) {
+  .header-more-backdrop {
+    z-index: 298;
+  }
+  .header-more-menu {
+    inset: 0;
+    top: 0;
+    bottom: 0;
+    inset-inline: 0;
+    width: auto;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    z-index: 300;
+    padding: 8px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+    box-shadow: none;
+    background: var(--card);
+  }
+  .header-more-menu .sheet-handle {
+    display: none;
+  }
+  .header-more-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 2px 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .header-more-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+  .header-more-close:hover {
+    background: var(--clay-tint);
+  }
+  .header-more-menu .header-more-item {
+    padding: 13px 12px;
+    font-size: 15.5px;
   }
 }
 @keyframes sheet-backdrop-in {
