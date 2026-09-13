@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
@@ -29,28 +29,10 @@ export function Header() {
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-  // Desktop only: once the pointer leaves the mark and its menu, the menu
-  // closes on its own after a short grace period, so a visitor never has to
-  // click elsewhere to dismiss it. The delay is long enough to cross the small
-  // gap between the button and the menu without it closing underneath the
-  // pointer; entering either one cancels a pending close. On the mobile bottom
-  // sheet this does nothing (pointer events do not fire): that sheet closes by
-  // tapping its backdrop or a row.
-  const closeTimer = useRef<number | undefined>(undefined);
-  const cancelAutoClose = () => {
-    if (closeTimer.current !== undefined) {
-      window.clearTimeout(closeTimer.current);
-      closeTimer.current = undefined;
-    }
-  };
-  const scheduleAutoClose = () => {
-    if (isSheet) return;
-    cancelAutoClose();
-    // A generous grace period so the menu does not vanish the instant the
-    // pointer drifts off it; long enough to glance away and come back.
-    closeTimer.current = window.setTimeout(() => setMoreOpen(false), 900);
-  };
-  useEffect(() => () => cancelAutoClose(), []);
+  // The menu behaves like a standard application menu (the pattern Claude's own
+  // interface uses): a click opens it, and it stays open until the visitor
+  // picks a row, clicks outside it (the backdrop), or presses Escape. It never
+  // closes on its own from the pointer drifting off, which read as unpredictable.
   const { share, copied: shareCopied } = useShare();
   // One-tap desktop install (Chrome/Edge). canPrompt is false everywhere the
   // browser has no native prompt (Safari, Firefox), so this stays invisible
@@ -115,8 +97,6 @@ export function Header() {
             type="button"
             className="header-menu-btn"
             onClick={() => setMoreOpen((v) => !v)}
-            onMouseEnter={cancelAutoClose}
-            onMouseLeave={scheduleAutoClose}
             aria-haspopup="menu"
             aria-expanded={moreOpen}
           >
@@ -130,8 +110,6 @@ export function Header() {
                 role="menu"
                 aria-label={t.ui.nav.menu}
                 className="card header-more-menu"
-                onMouseEnter={cancelAutoClose}
-                onMouseLeave={scheduleAutoClose}
               >
                 <span className="sheet-handle" aria-hidden="true" />
                 {/* Entry into the standalone assistant app, so the site and the
