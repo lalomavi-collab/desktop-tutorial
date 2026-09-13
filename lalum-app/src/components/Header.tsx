@@ -80,7 +80,7 @@ export function Header() {
   ];
 
   return (
-    <header className="site-header">
+    <header className={"site-header" + (moreOpen ? " nav-open" : "")}>
       <div className="wrap header-inner">
         <Link to="/" className="brand">
           <Wordmark height={19} />
@@ -111,7 +111,18 @@ export function Header() {
                 aria-label={t.ui.nav.menu}
                 className="card header-more-menu"
               >
-                <span className="sheet-handle" aria-hidden="true" />
+                {/* A header for the panel: on phones the menu is a full-screen
+                    overlay (it must cover the floating chat and accessibility
+                    buttons and the bottom tab bar, which sit above a partial
+                    sheet), so it needs the wordmark and an explicit close. On
+                    desktop this row is hidden and the anchored dropdown stands
+                    on its own. */}
+                <div className="header-more-head">
+                  <Wordmark height={17} />
+                  <button type="button" className="header-more-close" onClick={() => setMoreOpen(false)} aria-label={t.ui.quickAccess.close}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                  </button>
+                </div>
                 {/* Entry into the standalone assistant app, so the site and the
                     app reach each other. The label is the product name, one form
                     in every language, so it needs no translation string. */}
