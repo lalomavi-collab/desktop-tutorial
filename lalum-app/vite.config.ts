@@ -199,16 +199,43 @@ const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/bo
 // The two areas the practice leads with come first, matching the rendered
 // navigation. A crawler that does not run JavaScript reads this list on every
 // document, so the order is the site saying what it is about.
-const SITE_NAV = `<p><a href="/real-estate-legal-advisory/">ייעוץ נדל״ן והתחדשות עירונית</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/advisory/">ייעוץ משפטי</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
+//
+// Built from each language's own footerLinks/footer strings (already
+// validated across all 5 locales) rather than a second hardcoded copy, so
+// this list can never drift out of sync with the real, rendered footer nav.
+// "Readiness assessment" (/risk) has no existing short nav label elsewhere,
+// so it is the one label defined here directly, per language.
+const RISK_NAV_LABEL: Record<Lang, string> = {
+  he: "מבדק מוכנות",
+  en: "Readiness assessment",
+  es: "Autoevaluación de preparación",
+  fr: "Auto-évaluation de préparation",
+  ar: "تقييم الجاهزية",
+};
+function siteNavFor(lang: Lang): string {
+  const dict = strings[lang];
+  const L = dict.ui.footerLinks;
+  const items: [string, string][] = [
+    ["/real-estate-legal-advisory/", L.advisoryRe],
+    ["/ai-legal-advisory/", L.advisoryAi],
+    ["/advisory/", L.advisory],
+    ["/mediation-dispute-resolution/", L.advisoryMediation],
+    ["/insights/", L.insights],
+    ["/faq/", L.qa],
+    ["/risk/", RISK_NAV_LABEL[lang]],
+    ["/book/", dict.ui.footer.book],
+  ];
+  return `<p>${items.map(([href, text]) => `<a href="${href}">${esc(text)}</a>`).join(" · ")}</p>`;
+}
 
-function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
+function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: Lang = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
   const body = `
       <!-- Static content for crawlers and AI engines that do not run
            JavaScript. React replaces this the moment the app mounts. -->
       <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="${dir}" lang="${lang}">
 ${inner}
-        ${SITE_NAV}
+        ${siteNavFor(lang)}
       </div>`;
   return sub(html, FALLBACK_RE, (_m, open, _old, close) => `${open}${body}${close}`);
 }
