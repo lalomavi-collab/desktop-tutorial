@@ -50,6 +50,23 @@ export function Footer() {
 
   return (
     <footer className="site-footer">
+      {/* Founder band: a real photo and a first-person line, so the firm
+          behind the app has a face before the link columns start. */}
+      <div className="wrap footer-founder">
+        <img src="/founder.webp" alt={f.founderPhotoAlt} className="footer-founder-photo" loading="lazy" width={112} height={112} />
+        <div className="footer-founder-body">
+          <div className="footer-founder-name">{f.founderName}</div>
+          <p className="footer-founder-bio">{f.founderBio}</p>
+          <div className="footer-founder-actions">
+            <Link to="/book" className="btn btn-clay btn-sm">{f.book}</Link>
+            <a href={`mailto:${contactEmail}`} className="btn btn-ink btn-sm">{f.founderCtaEmail}</a>
+            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-linkedin btn-sm">
+              <LinkedInIcon /> {f.founderCtaLinkedin}
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Download band: QR on desktop, one-tap install on phones. */}
       <AppInstall />
 

@@ -19,10 +19,11 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
-// The founder's own photo is deliberately not on this page: it lives only on
-// the CV (public/cv.html, public/cv-en.html), which is what this hero card
-// links to. Here the card carries the firm mark instead, so the front door
-// reads as the practice's brand, not a headshot.
+// The founder's own photo is deliberately not in this hero: it lives on the
+// CV (public/cv.html, public/cv-en.html) and, since the footer's founder
+// band, in the site footer on every page. Here the card carries the firm
+// mark instead, so the front door reads as the practice's brand, not a
+// headshot.
 
 export function Home() {
   const { t, lang } = useLang();
@@ -62,8 +63,9 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* Firm mark, clickable, opens the full CV. The photo stays on the
-              CV itself; this card is the practice's identity, not a face. */}
+          {/* Firm mark, clickable, opens the full CV. No photo in this card
+              specifically (see the file-level note above) — this hero is
+              the practice's identity, not a face. */}
           <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
             <span className="founder-hero-mark">
               <Wordmark height={40} label={h.logoAlt} />
