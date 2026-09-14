@@ -15,6 +15,7 @@ import { useLang } from "../context/LangContext";
 export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
   const { t } = useLang();
   const h = t.home;
+  const nav = t.ui.nav;
 
   return (
     <section className="wrap section section-line">
@@ -31,7 +32,11 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
       <div className="grid grid-2">
         <Link to="/ai-legal-advisory" className="card" aria-label={h.advisoryAiTitle}>
           <span className="icon-badge"><Icon name="brain" size={23} /></span>
-          <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
+          {/* Same small eyebrow tag every other practice-area block on the site
+              carries above its heading (M&A spotlight, mediation section) —
+              these two cards were the only ones missing it. */}
+          <p className="eyebrow" style={{ margin: "18px 0 0" }}>{nav.ai}</p>
+          <h3 className="h3" style={{ fontSize: 22, margin: "6px 0 10px", lineHeight: 1.25 }}>{h.advisoryAiTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryAiBody}</p>
           {/* The capabilities under this domain, named rather than left to the
               body paragraph to imply: governance, regulation, risk and legal
@@ -42,7 +47,8 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
         </Link>
         <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
           <span className="icon-badge"><Icon name="scale" size={23} /></span>
-          <h3 className="h3" style={{ fontSize: 22, margin: "18px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
+          <p className="eyebrow" style={{ margin: "18px 0 0" }}>{nav.realEstate}</p>
+          <h3 className="h3" style={{ fontSize: 22, margin: "6px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
           <p className="pillar-tagline">{h.advisoryReTags}</p>
           <span className="card-go">{h.advisoryMore} &rarr;</span>
