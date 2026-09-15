@@ -605,22 +605,31 @@ export function LegalOS() {
   );
 }
 
+// This page's own dark, full-screen chat shell is unchanged: only its accent
+// colour is. It used to run a gold accent (#d9a441) unrelated to both the
+// site's clay and /portal's green, plus 3 spots (.los-zero-mark, .los-send)
+// that leaked the marketing clay in on top of that. Both are now the one
+// sage green /portal uses for its own primary button (#5a7a5d / #4c6850
+// hover), so the two signed-in app surfaces read as one product colour.
+// #8fc090 is that same green lightened for foreground text/borders sitting
+// directly on this near-black shell (~9:1 contrast, matching what the gold
+// it replaces had) rather than /portal's on-white --clay-bright.
 const LOS_CSS = `
 .los-shell{position:fixed;inset:0;display:flex;background:#141210;color:#f3ece0;font-family:var(--sans);z-index:1;overflow:hidden}
 .los-side{width:270px;flex:none;display:flex;flex-direction:column;gap:6px;padding:16px 14px;background:#0f0d0b;border-inline-end:1px solid rgba(255,255,255,.07);overflow-y:auto}
 .los-brand{display:inline-flex;color:#f3ece0;padding:6px 6px 12px}
-.los-new{display:block;width:100%;text-align:start;padding:11px 14px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(212,175,55,.4);background:transparent;color:#f3ece0;font:inherit;font-weight:700;cursor:pointer}
-.los-new:hover{background:rgba(212,175,55,.12)}
+.los-new{display:block;width:100%;text-align:start;padding:11px 14px;margin-bottom:8px;border-radius:12px;border:1px solid rgba(143,192,144,.4);background:transparent;color:#f3ece0;font:inherit;font-weight:700;cursor:pointer}
+.los-new:hover{background:rgba(143,192,144,.12)}
 .los-group-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a8072;margin:14px 6px 4px}
 .los-eng{display:block;width:100%;text-align:start;padding:9px 12px;border-radius:11px;border:1px solid transparent;background:transparent;color:#f3ece0;font:inherit;cursor:pointer}
 .los-eng:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
-.los-eng-cmd{display:inline-block;font-weight:700;color:#d9a441;font-size:13px;margin-inline-end:8px}
+.los-eng-cmd{display:inline-block;font-weight:700;color:#8fc090;font-size:13px;margin-inline-end:8px}
 .los-eng-label{font-weight:600;font-size:13.5px}
 .los-eng-desc{display:block;color:#9a9081;font-size:11.5px;margin-top:2px;line-height:1.4}
 .los-empty{color:#8a8072;font-size:12.5px;padding:2px 8px 4px;margin:0}
 .los-chatrow{display:flex;align-items:center;border-radius:10px}
 .los-chatrow:hover{background:rgba(255,255,255,.05)}
-.los-chatrow.active{background:rgba(212,175,55,.12)}
+.los-chatrow.active{background:rgba(143,192,144,.12)}
 .los-chatopen{flex:1;min-width:0;text-align:start;padding:8px 12px;border:none;background:transparent;color:#cfc6b8;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .los-chatrow.active .los-chatopen{color:#f3ece0}
 .los-chatdel{flex:none;width:28px;height:28px;margin-inline-end:4px;border:none;background:transparent;color:#8a8072;font-size:18px;line-height:1;cursor:pointer;border-radius:7px}
@@ -630,7 +639,7 @@ const LOS_CSS = `
 .los-side-foot{margin-top:auto;padding-top:12px}
 .los-langs{display:flex;flex-wrap:wrap;gap:6px;padding:6px}
 .los-lang{padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#cfc6b8;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
-.los-lang.active{background:rgba(212,175,55,.16);border-color:rgba(212,175,55,.5);color:#f3ece0}
+.los-lang.active{background:rgba(143,192,144,.16);border-color:rgba(143,192,144,.5);color:#f3ece0}
 .los-back{display:block;padding:9px 12px;margin-top:6px;color:#9a9081;text-decoration:none;font-size:13px}
 .los-back:hover{color:#f3ece0}
 .los-main{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -638,19 +647,19 @@ const LOS_CSS = `
 .los-burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#f3ece0;cursor:pointer;align-items:center;justify-content:center}
 .los-topbar-title{font-weight:700;letter-spacing:.04em;font-size:14px}
 .los-tts{width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#9a9081;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-.los-tts.on{color:#d9a441;border-color:rgba(212,175,55,.5);background:rgba(212,175,55,.12)}
+.los-tts.on{color:#8fc090;border-color:rgba(143,192,144,.5);background:rgba(143,192,144,.12)}
 .los-status{margin-inline-start:auto;color:#7fd598;font-size:12px}
 .los-body{flex:1;overflow-y:auto;padding:24px 18px}
 .los-zero{max-width:640px;margin:6vh auto 0;text-align:center;padding:0 12px}
-.los-zero-mark{color:#c15f3c;font-size:34px;line-height:1}
+.los-zero-mark{color:#8fc090;font-size:34px;line-height:1}
 .los-zero-title{font-family:var(--serif);font-size:clamp(30px,6vw,46px);margin:14px 0 2px;letter-spacing:.02em}
-.los-zero-kicker{font-size:12px;letter-spacing:.28em;color:#d9a441}
+.los-zero-kicker{font-size:12px;letter-spacing:.28em;color:#8fc090}
 .los-zero-sub{color:#b7ad9d;margin:14px 0 22px;font-size:15px}
 .los-zero-prompt{color:#9a9081;font-size:13.5px;margin-bottom:14px}
 .los-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .los-chip{padding:10px 16px;border-radius:9999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#f3ece0;font:inherit;font-size:13.5px;cursor:pointer}
-.los-chip b{color:#d9a441;margin-inline-end:4px}
-.los-chip:hover{border-color:rgba(212,175,55,.5);background:rgba(212,175,55,.1)}
+.los-chip b{color:#8fc090;margin-inline-end:4px}
+.los-chip:hover{border-color:rgba(143,192,144,.5);background:rgba(143,192,144,.1)}
 .los-thread{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .los-msg{display:flex}
 .los-msg.user{justify-content:flex-end}
@@ -660,8 +669,8 @@ const LOS_CSS = `
 .los-msg.assistant .los-bubble{background:#211d19;border:1px solid rgba(255,255,255,.08);color:#eee6d8;border-end-start-radius:5px}
 .los-typing{color:#9a9081}
 .los-composer{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)}
-.los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#d9c9a6;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:10px;padding:6px 12px;width:fit-content}
-.los-attach button{border:none;background:transparent;color:#d9c9a6;font-size:16px;line-height:1;cursor:pointer}
+.los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
+.los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
 .los-input-row{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:6px;background:#1d1a16;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px 10px}
 .los-input{flex:1;resize:none;max-height:160px;background:transparent;border:none;outline:none;color:#f3ece0;font:inherit;font-size:14.5px;line-height:1.5;padding:8px 4px}
 .los-input::placeholder{color:#7d7466}
@@ -669,10 +678,10 @@ const LOS_CSS = `
 .los-tool:hover{background:rgba(255,255,255,.06);color:#f3ece0}
 .los-tool:disabled{opacity:.5;cursor:default}
 .los-tool.rec{color:#e06a4a;background:rgba(224,106,74,.14)}
-.los-send{flex:none;width:40px;height:40px;border-radius:12px;border:none;background:#c15f3c;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.los-send{flex:none;width:40px;height:40px;border-radius:12px;border:none;background:#5a7a5d;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .los-send:disabled{opacity:.4;cursor:default}
-.los-send:not(:disabled):hover{background:#a8482a}
-.los-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#d9a441;animation:los-spin .7s linear infinite}
+.los-send:not(:disabled):hover{background:#4c6850}
+.los-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#8fc090;animation:los-spin .7s linear infinite}
 @keyframes los-spin{to{transform:rotate(360deg)}}
 .los-disclaimer{max-width:760px;margin:8px auto 0;text-align:center;color:#7d7466;font-size:11.5px}
 .los-scrim{display:none}
