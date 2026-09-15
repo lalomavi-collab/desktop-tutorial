@@ -129,6 +129,18 @@ export function Header() {
                 <Link to="/os" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
                   <Icon name="spark" size={18} /> LALUM LEX
                 </Link>
+                {/* Quick payment folded into the menu instead of standing on
+                    its own in the phone header (header-tools' one visible
+                    child there, before this): a single-purpose ₪ icon
+                    floating alone next to the menu button read as two
+                    separate controls competing for the same corner. Desktop
+                    still reaches payment through the floating ContactRail,
+                    unaffected by this. */}
+                {paymentsEnabled && (
+                  <Link to={user ? "/portal" : "/login"} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                    <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
+                  </Link>
+                )}
                 {nav.map((n) =>
                   n.hash ? (
                     <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
@@ -309,22 +321,14 @@ export function Header() {
           >
             {t.ui.sos.open}
           </button>
-          {/* On phones payment lives in the header (which has room there); on
-              desktop it lives in the floating ContactRail, so the two never
-              show at once. A bare card icon reads as decoration on a
-              touch screen with no hover to reveal the title, so — like the
-              SOS button beside it — this one carries its own short visible
-              label instead of relying on an icon alone. */}
-          {paymentsEnabled && (
-            <Link
-              to={user ? "/portal" : "/login"}
-              className="tb-btn tb-pay header-pay-m"
-              aria-label={t.ui.bookPage.quickPayTitle}
-              title={t.ui.bookPage.quickPayTitle}
-            >
-              ₪
-            </Link>
-          )}
+          {/* Quick payment used to live here too on phones (desktop always
+              reached it through the floating ContactRail instead): a bare ₪
+              icon standing alone beside the menu button, the toolbar's only
+              visible child at that width. Folded into the "More" menu
+              instead (see header-more-wrap above), so the phone header
+              collapses to exactly two controls, the wordmark and the menu,
+              rather than two separate single-purpose buttons competing for
+              the same corner. */}
           {/* A dedicated "Start" pill was tried here and dropped: the toolbar
               already carries six round controls plus the client login link,
               and one more rigid, non-shrinking pill pushed the nav-pills row
