@@ -220,7 +220,7 @@ const OS: Record<Lang, OsCopy> = {
       { to: "/real-estate-legal-advisory", label: "Immobilier et renouvellement urbain" },
       { to: "/ai-legal-advisory", label: "IA et Droit" },
       { to: "/risk", label: "Salle de Décision" },
-      { to: "/book", label: "Prendre rendez vous" },
+      { to: "/book", label: "Prendre rendez-vous" },
     ],
     demo: "Le moteur n'est pas connecté dans cet environnement. Configurez Supabase pour activer l'assistant.",
     error: "Une erreur temporaire s'est produite. Réessayez, ou réservez un diagnostic avec Dr. Avraham Lalum, Adv.",
@@ -529,7 +529,7 @@ export function LegalOS() {
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" /></svg>
             </button>
           )}
-          <span className="los-status">● {lang === "he" ? "מוכן" : lang === "ar" ? "جاهز" : "Ready"}</span>
+          <span className="los-status">● {{ he: "מוכן", ar: "جاهز", es: "Listo", fr: "Prêt", en: "Ready" }[lang]}</span>
         </header>
 
         <div className="los-body" ref={scrollRef}>
