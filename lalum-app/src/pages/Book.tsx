@@ -23,8 +23,9 @@ import { TRACKS, BANDS, MAX_SCORE, resultFor, type BandId } from "../lib/riskSco
 // manual request form below is only a fallback for when scheduling is not yet
 // connected (no link configured yet).
 const SCHEDULING_URL = import.meta.env.VITE_SCHEDULING_URL || bookingBaseUrl;
-// Clay / ivory palette to match the light brand (hex without '#').
-const CLAY_THEME = { background: "fbf9f3", text: "1a1815", primary: "c15f3c" };
+// Brand palette handed to the embedded scheduling widget (hex without '#'),
+// kept in sync with --paper / --ink / --clay-bright in index.css.
+const EMBED_THEME = { background: "fbf9f3", text: "1a1815", primary: "6b8f6e" };
 
 const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
@@ -177,7 +178,7 @@ export function Book() {
             </span>
           </div>
           <div style={{ padding: 8 }}>
-            <SchedulingEmbed key={active.key} url={activeUrl} theme={CLAY_THEME} height={720} />
+            <SchedulingEmbed key={active.key} url={activeUrl} theme={EMBED_THEME} height={720} />
           </div>
         </div>
       </section>

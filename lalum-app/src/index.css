@@ -9,11 +9,19 @@
   --card: #ffffff;
   --ink: #1a1815;
   --slate: #55514a;
-  --clay: #a8482a;
-  --clay-hover: #8c3b20;
-  --clay-bright: #c15f3c;
-  --clay-soft: #e4c7b7;
-  --clay-tint: #f3e7de;
+  /* Brand accent: gentle, muted sage green — replaced the original clay/
+     terracotta site-wide. Was piloted scoped to /portal and /os only (see
+     git history), then adopted as the one brand colour everywhere, by
+     explicit user decision. --clay itself (not --clay-bright) carries white
+     button text, so it is darkened to clear WCAG AA (4.5:1) rather than a
+     lighter swatch — the same reasoning already applied to
+     --brand-green-on-white below. The token names keep the word "clay" so
+     this diff stays small; they no longer mean clay-coloured. */
+  --clay: #5a7a5d;
+  --clay-hover: #4c6850;
+  --clay-bright: #6b8f6e;
+  --clay-soft: rgba(107, 143, 110, 0.35);
+  --clay-tint: #e7ede4;
   --line: #e3dccd;
   --line-strong: #d3c9b5;
   --success: #3f8f5f;
@@ -29,32 +37,6 @@
   --serif: "Newsreader", Georgia, serif;
   --sec: 108px;
   --maxw: 1180px;
-}
-
-/* Portal sub-brand: the authenticated client desk (/portal, and everything
-   rendered inside it — GroupChat, the admin scheduling console, client docs)
-   adopts a gentle, muted sage-green accent instead of the marketing site's
-   clay. This mirrors the "Talking Tree" direction prototyped in the LALUMap
-   app/repo, kept for the signed-in product experience while lalumapp.com's
-   own clay/ivory marketing brand (header, footer, every public page) stays
-   untouched. Same technique the a11y-contrast mode below uses: overriding
-   the shared custom properties on a wrapping class, so every existing
-   .btn-clay / .card / .icon-badge / pill / focus-ring rule repaints itself
-   with zero changes to the components that use them.
-   --clay itself (not --clay-bright) carries white button text, so it is
-   darkened to clear WCAG AA (4.5:1) rather than using the lighter mockup
-   swatch — the same reasoning already applied to --brand-green-on-white
-   above. This is independent of a11y-contrast (below): the two compose
-   normally, since a11y-contrast never touches --clay*. */
-.portal-theme {
-  --clay: #5a7a5d;
-  --clay-hover: #4c6850;
-  --clay-bright: #6b8f6e;
-  --clay-soft: rgba(107, 143, 110, 0.35);
-  --clay-tint: #e7ede4;
-}
-.portal-theme .btn-clay:hover {
-  box-shadow: 0 10px 22px -12px rgba(74, 100, 77, 0.6);
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
@@ -627,7 +609,7 @@ article p {
   background: var(--clay-hover);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px -12px rgba(139, 63, 40, 0.7);
+  box-shadow: 0 10px 22px -12px rgba(74, 100, 77, 0.6);
 }
 .btn-clay:active,
 .btn-ink:active {
@@ -1322,7 +1304,7 @@ a.card:hover .card-go {
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: rgba(193, 95, 60, 0.25);
+  background: rgba(107, 143, 110, 0.25);
   color: var(--clay-soft);
   display: inline-flex;
   align-items: center;
@@ -1703,7 +1685,7 @@ a.caps-item:focus-visible .caps-go {
   color: var(--paper);
   background: var(--clay);
   border-color: var(--clay);
-  box-shadow: 0 4px 12px -4px rgba(139, 63, 40, 0.55);
+  box-shadow: 0 4px 12px -4px rgba(74, 100, 77, 0.5);
 }
 .nav-pill.active:hover {
   color: var(--paper);
@@ -2448,7 +2430,7 @@ html.a11y-reduce-motion *::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(560px 360px at 84% 6%, rgba(193, 95, 60, 0.3), transparent 62%);
+  background: radial-gradient(560px 360px at 84% 6%, rgba(107, 143, 110, 0.3), transparent 62%);
 }
 
 /* ---------- footer ---------- */
@@ -3566,7 +3548,7 @@ html.a11y-reduce-motion *::after {
   min-height: 320px;
   inset-inline-start: -8%;
   top: -20%;
-  background: radial-gradient(circle at 50% 50%, rgba(193, 95, 60, 0.5), transparent 68%);
+  background: radial-gradient(circle at 50% 50%, rgba(107, 143, 110, 0.5), transparent 68%);
   animation: ambient-drift-1 26s ease-in-out infinite alternate;
 }
 .ambient-b2 {
@@ -3672,7 +3654,7 @@ html.a11y-reduce-motion *::after {
   border-color: var(--clay);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
 }
 .share-btn:active {
   transform: scale(0.92);
@@ -3745,7 +3727,7 @@ html.a11y-reduce-motion *::after {
   width: 26px;
   height: 26px;
   border-radius: 9999px;
-  background: rgba(193, 95, 60, 0.22);
+  background: rgba(107, 143, 110, 0.22);
   color: var(--clay-soft);
   display: inline-flex;
   align-items: center;
@@ -3916,7 +3898,7 @@ html.a11y-reduce-motion *::after {
   border-color: var(--clay);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
 }
 .tb-btn:active { transform: scale(0.92); }
 /* The assistant-call button is the primary quick-contact action, so it carries
@@ -4036,7 +4018,7 @@ html.a11y-reduce-motion *::after {
   background: var(--clay);
   border-color: var(--clay);
   color: var(--paper);
-  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
 }
 .header-menu-btn:hover svg {
   color: var(--paper);
@@ -4371,8 +4353,8 @@ html.a11y-reduce-motion *::after {
   .mic-live { animation: mic-pulse 1.3s ease-in-out infinite; }
 }
 @keyframes mic-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 72, 42, 0.45); }
-  50% { box-shadow: 0 0 0 5px rgba(168, 72, 42, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(90, 122, 93, 0.45); }
+  50% { box-shadow: 0 0 0 5px rgba(90, 122, 93, 0); }
 }
 
 /* ---------- Tech-Legal readiness self-assessment ---------- */
@@ -4429,7 +4411,7 @@ html.a11y-reduce-motion *::after {
 .riskcalc-choice.on {
   border-color: var(--clay);
   background: var(--clay-tint);
-  box-shadow: 0 12px 30px -20px rgba(193, 95, 60, 0.5);
+  box-shadow: 0 12px 30px -20px rgba(107, 143, 110, 0.5);
 }
 .riskcalc-choice.on .riskcalc-choice-mark { color: var(--clay); transform: scale(1.12); }
 .riskcalc-nav { margin-top: 16px; }
