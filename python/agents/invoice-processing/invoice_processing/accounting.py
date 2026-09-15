@@ -117,6 +117,7 @@ class Row:
     estimated: bool = False
     note: str = ""
     recognized_rate: float = 1.0   # 1.0 = מוכר במלואו; 0.25 = הוצאת בית מעורבת
+    date: str = ""                 # תאריך המסמך (YYYY-MM-DD), ריק אם לא זוהה
 
     @property
     def sign(self) -> int:
@@ -262,6 +263,21 @@ def find_amounts(text: str) -> tuple[float, float, float, bool]:
     return total, 0.0, total, True
 
 
+_DOC_DATE = re.compile(r"\b(\d{1,2})[./](\d{1,2})[./](20\d{2})\b")
+
+
+def extract_date(text: str) -> str:
+    """תאריך המסמך הראשון שנמצא בטקסט, בפורמט YYYY-MM-DD. ריק אם אין.
+    נדרש לאימות חודש הדיווח ולשער יציג במסמכי מט"ח."""
+    m = _DOC_DATE.search(text)
+    if not m:
+        return ""
+    d, mo, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    if not (1 <= d <= 31 and 1 <= mo <= 12):
+        return ""
+    return f"{y:04d}-{mo:02d}-{d:02d}"
+
+
 def detect_currency(text: str) -> str:
     if "$" in text or "USD" in text:
         return "USD"
@@ -391,6 +407,7 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             net=net, vat=vat, total=total,
             estimated=estimated, note=note,
             recognized_rate=recognized_rate,
+            date=extract_date(text),
         ))
 
     # קבצי תמונה (חשבוניות מצולמות): לעולם לא שקופים. כל תמונה מקבלת
@@ -421,6 +438,7 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
             net=net, vat=vat, total=total,
             estimated=True,
             note=note,
+            date=extract_date(text) if text.strip() else "",
         ))
     return rows, folder
 

@@ -68,9 +68,10 @@ COLS = [
     ('מע"מ מוכר', 14),
     ("אומדן", 8),
     ("הערה", 52),
+    ("תאריך מסמך", 13),
 ]
 # A מסמך  B קוד  C סוג  D מטבע  E נטו  F מע"מ  G סה"כ
-# H שיעור  I נטו מוכר  J מע"מ מוכר  K אומדן  L הערה
+# H שיעור  I נטו מוכר  J מע"מ מוכר  K אומדן  L הערה  M תאריך מסמך
 
 
 def _rtl(ws):
@@ -117,11 +118,15 @@ def _sheet_detail(wb: Workbook, rows: list) -> int:
         ws.cell(row=r, column=7, value=round(row.total or 0.0, 2))
         ws.cell(row=r, column=8, value=rate)
         # מראה את חישוב המנוע: בהוצאת בית ללא נטו מזוהה, הבסיס הוא הסכום המלא
+        # חשבון עסקה אינו מוכר, ולכן "נטו מוכר" ו"מע"מ מוכר" שלו הם אפס.
+        proforma = f'OR($B{r}="proforma_out",$B{r}="proforma_in")'
         ws.cell(row=r, column=9,
-                value=f'=IF($B{r}="expense_home",IF($E{r}>0,$E{r},$G{r})*$H{r},$E{r}*$H{r})')
-        ws.cell(row=r, column=10, value=f'=$F{r}*$H{r}')
+                value=f'=IF({proforma},0,'
+                      f'IF($B{r}="expense_home",IF($E{r}>0,$E{r},$G{r})*$H{r},$E{r}*$H{r}))')
+        ws.cell(row=r, column=10, value=f'=IF({proforma},0,$F{r}*$H{r})')
         ws.cell(row=r, column=11, value="כן" if row.estimated else "לא")
         ws.cell(row=r, column=12, value=row.note or "")
+        ws.cell(row=r, column=13, value=getattr(row, "date", "") or "לא זוהה")
         r += 1
 
     last = r - 1
@@ -136,7 +141,7 @@ def _sheet_detail(wb: Workbook, rows: list) -> int:
             elif c == 8:
                 cell.number_format = FMT_PCT
                 cell.alignment = Alignment(horizontal="center")
-            elif c in (4, 11):
+            elif c in (4, 11, 13):
                 cell.alignment = Alignment(horizontal="center")
             else:
                 cell.alignment = Alignment(horizontal="right", vertical="top", wrap_text=(c == 12))
@@ -157,9 +162,11 @@ def _sheet_detail(wb: Workbook, rows: list) -> int:
 
 
 def _sumifs(col: str, code: str, last: int, currency: str = "ILS") -> str:
-    rng = f"'{DETAIL}'!${col}$2:${col}${last}"
-    return (f"SUMIFS({rng},'{DETAIL}'!$B$2:$B${last},\"{code}\","
-            f"'{DETAIL}'!$D$2:$D${last},\"{currency}\")")
+    # עמודות שלמות ולא טווח נעול לשורה האחרונה: שורה שתתווסף לפירוט
+    # בחודש עמוס יותר, או ידנית על ידי רואת החשבון, נכנסת לסיכום מיד.
+    rng = f"'{DETAIL}'!${col}:${col}"
+    return (f"SUMIFS({rng},'{DETAIL}'!$B:$B,\"{code}\","
+            f"'{DETAIL}'!$D:$D,\"{currency}\")")
 
 
 def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
@@ -229,7 +236,7 @@ def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
          "בניכוי זיכויים")
     r += 1
     R_NOVAT = r
-    line(r, 'הוצאות ללא מע"מ', f"={_sumifs('G','expense_no_vat',last)}", None,
+    line(r, 'הוצאות ללא מע"מ', f"={_sumifs('I','expense_no_vat',last)}", None,
          'ארנונה, אגרות, ביטוח, וקבלות שאינן חשבונית מס. מוכרות כהוצאה, לא מזכות בתשומות.')
     r += 2
 
@@ -323,9 +330,13 @@ def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
 
 
 def _sheet_review(wb: Workbook, rows: list):
-    flagged = [x for x in rows
+    # רק מה שדורש הכרעה אנושית: סכום מ-OCR שלא אומת, מסמך שלא נקרא,
+    # ומט"ח שממתין לשער. קבלה תקינה שסווגה בוודאות אינה שייכת לכאן,
+    # גם אם יש לה הערה תיאורית.
+    flagged = [(i, x) for i, x in enumerate(rows)
                if getattr(x, "estimated", False)
-               or (x.note and x.category not in ("proforma_out", "proforma_in"))]
+               or (x.total or 0) == 0
+               or x.currency != "ILS"]
     ws = wb.create_sheet("לאימות")
     _rtl(ws)
     _widths(ws, [46, 26, 14, 14, 14, 64])
@@ -341,15 +352,19 @@ def _sheet_review(wb: Workbook, rows: list):
     _style_header(ws, 3, 6)
 
     r = 4
-    for x in flagged:
-        ws.cell(row=r, column=1, value=x.file)
+    for i, x in flagged:
+        # הסכומים הם הפניות חיות לגיליון הפירוט: תיקון שם משתקף כאן מיד.
+        d = i + 2
+        ws.cell(row=r, column=1, value=f"='{DETAIL}'!A{d}")
         ws.cell(row=r, column=2, value=CATEGORY_LABELS.get(x.category, x.category))
-        ws.cell(row=r, column=3, value=round(x.net or 0.0, 2))
-        ws.cell(row=r, column=4, value=round(x.vat or 0.0, 2))
-        ws.cell(row=r, column=5, value=round(x.total or 0.0, 2))
+        ws.cell(row=r, column=3, value=f"='{DETAIL}'!E{d}")
+        ws.cell(row=r, column=4, value=f"='{DETAIL}'!F{d}")
+        ws.cell(row=r, column=5, value=f"='{DETAIL}'!G{d}")
         reason = x.note or ""
         if getattr(x, "estimated", False):
             reason = ("הסכום חולץ בזיהוי טקסט ולא אומת. " + reason).strip()
+        if x.currency != "ILS":
+            reason = (reason + " מט\"ח: נדרש שער יציג ליום החיוב.").strip()
         ws.cell(row=r, column=6, value=reason)
         for c in range(1, 7):
             cell = ws.cell(row=r, column=c)
@@ -372,7 +387,7 @@ def _sheet_review(wb: Workbook, rows: list):
 
 
 def _sheet_excluded(wb: Workbook, rows: list):
-    excluded = [x for x in rows
+    excluded = [(i, x) for i, x in enumerate(rows)
                 if x.category in ("proforma_out", "proforma_in") or x.currency != "ILS"]
     ws = wb.create_sheet("לא נכלל")
     _rtl(ws)
@@ -389,11 +404,13 @@ def _sheet_excluded(wb: Workbook, rows: list):
     _style_header(ws, 3, 5)
 
     r = 4
-    for x in excluded:
-        ws.cell(row=r, column=1, value=x.file)
+    for i, x in excluded:
+        # הפניות חיות לגיליון הפירוט: תיקון סכום שם משתקף כאן מיד.
+        d = i + 2
+        ws.cell(row=r, column=1, value=f"='{DETAIL}'!A{d}")
         ws.cell(row=r, column=2, value=CATEGORY_LABELS.get(x.category, x.category))
-        ws.cell(row=r, column=3, value=x.currency)
-        ws.cell(row=r, column=4, value=round(x.total or 0.0, 2))
+        ws.cell(row=r, column=3, value=f"='{DETAIL}'!D{d}")
+        ws.cell(row=r, column=4, value=f"='{DETAIL}'!G{d}")
         reason = EXCLUDED_REASONS.get(x.category, "")
         if x.currency != "ILS":
             reason = (reason + " מטבע חוץ, נדרש שער יציג ליום החיוב.").strip()
@@ -412,14 +429,23 @@ def _sheet_excluded(wb: Workbook, rows: list):
         r += 1
 
     if excluded:
-        ws.cell(row=r + 1, column=1, value='סה"כ')
-        ws.cell(row=r + 1, column=4, value=f"=SUM(D4:D{r-1})")
-        for c in (1, 4):
-            cell = ws.cell(row=r + 1, column=c)
-            cell.font = Font(name=FONT_NAME, size=10, bold=True)
-            cell.fill = PatternFill("solid", fgColor=C_BOTTOM_BG)
-            cell.border = BOX
-        ws.cell(row=r + 1, column=4).number_format = FMT_ILS
+        # סכימה לפי מטבע: אסור לחבר שקלים ודולרים לאותו מספר. שורת סה"כ
+        # נפרדת לכל מטבע שמופיע בגיליון, מסוננת לפי עמודת המטבע.
+        currencies = sorted({x.currency for _, x in excluded})
+        tr = r + 1
+        for cur in currencies:
+            ws.cell(row=tr, column=1, value=f'סה"כ {cur}')
+            ws.cell(row=tr, column=3, value=cur)
+            ws.cell(row=tr, column=4,
+                    value=f'=SUMIFS(D4:D{r-1},C4:C{r-1},"{cur}")')
+            for c in (1, 3, 4):
+                cell = ws.cell(row=tr, column=c)
+                cell.font = Font(name=FONT_NAME, size=10, bold=True)
+                cell.fill = PatternFill("solid", fgColor=C_BOTTOM_BG)
+                cell.border = BOX
+            ws.cell(row=tr, column=4).number_format = FMT_ILS
+            ws.cell(row=tr, column=3).alignment = Alignment(horizontal="center")
+            tr += 1
     else:
         c = ws.cell(row=4, column=1, value="אין מסמכים שנותרו מחוץ לחישוב.")
         c.font = Font(name=FONT_NAME, size=10, italic=True, color="006100")
