@@ -20,7 +20,30 @@ import type { Lang } from "../lib/hreflang";
 // an effect or an event handler, never during render, so the prerender that
 // writes /os to a static file never runs into window or localStorage.
 
-type Msg = { role: "user" | "assistant"; content: string; file?: string };
+// A single finding from the analyze-contract engine. Mirrors the shape that
+// function returns (supabase/functions/analyze-contract/index.ts): every
+// field the model can supply, plus quote_verified, which that function adds
+// itself after checking exact_quote against the submitted contract text, so
+// this UI never has to (and never should) re-implement that check.
+type Finding = {
+  finding_id: string;
+  clause_number: string | null;
+  clause_title: string;
+  severity: "red" | "yellow" | "green";
+  issue_summary: string;
+  exact_quote: string | null;
+  page_hint: string | null;
+  legal_risk_rationale: string;
+  proposed_revision: string | null;
+  is_missing_clause: boolean;
+  quote_verified: boolean | null;
+};
+
+// A message is either a plain chat turn (content) or, when a contract was
+// attached, a findings turn: no free chat prose, a card per finding instead.
+// The two never mix in one message, mirroring the two engines behind them
+// (lalum-assistant vs analyze-contract).
+type Msg = { role: "user" | "assistant"; content: string; file?: string; findings?: Finding[]; findingsDisclaimer?: string };
 type Chat = { id: string; title: string; msgs: Msg[]; ts: number };
 
 const STORE_KEY = "lalum_os_chats";
@@ -62,6 +85,16 @@ type OsCopy = {
   siteLinks: { to: string; label: string }[];
   demo: string;
   error: string;
+  sevRed: string;
+  sevYellow: string;
+  sevGreen: string;
+  missingClause: string;
+  quoteVerified: string;
+  quoteUnverified: string;
+  proposedRevision: string;
+  copyRevision: string;
+  copied: string;
+  noFindings: string;
 };
 
 const OS: Record<Lang, OsCopy> = {
@@ -104,6 +137,16 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "המנוע אינו מחובר בסביבה זו. הגדירו את משתני Supabase כדי להפעיל את העוזר.",
     error: "אירעה תקלה זמנית. נסו שוב, או קבעו שיחת אבחון עם ד״ר עו״ד אברהם ללום.",
+    sevRed: "סיכון גבוה",
+    sevYellow: "לתשומת לב",
+    sevGreen: "תקין",
+    missingClause: "סעיף חסר",
+    quoteVerified: "אומת מול הטקסט שהוגש",
+    quoteUnverified: "לא אומת אוטומטית, יש לבדוק ידנית",
+    proposedRevision: "נוסח מוצע",
+    copyRevision: "העתק נוסח מתוקן למו״מ",
+    copied: "הועתק",
+    noFindings: "לא נמצאו ממצאים בחוזה זה.",
   },
   en: {
     newChat: "New chat",
@@ -144,6 +187,16 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "The engine is not connected in this environment. Configure Supabase to enable the assistant.",
     error: "A temporary error occurred. Try again, or book a diagnosis with Dr. Avraham Lalum, Adv.",
+    sevRed: "High risk",
+    sevYellow: "Worth flagging",
+    sevGreen: "Standard",
+    missingClause: "Missing clause",
+    quoteVerified: "Verified against the submitted text",
+    quoteUnverified: "Not auto-verified, check manually",
+    proposedRevision: "Proposed wording",
+    copyRevision: "Copy revised wording for negotiation",
+    copied: "Copied",
+    noFindings: "No findings for this contract.",
   },
   es: {
     newChat: "Nuevo chat",
@@ -184,6 +237,16 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "El motor no está conectado en este entorno. Configura Supabase para habilitar el asistente.",
     error: "Ocurrió un error temporal. Inténtalo de nuevo o reserva un diagnóstico con Dr. Avraham Lalum, Adv.",
+    sevRed: "Riesgo alto",
+    sevYellow: "Para señalar",
+    sevGreen: "Estándar",
+    missingClause: "Cláusula faltante",
+    quoteVerified: "Verificado contra el texto enviado",
+    quoteUnverified: "No verificado automáticamente, revisar manualmente",
+    proposedRevision: "Redacción propuesta",
+    copyRevision: "Copiar redacción corregida para negociar",
+    copied: "Copiado",
+    noFindings: "No se encontraron hallazgos en este contrato.",
   },
   fr: {
     newChat: "Nouveau chat",
@@ -224,6 +287,16 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "Le moteur n'est pas connecté dans cet environnement. Configurez Supabase pour activer l'assistant.",
     error: "Une erreur temporaire s'est produite. Réessayez, ou réservez un diagnostic avec Dr. Avraham Lalum, Adv.",
+    sevRed: "Risque élevé",
+    sevYellow: "À signaler",
+    sevGreen: "Standard",
+    missingClause: "Clause manquante",
+    quoteVerified: "Vérifié par rapport au texte soumis",
+    quoteUnverified: "Non vérifié automatiquement, à contrôler manuellement",
+    proposedRevision: "Rédaction proposée",
+    copyRevision: "Copier la rédaction révisée pour la négociation",
+    copied: "Copié",
+    noFindings: "Aucun constat pour ce contrat.",
   },
   ar: {
     newChat: "محادثة جديدة",
@@ -264,6 +337,16 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "المحرك غير متصل في هذه البيئة. اضبط إعدادات Supabase لتفعيل المساعد.",
     error: "حدث خطأ مؤقت. حاول مرة أخرى، أو احجز تشخيصًا مع Dr. Avraham Lalum, Adv.",
+    sevRed: "مخاطرة عالية",
+    sevYellow: "يستحق الانتباه",
+    sevGreen: "قياسي",
+    missingClause: "بند مفقود",
+    quoteVerified: "تم التحقق منه مقابل النص المُقدَّم",
+    quoteUnverified: "لم يتم التحقق تلقائيًا، يرجى المراجعة يدويًا",
+    proposedRevision: "صياغة مقترحة",
+    copyRevision: "نسخ الصياغة المعدّلة للتفاوض",
+    copied: "تم النسخ",
+    noFindings: "لم يتم العثور على ملاحظات في هذا العقد.",
   },
 };
 
@@ -303,6 +386,10 @@ export function LegalOS() {
   const [extracting, setExtracting] = useState(false);
   const [listening, setListening] = useState(false);
   const [readAloud, setReadAloud] = useState(false);
+  // Which finding's "copy revised wording" button most recently fired, so its
+  // label can flip to a confirmation for a moment. One id at a time is enough:
+  // nothing else on the page copies text to the clipboard.
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -359,6 +446,19 @@ export function LegalOS() {
     setInput((v) => (v.trim().startsWith(cmd) ? v : `${cmd} ${v}`.trimStart()));
     setNavOpen(false);
     inputRef.current?.focus();
+  }
+
+  // Module 1.4, one-click redline: puts the engine's proposed clause straight
+  // on the clipboard, ready to paste into a negotiation rider or a track-changes
+  // draft, so a red or yellow finding does not require retyping its own fix.
+  async function copyRevision(findingId: string, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(findingId);
+      setTimeout(() => setCopiedId((id) => (id === findingId ? null : id)), 1800);
+    } catch {
+      /* clipboard permission denied or unavailable; the button just does nothing */
+    }
   }
 
   function speak(text: string) {
@@ -418,25 +518,43 @@ export function LegalOS() {
     const text = input.trim();
     if ((!text && !attachment) || loading) return;
     const displayText = text || (attachment ? `📎 ${attachment.name}` : "");
-    const modelText = attachment && attachment.text
-      ? `${copy.reviewPrefix} (${attachment.name}):\n\n${attachment.text}\n\n${text || copy.reviewAsk}`
-      : text;
+    const hasContractText = !!attachment?.text;
     const id = activeId ?? newId();
     if (!activeId) setActiveId(id);
-    const convoForModel = [...msgs.map((m) => ({ role: m.role, content: m.content })), { role: "user" as const, content: modelText }];
     setMsgs((m) => [...m, { role: "user", content: displayText, file: attachment?.name }]);
+    const attachedFile = attachment;
     setInput("");
     setAttachment(null);
     setLoading(true);
     try {
-      let reply = copy.demo;
-      if (supabase) {
-        const { data, error } = await supabase.functions.invoke("lalum-assistant", { body: { messages: convoForModel } });
+      // A real, extracted attachment routes to analyze-contract, the strict
+      // citation engine (supabase/functions/analyze-contract), instead of the
+      // freeform chat model: a document gets structured, verified findings,
+      // never prose. Any text typed alongside the file is shown in the thread
+      // like always, but is not sent on, that engine takes a document and
+      // nothing else. Plain text (no attachment, or one extractText could not
+      // read) keeps going to lalum-assistant exactly as before.
+      if (hasContractText && supabase) {
+        const { data, error } = await supabase.functions.invoke("analyze-contract", {
+          body: { contract_text: attachedFile!.text, document_name: attachedFile!.name },
+        });
         if (error) throw error;
-        reply = ((data?.reply as string) || "").trim() || copy.error;
+        const findings: Finding[] = Array.isArray(data?.findings) ? data.findings : [];
+        setMsgs((m) => [...m, { role: "assistant", content: "", findings, findingsDisclaimer: data?.disclaimer }]);
+      } else {
+        const modelText = attachedFile
+          ? `${copy.reviewPrefix} (${attachedFile.name}):\n\n${text || copy.reviewAsk}`
+          : text;
+        const convoForModel = [...msgs.map((m) => ({ role: m.role, content: m.content })), { role: "user" as const, content: modelText }];
+        let reply = copy.demo;
+        if (supabase) {
+          const { data, error } = await supabase.functions.invoke("lalum-assistant", { body: { messages: convoForModel } });
+          if (error) throw error;
+          reply = ((data?.reply as string) || "").trim() || copy.error;
+        }
+        setMsgs((m) => [...m, { role: "assistant", content: reply }]);
+        if (readAloud) speak(reply);
       }
-      setMsgs((m) => [...m, { role: "assistant", content: reply }]);
-      if (readAloud) speak(reply);
     } catch {
       setMsgs((m) => [...m, { role: "assistant", content: copy.error }]);
     } finally {
@@ -550,14 +668,57 @@ export function LegalOS() {
             </div>
           ) : (
             <div className="los-thread">
-              {msgs.map((m, i) => (
-                <div key={i} className={"los-msg " + m.role}>
-                  <div className="los-bubble">
-                    {m.file && <span className="los-bubble-file">📎 {m.file}</span>}
-                    {m.content}
+              {msgs.map((m, i) =>
+                m.findings ? (
+                  <div key={i} className="los-msg assistant">
+                    <div className="los-findings">
+                      {m.findings.length === 0 ? (
+                        <p className="los-finding-empty">{copy.noFindings}</p>
+                      ) : (
+                        m.findings.map((f) => (
+                          <article key={f.finding_id} className={"los-finding sev-" + f.severity}>
+                            <header className="los-finding-head">
+                              <span className={"los-sev sev-" + f.severity}>
+                                {f.severity === "red" ? copy.sevRed : f.severity === "yellow" ? copy.sevYellow : copy.sevGreen}
+                              </span>
+                              {f.is_missing_clause && <span className="los-badge">{copy.missingClause}</span>}
+                              {f.clause_number && <span className="los-clause-no">§{f.clause_number}</span>}
+                            </header>
+                            <h3 className="los-finding-title">{f.clause_title}</h3>
+                            <p className="los-finding-text">{f.issue_summary}</p>
+                            {f.exact_quote && (
+                              <blockquote className="los-finding-quote">
+                                “{f.exact_quote}”
+                                <span className={"los-verify" + (f.quote_verified ? " ok" : "")}>
+                                  {f.quote_verified ? copy.quoteVerified : copy.quoteUnverified}
+                                </span>
+                              </blockquote>
+                            )}
+                            <p className="los-finding-text los-finding-rationale">{f.legal_risk_rationale}</p>
+                            {f.proposed_revision && (
+                              <div className="los-revision">
+                                <div className="los-revision-label">{copy.proposedRevision}</div>
+                                <p className="los-finding-text">{f.proposed_revision}</p>
+                                <button type="button" className="los-copy-btn" onClick={() => void copyRevision(f.finding_id, f.proposed_revision!)}>
+                                  {copiedId === f.finding_id ? copy.copied : copy.copyRevision}
+                                </button>
+                              </div>
+                            )}
+                          </article>
+                        ))
+                      )}
+                    </div>
+                    {m.findingsDisclaimer && <p className="los-findings-disclaimer">{m.findingsDisclaimer}</p>}
                   </div>
-                </div>
-              ))}
+                ) : (
+                  <div key={i} className={"los-msg " + m.role}>
+                    <div className="los-bubble">
+                      {m.file && <span className="los-bubble-file">📎 {m.file}</span>}
+                      {m.content}
+                    </div>
+                  </div>
+                )
+              )}
               {loading && <div className="los-msg assistant"><div className="los-bubble los-typing">{copy.thinking}</div></div>}
             </div>
           )}
@@ -668,6 +829,34 @@ const LOS_CSS = `
 .los-msg.user .los-bubble{background:#7a1f1f;color:#fdf6ef;border-end-end-radius:5px}
 .los-msg.assistant .los-bubble{background:#211d19;border:1px solid rgba(255,255,255,.08);color:#eee6d8;border-end-start-radius:5px}
 .los-typing{color:#9a9081}
+/* Findings cards (analyze-contract). Severity is a status colour, not a
+   brand colour, so red and yellow are new here; green deliberately reuses
+   the page's own #8fc090/rgba(143,192,144,*) tokens rather than a fourth
+   shade, so "no issue" and "this app" read as the same colour on purpose. */
+.los-findings{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.los-finding{background:#211d19;border:1px solid rgba(255,255,255,.08);border-inline-start-width:3px;border-radius:14px;padding:14px 16px}
+.los-finding.sev-red{border-inline-start-color:#e0574a}
+.los-finding.sev-yellow{border-inline-start-color:#d9a441}
+.los-finding.sev-green{border-inline-start-color:#8fc090}
+.los-finding-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.los-sev{font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:9999px}
+.los-sev.sev-red{color:#e0574a;background:rgba(224,87,74,.12);border:1px solid rgba(224,87,74,.35)}
+.los-sev.sev-yellow{color:#d9a441;background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.35)}
+.los-sev.sev-green{color:#8fc090;background:rgba(143,192,144,.12);border:1px solid rgba(143,192,144,.35)}
+.los-badge{font-size:11px;color:#b7ad9d;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9999px;padding:3px 9px}
+.los-clause-no{font-size:11.5px;color:#8a8072}
+.los-finding-title{font-size:15px;margin:2px 0 6px;color:#f3ece0}
+.los-finding-text{font-size:13.5px;line-height:1.6;color:#eee6d8;margin:0 0 8px}
+.los-finding-rationale{color:#cfc6b8}
+.los-finding-quote{margin:0 0 8px;padding-inline-start:10px;border-inline-start:2px solid rgba(255,255,255,.15);font-size:13px;font-style:italic;color:#b7ad9d}
+.los-verify{display:block;margin-top:4px;font-style:normal;font-size:11px;color:#8a8072}
+.los-verify.ok{color:#8fc090}
+.los-revision{background:rgba(143,192,144,.08);border:1px solid rgba(143,192,144,.25);border-radius:10px;padding:10px 12px;margin-top:4px}
+.los-revision-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8fc090;margin-bottom:4px}
+.los-copy-btn{border:1px solid rgba(143,192,144,.4);background:transparent;color:#bcd6bd;font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:9999px;cursor:pointer}
+.los-copy-btn:hover{background:rgba(143,192,144,.12)}
+.los-finding-empty{color:#9a9081;font-size:13.5px}
+.los-findings-disclaimer{max-width:760px;margin:8px auto 0;color:#7d7466;font-size:11.5px}
 .los-composer{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)}
 .los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
 .los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
