@@ -26,7 +26,13 @@ import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from invoice_processing.accounting import build_month_report
+from invoice_processing.accounting import (
+    HOME_UTILITY_FROM,
+    HOME_UTILITY_RATE,
+    _month_title,
+    build_month_report,
+)
+from invoice_processing.reporting.excel_summary import build_workbook
 from invoice_processing.senders.outlook_com_sender import (
     draft_via_outlook,
     send_via_outlook,
@@ -61,6 +67,17 @@ def mark_sent(month: str, result: dict):
         "to": result.get("to"),
         "attachments": result.get("attachments_sent", []),
     }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+# קודי יציאה. המשימה המתוזמנת ו-run_monthly.bat נשענים עליהם, ולכן
+# הרצה שנחסמה חייבת להיראות שונה מהרצה שהצליחה ביומן המשימות.
+# הערכים מתחילים ב-10 בכוונה: פייתון עצמו מחזיר 1 על חריגה שלא נתפסה
+# ו-2 על שגיאת ארגומנטים. קוד משלנו שיתנגש בהם יגרום להתראה שקרית.
+EXIT_SENT = 0         # נשלח, או שכבר נשלח קודם
+EXIT_DRAFT = 11       # טיוטה מוכנה ב-Outlook, ממתינה לאישור ידני
+EXIT_BLOCKED = 12     # התבקשה שליחה ונחסמה: פריטים לא מאומתים
+EXIT_NO_DOCS = 13     # לא נמצאו מסמכים בתיקיית החודש
+EXIT_MAIL_ERROR = 14  # Outlook החזיר שגיאה
 
 
 def blockers(result: dict) -> list[str]:
@@ -110,6 +127,21 @@ def main():
 
     result = build_month_report(month)
 
+    # טבלת החישוב לרואת החשבון: אותם נתונים בדיוק, בגיליון שאפשר
+    # למיין ולסכם בו. הסיכום בגיליון בנוי בנוסחאות על גיליון הפירוט,
+    # כך שתיקון סכום אצלה מתעדכן מיד בשורה התחתונה.
+    xlsx_path = None
+    try:
+        xlsx_path = Path(result["folder"]) / f"טבלת חישוב {month}.xlsx"
+        build_workbook(result["rows"], result["totals"], _month_title(month),
+                       xlsx_path, home_rate=HOME_UTILITY_RATE,
+                       home_from=HOME_UTILITY_FROM)
+        result["attachments"].append(str(xlsx_path))
+        print(f"📊 טבלת חישוב: {xlsx_path.name}")
+    except Exception as e:                        # noqa: BLE001
+        xlsx_path = None
+        print(f"⚠️  טבלת החישוב לא נבנתה ({e}), הדוח המילולי אינו מושפע")
+
     # התאמה כפולה מול דפי הבנק (תת-תיקיית _בנק). הדפים עצמם חסויים:
     # לא נסרקים כחשבוניות ולא מצורפים למייל, רק תוצאת ההתאמה נכנסת לדוח.
     from invoice_processing.bank_reconciliation import reconcile, build_reconciliation_block
@@ -136,9 +168,13 @@ def main():
         for i in issues:
             print(f"   • {i}")
 
+    if not result["rows"]:
+        print("\n🛑 לא נמצא אף מסמך בתיקיית החודש. אין מה לשלוח.")
+        return EXIT_NO_DOCS
+
     if args.no_mail:
         print("\n⏸  --no-mail: לא נוצר מייל.")
-        return
+        return EXIT_SENT
 
     to = os.environ.get("ACCOUNTING_EMAIL", "office@ronitkolani.co.il")
     mail = {
@@ -153,27 +189,28 @@ def main():
         prev = already_sent(month)
         if prev and not args.force:
             print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}. --force לשליחה חוזרת.")
-            return
+            return EXIT_SENT
         if issues:
             print("\n🛑 שליחה בוטלה — יש פריטים לא מאומתים. תקן, או הרץ בלי --send ליצירת טיוטה.")
-            return
+            return EXIT_BLOCKED
         print(f"\n🚀 שולח ל-{to} דרך Outlook...")
         res = send_via_outlook(mail, from_account=from_account)
         if res.get("sent"):
             mark_sent(month, res)
             print(f"✅ נשלח. {len(res['attachments_sent'])} צרופות.")
-        else:
-            print(f"❌ {res.get('error')}")
-        return
+            return EXIT_SENT
+        print(f"❌ {res.get('error')}")
+        return EXIT_MAIL_ERROR
 
     print(f"\n✉️  יוצר טיוטה ב-Outlook עבור {to}...")
     res = draft_via_outlook(mail, from_account=from_account)
     if res.get("drafted"):
         print(f"✅ הטיוטה מוכנה בתיקיית 'טיוטות' ב-Outlook. {len(res['attachments_sent'])} צרופות.")
         print("   פתח, בדוק את הפריטים המסומנים, ולחץ שלח.")
-    else:
-        print(f"❌ {res.get('error')}")
+        return EXIT_DRAFT
+    print(f"❌ {res.get('error')}")
+    return EXIT_MAIL_ERROR
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
