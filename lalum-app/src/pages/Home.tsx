@@ -72,7 +72,6 @@ export function Home() {
             <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="lazy" />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
-              <span className="founder-hero-role">{h.founderCreds1}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
             </span>
           </a>

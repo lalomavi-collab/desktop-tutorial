@@ -2259,19 +2259,11 @@ a.caps-item:focus-visible .caps-go {
   font-size: 21px;
   font-weight: 500;
 }
-.founder-hero-role {
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 12.5px;
-}
-/* Its own gap from the name and title above, so the CV link reads as a
-   separate, lower action rather than a third line crowded against the rest
-   of the caption. */
 .founder-hero-cv {
   color: #f0c9b8;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  margin-top: 10px;
 }
 
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
