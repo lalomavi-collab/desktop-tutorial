@@ -19,11 +19,12 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
-// The founder's own photo is deliberately not in this hero: it lives on the
-// CV (public/cv.html, public/cv-en.html) and, since the footer's founder
-// band, in the site footer on every page. Here the card carries the firm
-// mark instead, so the front door reads as the practice's brand, not a
-// headshot.
+// The hero card used to carry the firm mark instead of a photo, so the front
+// door read as the practice's brand rather than a headshot. Reversed on
+// request: the founder's own portrait (public/founder.webp, the same file
+// the footer's founder band already shows on every page) now fills the card,
+// with the name, the professional title, and the CV link stacked in the
+// caption, each with room of its own instead of sitting flush together.
 
 export function Home() {
   const { t, lang } = useLang();
@@ -63,15 +64,15 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* Firm mark, clickable, opens the full CV. No photo in this card
-              specifically (see the file-level note above) — this hero is
-              the practice's identity, not a face. */}
+          {/* The founder's own portrait, clickable, opens the full CV. Same
+              photo the footer's founder band already uses on every page
+              (public/founder.webp), so the front door now carries the same
+              face the site closes on, not a second, different image. */}
           <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            <span className="founder-hero-mark">
-              <Wordmark height={40} label={h.logoAlt} />
-            </span>
+            <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="lazy" />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
+              <span className="founder-hero-role">{h.founderCreds1}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
             </span>
           </a>
