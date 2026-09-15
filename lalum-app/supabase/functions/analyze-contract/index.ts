@@ -26,6 +26,10 @@ const MAX_OUTPUT_TOKENS = 8192;
 // contract with room left for the model's own reasoning and output.
 const MAX_CONTRACT_CHARS = 150_000;
 const MIN_CONTRACT_CHARS = 50;
+// A firm playbook (lalum_playbooks) is short, fixed reference text the client
+// looks up by slug and passes through verbatim, not user free text, but the
+// endpoint is public and unauthenticated, so it still gets a hard bound.
+const MAX_PLAYBOOK_CHARS = 4000;
 
 const SEVERITIES = new Set(["red", "yellow", "green"]);
 
@@ -153,13 +157,25 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, { code: "not_configured" });
 
-  let body: { contract_text?: string; document_name?: string };
+  let body: { contract_text?: string; document_name?: string; playbook_criteria?: string; playbook_label?: string };
   try { body = await req.json(); } catch { return json(400, { code: "bad_json" }); }
 
   const contractText = typeof body.contract_text === "string" ? body.contract_text.trim() : "";
   const documentName = typeof body.document_name === "string" ? body.document_name.trim().slice(0, 200) : "";
   if (contractText.length < MIN_CONTRACT_CHARS) return json(400, { code: "contract_too_short" });
   if (contractText.length > MAX_CONTRACT_CHARS) return json(400, { code: "contract_too_long", max_chars: MAX_CONTRACT_CHARS });
+
+  const playbookCriteria =
+    typeof body.playbook_criteria === "string" ? body.playbook_criteria.trim().slice(0, MAX_PLAYBOOK_CHARS) : "";
+  const playbookLabel = typeof body.playbook_label === "string" ? body.playbook_label.trim().slice(0, 100) : "";
+
+  // A selected playbook (lalum_playbooks) adds mandatory, contract-type
+  // specific review criteria on top of the base instructions, never in place
+  // of them: SYSTEM's grounding rules (verbatim quotes, no invented clause
+  // numbers) still bind every finding the playbook criteria ask for.
+  const system = playbookCriteria
+    ? `${SYSTEM}\n\nבנוסף, הופעלה תבנית בדיקה משרדית${playbookLabel ? ` (${playbookLabel})` : ""} עם דרישות הבדיקה הבאות. התייחס אליהן כחובה, לא כהמלצה, מבלי לוותר על אף אחת מהחובות שלעיל:\n${playbookCriteria}`
+    : SYSTEM;
 
   const userMessage = documentName
     ? `שם המסמך: ${documentName}\n\nטקסט החוזה:\n${contractText}`
@@ -172,7 +188,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
-        system: SYSTEM,
+        system,
         tools: [FINDINGS_TOOL],
         tool_choice: { type: "tool", name: FINDINGS_TOOL.name },
         messages: [{ role: "user", content: userMessage }],
