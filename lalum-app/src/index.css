@@ -31,6 +31,32 @@
   --maxw: 1180px;
 }
 
+/* Portal sub-brand: the authenticated client desk (/portal, and everything
+   rendered inside it — GroupChat, the admin scheduling console, client docs)
+   adopts a gentle, muted sage-green accent instead of the marketing site's
+   clay. This mirrors the "Talking Tree" direction prototyped in the LALUMap
+   app/repo, kept for the signed-in product experience while lalumapp.com's
+   own clay/ivory marketing brand (header, footer, every public page) stays
+   untouched. Same technique the a11y-contrast mode below uses: overriding
+   the shared custom properties on a wrapping class, so every existing
+   .btn-clay / .card / .icon-badge / pill / focus-ring rule repaints itself
+   with zero changes to the components that use them.
+   --clay itself (not --clay-bright) carries white button text, so it is
+   darkened to clear WCAG AA (4.5:1) rather than using the lighter mockup
+   swatch — the same reasoning already applied to --brand-green-on-white
+   above. This is independent of a11y-contrast (below): the two compose
+   normally, since a11y-contrast never touches --clay*. */
+.portal-theme {
+  --clay: #5a7a5d;
+  --clay-hover: #4c6850;
+  --clay-bright: #6b8f6e;
+  --clay-soft: rgba(107, 143, 110, 0.35);
+  --clay-tint: #e7ede4;
+}
+.portal-theme .btn-clay:hover {
+  box-shadow: 0 10px 22px -12px rgba(74, 100, 77, 0.6);
+}
+
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
    Assistant is a modern, crisp Hebrew sans for body; Suez One is a modern Hebrew
    editorial slab-serif for headings, giving the display type real weight and a
