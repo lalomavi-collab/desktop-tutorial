@@ -84,7 +84,7 @@
 - V GDPR לחברות ישראליות שמפעילות AI על מידע אירופי (gdpr-israeli-companies-ai)
 - V אחריות מוצר ל-AI: הוראת אחריות המוצר האירופית החדשה (ai-product-liability-eu)
 - V חובות לפי תפקיד ב-EU AI Act: ספק, מטמיע, מפיץ ומייבא (eu-ai-act-roles-obligations)
-- הכנת תיק תאימות (Conformity File) למערכת AI, שלב אחר שלב
+- V הכנת תיק תאימות (Conformity File) למערכת AI, שלב אחר שלב (eu-ai-act-conformity-file-preparation)
 - פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל
 - מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי
 - Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה
