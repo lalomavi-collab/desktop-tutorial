@@ -179,9 +179,9 @@ Deno.serve(async (req) => {
       }),
     });
     if (!res.ok) {
-      // TEMP (debugging PR #567 empty-findings issue): include the upstream body,
-      // not just the status, so a 4xx from Anthropic (bad model name, invalid
-      // tool schema, etc.) is visible instead of a bare "upstream_error".
+      // Surface the upstream body, not just the status, so a 4xx from
+      // Anthropic (bad model name, invalid tool schema, rate limit) is
+      // diagnosable instead of a bare "upstream_error".
       const errBody = await res.text();
       return json(502, { code: "upstream_error", status: res.status, upstream_body: errBody.slice(0, 2000) });
     }
@@ -207,18 +207,6 @@ Deno.serve(async (req) => {
       generated_at: new Date().toISOString(),
       verified_count: verifiedCount,
       unverified_count: unverifiedCount,
-      // TEMP (debugging PR #567 empty-findings issue): remove before merge once
-      // findings come back populated. Shows why rawFindings ended up empty:
-      // did the model even emit our tool_use block, did it emit a different
-      // one, was there raw text instead, and how did the turn end.
-      debug: {
-        stop_reason: data?.stop_reason ?? null,
-        content_block_types: Array.isArray(data?.content) ? data.content.map((b: { type?: string; name?: string }) => b?.name ? `${b.type}:${b.name}` : b?.type) : null,
-        raw_findings_count: rawFindings.length,
-        text_blocks: Array.isArray(data?.content)
-          ? data.content.filter((b: { type?: string }) => b?.type === "text").map((b: { text?: string }) => (b.text ?? "").slice(0, 500))
-          : null,
-      },
     });
   } catch {
     return json(502, { code: "fetch_failed" });
