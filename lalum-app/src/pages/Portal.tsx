@@ -711,7 +711,7 @@ export function Portal() {
   }
 
   return (
-    <section className="wrap portal-theme" style={{ padding: "56px 32px 120px" }}>
+    <section className="wrap" style={{ padding: "56px 32px 120px" }}>
       <PageMeta title="LALUM" path="/portal" noindex />
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 24, flexWrap: "wrap", marginBottom: 40 }}>
         <div>
