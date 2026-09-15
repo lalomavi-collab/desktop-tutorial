@@ -1,0 +1,19 @@
+/* Tailwind entry point for LALUM LEX components only (the Vault comparison
+   matrix, the split-screen contract review, the Prestige Executive UI). Not
+   imported by anything yet: nothing in the site or in LegalOS.tsx pulls this
+   in, so it is fully inert until a future LEX component does.
+
+   Deliberately its own file rather than an addition to src/index.css: that
+   file is the --clay* token system every one of the site's 245 prerendered
+   pages already renders against, and Tailwind's base layer resets margins,
+   headings, and form defaults site-wide the moment it enters the cascade.
+   Scoping Tailwind to files that explicitly import this one keeps the two
+   systems from ever touching the same page.
+
+   When a LEX component needs it: `import "../../styles/lex.css"` once, at
+   the top of that component's own file (or a small barrel for the LEX
+   surface), not in main.tsx. Prestige Executive tokens (obsidian, gold,
+   burgundy, the status chip colours) belong under an @theme block appended
+   here, not duplicated as ad hoc class names, once that UI is actually
+   built. */
+@import "tailwindcss";
