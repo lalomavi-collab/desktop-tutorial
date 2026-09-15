@@ -3371,6 +3371,16 @@ html.a11y-reduce-motion *::after {
   .nav-pills {
     display: none;
   }
+  /* header-tools carried exactly one visible child on phones, the quick-pay
+     ₪ button (now folded into the "More" menu instead, see Header.tsx).
+     With nothing left to show at this width, hide the wrapper itself rather
+     than leave an empty flex item: with only .brand and .header-more-wrap
+     left visible, justify-content: space-between on .header-inner puts the
+     wordmark and the menu button at opposite ends on its own, no explicit
+     order needed. */
+  .header-tools {
+    display: none;
+  }
   /* On a narrow (app) width, justified copy opens whitespace rivers and reads
      like a dense website. Let text flow naturally from the start edge instead,
      so the app feels lighter. Desktop keeps its clean justified columns. */
@@ -4138,6 +4148,16 @@ html.a11y-reduce-motion *::after {
 }
 .header-more-item svg {
   flex: none;
+  color: var(--clay);
+}
+/* The quick-pay row's icon is a currency glyph, not an svg like its
+   siblings; sized and coloured to match them so it sits in the same visual
+   column instead of looking like a stray character. */
+.header-more-pay-symbol {
+  flex: none;
+  width: 18px;
+  text-align: center;
+  font-weight: 700;
   color: var(--clay);
 }
 /* The app entry gets a faint accent so it reads as the one destination that
