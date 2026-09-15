@@ -127,7 +127,7 @@ export function Header() {
                     app reach each other. The label is the product name, one form
                     in every language, so it needs no translation string. */}
                 <Link to="/os" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
-                  <Icon name="spark" size={18} /> LALUM OS
+                  <Icon name="spark" size={18} /> LALUM LEX
                 </Link>
                 {nav.map((n) =>
                   n.hash ? (

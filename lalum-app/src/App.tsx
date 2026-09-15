@@ -71,7 +71,7 @@ export default function App() {
           <CommandBar />
         </Suspense>
         <Routes>
-          {/* LALUM OS: a standalone, full-screen app surface (the assistant),
+          {/* LALUM LEX: a standalone, full-screen app surface (the assistant),
               deliberately outside MarketingLayout so it carries no site header
               or footer and reads as an application. It shares the site's brain
               (the lalum-assistant edge function) and links back into the site. */}
