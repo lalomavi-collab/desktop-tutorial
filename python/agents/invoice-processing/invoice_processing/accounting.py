@@ -430,15 +430,30 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
         else:
             category = "income" if is_income else "expense"
             note = "🛑 חשבונית מצולמת (תמונה) — לא נקראה, נדרשת הזנה ידנית"
+        currency = detect_currency(text) if text.strip() else "ILS"
+
+        # אותו כלל הכרה חלקית שחל על קבצי ה-PDF. בלעדיו, חשבון ארנונה
+        # או חשמל שצולם היה מוכר ב-100% במקום ב-25%, בלי שדבר יסמן זאת.
+        recognized_rate = 1.0
+        if (category in ("expense", "expense_no_vat")
+                and currency == "ILS"
+                and month >= HOME_UTILITY_FROM
+                and _is_home_utility(text, path.name)):
+            category = "expense_home"
+            recognized_rate = HOME_UTILITY_RATE
+            pct = int(HOME_UTILITY_RATE * 100)
+            note = f"הוצאת בית מעורבת - מוכרת {pct}%" + (f" ({note})" if note else "")
+
         rows.append(Row(
             file=path.name,
             path=str(path),
             category=category,
-            currency=detect_currency(text) if text.strip() else "ILS",
+            currency=currency,
             net=net, vat=vat, total=total,
             estimated=True,
             note=note,
             date=extract_date(text) if text.strip() else "",
+            recognized_rate=recognized_rate,
         ))
     return rows, folder
 

@@ -169,6 +169,15 @@ def _sumifs(col: str, code: str, last: int, currency: str = "ILS") -> str:
             f"'{DETAIL}'!$D:$D,\"{currency}\")")
 
 
+def _sumifs_vat(col: str, code: str, last: int, vat_crit: str,
+                currency: str = "ILS") -> str:
+    """כמו _sumifs, עם סינון נוסף לפי עמודת המע"מ: "=0" או ">0"."""
+    rng = f"'{DETAIL}'!${col}$2:${col}${last}"
+    return (f"SUMIFS({rng},'{DETAIL}'!$B$2:$B${last},\"{code}\","
+            f"'{DETAIL}'!$D$2:$D${last},\"{currency}\","
+            f"'{DETAIL}'!$F$2:$F${last},\"{vat_crit}\")")
+
+
 def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
                    home_rate: float, home_from: str, doc_count: int):
     ws = wb.create_sheet("סיכום", 0)
@@ -245,11 +254,24 @@ def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
     line(r, "סכום מלא ששולם", f"={_sumifs('G','expense_home',last)}", None,
          "לשקיפות בלבד, לא נכנס לחישוב")
     r += 1
+    # הפרדה מכוונת. ארנונה אינה חייבת במע"מ ולכן אין בה תשומות לנכות;
+    # חשמל ומים כן חייבים, ומס התשומות שלהם מוכר באותו שיעור יחסי.
+    # איחוד שני אלה לשורה אחת "ללא מע"מ" מוותר על ניכוי שמגיע.
+    line(r, f'ארנונה ואגרות - ללא מע"מ',
+         f"={_sumifs_vat('I','expense_home',last,'=0')}", None,
+         'אין בהן מע"מ, ולכן אין תשומות לנכות. מוכרות כהוצאה בלבד.')
+    r += 1
+    line(r, 'חשמל ומים - עם מע"מ',
+         f"={_sumifs_vat('I','expense_home',last,'>0')}",
+         f"={_sumifs_vat('J','expense_home',last,'>0')}",
+         'חייבים במע"מ. מס התשומות מוכר באותו שיעור יחסי.')
+    r += 1
     R_HOME = r
-    line(r, f"החלק המוכר ({int(home_rate*100)}%)",
+    line(r, f'סה"כ מוכר ({int(home_rate*100)}%)',
          f"={_sumifs('I','expense_home',last)}",
          f"={_sumifs('J','expense_home',last)}",
-         f"חשמל, מים וארנונה המשויכים לבית. חל מ-{home_from}.")
+         f"חשמל, מים וארנונה המשויכים לבית. חל מ-{home_from}.",
+         bold=True)
     r += 2
 
     section(r, "שורה תחתונה"); r += 1
