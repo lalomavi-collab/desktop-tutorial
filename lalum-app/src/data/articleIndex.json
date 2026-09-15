@@ -347,8 +347,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-hallucinations-citations",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "ai-hallucinations-citations"
   ]
  },
  "urban-renewal-risk": {
@@ -378,9 +378,9 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
+   "california-sb574-ai-adjudication-ban",
    "quiet-legal-revolution",
-   "ai-liability-ruling",
-   "digital-lawyers-2026"
+   "ai-liability-ruling"
   ]
  },
  "international-trade-guide-2026": {
@@ -1100,7 +1100,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1365,6 +1365,14 @@
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
    "ai-realestate-risk-management"
+  ]
+ },
+ "california-sb574-ai-adjudication-ban": {
+  "topic": "ai-governance",
+  "related": [
+   "gemini-guide-law",
+   "ai-use-policy-organization",
+   "directors-liability-ai-era"
   ]
  }
 }
