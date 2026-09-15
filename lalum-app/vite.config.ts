@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
@@ -44,10 +45,10 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
-  // LALUM OS: the standalone assistant app. Prerendered only so a direct hit
+  // LALUM LEX: the standalone assistant app. Prerendered only so a direct hit
   // resolves to a real document, noindex because it is an application surface,
   // not a marketing page (the same treatment login and portal get).
-  { path: "os", title: "LALUM LEGAL OS", desc: "עוזר ה-AI של LALUM: הנדסת משפט וארכיטקטורת סיכונים.", noindex: true },
+  { path: "os", title: "LALUM LEX", desc: "עוזר ה-AI של LALUM: הנדסת משפט וארכיטקטורת סיכונים.", noindex: true },
   // One prerendered page per sector rubric under the AI pillar. These are the
   // pages outreach points a body at instead of a PDF, so they have to resolve
   // to a real document with their own title and description, not to the SPA
@@ -1091,5 +1092,11 @@ function seoPrerender(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), seoPrerender()],
+  // tailwindcss() only transforms a CSS file that itself contains
+  // `@import "tailwindcss"`. The site's global stylesheet (src/index.css,
+  // the --clay* token system every existing page depends on) has no such
+  // import, so registering the plugin here changes nothing about it. Until a
+  // LEX component imports src/styles/lex.css, this plugin sees no input and
+  // produces no output: adding it is inert on its own.
+  plugins: [react(), tailwindcss(), seoPrerender()],
 });

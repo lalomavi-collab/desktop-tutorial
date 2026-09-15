@@ -7,7 +7,7 @@ import { Wordmark } from "../components/Wordmark";
 import { LANGS, bcp47For } from "../lib/hreflang";
 import type { Lang } from "../lib/hreflang";
 
-// LALUM OS: a full-screen, app-style chat surface (the "Legal Algorist"),
+// LALUM LEX: a full-screen, app-style chat surface (the "Legal Algorist"),
 // wired to the same lalum-assistant edge function the site chat widget uses, so
 // the app and the site share one brain. Rendered standalone (no marketing
 // header or footer) at /os, noindex, so it reads as an application rather than
@@ -220,7 +220,7 @@ const OS: Record<Lang, OsCopy> = {
       { to: "/real-estate-legal-advisory", label: "Immobilier et renouvellement urbain" },
       { to: "/ai-legal-advisory", label: "IA et Droit" },
       { to: "/risk", label: "Salle de Décision" },
-      { to: "/book", label: "Prendre rendez vous" },
+      { to: "/book", label: "Prendre rendez-vous" },
     ],
     demo: "Le moteur n'est pas connecté dans cet environnement. Configurez Supabase pour activer l'assistant.",
     error: "Une erreur temporaire s'est produite. Réessayez, ou réservez un diagnostic avec Dr. Avraham Lalum, Adv.",
@@ -516,7 +516,7 @@ export function LegalOS() {
           <button type="button" className="los-burger" onClick={() => setNavOpen((v) => !v)} aria-label={copy.enginesLabel}>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
-          <span className="los-topbar-title">LALUM LEGAL OS</span>
+          <span className="los-topbar-title">LALUM LEX</span>
           {ttsOK && (
             <button
               type="button"
@@ -529,14 +529,14 @@ export function LegalOS() {
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" /></svg>
             </button>
           )}
-          <span className="los-status">● {lang === "he" ? "מוכן" : lang === "ar" ? "جاهز" : "Ready"}</span>
+          <span className="los-status">● {{ he: "מוכן", ar: "جاهز", es: "Listo", fr: "Prêt", en: "Ready" }[lang]}</span>
         </header>
 
         <div className="los-body" ref={scrollRef}>
           {empty ? (
             <div className="los-zero">
               <div className="los-zero-mark">✳</div>
-              <h1 className="los-zero-title">LALUM LEGAL OS</h1>
+              <h1 className="los-zero-title">LALUM LEX</h1>
               <div className="los-zero-kicker">THE LEGAL ALGORIST</div>
               <p className="los-zero-sub">{copy.zeroSub}</p>
               <p className="los-zero-prompt">{copy.zeroPrompt}</p>

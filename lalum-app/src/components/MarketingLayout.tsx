@@ -34,6 +34,20 @@ export function MarketingLayout() {
     if (!hash) window.scrollTo(0, 0);
   }, [pathname, hash]);
 
+  // /portal's own content already carries .portal-theme (Portal.tsx), which
+  // repaints --clay* green. That left the chrome this layout renders around
+  // it — Header, Footer, ContactRail, BottomTabBar, the chat widget — clay,
+  // so the signed-in page read as two colours stitched together instead of
+  // one. Toggling the same class on <html> for exactly this route extends
+  // the green to everything on the page, the same technique (and the same
+  // class) html.a11y-contrast already uses for a site-wide toggle. Every
+  // other route is untouched.
+  useEffect(() => {
+    const on = pathname === "/portal";
+    document.documentElement.classList.toggle("portal-theme", on);
+    return () => document.documentElement.classList.remove("portal-theme");
+  }, [pathname]);
+
   return (
     <>
       <a href="#main" className="skip-link">{t.ui.skipToContent}</a>
