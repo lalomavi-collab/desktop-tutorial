@@ -225,6 +225,25 @@ export function Header() {
           )}
         </div>
 
+        {/* A distinct entry point for the app, not a sixth nav-pill: CLAUDE.md
+            caps the domain/model row at the two areas plus Clinic, Engine and
+            Decision Room, so LALUM LEX cannot join it as a same-level item.
+            It lived only inside the "More" menu before this, first in that
+            list, which meant a desktop visitor (who already sees five visible
+            pills and has no habit of opening a hamburger menu) had no real
+            way to notice it, unlike on phones where the entire nav funnels
+            through that one menu and this is the first thing in it. A filled
+            button (like the site's other primary CTAs, /book included) reads
+            as a different kind of action than the outlined pills beside it:
+            leaving the marketing site for the standalone app, not another
+            page of it. Hidden on phones (hide-mobile): the "More" menu
+            already puts it first there, so a second copy would just be
+            clutter on an already tight row. */}
+        <Link to="/os" className="btn btn-clay btn-sm header-lex-cta hide-mobile" aria-label="LALUM LEX">
+          <span className="header-lex-cta-icon"><Icon name="spark" size={14} /></span>
+          <span className="header-lex-cta-label">LALUM LEX</span>
+        </Link>
+
         <nav className="nav-pills">
           {nav.map((n) =>
             n.hash ? (

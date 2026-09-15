@@ -1630,6 +1630,40 @@ a.caps-item:focus-visible .caps-go {
 .header-cta-label {
   display: none;
 }
+/* The app entry CTA (see Header.tsx for why it is a button, not a nav-pill)
+   keeps its text label at ordinary widths, unlike .header-cta above: it is
+   the one path a desktop visitor has to LALUM LEX at all, so it should read
+   as a named destination, not another anonymous icon in the toolbar. It
+   still collapses to icon-only at the same tight-desktop range nav-pills
+   already compress at (.header-lex-cta-label below), so it cannot itself
+   become the reason that row overflows into a scroll.
+   The icon sits in its own inset badge rather than floating loose beside the
+   label: one extra shape, not extra chrome, that reads as a small app
+   launcher rather than a copy of the plain icon+text pattern every other
+   .btn already uses (/book included). The badge lightens further and the
+   whole pill keeps .btn-clay's own lift on hover, so the accent stays
+   confined to hover states already established elsewhere, no added motion. */
+.header-lex-cta {
+  gap: 9px;
+  padding-inline-start: 7px;
+  padding-inline-end: 16px;
+  flex: none;
+}
+.header-lex-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--paper);
+  transition: background 0.15s ease;
+}
+.header-lex-cta:hover .header-lex-cta-icon {
+  background: rgba(255, 255, 255, 0.34);
+}
 /* Drop the secondary guide icon and the share icon too, for the same reason:
    both existed as tight-viewport relief valves that never fired once the
    nav grew past what fit in the capped-width header at any viewport. */
@@ -1724,6 +1758,14 @@ a.caps-item:focus-visible .caps-go {
 @media (max-width: 1120px) {
   .header-inner {
     gap: 12px;
+  }
+  .header-lex-cta {
+    width: var(--ctrl-h);
+    padding: 0;
+    justify-content: center;
+  }
+  .header-lex-cta-label {
+    display: none;
   }
   .nav-pills {
     gap: 4px;
