@@ -43,7 +43,19 @@ type Finding = {
 // attached, a findings turn: no free chat prose, a card per finding instead.
 // The two never mix in one message, mirroring the two engines behind them
 // (lalum-assistant vs analyze-contract).
-type Msg = { role: "user" | "assistant"; content: string; file?: string; findings?: Finding[]; findingsDisclaimer?: string };
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  file?: string;
+  findings?: Finding[];
+  findingsDisclaimer?: string;
+  // The submitted contract text, carried alongside its findings so the
+  // review can render as a split screen (Module 2): source document on one
+  // side, findings on the other, instead of findings alone. Absent on chats
+  // saved before this field existed, in which case the split simply
+  // collapses to the findings-only view it always was.
+  docText?: string;
+};
 type Chat = { id: string; title: string; msgs: Msg[]; ts: number };
 
 const STORE_KEY = "lalum_os_chats";
@@ -98,6 +110,7 @@ type OsCopy = {
   playbookLabel: string;
   playbookNone: string;
   playbooks: { slug: string; label: string }[];
+  sourceDocument: string;
 };
 
 const OS: Record<Lang, OsCopy> = {
@@ -157,6 +170,7 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "commercial-lease", label: "שכירות מסחרית" },
       { slug: "founders-ai", label: "מייסדים / AI Tech" },
     ],
+    sourceDocument: "מסמך מקור",
   },
   en: {
     newChat: "New chat",
@@ -214,6 +228,7 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "commercial-lease", label: "Commercial lease" },
       { slug: "founders-ai", label: "Founders / AI Tech" },
     ],
+    sourceDocument: "Source document",
   },
   es: {
     newChat: "Nuevo chat",
@@ -271,6 +286,7 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "commercial-lease", label: "Arrendamiento comercial" },
       { slug: "founders-ai", label: "Fundadores / AI Tech" },
     ],
+    sourceDocument: "Documento fuente",
   },
   fr: {
     newChat: "Nouveau chat",
@@ -328,6 +344,7 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "commercial-lease", label: "Bail commercial" },
       { slug: "founders-ai", label: "Fondateurs / AI Tech" },
     ],
+    sourceDocument: "Document source",
   },
   ar: {
     newChat: "محادثة جديدة",
@@ -385,6 +402,7 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "commercial-lease", label: "إيجار تجاري" },
       { slug: "founders-ai", label: "المؤسسون / AI Tech" },
     ],
+    sourceDocument: "المستند المصدر",
   },
 };
 
@@ -611,7 +629,10 @@ export function LegalOS() {
         });
         if (error) throw error;
         const findings: Finding[] = Array.isArray(data?.findings) ? data.findings : [];
-        setMsgs((m) => [...m, { role: "assistant", content: "", findings, findingsDisclaimer: data?.disclaimer }]);
+        setMsgs((m) => [
+          ...m,
+          { role: "assistant", content: "", findings, findingsDisclaimer: data?.disclaimer, docText: attachedFile!.text },
+        ]);
       } else {
         const modelText = attachedFile
           ? `${copy.reviewPrefix} (${attachedFile.name}):\n\n${text || copy.reviewAsk}`
@@ -631,6 +652,44 @@ export function LegalOS() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Shared by the split screen's findings pane and the pre-split-screen
+  // fallback (a chat saved before docText existed) so the card markup lives
+  // in exactly one place.
+  function findingsList(findings: Finding[]) {
+    if (findings.length === 0) return <p className="los-finding-empty">{copy.noFindings}</p>;
+    return findings.map((f) => (
+      <article key={f.finding_id} className={"los-finding sev-" + f.severity}>
+        <header className="los-finding-head">
+          <span className={"los-sev sev-" + f.severity}>
+            {f.severity === "red" ? copy.sevRed : f.severity === "yellow" ? copy.sevYellow : copy.sevGreen}
+          </span>
+          {f.is_missing_clause && <span className="los-badge">{copy.missingClause}</span>}
+          {f.clause_number && <span className="los-clause-no">§{f.clause_number}</span>}
+        </header>
+        <h3 className="los-finding-title">{f.clause_title}</h3>
+        <p className="los-finding-text">{f.issue_summary}</p>
+        {f.exact_quote && (
+          <blockquote className="los-finding-quote">
+            “{f.exact_quote}”
+            <span className={"los-verify" + (f.quote_verified ? " ok" : "")}>
+              {f.quote_verified ? copy.quoteVerified : copy.quoteUnverified}
+            </span>
+          </blockquote>
+        )}
+        <p className="los-finding-text los-finding-rationale">{f.legal_risk_rationale}</p>
+        {f.proposed_revision && (
+          <div className="los-revision">
+            <div className="los-revision-label">{copy.proposedRevision}</div>
+            <p className="los-finding-text">{f.proposed_revision}</p>
+            <button type="button" className="los-copy-btn" onClick={() => void copyRevision(f.finding_id, f.proposed_revision!)}>
+              {copiedId === f.finding_id ? copy.copied : copy.copyRevision}
+            </button>
+          </div>
+        )}
+      </article>
+    ));
   }
 
   function onKey(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -742,43 +801,22 @@ export function LegalOS() {
               {msgs.map((m, i) =>
                 m.findings ? (
                   <div key={i} className="los-msg assistant">
-                    <div className="los-findings">
-                      {m.findings.length === 0 ? (
-                        <p className="los-finding-empty">{copy.noFindings}</p>
-                      ) : (
-                        m.findings.map((f) => (
-                          <article key={f.finding_id} className={"los-finding sev-" + f.severity}>
-                            <header className="los-finding-head">
-                              <span className={"los-sev sev-" + f.severity}>
-                                {f.severity === "red" ? copy.sevRed : f.severity === "yellow" ? copy.sevYellow : copy.sevGreen}
-                              </span>
-                              {f.is_missing_clause && <span className="los-badge">{copy.missingClause}</span>}
-                              {f.clause_number && <span className="los-clause-no">§{f.clause_number}</span>}
-                            </header>
-                            <h3 className="los-finding-title">{f.clause_title}</h3>
-                            <p className="los-finding-text">{f.issue_summary}</p>
-                            {f.exact_quote && (
-                              <blockquote className="los-finding-quote">
-                                “{f.exact_quote}”
-                                <span className={"los-verify" + (f.quote_verified ? " ok" : "")}>
-                                  {f.quote_verified ? copy.quoteVerified : copy.quoteUnverified}
-                                </span>
-                              </blockquote>
-                            )}
-                            <p className="los-finding-text los-finding-rationale">{f.legal_risk_rationale}</p>
-                            {f.proposed_revision && (
-                              <div className="los-revision">
-                                <div className="los-revision-label">{copy.proposedRevision}</div>
-                                <p className="los-finding-text">{f.proposed_revision}</p>
-                                <button type="button" className="los-copy-btn" onClick={() => void copyRevision(f.finding_id, f.proposed_revision!)}>
-                                  {copiedId === f.finding_id ? copy.copied : copy.copyRevision}
-                                </button>
-                              </div>
-                            )}
-                          </article>
-                        ))
-                      )}
-                    </div>
+                    {m.docText ? (
+                      // Module 2, split screen: the submitted document on one
+                      // side, its findings on the other, so a reviewer checks
+                      // a citation against its own source without leaving the
+                      // page. Chats saved before docText existed (m.docText
+                      // absent) fall back to the findings-only view below.
+                      <div className="los-split">
+                        <div className="los-split-doc">
+                          <div className="los-split-doc-head">{m.file ? `📎 ${m.file}` : copy.sourceDocument}</div>
+                          <pre className="los-split-doc-text">{m.docText}</pre>
+                        </div>
+                        <div className="los-findings">{findingsList(m.findings)}</div>
+                      </div>
+                    ) : (
+                      <div className="los-findings">{findingsList(m.findings)}</div>
+                    )}
                     {m.findingsDisclaimer && <p className="los-findings-disclaimer">{m.findingsDisclaimer}</p>}
                   </div>
                 ) : (
@@ -940,6 +978,15 @@ const LOS_CSS = `
 .los-copy-btn:hover{background:rgba(143,192,144,.12)}
 .los-finding-empty{color:#9a9081;font-size:13.5px}
 .los-findings-disclaimer{max-width:760px;margin:8px auto 0;color:#7d7466;font-size:11.5px}
+/* Module 2, split screen: document pane beside the findings pane instead of
+   findings alone. The thread column widens only for a message that actually
+   contains a split, so a plain chat reply still reads at the usual 760px. */
+.los-thread:has(.los-split){max-width:1100px}
+.los-split{display:flex;gap:16px;align-items:flex-start;width:100%}
+.los-split-doc{flex:0 0 40%;min-width:0;max-height:65vh;overflow:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+.los-split-doc-head{font-size:12px;font-weight:700;color:#bcd6bd;margin-bottom:8px}
+.los-split-doc-text{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:12.5px;line-height:1.6;color:#d8d0c2;margin:0}
+.los-split>.los-findings{flex:1 1 60%;min-width:0;max-width:none;margin:0}
 .los-composer{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)}
 .los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
 .los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
@@ -965,5 +1012,8 @@ const LOS_CSS = `
   .los-side.open,.los-shell[dir="rtl"] .los-side.open{transform:translateX(0)}
   .los-scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:15}
   .los-burger{display:inline-flex}
+  .los-thread:has(.los-split){max-width:760px}
+  .los-split{flex-direction:column}
+  .los-split-doc{flex:none;width:100%;max-height:38vh}
 }
 `;
