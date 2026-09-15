@@ -1,8 +1,8 @@
 // analyze-contract: Supabase Edge Function (Deno) for the LALUM app.
-// The strict citation engine behind LEX (LALUM LEGAL OS, /os) /contracts review:
+// The strict citation engine behind LALUM LEX (/os) /contracts review:
 // takes a contract's extracted text and returns a structured findings list, not
-// prose. Public (no login), same as lalum-assistant and lalum-book: LEX itself
-// is a public-facing engine, not a /portal-gated one.
+// prose. Public (no login), same as lalum-assistant and lalum-book: LALUM LEX
+// itself is a public-facing engine, not a /portal-gated one.
 //
 // Anti-hallucination guardrail, in two layers:
 //   1. The model must answer through a forced tool call against a fixed JSON
@@ -45,7 +45,7 @@ const DISCLAIMER =
 // mandate already in lalum-assistant's system prompt, narrowed to the one job
 // this function does: extract findings from a document, never author facts
 // the document does not contain.
-const SYSTEM = `אתה מנוע ניתוח החוזים של LEX, מנוע LALUM LEGAL OS. תפקידך היחיד: לקרוא את טקסט החוזה שסופק לך, ולהחזיר ממצאים דרך הכלי return_contract_findings בלבד. אינך משוחח, ואינך מוסיף טקסט חופשי.
+const SYSTEM = `אתה מנוע ניתוח החוזים של LALUM LEX. תפקידך היחיד: לקרוא את טקסט החוזה שסופק לך, ולהחזיר ממצאים דרך הכלי return_contract_findings בלבד. אינך משוחח, ואינך מוסיף טקסט חופשי.
 
 חובת יסוד, אינה ניתנת לוויתור:
 1. שדה exact_quote חייב להיות העתקה מילולית, תו במקום תו, מתוך טקסט החוזה שסופק. לעולם אל תנסח מחדש, תשלים מהזיכרון, או תמציא ציטוט שנשמע סביר.
