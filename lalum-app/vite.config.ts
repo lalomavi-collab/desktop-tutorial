@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
@@ -1091,5 +1092,11 @@ function seoPrerender(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), seoPrerender()],
+  // tailwindcss() only transforms a CSS file that itself contains
+  // `@import "tailwindcss"`. The site's global stylesheet (src/index.css,
+  // the --clay* token system every existing page depends on) has no such
+  // import, so registering the plugin here changes nothing about it. Until a
+  // LEX component imports src/styles/lex.css, this plugin sees no input and
+  // produces no output: adding it is inert on its own.
+  plugins: [react(), tailwindcss(), seoPrerender()],
 });
