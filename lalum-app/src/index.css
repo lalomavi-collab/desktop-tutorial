@@ -2233,32 +2233,25 @@ a.caps-item:focus-visible .caps-go {
   border: 1px solid var(--line);
   box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
 }
-.founder-hero-mark {
+.founder-hero-photo {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--ink);
-  color: var(--paper);
+  display: block;
+  object-fit: cover;
   transition: transform 0.5s ease;
 }
-.founder-hero-mark svg {
-  width: 62%;
-  height: auto;
-}
-.founder-hero:hover .founder-hero-mark {
+.founder-hero:hover .founder-hero-photo {
   transform: scale(1.03);
 }
 .founder-hero-cap {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  padding: 46px 24px 20px;
+  padding: 46px 24px 22px;
   background: linear-gradient(to top, rgba(10, 10, 12, 0.86), rgba(10, 10, 12, 0.15) 70%, transparent);
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 .founder-hero-name {
   color: #ffffff;
@@ -2266,11 +2259,19 @@ a.caps-item:focus-visible .caps-go {
   font-size: 21px;
   font-weight: 500;
 }
+.founder-hero-role {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12.5px;
+}
+/* Its own gap from the name and title above, so the CV link reads as a
+   separate, lower action rather than a third line crowded against the rest
+   of the caption. */
 .founder-hero-cv {
   color: #f0c9b8;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  margin-top: 10px;
 }
 
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
