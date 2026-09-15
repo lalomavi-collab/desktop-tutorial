@@ -136,9 +136,19 @@ const SHARED = {
       { slug: "tenant-urban-renewal-guide", title: `מדריך לדייר בהתחדשות עירונית` },
       // The page's own hero and "covers" card promise both sides of the
       // border ("בארץ ובחו״ל"), but none of these six slots pointed abroad
-      // until now. Swapped the narrowest of the four urban-renewal links for
-      // the one general (not country-specific) overseas-transactions guide.
-      { slug: "intl-realestate-transactions", title: `ליווי עסקאות נדל״ן בינלאומיות` },
+      // until an earlier fix swapped one urban-renewal link for the general
+      // (not country-specific) overseas-transactions guide. That guide is now
+      // itself swapped out for the Portugal cluster: Search Console shows
+      // Portugal queries (`השקעות נדל"ן בפורטוגל`, `השקעה בפורטו`, and
+      // variants) carrying the single largest block of impressions on the
+      // entire site, roughly 500 across 28 days, against five published
+      // articles that were reachable from nowhere but each other's
+      // auto-generated "related" neighbours, not from this pillar page. The
+      // porto-vs-lisbon piece is the best single link for the slot: its own
+      // title opens with the exact head term ("נדל״ן בפורטוגל") the top
+      // queries share, and its content already folds in the Lisbon overview
+      // the roadmap once considered a separate article.
+      { slug: "portugal-porto-vs-lisbon", title: `נדל״ן בפורטוגל: פורטו מול ליסבון, איך בוחרים עיר למשקיע הישראלי` },
       { slug: "ai-realestate-risk-management", title: `ניהול סיכונים בנדל״ן מבוסס בינה מלאכותית` },
       { slug: "contract-review-before-signing", title: `בדיקת חוזה לפני חתימה` },
     ],
