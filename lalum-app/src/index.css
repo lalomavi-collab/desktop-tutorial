@@ -33,28 +33,102 @@
 
 /* Portal sub-brand: the authenticated client desk (/portal, and everything
    rendered inside it — GroupChat, the admin scheduling console, client docs)
-   adopts a gentle, muted sage-green accent instead of the marketing site's
-   clay. This mirrors the "Talking Tree" direction prototyped in the LALUMap
-   app/repo, kept for the signed-in product experience while lalumapp.com's
-   own clay/ivory marketing brand (header, footer, every public page) stays
-   untouched. Same technique the a11y-contrast mode below uses: overriding
-   the shared custom properties on a wrapping class, so every existing
-   .btn-clay / .card / .icon-badge / pill / focus-ring rule repaints itself
-   with zero changes to the components that use them.
-   --clay itself (not --clay-bright) carries white button text, so it is
-   darkened to clear WCAG AA (4.5:1) rather than using the lighter mockup
-   swatch — the same reasoning already applied to --brand-green-on-white
-   above. This is independent of a11y-contrast (below): the two compose
-   normally, since a11y-contrast never touches --clay*. */
+   adopts LALUM OS's own dark, sage-green look (see /os's LOS_CSS) instead of
+   the marketing site's light clay/ivory. Header, footer, and every public
+   page stay exactly as they are — this class only wraps /portal's own
+   section. Same technique the a11y-contrast mode below uses: overriding the
+   shared custom properties on a wrapping class, so every existing .btn-clay /
+   .card / .icon-badge / pill / focus-ring rule repaints itself with zero
+   changes to the components that use them — EXCEPT --paper and --ink, which
+   this file already uses for two unrelated things each (page-background or
+   input-background, and separately "white text on a filled button", for
+   --paper; body-text-colour, and separately a couple of intentionally-dark
+   filled chips like .btn-ink, for --ink). Repointing either wholesale would
+   turn every button's own text invisible, so they are left untouched
+   everywhere and the handful of concrete rules that used them as a surface
+   or text colour (never as a fill carrying white text) are overridden by
+   name below instead.
+   --clay itself (not --clay-bright) carries white button text, so it stays
+   the darker AA-safe shade (4.79:1) already used for /portal's light version
+   and for /os's own filled send button. --clay-bright is brighter than that
+   (#8fc090, same value /os uses) because here it is foreground text/icons
+   sitting directly on the dark --surface-sunken page background, which needs
+   far more contrast than white text on a solid green fill does — the same
+   split /os already draws. This is independent of a11y-contrast (below): the
+   two compose normally, since a11y-contrast never touches --clay*. */
 .portal-theme {
   --clay: #5a7a5d;
   --clay-hover: #4c6850;
-  --clay-bright: #6b8f6e;
-  --clay-soft: rgba(107, 143, 110, 0.35);
-  --clay-tint: #e7ede4;
+  --clay-bright: #8fc090;
+  --clay-soft: rgba(143, 192, 144, 0.35);
+  --clay-tint: rgba(143, 192, 144, 0.14);
+  /* --card and --line/--line-strong have exactly one meaning each in this
+     file (surface background; border colour) — never text-on-fill — so
+     unlike --paper/--ink they are safe to repoint directly. */
+  --card: #211d19;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --slate: #b7ad9d;
+  /* New: portal-only tokens for the page's own background and a "sunken"
+     surface one shade darker than --card (inputs, GroupChat's message
+     list) — there is no existing site-wide token for either. */
+  --surface-sunken: #171512;
+  background: var(--surface-sunken);
+  color: #f3ece0;
 }
 .portal-theme .btn-clay:hover {
   box-shadow: 0 10px 22px -12px rgba(74, 100, 77, 0.6);
+}
+/* .eyebrow's own rule reads --clay (the AA-for-white-text shade, ~3.8:1 on
+   this dark background) — enough for the icons that reuse --clay as
+   currentColor (3:1 threshold) but not for this small-caps text (needs
+   4.5:1), so it takes the brighter --clay-bright instead, same split as the
+   rest of this block. */
+.portal-theme .eyebrow {
+  color: var(--clay-bright);
+}
+/* .field (every text input / textarea in the portal: messages, booking note,
+   milestone form, bank-transfer reference) hardcodes --paper for its
+   background and --ink for its text — both left untouched above for the
+   reasons in the big comment, so both are overridden here explicitly. */
+.portal-theme .field {
+  background: var(--surface-sunken);
+  border-color: var(--line-strong);
+  color: #f3ece0;
+}
+.portal-theme .field:focus {
+  background: var(--card);
+  border-color: var(--clay);
+}
+.portal-theme .field::placeholder {
+  color: var(--slate);
+}
+/* The three notice tones hardcode light-mode-only colours. .notice-warn
+   normally piggybacks on --clay-tint/--clay-soft — harmless while clay is an
+   amber-adjacent terracotta, but clay is sage green in this scope, so
+   "warning" would otherwise read as the same colour as "success" and as the
+   brand accent. It gets the site's own --warning amber instead, independent
+   of clay/green. */
+.portal-theme .notice-ok {
+  background: rgba(143, 192, 144, 0.14);
+  border-color: rgba(143, 192, 144, 0.35);
+  color: #8fc090;
+}
+.portal-theme .notice-warn {
+  background: rgba(184, 132, 42, 0.16);
+  border-color: rgba(184, 132, 42, 0.4);
+  color: #e0b563;
+}
+.portal-theme .notice-err {
+  background: rgba(224, 106, 74, 0.14);
+  border-color: rgba(224, 106, 74, 0.35);
+  color: #e6a08c;
+}
+/* .card's own hover lift uses a dark, warm drop-shadow that reads clearly on
+   the marketing site's light paper but disappears entirely against this dark
+   page — swapped for a soft green glow instead of losing the hover feedback. */
+.portal-theme .card:hover {
+  box-shadow: 0 22px 44px -28px rgba(143, 192, 144, 0.25);
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.

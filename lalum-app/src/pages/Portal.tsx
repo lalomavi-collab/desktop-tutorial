@@ -646,15 +646,15 @@ export function Portal() {
     return (
       <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
+          {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay-bright)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
           {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
-          {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
+          {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#7fd598" }}>{C.billable}</span>}
           <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(c.created_at)}</span>
         </div>
         {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
         {task && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13.5, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
-            <span style={{ fontWeight: 700, color: "var(--clay)" }}>{C.task}:</span>
+            <span style={{ fontWeight: 700, color: "var(--clay-bright)" }}>{C.task}:</span>
             <span>{task.title}</span>
             <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
             {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
@@ -663,7 +663,7 @@ export function Portal() {
         {paymentsEnabled && c.is_billable && bill && (
           <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
             {chargedIds.has(c.id) ? (
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#7fd598" }}>{C.charged}</span>
             ) : (
               <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
                 <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
@@ -683,9 +683,9 @@ export function Portal() {
     return (
       <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay-bright)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
           {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
-          {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
+          {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#7fd598" }}>{P.inbox.replied} ✓</span>}
           <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(m.created_at)}</span>
         </div>
         {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
@@ -858,7 +858,7 @@ export function Portal() {
                 <div style={{ flex: 1, minWidth: 200, display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--line-strong)", borderRadius: 9999, padding: "9px 14px", background: "var(--card)" }}>
                   <Icon name="search" size={16} />
                   <input value={inboxQuery} onChange={(e) => setInboxQuery(e.target.value)} placeholder={P.inbox.searchPh}
-                    style={{ border: "none", outline: "none", background: "transparent", flex: 1, font: "inherit", fontSize: 14, color: "var(--ink)", minWidth: 0 }} />
+                    style={{ border: "none", outline: "none", background: "transparent", flex: 1, font: "inherit", fontSize: 14, color: "inherit", minWidth: 0 }} />
                 </div>
                 <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13.5, cursor: "pointer", whiteSpace: "nowrap" }}>
                   <input type="checkbox" checked={inboxUnhandledOnly} onChange={(e) => setInboxUnhandledOnly(e.target.checked)} />
@@ -925,12 +925,12 @@ export function Portal() {
                 return (
                   <div key={d.id} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 16 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay-bright)", textTransform: "uppercase", letterSpacing: ".06em" }}>
                         {topicBySlug.get(d.topic)?.name ?? d.topic}
                       </span>
                       {pending
                         ? <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>ממתינה</span>
-                        : <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>פורסמה ✓</span>}
+                        : <span style={{ fontSize: 11, fontWeight: 700, color: "#7fd598" }}>פורסמה ✓</span>}
                       {(d.asker_name || d.asker_email) && (
                         <span className="muted" style={{ fontSize: 12 }} dir="ltr">{d.asker_name}{d.asker_name && d.asker_email ? " · " : ""}{d.asker_email}</span>
                       )}
@@ -946,14 +946,14 @@ export function Portal() {
                           <button type="button" className="btn btn-clay btn-sm" disabled={!!busy || !(discussionDrafts[d.id] ?? "").trim()} onClick={() => replyDiscussion(d.id)}>
                             <Icon name="send" size={15} /> {busy === "send" ? "מפרסם…" : "פרסום תשובה"}
                           </button>
-                          <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => rejectDiscussion(d.id)} style={{ color: "var(--clay)" }}>
+                          <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => rejectDiscussion(d.id)} style={{ color: "var(--clay-bright)" }}>
                             {busy === "reject" ? "…" : "דחייה, ללא פרסום"}
                           </button>
                         </div>
                       </>
                     ) : (
                       <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 12 }}>
-                        <div className="label" style={{ color: "var(--clay)", fontSize: 11 }}>התשובה שפורסמה</div>
+                        <div className="label" style={{ color: "var(--clay-bright)", fontSize: 11 }}>התשובה שפורסמה</div>
                         <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14 }}>{d.reply}</p>
                       </div>
                     )}
@@ -971,7 +971,7 @@ export function Portal() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", rowGap: 10, marginBottom: 8 }}>
             <span className="icon-badge"><Icon name="scale" size={20} /></span>
             <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.billing.adminTitle}</h2>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{P.billing.adminOnly}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay-bright)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{P.billing.adminOnly}</span>
             {accountingDashboardEnabled && (
               <a
                 className="btn btn-ghost btn-sm"
@@ -1036,7 +1036,7 @@ export function Portal() {
                       <div className="muted" style={{ fontSize: 12 }} dir="ltr">{bl.client_email}</div>
                     </div>
                     <span dir="ltr" style={{ fontWeight: 700 }}>{fmtMoney(bl.amount, bl.currency)}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#7fd598" : "var(--clay-bright)", textTransform: "uppercase" }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</span>
                     {bl.status !== "paid" && (
                       <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : P.billing.copyLink}</button>
                     )}
@@ -1093,14 +1093,14 @@ export function Portal() {
               return (
                 <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay-bright)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
                     <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }} dir="ltr">{new Date(m.created_at).toLocaleDateString(bcp47For(lang))}</span>
                   </div>
                   {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
                   <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
                   {m.reply ? (
                     <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 14, marginTop: 12 }}>
-                      <div className="label" style={{ color: "var(--clay)" }}>{P.thread.replyLabel}</div>
+                      <div className="label" style={{ color: "var(--clay-bright)" }}>{P.thread.replyLabel}</div>
                       <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.reply}</p>
                     </div>
                   ) : (
@@ -1148,7 +1148,7 @@ export function Portal() {
                   </div>
                   <div style={{ fontWeight: 700, fontSize: 16 }} dir="ltr">{fmtMoney(bl.amount, bl.currency)}</div>
                   {paid ? (
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{P.billing.statusLabels.paid} ✓</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#7fd598" }}>{P.billing.statusLabels.paid} ✓</span>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
                       <button type="button" className="btn btn-clay btn-sm" disabled={payBusy === bl.id} onClick={() => payMilestone(bl.id)}>
@@ -1158,7 +1158,7 @@ export function Portal() {
                     </div>
                   )}
                   {failed && (
-                    <div style={{ flexBasis: "100%", fontSize: 12.5, color: "var(--clay)", lineHeight: 1.5, marginTop: 2 }}>
+                    <div style={{ flexBasis: "100%", fontSize: 12.5, color: "var(--clay-bright)", lineHeight: 1.5, marginTop: 2 }}>
                       {P.billing.failedHint}
                     </div>
                   )}
@@ -1178,7 +1178,7 @@ export function Portal() {
             <LeumiMark size={26} />
             <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.transfer.title}</h2>
             {!(bankTransfer.enabled && bankTransfer.account) && (
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{t.ui.comingSoon}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay-bright)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{t.ui.comingSoon}</span>
             )}
           </div>
           <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 18px" }}>{P.transfer.intro}</p>
@@ -1256,7 +1256,7 @@ export function Portal() {
                   <span style={{ flex: 1, minWidth: 120, wordBreak: "break-word", fontSize: 14 }} dir="auto">{prettyName(f.name)}</span>
                   {prettySize(f.size) && <span className="muted" style={{ fontSize: 12 }} dir="ltr">{prettySize(f.size)}</span>}
                   <button type="button" onClick={() => downloadFile(f.path)} className="btn btn-ghost btn-sm">{P.files.download}</button>
-                  <button type="button" onClick={() => removeFile(f.path)} className="btn btn-ghost btn-sm" style={{ color: "var(--clay)" }}>{P.files.remove}</button>
+                  <button type="button" onClick={() => removeFile(f.path)} className="btn btn-ghost btn-sm" style={{ color: "var(--clay-bright)" }}>{P.files.remove}</button>
                 </li>
               ))}
             </ul>
@@ -1304,7 +1304,7 @@ export function Portal() {
                 const on = slot === s;
                 return (
                   <button type="button" key={s} onClick={() => { setSlot(s); setBookMsg(null); }}
-                    style={{ padding: "11px 20px", borderRadius: 9999, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)", color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 15, fontWeight: 600 }} dir="ltr">
+                    style={{ padding: "11px 20px", borderRadius: 9999, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)", color: on ? "var(--paper)" : "inherit", cursor: "pointer", fontSize: 15, fontWeight: 600 }} dir="ltr">
                     {s}
                   </button>
                 );

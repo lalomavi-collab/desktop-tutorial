@@ -103,7 +103,7 @@ export function GroupChat() {
 
       <div
         ref={listRef}
-        style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 360, overflowY: "auto", border: "1px solid var(--line)", borderRadius: 12, padding: 14, marginBottom: 14, background: "var(--paper)" }}
+        style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 360, overflowY: "auto", border: "1px solid var(--line)", borderRadius: 12, padding: 14, marginBottom: 14, background: "var(--surface-sunken, var(--paper))" }}
       >
         {rows.length === 0 ? (
           <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>{G.empty}</p>

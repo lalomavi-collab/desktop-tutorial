@@ -153,7 +153,7 @@ export function SchedulingConsole() {
                         <div key={e.id} style={{ border: `1px solid ${conflictIds.has(e.id) ? "var(--clay)" : "var(--line)"}`, borderRadius: 12, padding: "12px 14px", background: "var(--card)" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                             <span dir="ltr" style={{ fontWeight: 700, fontSize: 14 }}>{`${fmtTime(e.starts_at)}-${fmtTime(e.ends_at)}`}</span>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".05em" }}>{kindLabel(e.kind)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay-bright)", textTransform: "uppercase", letterSpacing: ".05em" }}>{kindLabel(e.kind)}</span>
                             {conflictIds.has(e.id) && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{S.conflictBadge}</span>}
                             <button type="button" onClick={() => deleteEvent(e.id)} className="btn btn-ghost btn-sm" style={{ marginInlineStart: "auto", padding: "4px 10px" }} aria-label={S.delete}><Icon name="x" size={14} /></button>
                           </div>
