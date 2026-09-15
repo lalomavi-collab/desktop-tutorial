@@ -6,8 +6,8 @@
 // back through the same Cloud API the existing test workflow already talks to
 // (.github/workflows/test-whatsapp-connection.yml).
 //
-// GET  — Meta's webhook verification handshake.
-// POST — inbound message notifications. Verified with the app secret's
+// GET: Meta's webhook verification handshake.
+// POST: inbound message notifications. Verified with the app secret's
 // X-Hub-Signature-256 (fails closed if unset, same posture as
 // supabase/functions/lalum-voice-webhook for VOICE_WEBHOOK_SECRET).
 //
