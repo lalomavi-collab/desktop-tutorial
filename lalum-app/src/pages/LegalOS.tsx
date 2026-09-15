@@ -39,10 +39,27 @@ type Finding = {
   quote_verified: boolean | null;
 };
 
-// A message is either a plain chat turn (content) or, when a contract was
-// attached, a findings turn: no free chat prose, a card per finding instead.
-// The two never mix in one message, mirroring the two engines behind them
-// (lalum-assistant vs analyze-contract).
+// One cell of the Vault comparison matrix (Module 1.1): one topic, one
+// document. Mirrors compare-contracts/index.ts's sanitized shape.
+type ComparisonCell = {
+  document_index: number;
+  present: boolean;
+  summary: string;
+  exact_quote: string | null;
+  quote_verified: boolean | null;
+};
+type ComparisonTopic = {
+  topic: string;
+  materially_differs: boolean;
+  comparison_note: string;
+  cells: ComparisonCell[];
+};
+
+// A message is a plain chat turn (content), a findings turn (one contract
+// against analyze-contract), or a comparison turn (two to five contracts
+// against compare-contracts). Exactly one of findings or comparison is set on
+// a given assistant message, mirroring the three engines behind them
+// (lalum-assistant, analyze-contract, compare-contracts).
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -55,6 +72,9 @@ type Msg = {
   // saved before this field existed, in which case the split simply
   // collapses to the findings-only view it always was.
   docText?: string;
+  comparison?: ComparisonTopic[];
+  comparisonDocs?: string[];
+  comparisonDisclaimer?: string;
 };
 type Chat = { id: string; title: string; msgs: Msg[]; ts: number };
 
@@ -111,6 +131,15 @@ type OsCopy = {
   playbookNone: string;
   playbooks: { slug: string; label: string }[];
   sourceDocument: string;
+  vault: string;
+  vaultHint: string;
+  vaultTooFew: string;
+  vaultRemove: string;
+  comparisonTitle: string;
+  comparisonTopic: string;
+  comparisonPresent: string;
+  comparisonMissing: string;
+  comparisonDiffers: string;
 };
 
 const OS: Record<Lang, OsCopy> = {
@@ -171,6 +200,15 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "founders-ai", label: "מייסדים / AI Tech" },
     ],
     sourceDocument: "מסמך מקור",
+    vault: "השוואת מספר חוזים (Vault)",
+    vaultHint: "בחרו 2 עד 5 קבצים להשוואה",
+    vaultTooFew: "יש לבחור לפחות שני קבצים להשוואה.",
+    vaultRemove: "הסרה מההשוואה",
+    comparisonTitle: "טבלת השוואה",
+    comparisonTopic: "נושא",
+    comparisonPresent: "קיים",
+    comparisonMissing: "חסר",
+    comparisonDiffers: "הבדל מהותי",
   },
   en: {
     newChat: "New chat",
@@ -229,6 +267,15 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "founders-ai", label: "Founders / AI Tech" },
     ],
     sourceDocument: "Source document",
+    vault: "Compare multiple contracts (Vault)",
+    vaultHint: "Choose 2 to 5 files to compare",
+    vaultTooFew: "Choose at least two files to compare.",
+    vaultRemove: "Remove from comparison",
+    comparisonTitle: "Comparison matrix",
+    comparisonTopic: "Topic",
+    comparisonPresent: "Present",
+    comparisonMissing: "Missing",
+    comparisonDiffers: "Material difference",
   },
   es: {
     newChat: "Nuevo chat",
@@ -287,6 +334,15 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "founders-ai", label: "Fundadores / AI Tech" },
     ],
     sourceDocument: "Documento fuente",
+    vault: "Comparar varios contratos (Vault)",
+    vaultHint: "Elige de 2 a 5 archivos para comparar",
+    vaultTooFew: "Elige al menos dos archivos para comparar.",
+    vaultRemove: "Quitar de la comparación",
+    comparisonTitle: "Matriz de comparación",
+    comparisonTopic: "Tema",
+    comparisonPresent: "Presente",
+    comparisonMissing: "Ausente",
+    comparisonDiffers: "Diferencia material",
   },
   fr: {
     newChat: "Nouveau chat",
@@ -345,6 +401,15 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "founders-ai", label: "Fondateurs / AI Tech" },
     ],
     sourceDocument: "Document source",
+    vault: "Comparer plusieurs contrats (Vault)",
+    vaultHint: "Choisissez de 2 à 5 fichiers à comparer",
+    vaultTooFew: "Choisissez au moins deux fichiers à comparer.",
+    vaultRemove: "Retirer de la comparaison",
+    comparisonTitle: "Matrice de comparaison",
+    comparisonTopic: "Sujet",
+    comparisonPresent: "Présent",
+    comparisonMissing: "Absent",
+    comparisonDiffers: "Différence matérielle",
   },
   ar: {
     newChat: "محادثة جديدة",
@@ -403,6 +468,15 @@ const OS: Record<Lang, OsCopy> = {
       { slug: "founders-ai", label: "المؤسسون / AI Tech" },
     ],
     sourceDocument: "المستند المصدر",
+    vault: "مقارنة عدة عقود (Vault)",
+    vaultHint: "اختر من 2 إلى 5 ملفات للمقارنة",
+    vaultTooFew: "اختر ملفين على الأقل للمقارنة.",
+    vaultRemove: "إزالة من المقارنة",
+    comparisonTitle: "جدول المقارنة",
+    comparisonTopic: "الموضوع",
+    comparisonPresent: "موجود",
+    comparisonMissing: "غير موجود",
+    comparisonDiffers: "فرق جوهري",
   },
 };
 
@@ -451,10 +525,18 @@ export function LegalOS() {
   // by slug so send() never needs a second round trip when the user picks one.
   const [playbookSlug, setPlaybookSlug] = useState("");
   const [playbookCriteria, setPlaybookCriteria] = useState<Record<string, string>>({});
+  // Module 1.1, Vault: two to five documents queued for compare-contracts
+  // instead of one attachment for analyze-contract. Mutually exclusive with
+  // `attachment`: picking one clears the other, so send() never has to guess
+  // which engine a message meant.
+  const [vaultFiles, setVaultFiles] = useState<{ name: string; text: string }[]>([]);
+  const [vaultExtracting, setVaultExtracting] = useState(false);
+  const [vaultError, setVaultError] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const vaultFileRef = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recRef = useRef<any>(null);
 
@@ -508,6 +590,8 @@ export function LegalOS() {
     setInput("");
     setAttachment(null);
     setPlaybookSlug("");
+    setVaultFiles([]);
+    setVaultError("");
     setNavOpen(false);
     inputRef.current?.focus();
   }
@@ -584,6 +668,8 @@ export function LegalOS() {
     const file = e.target.files?.[0];
     if (fileRef.current) fileRef.current.value = "";
     if (!file) return;
+    setVaultFiles([]);
+    setVaultError("");
     setExtracting(true);
     try {
       const text = await extractText(file);
@@ -596,30 +682,94 @@ export function LegalOS() {
     }
   }
 
+  // Module 1.1, Vault: same client-side extraction as a single attachment,
+  // run over every selected file. A selection under two files does not clear
+  // whatever was already queued: the toolbar hint stays visible instead of
+  // silently discarding a first file while the person adds a second one.
+  async function onVaultFiles(e: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []).slice(0, 5);
+    if (vaultFileRef.current) vaultFileRef.current.value = "";
+    if (files.length === 0) return;
+    setAttachment(null);
+    setVaultError("");
+    setVaultExtracting(true);
+    try {
+      const extracted = await Promise.all(
+        files.map(async (file) => {
+          try {
+            return { name: file.name, text: await extractText(file) };
+          } catch {
+            return { name: file.name, text: "" };
+          }
+        })
+      );
+      setVaultFiles((prev) => [...prev, ...extracted].slice(0, 5));
+    } finally {
+      setVaultExtracting(false);
+      inputRef.current?.focus();
+    }
+  }
+  function removeVaultFile(name: string) {
+    setVaultFiles((prev) => prev.filter((f) => f.name !== name));
+  }
+
   async function send() {
     const text = input.trim();
-    if ((!text && !attachment) || loading) return;
-    const displayText = text || (attachment ? `📎 ${attachment.name}` : "");
+    if (vaultFiles.length === 1) {
+      setVaultError(copy.vaultTooFew);
+      return;
+    }
+    const hasVault = vaultFiles.length >= 2;
+    if ((!text && !attachment && !hasVault) || loading) return;
+    const displayText = hasVault
+      ? `📎 ${vaultFiles.map((f) => f.name).join(", ")}`
+      : text || (attachment ? `📎 ${attachment.name}` : "");
     const hasContractText = !!attachment?.text;
     const id = activeId ?? newId();
     if (!activeId) setActiveId(id);
-    setMsgs((m) => [...m, { role: "user", content: displayText, file: attachment?.name }]);
+    setMsgs((m) => [...m, { role: "user", content: displayText, file: hasVault ? undefined : attachment?.name }]);
     const attachedFile = attachment;
+    const queuedVaultFiles = vaultFiles;
     const chosenPlaybook = playbookSlug ? copy.playbooks.find((p) => p.slug === playbookSlug) : undefined;
     const chosenCriteria = playbookSlug ? playbookCriteria[playbookSlug] : undefined;
     setInput("");
     setAttachment(null);
+    setVaultFiles([]);
+    setVaultError("");
     setPlaybookSlug("");
     setLoading(true);
     try {
-      // A real, extracted attachment routes to analyze-contract, the strict
-      // citation engine (supabase/functions/analyze-contract), instead of the
-      // freeform chat model: a document gets structured, verified findings,
-      // never prose. Any text typed alongside the file is shown in the thread
-      // like always, but is not sent on, that engine takes a document and
-      // nothing else. Plain text (no attachment, or one extractText could not
-      // read) keeps going to lalum-assistant exactly as before.
-      if (hasContractText && supabase) {
+      // Vault (Module 1.1): two to five queued documents route to
+      // compare-contracts, a topic by topic matrix, never to analyze-contract
+      // or the free chat model. Mutually exclusive with a single attachment
+      // by construction (see onFile/onVaultFiles), so this check alone
+      // decides the engine.
+      if (hasVault && supabase) {
+        const { data, error } = await supabase.functions.invoke("compare-contracts", {
+          body: {
+            documents: queuedVaultFiles.map((f) => ({ name: f.name, text: f.text })),
+            ...(chosenCriteria ? { playbook_criteria: chosenCriteria, playbook_label: chosenPlaybook?.label } : {}),
+          },
+        });
+        if (error) throw error;
+        const topics: ComparisonTopic[] = Array.isArray(data?.topics) ? data.topics : [];
+        const docNames: string[] = Array.isArray(data?.document_names)
+          ? data.document_names
+          : queuedVaultFiles.map((f) => f.name);
+        setMsgs((m) => [
+          ...m,
+          { role: "assistant", content: "", comparison: topics, comparisonDocs: docNames, comparisonDisclaimer: data?.disclaimer },
+        ]);
+      } else if (hasVault) {
+        setMsgs((m) => [...m, { role: "assistant", content: copy.demo }]);
+      } else if (hasContractText && supabase) {
+        // A real, extracted attachment routes to analyze-contract, the strict
+        // citation engine (supabase/functions/analyze-contract), instead of the
+        // freeform chat model: a document gets structured, verified findings,
+        // never prose. Any text typed alongside the file is shown in the thread
+        // like always, but is not sent on, that engine takes a document and
+        // nothing else. Plain text (no attachment, or one extractText could not
+        // read) keeps going to lalum-assistant exactly as before.
         const { data, error } = await supabase.functions.invoke("analyze-contract", {
           body: {
             contract_text: attachedFile!.text,
@@ -799,7 +949,54 @@ export function LegalOS() {
           ) : (
             <div className="los-thread">
               {msgs.map((m, i) =>
-                m.findings ? (
+                m.comparison ? (
+                  <div key={i} className="los-msg assistant">
+                    <div className="los-matrix-wrap">
+                      <table className="los-matrix">
+                        <thead>
+                          <tr>
+                            <th>{copy.comparisonTopic}</th>
+                            {(m.comparisonDocs ?? []).map((name, di) => (
+                              <th key={di}>📎 {name}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {m.comparison.map((t, ti) => (
+                            <tr key={ti} className={t.materially_differs ? "differs" : ""}>
+                              <td className="los-matrix-topic">
+                                {t.topic}
+                                {t.materially_differs && <span className="los-matrix-flag">{copy.comparisonDiffers}</span>}
+                                <p className="los-matrix-note">{t.comparison_note}</p>
+                              </td>
+                              {(m.comparisonDocs ?? []).map((_, di) => {
+                                const cell = t.cells.find((c) => c.document_index === di);
+                                if (!cell) return <td key={di} className="los-matrix-cell empty" />;
+                                return (
+                                  <td key={di} className={"los-matrix-cell " + (cell.present ? "present" : "missing")}>
+                                    <span className="los-matrix-cell-status">
+                                      {cell.present ? copy.comparisonPresent : copy.comparisonMissing}
+                                    </span>
+                                    <p className="los-matrix-cell-text">{cell.summary}</p>
+                                    {cell.exact_quote && (
+                                      <blockquote className="los-finding-quote">
+                                        “{cell.exact_quote}”
+                                        <span className={"los-verify" + (cell.quote_verified ? " ok" : "")}>
+                                          {cell.quote_verified ? copy.quoteVerified : copy.quoteUnverified}
+                                        </span>
+                                      </blockquote>
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {m.comparisonDisclaimer && <p className="los-findings-disclaimer">{m.comparisonDisclaimer}</p>}
+                  </div>
+                ) : m.findings ? (
                   <div key={i} className="los-msg assistant">
                     {m.docText ? (
                       // Module 2, split screen: the submitted document on one
@@ -852,12 +1049,42 @@ export function LegalOS() {
               <button type="button" onClick={() => { setAttachment(null); setPlaybookSlug(""); }} aria-label="×">×</button>
             </div>
           )}
+          {vaultFiles.length > 0 && (
+            <div className="los-attach los-vault-chips">
+              {vaultFiles.map((f) => (
+                <span key={f.name} className="los-vault-chip">
+                  📎 {f.name}
+                  <button type="button" onClick={() => removeVaultFile(f.name)} aria-label={copy.vaultRemove} title={copy.vaultRemove}>×</button>
+                </span>
+              ))}
+              <select
+                className="los-playbook-select"
+                value={playbookSlug}
+                onChange={(e) => setPlaybookSlug(e.target.value)}
+                aria-label={copy.playbookLabel}
+                title={copy.playbookLabel}
+              >
+                <option value="">{copy.playbookNone}</option>
+                {copy.playbooks.map((p) => (
+                  <option key={p.slug} value={p.slug}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {vaultError && <p className="los-vault-error">{vaultError}</p>}
+          {vaultFiles.length === 0 && <p className="los-vault-hint">{copy.vaultHint}</p>}
           <div className="los-input-row">
             <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.txt" onChange={onFile} hidden />
+            <input ref={vaultFileRef} type="file" accept=".pdf,.docx,.doc,.txt" multiple onChange={onVaultFiles} hidden />
             <button type="button" className="los-tool" onClick={() => fileRef.current?.click()} disabled={extracting} title={copy.attach} aria-label={copy.attach}>
               {extracting
                 ? <span className="los-spin" />
                 : <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.5 12.5 21a5 5 0 0 1-7-7l8.5-8.5a3.5 3.5 0 0 1 5 5L10.5 18a2 2 0 0 1-3-3l7.5-7.5" /></svg>}
+            </button>
+            <button type="button" className="los-tool" onClick={() => vaultFileRef.current?.click()} disabled={vaultExtracting} title={copy.vault} aria-label={copy.vault}>
+              {vaultExtracting
+                ? <span className="los-spin" />
+                : <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="8" height="16" rx="1.5" /><rect x="13" y="4" width="8" height="16" rx="1.5" /></svg>}
             </button>
             {!!SpeechRec && (
               <button type="button" className={"los-tool" + (listening ? " rec" : "")} onClick={toggleListen} title={copy.mic} aria-label={copy.mic} aria-pressed={listening}>
@@ -876,7 +1103,13 @@ export function LegalOS() {
               dir="auto"
               aria-label={copy.placeholder}
             />
-            <button type="button" className="los-send" onClick={() => void send()} disabled={loading || (!input.trim() && !attachment)} aria-label={copy.send}>
+            <button
+              type="button"
+              className="los-send"
+              onClick={() => void send()}
+              disabled={loading || (!input.trim() && !attachment && vaultFiles.length === 0)}
+              aria-label={copy.send}
+            >
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" /></svg>
             </button>
           </div>
@@ -981,15 +1214,37 @@ const LOS_CSS = `
 /* Module 2, split screen: document pane beside the findings pane instead of
    findings alone. The thread column widens only for a message that actually
    contains a split, so a plain chat reply still reads at the usual 760px. */
-.los-thread:has(.los-split){max-width:1100px}
+.los-thread:has(.los-split),.los-thread:has(.los-matrix-wrap){max-width:1100px}
 .los-split{display:flex;gap:16px;align-items:flex-start;width:100%}
 .los-split-doc{flex:0 0 40%;min-width:0;max-height:65vh;overflow:auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
 .los-split-doc-head{font-size:12px;font-weight:700;color:#bcd6bd;margin-bottom:8px}
 .los-split-doc-text{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:12.5px;line-height:1.6;color:#d8d0c2;margin:0}
 .los-split>.los-findings{flex:1 1 60%;min-width:0;max-width:none;margin:0}
+/* Module 1.1, Vault: a topic by topic comparison matrix across two to five
+   submitted documents, replacing the single-document findings view for a
+   compare-contracts message. */
+.los-matrix-wrap{width:100%;overflow-x:auto}
+.los-matrix{width:100%;border-collapse:separate;border-spacing:0 10px}
+.los-matrix th{text-align:start;font-size:12px;font-weight:700;color:#bcd6bd;padding:0 10px 4px;white-space:nowrap}
+.los-matrix td{background:#211d19;border:1px solid rgba(255,255,255,.08);vertical-align:top;padding:12px 14px;font-size:13.5px}
+.los-matrix tr.differs td{border-color:rgba(217,164,65,.45)}
+.los-matrix td:first-child{border-start-start-radius:12px;border-end-start-radius:12px}
+.los-matrix td:last-child{border-start-end-radius:12px;border-end-end-radius:12px}
+.los-matrix-topic{min-width:180px;font-weight:700;color:#f3ece0}
+.los-matrix-flag{display:inline-block;margin-inline-start:8px;font-size:10.5px;font-weight:700;color:#d9a441;background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.4);border-radius:999px;padding:2px 8px;vertical-align:middle}
+.los-matrix-note{margin:6px 0 0;font-weight:400;color:#9a9081;font-size:12px}
+.los-matrix-cell{min-width:220px}
+.los-matrix-cell.missing{color:#c9beb0}
+.los-matrix-cell-status{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px}
+.los-matrix-cell.present .los-matrix-cell-status{color:#bcd6bd;background:rgba(143,192,144,.14);border:1px solid rgba(143,192,144,.4)}
+.los-matrix-cell.missing .los-matrix-cell-status{color:#c9beb0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+.los-matrix-cell-text{margin:6px 0 0}
 .los-composer{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)}
-.los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
+.los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
 .los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
+.los-vault-chip{display:inline-flex;align-items:center;gap:4px}
+.los-vault-hint,.los-vault-error{max-width:760px;margin:0 auto 6px;font-size:11.5px;color:#7d7466;text-align:center}
+.los-vault-error{color:#e0574a}
 .los-playbook-select{border:1px solid rgba(143,192,144,.35);background:#1c1a16;color:#bcd6bd;font:inherit;font-size:12px;border-radius:7px;padding:4px 8px;cursor:pointer;max-width:180px}
 .los-playbook-select:focus-visible{outline:2px solid #8fc090;outline-offset:1px}
 .los-input-row{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:6px;background:#1d1a16;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px 10px}
@@ -1012,8 +1267,9 @@ const LOS_CSS = `
   .los-side.open,.los-shell[dir="rtl"] .los-side.open{transform:translateX(0)}
   .los-scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:15}
   .los-burger{display:inline-flex}
-  .los-thread:has(.los-split){max-width:760px}
+  .los-thread:has(.los-split),.los-thread:has(.los-matrix-wrap){max-width:760px}
   .los-split{flex-direction:column}
   .los-split-doc{flex:none;width:100%;max-height:38vh}
+  .los-matrix-topic,.los-matrix-cell{min-width:150px}
 }
 `;
