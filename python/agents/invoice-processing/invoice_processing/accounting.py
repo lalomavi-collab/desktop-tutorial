@@ -18,6 +18,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
+import os
 from pathlib import Path
 
 from .collectors.month_path import HEBREW_MONTHS, resolve_month_folder
@@ -70,6 +71,16 @@ _TAX_INVOICE_RE = re.compile(r"חשבונית\s*מס")
 # השיעור חל גם על ההוצאה וגם על מס התשומות (ניכוי יחסי).
 # חל מהחודש שנקבע ואילך בלבד, כדי לא לשנות חודשים שכבר דווחו.
 # ---------------------------------------------------------------------------
+# יבוא שירותים מחו"ל. לפי הנחיית הלקוח ההוצאה נכנסת לחישוב בלי הוצאת
+# חשבונית עצמית: אין דיווח מע"מ עסקאות על היבוא, ואין ניכוי תשומות כנגדו.
+# כשההוצאה מוכרת במלואה השתיים מתקזזות ממילא, ולכן אין פגיעה תזרימית.
+# השערים הם ברירת מחדל גלויה, לא נתון שנשלף: ניתן לדרוס ב-.env, והם
+# נכתבים בבלוק ההנחות שבטבלה כדי שרואת החשבון תראה לפי מה חושב.
+FX_RATES = {
+    "USD": float(os.environ.get("FX_RATE_USD", "3.70")),
+    "EUR": float(os.environ.get("FX_RATE_EUR", "4.00")),
+}
+
 HOME_UTILITY_RATE = 0.25
 HOME_UTILITY_FROM = "2026-09"
 _HOME_UTILITY_HINTS = (
@@ -360,6 +371,20 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
         category, note = _resolve_no_vat_hint(category, vat, note)
         currency = detect_currency(text)
 
+        # המרה לשקל לפני הסיווג, כדי שההוצאה תיכנס לחישוב ולא תישאר בצד.
+        # בלי חשבונית עצמית אין תשומות לנכות, ולכן השורה נכנסת כהוצאה
+        # ללא מע"מ - הסכום מוכר, המע"מ לא.
+        if currency in FX_RATES and total > 0:
+            rate = FX_RATES[currency]
+            original, original_currency = total, currency
+            net = round((net or total) * rate, 2)
+            vat = 0.0
+            total = round(total * rate, 2)
+            currency = "ILS"
+            note = (f'יבוא שירותים - ללא חשבונית עצמית, אינו מזכה בניכוי תשומות. '
+                    f'שער המרה {original_currency} {rate:g}, סכום מקורי '
+                    f'{original:,.2f} {original_currency}')
+
         if total == 0:
             # PDF סרוק, פגום, או תבנית שלא נקראה. חייב טיפול ידני —
             # אסור שיישאר שקוף בדוח.
@@ -386,6 +411,12 @@ def build_rows(month: str) -> tuple[list[Row], Path]:
         # כשהסכום עצמו הגיע מ-OCR, או כשלא הצלחנו לקרוא את מצב המע\"מ.
         if (category == "expense_no_vat" and total > 0 and not used_ocr
                 and "לא זוהה" not in note):
+            estimated = False
+
+        # שורת יבוא אינה טעונה אימות פרטני: השער מוצהר בבלוק ההנחות,
+        # ונבדק פעם אחת ולא כל חודש מחדש. אחרת כל חשבון ספק מחו"ל
+        # היה חוסם את ההרצה החודשית.
+        if "שער המרה" in note:
             estimated = False
 
         # הוצאת בית מעורבת: מוכרת בשיעור חלקי, על ההוצאה ועל התשומות כאחד

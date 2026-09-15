@@ -179,7 +179,8 @@ def _sumifs_vat(col: str, code: str, last: int, vat_crit: str,
 
 
 def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
-                   home_rate: float, home_from: str, doc_count: int):
+                   home_rate: float, home_from: str, doc_count: int,
+                   fx_rates: dict | None = None):
     ws = wb.create_sheet("סיכום", 0)
     _rtl(ws)
     _widths(ws, [42, 18, 18, 62])
@@ -308,6 +309,11 @@ def _sheet_summary(wb: Workbook, totals, month_title: str, last: int,
         ("סכומים מסומנים כאומדן",
          'כל שורה שסומנה "כן" בעמודת האומדן בגיליון הפירוט חולצה בזיהוי טקסט '
          'ולא אומתה. ראו גיליון "לאימות".'),
+        ("שערי המרה למטבע חוץ",
+         (", ".join(f"{c} {r:g}" for c, r in sorted((fx_rates or {}).items()))
+          or "לא הוגדרו") +
+         '. יבוא שירותים נכנס כהוצאה מוכרת ללא ניכוי תשומות, בלי הוצאת '
+         'חשבונית עצמית. השער הוא ברירת מחדל מוצהרת - נא לאשר או לתקן.'),
         ("מקור הנתונים",
          "קבצי ה-PDF בתיקיית החודש בלבד. מסמך שלא הגיע לתיקייה אינו מופיע כאן, "
          "והמנוע אינו יכול לדעת שהוא חסר."),
@@ -478,13 +484,15 @@ def _sheet_excluded(wb: Workbook, rows: list):
 
 
 def build_workbook(rows: list, totals, month_title: str, out_path: Path,
-                   home_rate: float = 0.25, home_from: str = "2026-09") -> Path:
+                   home_rate: float = 0.25, home_from: str = "2026-09",
+                   fx_rates: dict | None = None) -> Path:
     """בונה את חוברת העבודה החודשית ושומר אותה ב-out_path."""
     wb = Workbook()
     wb.remove(wb.active)
 
     last = _sheet_detail(wb, rows)
-    _sheet_summary(wb, totals, month_title, last, home_rate, home_from, len(rows))
+    _sheet_summary(wb, totals, month_title, last, home_rate, home_from,
+                   len(rows), fx_rates)
     _sheet_review(wb, rows)
     _sheet_excluded(wb, rows)
 
@@ -496,9 +504,11 @@ def build_workbook(rows: list, totals, month_title: str, out_path: Path,
 
 
 def build_for_month(month: str, folder: Path, rows: list, totals,
-                    home_rate: float = 0.25, home_from: str = "2026-09") -> Path:
+                    home_rate: float = 0.25, home_from: str = "2026-09",
+                    fx_rates: dict | None = None) -> Path:
     """נקודת הכניסה מהפייפליין. מחזיר את נתיב הקובץ שנשמר."""
     from ..accounting import _month_title
     out = Path(folder) / f"טבלת חישוב {month}.xlsx"
     return build_workbook(rows, totals, _month_title(month), out,
-                          home_rate=home_rate, home_from=home_from)
+                          home_rate=home_rate, home_from=home_from,
+                          fx_rates=fx_rates)

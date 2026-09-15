@@ -6,7 +6,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from invoice_processing.accounting import (
-    build_rows, compute, _month_title, HOME_UTILITY_RATE, HOME_UTILITY_FROM)
+    build_rows, compute, _month_title, HOME_UTILITY_RATE, HOME_UTILITY_FROM,
+    FX_RATES)
 from invoice_processing.reporting.excel_summary import build_workbook
 
 month = sys.argv[1]
@@ -14,7 +15,8 @@ rows, folder = build_rows(month)
 t = compute(rows, month)
 out = Path(folder) / f"טבלת חישוב {month}.xlsx"
 build_workbook(rows, t, _month_title(month), out,
-               home_rate=HOME_UTILITY_RATE, home_from=HOME_UTILITY_FROM)
+               home_rate=HOME_UTILITY_RATE, home_from=HOME_UTILITY_FROM,
+               fx_rates=FX_RATES)
 
 print("OUT=" + str(out))
 print(f"ROWS={len(rows)}")

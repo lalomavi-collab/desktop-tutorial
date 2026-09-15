@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from invoice_processing.accounting import (
+    FX_RATES,
     HOME_UTILITY_FROM,
     HOME_UTILITY_RATE,
     _month_title,
@@ -135,7 +136,7 @@ def main():
         xlsx_path = Path(result["folder"]) / f"טבלת חישוב {month}.xlsx"
         build_workbook(result["rows"], result["totals"], _month_title(month),
                        xlsx_path, home_rate=HOME_UTILITY_RATE,
-                       home_from=HOME_UTILITY_FROM)
+                       home_from=HOME_UTILITY_FROM, fx_rates=FX_RATES)
         result["attachments"].append(str(xlsx_path))
         print(f"📊 טבלת חישוב: {xlsx_path.name}")
     except Exception as e:                        # noqa: BLE001
