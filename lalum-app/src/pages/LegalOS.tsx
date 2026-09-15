@@ -95,6 +95,9 @@ type OsCopy = {
   copyRevision: string;
   copied: string;
   noFindings: string;
+  playbookLabel: string;
+  playbookNone: string;
+  playbooks: { slug: string; label: string }[];
 };
 
 const OS: Record<Lang, OsCopy> = {
@@ -147,6 +150,13 @@ const OS: Record<Lang, OsCopy> = {
     copyRevision: "העתק נוסח מתוקן למו״מ",
     copied: "הועתק",
     noFindings: "לא נמצאו ממצאים בחוזה זה.",
+    playbookLabel: "תבנית בדיקה משרדית",
+    playbookNone: "ללא תבנית, בדיקה כללית",
+    playbooks: [
+      { slug: "tama38", label: "התחדשות עירונית / תמ״א 38" },
+      { slug: "commercial-lease", label: "שכירות מסחרית" },
+      { slug: "founders-ai", label: "מייסדים / AI Tech" },
+    ],
   },
   en: {
     newChat: "New chat",
@@ -197,6 +207,13 @@ const OS: Record<Lang, OsCopy> = {
     copyRevision: "Copy revised wording for negotiation",
     copied: "Copied",
     noFindings: "No findings for this contract.",
+    playbookLabel: "Firm playbook",
+    playbookNone: "No playbook, general review",
+    playbooks: [
+      { slug: "tama38", label: "Urban renewal / TAMA 38" },
+      { slug: "commercial-lease", label: "Commercial lease" },
+      { slug: "founders-ai", label: "Founders / AI Tech" },
+    ],
   },
   es: {
     newChat: "Nuevo chat",
@@ -247,6 +264,13 @@ const OS: Record<Lang, OsCopy> = {
     copyRevision: "Copiar redacción corregida para negociar",
     copied: "Copiado",
     noFindings: "No se encontraron hallazgos en este contrato.",
+    playbookLabel: "Plantilla de revisión del despacho",
+    playbookNone: "Sin plantilla, revisión general",
+    playbooks: [
+      { slug: "tama38", label: "Renovación urbana / TAMA 38" },
+      { slug: "commercial-lease", label: "Arrendamiento comercial" },
+      { slug: "founders-ai", label: "Fundadores / AI Tech" },
+    ],
   },
   fr: {
     newChat: "Nouveau chat",
@@ -297,6 +321,13 @@ const OS: Record<Lang, OsCopy> = {
     copyRevision: "Copier la rédaction révisée pour la négociation",
     copied: "Copié",
     noFindings: "Aucun constat pour ce contrat.",
+    playbookLabel: "Modèle de revue du cabinet",
+    playbookNone: "Aucun modèle, revue générale",
+    playbooks: [
+      { slug: "tama38", label: "Renouvellement urbain / TAMA 38" },
+      { slug: "commercial-lease", label: "Bail commercial" },
+      { slug: "founders-ai", label: "Fondateurs / AI Tech" },
+    ],
   },
   ar: {
     newChat: "محادثة جديدة",
@@ -347,6 +378,13 @@ const OS: Record<Lang, OsCopy> = {
     copyRevision: "نسخ الصياغة المعدّلة للتفاوض",
     copied: "تم النسخ",
     noFindings: "لم يتم العثور على ملاحظات في هذا العقد.",
+    playbookLabel: "نموذج مراجعة المكتب",
+    playbookNone: "بلا نموذج، مراجعة عامة",
+    playbooks: [
+      { slug: "tama38", label: "التجديد الحضري / تاما 38" },
+      { slug: "commercial-lease", label: "إيجار تجاري" },
+      { slug: "founders-ai", label: "المؤسسون / AI Tech" },
+    ],
   },
 };
 
@@ -390,6 +428,11 @@ export function LegalOS() {
   // label can flip to a confirmation for a moment. One id at a time is enough:
   // nothing else on the page copies text to the clipboard.
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // Selected firm playbook (lalum_playbooks.slug), empty string meaning
+  // "no playbook, general review". The criteria text itself is fetched once
+  // by slug so send() never needs a second round trip when the user picks one.
+  const [playbookSlug, setPlaybookSlug] = useState("");
+  const [playbookCriteria, setPlaybookCriteria] = useState<Record<string, string>>({});
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -400,6 +443,26 @@ export function LegalOS() {
   // Load saved chats once, client-side only.
   useEffect(() => {
     setChats(loadChats());
+  }, []);
+
+  // Load the firm's playbooks once. lalum_playbooks is public read (RLS,
+  // 0006_lalum_playbooks.sql): the criteria text itself lives in Hebrew in
+  // the database, the selector's labels stay in this file's own OS
+  // dictionary so they follow the page's five languages like everything else
+  // here, joined only by the shared slug.
+  useEffect(() => {
+    if (!supabase) return;
+    supabase
+      .from("lalum_playbooks")
+      .select("slug, criteria_text")
+      .then(({ data }) => {
+        if (!Array.isArray(data)) return;
+        const map: Record<string, string> = {};
+        for (const row of data as { slug?: unknown; criteria_text?: unknown }[]) {
+          if (typeof row.slug === "string" && typeof row.criteria_text === "string") map[row.slug] = row.criteria_text;
+        }
+        setPlaybookCriteria(map);
+      });
   }, []);
 
   useEffect(() => {
@@ -426,6 +489,7 @@ export function LegalOS() {
     setActiveId(null);
     setInput("");
     setAttachment(null);
+    setPlaybookSlug("");
     setNavOpen(false);
     inputRef.current?.focus();
   }
@@ -523,8 +587,11 @@ export function LegalOS() {
     if (!activeId) setActiveId(id);
     setMsgs((m) => [...m, { role: "user", content: displayText, file: attachment?.name }]);
     const attachedFile = attachment;
+    const chosenPlaybook = playbookSlug ? copy.playbooks.find((p) => p.slug === playbookSlug) : undefined;
+    const chosenCriteria = playbookSlug ? playbookCriteria[playbookSlug] : undefined;
     setInput("");
     setAttachment(null);
+    setPlaybookSlug("");
     setLoading(true);
     try {
       // A real, extracted attachment routes to analyze-contract, the strict
@@ -536,7 +603,11 @@ export function LegalOS() {
       // read) keeps going to lalum-assistant exactly as before.
       if (hasContractText && supabase) {
         const { data, error } = await supabase.functions.invoke("analyze-contract", {
-          body: { contract_text: attachedFile!.text, document_name: attachedFile!.name },
+          body: {
+            contract_text: attachedFile!.text,
+            document_name: attachedFile!.name,
+            ...(chosenCriteria ? { playbook_criteria: chosenCriteria, playbook_label: chosenPlaybook?.label } : {}),
+          },
         });
         if (error) throw error;
         const findings: Finding[] = Array.isArray(data?.findings) ? data.findings : [];
@@ -728,7 +799,19 @@ export function LegalOS() {
           {attachment && (
             <div className="los-attach">
               <span>📎 {attachment.name}</span>
-              <button type="button" onClick={() => setAttachment(null)} aria-label="×">×</button>
+              <select
+                className="los-playbook-select"
+                value={playbookSlug}
+                onChange={(e) => setPlaybookSlug(e.target.value)}
+                aria-label={copy.playbookLabel}
+                title={copy.playbookLabel}
+              >
+                <option value="">{copy.playbookNone}</option>
+                {copy.playbooks.map((p) => (
+                  <option key={p.slug} value={p.slug}>{p.label}</option>
+                ))}
+              </select>
+              <button type="button" onClick={() => { setAttachment(null); setPlaybookSlug(""); }} aria-label="×">×</button>
             </div>
           )}
           <div className="los-input-row">
@@ -860,6 +943,8 @@ const LOS_CSS = `
 .los-composer{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.07)}
 .los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
 .los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
+.los-playbook-select{border:1px solid rgba(143,192,144,.35);background:#1c1a16;color:#bcd6bd;font:inherit;font-size:12px;border-radius:7px;padding:4px 8px;cursor:pointer;max-width:180px}
+.los-playbook-select:focus-visible{outline:2px solid #8fc090;outline-offset:1px}
 .los-input-row{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:6px;background:#1d1a16;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px 10px}
 .los-input{flex:1;resize:none;max-height:160px;background:transparent;border:none;outline:none;color:#f3ece0;font:inherit;font-size:14.5px;line-height:1.5;padding:8px 4px}
 .los-input::placeholder{color:#7d7466}
