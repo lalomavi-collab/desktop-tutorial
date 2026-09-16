@@ -107,8 +107,16 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
+   "eu-ai-act-conformity-file-preparation",
+   "eu-ai-act-high-risk-classification"
+  ]
+ },
+ "eu-ai-act-conformity-file-preparation": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-roles-obligations",
    "eu-ai-act-high-risk-classification",
-   "ai-governance-board-framework"
+   "eu-ai-act-israeli-companies"
   ]
  },
  "ai-product-liability-eu": {
@@ -163,8 +171,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "shadow-it-law-firms",
-   "memory"
+   "memory",
+   "shadow-it-law-firms"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -228,7 +236,7 @@
   "related": [
    "eu-ai-act-2026",
    "ai-use-policy-organization",
-   "eu-ai-act-roles-obligations"
+   "directors-liability-ai-era"
   ]
  },
  "directors-liability-ai-era": {
@@ -250,17 +258,17 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-use-policy-organization",
    "ai-governance-board-framework",
-   "eu-ai-act-2026"
+   "ai-use-policy-organization",
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "eu-ai-act-transparency-generative": {
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "eu-ai-act-2026"
+   "eu-ai-act-2026",
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -268,7 +276,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-roles-obligations",
-   "eu-ai-act-transparency-generative"
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "privacy-law-amendment-13-guide": {
@@ -347,8 +355,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-workspace-encyclopedia",
-   "ai-hallucinations-citations"
+   "ai-hallucinations-citations",
+   "ai-workspace-encyclopedia"
   ]
  },
  "urban-renewal-risk": {
@@ -356,7 +364,7 @@
   "related": [
    "free-lawyer-illusion",
    "combination-deals-architecture",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
+   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
   ]
  },
  "business-mediation-relations": {
@@ -388,7 +396,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
-   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "real-estate-dispute-arbitration": {
@@ -547,8 +555,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "ai-workspace-encyclopedia"
   ]
  },
  "why-realestate-needs-ai": {
@@ -571,8 +579,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
@@ -1251,8 +1259,8 @@
   "topic": "mediation",
   "related": [
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
-   "lalum-clinic-experience"
+   "lalum-clinic-experience",
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות"
   ]
  },
  "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד": {
