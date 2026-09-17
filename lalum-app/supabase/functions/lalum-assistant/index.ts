@@ -104,13 +104,17 @@ Deno.serve(async (req) => {
       headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({ model: MODEL, max_tokens: 1200, system: SYSTEM, messages }),
     });
-    if (!res.ok) return json(502, { code: "upstream_error", status: res.status });
+    if (!res.ok) {
+      console.error(`lalum-assistant: upstream ${res.status}`);
+      return json(502, { code: "upstream_error", status: res.status });
+    }
     const data = await res.json();
     const reply = Array.isArray(data?.content)
       ? data.content.filter((b: { type?: string }) => b?.type === "text").map((b: { text?: string }) => b.text ?? "").join("").trim()
       : "";
     return json(200, { reply });
-  } catch {
+  } catch (e) {
+    console.error(`lalum-assistant: fetch_failed ${String(e).slice(0, 200)}`);
     return json(502, { code: "fetch_failed" });
   }
 });
