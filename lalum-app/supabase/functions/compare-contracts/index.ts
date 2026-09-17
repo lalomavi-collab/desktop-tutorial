@@ -195,8 +195,12 @@ Deno.serve(async (req) => {
       }),
     });
     if (!res.ok) {
+      // Log the upstream body server-side only: this is a public,
+      // unauthenticated endpoint, so an anonymous caller never sees more
+      // than a status code and a generic error.
       const errBody = await res.text();
-      return json(502, { code: "upstream_error", status: res.status, upstream_body: errBody.slice(0, 2000) });
+      console.error(`compare-contracts: upstream ${res.status} ${errBody.slice(0, 500)}`);
+      return json(502, { code: "upstream_error", status: res.status });
     }
     const data = await res.json();
 
@@ -217,7 +221,8 @@ Deno.serve(async (req) => {
       model: MODEL,
       generated_at: new Date().toISOString(),
     });
-  } catch {
+  } catch (e) {
+    console.error(`compare-contracts: fetch_failed ${String(e).slice(0, 200)}`);
     return json(502, { code: "fetch_failed" });
   }
 });

@@ -27,12 +27,18 @@ function esc(s: string): string {
 async function sendEmail(apiKey: string, from: string, to: string, subject: string, html: string, replyTo?: string) {
   const payload: Record<string, unknown> = { from, to, subject, html };
   if (replyTo) payload.reply_to = replyTo;
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return res.ok;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) console.error(`lalum-notify: resend ${res.status}`);
+    return res.ok;
+  } catch (e) {
+    console.error(`lalum-notify: send_failed ${String(e).slice(0, 200)}`);
+    return false;
+  }
 }
 
 Deno.serve(async (req) => {

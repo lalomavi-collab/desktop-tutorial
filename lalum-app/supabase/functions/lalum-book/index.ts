@@ -27,8 +27,12 @@ async function send(apiKey: string, from: string, to: string, subject: string, h
       headers: { Authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
       body: JSON.stringify(payload),
     });
+    if (!r.ok) console.error(`lalum-book: resend ${r.status}`);
     return r.ok;
-  } catch { return false; }
+  } catch (e) {
+    console.error(`lalum-book: send_failed ${String(e).slice(0, 200)}`);
+    return false;
+  }
 }
 
 Deno.serve(async (req) => {

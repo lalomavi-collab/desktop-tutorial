@@ -195,11 +195,13 @@ Deno.serve(async (req) => {
       }),
     });
     if (!res.ok) {
-      // Surface the upstream body, not just the status, so a 4xx from
-      // Anthropic (bad model name, invalid tool schema, rate limit) is
-      // diagnosable instead of a bare "upstream_error".
+      // Log the upstream body server-side for diagnosis (bad model name,
+      // invalid tool schema, rate limit), but never echo it to the caller:
+      // this is a public, unauthenticated endpoint, and the raw body can
+      // carry more detail than an anonymous caller should see.
       const errBody = await res.text();
-      return json(502, { code: "upstream_error", status: res.status, upstream_body: errBody.slice(0, 2000) });
+      console.error(`analyze-contract: upstream ${res.status} ${errBody.slice(0, 500)}`);
+      return json(502, { code: "upstream_error", status: res.status });
     }
     const data = await res.json();
 
@@ -224,7 +226,8 @@ Deno.serve(async (req) => {
       verified_count: verifiedCount,
       unverified_count: unverifiedCount,
     });
-  } catch {
+  } catch (e) {
+    console.error(`analyze-contract: fetch_failed ${String(e).slice(0, 200)}`);
     return json(502, { code: "fetch_failed" });
   }
 });
