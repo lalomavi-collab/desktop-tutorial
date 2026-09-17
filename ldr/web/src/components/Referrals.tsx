@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   supabase, JURISDICTIONS, JURISDICTION_LABELS, CURRENCY_SYMBOL,
   REFERRAL_STATUS_LABELS,
   type Profile, type Referral, type Milestone, type Currency,
 } from "../lib/supabase";
+import { matchPartners } from "../lib/partnerMatch";
 
 const EMBED = "*, requester:ldr_profiles!requester_id(display_name), provider:ldr_profiles!provider_id(display_name)";
 
@@ -225,6 +226,7 @@ function NewReferral({
 }: { profile: Profile; notify: (m: string) => void; onDone: () => void }) {
   const [providers, setProviders] = useState<Profile[]>([]);
   const [providerId, setProviderId] = useState("");
+  const [providerTouched, setProviderTouched] = useState(false);
   const [jurisdiction, setJurisdiction] = useState(profile.jurisdiction ?? "IL");
   const [brief, setBrief] = useState("");
   const [currency, setCurrency] = useState<Currency>("EUR");
@@ -236,12 +238,27 @@ function NewReferral({
     supabase.from("ldr_profiles").select("*")
       .not("experience_tier", "is", null).neq("id", profile.id)
       .order("reputation", { ascending: false }).limit(100)
-      .then(({ data }) => {
-        const list = (data as Profile[]) ?? [];
-        setProviders(list);
-        if (list[0]) setProviderId(list[0].id);
-      });
+      .then(({ data }) => setProviders((data as Profile[]) ?? []));
   }, []);
+
+  // 🤖 AI Partner Match: ranks candidates by jurisdiction fit, practice-area
+  // overlap detected from the brief, seniority and reputation. Recomputes
+  // live as the requester types, and picks the top match by default until
+  // the requester chooses someone else.
+  const matches = useMemo(
+    () => matchPartners(providers, jurisdiction, brief),
+    [providers, jurisdiction, brief],
+  );
+  const topMatch = matches[0];
+
+  useEffect(() => {
+    if (!providerTouched && topMatch) setProviderId(topMatch.profile.id);
+  }, [topMatch, providerTouched]);
+
+  function selectProvider(id: string) {
+    setProviderId(id);
+    setProviderTouched(true);
+  }
 
   function setMs(i: number, k: "title" | "amount", v: string) {
     setMilestones((prev) => prev.map((m, idx) => idx === i ? { ...m, [k]: v } : m));
@@ -277,9 +294,11 @@ function NewReferral({
           <div className="grid cols-2">
             <div>
               <label>עו״ד מקבל (Provider)</label>
-              <select value={providerId} onChange={(e) => setProviderId(e.target.value)}>
-                {providers.map((p) => (
-                  <option key={p.id} value={p.id}>{p.display_name || "עו״ד"} · {p.reputation} מוניטין</option>
+              <select value={providerId} onChange={(e) => selectProvider(e.target.value)}>
+                {matches.map((m) => (
+                  <option key={m.profile.id} value={m.profile.id}>
+                    {m.profile.display_name || "עו״ד"} · {m.score}% התאמת AI · {m.profile.reputation} מוניטין
+                  </option>
                 ))}
               </select>
             </div>
@@ -294,6 +313,23 @@ function NewReferral({
           <label>תדריך המשימה</label>
           <textarea value={brief} onChange={(e) => setBrief(e.target.value)}
             placeholder="מה נדרש מהעו״ד המקומי (due diligence, נוטריון, הגשה רגולטורית...)" />
+
+          {topMatch && topMatch.score >= 30 && (
+            <div className="card pad" style={{ marginTop: 12, borderColor: "rgba(212,175,55,0.35)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <b style={{ fontSize: 14 }}>🤖 המלצת AI: {topMatch.profile.display_name || "עו״ד"}</b>
+                <span className="tag tag-gold" style={{ fontSize: 11 }}>{topMatch.score}% התאמה</span>
+              </div>
+              <ul className="muted" style={{ margin: "8px 0 0", paddingInlineStart: 18, fontSize: 12.5 }}>
+                {topMatch.reasons.map((r, i) => <li key={i}>{r}</li>)}
+              </ul>
+              {providerId !== topMatch.profile.id && (
+                <button className="btn btn-ghost" style={{ marginTop: 10 }} onClick={() => selectProvider(topMatch.profile.id)}>
+                  בחירת ההמלצה
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="grid cols-3">
             <div>
