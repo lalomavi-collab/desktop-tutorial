@@ -47,7 +47,9 @@ export function Home() {
           <div>
             <span className="pill">{h.heroPill}</span>
             <h1 className="h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
-              {h.heroH1a} <span className="italic-clay">{h.heroH1b}</span>
+              {h.heroH1a}
+              {" "}
+              <span className="italic-clay">{h.heroH1b}</span>
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>

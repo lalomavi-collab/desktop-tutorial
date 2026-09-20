@@ -46,7 +46,9 @@ export function Training() {
         <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 1000, padding: "96px 32px 80px", textAlign: "center" }}>
           <span className="pill">{tr.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(32px, 8vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "18ch" }}>
-            {tr.heroH1a} <span className="italic-clay">{tr.heroH1b}</span>
+            {tr.heroH1a}
+            {" "}
+            <span className="italic-clay">{tr.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 36px" }}>{tr.heroLede}</p>
           <div style={{ display: "flex", gap: 14, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>

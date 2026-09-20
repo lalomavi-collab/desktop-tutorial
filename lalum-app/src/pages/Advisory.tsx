@@ -29,7 +29,9 @@ export function Advisory() {
         <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 1000, padding: "96px 32px 80px", textAlign: "center" }}>
           <span className="pill">{a.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(32px, 8vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "18ch" }}>
-            {a.heroH1a} <span className="italic-clay">{a.heroH1b}</span>
+            {a.heroH1a}
+            {" "}
+            <span className="italic-clay">{a.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 14px" }}>{a.heroLede}</p>
           {/* Names what "Clinic" is made of: strategy, law, risk, judgment,
