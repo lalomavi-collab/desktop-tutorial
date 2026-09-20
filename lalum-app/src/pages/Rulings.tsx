@@ -39,7 +39,7 @@ function RulingCard({ r }: { r: Ruling }) {
   const cite = `${rulingTitle(r)} (${r.dateLabel})`;
 
   return (
-    <article style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 18, padding: "26px 28px", borderTop: "3px solid #9a7328" }}>
+    <article style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 18, padding: "26px 28px", borderTop: "3px solid #916c26" }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "baseline", justifyContent: "space-between" }}>
         {/* Foreign captions and courts sit in a Hebrew page. Without their own
             direction the citation dot and the date land on the wrong side. */}
@@ -81,7 +81,7 @@ function RulingCard({ r }: { r: Ruling }) {
       {r.issue && <Section label={c.issue}>{r.issue}</Section>}
       <Section label={c.holding}>{r.holding}</Section>
       {r.quote && (
-        <blockquote style={{ margin: "14px 0 0", padding: "10px 16px", borderInlineStart: "3px solid #9a7328", background: "var(--clay-tint)", fontSize: 15, lineHeight: 1.6 }}>
+        <blockquote style={{ margin: "14px 0 0", padding: "10px 16px", borderInlineStart: "3px solid #916c26", background: "var(--clay-tint)", fontSize: 15, lineHeight: 1.6 }}>
           {r.quote}
         </blockquote>
       )}
@@ -137,7 +137,7 @@ function ExternalPanel({ title, body, terms, q }: { title: string; body: string;
         {DATABASES.map((db, i) => (
           <span key={db.site}>
             {i > 0 ? " · " : ""}
-            <a href={db.form} target="_blank" rel="noopener noreferrer">{db.label}</a>
+            <a href={db.form} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>{db.label}</a>
           </span>
         ))}
       </p>

@@ -150,21 +150,21 @@ export function Home() {
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
-            <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{h.engineEyebrow}</p>
+            <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
             {/* Names what "Engine" is made of, the same way the FocusAreas
                 cards and the Clinic hero now do: a quiet capability line, not
                 another sentence about the same thing. */}
-            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-soft)", margin: "14px 0 0" }}>{h.engineTagline}</p>
+            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
           <div className="grid grid-3">
             {t.data.frameworks.map((f) => (
               <div key={f.code} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.13)", borderRadius: 16, padding: 32 }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-soft)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-bright)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                   <Icon name={f.icon} size={24} />
                 </span>
-                <div style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--clay-soft)", margin: "20px 0 4px" }} dir="ltr">{f.code}</div>
+                <div style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--clay-bright)", margin: "20px 0 4px" }} dir="ltr">{f.code}</div>
                 <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--paper)", margin: "0 0 10px" }}>{f.title}</h3>
                 <p style={{ fontSize: 15, lineHeight: 1.66, color: "#C6C0B4", margin: 0 }}>{f.body}</p>
               </div>

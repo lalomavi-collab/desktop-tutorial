@@ -14,7 +14,7 @@ import { trainingEmail } from "../lib/content";
 // reads with colour and variety instead of flat centred text.
 const FMT_ACCENTS = [
   { c: "#a8482a", t: "#f3e7de" },
-  { c: "#9a7328", t: "#f1e9d6" },
+  { c: "#916c26", t: "#f1e9d6" },
   { c: "#8a3f45", t: "#f3e4e4" },
 ];
 const FMT_ICONS = ["gavel", "brain", "spark"];

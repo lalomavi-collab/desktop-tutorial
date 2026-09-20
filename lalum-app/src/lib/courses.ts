@@ -78,7 +78,7 @@ export const courses: Course[] = [
     capstoneName: "Automated Contract Negotiator & Risk Assessor",
     capstoneDesc: "מערכת מותאמת אישית המאבחנת שינויים בהסכמים, מזהה סתירות פנימיות ומציעה ניסוחי נגד אסטרטגיים.",
     icon: "gavel",
-    accent: "#9a7328",
+    accent: "#916c26",
     image: "/courses/lalum-academy-corporate.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, System Prompts וארכיטקטורת מודלים לעבודה חוזית ותאגידית" },
@@ -198,7 +198,7 @@ export const courses: Course[] = [
     capstoneName: "Regulatory & AML Decision Auditor",
     capstoneDesc: "סוכן AI הבוחן החלטות אשראי וחיתום, מזהה הטיה וחשיפות ציות (איסור הלבנה, הגינות), ומפיק מפת סיכונים.",
     icon: "file",
-    accent: "#9a7328",
+    accent: "#916c26",
     image: "/courses/lalum-academy-finance.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI בפיננסים והנדסת פרומפטים לחוזים ולרגולציה" },

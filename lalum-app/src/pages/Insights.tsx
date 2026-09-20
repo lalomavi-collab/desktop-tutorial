@@ -10,9 +10,12 @@ import { TOPICS_IN_ORDER, articlesByTopic, topicPath } from "../lib/topics";
 // A warm, brand-cohesive palette. Each article card takes the next accent so
 // the grid reads as one family, gently varied, rather than a flat wall of
 // identical clay cards. Pairs are {accent, tint} tuned to sit on the paper.
+// Every accent is darkened, where needed, to clear WCAG AA (4.5:1) as small
+// text on white (.article-card-cat, .article-card-go): ochre/gold measured
+// 4.32:1 at full brightness and failed.
 const PALETTE = [
   { accent: "#a8482a", tint: "#f6e6de" }, // clay
-  { accent: "#9a7328", tint: "#f3ecd6" }, // ochre / gold
+  { accent: "#916c26", tint: "#f3ecd6" }, // ochre / gold
   { accent: "#8a3f45", tint: "#f3e3e4" }, // wine
   { accent: "#3f6f68", tint: "#e1ede9" }, // teal
   { accent: "#5a4f9a", tint: "#e8e5f3" }, // indigo
@@ -85,7 +88,7 @@ export function Insights() {
           {cards.map((c, i) => {
             const p = PALETTE[i % PALETTE.length];
             return (
-              <Link key={c.slug} to={`/insights/${c.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}`, animationDelay: `${i * 60}ms` }}>
+              <Link key={c.slug} to={`/insights/${c.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}`, animationDelay: `${Math.min(i, 10) * 60}ms` }}>
                 {c.cover ? (
                   <div className="article-card-head article-card-head-img">
                     <img src={c.cover} alt="" loading="lazy" />
