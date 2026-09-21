@@ -32,7 +32,7 @@ export function Course() {
 
       <section dir="rtl" lang="he" className="academy">
         <div className="wrap section" style={{ maxWidth: "80ch" }}>
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>
             <Link to="/training" className="course-title-link">LALUM Academy</Link>
             {" · "}
             {c.category}
@@ -54,7 +54,7 @@ export function Course() {
           </div>
 
           <div className="course-capstone" style={{ borderColor: c.accent, marginBottom: 26 }}>
-            <div className="course-capstone-k" style={{ color: c.accent === "#9a7328" ? "#c79a3f" : "var(--clay-soft)" }}>פרויקט גמר</div>
+            <div className="course-capstone-k" style={{ color: c.accent === "#916c26" ? "#c79a3f" : "var(--clay-bright)" }}>פרויקט גמר</div>
             <div className="course-capstone-name" dir="ltr">{c.capstoneName}</div>
             <p className="course-capstone-desc">{c.capstoneDesc}</p>
           </div>

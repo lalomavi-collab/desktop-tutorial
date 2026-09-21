@@ -22,7 +22,7 @@ export function MnaSpotlight() {
     <section id="mna" style={{ background: "var(--ink)", color: "var(--paper)" }}>
       <div className="wrap section mna-spotlight">
         <div className="mna-copy">
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{mna.tag}</p>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{mna.tag}</p>
           <h2 className="h2" style={{ color: "var(--paper)", margin: "12px 0 0" }}>{mna.title}</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: "16px 0 0", maxWidth: "48ch" }}>{mna.blurb}</p>
           <Link to="/book" className="btn btn-clay" style={{ marginTop: 26 }}>{CTA[lang]}</Link>

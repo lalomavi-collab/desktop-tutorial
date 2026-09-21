@@ -1210,7 +1210,7 @@ const LOS_CSS = `
 .los-copy-btn{border:1px solid rgba(143,192,144,.4);background:transparent;color:#bcd6bd;font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:9999px;cursor:pointer}
 .los-copy-btn:hover{background:rgba(143,192,144,.12)}
 .los-finding-empty{color:#9a9081;font-size:13.5px}
-.los-findings-disclaimer{max-width:760px;margin:8px auto 0;color:#7d7466;font-size:11.5px}
+.los-findings-disclaimer{max-width:760px;margin:8px auto 0;color:#8c8272;font-size:11.5px}
 /* Module 2, split screen: document pane beside the findings pane instead of
    findings alone. The thread column widens only for a message that actually
    contains a split, so a plain chat reply still reads at the usual 760px. */
@@ -1243,13 +1243,13 @@ const LOS_CSS = `
 .los-attach{max-width:760px;margin:0 auto 8px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12.5px;color:#bcd6bd;background:rgba(143,192,144,.1);border:1px solid rgba(143,192,144,.3);border-radius:10px;padding:6px 12px;width:fit-content}
 .los-attach button{border:none;background:transparent;color:#bcd6bd;font-size:16px;line-height:1;cursor:pointer}
 .los-vault-chip{display:inline-flex;align-items:center;gap:4px}
-.los-vault-hint,.los-vault-error{max-width:760px;margin:0 auto 6px;font-size:11.5px;color:#7d7466;text-align:center}
+.los-vault-hint,.los-vault-error{max-width:760px;margin:0 auto 6px;font-size:11.5px;color:#8c8272;text-align:center}
 .los-vault-error{color:#e0574a}
 .los-playbook-select{border:1px solid rgba(143,192,144,.35);background:#1c1a16;color:#bcd6bd;font:inherit;font-size:12px;border-radius:7px;padding:4px 8px;cursor:pointer;max-width:180px}
 .los-playbook-select:focus-visible{outline:2px solid #8fc090;outline-offset:1px}
 .los-input-row{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:6px;background:#1d1a16;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:8px 10px}
 .los-input{flex:1;resize:none;max-height:160px;background:transparent;border:none;outline:none;color:#f3ece0;font:inherit;font-size:14.5px;line-height:1.5;padding:8px 4px}
-.los-input::placeholder{color:#7d7466}
+.los-input::placeholder{color:#8c8272}
 .los-tool{flex:none;width:38px;height:38px;border-radius:11px;border:none;background:transparent;color:#b7ad9d;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .los-tool:hover{background:rgba(255,255,255,.06);color:#f3ece0}
 .los-tool:disabled{opacity:.5;cursor:default}
@@ -1259,7 +1259,7 @@ const LOS_CSS = `
 .los-send:not(:disabled):hover{background:#4c6850}
 .los-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#8fc090;animation:los-spin .7s linear infinite}
 @keyframes los-spin{to{transform:rotate(360deg)}}
-.los-disclaimer{max-width:760px;margin:8px auto 0;text-align:center;color:#7d7466;font-size:11.5px}
+.los-disclaimer{max-width:760px;margin:8px auto 0;text-align:center;color:#8c8272;font-size:11.5px}
 .los-scrim{display:none}
 @media (max-width:820px){
   .los-side{position:fixed;inset-block:0;inset-inline-start:0;width:min(300px,86vw);transform:translateX(-100%);transition:transform .22s ease;z-index:20;box-shadow:0 0 40px rgba(0,0,0,.5)}

@@ -56,7 +56,7 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
       </div>
       <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: "26px 0 0" }}>
         {h.advisoryMediationLead}{" "}
-        <Link to="/mediation-dispute-resolution" style={{ color: "var(--clay)" }}>{h.advisoryMediationTitle}</Link>
+        <Link to="/mediation-dispute-resolution" style={{ color: "var(--clay)", textDecoration: "underline" }}>{h.advisoryMediationTitle}</Link>
       </p>
     </section>
   );

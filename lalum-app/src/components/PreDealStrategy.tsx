@@ -13,7 +13,7 @@ export function PreDealStrategy() {
     <section id="pre-deal" className="pre-deal">
       <div className="wrap section pre-deal-grid">
         <div className="pre-deal-head">
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{pd.eyebrow}</p>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{pd.eyebrow}</p>
           <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{pd.title}</h2>
           <p className="pre-deal-lede">{pd.lede}</p>
           <div className="pre-deal-note">

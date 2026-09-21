@@ -37,7 +37,7 @@ export const academyPro: Course[] = [
     capstoneDesc:
       "מנוע ניסוח וסקירת חוזים שעובד על תבניות המשרד עצמו ומפיק טיוטה מסומנת עם נקודות לבדיקה אנושית.",
     icon: "gavel",
-    accent: "#9a7328",
+    accent: "#916c26",
     image: "",
     track: "pro",
     frame: proFramework,
