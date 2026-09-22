@@ -6,7 +6,8 @@ import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
+import { alternatesFor, cvPath, langUrl, LANGS, EN_ARTICLE_SLUGS, type Lang } from "./src/lib/hreflang";
+import { enPosts } from "./src/data/enPosts";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
@@ -774,6 +775,13 @@ function applyMeta(template: string, r: { title: string; desc: string; url: stri
       const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
       h = replaceTag(h, re, "$1", a.href, "$2");
     }
+    // Drop any inherited alternate the template carried for a language this
+    // route is NOT translated into. A route translated to fewer languages than
+    // the home (a he-plus-en pilot article) would otherwise keep the home's
+    // stale es, fr and ar tags, pointing at query-param URLs that resolve to no
+    // file, which is exactly the dangling-alternate the build check catches.
+    const keep = new Set(alts.map((a) => a.hreflang));
+    h = h.replace(/\s*<link rel="alternate" hreflang="([^"]*)" href="[^"]*"\s*\/>/g, (m, code) => (keep.has(code) ? m : ""));
   }
   if (r.noindex) {
     h = replaceTag(h, /(<meta name="robots" content=")[^"]*("\s*\/>)/, "$1", "noindex, follow", "$2");
@@ -1039,6 +1047,34 @@ function seoPrerender(): Plugin {
           written++;
         }
       }
+
+      // English article variants (the urban renewal and AI pilot). Each is a
+      // real file at /en/insights/<slug>/ carrying the English title, standfirst
+      // and prose, its own self-referencing English canonical, the he plus en
+      // hreflang pair (from alternatesFor, which now returns exactly those two
+      // for a pilot slug), and the English article JSON-LD. The Hebrew file for
+      // the same slug already picked up the reciprocal en alternate through the
+      // same helper, so the two point at each other and Google reads them as one
+      // piece in two languages rather than a duplicate.
+      for (const slug of EN_ARTICLE_SLUGS) {
+        const en = enPosts[slug];
+        const meta = blogMeta.find((m) => m.slug === slug);
+        if (!en || !meta) continue;
+        const image = meta.cover ? (meta.cover.startsWith("http") ? meta.cover : `${SITE}${meta.cover.startsWith("/") ? "" : "/"}${meta.cover}`) : undefined;
+        const blocks = toBlocks(en.body);
+        const topic = topicOfArticle(strings.he, slug);
+        let html = applyMeta(template, {
+          title: `${en.title} · LALUM`, desc: clip(en.excerpt), url: langUrl(`/insights/${slug}`, "en"), path: `insights/${slug}`, image,
+        });
+        html = sub(html, /<html[^>]*>/, () => `<html lang="en" dir="ltr">`);
+        const script = articleJsonLd({ slug, headline: en.title, desc: clip(en.excerpt), image, date: en.date, body: blocksToText(blocks), topic });
+        html = sub(html, "</head>", () => `    ${script}\n  </head>`);
+        html = withStaticBody(html, articleBodyHtml(en.title, en.excerpt, blocks, relatedTo(slug, corpus), topic), "ltr", "en");
+        const file = join(outDir, "en", "insights", slug, "index.html");
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, html, "utf8");
+        written++;
+      }
       // Stamp a dynamic lastmod on every sitemap URL at build time, so crawlers
       // see a fresh, self-updating date on each deploy instead of a hand-edited
       // one that drifts. Only URLs that do not already carry a <lastmod> are
@@ -1062,6 +1098,15 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
         if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
+        // English article variants (the pilot), so a crawler finds them in the
+        // sitemap and not only by following the hreflang link from the Hebrew
+        // article. They update as the underlying piece does, hence monthly.
+        const enRows = [...EN_ARTICLE_SLUGS]
+          .filter((slug) => enPosts[slug])
+          .map((slug) => langUrl(`/insights/${slug}`, "en"))
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+        if (enRows.length) xml = sub(xml, "</urlset>", () => `${enRows.join("\n")}\n</urlset>`);
         // Auto-add every sector rubric, so a new one is in the sitemap the
         // moment it is added to sectors.ts. They update as the case law and
         // the regulator's instructions do, hence weekly, and they carry the
