@@ -919,8 +919,9 @@ const en = {
       title: "Privacy",
       body: [
         "This Privacy Policy was updated in July 2026 in line with Amendment 13 to the Protection of Privacy Law, 5741-1981.",
-        "We collect only what you send us: the details in a booking request or a message, plus the basic technical logs needed to run the site. We use them to respond to you and to operate and secure the service.",
+        "This applies to every visitor, whether you are exploring the site as a prospective client, already work with the firm, or are a colleague reviewing our practices. We collect only what you send us: the details in a booking request or a message, plus the basic technical logs needed to run the site. We use them to respond to you and to operate and secure the service.",
         "We do not sell your information. Client matters are held under attorney and client confidentiality. Under the amended law you have the right to know what personal information we hold about you, to access it, and to ask us to correct or delete it. To exercise these rights, contact us at avraham@lalum.co.",
+        "This site also uses cookies. Essential cookies are always on and keep the site running and secure. Analytics cookies are optional, off by default, and load only if you allow them. Review or change your choice at any time from Cookie settings in the footer.",
       ],
     },
     accessibility: {
@@ -2109,8 +2110,9 @@ const he: Dict = {
       title: "פרטיות",
       body: [
         "מדיניות פרטיות זו עודכנה ביולי 2026 בהתאם לתיקון 13 לחוק הגנת הפרטיות, התשמ״א-1981.",
-        "אנחנו אוספים רק את מה שאתם שולחים לנו: הפרטים בבקשת פגישה או בהודעה, ולוגים טכניים בסיסיים הדרושים להפעלת האתר. אנחנו משתמשים בהם כדי לחזור אליכם ולהפעיל ולאבטח את השירות.",
+        "עמוד זה חל על כל מבקר באתר, בין אם אתם בוחנים אותו כלקוח פוטנציאלי, כבר עובדים עם המשרד, או עמיתים מקצועיים הבוחנים את הנהלים שלנו. אנחנו אוספים רק את מה שאתם שולחים לנו: הפרטים בבקשת פגישה או בהודעה, ולוגים טכניים בסיסיים הדרושים להפעלת האתר. אנחנו משתמשים בהם כדי לחזור אליכם ולהפעיל ולאבטח את השירות.",
         "אנחנו לא מוכרים את המידע שלכם. ענייני לקוח מוחזקים תחת חיסיון עורך דין ולקוח. על פי החוק המעודכן, יש לכם זכות לדעת איזה מידע אישי מוחזק אצלנו עליכם, לעיין בו, ולבקש לתקן או למחוק אותו. למימוש הזכויות, פנו אלינו בכתובת avraham@lalum.co.",
+        "האתר משתמש גם בקובצי Cookie. קובצי Cookie חיוניים תמיד פעילים ושומרים על תפקוד האתר ואבטחתו. קובצי Cookie לניתוח נתונים הם רשות, כבויים כברירת מחדל, ופועלים רק אם אישרתם זאת. ניתן לעיין בבחירה או לשנות אותה בכל עת דרך הגדרות קובצי Cookie בתחתית העמוד.",
       ],
     },
     accessibility: {
@@ -3296,8 +3298,9 @@ const es: Dict = {
       title: "Privacidad",
       body: [
         "Esta Política de Privacidad fue actualizada en julio de 2026 conforme a la Enmienda 13 de la Ley de Protección de la Privacidad, 5741-1981.",
-        "Recopilamos únicamente lo que usted nos envía: los datos incluidos en una solicitud de reserva o en un mensaje, además de los registros técnicos básicos necesarios para operar el sitio. Los utilizamos para responderle y para operar y proteger el servicio.",
+        "Esta política se aplica a toda persona que visita el sitio, ya sea que lo explore como cliente potencial, ya trabaje con el despacho, o sea un colega que revisa nuestras prácticas. Recopilamos únicamente lo que usted nos envía: los datos incluidos en una solicitud de reserva o en un mensaje, además de los registros técnicos básicos necesarios para operar el sitio. Los utilizamos para responderle y para operar y proteger el servicio.",
         "No vendemos su información. Los asuntos de los clientes se mantienen bajo el secreto profesional entre abogado y cliente. Conforme a la ley enmendada, usted tiene derecho a saber qué información personal conservamos sobre usted, a acceder a ella, y a solicitarnos que la corrijamos o eliminemos. Para ejercer estos derechos, contáctenos en avraham@lalum.co.",
+        "Este sitio también utiliza cookies. Las cookies esenciales siempre están activas y mantienen el sitio en funcionamiento y protegido. Las cookies de análisis son opcionales, están desactivadas por defecto, y se activan únicamente si usted las autoriza. Puede revisar o cambiar su elección en cualquier momento desde Configuración de cookies en el pie de página.",
       ],
     },
     accessibility: {
@@ -4440,8 +4443,9 @@ const fr: Dict = {
       title: "Confidentialité",
       body: [
         "Cette politique de confidentialité a été mise à jour en juillet 2026 conformément à l'amendement 13 à la loi sur la protection de la vie privée, 5741-1981.",
-        "Nous ne collectons que ce que vous nous transmettez : les informations d'une demande de rendez-vous ou d'un message, ainsi que les journaux techniques de base nécessaires au fonctionnement du site. Nous les utilisons pour vous répondre et pour exploiter et sécuriser le service.",
+        "Cette politique s'applique à chaque visiteur, que vous découvriez le site en tant que client potentiel, que vous travailliez déjà avec le cabinet, ou que vous soyez un confrère examinant nos pratiques. Nous ne collectons que ce que vous nous transmettez : les informations d'une demande de rendez-vous ou d'un message, ainsi que les journaux techniques de base nécessaires au fonctionnement du site. Nous les utilisons pour vous répondre et pour exploiter et sécuriser le service.",
         "Nous ne vendons pas vos informations. Les dossiers clients sont soumis au secret professionnel avocat client. En vertu de la loi modifiée, vous avez le droit de savoir quelles informations personnelles nous détenons à votre sujet, d'y accéder, et de nous demander de les corriger ou de les supprimer. Pour exercer ces droits, contactez-nous à avraham@lalum.co.",
+        "Ce site utilise également des cookies. Les cookies essentiels sont toujours actifs et assurent le fonctionnement et la sécurité du site. Les cookies analytiques sont facultatifs, désactivés par défaut, et ne s'activent que si vous les autorisez. Vous pouvez revoir ou modifier votre choix à tout moment depuis Paramètres des cookies dans le pied de page.",
       ],
     },
     accessibility: {
@@ -5591,8 +5595,9 @@ const ar: Dict = {
       title: "الخصوصية",
       body: [
         "تم تحديث سياسة الخصوصية هذه في يوليو 2026 بما يتماشى مع التعديل رقم 13 لقانون حماية الخصوصية، 5741-1981.",
-        "نجمع فقط ما ترسلونه لنا: التفاصيل الواردة في طلب حجز موعد أو رسالة، بالإضافة إلى السجلات التقنية الأساسية اللازمة لتشغيل الموقع. نستخدمها للرد عليكم ولتشغيل الخدمة وتأمينها.",
+        "تنطبق هذه السياسة على كل زائر لهذا الموقع، سواء كنتم تستكشفونه كعميل محتمل، أو تعملون بالفعل مع المكتب، أو زميلاً مهنياً يراجع ممارساتنا. نجمع فقط ما ترسلونه لنا: التفاصيل الواردة في طلب حجز موعد أو رسالة، بالإضافة إلى السجلات التقنية الأساسية اللازمة لتشغيل الموقع. نستخدمها للرد عليكم ولتشغيل الخدمة وتأمينها.",
         "نحن لا نبيع معلوماتكم. تُحفظ قضايا العملاء بموجب سرية العلاقة بين المحامي والموكل. بموجب القانون المعدَّل، لكم الحق في معرفة المعلومات الشخصية التي نحتفظ بها عنكم، والوصول إليها، وطلب تصحيحها أو حذفها. لممارسة هذه الحقوق، تواصلوا معنا على avraham@lalum.co.",
+        "يستخدم هذا الموقع أيضاً ملفات تعريف الارتباط. ملفات تعريف الارتباط الأساسية مفعّلة دائماً وتحافظ على تشغيل الموقع وأمانه. ملفات تعريف الارتباط الخاصة بالتحليلات اختيارية، معطّلة افتراضياً، ولا تعمل إلا بموافقتكم. يمكنكم مراجعة اختياركم أو تغييره في أي وقت من إعدادات ملفات تعريف الارتباط في تذييل الصفحة.",
       ],
     },
     accessibility: {
