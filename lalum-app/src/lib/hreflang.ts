@@ -85,6 +85,10 @@ export const TRANSLATED_ROUTES = new Set([
 // avoid, so the language set is derived per route rather than assumed.
 export const EN_ARTICLE_SLUGS = new Set<string>([
   "second-opinion-real-estate-urban-renewal",
+  "israel-ai-regulation-policy",
+  "eu-ai-act-israeli-companies",
+  "gemini-guide-law",
+  "urban-renewal-mistakes-guide",
 ]);
 
 // The slug of an /insights/<slug>/ article path, or null for anything else.
