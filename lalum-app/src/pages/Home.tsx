@@ -44,7 +44,7 @@ export function Home() {
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground variant="photo" />
         <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
-          <div>
+          <div className="hero-text-panel">
             <span className="pill">{h.heroPill}</span>
             <h1 className="h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
               {h.heroH1a}
