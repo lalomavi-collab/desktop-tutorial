@@ -3612,6 +3612,43 @@ html.a11y-reduce-motion *::after {
     rgba(245, 241, 232, 0.72) 100%
   );
 }
+/* The one photographic variant: a real image needs a heavier veil than the
+   drawn ones so the hero heading and lede keep full contrast over it, and a
+   long fade at the inline end so it settles into the ivory page rather than
+   cutting off hard. */
+.ambient-photo-img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: 30% 40%;
+  opacity: 0.9;
+}
+.ambient-photo .ambient-scrim {
+  background:
+    linear-gradient(180deg, rgba(27, 27, 27, 0.2) 0%, rgba(245, 241, 232, 0.55) 62%, var(--ivory) 100%),
+    linear-gradient(90deg, var(--ivory) 0%, rgba(245, 241, 232, 0.35) 22%, transparent 46%);
+}
+[dir="rtl"] .ambient-photo .ambient-scrim {
+  background:
+    linear-gradient(180deg, rgba(27, 27, 27, 0.2) 0%, rgba(245, 241, 232, 0.55) 62%, var(--ivory) 100%),
+    linear-gradient(270deg, var(--ivory) 0%, rgba(245, 241, 232, 0.35) 22%, transparent 46%);
+}
+/* Below 900px the hero grid collapses to one column (see .hero-grid above),
+   so the heading sits directly on top of the image instead of beside it.
+   The side fade that carries contrast on desktop no longer has room to work,
+   so the veil goes heavy and even here: the photo reads as a faint texture
+   behind the text rather than something the text has to compete with. */
+@media (max-width: 900px) {
+  .ambient-photo .ambient-scrim,
+  [dir="rtl"] .ambient-photo .ambient-scrim {
+    background: linear-gradient(180deg, rgba(245, 241, 232, 0.86) 0%, rgba(245, 241, 232, 0.93) 55%, var(--ivory) 100%);
+  }
+  .ambient-photo-img {
+    object-position: 50% 15%;
+  }
+}
 .ambient-blob {
   position: absolute;
   border-radius: 50%;
