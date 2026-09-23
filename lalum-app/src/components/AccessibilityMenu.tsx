@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
+import { useNearTopScroll } from "../hooks/useNearTopScroll";
 
 // Self-contained accessibility menu (no third-party vendor). A fixed button at
 // the bottom-inline-start opens a panel of real controls: text size, high
@@ -43,6 +44,11 @@ export function AccessibilityMenu() {
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<Settings>(DEFAULTS);
   const panelRef = useRef<HTMLDivElement>(null);
+  // See useNearTopScroll: near the top of a page, this fixed dock sits right
+  // on top of the hero's own CTA row on many common phone heights. Never
+  // apply it while the panel itself is open, so an open panel can't vanish
+  // out from under someone scrolling.
+  const nearTop = useNearTopScroll();
 
   // Load saved settings once on mount.
   useEffect(() => {
@@ -67,7 +73,7 @@ export function AccessibilityMenu() {
   }, [open]);
 
   return (
-    <div className="a11y-dock">
+    <div className={"a11y-dock" + (nearTop && !open ? " dock-near-top" : "")}>
       {open && (
         <div className="a11y-panel" ref={panelRef} role="dialog" aria-label={a.title}>
           <div className="a11y-panel-head">

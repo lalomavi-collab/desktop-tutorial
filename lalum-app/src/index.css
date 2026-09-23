@@ -2483,6 +2483,15 @@ html.a11y-reduce-motion *::after {
   .a11y-panel {
     width: min(282px, calc(100vw - 32px));
   }
+  /* See useNearTopScroll: fades the dock out for the first ~180px of scroll,
+     where its fixed position would otherwise sit on top of the hero's own
+     CTA row on many common phone heights. Never applied while the panel is
+     open (see the component). */
+  .a11y-dock.dock-near-top {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
 }
 
 /* ---------- dark contact panel ---------- */
@@ -3994,6 +4003,13 @@ html.a11y-reduce-motion *::after {
   /* Lift the floating chat bubble above the tab bar. */
   .chat-dock {
     bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  /* See useNearTopScroll / the matching .a11y-dock rule above: same
+     fixed-dock-over-hero-CTA collision, same fix. */
+  .chat-dock.dock-near-top {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
   }
 }
 
