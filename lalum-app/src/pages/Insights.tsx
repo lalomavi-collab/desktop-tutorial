@@ -2,6 +2,7 @@ import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
+import { AmbientBackground } from "../components/AmbientBackground";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
@@ -57,7 +58,9 @@ export function Insights() {
       <PageMeta title={t.seo.insights.title} description={t.seo.insights.desc} path="/insights" jsonLd={pageJsonLd([pageNode("CollectionPage", t.seo.insights.title, t.seo.insights.desc, "https://lalumapp.com/insights")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>
+        <AmbientBackground variant="photo" />
+        <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>
+        <div className="hero-text-panel" style={{ display: "inline-block", maxWidth: "100%" }}>
           <span className="pill">{ins.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
             {ins.heroH1a}
@@ -65,6 +68,7 @@ export function Insights() {
             <span className="italic-clay">{ins.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{ins.heroLede}</p>
+        </div>
         </div>
       </section>
 

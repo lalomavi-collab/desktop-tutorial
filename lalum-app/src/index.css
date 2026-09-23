@@ -3612,6 +3612,61 @@ html.a11y-reduce-motion *::after {
     rgba(245, 241, 232, 0.72) 100%
   );
 }
+/* The one photographic variant. Contrast for the heading and lede comes from
+   the frosted .hero-text-panel they sit in (below), not from washing out the
+   image, so the photo itself stays close to full strength: a thin top vignette
+   for depth, and a bottom fade so the hero settles into the ivory page rather
+   than cutting off hard, are all it needs. */
+.ambient-photo-img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: 30% 40%;
+}
+.ambient-photo .ambient-scrim {
+  background: linear-gradient(180deg, rgba(20, 18, 15, 0.12) 0%, transparent 22%, transparent 78%, var(--ivory) 100%);
+}
+/* Below 900px the hero grid collapses to one column (see .hero-grid above)
+   and the panel spans the full width, so the fade at the bottom can be a
+   little shorter: there is no second column still needing the image behind it. */
+@media (max-width: 900px) {
+  .ambient-photo .ambient-scrim {
+    background: linear-gradient(180deg, rgba(20, 18, 15, 0.16) 0%, transparent 20%, transparent 70%, var(--ivory) 100%);
+  }
+  .ambient-photo-img {
+    object-position: 50% 15%;
+  }
+}
+/* Frosted glass card for the hero copy over the photo: the same ivory as the
+   page, translucent, so the photo keeps showing through softly right behind
+   the words rather than the words sitting on the raw image. Only the home
+   hero's photo variant uses it; every other ambient variant is abstract
+   enough already that the text sits on it directly, as before. */
+.hero-text-panel {
+  background: rgba(245, 241, 232, 0.82);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 28px;
+  padding: 34px 38px;
+  box-shadow: 0 24px 60px -28px rgba(20, 18, 15, 0.35);
+}
+@media (max-width: 560px) {
+  .hero-text-panel {
+    padding: 24px 22px;
+    border-radius: 22px;
+  }
+}
+/* Firefox and older Safari drop backdrop-filter silently; fall back to a
+   near-opaque panel so contrast never depends on a feature that may be
+   missing. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hero-text-panel {
+    background: rgba(245, 241, 232, 0.97);
+  }
+}
 .ambient-blob {
   position: absolute;
   border-radius: 50%;
