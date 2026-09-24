@@ -11,15 +11,27 @@ import { useEffect, useState } from "react";
 // reappears the instant the visitor scrolls) resolves the collision on
 // every page without hard-coding a page-specific pixel offset.
 export function useNearTopScroll(thresholdPx = 180): boolean {
-  const [nearTop, setNearTop] = useState(() => (typeof window === "undefined" ? false : window.scrollY < thresholdPx));
+  const [nearTop, setNearTop] = useState(false);
 
   useEffect(() => {
-    function onScroll() {
-      setNearTop(window.scrollY < thresholdPx);
+    // Guards against a page short enough that it can never scroll past
+    // thresholdPx (a short article, a form-only page): without this,
+    // scrollY can never reach the threshold, so the hook would return true
+    // forever and the dock would never appear on that page at all. Found
+    // by testing the fix on more than just the page it was written
+    // against — the same fixed-dock-over-content trade-off this hook
+    // makes is only worth it when scrolling can actually clear the zone.
+    function evaluate() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      setNearTop(maxScroll > thresholdPx && window.scrollY < thresholdPx);
     }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    evaluate();
+    window.addEventListener("scroll", evaluate, { passive: true });
+    window.addEventListener("resize", evaluate);
+    return () => {
+      window.removeEventListener("scroll", evaluate);
+      window.removeEventListener("resize", evaluate);
+    };
   }, [thresholdPx]);
 
   return nearTop;
