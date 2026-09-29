@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "urban-renewal-guarantees-sale-law-registration": {
+  "topic": "real-estate",
+  "related": [
+   "pinui-binui-owner-guide",
+   "tama-38-1-vs-38-2-comparison",
+   "overseas-property-due-diligence"
+  ]
+ },
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
@@ -371,8 +379,8 @@
   "topic": "real-estate",
   "related": [
    "free-lawyer-illusion",
-   "combination-deals-architecture",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
+   "combination-deals-architecture"
   ]
  },
  "business-mediation-relations": {
@@ -668,7 +676,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
+   "overseas-property-holding-structure"
   ]
  },
  "second-opinion-revolution": {
@@ -1028,7 +1036,7 @@
   "related": [
    "effective-human-oversight-ai-systems",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
+   "urban-renewal-guarantees-sale-law-registration"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
