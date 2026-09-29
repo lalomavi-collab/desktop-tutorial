@@ -85,7 +85,7 @@
 - V אחריות מוצר ל-AI: הוראת אחריות המוצר האירופית החדשה (ai-product-liability-eu)
 - V חובות לפי תפקיד ב-EU AI Act: ספק, מטמיע, מפיץ ומייבא (eu-ai-act-roles-obligations)
 - V הכנת תיק תאימות (Conformity File) למערכת AI, שלב אחר שלב (eu-ai-act-conformity-file-preparation)
-- פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל
+- V פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל (effective-human-oversight-ai-systems)
 - מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי
 - Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה
 - רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית
