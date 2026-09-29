@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "effective-human-oversight-ai-systems": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-organization",
+   "ai-governance-board-framework",
+   "amendment-13-data-security-guide"
+  ]
+ },
  "portugal-porto-vs-lisbon": {
   "topic": "real-estate",
   "related": [
@@ -267,8 +275,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-2026",
-   "eu-ai-act-high-risk-classification"
+   "eu-ai-act-high-risk-classification",
+   "eu-ai-act-2026"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -355,8 +363,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-hallucinations-citations",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "ai-hallucinations-citations"
   ]
  },
  "urban-renewal-risk": {
@@ -364,7 +372,7 @@
   "related": [
    "free-lawyer-illusion",
    "combination-deals-architecture",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
   ]
  },
  "business-mediation-relations": {
@@ -386,9 +394,9 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
+   "effective-human-oversight-ai-systems",
    "california-sb574-ai-adjudication-ban",
-   "quiet-legal-revolution",
-   "ai-liability-ruling"
+   "quiet-legal-revolution"
   ]
  },
  "international-trade-guide-2026": {
@@ -555,8 +563,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "shadow-it-law-firms",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "shadow-it-law-firms"
   ]
  },
  "why-realestate-needs-ai": {
@@ -660,7 +668,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -1018,9 +1026,9 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
+   "effective-human-oversight-ai-systems",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1378,9 +1386,9 @@
  "california-sb574-ai-adjudication-ban": {
   "topic": "ai-governance",
   "related": [
+   "effective-human-oversight-ai-systems",
    "gemini-guide-law",
-   "ai-use-policy-organization",
-   "directors-liability-ai-era"
+   "ai-use-policy-organization"
   ]
  }
 }
