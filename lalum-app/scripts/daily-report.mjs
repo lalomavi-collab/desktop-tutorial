@@ -1,10 +1,14 @@
-// Builds the daily status report sent to Telegram: visits, security, and
-// promotion (SEO/GEO). Dependency free (only Node built-ins and global fetch),
-// so it runs without an install step. Prints the Hebrew report to stdout.
+// Builds the daily status report sent to Telegram: search entries, security,
+// and promotion (SEO/GEO). Dependency free (only Node built-ins), so it runs
+// without an install step. Prints the Hebrew report to stdout.
 //
-// Visits come from Cloudflare Web Analytics when CLOUDFLARE_API_TOKEN and
-// CLOUDFLARE_ZONE_ID are set as environment variables; otherwise the visits
-// line explains what to configure.
+// The entries line reads real Google Search Console figures. The workflow
+// fetches the data/search-console branch and passes the current snapshot in
+// GSC_JSON (and the previous day's snapshot in GSC_PREV_JSON for the trend).
+// If those are absent the script falls back to reading the branch itself with
+// git, and if that too is unavailable it says so plainly rather than inventing
+// a number. Visitor counts from Cloudflare Web Analytics are an optional extra
+// line, shown only when CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID are set.
 
 import { execSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
@@ -13,6 +17,82 @@ import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), "utf8") : "");
+
+// ---- Search Console data ----
+// Load the current snapshot from GSC_JSON, or fall back to reading the data
+// branch directly. Returns the parsed object, or null when nothing is readable.
+function loadGsc(envVar, gitRef) {
+  const p = process.env[envVar];
+  if (p && existsSync(p)) {
+    try {
+      const txt = readFileSync(p, "utf8").trim();
+      if (txt) return JSON.parse(txt);
+    } catch {
+      // fall through to git
+    }
+  }
+  try {
+    const txt = execSync(
+      `git show ${gitRef}:data/search-console/latest.json`,
+      { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+    ).trim();
+    if (txt) return JSON.parse(txt);
+  } catch {
+    // not available
+  }
+  return null;
+}
+
+const he = (n) => Number(n).toLocaleString("he-IL");
+const shortPath = (url) => {
+  try {
+    const u = new URL(url);
+    return u.pathname === "/" ? "/" : u.pathname;
+  } catch {
+    return url;
+  }
+};
+const qText = (row) => (Array.isArray(row.keys) ? row.keys[0] : row.keys) || "";
+
+function trendLine(cur, prev) {
+  if (!prev?.totals || !cur?.totals) return "מגמה: אין קובץ קודם להשוואה";
+  const dc = (cur.totals.clicks ?? 0) - (prev.totals.clicks ?? 0);
+  const di = (cur.totals.impressions ?? 0) - (prev.totals.impressions ?? 0);
+  const fmt = (d) => (d > 0 ? `עלה ב-${he(d)}` : d < 0 ? `ירד ב-${he(-d)}` : "ללא שינוי");
+  return `מגמה מול אתמול: קליקים ${fmt(dc)}, הופעות ${fmt(di)}`;
+}
+
+function entriesSection() {
+  const cur = loadGsc("GSC_JSON", "origin/data/search-console");
+  if (!cur?.totals) {
+    return "📈 כניסות מחיפוש (Search Console)\nאין נתונים זמינים כרגע, ייתכן שענף הנתונים טרם עודכן. לא ממציאים מספר.";
+  }
+  const prev = loadGsc("GSC_PREV_JSON", "origin/data/search-console~1");
+  const w = cur.window || {};
+  const t = cur.totals || {};
+  const ctr = t.impressions ? Math.round((t.clicks / t.impressions) * 1000) / 10 : 0;
+
+  const topQ = [...(cur.queries || [])]
+    .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
+    .slice(0, 3)
+    .map((q) => `${qText(q)} (${he(q.clicks || 0)})`)
+    .join(", ");
+  const topP = [...(cur.pages || [])]
+    .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
+    .slice(0, 3)
+    .map((p) => `${shortPath(qText(p))} (${he(p.clicks || 0)})`)
+    .join(", ");
+
+  const lines = [
+    "📈 כניסות מחיפוש (Search Console)",
+    `חלון ${w.start || "?"} עד ${w.end || "?"}: ${he(t.clicks || 0)} קליקים, ${he(t.impressions || 0)} הופעות, CTR ${ctr}%`,
+    trendLine(cur, prev),
+  ];
+  if (topQ) lines.push(`שאילתות מובילות: ${topQ}`);
+  if (topP) lines.push(`עמודים מובילים: ${topP}`);
+  lines.push("הערה: נתוני Search Console מתעדכנים בפיגור של יומיים עד שלושה, זה תקין.");
+  return lines.join("\n");
+}
 
 // ---- Promotion (SEO and GEO) ----
 let seoOut = "";
@@ -35,11 +115,11 @@ const secOk = hasHsts && mixed === 0;
 const secStatus = secOk ? "✅ תקין" : "⚠️ דורש בדיקה";
 const secDetail = `${hasHsts ? "HSTS פעיל" : "HSTS חסר"}, ${mixed ? `תוכן מעורב: ${mixed}` : "אין תוכן מעורב"}`;
 
-// ---- Visits (Cloudflare Web Analytics) ----
+// ---- Visitors (Cloudflare Web Analytics, optional) ----
 async function visitsLine() {
   const token = process.env.CLOUDFLARE_API_TOKEN;
   const zone = process.env.CLOUDFLARE_ZONE_ID;
-  if (!token || !zone) return "לא מוגדר עדיין (צריך טוקן Cloudflare, ראו הוראות)";
+  if (!token || !zone) return "";
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString().slice(0, 10);
   const query =
     "query($zone:String!,$since:String!){viewer{zones(filter:{zoneTag:$zone})" +
@@ -53,27 +133,25 @@ async function visitsLine() {
     });
     const data = await res.json();
     const groups = data?.data?.viewer?.zones?.[0]?.httpRequests1dGroups || [];
-    if (!groups.length) return "אין נתונים עדיין";
+    if (!groups.length) return "👥 מבקרים (Cloudflare): אין נתונים עדיין";
     const g = groups[0];
-    return `${g.uniq?.uniques ?? "?"} מבקרים, ${g.sum?.pageViews ?? "?"} צפיות (${g.dimensions?.date})`;
+    return `👥 מבקרים (Cloudflare): ${g.uniq?.uniques ?? "?"} מבקרים, ${g.sum?.pageViews ?? "?"} צפיות (${g.dimensions?.date})`;
   } catch {
-    return "לא זמין כרגע";
+    return "👥 מבקרים (Cloudflare): לא זמין כרגע";
   }
 }
 
+const entries = entriesSection();
 const visits = await visitsLine();
 const date = new Date().toISOString().slice(0, 10);
 
-const msg = `📊 דוח יומי LALUM, ${date}
+const blocks = [
+  `📊 דוח יומי LALUM, ${date}`,
+  entries,
+  visits,
+  `🔒 אבטחה: ${secStatus}\n${secDetail}`,
+  `🚀 קידום SEO ו-GEO: ${promo}\nבדיקות: ${seoSummary}`,
+  "https://lalumapp.com/",
+].filter(Boolean);
 
-👥 כניסות: ${visits}
-
-🔒 אבטחה: ${secStatus}
-${secDetail}
-
-🚀 קידום SEO ו-GEO: ${promo}
-בדיקות: ${seoSummary}
-
-https://lalumapp.com/`;
-
-console.log(msg);
+console.log(blocks.join("\n\n"));
