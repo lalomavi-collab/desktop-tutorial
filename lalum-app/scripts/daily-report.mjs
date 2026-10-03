@@ -54,22 +54,41 @@ const shortPath = (url) => {
 };
 const qText = (row) => (Array.isArray(row.keys) ? row.keys[0] : row.keys) || "";
 
+// The real totals are the sum over the date dimension. Search Console hides
+// rare queries, so the stored `totals` (historically the query-dimension sum)
+// undercounts actual traffic by about threefold. Summing `dates` matches the
+// figure shown in the Search Console UI. We derive it here so the report is
+// correct even against an older snapshot whose `totals` was query based,
+// falling back to the stored `totals` only when no date rows are present.
+function realTotals(d) {
+  const dates = Array.isArray(d?.dates) ? d.dates : [];
+  if (dates.length) {
+    return dates.reduce(
+      (a, r) => ({ clicks: a.clicks + (r.clicks || 0), impressions: a.impressions + (r.impressions || 0) }),
+      { clicks: 0, impressions: 0 },
+    );
+  }
+  return d?.totals || { clicks: 0, impressions: 0 };
+}
+
 function trendLine(cur, prev) {
-  if (!prev?.totals || !cur?.totals) return "מגמה: אין קובץ קודם להשוואה";
-  const dc = (cur.totals.clicks ?? 0) - (prev.totals.clicks ?? 0);
-  const di = (cur.totals.impressions ?? 0) - (prev.totals.impressions ?? 0);
+  if (!prev) return "מגמה: אין קובץ קודם להשוואה";
+  const c = realTotals(cur);
+  const p = realTotals(prev);
+  const dc = c.clicks - p.clicks;
+  const di = c.impressions - p.impressions;
   const fmt = (d) => (d > 0 ? `עלה ב-${he(d)}` : d < 0 ? `ירד ב-${he(-d)}` : "ללא שינוי");
   return `מגמה מול אתמול: קליקים ${fmt(dc)}, הופעות ${fmt(di)}`;
 }
 
 function entriesSection() {
   const cur = loadGsc("GSC_JSON", "origin/data/search-console");
-  if (!cur?.totals) {
+  if (!cur?.dates && !cur?.totals) {
     return "📈 כניסות מחיפוש (Search Console)\nאין נתונים זמינים כרגע, ייתכן שענף הנתונים טרם עודכן. לא ממציאים מספר.";
   }
   const prev = loadGsc("GSC_PREV_JSON", "origin/data/search-console~1");
   const w = cur.window || {};
-  const t = cur.totals || {};
+  const t = realTotals(cur);
   const ctr = t.impressions ? Math.round((t.clicks / t.impressions) * 1000) / 10 : 0;
 
   const topQ = [...(cur.queries || [])]

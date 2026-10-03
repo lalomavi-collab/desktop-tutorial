@@ -157,11 +157,21 @@ async function main() {
     await query(token, site, ["country"]),
   ];
 
+  // Totals come from the date dimension, not the query dimension. Search
+  // Console hides rare (anonymised) queries, so summing the query rows
+  // undercounts real traffic, here by about threefold (query sum 20 clicks
+  // against 61 across the dates). The date dimension carries no such
+  // anonymisation, so its sum is the figure the Search Console UI shows and the
+  // one every report should quote.
+  const sum = (rows) => (rows || []).reduce(
+    (a, r) => ({ clicks: a.clicks + (r.clicks || 0), impressions: a.impressions + (r.impressions || 0) }),
+    { clicks: 0, impressions: 0 },
+  );
   const out = {
     site,
     fetchedAt: new Date().toISOString(),
     window: { start: isoDaysAgo(LAG_DAYS + WINDOW_DAYS), end: isoDaysAgo(LAG_DAYS) },
-    totals: queries.reduce((a, r) => ({ clicks: a.clicks + r.clicks, impressions: a.impressions + r.impressions }), { clicks: 0, impressions: 0 }),
+    totals: sum(dates),
     queries, pages, byQueryPage, dates, countries,
   };
   const dir = join(root, "data", "search-console");
