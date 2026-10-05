@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-banking-finance-regulation-risk": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-high-risk-classification",
+   "gdpr-israeli-companies-ai"
+  ]
+ },
  "urban-renewal-guarantees-sale-law-registration": {
   "topic": "real-estate",
   "related": [
@@ -252,7 +260,7 @@
   "related": [
    "eu-ai-act-2026",
    "ai-use-policy-organization",
-   "directors-liability-ai-era"
+   "eu-ai-act-roles-obligations"
   ]
  },
  "directors-liability-ai-era": {
@@ -274,8 +282,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-governance-board-framework",
    "ai-use-policy-organization",
+   "ai-governance-board-framework",
    "eu-ai-act-conformity-file-preparation"
   ]
  },
@@ -371,8 +379,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-workspace-encyclopedia",
-   "ai-hallucinations-citations"
+   "ai-hallucinations-citations",
+   "lalum-clinic-experience"
   ]
  },
  "urban-renewal-risk": {
@@ -427,8 +435,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-turning-point-2026",
-   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
-   "decision-oriented-ai-law"
+   "decision-oriented-ai-law",
+   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai"
   ]
  },
  "algorithmic-transparency": {
@@ -1204,7 +1212,7 @@
   "related": [
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
-   "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי"
+   "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
  "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע": {
@@ -1388,7 +1396,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "ai-realestate-risk-management"
+   "urban-renewal-risk"
   ]
  },
  "california-sb574-ai-adjudication-ban": {
