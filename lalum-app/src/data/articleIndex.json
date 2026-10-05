@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "lawyers-ai-ethics-accountability": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-banking-finance-regulation-risk",
+   "eu-ai-act-transparency-generative",
+   "gemini-guide-law"
+  ]
+ },
  "ai-banking-finance-regulation-risk": {
   "topic": "ai-governance",
   "related": [
+   "lawyers-ai-ethics-accountability",
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "gdpr-israeli-companies-ai"
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "urban-renewal-guarantees-sale-law-registration": {
@@ -291,8 +299,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "eu-ai-act-2026"
+   "eu-ai-act-2026",
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -379,8 +387,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-hallucinations-citations",
-   "lalum-clinic-experience"
+   "lalum-clinic-experience",
+   "ai-hallucinations-citations"
   ]
  },
  "urban-renewal-risk": {
@@ -388,7 +396,7 @@
   "related": [
    "free-lawyer-illusion",
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-   "combination-deals-architecture"
+   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
   ]
  },
  "business-mediation-relations": {
@@ -554,8 +562,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "unfair-advantage-course",
+   "transcription-tools-guide",
    "law-algorithm-era"
   ]
  },
@@ -579,8 +587,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "ai-workspace-encyclopedia"
   ]
  },
  "why-realestate-needs-ai": {
@@ -660,7 +668,7 @@
   "related": [
    "overseas-partnership-guide",
    "israeli-realestate-abroad",
-   "portugal-investment-guide"
+   "portugal-real-estate-taxation"
   ]
  },
  "realestate-second-opinion": {
@@ -684,7 +692,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -1403,8 +1411,8 @@
   "topic": "ai-governance",
   "related": [
    "effective-human-oversight-ai-systems",
-   "gemini-guide-law",
-   "ai-use-policy-organization"
+   "lawyers-ai-ethics-accountability",
+   "gemini-guide-law"
   ]
  }
 }
