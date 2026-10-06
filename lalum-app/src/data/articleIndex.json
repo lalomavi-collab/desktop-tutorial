@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-insurance-underwriting-pricing-regulation": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-banking-finance-regulation-risk",
+   "israel-ai-regulation-policy",
+   "eu-ai-act-high-risk-classification"
+  ]
+ },
  "developer-agreement-urban-renewal-critical-clauses": {
   "topic": "real-estate",
   "related": [
@@ -82,9 +90,9 @@
  "ai-banking-finance-regulation-risk": {
   "topic": "ai-governance",
   "related": [
+   "ai-insurance-underwriting-pricing-regulation",
    "lawyers-ai-ethics-accountability",
-   "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification"
+   "eu-ai-act-israeli-companies"
   ]
  },
  "urban-renewal-guarantees-sale-law-registration": {
@@ -570,8 +578,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "unfair-advantage-course",
+   "transcription-tools-guide",
    "law-algorithm-era"
   ]
  },
@@ -739,8 +747,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "overseas-partnership-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1068,7 +1076,7 @@
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "free-lawyer-illusion"
+   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
   ]
  },
  "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות": {
@@ -1148,7 +1156,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1162,8 +1170,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },

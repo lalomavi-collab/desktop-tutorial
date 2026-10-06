@@ -12,6 +12,13 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "ai-insurance-underwriting-pricing-regulation",
+    "title": "בינה מלאכותית בביטוח: חיתום, תמחור ותביעות תחת פיקוח רגולטורי",
+    "excerpt": "חברות ביטוח משתמשות בבינה מלאכותית בחיתום, בתמחור ובטיפול בתביעות, וכל שימוש כזה מעורר שאלות של הוגנות, שקיפות ואחריות. מדריך לסיכונים המשפטיים ולבקרות שנדרשות.",
+    "date": "אוקטובר 2026",
+    "cover": "/images/covers/algorithmic-transparency.webp"
+  },
+  {
     "slug": "developer-agreement-urban-renewal-critical-clauses",
     "title": "הסכם עם יזם בהתחדשות עירונית: הסעיפים הקריטיים לבדיקה",
     "excerpt": "ההסכם עם היזם קובע מה בעל הדירה מקבל בפועל, ולא התוכנית שהוצגה באסיפה. מדריך לשישה סעיפים קריטיים: תמורות ומפרט, לוחות זמנים, בטוחות, דמי שכירות, החלפת יזם ושינויים.",
