@@ -13,7 +13,7 @@ import os
 import re
 from datetime import datetime
 
-from .filters import is_expense_document, is_invoice_email
+from .filters import is_expense_document, is_invoice_email, is_issued_by_us
 from .link_downloader import download_document_from_body
 from .month_path import resolve_month_folder
 
@@ -70,6 +70,21 @@ def _scan_inbox(inbox, start, end, dest, label, collected, seen):
                         break
             except Exception:
                 pass
+
+            # מסמך שהמשרד הפיק ללקוח הוא הכנסה: מתויק ל"_הופק ללקוחות"
+            # כדי שייכנס לחישוב ההכנסות והמע"מ, במקום להיזרק. בלי זה
+            # חודש שלם יוצא עם "הכנסות 0.00" (מה שקרה בספטמבר 2026).
+            if (pdf_att is not None and is_invoice_email(subject, sender, has_pdf=True)
+                    and is_issued_by_us(subject, sender)):
+                try:
+                    income_dir = dest / "_הופק ללקוחות"
+                    income_dir.mkdir(parents=True, exist_ok=True)
+                    income_target = income_dir / _safe(pdf_att.FileName)
+                    if not income_target.exists():
+                        pdf_att.SaveAsFile(str(income_target))
+                except Exception:
+                    pass
+                continue
 
             if not is_expense_document(subject, sender, has_pdf=pdf_att is not None):
                 continue
