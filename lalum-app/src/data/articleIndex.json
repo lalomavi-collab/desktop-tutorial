@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "developer-agreement-urban-renewal-critical-clauses": {
+  "topic": "real-estate",
+  "related": [
+   "urban-renewal-guarantees-sale-law-registration",
+   "pinui-binui-owner-guide",
+   "tama-38-1-vs-38-2-comparison"
+  ]
+ },
  "lawyers-ai-ethics-accountability": {
   "topic": "ai-governance",
   "related": [
@@ -82,9 +90,9 @@
  "urban-renewal-guarantees-sale-law-registration": {
   "topic": "real-estate",
   "related": [
+   "developer-agreement-urban-renewal-critical-clauses",
    "pinui-binui-owner-guide",
-   "tama-38-1-vs-38-2-comparison",
-   "overseas-property-due-diligence"
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -252,7 +260,7 @@
   "related": [
    "tama-38-1-vs-38-2-comparison",
    "tenant-urban-renewal-guide",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -260,7 +268,7 @@
   "related": [
    "pinui-binui-owner-guide",
    "portugal-real-estate-financing",
-   "tenant-urban-renewal-guide"
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "ai-governance-board-framework": {
@@ -396,7 +404,7 @@
   "related": [
    "free-lawyer-illusion",
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
+   "combination-deals-architecture"
   ]
  },
  "business-mediation-relations": {
@@ -451,8 +459,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "the-code-realestate",
-   "why-realestate-needs-ai"
+   "why-realestate-needs-ai",
+   "the-code-realestate"
   ]
  },
  "decision-oriented-ai-law": {
@@ -562,8 +570,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "unfair-advantage-course",
    "transcription-tools-guide",
+   "unfair-advantage-course",
    "law-algorithm-era"
   ]
  },
@@ -587,8 +595,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "shadow-it-law-firms",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "shadow-it-law-firms"
   ]
  },
  "why-realestate-needs-ai": {
@@ -692,7 +700,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
+   "overseas-property-holding-structure"
   ]
  },
  "second-opinion-revolution": {
@@ -988,7 +996,7 @@
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "decision-oriented-mediation-benefits",
-   "legal-mediation-benefits"
+   "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
   ]
  },
  "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai": {
@@ -1050,9 +1058,9 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
+   "developer-agreement-urban-renewal-critical-clauses",
    "effective-human-oversight-ai-systems",
-   "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
-   "urban-renewal-guarantees-sale-law-registration"
+   "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1154,8 +1162,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
@@ -1411,8 +1419,8 @@
   "topic": "ai-governance",
   "related": [
    "effective-human-oversight-ai-systems",
-   "lawyers-ai-ethics-accountability",
-   "gemini-guide-law"
+   "gemini-guide-law",
+   "lawyers-ai-ethics-accountability"
   ]
  }
 }
