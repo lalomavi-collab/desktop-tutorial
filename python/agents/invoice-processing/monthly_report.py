@@ -74,11 +74,13 @@ def mark_sent(month: str, result: dict):
 # הרצה שנחסמה חייבת להיראות שונה מהרצה שהצליחה ביומן המשימות.
 # הערכים מתחילים ב-10 בכוונה: פייתון עצמו מחזיר 1 על חריגה שלא נתפסה
 # ו-2 על שגיאת ארגומנטים. קוד משלנו שיתנגש בהם יגרום להתראה שקרית.
-EXIT_SENT = 0         # נשלח, או שכבר נשלח קודם
+EXIT_SENT = 0         # נשלח בהרצה הזו
 EXIT_DRAFT = 11       # טיוטה מוכנה ב-Outlook, ממתינה לאישור ידני
 EXIT_BLOCKED = 12     # התבקשה שליחה ונחסמה: פריטים לא מאומתים
 EXIT_NO_DOCS = 13     # לא נמצאו מסמכים בתיקיית החודש
 EXIT_MAIL_ERROR = 14  # Outlook החזיר שגיאה
+EXIT_ALREADY_SENT = 15  # החודש נשלח קודם, השליחה נחסמה. לא כשל, אבל גם לא
+                        # הצלחה: בהרצה החודשית זה סימן שהחודש יצא מחוץ לתהליך.
 
 
 def _ack_path(month: str) -> Path:
@@ -254,7 +256,7 @@ def main():
         prev = already_sent(month)
         if prev and not args.force:
             print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}. --force לשליחה חוזרת.")
-            return EXIT_SENT
+            return EXIT_ALREADY_SENT
         if issues:
             print("\n🛑 שליחה בוטלה — יש פריטים לא מאומתים. תקן, או הרץ בלי --send ליצירת טיוטה.")
             return EXIT_BLOCKED
