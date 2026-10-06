@@ -11,7 +11,7 @@ import { whatsappNumber, officePhone } from "../lib/content";
 const ICONS = ["headset", "video", "calendar", "shield", "folder", "whatsapp", "book", "search"];
 const ACCENTS = [
   { c: "#a8482a", t: "#f3e7de" },
-  { c: "#9a7328", t: "#f1e9d6" },
+  { c: "#916c26", t: "#f1e9d6" },
   { c: "#8a3f45", t: "#f3e4e4" },
   { c: "#3f8f5f", t: "#e2f0e7" },
 ];

@@ -7,6 +7,7 @@ import { useLang } from "../context/LangContext";
 import { cvPath } from "../lib/hreflang";
 import type { ArticleBlock } from "../lib/content";
 import { blogMeta } from "../lib/blogMeta";
+import { enPosts } from "../data/enPosts";
 import { articleCorpus, relatedTo } from "../lib/related";
 import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
@@ -76,9 +77,17 @@ export function Article() {
 
   if (!article && !post) return <Navigate to="/insights" replace />;
 
+  // A pilot article that has an English translation renders that translation
+  // when the reader is in English: its own title, standfirst, date and prose,
+  // from enPosts rather than the Hebrew body module. Every other language, and
+  // every untranslated article, stays Hebrew as before.
+  const enPost = post && lang === "en" ? enPosts[post.slug] : undefined;
+
   const view = article
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
-    : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: body ? toBlocks(body) : [] };
+    : enPost
+      ? { category: t.insights.fromBlog, title: enPost.title, dek: enPost.excerpt, date: enPost.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(enPost.body) }
+      : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: body ? toBlocks(body) : [] };
 
   // Related reading: the three pieces closest to this one in subject, scored by
   // relatedTo over the whole corpus. These internal links keep readers (and

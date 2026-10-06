@@ -12,7 +12,7 @@ from email.header import decode_header
 from pathlib import Path
 
 from ..utils.credentials import get_secret, missing_secrets
-from .filters import is_expense_document
+from .filters import is_expense_document, is_invoice_email, is_issued_by_us
 from .outlook_com_collector import collect_from_outlook_com
 from .base_folder import get_base_folder
 from .month_path import resolve_month_folder
@@ -99,6 +99,23 @@ def collect_from_mailbox(
                     target = bank_dir / safe
                     if not target.exists():
                         target.write_bytes(part.get_payload(decode=True))
+                continue
+
+            # מסמך שהופק ללקוח (הכנסה): מתויק ל"_הופק ללקוחות" ולא לשורש
+            if is_invoice_email(subject, sender, has_pdf=True) and is_issued_by_us(subject, sender):
+                income_dir = dest / "_הופק ללקוחות"
+                for part in msg.walk():
+                    fname = part.get_filename()
+                    if not fname:
+                        continue
+                    fname = _decode_str(fname)
+                    if not fname.lower().endswith(".pdf"):
+                        continue
+                    income_dir.mkdir(parents=True, exist_ok=True)
+                    safe = re.sub(r"[^\w\.\-]", "_", fname)
+                    t = income_dir / safe
+                    if not t.exists():
+                        t.write_bytes(part.get_payload(decode=True))
                 continue
 
             # חיפוש צרופת PDF — רשומה אחת לכל מייל

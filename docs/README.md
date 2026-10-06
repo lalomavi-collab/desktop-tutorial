@@ -24,6 +24,7 @@ read top-to-bottom by a new engineer, investor, or partner.
 | 09 | [Monetization Strategy](./09-monetization.md) | Freemium, subscriptions, referral & AI revenue |
 | 10 | [24-Month Roadmap](./10-roadmap-24mo.md) | Phased plan from MVP to global platform |
 | 11 | [Bar-Registry Verification](./11-verification-bar-registry.md) | How we make "verified attorney" 100% true |
+| 12 | [WhatsApp Interface](./12-whatsapp-interface.md) | The LALUM executive WhatsApp channel: triage, tools, guardrails, deploy |
 
 ## North-star principle: **Trust First**
 

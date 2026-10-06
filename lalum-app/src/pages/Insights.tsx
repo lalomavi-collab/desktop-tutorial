@@ -2,6 +2,7 @@ import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
+import { AmbientBackground } from "../components/AmbientBackground";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
@@ -10,9 +11,12 @@ import { TOPICS_IN_ORDER, articlesByTopic, topicPath } from "../lib/topics";
 // A warm, brand-cohesive palette. Each article card takes the next accent so
 // the grid reads as one family, gently varied, rather than a flat wall of
 // identical clay cards. Pairs are {accent, tint} tuned to sit on the paper.
+// Every accent is darkened, where needed, to clear WCAG AA (4.5:1) as small
+// text on white (.article-card-cat, .article-card-go): ochre/gold measured
+// 4.32:1 at full brightness and failed.
 const PALETTE = [
   { accent: "#a8482a", tint: "#f6e6de" }, // clay
-  { accent: "#9a7328", tint: "#f3ecd6" }, // ochre / gold
+  { accent: "#916c26", tint: "#f3ecd6" }, // ochre / gold
   { accent: "#8a3f45", tint: "#f3e3e4" }, // wine
   { accent: "#3f6f68", tint: "#e1ede9" }, // teal
   { accent: "#5a4f9a", tint: "#e8e5f3" }, // indigo
@@ -54,12 +58,17 @@ export function Insights() {
       <PageMeta title={t.seo.insights.title} description={t.seo.insights.desc} path="/insights" jsonLd={pageJsonLd([pageNode("CollectionPage", t.seo.insights.title, t.seo.insights.desc, "https://lalumapp.com/insights")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>
+        <AmbientBackground variant="photo" />
+        <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 900, padding: "96px 32px 56px", textAlign: "center" }}>
+        <div className="hero-text-panel" style={{ display: "inline-block", maxWidth: "100%" }}>
           <span className="pill">{ins.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
-            {ins.heroH1a} <span className="italic-clay">{ins.heroH1b}</span>
+            {ins.heroH1a}
+            {" "}
+            <span className="italic-clay">{ins.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{ins.heroLede}</p>
+        </div>
         </div>
       </section>
 
@@ -85,7 +94,7 @@ export function Insights() {
           {cards.map((c, i) => {
             const p = PALETTE[i % PALETTE.length];
             return (
-              <Link key={c.slug} to={`/insights/${c.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}`, animationDelay: `${i * 60}ms` }}>
+              <Link key={c.slug} to={`/insights/${c.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}`, animationDelay: `${Math.min(i, 10) * 60}ms` }}>
                 {c.cover ? (
                   <div className="article-card-head article-card-head-img">
                     <img src={c.cover} alt="" loading="lazy" />

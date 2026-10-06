@@ -77,6 +77,36 @@ export const TRANSLATED_ROUTES = new Set([
   "/legal/",
 ]);
 
+// Individual articles translated to English only, as a pilot for the two lead
+// clusters (urban renewal and AI). Unlike the eight core routes above, these
+// have a Hebrew and an English version and nothing else, so their hreflang set
+// is he plus en, never the full five. Claiming es, fr and ar variants that do
+// not exist is the exact duplicate-content mistake this file was written to
+// avoid, so the language set is derived per route rather than assumed.
+export const EN_ARTICLE_SLUGS = new Set<string>([
+  "second-opinion-real-estate-urban-renewal",
+  "israel-ai-regulation-policy",
+  "eu-ai-act-israeli-companies",
+  "gemini-guide-law",
+  "urban-renewal-mistakes-guide",
+]);
+
+// The slug of an /insights/<slug>/ article path, or null for anything else.
+function articleSlugOf(path: string): string | null {
+  const m = /^\/insights\/([^/]+)\/$/.exec(normPath(path));
+  return m ? m[1] : null;
+}
+
+// The languages a path is genuinely translated into (empty when it is not
+// translated at all). Core routes carry all five; a pilot article carries he
+// and en only.
+export function translatedLangs(path: string): Lang[] {
+  if (TRANSLATED_ROUTES.has(normPath(path))) return LANGS.map((l) => l.code);
+  const slug = articleSlugOf(path);
+  if (slug && EN_ARTICLE_SLUGS.has(slug)) return ["he", "en"];
+  return [];
+}
+
 // Normalise a route path to a leading-slash, TRAILING-slash form (home stays
 // "/"). The content routes are prerendered as `<path>/index.html`, and the host
 // serves them at `<path>/`: a request without the trailing slash 301-redirects
@@ -102,6 +132,11 @@ const HEBREW_CONTENT_ROOTS = ["/faq", "/insights", "/rulings", "/risk", "/traini
 
 export function hasHebrewOnlyContent(path: string): boolean {
   const p = normPath(path);
+  // A pilot article translated to English is no longer Hebrew only: its /en
+  // rendering is a real English document, so it must not be forced back to the
+  // Hebrew corpus the way an untranslated /insights piece is.
+  const slug = articleSlugOf(p);
+  if (slug && EN_ARTICLE_SLUGS.has(slug)) return false;
   if (HEBREW_CONTENT_ROOTS.some((r) => p.startsWith(`${r}/`))) return true;
   // The sector rubrics and the diagnostic tools live under the AI pillar and
   // are written for an Israeli readership alone. The pillar page above them is
@@ -118,7 +153,7 @@ export function scriptDir(text: string): { lang: "he" | "en"; dir: "rtl" | "ltr"
 }
 
 export function isTranslatedRoute(path: string): boolean {
-  return TRANSLATED_ROUTES.has(normPath(path));
+  return translatedLangs(path).length > 0;
 }
 
 // The absolute URL for a given path in a given language. Hebrew keeps the clean
@@ -150,9 +185,10 @@ export type Alternate = { hreflang: string; href: string };
 // translated gets one; for anything else this is empty, and the page makes no
 // claim about languages it does not have.
 export function alternatesFor(path: string): Alternate[] {
-  if (!isTranslatedRoute(path)) return [];
+  const langs = translatedLangs(path);
+  if (langs.length === 0) return [];
   return [
-    ...LANGS.map((l) => ({ hreflang: l.code === "he" ? "he-IL" : l.code, href: langUrl(path, l.code) })),
+    ...langs.map((code) => ({ hreflang: code === "he" ? "he-IL" : code, href: langUrl(path, code) })),
     { hreflang: "x-default", href: langUrl(path, "he") },
   ];
 }

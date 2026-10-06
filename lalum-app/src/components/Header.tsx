@@ -1,22 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "./AppLink";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
-import { ShareButton, useShare } from "./ShareButton";
+import { useShare } from "./ShareButton";
+import { DownloadIcon, useInstall } from "./AppInstall";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
+import { OPEN_SOS_EVENT } from "./SosMenu";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
+import { useScrollLock } from "../lib/useScrollLock";
 
 export function Header() {
   const { user } = useAuth();
   const { t, lang, setLang } = useLang();
-  const [langOpen, setLangOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [insightsOpen, setInsightsOpen] = useState(false);
-  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+  // The full menu renders as a bottom sheet only below 900px; above it, it is a
+  // small anchored dropdown. Scroll-lock the page behind the sheet, but not
+  // behind the desktop dropdown (which closes on any outside click) so the page
+  // does not freeze under a small card.
+  const [isSheet, setIsSheet] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const update = () => setIsSheet(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  // The menu behaves like a standard application menu (the pattern Claude's own
+  // interface uses): a click opens it, and it stays open until the visitor
+  // picks a row, clicks outside it (the backdrop), or presses Escape. It never
+  // closes on its own from the pointer drifting off, which read as unpredictable.
   const { share, copied: shareCopied } = useShare();
+  // One-tap desktop install (Chrome/Edge). canPrompt is false everywhere the
+  // browser has no native prompt (Safari, Firefox), so this stays invisible
+  // there instead of adding a seventh permanent icon to a row already at its
+  // documented limit of six.
+  const { installed: appInstalled, canPrompt: canInstall, promptInstall } = useInstall();
+
+  // Below 900px the "more" menu becomes a bottom sheet (see index.css); a
+  // sheet that only closes by tapping its own backdrop reads as broken on a
+  // phone, and locking the page behind it keeps the body from scrolling out
+  // from under a surface that is meant to feel anchored to the screen edge.
+  useEffect(() => {
+    if (!moreOpen && !insightsOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMoreOpen(false);
+      setInsightsOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [moreOpen, insightsOpen]);
+  useScrollLock(moreOpen && isSheet);
 
   // The two areas the practice leads with, first and named as domains: AI &
   // Law, then Real Estate. Clinic is the existing advisory hub under a name
@@ -42,10 +80,180 @@ export function Header() {
   ];
 
   return (
-    <header className="site-header">
+    <header className={"site-header" + (moreOpen ? " nav-open" : "")}>
       <div className="wrap header-inner">
         <Link to="/" className="brand">
           <Wordmark height={19} />
+        </Link>
+
+        {/* The one menu, right beside the wordmark: a labelled control that
+            opens a single panel with the full site nav, the reading menu,
+            every contact and utility action, and the language switch. It shows
+            on every width (the nav pills hide on phones, this does not), so
+            there is one obvious place that reaches everything, and it closes on
+            its own once the pointer leaves it (see scheduleAutoClose). */}
+        <div className="header-more-wrap">
+          <button
+            type="button"
+            className="header-menu-btn"
+            onClick={() => setMoreOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
+          >
+            <Icon name="menu" size={17} />
+            <span>{t.ui.nav.menu}</span>
+          </button>
+          {moreOpen && (
+            <>
+              <div onClick={() => setMoreOpen(false)} className="header-more-backdrop" />
+              <div
+                role="menu"
+                aria-label={t.ui.nav.menu}
+                className="card header-more-menu"
+              >
+                {/* A header for the panel: on phones the menu is a full-screen
+                    overlay (it must cover the floating chat and accessibility
+                    buttons and the bottom tab bar, which sit above a partial
+                    sheet), so it needs the wordmark and an explicit close. On
+                    desktop this row is hidden and the anchored dropdown stands
+                    on its own. */}
+                <div className="header-more-head">
+                  <Wordmark height={17} />
+                  <button type="button" className="header-more-close" onClick={() => setMoreOpen(false)} aria-label={t.ui.quickAccess.close}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                  </button>
+                </div>
+                {/* Entry into the standalone assistant app, so the site and the
+                    app reach each other. The label is the product name, one form
+                    in every language, so it needs no translation string. */}
+                <Link to="/os" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
+                  <Icon name="spark" size={18} /> LALUM LEX
+                </Link>
+                {/* Quick payment folded into the menu instead of standing on
+                    its own in the phone header (header-tools' one visible
+                    child there, before this): a single-purpose ₪ icon
+                    floating alone next to the menu button read as two
+                    separate controls competing for the same corner. Desktop
+                    still reaches payment through the floating ContactRail,
+                    unaffected by this. */}
+                {paymentsEnabled && (
+                  <Link to={user ? "/portal" : "/login"} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                    <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
+                  </Link>
+                )}
+                {nav.map((n) =>
+                  n.hash ? (
+                    <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                      {n.label}
+                    </Link>
+                  ) : (
+                    <NavLink
+                      key={n.to}
+                      to={n.to}
+                      end={n.end}
+                      role="menuitem"
+                      onClick={() => setMoreOpen(false)}
+                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                    >
+                      {n.label}
+                    </NavLink>
+                  )
+                )}
+                {insightsLinks.map((l) => (
+                  <NavLink
+                    key={l.to}
+                    to={l.to}
+                    role="menuitem"
+                    onClick={() => setMoreOpen(false)}
+                    className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
+                  >
+                    {l.label}
+                  </NavLink>
+                ))}
+                <div className="header-more-divider" role="separator" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="header-more-item"
+                  onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
+                >
+                  <Icon name="compass" size={18} /> {t.ui.guide.open}
+                </button>
+                <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
+                  <Icon name="headset" size={18} /> {t.ui.botCall.aria}
+                </a>
+                <a
+                  role="menuitem"
+                  className="header-more-item"
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMoreOpen(false)}
+                >
+                  <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
+                </a>
+                <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
+                  <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
+                </a>
+                <button type="button" role="menuitem" className="header-more-item" onClick={share}>
+                  <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
+                </button>
+                {canInstall && !appInstalled && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="header-more-item"
+                    onClick={() => { void promptInstall(); setMoreOpen(false); }}
+                  >
+                    <DownloadIcon size={18} /> {t.ui.footer.installApp}
+                  </button>
+                )}
+                <Link
+                  to={user ? "/portal" : "/login"}
+                  role="menuitem"
+                  className="header-more-item"
+                  onClick={() => setMoreOpen(false)}
+                >
+                  <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
+                </Link>
+                <div className="header-more-divider" role="separator" />
+                <div className="header-more-langs">
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={l.code === lang}
+                      onClick={() => { setLang(l.code); setMoreOpen(false); }}
+                      dir={l.dir}
+                      className={"header-more-lang" + (l.code === lang ? " active" : "")}
+                    >
+                      {l.autonym}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* A distinct entry point for the app, not a sixth nav-pill: CLAUDE.md
+            caps the domain/model row at the two areas plus Clinic, Engine and
+            Decision Room, so LALUM LEX cannot join it as a same-level item.
+            It lived only inside the "More" menu before this, first in that
+            list, which meant a desktop visitor (who already sees five visible
+            pills and has no habit of opening a hamburger menu) had no real
+            way to notice it, unlike on phones where the entire nav funnels
+            through that one menu and this is the first thing in it. A filled
+            button (like the site's other primary CTAs, /book included) reads
+            as a different kind of action than the outlined pills beside it:
+            leaving the marketing site for the standalone app, not another
+            page of it. Hidden on phones (hide-mobile): the "More" menu
+            already puts it first there, so a second copy would just be
+            clutter on an already tight row. */}
+        <Link to="/os" className="btn btn-clay btn-sm header-lex-cta hide-mobile" aria-label="LALUM LEX">
+          <span className="header-lex-cta-icon"><Icon name="spark" size={14} /></span>
+          <span className="header-lex-cta-label">LALUM LEX</span>
         </Link>
 
         <nav className="nav-pills">
@@ -97,175 +305,30 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
-          {/* On phones payment lives in the header (which has room there); on
-              desktop it lives in the floating ContactRail, so the two never
-              show at once. */}
-          {paymentsEnabled && (
-            <Link
-              to={user ? "/portal" : "/login"}
-              className="tb-btn tb-pay header-pay-m"
-              aria-label={t.ui.bookPage.quickPayTitle}
-              title={t.ui.bookPage.quickPayTitle}
-            >
-              <Icon name="card" size={18} />
-            </Link>
-          )}
-          {/* The full icon row. It only has room next to the wordmark from
-              here up: below 900px (the width where the nav already moves into
-              the bottom tab bar) it hides in favour of the single "more"
-              button below, so the two never show at once and the row never
-              has to shrink icons down to squeeze six of them past the logo. */}
-          <div className="header-util-group">
-            <button
-              type="button"
-              className="tb-btn hdr-secondary"
-              onClick={() => window.dispatchEvent(new Event(OPEN_GUIDE_EVENT))}
-              aria-label={t.ui.guide.open}
-              title={t.ui.guide.open}
-            >
-              <Icon name="compass" size={18} />
-            </button>
-            <a
-              className="tb-btn tb-bot"
-              href={`tel:${officePhone.tel}`}
-              aria-label={t.ui.botCall.aria}
-              title={t.ui.botCall.aria}
-            >
-              <Icon name="headset" size={19} />
-            </a>
-            <a
-              className="tb-btn"
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t.ui.whatsapp.aria}
-              title={t.ui.whatsapp.aria}
-            >
-              <Icon name="whatsapp" size={19} />
-            </a>
-            <a
-              className="tb-btn tb-tg"
-              href={telegramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t.ui.telegram.aria}
-              title={t.ui.telegram.aria}
-            >
-              <Icon name="telegram" size={18} />
-            </a>
-            <ShareButton />
-            <div className="tb-lang-wrap" style={{ position: "relative" }}>
-              <button
-                type="button"
-                onClick={() => setLangOpen((v) => !v)}
-                className="tb-btn tb-lang"
-                aria-label="Switch language"
-                aria-haspopup="listbox"
-                aria-expanded={langOpen}
-                title={current.autonym}
-              >
-                {current.code.toUpperCase()}
-              </button>
-              {langOpen && (
-                <>
-                  {/* Backdrop closes the menu on outside click without a global listener. */}
-                  <div onClick={() => setLangOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                  <ul
-                    role="listbox"
-                    className="card"
-                    style={{ position: "absolute", insetInlineEnd: 0, top: "calc(100% + 8px)", zIndex: 41, listStyle: "none", margin: 0, padding: 6, minWidth: 140, display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    {LANGS.map((l) => (
-                      <li key={l.code}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={l.code === lang}
-                          onClick={() => { setLang(l.code); setLangOpen(false); }}
-                          dir={l.dir}
-                          style={{
-                            width: "100%", textAlign: l.dir === "rtl" ? "right" : "left", padding: "9px 12px", borderRadius: 8, border: "none",
-                            background: l.code === lang ? "var(--clay-tint)" : "transparent", color: "var(--ink)", cursor: "pointer", fontSize: 14.5,
-                            fontWeight: l.code === lang ? 700 : 500,
-                          }}
-                        >
-                          {l.autonym}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Phones: the six controls above collapse into one button, so the
-              header never has more than the logo, this button and (when it
-              applies) the one-tap payment icon next to it. The sheet gives
-              each action a label, which a bare row of round icons never had
-              room for anyway. */}
-          <div className="header-more-wrap">
-            <button
-              type="button"
-              className="tb-btn header-more-btn"
-              onClick={() => setMoreOpen((v) => !v)}
-              aria-label={t.ui.quickActions}
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-            >
-              <Icon name="menu" size={19} />
-            </button>
-            {moreOpen && (
-              <>
-                <div onClick={() => setMoreOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                <div role="menu" aria-label={t.ui.quickActions} className="card header-more-menu">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="header-more-item"
-                    onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
-                  >
-                    <Icon name="compass" size={18} /> {t.ui.guide.open}
-                  </button>
-                  <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
-                    <Icon name="headset" size={18} /> {t.ui.botCall.aria}
-                  </a>
-                  <a
-                    role="menuitem"
-                    className="header-more-item"
-                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMoreOpen(false)}
-                  >
-                    <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
-                  </a>
-                  <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
-                    <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
-                  </a>
-                  <button type="button" role="menuitem" className="header-more-item" onClick={share}>
-                    <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
-                  </button>
-                  <div className="header-more-divider" role="separator" />
-                  <div className="header-more-langs">
-                    {LANGS.map((l) => (
-                      <button
-                        key={l.code}
-                        type="button"
-                        role="menuitemradio"
-                        aria-checked={l.code === lang}
-                        onClick={() => { setLang(l.code); setMoreOpen(false); }}
-                        dir={l.dir}
-                        className={"header-more-lang" + (l.code === lang ? " active" : "")}
-                      >
-                        {l.autonym}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          {/* The urgent-contact button: always visible on desktop, first in
+              the row, so it is never lost among the other tools. Opens a
+              small sheet with every fast channel (call, WhatsApp, Telegram)
+              instead of picking one action for the client. On phones it
+              drops out here (hide-mobile): the bottom tab bar already carries
+              its own always-reachable SOS tab, and showing both crowded the
+              top bar for no benefit — one reachable SOS is enough. */}
+          <button
+            type="button"
+            className="tb-btn tb-sos hide-mobile"
+            onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
+            aria-label={t.ui.sos.aria}
+            title={t.ui.sos.aria}
+          >
+            {t.ui.sos.open}
+          </button>
+          {/* Quick payment used to live here too on phones (desktop always
+              reached it through the floating ContactRail instead): a bare ₪
+              icon standing alone beside the menu button, the toolbar's only
+              visible child at that width. Folded into the "More" menu
+              instead (see header-more-wrap above), so the phone header
+              collapses to exactly two controls, the wordmark and the menu,
+              rather than two separate single-purpose buttons competing for
+              the same corner. */}
           {/* A dedicated "Start" pill was tried here and dropped: the toolbar
               already carries six round controls plus the client login link,
               and one more rigid, non-shrinking pill pushed the nav-pills row

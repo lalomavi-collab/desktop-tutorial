@@ -28,7 +28,7 @@ export function CourseCatalog() {
     <section id="programs" dir="rtl" lang="he" className="academy">
       <div className="wrap section">
         <div style={{ textAlign: "center", maxWidth: "62ch", margin: "0 auto 46px" }}>
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>LALUM Academy</p>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>LALUM Academy</p>
           <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות הדרכה מתקדמות לארגון</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
             תוכניות דגל למגוון רחב של תעשיות, בהעברה פנים-ארגונית בבית העסק, המשלבות סטאק כלי AI, גבולות מותר ואסור, ופרויקט גמר מעשי המותאם לפעילות שלכם.
@@ -43,7 +43,7 @@ export function CourseCatalog() {
         </div>
 
         <div id="academy-pro" style={{ textAlign: "center", maxWidth: "62ch", margin: "72px auto 46px" }}>
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>LALUM Academy Pro</p>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>LALUM Academy Pro</p>
           <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 14px" }}>תוכניות לבעלי מקצוע</h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>
             אותו מבנה, בקבוצה פתוחה ובלמידה מקוונת, לעורכי דין, לשמאי מקרקעין ולרואי חשבון ויועצי מס. שישה מפגשים, פרויקט גמר שנשאר אצלכם.
@@ -92,7 +92,7 @@ export function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Cours
         </div>
 
         <div className="course-capstone" style={{ borderColor: c.accent }}>
-          <div className="course-capstone-k" style={{ color: c.accent === "#9a7328" ? "#c79a3f" : "var(--clay-soft)" }}>פרויקט גמר</div>
+          <div className="course-capstone-k" style={{ color: c.accent === "#916c26" ? "#c79a3f" : "var(--clay-bright)" }}>פרויקט גמר</div>
           <div className="course-capstone-name" dir="ltr">{c.capstoneName}</div>
           <p className="course-capstone-desc">{c.capstoneDesc}</p>
         </div>

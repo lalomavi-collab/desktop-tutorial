@@ -19,11 +19,12 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
-// Imported so Vite emits a content-hashed filename: swapping the photo always
-// busts any browser or CDN cache instead of serving a stale /founder.webp.
-// WebP, resized to 944px (2x the on-page display width) for a sharp retina
-// portrait at a fraction of the original JPEG weight.
-import founderPhoto from "../assets/founder.webp";
+// The hero card used to carry the firm mark instead of a photo, so the front
+// door read as the practice's brand rather than a headshot. Reversed on
+// request: the founder's own portrait (public/founder.webp, the same file
+// the footer's founder band already shows on every page) now fills the card,
+// with the name, the professional title, and the CV link stacked in the
+// caption, each with room of its own instead of sitting flush together.
 
 export function Home() {
   const { t, lang } = useLang();
@@ -46,7 +47,9 @@ export function Home() {
           <div>
             <span className="pill">{h.heroPill}</span>
             <h1 className="h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
-              {h.heroH1a} <span className="italic-clay">{h.heroH1b}</span>
+              {h.heroH1a}
+              {" "}
+              <span className="italic-clay">{h.heroH1b}</span>
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
@@ -63,9 +66,12 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* Founder portrait, clickable, opens the full CV */}
+          {/* The founder's own portrait, clickable, opens the full CV. Same
+              photo the footer's founder band already uses on every page
+              (public/founder.webp), so the front door now carries the same
+              face the site closes on, not a second, different image. */}
           <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            <img src={founderPhoto} alt={h.founderName} />
+            <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="lazy" />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
@@ -146,21 +152,21 @@ export function Home() {
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
-            <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{h.engineEyebrow}</p>
+            <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
             {/* Names what "Engine" is made of, the same way the FocusAreas
                 cards and the Clinic hero now do: a quiet capability line, not
                 another sentence about the same thing. */}
-            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-soft)", margin: "14px 0 0" }}>{h.engineTagline}</p>
+            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
           <div className="grid grid-3">
             {t.data.frameworks.map((f) => (
               <div key={f.code} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.13)", borderRadius: 16, padding: 32 }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-soft)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-bright)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                   <Icon name={f.icon} size={24} />
                 </span>
-                <div style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--clay-soft)", margin: "20px 0 4px" }} dir="ltr">{f.code}</div>
+                <div style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--clay-bright)", margin: "20px 0 4px" }} dir="ltr">{f.code}</div>
                 <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--paper)", margin: "0 0 10px" }}>{f.title}</h3>
                 <p style={{ fontSize: 15, lineHeight: 1.66, color: "#C6C0B4", margin: 0 }}>{f.body}</p>
               </div>

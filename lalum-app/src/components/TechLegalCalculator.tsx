@@ -222,6 +222,9 @@ export function TechLegalCalculator() {
           <p className="eyebrow" style={{ color: "var(--clay)" }}>התוצאה שלכם</p>
           <ExposureGauge score={score} title={result!.title} tone={result!.tone} />
           <div className={"riskcalc-badge tone-" + result!.tone}>{result!.title}</div>
+          <p className="riskcalc-disclaimer" style={{ marginTop: 4 }}>
+            המבדק כללי ומבוסס על תיאור עצמי. הוא אינו ביקורת משפטית, אינו חוות דעת ואינו תחליף לבדיקה פרטנית.
+          </p>
           {gap && <p className="riskcalc-gap"><strong>הפער הגדול ביותר שסימנתם:</strong> {gap}</p>}
           <p className="riskcalc-body">{result!.body}</p>
           <p className="riskcalc-next"><strong>הצעד הבא:</strong> {result!.next}</p>

@@ -29,7 +29,9 @@ export function Advisory() {
         <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 1000, padding: "96px 32px 80px", textAlign: "center" }}>
           <span className="pill">{a.heroPill}</span>
           <h1 className="serif" style={{ fontSize: "clamp(32px, 8vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "18ch" }}>
-            {a.heroH1a} <span className="italic-clay">{a.heroH1b}</span>
+            {a.heroH1a}
+            {" "}
+            <span className="italic-clay">{a.heroH1b}</span>
           </h1>
           <p className="lede" style={{ maxWidth: "60ch", margin: "26px auto 14px" }}>{a.heroLede}</p>
           {/* Names what "Clinic" is made of: strategy, law, risk, judgment,
@@ -82,14 +84,14 @@ export function Advisory() {
       <section id="mediation" style={{ background: "var(--ink)", color: "var(--paper)" }}>
         <div className="wrap section">
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
-            <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{a.mediationEyebrow}</p>
+            <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{a.mediationEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{a.mediationH2}</h2>
             <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{a.mediationP}</p>
           </div>
           <div className="grid grid-3">
             {t.data.domModules.map((m) => (
               <div key={m.title} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.13)", borderRadius: 16, padding: 32 }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-soft)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-bright)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                   <Icon name={m.icon} size={24} />
                 </span>
                 <h3 style={{ fontSize: 18, fontWeight: 600, color: "var(--paper)", margin: "20px 0 10px" }}>{m.title}</h3>
@@ -125,7 +127,7 @@ export function Advisory() {
           </div>
           <div className="grid grid-2">
             {t.data.plans.map((p) => (
-              <div key={p.name} className="card" style={{ position: "relative", display: "flex", flexDirection: "column", borderColor: p.popular ? "var(--clay-soft)" : "var(--line)" }}>
+              <div key={p.name} className="card" style={{ position: "relative", display: "flex", flexDirection: "column", borderColor: p.popular ? "var(--clay-bright)" : "var(--line)" }}>
                 {p.popular && (
                   <span style={{ position: "absolute", top: -11, insetInlineEnd: 26, background: "var(--clay)", color: "var(--paper)", fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 9999 }}>{a.mostPopular}</span>
                 )}

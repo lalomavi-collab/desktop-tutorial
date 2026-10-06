@@ -63,6 +63,38 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "lawyers-ai-ethics-accountability": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-banking-finance-regulation-risk",
+   "eu-ai-act-transparency-generative",
+   "gemini-guide-law"
+  ]
+ },
+ "ai-banking-finance-regulation-risk": {
+  "topic": "ai-governance",
+  "related": [
+   "lawyers-ai-ethics-accountability",
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-high-risk-classification"
+  ]
+ },
+ "urban-renewal-guarantees-sale-law-registration": {
+  "topic": "real-estate",
+  "related": [
+   "pinui-binui-owner-guide",
+   "tama-38-1-vs-38-2-comparison",
+   "overseas-property-due-diligence"
+  ]
+ },
+ "effective-human-oversight-ai-systems": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-organization",
+   "ai-governance-board-framework",
+   "amendment-13-data-security-guide"
+  ]
+ },
  "portugal-porto-vs-lisbon": {
   "topic": "real-estate",
   "related": [
@@ -107,8 +139,16 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
+   "eu-ai-act-conformity-file-preparation",
+   "eu-ai-act-high-risk-classification"
+  ]
+ },
+ "eu-ai-act-conformity-file-preparation": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-roles-obligations",
    "eu-ai-act-high-risk-classification",
-   "ai-governance-board-framework"
+   "eu-ai-act-israeli-companies"
   ]
  },
  "ai-product-liability-eu": {
@@ -163,8 +203,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "shadow-it-law-firms",
-   "memory"
+   "memory",
+   "shadow-it-law-firms"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -252,15 +292,15 @@
   "related": [
    "ai-use-policy-organization",
    "ai-governance-board-framework",
-   "eu-ai-act-2026"
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "eu-ai-act-transparency-generative": {
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "eu-ai-act-2026"
+   "eu-ai-act-2026",
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -268,7 +308,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-roles-obligations",
-   "eu-ai-act-transparency-generative"
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "privacy-law-amendment-13-guide": {
@@ -347,16 +387,16 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "ai-hallucinations-citations",
-   "ai-workspace-encyclopedia"
+   "lalum-clinic-experience",
+   "ai-hallucinations-citations"
   ]
  },
  "urban-renewal-risk": {
   "topic": "real-estate",
   "related": [
    "free-lawyer-illusion",
-   "combination-deals-architecture",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
+   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
+   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
   ]
  },
  "business-mediation-relations": {
@@ -378,9 +418,9 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
-   "quiet-legal-revolution",
-   "ai-liability-ruling",
-   "digital-lawyers-2026"
+   "effective-human-oversight-ai-systems",
+   "california-sb574-ai-adjudication-ban",
+   "quiet-legal-revolution"
   ]
  },
  "international-trade-guide-2026": {
@@ -388,7 +428,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
-   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
+   "eu-ai-act-conformity-file-preparation"
   ]
  },
  "real-estate-dispute-arbitration": {
@@ -403,8 +443,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-turning-point-2026",
-   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
-   "decision-oriented-ai-law"
+   "decision-oriented-ai-law",
+   "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai"
   ]
  },
  "algorithmic-transparency": {
@@ -522,8 +562,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "unfair-advantage-course",
+   "transcription-tools-guide",
    "law-algorithm-era"
   ]
  },
@@ -547,8 +587,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "ai-workspace-encyclopedia"
   ]
  },
  "why-realestate-needs-ai": {
@@ -571,8 +611,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
@@ -628,7 +668,7 @@
   "related": [
    "overseas-partnership-guide",
    "israeli-realestate-abroad",
-   "portugal-investment-guide"
+   "portugal-real-estate-taxation"
   ]
  },
  "realestate-second-opinion": {
@@ -652,7 +692,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -1010,9 +1050,9 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
+   "effective-human-oversight-ai-systems",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות",
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
+   "urban-renewal-guarantees-sale-law-registration"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1100,7 +1140,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1180,7 +1220,7 @@
   "related": [
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
-   "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי"
+   "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
  "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע": {
@@ -1251,8 +1291,8 @@
   "topic": "mediation",
   "related": [
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
-   "lalum-clinic-experience"
+   "lalum-clinic-experience",
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות"
   ]
  },
  "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד": {
@@ -1364,7 +1404,15 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "ai-realestate-risk-management"
+   "urban-renewal-risk"
+  ]
+ },
+ "california-sb574-ai-adjudication-ban": {
+  "topic": "ai-governance",
+  "related": [
+   "effective-human-oversight-ai-systems",
+   "lawyers-ai-ethics-accountability",
+   "gemini-guide-law"
   ]
  }
 }

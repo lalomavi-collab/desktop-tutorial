@@ -5,6 +5,15 @@ import { PageMeta } from "../components/PageMeta";
 import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import type { PillarPage } from "../lib/pillars";
+import { DiscussionsTrigger, type DiscussionTopic } from "./DiscussionsPanel";
+
+// Which of the two Discussions topics (see DiscussionsPanel.tsx) this pillar
+// maps to. The mediation pillar maps to none: that cluster gets no new
+// surface, per the two-focus-areas rule.
+const DISCUSSION_TOPIC: Record<string, DiscussionTopic | undefined> = {
+  "real-estate-legal-advisory": "real-estate",
+  "ai-legal-advisory": "ai-governance",
+};
 
 // One rendering for all three pillar landing pages. The AI page and the real
 // estate page were the same 120 lines of JSX twice over, differing only in
@@ -17,6 +26,7 @@ import type { PillarPage } from "../lib/pillars";
 
 export function PillarView({ P }: { P: PillarPage }) {
   const faqs = P.faqs;
+  const discussionTopic = DISCUSSION_TOPIC[P.path];
   const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
   // Single open question at a time, same as PracticeFaq. Empty string is
   // "none open", not a valid question text, so it never collides with a q.
@@ -179,6 +189,11 @@ export function PillarView({ P }: { P: PillarPage }) {
         <h2 className="serif" style={{ fontSize: "clamp(26px, 5.5vw, 36px)", lineHeight: 1.2, margin: "0 0 14px" }}>{P.ctaH2}        </h2>
         <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "0 auto 24px", maxWidth: "52ch" }}>{P.ctaBody}        </p>
         <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+        {discussionTopic && (
+          <div style={{ marginTop: 16 }}>
+            <DiscussionsTrigger topic={discussionTopic} />
+          </div>
+        )}
         <p style={{ fontSize: 13, color: "var(--slate)", marginTop: 20 }}>{P.disclaimer}        </p>
       </section>
     </>

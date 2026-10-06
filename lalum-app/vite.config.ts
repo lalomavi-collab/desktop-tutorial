@@ -1,11 +1,13 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, cvPath, langUrl, LANGS, type Lang } from "./src/lib/hreflang";
+import { alternatesFor, cvPath, langUrl, LANGS, EN_ARTICLE_SLUGS, type Lang } from "./src/lib/hreflang";
+import { enPosts } from "./src/data/enPosts";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
@@ -44,6 +46,10 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // LALUM LEX: the standalone assistant app. Prerendered only so a direct hit
+  // resolves to a real document, noindex because it is an application surface,
+  // not a marketing page (the same treatment login and portal get).
+  { path: "os", title: "LALUM LEX", desc: "עוזר ה-AI של LALUM: הנדסת משפט וארכיטקטורת סיכונים.", noindex: true },
   // One prerendered page per sector rubric under the AI pillar. These are the
   // pages outreach points a body at instead of a PDF, so they have to resolve
   // to a real document with their own title and description, not to the SPA
@@ -195,16 +201,43 @@ const FALLBACK_RE = /(<div id="root">)([\s\S]*?)(\n\s*<\/div>\s*(?:<script|<\/bo
 // The two areas the practice leads with come first, matching the rendered
 // navigation. A crawler that does not run JavaScript reads this list on every
 // document, so the order is the site saying what it is about.
-const SITE_NAV = `<p><a href="/real-estate-legal-advisory/">ייעוץ נדל״ן והתחדשות עירונית</a> · <a href="/ai-legal-advisory/">ייעוץ AI</a> · <a href="/advisory/">ייעוץ משפטי</a> · <a href="/mediation-dispute-resolution/">גישור ויישוב סכסוכים</a> · <a href="/insights/">מאמרים</a> · <a href="/faq/">שאלות ותשובות</a> · <a href="/risk/">מבדק מוכנות</a> · <a href="/book/">תיאום פגישה</a></p>`;
+//
+// Built from each language's own footerLinks/footer strings (already
+// validated across all 5 locales) rather than a second hardcoded copy, so
+// this list can never drift out of sync with the real, rendered footer nav.
+// "Readiness assessment" (/risk) has no existing short nav label elsewhere,
+// so it is the one label defined here directly, per language.
+const RISK_NAV_LABEL: Record<Lang, string> = {
+  he: "מבדק מוכנות",
+  en: "Readiness assessment",
+  es: "Autoevaluación de preparación",
+  fr: "Auto-évaluation de préparation",
+  ar: "تقييم الجاهزية",
+};
+function siteNavFor(lang: Lang): string {
+  const dict = strings[lang];
+  const L = dict.ui.footerLinks;
+  const items: [string, string][] = [
+    ["/real-estate-legal-advisory/", L.advisoryRe],
+    ["/ai-legal-advisory/", L.advisoryAi],
+    ["/advisory/", L.advisory],
+    ["/mediation-dispute-resolution/", L.advisoryMediation],
+    ["/insights/", L.insights],
+    ["/faq/", L.qa],
+    ["/risk/", RISK_NAV_LABEL[lang]],
+    ["/book/", dict.ui.footer.book],
+  ];
+  return `<p>${items.map(([href, text]) => `<a href="${href}">${esc(text)}</a>`).join(" · ")}</p>`;
+}
 
-function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: string = "he"): string {
+function withStaticBody(html: string, inner: string, dir: "rtl" | "ltr" = "rtl", lang: Lang = "he"): string {
   if (!FALLBACK_RE.test(html)) return html;
   const body = `
       <!-- Static content for crawlers and AI engines that do not run
            JavaScript. React replaces this the moment the app mounts. -->
       <div style="max-width:820px;margin:0 auto;padding:48px 24px;font-family:system-ui,sans-serif;line-height:1.6;color:#1a1815" dir="${dir}" lang="${lang}">
 ${inner}
-        ${SITE_NAV}
+        ${siteNavFor(lang)}
       </div>`;
   return sub(html, FALLBACK_RE, (_m, open, _old, close) => `${open}${body}${close}`);
 }
@@ -742,6 +775,13 @@ function applyMeta(template: string, r: { title: string; desc: string; url: stri
       const re = new RegExp(`(<link rel="alternate" hreflang="${a.hreflang}" href=")[^"]*("\\s*/>)`);
       h = replaceTag(h, re, "$1", a.href, "$2");
     }
+    // Drop any inherited alternate the template carried for a language this
+    // route is NOT translated into. A route translated to fewer languages than
+    // the home (a he-plus-en pilot article) would otherwise keep the home's
+    // stale es, fr and ar tags, pointing at query-param URLs that resolve to no
+    // file, which is exactly the dangling-alternate the build check catches.
+    const keep = new Set(alts.map((a) => a.hreflang));
+    h = h.replace(/\s*<link rel="alternate" hreflang="([^"]*)" href="[^"]*"\s*\/>/g, (m, code) => (keep.has(code) ? m : ""));
   }
   if (r.noindex) {
     h = replaceTag(h, /(<meta name="robots" content=")[^"]*("\s*\/>)/, "$1", "noindex, follow", "$2");
@@ -1007,6 +1047,34 @@ function seoPrerender(): Plugin {
           written++;
         }
       }
+
+      // English article variants (the urban renewal and AI pilot). Each is a
+      // real file at /en/insights/<slug>/ carrying the English title, standfirst
+      // and prose, its own self-referencing English canonical, the he plus en
+      // hreflang pair (from alternatesFor, which now returns exactly those two
+      // for a pilot slug), and the English article JSON-LD. The Hebrew file for
+      // the same slug already picked up the reciprocal en alternate through the
+      // same helper, so the two point at each other and Google reads them as one
+      // piece in two languages rather than a duplicate.
+      for (const slug of EN_ARTICLE_SLUGS) {
+        const en = enPosts[slug];
+        const meta = blogMeta.find((m) => m.slug === slug);
+        if (!en || !meta) continue;
+        const image = meta.cover ? (meta.cover.startsWith("http") ? meta.cover : `${SITE}${meta.cover.startsWith("/") ? "" : "/"}${meta.cover}`) : undefined;
+        const blocks = toBlocks(en.body);
+        const topic = topicOfArticle(strings.he, slug);
+        let html = applyMeta(template, {
+          title: `${en.title} · LALUM`, desc: clip(en.excerpt), url: langUrl(`/insights/${slug}`, "en"), path: `insights/${slug}`, image,
+        });
+        html = sub(html, /<html[^>]*>/, () => `<html lang="en" dir="ltr">`);
+        const script = articleJsonLd({ slug, headline: en.title, desc: clip(en.excerpt), image, date: en.date, body: blocksToText(blocks), topic });
+        html = sub(html, "</head>", () => `    ${script}\n  </head>`);
+        html = withStaticBody(html, articleBodyHtml(en.title, en.excerpt, blocks, relatedTo(slug, corpus), topic), "ltr", "en");
+        const file = join(outDir, "en", "insights", slug, "index.html");
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, html, "utf8");
+        written++;
+      }
       // Stamp a dynamic lastmod on every sitemap URL at build time, so crawlers
       // see a fresh, self-updating date on each deploy instead of a hand-edited
       // one that drifts. Only URLs that do not already carry a <lastmod> are
@@ -1030,6 +1098,15 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
         if (rows.length) xml = sub(xml, "</urlset>", () => `${rows.join("\n")}\n</urlset>`);
+        // English article variants (the pilot), so a crawler finds them in the
+        // sitemap and not only by following the hreflang link from the Hebrew
+        // article. They update as the underlying piece does, hence monthly.
+        const enRows = [...EN_ARTICLE_SLUGS]
+          .filter((slug) => enPosts[slug])
+          .map((slug) => langUrl(`/insights/${slug}`, "en"))
+          .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
+          .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+        if (enRows.length) xml = sub(xml, "</urlset>", () => `${enRows.join("\n")}\n</urlset>`);
         // Auto-add every sector rubric, so a new one is in the sitemap the
         // moment it is added to sectors.ts. They update as the case law and
         // the regulator's instructions do, hence weekly, and they carry the
@@ -1060,5 +1137,11 @@ function seoPrerender(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), seoPrerender()],
+  // tailwindcss() only transforms a CSS file that itself contains
+  // `@import "tailwindcss"`. The site's global stylesheet (src/index.css,
+  // the --clay* token system every existing page depends on) has no such
+  // import, so registering the plugin here changes nothing about it. Until a
+  // LEX component imports src/styles/lex.css, this plugin sees no input and
+  // produces no output: adding it is inert on its own.
+  plugins: [react(), tailwindcss(), seoPrerender()],
 });

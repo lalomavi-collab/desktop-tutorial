@@ -9,11 +9,29 @@
   --card: #ffffff;
   --ink: #1a1815;
   --slate: #55514a;
-  --clay: #a8482a;
-  --clay-hover: #8c3b20;
-  --clay-bright: #c15f3c;
-  --clay-soft: #e4c7b7;
-  --clay-tint: #f3e7de;
+  /* Brand accent: gentle, muted sage green — replaced the original clay/
+     terracotta site-wide. Was piloted scoped to /portal and /os only (see
+     git history), then adopted as the one brand colour everywhere, by
+     explicit user decision. --clay itself (not --clay-bright) carries white
+     button text, and also runs as body-sized text directly on --ivory and
+     --clay-tint (footer labels, .pill, .eyebrow, .faq-cat-count), so it is
+     darkened to clear WCAG AA (4.5:1) against the darkest of those, not just
+     white: 4.5:1 on #ffffff alone left it at 4.02:1 on --clay-tint and
+     4.25:1 on --ivory, both a fail. This shade holds 4.5:1+ on all three.
+     The same reasoning already applied to --brand-green-on-white below. The
+     token names keep the word "clay" so this diff stays small; they no
+     longer mean clay-coloured. */
+  --clay: #537056;
+  --clay-hover: #4c6850;
+  /* Brightened for the same reason as --clay above: as text (an eyebrow, a
+     course-meta label, a numbered badge) on --ink it read at 6.85:1, but the
+     translucent white overlays on nested cards (.course-card then
+     .course-capstone) lighten the effective background enough that the same
+     text measured 4.41:1, then 3.93:1, on those, both a fail. This shade
+     clears 4.5:1 against the lightest of those nested composites. */
+  --clay-bright: #769d79;
+  --clay-soft: rgba(107, 143, 110, 0.35);
+  --clay-tint: #e7ede4;
   --line: #e3dccd;
   --line-strong: #d3c9b5;
   --success: #3f8f5f;
@@ -182,6 +200,29 @@ body {
 .share-btn:focus-visible,
 .tabbar-item:focus-visible {
   outline-offset: 3px;
+}
+/* Fixed-width digits everywhere numbers actually appear (credentials line,
+   article dates, phone numbers, prices). Hebrew text mixes constantly with
+   Latin numerals, and tabular figures keep them from jittering in width as
+   the surrounding text reflows. Purely a digit-rendering property; it has
+   no effect on Hebrew letterforms. */
+body {
+  font-variant-numeric: tabular-nums;
+}
+/* Chrome that reads as an app control, not a text page: nav, buttons and
+   badges aren't meant to be selected/copied the way body prose is. Contact
+   info (phone/email links) is deliberately excluded, those ARE meant to be
+   selectable. */
+.nav-pills .nav-pill,
+.tabbar-item,
+.btn,
+.tb-btn,
+.pill,
+.eyebrow,
+.header-more-item,
+.qad-item {
+  user-select: none;
+  -webkit-user-select: none;
 }
 /* Long tokens (emails, urls) wrap instead of pushing a box wider than the app. */
 p,
@@ -601,7 +642,7 @@ article p {
   background: var(--clay-hover);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px -12px rgba(139, 63, 40, 0.7);
+  box-shadow: 0 10px 22px -12px rgba(74, 100, 77, 0.6);
 }
 .btn-clay:active,
 .btn-ink:active {
@@ -920,11 +961,11 @@ a.card:focus-visible {
 }
 /* Warm brand tones in rotation, so the stack reads as one family rather than
    six unrelated colours. */
-.pillar-band:nth-child(6n + 2) { border-inline-start-color: #9a7328; }
+.pillar-band:nth-child(6n + 2) { border-inline-start-color: #916c26; }
 .pillar-band:nth-child(6n + 3) { border-inline-start-color: #8a3f45; }
 .pillar-band:nth-child(6n + 4) { border-inline-start-color: var(--success); }
 .pillar-band:nth-child(6n + 5) { border-inline-start-color: var(--clay-bright); }
-.pillar-band:nth-child(6n) { border-inline-start-color: #9a7328; }
+.pillar-band:nth-child(6n) { border-inline-start-color: #916c26; }
 
 @media (prefers-reduced-motion: no-preference) {
   .pillar-band {
@@ -1041,7 +1082,7 @@ a.card:hover .card-go {
   border-top-color: #a8482a;
 }
 .grid-3 > .card:nth-child(3n + 2) {
-  border-top-color: #9a7328;
+  border-top-color: #916c26;
 }
 .grid-3 > .card:nth-child(3n) {
   border-top-color: #8a3f45;
@@ -1078,7 +1119,7 @@ a.card:hover .card-go {
   gap: 8px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--clay-soft);
+  color: var(--clay-bright);
   margin-bottom: 24px;
 }
 .home-academy-cta {
@@ -1232,7 +1273,7 @@ a.card:hover .card-go {
 }
 .course-meta-k {
   font-weight: 700;
-  color: var(--clay-soft);
+  color: var(--clay-bright);
 }
 .course-capstone {
   border: 1px solid;
@@ -1296,8 +1337,8 @@ a.card:hover .card-go {
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: rgba(193, 95, 60, 0.25);
-  color: var(--clay-soft);
+  background: rgba(107, 143, 110, 0.25);
+  color: var(--clay-bright);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1564,6 +1605,12 @@ a.caps-item:focus-visible .caps-go {
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
+/* While the menu is open the header lifts above every floating surface (chat
+   dock, accessibility dock, cookie banner, bottom tab bar), so the full-screen
+   mobile panel inside it covers them instead of letting them poke through. */
+.site-header.nav-open {
+  z-index: 400;
+}
 .header-inner {
   display: flex;
   align-items: center;
@@ -1592,6 +1639,40 @@ a.caps-item:focus-visible .caps-go {
 }
 .header-cta-label {
   display: none;
+}
+/* The app entry CTA (see Header.tsx for why it is a button, not a nav-pill)
+   keeps its text label at ordinary widths, unlike .header-cta above: it is
+   the one path a desktop visitor has to LALUM LEX at all, so it should read
+   as a named destination, not another anonymous icon in the toolbar. It
+   still collapses to icon-only at the same tight-desktop range nav-pills
+   already compress at (.header-lex-cta-label below), so it cannot itself
+   become the reason that row overflows into a scroll.
+   The icon sits in its own inset badge rather than floating loose beside the
+   label: one extra shape, not extra chrome, that reads as a small app
+   launcher rather than a copy of the plain icon+text pattern every other
+   .btn already uses (/book included). The badge lightens further and the
+   whole pill keeps .btn-clay's own lift on hover, so the accent stays
+   confined to hover states already established elsewhere, no added motion. */
+.header-lex-cta {
+  gap: 9px;
+  padding-inline-start: 7px;
+  padding-inline-end: 16px;
+  flex: none;
+}
+.header-lex-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--paper);
+  transition: background 0.15s ease;
+}
+.header-lex-cta:hover .header-lex-cta-icon {
+  background: rgba(255, 255, 255, 0.34);
 }
 /* Drop the secondary guide icon and the share icon too, for the same reason:
    both existed as tight-viewport relief valves that never fired once the
@@ -1671,7 +1752,7 @@ a.caps-item:focus-visible .caps-go {
   color: var(--paper);
   background: var(--clay);
   border-color: var(--clay);
-  box-shadow: 0 4px 12px -4px rgba(139, 63, 40, 0.55);
+  box-shadow: 0 4px 12px -4px rgba(74, 100, 77, 0.5);
 }
 .nav-pill.active:hover {
   color: var(--paper);
@@ -1687,6 +1768,14 @@ a.caps-item:focus-visible .caps-go {
 @media (max-width: 1120px) {
   .header-inner {
     gap: 12px;
+  }
+  .header-lex-cta {
+    width: var(--ctrl-h);
+    padding: 0;
+    justify-content: center;
+  }
+  .header-lex-cta-label {
+    display: none;
   }
   .nav-pills {
     gap: 4px;
@@ -2154,26 +2243,25 @@ a.caps-item:focus-visible .caps-go {
   border: 1px solid var(--line);
   box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
 }
-.founder-hero img {
+.founder-hero-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 50% 12%;
   display: block;
+  object-fit: cover;
   transition: transform 0.5s ease;
 }
-.founder-hero:hover img {
+.founder-hero:hover .founder-hero-photo {
   transform: scale(1.03);
 }
 .founder-hero-cap {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  padding: 46px 24px 20px;
+  padding: 46px 24px 22px;
   background: linear-gradient(to top, rgba(10, 10, 12, 0.86), rgba(10, 10, 12, 0.15) 70%, transparent);
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 .founder-hero-name {
   color: #ffffff;
@@ -2395,6 +2483,15 @@ html.a11y-reduce-motion *::after {
   .a11y-panel {
     width: min(282px, calc(100vw - 32px));
   }
+  /* See useNearTopScroll: fades the dock out for the first ~180px of scroll,
+     where its fixed position would otherwise sit on top of the hero's own
+     CTA row on many common phone heights. Never applied while the panel is
+     open (see the component). */
+  .a11y-dock.dock-near-top {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
 }
 
 /* ---------- dark contact panel ---------- */
@@ -2410,7 +2507,7 @@ html.a11y-reduce-motion *::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(560px 360px at 84% 6%, rgba(193, 95, 60, 0.3), transparent 62%);
+  background: radial-gradient(560px 360px at 84% 6%, rgba(107, 143, 110, 0.3), transparent 62%);
 }
 
 /* ---------- footer ---------- */
@@ -2439,6 +2536,46 @@ html.a11y-reduce-motion *::after {
   line-height: 1.62;
   color: var(--slate);
   margin: 0;
+}
+/* Founder band: photo + first-person bio + CTA row, above the link columns. */
+.footer-founder {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 40px 32px 8px;
+}
+.footer-founder-photo {
+  width: 112px;
+  height: 112px;
+  border-radius: 20px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.footer-founder-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 62ch;
+}
+.footer-founder-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--clay);
+}
+.footer-founder-bio {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--slate);
+  margin: 0;
+}
+.footer-founder-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
 .footer-col {
   display: flex;
@@ -2731,27 +2868,6 @@ html.a11y-reduce-motion *::after {
   color: var(--clay);
   border-color: var(--clay);
   transform: translateY(-1px);
-}
-/* Prominent LinkedIn follow button, so visitors reach the founder's posts and
-   connect. LinkedIn brand blue so it reads instantly as the social action. */
-.footer-linkedin-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  padding: 10px 18px;
-  border-radius: 9999px;
-  background: #0a66c2;
-  color: #fff;
-  font-weight: 600;
-  font-size: 13.5px;
-  line-height: 1.2;
-  transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-.footer-linkedin-cta:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px -12px rgba(10, 102, 194, 0.7);
 }
 .footer-website {
   display: inline-block;
@@ -3091,10 +3207,36 @@ html.a11y-reduce-motion *::after {
     grid-column: 1 / -1;
     max-width: none;
   }
+  .footer-founder {
+    padding: 32px 20px 4px;
+    gap: 20px;
+  }
+  .footer-founder-photo {
+    width: 88px;
+    height: 88px;
+    border-radius: 16px;
+  }
 }
 /* App-like compact footer on phones: keep columns side by side instead of a
    tall single stack, tighten spacing, and shrink the download band. */
 @media (max-width: 560px) {
+  .footer-founder {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 26px 20px 4px;
+    gap: 14px;
+  }
+  .footer-founder-photo {
+    width: 76px;
+    height: 76px;
+  }
+  .footer-founder-actions {
+    width: 100%;
+  }
+  .footer-founder-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
   .footer-download {
     gap: 14px;
     padding: 18px 20px;
@@ -3239,6 +3381,16 @@ html.a11y-reduce-motion *::after {
   }
   /* Primary nav moves to the bottom tab bar on phones. */
   .nav-pills {
+    display: none;
+  }
+  /* header-tools carried exactly one visible child on phones, the quick-pay
+     ₪ button (now folded into the "More" menu instead, see Header.tsx).
+     With nothing left to show at this width, hide the wrapper itself rather
+     than leave an empty flex item: with only .brand and .header-more-wrap
+     left visible, justify-content: space-between on .header-inner puts the
+     wordmark and the menu button at opposite ends on its own, no explicit
+     order needed. */
+  .header-tools {
     display: none;
   }
   /* On a narrow (app) width, justified copy opens whitespace rivers and reads
@@ -3469,6 +3621,61 @@ html.a11y-reduce-motion *::after {
     rgba(245, 241, 232, 0.72) 100%
   );
 }
+/* The one photographic variant. Contrast for the heading and lede comes from
+   the frosted .hero-text-panel they sit in (below), not from washing out the
+   image, so the photo itself stays close to full strength: a thin top vignette
+   for depth, and a bottom fade so the hero settles into the ivory page rather
+   than cutting off hard, are all it needs. */
+.ambient-photo-img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: 30% 40%;
+}
+.ambient-photo .ambient-scrim {
+  background: linear-gradient(180deg, rgba(20, 18, 15, 0.12) 0%, transparent 22%, transparent 78%, var(--ivory) 100%);
+}
+/* Below 900px the hero grid collapses to one column (see .hero-grid above)
+   and the panel spans the full width, so the fade at the bottom can be a
+   little shorter: there is no second column still needing the image behind it. */
+@media (max-width: 900px) {
+  .ambient-photo .ambient-scrim {
+    background: linear-gradient(180deg, rgba(20, 18, 15, 0.16) 0%, transparent 20%, transparent 70%, var(--ivory) 100%);
+  }
+  .ambient-photo-img {
+    object-position: 50% 15%;
+  }
+}
+/* Frosted glass card for the hero copy over the photo: the same ivory as the
+   page, translucent, so the photo keeps showing through softly right behind
+   the words rather than the words sitting on the raw image. Only the home
+   hero's photo variant uses it; every other ambient variant is abstract
+   enough already that the text sits on it directly, as before. */
+.hero-text-panel {
+  background: rgba(245, 241, 232, 0.82);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 28px;
+  padding: 34px 38px;
+  box-shadow: 0 24px 60px -28px rgba(20, 18, 15, 0.35);
+}
+@media (max-width: 560px) {
+  .hero-text-panel {
+    padding: 24px 22px;
+    border-radius: 22px;
+  }
+}
+/* Firefox and older Safari drop backdrop-filter silently; fall back to a
+   near-opaque panel so contrast never depends on a feature that may be
+   missing. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hero-text-panel {
+    background: rgba(245, 241, 232, 0.97);
+  }
+}
 .ambient-blob {
   position: absolute;
   border-radius: 50%;
@@ -3483,7 +3690,7 @@ html.a11y-reduce-motion *::after {
   min-height: 320px;
   inset-inline-start: -8%;
   top: -20%;
-  background: radial-gradient(circle at 50% 50%, rgba(193, 95, 60, 0.5), transparent 68%);
+  background: radial-gradient(circle at 50% 50%, rgba(107, 143, 110, 0.5), transparent 68%);
   animation: ambient-drift-1 26s ease-in-out infinite alternate;
 }
 .ambient-b2 {
@@ -3589,7 +3796,7 @@ html.a11y-reduce-motion *::after {
   border-color: var(--clay);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
 }
 .share-btn:active {
   transform: scale(0.92);
@@ -3662,7 +3869,7 @@ html.a11y-reduce-motion *::after {
   width: 26px;
   height: 26px;
   border-radius: 9999px;
-  background: rgba(193, 95, 60, 0.22);
+  background: rgba(107, 143, 110, 0.22);
   color: var(--clay-soft);
   display: inline-flex;
   align-items: center;
@@ -3766,6 +3973,28 @@ html.a11y-reduce-motion *::after {
     color: var(--clay);
     background: var(--clay-tint);
   }
+  /* SOS is a <button>, not a link, so it needs its own reset on top of the
+     shared .tabbar-item layout. */
+  .tabbar-sos {
+    background: none;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    color: var(--danger);
+  }
+  .tabbar-sos-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 21px;
+    height: 21px;
+    border-radius: 9999px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
   /* Keep the footer (last scrollable content) clear of the fixed tab bar and
      the floating chat / accessibility buttons that sit just above it. */
   .site-footer {
@@ -3774,6 +4003,13 @@ html.a11y-reduce-motion *::after {
   /* Lift the floating chat bubble above the tab bar. */
   .chat-dock {
     bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  /* See useNearTopScroll / the matching .a11y-dock rule above: same
+     fixed-dock-over-hero-CTA collision, same fix. */
+  .chat-dock.dock-near-top {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
   }
 }
 
@@ -3811,7 +4047,7 @@ html.a11y-reduce-motion *::after {
   border-color: var(--clay);
   color: var(--paper);
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px -10px rgba(193, 95, 60, 0.75);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
 }
 .tb-btn:active { transform: scale(0.92); }
 /* The assistant-call button is the primary quick-contact action, so it carries
@@ -3826,15 +4062,34 @@ html.a11y-reduce-motion *::after {
   color: var(--paper);
 }
 /* Quick payment carries the brand burgundy so it stands apart from the clay
-   contact button and reads as the pay action, one tap from the top bar. */
+   contact button and reads as the pay action, one tap from the top bar. It
+   shows the shekel sign rather than a bare card icon — like .tb-sos below,
+   a short visible glyph reads correctly with no hover to fall back on. */
 .tb-btn.tb-pay {
   background: #800020;
   border-color: #800020;
   color: var(--paper);
+  font-size: 17px;
+  font-weight: 700;
 }
 .tb-btn.tb-pay:hover {
   filter: brightness(1.1);
   color: var(--paper);
+}
+/* Urgent contact is the one action nobody should have to search for, so it
+   gets its own alarm color (unused elsewhere in the app) instead of sharing
+   the clay/burgundy accents already claimed by the other header buttons. */
+.tb-btn.tb-sos {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.tb-btn.tb-sos:hover {
+  filter: brightness(1.1);
+  color: #fff;
 }
 .tabbar-bot { color: var(--clay); }
 .tb-lang {
@@ -3867,32 +4122,64 @@ html.a11y-reduce-motion *::after {
   }
 }
 
-/* ---------- header "more" menu (phones) ---------- */
-/* The desktop row: guide, call, WhatsApp, Telegram, share, language. Visible
-   down to 900px, the width where the primary nav already leaves the header
-   for the bottom tab bar; below it the row would otherwise have to keep
-   shrinking icons to avoid riding over the wordmark, which is the crowding
-   this menu replaces. */
-.header-util-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ---------- header menu (all widths) ---------- */
+/* One trigger for everything, on every width: the LALUM mark. The old
+   right-side icon row and separate language dropdown are gone, folded into
+   the menu this button opens, so the header carries the wordmark, the primary
+   nav pills, this mark, and the login pill, and nothing has to shrink to fit. */
 .header-more-wrap {
-  display: none;
+  display: inline-flex;
   position: relative;
 }
-@media (max-width: 900px) {
-  .header-util-group {
-    display: none;
-  }
-  .header-more-wrap {
-    display: inline-flex;
-  }
+/* The trigger is a labelled control, not a bare glyph: a menu icon and the
+   word "Menu" in a pill beside the wordmark, so it plainly reads as the way to
+   open the menu rather than as a second logo. It carries the clay accent on
+   hover like the primary quick-contact actions. */
+.header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  /* Above the menu's own full-screen click-catcher backdrop (z-index 40), so
+     opening the menu never paints the backdrop over the button and fires a
+     false mouseleave that would auto-close it while the pointer still rests on
+     the trigger. */
+  position: relative;
+  z-index: 42;
+  height: var(--ctrl-h);
+  padding: 0 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.header-menu-btn svg {
+  flex: none;
+  color: var(--clay);
+  transition: color 0.15s ease;
+}
+.header-menu-btn:hover {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: var(--paper);
+  box-shadow: 0 8px 18px -10px rgba(107, 143, 110, 0.75);
+}
+.header-menu-btn:hover svg {
+  color: var(--paper);
+}
+.header-menu-btn[aria-expanded="true"] {
+  background: var(--clay-tint);
+  border-color: var(--clay-soft);
 }
 .header-more-menu {
   position: absolute;
-  inset-inline-end: 0;
+  /* Anchored to the logo side now that the trigger sits beside the wordmark. */
+  inset-inline-start: 0;
   top: calc(100% + 8px);
   z-index: 41;
   padding: 8px;
@@ -3936,6 +4223,26 @@ html.a11y-reduce-motion *::after {
 .header-more-item svg {
   flex: none;
   color: var(--clay);
+}
+/* The quick-pay row's icon is a currency glyph, not an svg like its
+   siblings; sized and coloured to match them so it sits in the same visual
+   column instead of looking like a stray character. */
+.header-more-pay-symbol {
+  flex: none;
+  width: 18px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--clay);
+}
+/* The app entry gets a faint accent so it reads as the one destination that
+   leaves the marketing site for the assistant application. */
+.header-more-os {
+  font-weight: 700;
+  background: var(--clay-tint);
+}
+.header-more-os:hover,
+.header-more-os:focus-visible {
+  background: var(--clay-soft);
 }
 .header-more-divider {
   height: 1px;
@@ -4046,7 +4353,7 @@ html.a11y-reduce-motion *::after {
   height: 30px;
   border-radius: 9999px;
   background: var(--ink);
-  color: var(--clay-soft);
+  color: var(--clay-bright);
   font-weight: 800;
   font-size: 14px;
   display: inline-flex;
@@ -4125,6 +4432,56 @@ html.a11y-reduce-motion *::after {
   margin: 16px 0 0;
 }
 
+/* ---------- SOS urgent-contact sheet (shares .guide-overlay/.guide-sheet) ---------- */
+.sos-sheet {
+  max-width: 420px;
+}
+.sos-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.sos-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.sos-action:hover {
+  border-color: var(--danger);
+  background: rgba(179, 64, 47, 0.06);
+  transform: translateY(-1px);
+}
+.sos-action-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background: var(--danger);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sos-action-c {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.sos-action-c span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate);
+}
+
 /* ---------- Marketing consent (opt-in checkbox) ---------- */
 .consent {
   display: flex;
@@ -4148,15 +4505,15 @@ html.a11y-reduce-motion *::after {
 }
 .consent-text a { color: var(--clay); text-decoration: underline; }
 .consent-dark .consent-text { color: rgba(245, 241, 232, 0.72); }
-.consent-dark .consent-text a { color: var(--clay-soft); }
+.consent-dark .consent-text a { color: var(--clay-bright); }
 
 /* Chat voice input: pulse the mic while recording. */
 @media (prefers-reduced-motion: no-preference) {
   .mic-live { animation: mic-pulse 1.3s ease-in-out infinite; }
 }
 @keyframes mic-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 72, 42, 0.45); }
-  50% { box-shadow: 0 0 0 5px rgba(168, 72, 42, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(90, 122, 93, 0.45); }
+  50% { box-shadow: 0 0 0 5px rgba(90, 122, 93, 0); }
 }
 
 /* ---------- Tech-Legal readiness self-assessment ---------- */
@@ -4213,7 +4570,7 @@ html.a11y-reduce-motion *::after {
 .riskcalc-choice.on {
   border-color: var(--clay);
   background: var(--clay-tint);
-  box-shadow: 0 12px 30px -20px rgba(193, 95, 60, 0.5);
+  box-shadow: 0 12px 30px -20px rgba(107, 143, 110, 0.5);
 }
 .riskcalc-choice.on .riskcalc-choice-mark { color: var(--clay); transform: scale(1.12); }
 .riskcalc-nav { margin-top: 16px; }
@@ -4342,141 +4699,6 @@ html.a11y-reduce-motion *::after {
    there is no reason to keep the gap above it. */
 .vbub-dock.is-open {
   bottom: 24px;
-}
-
-.vbub-orb-wrap {
-  position: relative;
-  display: flex;
-}
-
-/* The invitation. One control: the clip's thumbnail, the question it answers,
-   and how long it takes. The old bubble kept its caption behind :hover, which
-   on a phone means it never appeared at all, so the thing in the corner was a
-   floating face with nothing saying what tapping it would do. */
-.vbub-invite {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-inline-size: min(300px, calc(100vw - 40px));
-  /* Logical padding: the thumbnail sits at the inline start, so the tighter
-     side has to follow the writing direction rather than being pinned left. */
-  padding-block: 10px;
-  padding-inline-start: 10px;
-  padding-inline-end: 18px;
-  border: 1px solid var(--clay-soft);
-  border-radius: 999px;
-  background: var(--paper);
-  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
-  cursor: pointer;
-  text-align: start;
-  font: inherit;
-}
-.vbub-invite:hover {
-  border-color: var(--clay);
-  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
-}
-.vbub-invite:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 3px;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-invite {
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    animation: vbub-arrive 0.5s cubic-bezier(0.22, 0.9, 0.28, 1) both;
-  }
-  .vbub-invite:hover {
-    transform: translateY(-2px);
-  }
-}
-@keyframes vbub-arrive {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
-}
-
-.vbub-orb {
-  position: relative;
-  inline-size: 54px;
-  block-size: 54px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex: none;
-  background: var(--vbub-navy);
-  border: 2px solid var(--clay-soft);
-}
-.vbub-orb-video {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  /* The clip is a vertical portrait, so a centred crop lands on the chest.
-     Pulling the frame up puts the face in the circle. */
-  object-position: 50% 22%;
-  display: block;
-}
-/* A play chip, always present: it is what marks the thumbnail as a video
-   rather than a photo of somebody. */
-.vbub-orb-play {
-  position: absolute;
-  inset-block-end: -1px;
-  inset-inline-end: -1px;
-  inline-size: 22px;
-  block-size: 22px;
-  border-radius: 50%;
-  background: var(--clay);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 0 0 2px var(--paper);
-}
-.vbub-orb-play svg {
-  /* The glyph is a right-pointing triangle, and it means "play" in every
-     direction, so it must not flip with the page. */
-  transform: translateX(1px);
-}
-
-.vbub-invite-txt {
-  min-inline-size: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.vbub-invite-line {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--ink);
-}
-.vbub-invite-meta {
-  font-size: 11.5px;
-  line-height: 1.35;
-  color: var(--slate);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Quiet: closing is not the action being offered. */
-.vbub-dismiss {
-  position: absolute;
-  inset-block-start: -7px;
-  inset-inline-end: -7px;
-  inline-size: 22px;
-  block-size: 22px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--slate);
-  font-size: 14px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.vbub-dismiss:hover {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #ffffff;
 }
 
 /* ---------- expanded player ---------- */
@@ -4669,8 +4891,6 @@ html.a11y-reduce-motion *::after {
 }
 
 /* Keyboard focus has to stay obvious against a dark, moving background. */
-.vbub-orb:focus-visible,
-.vbub-dismiss:focus-visible,
 .vbub-tool:focus-visible,
 .vbub-seek:focus-visible,
 .vbub-cta-gold:focus-visible,
@@ -4687,11 +4907,6 @@ html.a11y-reduce-motion *::after {
   }
   .vbub-dock.is-open {
     bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-  }
-  .vbub-orb {
-    width: 72px;
-    height: 72px;
-    border-width: 2px;
   }
   .vbub-panel {
     height: min(560px, calc(100vh - 190px));
@@ -4768,157 +4983,322 @@ html.a11y-reduce-motion *::after {
 }
 
 /* ============================================================
-   Home entry prompt (components/HomePrompt.tsx)
+   Quick access dot (components/QuickAccessDot.tsx)
    ------------------------------------------------------------
-   A strip, not a block: an orb beside one line of text, the same
-   shape the video bubble's own invite already uses. It was a
-   340px circle at first, then a 272px card, and both still stood
-   tall enough to compete with the hero. A strip does not: it is
-   shorter than either predecessor by more than half, so it reads
-   as a passing invitation instead of a panel the page has to make
-   room for.
-   The pill itself is paper, not navy: the video bubble already
-   owns the dark orb-on-navy look on the opposite corner, and two
-   dark shapes on the same page would read as one system split in
-   two rather than two distinct invitations.
-   It sits on the inline-start edge: in Hebrew and Arabic that is
-   the right, where only the accessibility button lives, and in
-   the Latin languages the left. The chat, the contact rail and
-   the video bubble all occupy the opposite edge, so nothing
-   overlaps at any breakpoint.
+   Replaces two independent auto-popping invitations (the video
+   teaser pill and the home-page compliance prompt) that visitors
+   found intrusive, and that — on a phone — sat close enough in
+   the same corner to visually collide (see the removed .hprompt/
+   .vbub-invite history below in git blame). One small, quiet
+   button in the video bubble's old corner; nothing appears on its
+   own, nothing times out, nothing needs a dismiss button. Opening
+   it is the visitor's own choice, once, on request.
    ============================================================ */
-.hprompt {
-  --hp-navy: #0a192f;
-  --hp-navy-soft: #112240;
-  --hp-gold: #d4af37;
-  --hp-gold-soft: #c5a880;
-
+.qad-dock {
   position: fixed;
-  bottom: 96px;
-  inset-inline-start: 24px;
-  z-index: 84;
+  bottom: 98px;
+  inset-inline-end: 24px;
+  z-index: 82;
   display: flex;
-  align-items: center;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .hprompt { animation: hprompt-in 0.4s cubic-bezier(0.2, 0.7, 0.3, 1); }
-}
-@keyframes hprompt-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
-}
-
-.hprompt-pill {
-  display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 10px;
-  max-width: min(248px, calc(100vw - 76px));
-  background: var(--paper);
-  border: 1px solid var(--hp-gold-soft);
-  border-radius: 9999px;
-  padding: 7px 14px 7px 7px;
-  box-shadow: 0 14px 30px -18px rgba(26, 24, 21, 0.4);
-  text-decoration: none;
+}
+.qad-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 0;
+  border: 2px solid var(--clay-soft);
+  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
+  cursor: pointer;
+  overflow: hidden;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
-[dir="rtl"] .hprompt-pill {
-  padding: 7px 7px 7px 14px;
+.qad-button:hover {
+  border-color: var(--clay);
+  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
 }
-.hprompt-pill:hover {
-  border-color: var(--hp-gold);
-  box-shadow: 0 18px 36px -18px rgba(26, 24, 21, 0.48);
-  transform: translateY(-1px);
-}
-.hprompt-pill:focus-visible {
-  outline: 3px solid var(--hp-gold);
+.qad-button:focus-visible {
+  outline: 3px solid var(--clay);
   outline-offset: 3px;
 }
-/* The favicon's own square carries a black ground already, so cropping it to
-   a circle needs only the border and the clip, not a background of our own:
-   an underlying gradient would show at the corners the image does not, and
-   there are none once it is round. */
-.hprompt-orb {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: block;
+/* The mark's own square is solid black with the wordmark in white (see
+   assets/lalum-mark.svg) — a full-bleed circular crop, the same treatment
+   the retired .hprompt-orb used, needs no separate background of its own. */
+.qad-button img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 2px solid var(--hp-gold);
+  display: block;
 }
-.hprompt-txt {
-  flex: 1;
+
+.qad-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  inset-inline-end: 0;
+  width: min(272px, calc(100vw - 48px));
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 24px 48px -20px rgba(26, 24, 21, 0.4);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .qad-menu { animation: qad-menu-in 0.16s ease both; }
+}
+@keyframes qad-menu-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.qad-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background: none;
+  text-align: start;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.qad-item:hover {
+  background: var(--ivory);
+}
+.qad-item:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: -2px;
+}
+.qad-item-icon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--clay-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+.qad-item-txt {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
-/* One line each, truncated: a strip this short has room for a headline and a
-   hint of what it leads to, not the whole sentence. The full text is still on
-   the link's title attribute for anyone who hovers, and in the region's own
-   aria-label for anyone using a screen reader. */
-.hprompt-lead,
-.hprompt-body {
+.qad-item-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.qad-item-desc {
+  font-size: 11.5px;
+  color: var(--slate);
+  line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.hprompt-lead {
-  color: var(--ink);
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.hprompt-body {
-  color: var(--slate);
-  font-size: 10.5px;
-  line-height: 1.3;
-}
-.hprompt-go {
-  flex: none;
-  color: var(--hp-gold-soft);
-  font-size: 15px;
-}
-/* U+2192 is not mirrored by the bidi algorithm, so in Hebrew and Arabic it
-   would point away from the link it belongs to. */
-[dir="rtl"] .hprompt-go {
-  display: inline-block;
-  transform: scaleX(-1);
-}
-.hprompt-close {
-  position: absolute;
-  top: -7px;
-  inset-inline-end: -7px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid var(--hp-gold-soft);
-  background: var(--paper);
-  color: var(--slate);
-  font-size: 13px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px -4px rgba(26, 24, 21, 0.35);
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.hprompt-close:hover {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #ffffff;
-}
-.hprompt-close:focus-visible {
-  outline: 3px solid var(--hp-gold);
-  outline-offset: 3px;
-}
 
 @media (max-width: 900px) {
-  .hprompt {
-    /* Clear of the bottom tab bar and of the accessibility button above it. */
-    bottom: calc(154px + env(safe-area-inset-bottom, 0px));
+  .qad-dock {
+    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
+    inset-inline-end: 16px;
   }
-  .hprompt-pill {
-    max-width: min(230px, calc(100vw - 76px));
+}
+
+/* ---------- bottom sheets (phones) ---------- */
+/* Two menus — the header's mobile "more" menu and the quick-access menu —
+   are small anchored dropdown cards on desktop, which is exactly the
+   "website" tell on a phone: a native app slides these up from the screen
+   edge instead. Below 900px both get the same treatment: fixed to the
+   bottom edge, full width, a drag handle, a dimmed backdrop and a slide-in
+   entrance. Desktop keeps the original anchored card untouched — only the
+   rules inside this query change anything. */
+.header-more-backdrop,
+.qad-backdrop {
+  position: fixed;
+  inset: 0;
+}
+.header-more-backdrop {
+  z-index: 40;
+}
+.qad-backdrop {
+  z-index: 81;
+}
+.sheet-handle {
+  display: none;
+}
+@media (max-width: 900px) {
+  .header-more-backdrop,
+  .qad-backdrop {
+    z-index: 95;
+    background: rgba(26, 24, 21, 0.32);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-more-backdrop,
+    .qad-backdrop {
+      animation: sheet-backdrop-in 0.18s ease both;
+    }
+  }
+  .header-more-menu,
+  .qad-menu {
+    position: fixed;
+    inset-inline: 0;
+    top: auto;
+    bottom: 0;
+    z-index: 96;
+    width: auto;
+    min-width: 0;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+    max-height: 82vh;
+    overflow-y: auto;
+    box-shadow: 0 -20px 50px -20px rgba(26, 24, 21, 0.45);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-more-menu,
+    .qad-menu {
+      /* Overrides each menu's own fade-in-place animation at this width —
+         later in source order wins at equal specificity — so the sheet
+         slides up from the edge instead of fading in mid-air. */
+      animation: sheet-in 0.22s cubic-bezier(0.32, 0.72, 0.35, 1) both;
+    }
+  }
+  /* The grab handle a real bottom sheet shows above its content; purely
+     decorative (the backdrop and Escape key already close it), so it is
+     aria-hidden in markup and only ever shown at this width. */
+  .sheet-handle {
+    display: block;
+    flex: none;
+    width: 36px;
+    height: 4px;
+    margin: 2px auto 8px;
+    border-radius: 999px;
+    background: var(--line);
+  }
+}
+/* The header's own menu is the exception to the partial bottom sheet above: on
+   phones it is a FULL-SCREEN panel. A partial sheet leaves the floating chat
+   and accessibility buttons and the bottom tab bar (all above z-index 200)
+   poking through its lower edge; a full overlay above them (z-index 300) reads
+   as one focused surface. Its header row (wordmark + close) replaces the drag
+   handle, and the rows get phone-sized tap targets. */
+.header-more-head {
+  display: none;
+}
+@media (max-width: 900px) {
+  .header-more-backdrop {
+    z-index: 298;
+  }
+  .header-more-menu {
+    inset: 0;
+    top: 0;
+    bottom: 0;
+    inset-inline: 0;
+    width: auto;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    z-index: 300;
+    padding: 8px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+    box-shadow: none;
+    background: var(--card);
+  }
+  .header-more-menu .sheet-handle {
+    display: none;
+  }
+  .header-more-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 2px 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .header-more-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+  .header-more-close:hover {
+    background: var(--clay-tint);
+  }
+  .header-more-menu .header-more-item {
+    padding: 13px 12px;
+    font-size: 15.5px;
+  }
+}
+@keyframes sheet-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* In-app browser notice (WhatsApp/Instagram/Facebook WebViews). Sits in
+   normal flow ahead of the sticky header — see the component comment for why
+   this is never `position: fixed`. */
+.iab-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.iab-banner-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.iab-banner-how {
+  color: var(--clay-bright);
+  font-weight: 600;
+}
+.iab-banner-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--paper);
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.75;
+}
+.iab-banner-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+.iab-banner-close:focus-visible {
+  outline: 2px solid var(--clay-bright);
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .iab-banner {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 }

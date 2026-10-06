@@ -18,7 +18,7 @@ type InstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-function DownloadIcon({ size = 17 }: { size?: number }) {
+export function DownloadIcon({ size = 17 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 3v12M7 10l5 5 5-5M4 20h16" />
@@ -34,12 +34,15 @@ function ScanIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-export function AppInstall() {
-  const { t } = useLang();
-  const f = t.ui.footer;
+// Shared install state, so any control (this footer band, or the one-tap
+// header button) can offer the same native install without each running its
+// own beforeinstallprompt listener. `canPrompt` is true only where the
+// browser actually supports a one-tap install (Chrome/Edge, desktop or
+// Android); everywhere else (iOS Safari, Firefox) a caller falls back to its
+// own "how to install" hint, as the footer band does below.
+export function useInstall() {
   const [deferred, setDeferred] = useState<InstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [showHow, setShowHow] = useState(false);
 
   useEffect(() => {
     // Already running as an installed standalone app: offer nothing.
@@ -51,7 +54,7 @@ export function AppInstall() {
       return;
     }
     function onPrompt(e: Event) {
-      // Keep the event so the button can trigger the native install later.
+      // Keep the event so a button can trigger the native install later.
       e.preventDefault();
       setDeferred(e as InstallPromptEvent);
     }
@@ -67,13 +70,28 @@ export function AppInstall() {
     };
   }, []);
 
+  // Returns true once the native prompt actually fired, so a caller with its
+  // own fallback (per-platform steps) knows when it needs to show that instead.
+  async function promptInstall(): Promise<boolean> {
+    if (!deferred) return false;
+    await deferred.prompt();
+    // The captured event is single-use; drop it whatever the choice was.
+    setDeferred(null);
+    return true;
+  }
+
+  return { installed, canPrompt: !!deferred, promptInstall };
+}
+
+export function AppInstall() {
+  const { t } = useLang();
+  const f = t.ui.footer;
+  const { installed, canPrompt, promptInstall } = useInstall();
+  const [showHow, setShowHow] = useState(false);
+
   async function onInstall() {
-    if (deferred) {
-      await deferred.prompt();
-      // The captured event is single-use; drop it whatever the choice was.
-      setDeferred(null);
-      return;
-    }
+    const triggered = await promptInstall();
+    if (triggered) return;
     // No native prompt available (iOS Safari, or a browser without it): show
     // the short per-platform "add to home screen" steps.
     setShowHow((v) => !v);
@@ -89,7 +107,7 @@ export function AppInstall() {
         {/* Install control. CSS shows it on phones (where the QR is hidden) and
             keeps it out of the way on desktop, unless a native install prompt is
             available, in which case it is offered everywhere. */}
-        <div className={`footer-install${deferred ? " has-prompt" : ""}`}>
+        <div className={`footer-install${canPrompt ? " has-prompt" : ""}`}>
           <button type="button" className="btn btn-clay footer-install-btn" onClick={onInstall} aria-expanded={showHow}>
             <DownloadIcon /> {f.installApp}
           </button>

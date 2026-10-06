@@ -7,6 +7,13 @@ export const OPEN_COOKIE_EVENT = "lalum:open-cookie-settings";
 // Fired once the visitor has made (or already has) a cookie choice, so other
 // first-visit overlays can wait their turn instead of stacking on top.
 export const COOKIE_RESOLVED_EVENT = "lalum:cookie-consent-resolved";
+// The first-visit banner does not out-wait a visitor who never taps it: left
+// untouched this long, it resolves itself the same way "reject non-essential"
+// would — the strictest default, never an implied accept, so a silent
+// auto-close cannot read as consent it never asked for. A visitor who opens
+// "Manage" is actively choosing, so the timer is cancelled the moment that
+// happens (see the two call sites below).
+const AUTO_DISMISS_MS = 8000;
 
 type Consent = { analytics: boolean; ts: number };
 
@@ -35,23 +42,40 @@ export function CookieConsent() {
   const [analytics, setAnalytics] = useState(false);
   const [saved, setSaved] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useDialogA11y(modal, () => setModal(false), modalRef);
+
+  function clearDismissTimer() {
+    if (dismissTimer.current) {
+      clearTimeout(dismissTimer.current);
+      dismissTimer.current = undefined;
+    }
+  }
 
   useEffect(() => {
     const existing = read();
-    if (!existing) setBanner(true);
-    else setAnalytics(existing.analytics);
+    if (!existing) {
+      setBanner(true);
+      dismissTimer.current = setTimeout(() => persist(false), AUTO_DISMISS_MS);
+    } else {
+      setAnalytics(existing.analytics);
+    }
     const openModal = () => {
+      clearDismissTimer();
       const cur = read();
       setAnalytics(cur?.analytics ?? false);
       setSaved(false);
       setModal(true);
     };
     window.addEventListener(OPEN_COOKIE_EVENT, openModal);
-    return () => window.removeEventListener(OPEN_COOKIE_EVENT, openModal);
+    return () => {
+      window.removeEventListener(OPEN_COOKIE_EVENT, openModal);
+      clearDismissTimer();
+    };
   }, []);
 
   function persist(a: boolean) {
+    clearDismissTimer();
     try {
       localStorage.setItem(KEY, JSON.stringify({ analytics: a, ts: Date.now() } satisfies Consent));
     } catch {
@@ -63,6 +87,14 @@ export function CookieConsent() {
     window.dispatchEvent(new Event(COOKIE_RESOLVED_EVENT));
   }
 
+  // Opening "Manage" from the banner itself (not the footer's reopen event,
+  // already handled above) is also an active choice — cancel the same timer.
+  function manage() {
+    clearDismissTimer();
+    setSaved(false);
+    setModal(true);
+  }
+
   if (!banner && !modal) return null;
 
   return (
@@ -71,7 +103,7 @@ export function CookieConsent() {
         <div dir={dir} role="region" aria-label={C.title} className="cookie-banner">
           <span className="cookie-banner-text">{C.banner}</span>
           <div className="cookie-banner-actions">
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setSaved(false); setModal(true); }}>{C.manage}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={manage}>{C.manage}</button>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => persist(false)}>{C.reject}</button>
             <button type="button" className="btn btn-clay btn-sm" onClick={() => persist(true)}>{C.accept}</button>
           </div>

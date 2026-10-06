@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase";
 import { extractText } from "../lib/extractText";
 import { OPEN_CHAT_EVENT, emitChatState } from "./chatEvents";
 import { bcp47For } from "../lib/hreflang";
+import { useNearTopScroll } from "../hooks/useNearTopScroll";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
@@ -33,6 +34,10 @@ export function ChatWidget() {
   const [readAloud, setReadAloud] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  // See useNearTopScroll: same fixed-dock-over-hero-CTA collision as
+  // AccessibilityMenu's dock, on the same phone-height range, since both
+  // docks sit at the same bottom offset on opposite sides of the screen.
+  const nearTop = useNearTopScroll();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recRef = useRef<any>(null);
 
@@ -150,7 +155,10 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="chat-dock" style={{ position: "fixed", bottom: 24, insetInlineEnd: 24, zIndex: 80, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14 }}>
+    <div
+      className={"chat-dock" + (nearTop && !open ? " dock-near-top" : "")}
+      style={{ position: "fixed", bottom: 24, insetInlineEnd: 24, zIndex: 80, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14 }}
+    >
       {open && (
         <div style={{ width: 370, maxWidth: "calc(100vw - 32px)", height: 520, maxHeight: "calc(100vh - 120px)", background: "var(--card)", border: "1px solid var(--line)", borderRadius: 20, boxShadow: "0 30px 70px -30px rgba(60,45,30,.5)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--line)", background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>

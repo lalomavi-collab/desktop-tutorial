@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { InAppBrowserBanner } from "./InAppBrowserBanner";
 // The chat bot is deferred: it is not needed for first paint, so splitting it
 // out keeps it (and its dependencies) off the initial load.
 const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
@@ -15,7 +16,7 @@ import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
 import { PrivacyUpdateNotice } from "./PrivacyUpdateNotice";
 import { UserGuide } from "./UserGuide";
-import { HomePrompt } from "./HomePrompt";
+import { SosMenu } from "./SosMenu";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
 import { hasHebrewOnlyContent, stripLangPrefix } from "../lib/hreflang";
@@ -36,6 +37,7 @@ export function MarketingLayout() {
   return (
     <>
       <a href="#main" className="skip-link">{t.ui.skipToContent}</a>
+      <InAppBrowserBanner />
       <Header />
       <main id="main">
         {/* Keyed by path so each navigation replays the reveal (app-like page transition).
@@ -67,17 +69,10 @@ export function MarketingLayout() {
       <BottomTabBar />
       <AccessibilityMenu />
       <A11yWidget />
-      {/* The entry prompt belongs to the home page, but it is mounted HERE and
-          not inside the page component. Anything position:fixed rendered inside
-          a route is laid out against .route-view rather than the viewport,
-          because that element carries an animation whose keyframes set a
-          transform, and a transformed ancestor becomes the containing block for
-          fixed descendants. Inside the page it scrolled away with the content;
-          out here it stays where it was put. */}
-      {pathname === "/" && <HomePrompt />}
       <CookieConsent />
       <PrivacyUpdateNotice />
       <UserGuide />
+      <SosMenu />
     </>
   );
 }

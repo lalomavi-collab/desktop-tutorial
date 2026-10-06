@@ -14,7 +14,7 @@ export function HomeAcademy() {
     <section className="home-academy">
       <div className="wrap section home-academy-inner">
         <div className="home-academy-copy">
-          <p className="eyebrow" style={{ color: "var(--clay-soft)" }}>{a.eyebrow}</p>
+          <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{a.eyebrow}</p>
           <h2 className="serif home-academy-title">{a.title}</h2>
           <p className="home-academy-body">{a.body}</p>
           <div className="home-academy-meta"><Icon name="check" size={15} /> {a.meta}</div>
