@@ -6,14 +6,29 @@
 רעש כזה חוסם את השליחה האוטומטית לצמיתות.
 """
 
+import os
+
 # מילים שמעידות על מסמך חשבונאי ממש
 DOC_KEYWORDS = [
     "חשבונית", "קבלה", "חשבון עסקה", "פקטורה", "דרישת תשלום",
     "invoice", "receipt", "proforma", "justificante", "factura",
+    "בילינג",
 ]
 
 # שמות ספקים. לבדם אינם מספיקים, נדרשת גם צרופת PDF.
 VENDOR_KEYWORDS = ["google ads", "gett", "anthropic", "openai", "microsoft 365"]
+
+# ספקים קבועים שמנסחים את הנושא בקיצור שאינו נתפס במילות המפתח. עזריאלי
+# שולח "(מסמך ממוחשב) הדפסת חש' בילינג - SI260210003188": אין בו "חשבונית",
+# ולכן כל חשבוניות השכירות, דמי הניהול והחשמל נדחו בשקט. מייל משולח כזה
+# שיש בו צרופת PDF הוא מסמך, בלי תלות בניסוח הנושא.
+# ניתן להרחיב מבלי לגעת בקוד: TRUSTED_DOC_SENDERS=domain1,domain2 ב-.env
+_DEFAULT_TRUSTED = ["azrieli.com", "cellcominv.co.il"]
+TRUSTED_DOC_SENDERS = [
+    d.strip().lower()
+    for d in os.environ.get("TRUSTED_DOC_SENDERS", ",".join(_DEFAULT_TRUSTED)).split(",")
+    if d.strip()
+]
 
 # שולחים שהם רעש שיווקי או מערכתי
 NOISE_SENDERS = [
@@ -59,6 +74,10 @@ def is_invoice_email(subject: str, sender: str = "", has_pdf: bool = False) -> b
     # תשובה או העברה בשרשור היא שיחה, לא המסמך עצמו, אלא אם צורף PDF
     if s.startswith(REPLY_PREFIXES) and not has_pdf:
         return False
+
+    # שולח קבוע עם צרופה גובר על ניסוח הנושא
+    if has_pdf and any(t in f for t in TRUSTED_DOC_SENDERS):
+        return True
 
     if any(k in s for k in DOC_KEYWORDS):
         return True

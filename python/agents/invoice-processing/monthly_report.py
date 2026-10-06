@@ -81,13 +81,55 @@ EXIT_NO_DOCS = 13     # לא נמצאו מסמכים בתיקיית החודש
 EXIT_MAIL_ERROR = 14  # Outlook החזיר שגיאה
 
 
-def blockers(result: dict) -> list[str]:
-    """מה מונע שליחה אוטומטית. רשימה ריקה = הכול נקי."""
+def _ack_path(month: str) -> Path:
+    """יומן האישורים יושב לצד סמני השליחה, בתיקיית החשבוניות הקבועה."""
+    from invoice_processing.collectors.base_folder import get_base_folder
+    return get_base_folder() / "_מערכת" / "אושר" / f"{month}.json"
+
+
+def load_acks(month: str) -> dict:
+    """שורות שאדם כבר אימת מול המסמך המקורי. המפתח הוא שם הקובץ."""
+    if not month:
+        return {}
+    p = _ack_path(month)
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def add_ack(month: str, filename: str, note: str = "") -> dict:
+    """רושם אישור אנושי לשורה. פעולה מכוונת, לעולם לא אוטומטית."""
+    p = _ack_path(month)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    acks = load_acks(month)
+    acks[filename] = {
+        "when": datetime.now().isoformat(timespec="seconds"),
+        "note": note,
+    }
+    p.write_text(json.dumps(acks, ensure_ascii=False, indent=2), encoding="utf-8")
+    return acks
+
+
+def blockers(result: dict, month: str = "") -> list[str]:
+    """
+    מה מונע שליחה אוטומטית. רשימה ריקה = הכול נקי.
+
+    שורה שמקורה ב-OCR או שלא נמצאה בה שלשת מע"מ תקינה מסומנת estimated,
+    וקטגוריות אלה חוזרות בכל חודש. בלי זיכרון של אישור אנושי, --send היה
+    נחסם לנצח ומדווח הצלחה. יומן האישורים מבדיל בין "טרם נבדק" לבין
+    "אדם בדק מול המסמך המקורי ואישר", והאישור תקף לאותו חודש בלבד.
+    """
     out = []
     rows = result["rows"]
     if not rows:
         out.append("לא נמצאו מסמכים בתיקיית החודש")
+    acks = load_acks(month)
     for r in rows:
+        if r.file in acks:
+            continue
         if r.total == 0:
             out.append(f"לא חולץ סכום: {r.file}")
         elif r.estimated:
@@ -102,11 +144,33 @@ def main():
     ap.add_argument("--send", action="store_true", help="שלח בפועל במקום טיוטה")
     ap.add_argument("--force", action="store_true", help="שלח גם אם החודש כבר נשלח")
     ap.add_argument("--no-mail", action="store_true", help="הפק דוח בלבד")
+    ap.add_argument("--ack", action="append", default=[], metavar="FILE",
+                    help="רשום אישור אנושי לשורה (שם הקובץ). ניתן לחזור על הדגל")
+    ap.add_argument("--ack-note", default="", help="הערה שתישמר לצד האישור")
+    ap.add_argument("--list-acks", action="store_true", help="הצג את יומן האישורים לחודש וצא")
     ap.add_argument("--no-collect", action="store_true",
                     help="דלג על איסוף מהמיילים, קרא רק את מה שכבר בתיקייה")
     args = ap.parse_args()
 
     month = args.month or (previous_month() if args.prev else datetime.now().strftime("%Y-%m"))
+
+    # יומן האישורים: פעולות ניהול שרצות לפני הפקת הדוח ויוצאות מיד.
+    if args.list_acks:
+        acks = load_acks(month)
+        if not acks:
+            print(f"אין אישורים רשומים לחודש {month}")
+        else:
+            print(f"יומן אישורים {month} ({len(acks)}):")
+            for fn, meta in acks.items():
+                note = meta.get("note", "")
+                print(f"  • {fn}  [{meta.get('when', '')}]" + (f"  {note}" if note else ""))
+        return EXIT_SENT
+    if args.ack:
+        for fn in args.ack:
+            add_ack(month, fn, args.ack_note)
+            print(f"✅ נרשם אישור ל-{fn} בחודש {month}")
+        print(f"   {_ack_path(month)}")
+        return EXIT_SENT
 
     print("=" * 60)
     print(f"  דוח הנהלת חשבונות LALUM — {month}")
@@ -163,7 +227,7 @@ def main():
     print(result["body"])
     print(f"\n📄 דוח מפורט: {result['report_path']}")
 
-    issues = blockers(result)
+    issues = blockers(result, month)
     if issues:
         print(f"\n⚠️  {len(issues)} פריטים לבדיקה:")
         for i in issues:
