@@ -63,20 +63,28 @@
    "legal-logic"
   ]
  },
- "ai-planning-permits-local-authority-discretion": {
+ "ai-municipal-algorithmic-enforcement-due-process": {
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
-   "effective-human-oversight-ai-systems",
-   "directors-liability-ai-era"
+   "ai-planning-permits-local-authority-discretion",
+   "ai-use-policy-organization"
+  ]
+ },
+ "ai-planning-permits-local-authority-discretion": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-municipal-algorithmic-enforcement-due-process",
+   "ai-local-authorities-uses-legal-limits",
+   "effective-human-oversight-ai-systems"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
   "topic": "ai-governance",
   "related": [
+   "ai-municipal-algorithmic-enforcement-due-process",
    "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems",
-   "ai-banking-finance-regulation-risk"
+   "effective-human-oversight-ai-systems"
   ]
  },
  "ai-drafted-real-estate-contract-review": {
@@ -212,7 +220,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-use-policy-organization"
+   "decision-oriented-ai-law"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -603,8 +611,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
