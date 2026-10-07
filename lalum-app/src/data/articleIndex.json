@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-planning-permits-local-authority-discretion": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authorities-uses-legal-limits",
+   "effective-human-oversight-ai-systems",
+   "directors-liability-ai-era"
+  ]
+ },
  "ai-local-authorities-uses-legal-limits": {
   "topic": "ai-governance",
   "related": [
+   "ai-planning-permits-local-authority-discretion",
    "effective-human-oversight-ai-systems",
-   "ai-banking-finance-regulation-risk",
-   "ai-use-policy-organization"
+   "ai-banking-finance-regulation-risk"
   ]
  },
  "ai-drafted-real-estate-contract-review": {
@@ -123,8 +131,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
-   "ai-use-policy-organization",
-   "ai-governance-board-framework"
+   "ai-planning-permits-local-authority-discretion",
+   "ai-use-policy-organization"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -483,8 +491,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "why-realestate-needs-ai",
-   "the-code-realestate"
+   "the-code-realestate",
+   "why-realestate-needs-ai"
   ]
  },
  "decision-oriented-ai-law": {
@@ -612,7 +620,7 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "ai-ethics-legal-risks"
+   "shadow-it-law-firms"
   ]
  },
  "notebooklm-focus": {
@@ -724,7 +732,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -763,8 +771,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "overseas-partnership-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1442,9 +1450,9 @@
  "california-sb574-ai-adjudication-ban": {
   "topic": "ai-governance",
   "related": [
+   "ai-planning-permits-local-authority-discretion",
    "effective-human-oversight-ai-systems",
-   "gemini-guide-law",
-   "lawyers-ai-ethics-accountability"
+   "gemini-guide-law"
   ]
  }
 }
