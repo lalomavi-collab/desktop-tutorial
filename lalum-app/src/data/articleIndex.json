@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-healthcare-informed-consent": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-healthcare-liability-regulation",
+   "ai-diagnosis-imaging-clinical",
+   "ai-use-policy-organization"
+  ]
+ },
  "ai-diagnosis-imaging-clinical": {
   "topic": "ai-governance",
   "related": [
    "ai-healthcare-liability-regulation",
-   "ai-local-authorities-uses-legal-limits",
-   "ai-municipal-algorithmic-enforcement-due-process"
+   "ai-healthcare-informed-consent",
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-health-data-privacy": {
@@ -84,7 +92,7 @@
   "related": [
    "ai-diagnosis-imaging-clinical",
    "ai-health-data-privacy",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-healthcare-informed-consent"
   ]
  },
  "cyprus-realestate-israeli-buyer-guide": {
@@ -451,15 +459,15 @@
   "topic": "ai-governance",
   "related": [
    "ai-governance-board-framework",
-   "ai-health-data-privacy",
-   "ai-risk-frameworks-iso-42001-nist"
+   "ai-healthcare-informed-consent",
+   "ai-health-data-privacy"
   ]
  },
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-use-policy-organization",
    "ai-governance-board-framework",
+   "ai-use-policy-organization",
    "eu-ai-act-conformity-file-preparation"
   ]
  },
@@ -1084,7 +1092,7 @@
   "related": [
    "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה",
    "real-estate-arbitration",
-   "three-minute-legal-check"
+   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה"
   ]
  },
  "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה": {
@@ -1308,7 +1316,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1322,8 +1330,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
