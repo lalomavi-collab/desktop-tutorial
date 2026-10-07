@@ -110,7 +110,11 @@ export function Partners() {
                   <label className="ck-label" htmlFor="p-pass">סיסמה</label>
                   <input id="p-pass" className="field" type="password" autoComplete="current-password" required dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} />
                   <button className="ck-btn primary" disabled={busy}>{busy ? "נכנס..." : "כניסה"}</button>
-                  <div className="ck-meta">אין לכם גישה עדיין? <Link to="/book">תיאום שיחה עם LALUM</Link></div>
+                  <div className="ck-meta">
+                    <Link to="/login?mode=reset">שכחתם סיסמה?</Link>
+                    {" · "}
+                    אין לכם גישה עדיין? <Link to="/book">תיאום שיחה עם LALUM</Link>
+                  </div>
                 </form>
               ) : null}
           </main>

@@ -33,6 +33,7 @@ const Article = lazy(() => import("./pages/Article").then((m) => ({ default: m.A
 const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal })));
 const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })));
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })));
+const ResetPassword = lazy(() => import("./pages/ResetPassword").then((m) => ({ default: m.ResetPassword })));
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
 const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.LegalOS })));
 // Case cockpit for partners and admins: standalone surfaces (own Hebrew frame, no marketing
@@ -127,6 +128,7 @@ export default function App() {
             <Route path="legal" element={<Legal />} />
             <Route path="book" element={<Book />} />
             <Route path="login" element={<Login />} />
+            <Route path="reset-password" element={<ResetPassword />} />
             <Route
               path="portal"
               element={
