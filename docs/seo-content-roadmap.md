@@ -98,7 +98,7 @@
   - V (עוגן) אחריות ורגולציה (ai-healthcare-liability-regulation)
   - פרטיות מידע בריאותי ו-AI: מה מותר להזין, שימוש משני, והעברה לספק (ai-health-data-privacy)
   - V בינה מלאכותית באבחון ובפענוח הדמיה: תיקוף, בקרה ואחריות (ai-diagnosis-imaging-clinical)
-  - הסכמה מדעת ושקיפות כשמעורבת בינה מלאכותית בטיפול (ai-healthcare-informed-consent)
+  - V הסכמה מדעת ושקיפות כשמעורבת בינה מלאכותית בטיפול (ai-healthcare-informed-consent)
   - הטמעת מערכת AI קלינית במוסד רפואי: מה לבדוק מול הספק (ai-clinical-system-deployment)
 - V בינה מלאכותית בביטוח: חיתום, תמחור ורגולציה (ai-insurance-underwriting-pricing-regulation)
 - בינה מלאכותית בנדל"ן ובהתחדשות עירונית: הזדמנויות וסיכונים משפטיים
