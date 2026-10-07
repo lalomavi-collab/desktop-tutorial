@@ -63,28 +63,36 @@
    "legal-logic"
   ]
  },
+ "ai-use-policy-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authorities-uses-legal-limits",
+   "ai-planning-permits-local-authority-discretion",
+   "effective-human-oversight-ai-systems"
+  ]
+ },
  "ai-municipal-algorithmic-enforcement-due-process": {
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "ai-use-policy-organization"
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-planning-permits-local-authority-discretion": {
   "topic": "ai-governance",
   "related": [
+   "ai-use-policy-local-authority",
    "ai-municipal-algorithmic-enforcement-due-process",
-   "ai-local-authorities-uses-legal-limits",
-   "effective-human-oversight-ai-systems"
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
   "topic": "ai-governance",
   "related": [
+   "ai-use-policy-local-authority",
    "ai-municipal-algorithmic-enforcement-due-process",
-   "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "ai-drafted-real-estate-contract-review": {
@@ -115,16 +123,16 @@
   "topic": "ai-governance",
   "related": [
    "ai-banking-finance-regulation-risk",
-   "gemini-guide-law",
-   "eu-ai-act-transparency-generative"
+   "ai-use-policy-local-authority",
+   "gemini-guide-law"
   ]
  },
  "ai-banking-finance-regulation-risk": {
   "topic": "ai-governance",
   "related": [
    "ai-insurance-underwriting-pricing-regulation",
-   "lawyers-ai-ethics-accountability",
-   "eu-ai-act-israeli-companies"
+   "ai-use-policy-local-authority",
+   "lawyers-ai-ethics-accountability"
   ]
  },
  "urban-renewal-guarantees-sale-law-registration": {
@@ -138,9 +146,9 @@
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
+   "ai-use-policy-local-authority",
    "ai-local-authorities-uses-legal-limits",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-use-policy-organization"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -1458,9 +1466,9 @@
  "california-sb574-ai-adjudication-ban": {
   "topic": "ai-governance",
   "related": [
+   "ai-use-policy-local-authority",
    "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems",
-   "gemini-guide-law"
+   "effective-human-oversight-ai-systems"
   ]
  }
 }
