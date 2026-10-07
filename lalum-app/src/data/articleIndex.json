@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-diagnosis-imaging-clinical": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-healthcare-liability-regulation",
+   "ai-local-authorities-uses-legal-limits",
+   "ai-municipal-algorithmic-enforcement-due-process"
+  ]
+ },
  "ai-health-data-privacy": {
   "topic": "ai-governance",
   "related": [
@@ -74,9 +82,9 @@
  "ai-healthcare-liability-regulation": {
   "topic": "ai-governance",
   "related": [
+   "ai-diagnosis-imaging-clinical",
    "ai-health-data-privacy",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "cyprus-realestate-israeli-buyer-guide": {
@@ -332,7 +340,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-use-policy-organization"
+   "decision-oriented-ai-law"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -572,7 +580,7 @@
   "related": [
    "ai-ethics-legal-risks",
    "algorithmic-transparency",
-   "ai-realestate-risk-management"
+   "urban-renewal-risk"
   ]
  },
  "ai-hallucinations-citations": {
@@ -723,8 +731,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "law-algorithm-era",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "law-algorithm-era"
   ]
  },
  "digital-lawyers-2026": {
@@ -740,7 +748,7 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "ai-ethics-legal-risks"
+   "notebooklm-focus"
   ]
  },
  "notebooklm-focus": {
@@ -1300,7 +1308,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1346,8 +1354,8 @@
  "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית": {
   "topic": "real-estate",
   "related": [
-   "urban-renewal-mistakes-guide",
    "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
+   "urban-renewal-mistakes-guide",
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש"
   ]
  },
