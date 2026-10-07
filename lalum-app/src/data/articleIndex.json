@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-clinical-system-deployment": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-procurement-tender-local-authority",
+   "ai-healthcare-liability-regulation",
+   "ai-diagnosis-imaging-clinical"
+  ]
+ },
  "ai-healthcare-informed-consent": {
   "topic": "ai-governance",
   "related": [
@@ -75,8 +83,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-healthcare-liability-regulation",
-   "ai-healthcare-informed-consent",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-clinical-system-deployment",
+   "ai-healthcare-informed-consent"
   ]
  },
  "ai-health-data-privacy": {
@@ -91,8 +99,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-diagnosis-imaging-clinical",
-   "ai-health-data-privacy",
-   "ai-healthcare-informed-consent"
+   "ai-clinical-system-deployment",
+   "ai-health-data-privacy"
   ]
  },
  "cyprus-realestate-israeli-buyer-guide": {
@@ -178,9 +186,9 @@
  "ai-procurement-tender-local-authority": {
   "topic": "ai-governance",
   "related": [
+   "ai-clinical-system-deployment",
    "ai-use-policy-local-authority",
-   "ai-municipal-chatbot-resident-liability",
-   "ai-resident-data-privacy-local-authority"
+   "ai-municipal-chatbot-resident-liability"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -891,8 +899,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "digital-lawyers-2026",
-   "algorithmic-transparency"
+   "algorithmic-transparency",
+   "digital-lawyers-2026"
   ]
  },
  "combination-deals-architecture": {
@@ -1316,7 +1324,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
