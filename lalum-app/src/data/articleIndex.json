@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-hr-use-policy": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "ai-hr-overview-legal-exposure",
+   "ai-employee-evaluation-decisions"
+  ]
+ },
  "ai-employee-evaluation-decisions": {
   "topic": "ai-governance",
   "related": [
+   "ai-hr-use-policy",
    "ai-hr-overview-legal-exposure",
-   "ai-diagnosis-imaging-clinical",
-   "ai-recruitment-screening-discrimination"
+   "ai-diagnosis-imaging-clinical"
   ]
  },
  "ai-employee-monitoring-privacy": {
@@ -76,23 +84,23 @@
   "related": [
    "ai-hr-overview-legal-exposure",
    "ai-resident-data-privacy-local-authority",
-   "ai-health-data-privacy"
+   "ai-hr-use-policy"
   ]
  },
  "ai-recruitment-screening-discrimination": {
   "topic": "contracts",
   "related": [
    "ai-hr-overview-legal-exposure",
-   "ai-employee-evaluation-decisions",
-   "ai-healthcare-informed-consent"
+   "ai-hr-use-policy",
+   "ai-employee-evaluation-decisions"
   ]
  },
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
+   "ai-hr-use-policy",
    "ai-recruitment-screening-discrimination",
-   "ai-employee-monitoring-privacy",
-   "ai-employee-evaluation-decisions"
+   "ai-employee-monitoring-privacy"
   ]
  },
  "ai-clinical-system-deployment": {
@@ -226,9 +234,9 @@
  "ai-use-policy-local-authority": {
   "topic": "ai-governance",
   "related": [
+   "ai-hr-use-policy",
    "ai-local-authorities-uses-legal-limits",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-resident-data-privacy-local-authority"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "ai-municipal-algorithmic-enforcement-due-process": {
@@ -292,7 +300,7 @@
   "related": [
    "ai-hr-overview-legal-exposure",
    "ai-insurance-underwriting-pricing-regulation",
-   "ai-use-policy-local-authority"
+   "ai-recruitment-screening-discrimination"
   ]
  },
  "urban-renewal-guarantees-sale-law-registration": {
@@ -635,8 +643,8 @@
   "topic": "ai-governance",
   "related": [
    "california-sb574-ai-adjudication-ban",
-   "effective-human-oversight-ai-systems",
-   "quiet-legal-revolution"
+   "quiet-legal-revolution",
+   "effective-human-oversight-ai-systems"
   ]
  },
  "international-trade-guide-2026": {
@@ -1188,7 +1196,7 @@
   "related": [
    "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
    "real-estate-arbitration",
-   "mediator-tools-body-language-field-experience"
+   "urban-renewal-risk"
   ]
  },
  "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות": {
