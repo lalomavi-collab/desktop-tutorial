@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-resident-data-privacy-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "gdpr-israeli-companies-ai",
+   "ai-planning-permits-local-authority-discretion"
+  ]
+ },
  "ai-procurement-tender-local-authority": {
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-local-authorities-uses-legal-limits",
-   "procurement"
+   "ai-resident-data-privacy-local-authority",
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -76,7 +84,7 @@
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "ai-procurement-tender-local-authority"
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-municipal-algorithmic-enforcement-due-process": {
@@ -259,8 +267,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "partnership-dissolution-ai-ownership",
-   "gdpr-israeli-companies-ai"
+   "ai-resident-data-privacy-local-authority",
+   "partnership-dissolution-ai-ownership"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -275,8 +283,8 @@
   "topic": "ai-governance",
   "related": [
    "saas-eu-compliance-israeli-companies",
-   "ai-due-diligence-tech-acquisition",
-   "eu-ai-act-israeli-companies"
+   "ai-resident-data-privacy-local-authority",
+   "ai-due-diligence-tech-acquisition"
   ]
  },
  "overseas-property-due-diligence": {

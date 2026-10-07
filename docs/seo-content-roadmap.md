@@ -112,7 +112,7 @@
 - V רישוי ותכנון בעזרת AI ברשות המקומית: הזדמנות וגבול שיקול הדעת (ai-planning-permits-local-authority-discretion)
 - V מדיניות שימוש ב-AI ברשות מקומית: מה חייב להיות בנוהל (ai-use-policy-local-authority)
 - V רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק (ai-procurement-tender-local-authority)
-- הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI
+- V הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI (ai-resident-data-privacy-local-authority)
 
 ## עדיפות 2: התחדשות עירונית (חסר, ביקוש חיפוש גבוה)
 
