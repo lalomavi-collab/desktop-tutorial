@@ -11,6 +11,8 @@ type AuthValue = {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -80,8 +82,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const resetPassword: AuthValue["resetPassword"] = async (email) => {
+    if (!supabase) return { error: null };
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    return { error: error?.message ?? null };
+  };
+
+  const updatePassword: AuthValue["updatePassword"] = async (password) => {
+    if (!supabase) {
+      if (password.length < 6) return { error: "Enter a password of at least 6 characters." };
+      return { error: null };
+    }
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error: error?.message ?? null };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );
