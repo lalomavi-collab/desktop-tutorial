@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-local-authorities-uses-legal-limits": {
+  "topic": "ai-governance",
+  "related": [
+   "effective-human-oversight-ai-systems",
+   "ai-banking-finance-regulation-risk",
+   "ai-use-policy-organization"
+  ]
+ },
  "ai-drafted-real-estate-contract-review": {
   "topic": "real-estate",
   "related": [
@@ -114,9 +122,9 @@
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
+   "ai-local-authorities-uses-legal-limits",
    "ai-use-policy-organization",
-   "ai-governance-board-framework",
-   "amendment-13-data-security-guide"
+   "ai-governance-board-framework"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -604,7 +612,7 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "notebooklm-focus"
+   "ai-ethics-legal-risks"
   ]
  },
  "notebooklm-focus": {
@@ -1074,8 +1082,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
+   "ai-local-authorities-uses-legal-limits",
    "developer-agreement-urban-renewal-critical-clauses",
-   "effective-human-oversight-ai-systems",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
@@ -1314,9 +1322,9 @@
  "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה": {
   "topic": "mediation",
   "related": [
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "lalum-clinic-experience",
-   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות"
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
   ]
  },
  "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד": {
