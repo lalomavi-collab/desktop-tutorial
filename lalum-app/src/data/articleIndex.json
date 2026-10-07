@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-hr-overview-legal-exposure": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-international-transactions-overview",
+   "ai-healthcare-liability-regulation",
+   "ai-banking-finance-regulation-risk"
+  ]
+ },
  "ai-clinical-system-deployment": {
   "topic": "ai-governance",
   "related": [
@@ -122,9 +130,9 @@
  "ai-international-transactions-overview": {
   "topic": "ai-governance",
   "related": [
+   "ai-hr-overview-legal-exposure",
    "ai-planning-permits-local-authority-discretion",
-   "ai-healthcare-liability-regulation",
-   "ai-municipal-algorithmic-enforcement-due-process"
+   "ai-healthcare-liability-regulation"
   ]
  },
  "urban-renewal-principles-vs-detailed-agreement": {
@@ -258,9 +266,9 @@
  "ai-banking-finance-regulation-risk": {
   "topic": "ai-governance",
   "related": [
+   "ai-hr-overview-legal-exposure",
    "ai-insurance-underwriting-pricing-regulation",
-   "ai-use-policy-local-authority",
-   "lawyers-ai-ethics-accountability"
+   "ai-use-policy-local-authority"
   ]
  },
  "urban-renewal-guarantees-sale-law-registration": {
@@ -348,7 +356,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "eu-ai-act-2026"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
