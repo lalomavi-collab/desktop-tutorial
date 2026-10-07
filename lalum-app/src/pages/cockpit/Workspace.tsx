@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
@@ -26,13 +26,13 @@ function MatterList({ firmName, userName, role }: { firmName: string; userName: 
     <div className="ck-stack">
       <div className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><div><div className="ck-title">{firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii">🔒 PII Masked &amp; Secured</span></div></div>
       <div className="ck-row"><button className="ck-btn primary" aria-expanded={adding} onClick={() => setAdding((a) => !a)}>תיק חדש (קליטה אוטומטית)</button></div>
-      {adding && <div className="ck-card"><IntakeForm onDone={(m) => nav(`/workspace/${m}`)} /></div>}
+      {adding && <div className="ck-card"><IntakeForm onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       <div className="ck-label">תיקים</div>
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card"><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th></tr></thead><tbody>
           {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
             <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
-              <td><Link to={`/workspace/${x.matter_id}`} style={{ textDecoration: "underline" }}>{x.title}</Link></td>
+              <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{x.title}</Link></td>
               <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
             </tr>); })}
         </tbody></table></div>
@@ -42,9 +42,14 @@ function MatterList({ firmName, userName, role }: { firmName: string; userName: 
 }
 
 export function Workspace() {
-  const { matterId } = useParams();
+  // A matter is addressed as /workspace?matter=<uuid>: the site has no SPA catch-all, so only
+  // prerendered paths resolve on a direct hit or refresh. /workspace/<uuid> still works in-app.
+  const [q] = useSearchParams();
+  const fromQuery = q.get("matter");
+  const param = useParams().matterId;
+  const matterId = param ?? (fromQuery && /^[0-9a-f-]{36}$/i.test(fromQuery) ? fromQuery : undefined);
   return (
-    <CockpitFrame title="קוקפיט תיקים" description="קוקפיט התיקים של LALUM: כספת, עורך חכם ואולפן סוכני תחום עם אישור אנושי לפני ייצוא." path={matterId ? `/workspace/${matterId}` : "/workspace"}>
+    <CockpitFrame title="קוקפיט תיקים" description="קוקפיט התיקים של LALUM: כספת, עורך חכם ואולפן סוכני תחום עם אישור אנושי לפני ייצוא." path="/workspace">
       {({ member }) => member && (matterId
         ? <MatterCockpit key={matterId} matterId={matterId} member={member} />
         : <MatterList firmName={member.lalum_firms.firm_name} userName={member.name} role={member.role} />)}
