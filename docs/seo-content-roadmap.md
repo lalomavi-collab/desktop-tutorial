@@ -94,6 +94,12 @@
 
 - V בינה מלאכותית בבנקאות ובפיננסים: רגולציה וסיכונים (ai-banking-finance-regulation-risk)
 - V בינה מלאכותית בתחום הבריאות: אחריות ורגולציה (ai-healthcare-liability-regulation)
+  - אשכול דגל בריאות (עוגן + 4), ממקד בחשיפה של רופאים ומוסדות רפואיים:
+  - V (עוגן) אחריות ורגולציה (ai-healthcare-liability-regulation)
+  - פרטיות מידע בריאותי ו-AI: מה מותר להזין, שימוש משני, והעברה לספק (ai-health-data-privacy)
+  - בינה מלאכותית באבחון ובפענוח הדמיה: תיקוף, בקרה ואחריות (ai-diagnosis-imaging-clinical)
+  - הסכמה מדעת ושקיפות כשמעורבת בינה מלאכותית בטיפול (ai-healthcare-informed-consent)
+  - הטמעת מערכת AI קלינית במוסד רפואי: מה לבדוק מול הספק (ai-clinical-system-deployment)
 - V בינה מלאכותית בביטוח: חיתום, תמחור ורגולציה (ai-insurance-underwriting-pricing-regulation)
 - בינה מלאכותית בנדל"ן ובהתחדשות עירונית: הזדמנויות וסיכונים משפטיים
 - V בינה מלאכותית בעריכת דין ובשירותים מקצועיים: אחריות ואתיקה (lawyers-ai-ethics-accountability)
