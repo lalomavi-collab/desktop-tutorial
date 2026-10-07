@@ -35,6 +35,20 @@ async function send(apiKey: string, from: string, to: string, subject: string, h
   }
 }
 
+// Abuse guard: a hashed client key per route, counted in Postgres (lalum_rate_limit). Fails open: a limiter error never blocks a real visitor.
+async function sha(s: string): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+// deno-lint-ignore no-explicit-any
+async function allowed(admin: any, key: string, max: number, windowSeconds: number): Promise<boolean> {
+  try {
+    const { data, error } = await admin.rpc("lalum_rate_limit", { p_key: key, p_max: max, p_window_seconds: windowSeconds });
+    return error ? true : data !== false;
+  } catch { return true; }
+}
+const clientIp = (req: Request): string => (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
@@ -53,6 +67,8 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) return json(500, { code: "not_configured" });
   const admin = createClient(url, serviceKey);
+  // Ten requests an hour per client, and two per hour per address, so the form cannot be used to flood someone's inbox.
+  if (!(await allowed(admin, `book:ip:${await sha(clientIp(req))}`, 10, 3600)) || !(await allowed(admin, `book:email:${await sha(email.toLowerCase())}`, 2, 3600))) return json(429, { code: "too_many_requests" });
   const { error } = await admin.from("lalum_booking_requests").insert({
     full_name: fullName || null, email, requested_day: day, requested_slot: slot, topic: topic || null,
   });
