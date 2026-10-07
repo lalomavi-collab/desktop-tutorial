@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
-import { supabase } from "../lib/supabase";
+import { supabase, passwordRecovery } from "../lib/supabase";
 import { pwnedCount } from "../lib/pwnedCheck";
 
 // Reached only via the link Supabase's own reset email sends (see
@@ -13,12 +13,17 @@ import { pwnedCount } from "../lib/pwnedCheck";
 // then works like any other authenticated call. A visitor who lands here
 // without that event (an expired or reused link) sees resetLinkInvalid
 // instead of a form that would just fail.
+//
+// This page is a lazy route, so its own onAuthStateChange subscription below
+// often attaches after the event already fired (lib/supabase.ts's
+// module-scope listener catches it first and sets `passwordRecovery`); the
+// effect stays only as a fallback for whatever edge case beats even that.
 export function ResetPassword() {
   const { updatePassword, demoMode } = useAuth();
   const { t } = useLang();
   const L = t.ui.login;
   const navigate = useNavigate();
-  const [ready, setReady] = useState(demoMode);
+  const [ready, setReady] = useState(demoMode || passwordRecovery);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
