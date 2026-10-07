@@ -216,11 +216,9 @@ export function Header() {
                 >
                   <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
                 </Link>
-                {!user && (
-                  <Link to="/partners" role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
-                    <Icon name="scale" size={18} /> {t.ui.partnerLogin}
-                  </Link>
-                )}
+                <Link to="/partners" role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                  <Icon name="scale" size={18} /> {t.ui.partnerLogin}
+                </Link>
                 <div className="header-more-divider" role="separator" />
                 <div className="header-more-langs">
                   {LANGS.map((l) => (
