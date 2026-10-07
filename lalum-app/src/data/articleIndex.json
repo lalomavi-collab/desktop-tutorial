@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-healthcare-liability-regulation": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-local-authorities-uses-legal-limits",
+   "ai-use-policy-local-authority"
+  ]
+ },
  "cyprus-realestate-israeli-buyer-guide": {
   "topic": "real-estate",
   "related": [
@@ -83,8 +91,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-planning-permits-local-authority-discretion",
-   "ai-municipal-algorithmic-enforcement-due-process",
-   "ai-banking-finance-regulation-risk"
+   "ai-healthcare-liability-regulation",
+   "ai-municipal-algorithmic-enforcement-due-process"
   ]
  },
  "urban-renewal-principles-vs-detailed-agreement": {
@@ -164,7 +172,7 @@
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "ai-international-transactions-overview"
+   "ai-healthcare-liability-regulation"
   ]
  },
  "ai-planning-permits-local-authority-discretion": {
@@ -355,8 +363,8 @@
   "topic": "ai-governance",
   "related": [
    "saas-eu-compliance-israeli-companies",
-   "ai-resident-data-privacy-local-authority",
-   "ai-due-diligence-tech-acquisition"
+   "ai-due-diligence-tech-acquisition",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "overseas-property-due-diligence": {
@@ -1284,7 +1292,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
