@@ -46,6 +46,16 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
+  // The partner and admin cockpit. No SPA catch-all exists, so each route must be prerendered to
+  // resolve on a direct hit or a refresh. Application surfaces: kept out of the index.
+  { path: "partners", title: "כניסה לשותפים | LALUM", desc: "כניסה למשרדים שותפים ולמנהלי LALUM.", noindex: true },
+  { path: "workspace", title: "קוקפיט תיקים | LALUM", desc: "קוקפיט התיקים של LALUM.", noindex: true },
+  { path: "workspace/guide", title: "מדריך הקוקפיט | LALUM", desc: "מה הקוקפיט עושה ואיך משתמשים בו.", noindex: true },
+  { path: "admin/matters", title: "ניהול תיקים | LALUM", desc: "מסך הניהול של תיקי הקליטה.", noindex: true },
+  { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },
+  { path: "legal/saas-terms", title: "תנאי שירות SaaS | LALUM", desc: "תנאי השירות למשרדי עורכי דין המשתמשים בקוקפיט.", noindex: true },
+  { path: "legal/client-disclosure", title: "גילוי ללקוח | LALUM", desc: "נוסח גילוי ללקוחות על שימוש במערכת קליטה אוטומטית.", noindex: true },
+  { path: "legal/dpa-terms", title: "הסכם עיבוד מידע | LALUM", desc: "תנאי עיבוד מידע אישי בקוקפיט.", noindex: true },
   // LALUM LEX: the standalone assistant app. Prerendered only so a direct hit
   // resolves to a real document, noindex because it is an application surface,
   // not a marketing page (the same treatment login and portal get).
