@@ -248,6 +248,26 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # directory or a path already ending in a slash, where it lands on the
 # canonical in one hop as well; the placeholder just spares the common article
 # path the extra trailing-slash hop it used to take.
+#
+# EXCEPTION, the real English article pages. These five slugs DO have a
+# prerendered English page at /en/insights/<slug>/index.html (the pilot in
+# EN_ARTICLE_SLUGS, src/lib/hreflang.ts), they are listed in the sitemap and
+# linked by hreflang. On Cloudflare Pages a redirect takes precedence over a
+# static asset and first match wins, so without these rules the blanket below
+# 301s the real pages to Hebrew and the English pilot is unreachable. Each real
+# page is served (200 rewrite to its index.html); the no-slash form gets the one
+# trailing-slash hop to its own English canonical, not to Hebrew. KEEP IN SYNC
+# with EN_ARTICLE_SLUGS: a new English article needs its two lines here too.
+/en/insights/second-opinion-real-estate-urban-renewal/  /en/insights/second-opinion-real-estate-urban-renewal/index.html  200
+/en/insights/second-opinion-real-estate-urban-renewal   /en/insights/second-opinion-real-estate-urban-renewal/  301
+/en/insights/israel-ai-regulation-policy/  /en/insights/israel-ai-regulation-policy/index.html  200
+/en/insights/israel-ai-regulation-policy   /en/insights/israel-ai-regulation-policy/  301
+/en/insights/eu-ai-act-israeli-companies/  /en/insights/eu-ai-act-israeli-companies/index.html  200
+/en/insights/eu-ai-act-israeli-companies   /en/insights/eu-ai-act-israeli-companies/  301
+/en/insights/gemini-guide-law/  /en/insights/gemini-guide-law/index.html  200
+/en/insights/gemini-guide-law   /en/insights/gemini-guide-law/  301
+/en/insights/urban-renewal-mistakes-guide/  /en/insights/urban-renewal-mistakes-guide/index.html  200
+/en/insights/urban-renewal-mistakes-guide   /en/insights/urban-renewal-mistakes-guide/  301
 /en/insights/:slug  /insights/:slug/  301
 /en/insights/*  /insights/:splat  301
 /es/insights/:slug  /insights/:slug/  301
