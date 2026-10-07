@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-employee-evaluation-decisions": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-hr-overview-legal-exposure",
+   "ai-diagnosis-imaging-clinical",
+   "ai-recruitment-screening-discrimination"
+  ]
+ },
  "ai-employee-monitoring-privacy": {
   "topic": "ai-governance",
   "related": [
@@ -75,8 +83,8 @@
   "topic": "contracts",
   "related": [
    "ai-hr-overview-legal-exposure",
-   "ai-healthcare-informed-consent",
-   "ai-banking-finance-regulation-risk"
+   "ai-employee-evaluation-decisions",
+   "ai-healthcare-informed-consent"
   ]
  },
  "ai-hr-overview-legal-exposure": {
@@ -84,7 +92,7 @@
   "related": [
    "ai-recruitment-screening-discrimination",
    "ai-employee-monitoring-privacy",
-   "ai-international-transactions-overview"
+   "ai-employee-evaluation-decisions"
   ]
  },
  "ai-clinical-system-deployment": {
@@ -107,8 +115,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-healthcare-liability-regulation",
-   "ai-clinical-system-deployment",
-   "ai-healthcare-informed-consent"
+   "ai-employee-evaluation-decisions",
+   "ai-clinical-system-deployment"
   ]
  },
  "ai-health-data-privacy": {
@@ -228,7 +236,7 @@
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "ai-healthcare-liability-regulation"
+   "ai-employee-evaluation-decisions"
   ]
  },
  "ai-planning-permits-local-authority-discretion": {
