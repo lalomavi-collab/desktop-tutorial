@@ -81,3 +81,15 @@
 .ck-step { display: flex; gap: 12px; align-items: flex-start; }
 .ck-step .n { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--clay); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 .ck-doc .ck-btn.primary { color: #fff; text-decoration: none; }
+
+/* /partners: the functional login stays single-column at any width; the
+   decorative side (wordmark, tagline, line-art) only earns its keep once
+   there is room beside the form, not squeezed above or below it. */
+.partners-layout { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+.partners-aside { display: none; }
+@media (min-width: 860px) {
+  .partners-layout { grid-template-columns: 1fr 1fr; }
+  .partners-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding-top: 28px; }
+}
+.partners-tagline { font-size: 14px; color: var(--slate); line-height: 1.6; max-width: 32ch; margin: 0; }
+.partners-art { width: 100%; max-width: 320px; aspect-ratio: 1 / 1; }
