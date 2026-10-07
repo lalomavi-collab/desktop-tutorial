@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-health-data-privacy": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-resident-data-privacy-local-authority",
+   "ai-healthcare-liability-regulation",
+   "attorney-client-privilege-ai"
+  ]
+ },
  "ai-healthcare-liability-regulation": {
   "topic": "ai-governance",
   "related": [
+   "ai-health-data-privacy",
    "ai-planning-permits-local-authority-discretion",
-   "ai-local-authorities-uses-legal-limits",
-   "ai-use-policy-local-authority"
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "cyprus-realestate-israeli-buyer-guide": {
@@ -146,9 +154,9 @@
  "ai-resident-data-privacy-local-authority": {
   "topic": "ai-governance",
   "related": [
+   "ai-health-data-privacy",
    "ai-use-policy-local-authority",
-   "gdpr-israeli-companies-ai",
-   "ai-planning-permits-local-authority-discretion"
+   "gdpr-israeli-companies-ai"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -347,8 +355,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "ai-resident-data-privacy-local-authority",
-   "partnership-dissolution-ai-ownership"
+   "ai-health-data-privacy",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -356,7 +364,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "shadow-it-law-firms",
-   "attorney-client-privilege-ai"
+   "memory"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -435,8 +443,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-governance-board-framework",
-   "ai-risk-frameworks-iso-42001-nist",
-   "directors-liability-ai-era"
+   "ai-health-data-privacy",
+   "ai-risk-frameworks-iso-42001-nist"
   ]
  },
  "ai-risk-frameworks-iso-42001-nist": {
@@ -491,8 +499,8 @@
   "topic": "contracts",
   "related": [
    "attorney-client-privilege-ai",
-   "partnership-dissolution-ai-ownership",
-   "algorithmic-transparency"
+   "ai-health-data-privacy",
+   "partnership-dissolution-ai-ownership"
   ]
  },
  "portugal-investment-guide": {
@@ -619,8 +627,8 @@
   "topic": "ai-governance",
   "related": [
    "legal-logic",
-   "legal-logic",
-   "lawyer-wakeup-call"
+   "lawyer-wakeup-call",
+   "legal-logic"
   ]
  },
  "legal-mediation-benefits": {
@@ -715,8 +723,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
@@ -732,7 +740,7 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "notebooklm-focus"
+   "ai-ethics-legal-risks"
   ]
  },
  "notebooklm-focus": {
@@ -867,8 +875,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "algorithmic-transparency",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "algorithmic-transparency"
   ]
  },
  "combination-deals-architecture": {
@@ -1292,7 +1300,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
