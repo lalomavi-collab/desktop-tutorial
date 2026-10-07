@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-international-transactions-overview": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-municipal-algorithmic-enforcement-due-process",
+   "ai-banking-finance-regulation-risk"
+  ]
+ },
  "urban-renewal-principles-vs-detailed-agreement": {
   "topic": "real-estate",
   "related": [
@@ -123,8 +131,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-resident-data-privacy-local-authority",
-   "ai-municipal-chatbot-resident-liability"
+   "ai-municipal-chatbot-resident-liability",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -140,7 +148,7 @@
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "ai-use-policy-local-authority"
+   "ai-international-transactions-overview"
   ]
  },
  "ai-planning-permits-local-authority-discretion": {
@@ -851,8 +859,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "homeowners-iron-dome"
   ]
  },
  "israeli-realestate-abroad": {
@@ -915,8 +923,8 @@
   "topic": "real-estate",
   "related": [
    "four-opinions-one-agreement",
-   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית",
-   "second-opinion-revolution"
+   "second-opinion-revolution",
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "four-opinions-one-agreement": {
