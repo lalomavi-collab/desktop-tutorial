@@ -309,7 +309,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
       {drawer && (
         <aside className="ck-drawer" aria-label="בודק PII">
           <div className="ck-row" style={{ justifyContent: "space-between" }}><h2 className="serif" style={{ margin: 0, fontSize: 17 }}>בודק PII</h2><button className="ck-btn" onClick={() => setDrawer(false)}>סגירה</button></div>
-          <div className="ck-meta">{map ? "המקור זמין בזיכרון הדפדפן בלבד, מהסשן שבו הועלה המסמך. הוא לא נשמר בשרת וייעלם ברענון." : "מיפוי הזהויות נמחק בהתאם ל-Zero Data Retention ואינו זמין בשרת. ניתן לראות את המקור רק בסשן שבו הועלה המסמך."}</div>
+          <div className="ck-meta">{map ? "המקור זמין בזיכרון הדפדפן בלבד, מהסשן שבו הועלה המסמך. הוא לא נשמר בשרת וייעלם ברענון." : "מיפוי הזהויות אינו נשמר בשרת ואינו זמין. ניתן לראות את המקור רק בסשן שבו הועלה המסמך."}</div>
           <div className="ck-row"><button className={`ck-btn${showOrig ? "" : " primary"}`} onClick={() => setShowOrig(false)}>מוסתר</button><button className={`ck-btn${showOrig ? " primary" : ""}`} disabled={!map} onClick={() => setShowOrig(true)}>מקור</button></div>
           <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>אסימון</th><th>סוג</th><th>ערך</th></tr></thead><tbody>
             {tokens.length ? tokens.map((t) => <tr key={t}><td dir="ltr">{t}</td><td>{KIND_HE[(/^\[([A-Z_]+)_\d+\]$/.exec(t) ?? [])[1] ?? ""] ?? ""}</td><td>{showOrig && map?.has(t) ? map.get(t) : "••••••"}</td></tr>) : <tr><td colSpan={3}>אין אסימונים</td></tr>}
