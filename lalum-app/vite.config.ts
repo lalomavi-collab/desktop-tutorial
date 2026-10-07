@@ -52,6 +52,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace", title: "קוקפיט תיקים | LALUM", desc: "קוקפיט התיקים של LALUM.", noindex: true },
   { path: "workspace/guide", title: "מדריך הקוקפיט | LALUM", desc: "מה הקוקפיט עושה ואיך משתמשים בו.", noindex: true },
   { path: "admin/matters", title: "ניהול תיקים | LALUM", desc: "מסך הניהול של תיקי הקליטה.", noindex: true },
+  { path: "settings/security", title: "אבטחת חשבון | LALUM", desc: "הפעלה וניהול של אימות דו-שלבי לחשבון.", noindex: true },
   { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },
   { path: "legal/saas-terms", title: "תנאי שירות SaaS | LALUM", desc: "תנאי השירות למשרדי עורכי דין המשתמשים בקוקפיט.", noindex: true },
   { path: "legal/client-disclosure", title: "גילוי ללקוח | LALUM", desc: "נוסח גילוי ללקוחות על שימוש במערכת קליטה אוטומטית.", noindex: true },

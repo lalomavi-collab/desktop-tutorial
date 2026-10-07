@@ -31,6 +31,7 @@ function MatterList({ firmName, userName, role }: { firmName: string; userName: 
         <div className="ck-card"><div className="ck-title">מדריך קצר</div><div className="ck-meta">מה קורה לכל מסמך, איך עובד אישור השותף, ומה נמחק ומתי.</div><Link className="ck-btn" to="/workspace/guide">לפתיחת המדריך</Link></div>
         <div className="ck-card"><div className="ck-title">מסך הניהול</div><div className="ck-meta">כל התיקים, חריגות SLA ויומן ניגוד עניינים.</div><Link className="ck-btn" to="/admin/matters">לניהול</Link></div>
         <div className="ck-card"><div className="ck-title">חיוב והגדרות</div><div className="ck-meta">מסלול, מושבים, חשבוניות וטלפון להתראות.</div><Link className="ck-btn" to="/settings/billing">להגדרות</Link></div>
+        <div className="ck-card"><div className="ck-title">אבטחת חשבון</div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
       {adding && <div className="ck-card"><IntakeForm onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
