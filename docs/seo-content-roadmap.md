@@ -123,7 +123,7 @@
 - V (עוגן) הרוב הדרוש בהתחדשות עירונית והדייר הסרבן (urban-renewal-required-majority-holdout)
 - V מיסוי בהתחדשות עירונית: היטל השבחה, מס שבח ומס רכישה לבעל דירה (urban-renewal-taxation-owner)
 - V תמורות בפינוי-בינוי: איך קוראים ומעריכים את הצעת היזם (pinui-binui-consideration-valuation)
-- נציגות בעלי הדירות בהתחדשות עירונית: תפקיד, סמכויות וגבולות (urban-renewal-owners-representation)
+- V נציגות בעלי הדירות בהתחדשות עירונית: תפקיד, סמכויות וגבולות (urban-renewal-owners-representation)
 - הסכם עקרונות מול הסכם מפורט בהתחדשות עירונית: מה מחייב ומתי (urban-renewal-principles-vs-detailed-agreement)
 
 - V תמ"א 38/1 מול תמ"א 38/2: מה ההבדל ומה מתאים לבניין שלכם (tama-38-1-vs-38-2-comparison)
