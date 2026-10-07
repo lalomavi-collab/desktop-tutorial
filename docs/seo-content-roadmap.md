@@ -122,7 +122,7 @@
 
 - V (עוגן) הרוב הדרוש בהתחדשות עירונית והדייר הסרבן (urban-renewal-required-majority-holdout)
 - V מיסוי בהתחדשות עירונית: היטל השבחה, מס שבח ומס רכישה לבעל דירה (urban-renewal-taxation-owner)
-- תמורות בפינוי-בינוי: איך קוראים ומעריכים את הצעת היזם (pinui-binui-consideration-valuation)
+- V תמורות בפינוי-בינוי: איך קוראים ומעריכים את הצעת היזם (pinui-binui-consideration-valuation)
 - נציגות בעלי הדירות בהתחדשות עירונית: תפקיד, סמכויות וגבולות (urban-renewal-owners-representation)
 - הסכם עקרונות מול הסכם מפורט בהתחדשות עירונית: מה מחייב ומתי (urban-renewal-principles-vs-detailed-agreement)
 
