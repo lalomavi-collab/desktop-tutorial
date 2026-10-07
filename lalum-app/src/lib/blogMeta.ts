@@ -755,7 +755,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "four-opinions-one-agreement",
-    "title": "“ארבע חוות דעת, הסכם אחד: ומחלוקת שנמשכה מעל שנה\"",
+    "title": "ארבע חוות דעת, הסכם אחד: ומחלוקת שנמשכה מעל שנה",
     "excerpt": "סיפור מקרה על ארבע חוות דעת סותרות על אותו הסכם התחדשות עירונית, ומדוע נדרשת חוות דעת מתכללת אחת.",
     "date": "נובמבר 2025",
     "cover": "/images/covers/decision-oriented-mediation-benefits.webp"
