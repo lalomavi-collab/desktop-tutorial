@@ -35,6 +35,15 @@ const Book = lazy(() => import("./pages/Book").then((m) => ({ default: m.Book })
 const Login = lazy(() => import("./pages/Login").then((m) => ({ default: m.Login })));
 const Portal = lazy(() => import("./pages/Portal").then((m) => ({ default: m.Portal })));
 const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.LegalOS })));
+// Case cockpit for partners and admins: standalone surfaces (own Hebrew frame, no marketing
+// header or footer), gated by firm membership inside CockpitFrame.
+const Workspace = lazy(() => import("./pages/cockpit/Workspace").then((m) => ({ default: m.Workspace })));
+const AdminMatters = lazy(() => import("./pages/cockpit/AdminMatters").then((m) => ({ default: m.AdminMatters })));
+const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ default: m.Billing })));
+const CockpitGuide = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.CockpitGuide })));
+const SaasTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.SaasTerms })));
+const ClientDisclosure = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.ClientDisclosure })));
+const DpaTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.DpaTerms })));
 const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
 
 // Scroll to a #hash target after navigation, including cross-page links like
@@ -76,6 +85,14 @@ export default function App() {
               or footer and reads as an application. It shares the site's brain
               (the lalum-assistant edge function) and links back into the site. */}
           <Route path="os" element={<Suspense fallback={null}><LegalOS /></Suspense>} />
+          <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
+          <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
+          <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
+          <Route path="admin/matters" element={<Suspense fallback={null}><AdminMatters /></Suspense>} />
+          <Route path="settings/billing" element={<Suspense fallback={null}><Billing /></Suspense>} />
+          <Route path="legal/saas-terms" element={<Suspense fallback={null}><SaasTerms /></Suspense>} />
+          <Route path="legal/client-disclosure" element={<Suspense fallback={null}><ClientDisclosure /></Suspense>} />
+          <Route path="legal/dpa-terms" element={<Suspense fallback={null}><DpaTerms /></Suspense>} />
           <Route element={<MarketingLayout />}>
             <Route index element={<Home />} />
             <Route path="advisory" element={<Advisory />} />

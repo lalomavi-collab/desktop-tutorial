@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
-import { REMEMBER_KEY } from "../lib/supabase";
+import { REMEMBER_KEY, supabase } from "../lib/supabase";
 import { pwnedCount } from "../lib/pwnedCheck";
 
 export function Login() {
@@ -45,7 +45,19 @@ export function Login() {
       setMode("in");
       return;
     }
-    navigate("/portal");
+    // Partners and admins land in the case cockpit; everyone else in the client portal.
+    let dest = "/portal";
+    if (supabase) {
+      const { data: auth } = await supabase.auth.getUser();
+      if (auth.user) {
+        const [m, a] = await Promise.all([
+          supabase.from("lalum_firm_members").select("firm_id").eq("user_id", auth.user.id).maybeSingle(),
+          supabase.rpc("lalum_is_admin"),
+        ]);
+        if (m.data || a.data === true) dest = "/workspace";
+      }
+    }
+    navigate(dest);
   }
 
   return (
