@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "urban-renewal-required-majority-holdout": {
+  "topic": "real-estate",
+  "related": [
+   "pinui-binui-owner-guide",
+   "tama-38-1-vs-38-2-comparison",
+   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+  ]
+ },
  "ai-municipal-chatbot-resident-liability": {
   "topic": "ai-governance",
   "related": [
@@ -83,8 +91,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-resident-data-privacy-local-authority",
-   "ai-municipal-chatbot-resident-liability"
+   "ai-municipal-chatbot-resident-liability",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -243,8 +251,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "saas-eu-compliance-israeli-companies",
-   "eu-ai-act-2026"
+   "eu-ai-act-2026",
+   "saas-eu-compliance-israeli-companies"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -875,8 +883,8 @@
   "topic": "real-estate",
   "related": [
    "four-opinions-one-agreement",
-   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית",
-   "second-opinion-revolution"
+   "second-opinion-revolution",
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "four-opinions-one-agreement": {
@@ -1291,8 +1299,8 @@
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "free-lawyer-illusion",
-   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
+   "urban-renewal-required-majority-holdout",
+   "free-lawyer-illusion"
   ]
  },
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
