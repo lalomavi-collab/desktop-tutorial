@@ -124,7 +124,7 @@
 - V מיסוי בהתחדשות עירונית: היטל השבחה, מס שבח ומס רכישה לבעל דירה (urban-renewal-taxation-owner)
 - V תמורות בפינוי-בינוי: איך קוראים ומעריכים את הצעת היזם (pinui-binui-consideration-valuation)
 - V נציגות בעלי הדירות בהתחדשות עירונית: תפקיד, סמכויות וגבולות (urban-renewal-owners-representation)
-- הסכם עקרונות מול הסכם מפורט בהתחדשות עירונית: מה מחייב ומתי (urban-renewal-principles-vs-detailed-agreement)
+- V הסכם עקרונות מול הסכם מפורט בהתחדשות עירונית: מה מחייב ומתי (urban-renewal-principles-vs-detailed-agreement) [האשכול הושלם, 5/5]
 
 - V תמ"א 38/1 מול תמ"א 38/2: מה ההבדל ומה מתאים לבניין שלכם (tama-38-1-vs-38-2-comparison)
 - V פינוי-בינוי: מדריך מלא לבעלי דירות (pinui-binui-owner-guide)
