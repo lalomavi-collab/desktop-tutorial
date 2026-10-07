@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "urban-renewal-principles-vs-detailed-agreement": {
+  "topic": "real-estate",
+  "related": [
+   "developer-agreement-urban-renewal-critical-clauses",
+   "pinui-binui-consideration-valuation",
+   "urban-renewal-owners-representation"
+  ]
+ },
  "urban-renewal-owners-representation": {
   "topic": "real-estate",
   "related": [
+   "urban-renewal-principles-vs-detailed-agreement",
    "pinui-binui-owner-guide",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "urban-renewal-required-majority-holdout"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "pinui-binui-consideration-valuation": {
@@ -76,7 +84,7 @@
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
    "tama-38-1-vs-38-2-comparison",
-   "second-opinion-real-estate-urban-renewal"
+   "urban-renewal-principles-vs-detailed-agreement"
   ]
  },
  "urban-renewal-taxation-owner": {
@@ -172,7 +180,7 @@
   "related": [
    "pinui-binui-consideration-valuation",
    "urban-renewal-guarantees-sale-law-registration",
-   "pinui-binui-owner-guide"
+   "urban-renewal-principles-vs-detailed-agreement"
   ]
  },
  "lawyers-ai-ethics-accountability": {
@@ -228,7 +236,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "ai-drafted-real-estate-contract-review",
-   "portugal-real-estate-financing"
+   "urban-renewal-principles-vs-detailed-agreement"
   ]
  },
  "portugal-real-estate-financing": {
@@ -1252,7 +1260,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
