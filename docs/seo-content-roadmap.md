@@ -168,7 +168,7 @@
 מדריכי מדינה למשקיע הישראלי (מעבר לאשכול פורטוגל):
 
 - V להשקיע בנדל"ן ביוון: מה חשוב לקונה הישראלי לדעת (greece-realestate-israeli-buyer-guide)
-- קפריסין: רכישת נדל"ן והמסגרת המשפטית לרוכש מישראל (cyprus-realestate-israeli-buyer-guide)
+- V קפריסין: רכישת נדל"ן והמסגרת המשפטית לרוכש מישראל (cyprus-realestate-israeli-buyer-guide)
 
 מנגנון:
 

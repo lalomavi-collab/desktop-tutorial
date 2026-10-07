@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "cyprus-realestate-israeli-buyer-guide": {
+  "topic": "real-estate",
+  "related": [
+   "greece-realestate-israeli-buyer-guide",
+   "portugal-purchase-contract",
+   "urban-renewal-taxation-owner"
+  ]
+ },
  "greece-realestate-israeli-buyer-guide": {
   "topic": "real-estate",
   "related": [
+   "cyprus-realestate-israeli-buyer-guide",
    "portugal-porto-vs-lisbon",
-   "portugal-purchase-contract",
-   "overseas-property-due-diligence"
+   "portugal-purchase-contract"
   ]
  },
  "ai-international-transactions-overview": {
@@ -108,7 +116,7 @@
   "related": [
    "urban-renewal-required-majority-holdout",
    "portugal-real-estate-taxation",
-   "urban-renewal-guarantees-sale-law-registration"
+   "cyprus-realestate-israeli-buyer-guide"
   ]
  },
  "urban-renewal-required-majority-holdout": {
@@ -459,8 +467,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "quiet-legal-revolution",
-   "realestate-second-opinion"
+   "realestate-second-opinion",
+   "quiet-legal-revolution"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -594,8 +602,8 @@
  "decision-oriented-ai-law": {
   "topic": "ai-governance",
   "related": [
-   "israel-ai-regulation-policy",
    "algorithmic-transparency",
+   "israel-ai-regulation-policy",
    "ai-ethics-legal-risks"
   ]
  },
@@ -699,8 +707,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "law-algorithm-era",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "law-algorithm-era"
   ]
  },
  "digital-lawyers-2026": {
