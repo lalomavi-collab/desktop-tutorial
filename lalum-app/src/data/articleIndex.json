@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-recruitment-screening-discrimination": {
+  "topic": "contracts",
+  "related": [
+   "ai-hr-overview-legal-exposure",
+   "ai-healthcare-informed-consent",
+   "ai-banking-finance-regulation-risk"
+  ]
+ },
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
+   "ai-recruitment-screening-discrimination",
    "ai-international-transactions-overview",
-   "ai-healthcare-liability-regulation",
-   "ai-banking-finance-regulation-risk"
+   "ai-healthcare-liability-regulation"
   ]
  },
  "ai-clinical-system-deployment": {
@@ -243,8 +251,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-banking-finance-regulation-risk",
-   "israel-ai-regulation-policy",
-   "eu-ai-act-high-risk-classification"
+   "ai-recruitment-screening-discrimination",
+   "israel-ai-regulation-policy"
   ]
  },
  "developer-agreement-urban-renewal-critical-clauses": {
@@ -755,8 +763,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
