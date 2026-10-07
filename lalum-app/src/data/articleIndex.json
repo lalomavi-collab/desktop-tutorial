@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-employee-monitoring-privacy": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-hr-overview-legal-exposure",
+   "ai-resident-data-privacy-local-authority",
+   "ai-health-data-privacy"
+  ]
+ },
  "ai-recruitment-screening-discrimination": {
   "topic": "contracts",
   "related": [
@@ -75,8 +83,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-recruitment-screening-discrimination",
-   "ai-international-transactions-overview",
-   "ai-healthcare-liability-regulation"
+   "ai-employee-monitoring-privacy",
+   "ai-international-transactions-overview"
   ]
  },
  "ai-clinical-system-deployment": {
@@ -196,7 +204,7 @@
   "related": [
    "ai-health-data-privacy",
    "ai-use-policy-local-authority",
-   "gdpr-israeli-companies-ai"
+   "ai-employee-monitoring-privacy"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -490,8 +498,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-governance-board-framework",
    "ai-use-policy-organization",
+   "ai-governance-board-framework",
    "eu-ai-act-conformity-file-preparation"
   ]
  },
@@ -763,8 +771,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "law-algorithm-era",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "law-algorithm-era"
   ]
  },
  "digital-lawyers-2026": {
@@ -1340,7 +1348,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1354,8 +1362,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
