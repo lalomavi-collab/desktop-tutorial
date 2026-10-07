@@ -45,6 +45,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // the SPA catch-all, but kept out of the index: a sign-in form and a private
   // client area are not search results anyone wants.
   { path: "login", title: "כניסת לקוחות | LALUM", desc: "כניסה לאזור הלקוחות של LALUM.", noindex: true },
+  { path: "reset-password", title: "איפוס סיסמה | LALUM", desc: "קביעת סיסמה חדשה לחשבון LALUM.", noindex: true },
   { path: "portal", title: "אזור הלקוחות | LALUM", desc: "האזור האישי ללקוחות LALUM.", noindex: true },
   // The partner and admin cockpit. No SPA catch-all exists, so each route must be prerendered to
   // resolve on a direct hit or a refresh. Application surfaces: kept out of the index.
