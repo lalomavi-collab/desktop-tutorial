@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "ai-municipal-chatbot-resident-liability": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authorities-uses-legal-limits",
+   "ai-use-policy-local-authority",
+   "ai-procurement-tender-local-authority"
+  ]
+ },
  "ai-resident-data-privacy-local-authority": {
   "topic": "ai-governance",
   "related": [
@@ -76,7 +84,7 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-resident-data-privacy-local-authority",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-municipal-chatbot-resident-liability"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -106,9 +114,9 @@
  "ai-local-authorities-uses-legal-limits": {
   "topic": "ai-governance",
   "related": [
+   "ai-municipal-chatbot-resident-liability",
    "ai-use-policy-local-authority",
-   "ai-municipal-algorithmic-enforcement-due-process",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-municipal-algorithmic-enforcement-due-process"
   ]
  },
  "ai-drafted-real-estate-contract-review": {
@@ -1476,7 +1484,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "ai-realestate-risk-management"
+   "urban-renewal-risk"
   ]
  },
  "california-sb574-ai-adjudication-ban": {
