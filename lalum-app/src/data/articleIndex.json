@@ -63,20 +63,28 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
- "ai-planning-permits-local-authority-discretion": {
+ "ai-municipal-algorithmic-enforcement-due-process": {
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
-   "effective-human-oversight-ai-systems",
-   "directors-liability-ai-era"
+   "ai-planning-permits-local-authority-discretion",
+   "ai-use-policy-organization"
+  ]
+ },
+ "ai-planning-permits-local-authority-discretion": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-municipal-algorithmic-enforcement-due-process",
+   "ai-local-authorities-uses-legal-limits",
+   "effective-human-oversight-ai-systems"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
   "topic": "ai-governance",
   "related": [
+   "ai-municipal-algorithmic-enforcement-due-process",
    "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems",
-   "ai-banking-finance-regulation-risk"
+   "effective-human-oversight-ai-systems"
   ]
  },
  "ai-drafted-real-estate-contract-review": {
@@ -603,8 +611,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
@@ -1052,7 +1060,7 @@
   "related": [
    "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
+   "מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי"
   ]
  },
  "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה": {
