@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "pinui-binui-consideration-valuation": {
+  "topic": "real-estate",
+  "related": [
+   "developer-agreement-urban-renewal-critical-clauses",
+   "tama-38-1-vs-38-2-comparison",
+   "second-opinion-real-estate-urban-renewal"
+  ]
+ },
  "urban-renewal-taxation-owner": {
   "topic": "real-estate",
   "related": [
@@ -154,9 +162,9 @@
  "developer-agreement-urban-renewal-critical-clauses": {
   "topic": "real-estate",
   "related": [
+   "pinui-binui-consideration-valuation",
    "urban-renewal-guarantees-sale-law-registration",
-   "pinui-binui-owner-guide",
-   "tama-38-1-vs-38-2-comparison"
+   "pinui-binui-owner-guide"
   ]
  },
  "lawyers-ai-ethics-accountability": {
@@ -355,8 +363,8 @@
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "portugal-real-estate-financing",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "pinui-binui-consideration-valuation",
+   "portugal-real-estate-financing"
   ]
  },
  "ai-governance-board-framework": {
@@ -419,8 +427,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "realestate-second-opinion",
-   "quiet-legal-revolution"
+   "quiet-legal-revolution",
+   "realestate-second-opinion"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -891,8 +899,8 @@
   "topic": "real-estate",
   "related": [
    "four-opinions-one-agreement",
-   "second-opinion-revolution",
-   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית",
+   "second-opinion-revolution"
   ]
  },
  "four-opinions-one-agreement": {
@@ -1236,7 +1244,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
