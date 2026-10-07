@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
@@ -101,6 +101,9 @@ export function Login() {
           >
             {mode === "in" ? L.createAccount : L.signIn}
           </button>
+        </p>
+        <p className="muted" style={{ textAlign: "center", fontSize: 13, margin: "12px 0 0" }}>
+          <Link to="/partners" style={{ color: "var(--clay)" }}>כניסה ייעודית למשרדים שותפים</Link>
         </p>
       </div>
     </section>
