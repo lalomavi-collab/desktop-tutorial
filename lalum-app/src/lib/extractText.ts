@@ -3,7 +3,7 @@
 
 const MAX_CHARS = 14000; // keep the model prompt bounded
 
-export async function extractText(file: File): Promise<string> {
+export async function extractText(file: File, maxChars: number = MAX_CHARS): Promise<string> {
   const name = file.name.toLowerCase();
   let text = "";
   if (name.endsWith(".docx")) {
@@ -22,10 +22,10 @@ export async function extractText(file: File): Promise<string> {
       const page = await doc.getPage(i);
       const content = await page.getTextContent();
       parts.push(content.items.map((it) => ("str" in it ? (it as { str: string }).str : "")).join(" "));
-      if (parts.join("\n").length > MAX_CHARS) break;
+      if (parts.join("\n").length > maxChars) break;
     }
     text = parts.join("\n");
   }
   text = text.replace(/\n{3,}/g, "\n\n").trim();
-  return text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + "…" : text;
+  return text.length > maxChars ? text.slice(0, maxChars) + "…" : text;
 }
