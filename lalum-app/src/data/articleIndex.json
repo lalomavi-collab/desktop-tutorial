@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "greece-realestate-israeli-buyer-guide": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-porto-vs-lisbon",
+   "portugal-purchase-contract",
+   "overseas-property-due-diligence"
+  ]
+ },
  "ai-international-transactions-overview": {
   "topic": "ai-governance",
   "related": [
@@ -227,8 +235,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-real-estate-financing",
-   "portugal-real-estate-taxation",
-   "israeli-realestate-abroad"
+   "greece-realestate-israeli-buyer-guide",
+   "portugal-real-estate-taxation"
   ]
  },
  "portugal-real-estate-taxation": {
@@ -244,7 +252,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "ai-drafted-real-estate-contract-review",
-   "urban-renewal-principles-vs-detailed-agreement"
+   "greece-realestate-israeli-buyer-guide"
   ]
  },
  "portugal-real-estate-financing": {
@@ -348,7 +356,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "overseas-property-holding-structure",
-   "ai-due-diligence-tech-acquisition"
+   "greece-realestate-israeli-buyer-guide"
   ]
  },
  "ai-due-diligence-tech-acquisition": {
@@ -843,8 +851,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "digital-lawyers-2026",
-   "algorithmic-transparency"
+   "algorithmic-transparency",
+   "digital-lawyers-2026"
   ]
  },
  "combination-deals-architecture": {
@@ -859,8 +867,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "overseas-partnership-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1268,7 +1276,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1459,8 +1467,8 @@
   "topic": "mediation",
   "related": [
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
-   "custom-mediation",
-   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
+   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי",
+   "custom-mediation"
   ]
  },
  "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה": {
