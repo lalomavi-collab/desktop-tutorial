@@ -3,8 +3,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-2026",
-   "ai-governance-board-framework",
-   "eu-ai-act-israeli-companies"
+   "eu-ai-act-israeli-companies",
+   "ai-governance-board-framework"
   ]
  },
  "explainability": {
@@ -63,6 +63,14 @@
    "legal-logic"
   ]
  },
+ "urban-renewal-owners-representation": {
+  "topic": "real-estate",
+  "related": [
+   "pinui-binui-owner-guide",
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
+   "urban-renewal-required-majority-holdout"
+  ]
+ },
  "pinui-binui-consideration-valuation": {
   "topic": "real-estate",
   "related": [
@@ -107,8 +115,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-municipal-chatbot-resident-liability",
-   "ai-resident-data-privacy-local-authority"
+   "ai-resident-data-privacy-local-authority",
+   "ai-municipal-chatbot-resident-liability"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -1315,8 +1323,8 @@
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "urban-renewal-required-majority-holdout",
-   "free-lawyer-illusion"
+   "free-lawyer-illusion",
+   "urban-renewal-required-majority-holdout"
   ]
  },
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
@@ -1324,7 +1332,7 @@
   "related": [
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
-   "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי"
+   "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
  "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע": {
