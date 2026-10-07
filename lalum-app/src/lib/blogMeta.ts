@@ -419,7 +419,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "ai-hallucinations-citations",
-    "title": "⚖️ כשהמודל מציע \"פסיקה\": מי בעצם מאמת?",
+    "title": "כשהמודל מציע \"פסיקה\": מי בעצם מאמת?",
     "excerpt": "הזיות בינה מלאכותית בכתבי טענות הפכו לסיכון מקצועי ממשי, ופסיקה בישראל ובעולם כבר מטילה סנקציות על עורכי דין שלא אימתו.",
     "date": "יוני 2026",
     "cover": "/images/covers/ai-hallucinations-citations.webp"
@@ -454,7 +454,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "decision-oriented-ai-law",
-    "title": "🧠 Decision-Oriented AI Law: משפט  מבוסס בינה מלאכותית מוכוון הכרעה בעידן של אי־ודאות משפטית",
+    "title": "Decision-Oriented AI Law: משפט מבוסס בינה מלאכותית מוכוון הכרעה בעידן של אי־ודאות משפטית",
     "excerpt": "תחום משפטי חדש שבו הבינה המלאכותית אינה רק מנתחת אלא מובילה להכרעה, בניתוח סיכונים, נדל״ן ויישוב סכסוכים.",
     "date": "אפריל 2026",
     "cover": "/images/covers/decision-oriented-ai-law.webp"
@@ -615,7 +615,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "realestate-master-course",
-    "title": "🎓 מאסטר בעסקאות נדל״ן: המשולש המנצח",
+    "title": "מאסטר בעסקאות נדל״ן: המשולש המנצח",
     "excerpt": "קורס מאסטר בעסקאות נדל״ן המשלב פרקטיקה משפטית, בינה מלאכותית ופסיכולוגיה עסקית בשישה מפגשים אינטנסיביים.",
     "date": "ינואר 2026",
     "cover": "/images/covers/realestate-master-course.webp"
