@@ -6,9 +6,9 @@ import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STAT
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
 import { originals } from "../../lib/cockpit/originals";
 import { IntakeForm } from "./Intake";
-import { Deadlines } from "./Deadlines";
+import { Retention } from "./Retention";
 
-interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string }
+interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
 interface SignoffStatus { complete: boolean; steps: Record<string, { valid: boolean }> }
 const TOKEN_RE = /\[[A-Z_]+_\d+\]/g;
@@ -258,7 +258,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
           <div className="ck-label">ציר זמן</div>
           <ul className="ck-tl">{timeline.map(([t, s], i) => <li key={i}><time>{fmt(t)}</time>{s}</li>)}</ul>
-          <Deadlines matterId={matter.id} practiceArea={matter.practice_area} />
+          <Retention matterId={matter.id} practiceArea={matter.practice_area} basis={matter.retention_basis ?? "STATUTORY"} consentAt={matter.client_consent_at} endedAt={matter.handling_ended_at} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
         </section>
         <div className="ck-handle" role="separator" aria-orientation="vertical" tabIndex={0} aria-label="שינוי רוחב" onPointerDown={(e) => drag(e, "w1")} />
 
