@@ -149,8 +149,13 @@ export function Home() {
       </section>
 
       {/* ENGINE */}
-      <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)" }}>
-        <div className="wrap section">
+      {/* A decision lattice drifts behind "the engine", literally what the
+          section names, so the dark panel is no longer a flat block. It sits
+          on z-index 0 behind the content (z-index 1) and freezes under
+          prefers-reduced-motion, same as the hero backdrop. */}
+      <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)", position: "relative", overflow: "hidden" }}>
+        <AmbientBackground variant="lattice" />
+        <div className="wrap section" style={{ position: "relative", zIndex: 1 }}>
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
             <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
