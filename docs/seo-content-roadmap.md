@@ -111,7 +111,7 @@
 - V אכיפה עירונית מבוססת אלגוריתם: מתי זה חוקי ומה חובת ההליך ההוגן (ai-municipal-algorithmic-enforcement-due-process)
 - V רישוי ותכנון בעזרת AI ברשות המקומית: הזדמנות וגבול שיקול הדעת (ai-planning-permits-local-authority-discretion)
 - V מדיניות שימוש ב-AI ברשות מקומית: מה חייב להיות בנוהל (ai-use-policy-local-authority)
-- רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק
+- V רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק (ai-procurement-tender-local-authority)
 - הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI
 
 ## עדיפות 2: התחדשות עירונית (חסר, ביקוש חיפוש גבוה)

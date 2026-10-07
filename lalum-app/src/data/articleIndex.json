@@ -35,8 +35,8 @@
   "topic": "ai-governance",
   "related": [
    "procurement",
-   "ai-risk-frameworks-iso-42001-nist",
-   "defensible"
+   "ai-procurement-tender-local-authority",
+   "ai-risk-frameworks-iso-42001-nist"
   ]
  },
  "legal-logic": {
@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "ai-procurement-tender-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "ai-local-authorities-uses-legal-limits",
+   "procurement"
+  ]
+ },
  "ai-use-policy-local-authority": {
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "ai-procurement-tender-local-authority"
   ]
  },
  "ai-municipal-algorithmic-enforcement-due-process": {
@@ -474,8 +482,8 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
-   "effective-human-oversight-ai-systems",
    "california-sb574-ai-adjudication-ban",
+   "effective-human-oversight-ai-systems",
    "quiet-legal-revolution"
   ]
  },
@@ -963,8 +971,8 @@
   "topic": "mediation",
   "related": [
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה",
-   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות",
-   "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה"
+   "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה",
+   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות"
   ]
  },
  "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני": {
@@ -1116,7 +1124,7 @@
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "free-lawyer-illusion"
   ]
  },
  "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות": {
@@ -1346,8 +1354,8 @@
  "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה": {
   "topic": "mediation",
   "related": [
-   "lalum-clinic-experience",
    "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
+   "lalum-clinic-experience",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
   ]
  },
