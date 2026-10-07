@@ -40,6 +40,7 @@ const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.L
 const Workspace = lazy(() => import("./pages/cockpit/Workspace").then((m) => ({ default: m.Workspace })));
 const AdminMatters = lazy(() => import("./pages/cockpit/AdminMatters").then((m) => ({ default: m.AdminMatters })));
 const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ default: m.Billing })));
+const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ default: m.Security })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const CockpitGuide = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.CockpitGuide })));
 const SaasTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.SaasTerms })));
@@ -91,6 +92,7 @@ export default function App() {
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="admin/matters" element={<Suspense fallback={null}><AdminMatters /></Suspense>} />
+          <Route path="settings/security" element={<Suspense fallback={null}><Security /></Suspense>} />
           <Route path="settings/billing" element={<Suspense fallback={null}><Billing /></Suspense>} />
           <Route path="legal/saas-terms" element={<Suspense fallback={null}><SaasTerms /></Suspense>} />
           <Route path="legal/client-disclosure" element={<Suspense fallback={null}><ClientDisclosure /></Suspense>} />

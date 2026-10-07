@@ -77,7 +77,7 @@ export interface Membership {
   firm_id: string;
   name: string;
   role: string;
-  lalum_firms: { firm_name: string; status: string; subscription_tier: string; monthly_fee: number | null; seat_limit: number };
+  lalum_firms: { firm_name: string; status: string; subscription_tier: string; monthly_fee: number | null; seat_limit: number; require_mfa?: boolean };
 }
 export interface PipelineReply {
   ok?: boolean;
@@ -191,7 +191,7 @@ export function useCockpitAccess(): Access {
       if (!supabase || !user) { if (live) setAccess({ state: "none" }); return; }
       const [m, a] = await Promise.all([
         supabase.from("lalum_firm_members")
-          .select("firm_id, name, role, lalum_firms(firm_name, status, subscription_tier, monthly_fee, seat_limit)")
+          .select("firm_id, name, role, lalum_firms(firm_name, status, subscription_tier, monthly_fee, seat_limit, require_mfa)")
           .eq("user_id", user.id).maybeSingle(),
         supabase.rpc("lalum_is_admin"),
       ]);

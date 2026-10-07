@@ -4,12 +4,14 @@ import { PageMeta } from "../../components/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
+import { MfaGate } from "./MfaGate";
 import "../../styles/cockpit.css";
 
 const NAV: Array<[string, string, boolean]> = [
   ["/workspace", "תיקים", false],
   ["/admin/matters", "ניהול", false],
   ["/settings/billing", "חיוב והגדרות", false],
+  ["/settings/security", "אבטחה", false],
   ["/workspace/guide", "מדריך", true],
 ];
 
@@ -20,12 +22,14 @@ export function CockpitFrame({
   path,
   children,
   needsFirm = true,
+  mfa = true,
 }: {
   title: string;
   description: string;
   path: string;
   children: (a: { member: Membership | null; platformAdmin: boolean }) => ReactNode;
   needsFirm?: boolean;
+  mfa?: boolean;
 }) {
   const { user, loading } = useAuth();
   const access = useCockpitAccess();
@@ -34,7 +38,11 @@ export function CockpitFrame({
   else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
   else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">החשבון אינו משויך למשרד</div><div className="ck-meta">כדי להשתמש בקוקפיט יש לצרף את החשבון למשרד. פנו למנהל המערכת של LALUM.</div></div>;
   else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">אין משרד משויך לחשבון זה</div><div className="ck-meta">מסך זה פועל בתוך משרד. מסך הניהול זמין למנהל הפלטפורמה.</div></div>;
-  else body = children({ member: access.member, platformAdmin: access.platformAdmin });
+  else {
+    const inner = children({ member: access.member, platformAdmin: access.platformAdmin });
+    const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");
+    body = mfa && partnerLike ? <MfaGate required={access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
+  }
 
   return (
     <div className="ck-root" dir="rtl" lang="he">
