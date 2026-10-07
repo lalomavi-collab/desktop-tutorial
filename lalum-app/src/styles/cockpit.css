@@ -82,6 +82,21 @@
 .ck-step .n { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--clay); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 .ck-doc .ck-btn.primary { color: #fff; text-decoration: none; }
 
+/* /partners: a scoped background wash (never touches .ck-root itself, so
+   every other cockpit screen stays exactly as plain as it was). A soft
+   two-tone radial gradient in the site's own sage/ivory tokens, not the
+   dark Prestige Executive palette used for generated documents. */
+.partners-root {
+  background:
+    radial-gradient(900px 560px at 85% -10%, var(--clay-tint) 0%, transparent 60%),
+    radial-gradient(700px 500px at -10% 100%, var(--clay-tint) 0%, transparent 55%),
+    var(--ivory);
+}
+.partners-shell .ck-top h1 { font-size: 30px; }
+.partners-intro-card { border-color: var(--line-strong); }
+.partners-intro-title { font-size: 18px; }
+.partners-intro-meta { font-size: 14px; }
+
 /* /partners: the functional login stays single-column at any width; the
    decorative side (wordmark, tagline, line-art) only earns its keep once
    there is room beside the form, not squeezed above or below it. */
@@ -91,5 +106,5 @@
   .partners-layout { grid-template-columns: 1fr 1fr; }
   .partners-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding-top: 28px; }
 }
-.partners-tagline { font-size: 14px; color: var(--slate); line-height: 1.6; max-width: 32ch; margin: 0; }
-.partners-art { width: 100%; max-width: 320px; aspect-ratio: 1 / 1; }
+.partners-tagline { font-size: 16px; color: var(--ink); line-height: 1.65; max-width: 34ch; margin: 0; font-weight: 500; }
+.partners-art { width: 100%; max-width: 360px; aspect-ratio: 1 / 1; }
