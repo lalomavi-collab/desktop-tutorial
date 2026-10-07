@@ -39,6 +39,20 @@ function Panel({ member }: { member: Membership }) {
     const { data, error } = await supabase.rpc("lalum_rotate_intake_token", { p_firm: member.firm_id });
     if (error) setMsg({ ok: false, text: error.message }); else setToken(String(data));
   }
+  const [phone, setPhone] = useState("");
+  const [phoneMsg, setPhoneMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  useEffect(() => {
+    (async () => {
+      if (!supabase || !user) return;
+      const { data } = await supabase.from("lalum_firm_members").select("phone").eq("user_id", user.id).maybeSingle();
+      setPhone((data as { phone: string | null } | null)?.phone ?? "");
+    })();
+  }, [user]);
+  async function savePhone() {
+    if (!supabase) return;
+    const { error } = await supabase.rpc("lalum_set_my_phone", { p_phone: phone });
+    setPhoneMsg(error ? { ok: false, text: "מספר לא תקין. הזינו מספר בפורמט 05X או 972..." } : { ok: true, text: "נשמר." });
+  }
   const used = members.length;
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-pipeline/api/v1/intake/webhook`;
   return (
@@ -46,6 +60,10 @@ function Panel({ member }: { member: Membership }) {
       <div className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><div><div className="ck-title">{firm.firm_name}</div><div className="ck-meta">מסלול נוכחי: <b>{firm.subscription_tier}</b> · {firm.status === "ACTIVE" ? "פעיל" : firm.status}</div></div>
         <div style={{ textAlign: "end" }}><div className="ck-title">{money(firm.monthly_fee)} לחודש</div><div className="ck-meta">דמי מנוי קבועים, ללא חלוקת שכר טרחה</div></div></div></div>
       <div className="ck-ok">LALUM גובה דמי מנוי קבועים בלבד. אין חלוקת שכר טרחה, אחוזים או שיתוף הכנסות, והלקוח מתקשר ישירות עם המשרד המטפל.</div>
+      <div className="ck-label">התראות לשותף</div>
+      <div className="ck-card"><div className="ck-meta">על כל תיק חדש נשלח דוא"ל עם תחום, רמת סיכון וקישור בלבד, ללא פרטים מזהים. להתראה גם ב-WhatsApp הזינו מספר נייד (דורש הפעלה של LALUM).</div>
+        <div className="ck-row"><input className="field" dir="ltr" inputMode="tel" aria-label="טלפון נייד" placeholder="05X-XXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} style={{ maxWidth: 260 }} /><button className="ck-btn" onClick={() => void savePhone()}>שמירה</button></div>
+        {phoneMsg && <div className={phoneMsg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{phoneMsg.text}</div>}</div>
       <div className="ck-label">מסלולי מנוי</div>
       <div className="ck-grid2">{plans.map((p) => (
         <div key={p.tier} className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><span className="ck-title">{p.display_name}</span>{p.tier === firm.subscription_tier && <span className="ck-badge green">המסלול שלכם</span>}</div>

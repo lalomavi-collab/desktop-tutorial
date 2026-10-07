@@ -40,6 +40,7 @@ const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.L
 const Workspace = lazy(() => import("./pages/cockpit/Workspace").then((m) => ({ default: m.Workspace })));
 const AdminMatters = lazy(() => import("./pages/cockpit/AdminMatters").then((m) => ({ default: m.AdminMatters })));
 const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ default: m.Billing })));
+const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const CockpitGuide = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.CockpitGuide })));
 const SaasTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.SaasTerms })));
 const ClientDisclosure = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.ClientDisclosure })));
@@ -85,6 +86,7 @@ export default function App() {
               or footer and reads as an application. It shares the site's brain
               (the lalum-assistant edge function) and links back into the site. */}
           <Route path="os" element={<Suspense fallback={null}><LegalOS /></Suspense>} />
+          <Route path="partners" element={<Suspense fallback={null}><Partners /></Suspense>} />
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
