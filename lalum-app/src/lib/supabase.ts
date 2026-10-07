@@ -34,3 +34,16 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
       auth: { persistSession: true, autoRefreshToken: true, storage: authStorage },
     })
   : null;
+
+// The recovery link lands with the token already in the URL, and the client
+// processes it (and fires PASSWORD_RECOVERY) as soon as this module loads,
+// not when some later component asks. ResetPassword is a lazy route: by the
+// time its own chunk downloads and its effect subscribes, the event has
+// already been delivered to whoever was listening first (AuthContext, which
+// only reads the session and ignores the event name) and a new subscriber
+// only replays INITIAL_SESSION. Subscribing here, at module scope, catches it
+// at the earliest possible point instead.
+export let passwordRecovery = false;
+supabase?.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY") passwordRecovery = true;
+});
