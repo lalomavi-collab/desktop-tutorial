@@ -720,7 +720,7 @@ export const blogMeta: BlogMeta[] = [
   },
   {
     "slug": "medicine-meets-law",
-    "title": "כשעולם הרפואה פוגש את עולם המשפט:",
+    "title": "כשעולם הרפואה פוגש את עולם המשפט: חוות דעת שנייה לפני חתימה על עסקה",
     "excerpt": "כיצד קליניקות משפטיות פרטיות מציעות חוות דעת שנייה לפני חתימה על עסקאות, בדומה למודל הרפואי.",
     "date": "נובמבר 2025",
     "cover": "/images/covers/medicine-meets-law.webp"
