@@ -63,12 +63,20 @@
    "legal-logic"
   ]
  },
+ "urban-renewal-taxation-owner": {
+  "topic": "real-estate",
+  "related": [
+   "urban-renewal-required-majority-holdout",
+   "portugal-real-estate-taxation",
+   "urban-renewal-guarantees-sale-law-registration"
+  ]
+ },
  "urban-renewal-required-majority-holdout": {
   "topic": "real-estate",
   "related": [
+   "urban-renewal-taxation-owner",
    "pinui-binui-owner-guide",
-   "tama-38-1-vs-38-2-comparison",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "ai-municipal-chatbot-resident-liability": {
@@ -172,7 +180,7 @@
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
    "ai-drafted-real-estate-contract-review",
-   "pinui-binui-owner-guide"
+   "urban-renewal-taxation-owner"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -195,8 +203,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-real-estate-financing",
-   "overseas-property-holding-structure",
-   "portugal-legal-due-diligence"
+   "urban-renewal-taxation-owner",
+   "overseas-property-holding-structure"
   ]
  },
  "portugal-purchase-contract": {
@@ -212,7 +220,7 @@
   "related": [
    "portugal-porto-vs-lisbon",
    "portugal-real-estate-taxation",
-   "tama-38-1-vs-38-2-comparison"
+   "portugal-legal-due-diligence"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -819,8 +827,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "overseas-partnership-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
