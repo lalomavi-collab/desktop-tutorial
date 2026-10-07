@@ -2,65 +2,65 @@
  "eu-ai-act-2026": {
   "topic": "ai-governance",
   "related": [
+   "eu-ai-act-2026",
    "ai-governance-board-framework",
-   "eu-ai-act-israeli-companies",
-   "israel-ai-regulation-policy"
+   "eu-ai-act-israeli-companies"
   ]
  },
  "explainability": {
   "topic": "ai-governance",
   "related": [
+   "explainability",
    "board-liability",
-   "ai-ethics-legal-risks",
-   "defensible"
+   "board-liability"
   ]
  },
  "sovereignty": {
   "topic": "ai-governance",
   "related": [
+   "sovereignty",
    "shadow-it-law-firms",
-   "directors-liability-ai-era",
-   "explainability"
+   "directors-liability-ai-era"
   ]
  },
  "board-liability": {
   "topic": "ai-governance",
   "related": [
+   "board-liability",
    "explainability",
-   "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "explainability"
   ]
  },
  "procurement": {
   "topic": "ai-governance",
   "related": [
+   "procurement",
    "ai-risk-frameworks-iso-42001-nist",
-   "defensible",
-   "explainability"
+   "defensible"
   ]
  },
  "legal-logic": {
   "topic": "contracts",
   "related": [
+   "legal-logic",
    "defensible",
-   "legal-algorist",
-   "explainability"
+   "defensible"
   ]
  },
  "memory": {
   "topic": "ai-governance",
   "related": [
+   "memory",
    "partnership-dissolution-ai-ownership",
-   "three-minute-legal-check",
-   "eu-ai-act-transparency-generative"
+   "three-minute-legal-check"
   ]
  },
  "defensible": {
   "topic": "ai-governance",
   "related": [
+   "defensible",
    "legal-logic",
-   "explainability",
-   "ai-risk-frameworks-iso-42001-nist"
+   "legal-logic"
   ]
  },
  "ai-municipal-algorithmic-enforcement-due-process": {
@@ -115,8 +115,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-banking-finance-regulation-risk",
-   "eu-ai-act-transparency-generative",
-   "gemini-guide-law"
+   "gemini-guide-law",
+   "eu-ai-act-transparency-generative"
   ]
  },
  "ai-banking-finance-regulation-risk": {
@@ -211,8 +211,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "saas-eu-compliance-israeli-companies",
+   "eu-ai-act-2026"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -220,7 +220,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-use-policy-organization"
+   "decision-oriented-ai-law"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -251,8 +251,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "memory",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "attorney-client-privilege-ai"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -315,8 +315,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-2026",
-   "ai-use-policy-organization",
-   "eu-ai-act-roles-obligations"
+   "eu-ai-act-2026",
+   "ai-use-policy-organization"
   ]
  },
  "directors-liability-ai-era": {
@@ -347,8 +347,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-2026",
-   "eu-ai-act-high-risk-classification"
+   "eu-ai-act-high-risk-classification",
+   "eu-ai-act-2026"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -388,7 +388,7 @@
   "related": [
    "attorney-client-privilege-ai",
    "partnership-dissolution-ai-ownership",
-   "sovereignty"
+   "algorithmic-transparency"
   ]
  },
  "portugal-investment-guide": {
@@ -435,15 +435,15 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "lalum-clinic-experience",
-   "ai-hallucinations-citations"
+   "ai-hallucinations-citations",
+   "lalum-clinic-experience"
   ]
  },
  "urban-renewal-risk": {
   "topic": "real-estate",
   "related": [
-   "free-lawyer-illusion",
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
+   "free-lawyer-illusion",
    "combination-deals-architecture"
   ]
  },
@@ -460,7 +460,7 @@
   "related": [
    "ai-ethics-legal-risks",
    "algorithmic-transparency",
-   "ai-governance-board-framework"
+   "ai-realestate-risk-management"
   ]
  },
  "ai-hallucinations-citations": {
@@ -515,8 +515,8 @@
   "topic": "ai-governance",
   "related": [
    "legal-logic",
-   "lawyer-wakeup-call",
-   "why-realestate-needs-ai"
+   "legal-logic",
+   "lawyer-wakeup-call"
   ]
  },
  "legal-mediation-benefits": {
@@ -628,15 +628,15 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "shadow-it-law-firms"
+   "notebooklm-focus"
   ]
  },
  "notebooklm-focus": {
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "shadow-it-law-firms",
-   "ai-workspace-encyclopedia"
+   "ai-workspace-encyclopedia",
+   "shadow-it-law-firms"
   ]
  },
  "why-realestate-needs-ai": {
@@ -779,8 +779,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "homeowners-iron-dome"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1452,7 +1452,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "urban-renewal-risk"
+   "ai-realestate-risk-management"
   ]
  },
  "california-sb574-ai-adjudication-ban": {
