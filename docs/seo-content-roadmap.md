@@ -106,7 +106,7 @@
 - V בינה מלאכותית במשאבי אנוש: גיוס, ניטור והערכת עובדים (ai-hr-overview-legal-exposure)
   - אשכול דגל משאבי אנוש (עוגן + 4), ממקד בחשיפה של מעסיקים ומחלקות HR:
   - V (עוגן) גיוס, ניטור והערכה, והחשיפה המשפטית (ai-hr-overview-legal-exposure)
-  - גיוס וסינון מועמדים ב-AI: אפליה, שקיפות וחובת ההנמקה (ai-recruitment-screening-discrimination)
+  - V גיוס וסינון מועמדים ב-AI: אפליה, שקיפות וחובת ההנמקה (ai-recruitment-screening-discrimination)
   - ניטור עובדים ב-AI: פרטיות, מידתיות ותכלית (ai-employee-monitoring-privacy)
   - הערכת ביצועים והחלטות על עובדים ב-AI: בקרה אנושית וזכות שימוע (ai-employee-evaluation-decisions)
   - נוהל AI במשאבי אנוש: מה להגדיר לפני שמשתמשים בכלי על עובדים (ai-hr-use-policy)
