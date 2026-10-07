@@ -15,7 +15,9 @@ import "../../styles/cockpit.css";
 function PartnersArt() {
   return (
     <svg viewBox="0 0 320 320" width="100%" height="100%" role="presentation" aria-hidden="true">
-      <g fill="none" stroke="var(--clay)" strokeWidth="1.4" opacity="0.55">
+      <circle cx="120" cy="190" r="150" fill="var(--clay-tint)" opacity="0.5" />
+      <circle cx="245" cy="175" r="95" fill="var(--clay-soft)" opacity="0.4" />
+      <g fill="var(--paper)" stroke="var(--clay)" strokeWidth="1.4" opacity="0.85">
         <rect x="34" y="150" width="26" height="110" />
         <rect x="66" y="110" width="26" height="150" />
         <rect x="98" y="170" width="26" height="90" />
@@ -85,15 +87,15 @@ export function Partners() {
   }
 
   return (
-    <div className="ck-root" dir="rtl" lang="he">
+    <div className="ck-root partners-root" dir="rtl" lang="he">
       <PageMeta title="כניסה לשותפים" description="כניסה למשרדים שותפים ולמנהלי LALUM." path="/partners" noindex />
       <div className="ck-shell partners-shell" style={{ maxWidth: 1040 }}>
         <header className="ck-top"><h1 className="serif">כניסה לשותפים</h1><nav className="ck-nav"><Link to="/">לאתר</Link><Link to="/workspace/guide">מה זה הקוקפיט?</Link></nav></header>
         <div className="partners-layout">
           <main className="ck-stack">
-            <div className="ck-card">
-              <div className="ck-title">אזור המשרדים השותפים</div>
-              <div className="ck-meta">קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה למשרדים ולמנהלי LALUM בלבד, ללא הרשמה עצמית.</div>
+            <div className="ck-card partners-intro-card">
+              <div className="ck-title partners-intro-title">אזור המשרדים השותפים</div>
+              <div className="ck-meta partners-intro-meta">קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה למשרדים ולמנהלי LALUM בלבד, ללא הרשמה עצמית.</div>
             </div>
             {loading || (user && access.state === "loading") ? <div className="ck-meta">טוען...</div>
               : user && access.state === "none" ? (
@@ -113,7 +115,7 @@ export function Partners() {
               ) : null}
           </main>
           <aside className="partners-aside" aria-hidden="true">
-            <Wordmark height={28} style={{ color: "var(--ink)" }} />
+            <Wordmark height={40} style={{ color: "var(--ink)" }} />
             <p className="partners-tagline">נדל״ן והתחדשות עירונית, ובינה מלאכותית. שני תחומים, קו הכרעה אחד.</p>
             <div className="partners-art"><PartnersArt /></div>
           </aside>
