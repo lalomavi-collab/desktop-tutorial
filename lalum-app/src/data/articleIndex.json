@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-drafted-real-estate-contract-review": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-purchase-contract",
+   "urban-renewal-guarantees-sale-law-registration",
+   "three-minute-legal-check"
+  ]
+ },
  "ai-insurance-underwriting-pricing-regulation": {
   "topic": "ai-governance",
   "related": [
@@ -99,8 +107,8 @@
   "topic": "real-estate",
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
-   "pinui-binui-owner-guide",
-   "tama-38-1-vs-38-2-comparison"
+   "ai-drafted-real-estate-contract-review",
+   "pinui-binui-owner-guide"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -131,8 +139,8 @@
   "topic": "contracts",
   "related": [
    "portugal-legal-due-diligence",
-   "portugal-real-estate-financing",
-   "portugal-real-estate-taxation"
+   "ai-drafted-real-estate-contract-review",
+   "portugal-real-estate-financing"
   ]
  },
  "portugal-real-estate-financing": {
@@ -188,7 +196,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "decision-oriented-ai-law"
+   "ai-use-policy-organization"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -420,7 +428,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "real-estate-arbitration",
-   "decision-oriented-mediation-benefits"
+   "lalum-mediation-arbitration"
   ]
  },
  "ai-turning-point-2026": {
@@ -508,7 +516,7 @@
   "related": [
    "quiet-legal-revolution",
    "ai-legal-practice",
-   "contract-review-before-signing"
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "ai-presentation-tools": {
@@ -578,8 +586,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "unfair-advantage-course",
    "transcription-tools-guide",
+   "unfair-advantage-course",
    "law-algorithm-era"
   ]
  },
@@ -596,15 +604,15 @@
   "related": [
    "gemini-guide-law",
    "digital-lawyers-2026",
-   "ai-ethics-legal-risks"
+   "notebooklm-focus"
   ]
  },
  "notebooklm-focus": {
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "shadow-it-law-firms",
+   "ai-workspace-encyclopedia"
   ]
  },
  "why-realestate-needs-ai": {
@@ -635,8 +643,8 @@
   "topic": "ai-governance",
   "related": [
    "realestate-master-course",
-   "lawyer-wakeup-call",
-   "digital-toolbox-part1"
+   "digital-toolbox-part1",
+   "lawyer-wakeup-call"
   ]
  },
  "ai-legal-departments-talent": {
@@ -747,8 +755,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "homeowners-iron-dome"
   ]
  },
  "israeli-realestate-abroad": {
@@ -972,7 +980,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "free-lawyer-illusion"
+   "legal-mediation-benefits"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
@@ -1170,8 +1178,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
