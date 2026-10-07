@@ -12,6 +12,31 @@
 import { chromium } from "playwright";
 import { createServer } from "vite";
 import { preview } from "vite";
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+// Resolve a Chromium binary without a manual env var. Playwright's bundled
+// download is skipped in this environment (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD),
+// and the browser lives under PLAYWRIGHT_BROWSERS_PATH (default /opt/pw-browsers)
+// as chromium-<rev>/chrome-linux/chrome. Without this the audit crashed with
+// "Executable doesn't exist" unless PLAYWRIGHT_CHROMIUM was set by hand.
+function resolveChromium() {
+  if (process.env.PLAYWRIGHT_CHROMIUM) return process.env.PLAYWRIGHT_CHROMIUM;
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
+  try {
+    const dir = readdirSync(root)
+      .filter((d) => d.startsWith("chromium-"))
+      .sort()
+      .reverse()[0];
+    if (dir) {
+      const bin = join(root, dir, "chrome-linux", "chrome");
+      if (existsSync(bin)) return bin;
+    }
+  } catch {
+    // Fall through to Playwright's own default resolution.
+  }
+  return undefined;
+}
 
 const ROUTES = [
   ["/", "עמוד הבית"],
@@ -54,9 +79,8 @@ if (slug) ROUTES.push([`/insights/${slug}/`, "מאמר"]);
 const server = await preview({ preview: { port: 4322, strictPort: true } });
 const base = `http://localhost:4322`;
 
-const browser = await chromium.launch(
-  process.env.PLAYWRIGHT_CHROMIUM ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM } : {},
-);
+const chromiumPath = resolveChromium();
+const browser = await chromium.launch(chromiumPath ? { executablePath: chromiumPath } : {});
 const axeSource = (await import("axe-core")).default.source;
 
 const byRule = new Map();
