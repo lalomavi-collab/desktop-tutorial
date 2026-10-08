@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
 import { useAuth } from "../../context/AuthContext";
@@ -31,7 +31,9 @@ export function CockpitFrame({
   needsFirm?: boolean;
   mfa?: boolean;
 }) {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
+  const nav = useNavigate();
+  async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   let body: ReactNode;
   if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
@@ -56,6 +58,12 @@ export function CockpitFrame({
             ))}
             <Link to="/portal">אזור אישי</Link>
             <Link to="/">לאתר</Link>
+            {user && (
+              <button type="button" className="ck-logout" onClick={() => void leave()}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" /><path d="M16 8l4 4-4 4M20 12H9" /></svg>
+                התנתקות
+              </button>
+            )}
           </nav>
         </header>
         <main>{body}</main>

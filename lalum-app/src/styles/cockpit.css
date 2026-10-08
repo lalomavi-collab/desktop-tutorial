@@ -157,6 +157,31 @@
 @media (max-width: 640px) { .ck-hero { flex-direction: column; align-items: flex-start; } .ck-hero-art { width: 100%; max-width: 240px; } }
 @media (prefers-reduced-motion: reduce) { .ck-card { transition: none; } .ck-grid2 > .ck-card:hover { transform: none; } }
 
+/* Cockpit chrome and forms (design lane). Colours come only from the theme tokens defined on .ck-root, so this
+   follows the dark management theme and any later palette change. */
+.ck-top {
+  position: sticky; top: 0; z-index: 30; margin: 0 -20px; padding: 12px 20px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.ck-logout {
+  font: inherit; font-size: 13.5px; padding: 8px 15px; border-radius: 9999px; min-height: 38px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; color: var(--danger); background: var(--card); border: 1px solid var(--line-strong);
+  margin-inline-start: 6px;
+}
+.ck-logout:hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, var(--card)); }
+.ck-logout:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Forms: labels readable, controls easier to hit, focus unmistakable. */
+.ck-field { font-size: 13.5px; font-weight: 600; color: var(--ink); gap: 7px; }
+.ck-input, .ck-select, .ck-textarea { min-height: 44px; font-size: 15px; border-color: var(--line-strong); transition: border-color .12s ease, box-shadow .12s ease; }
+.ck-input:hover, .ck-select:hover, .ck-textarea:hover { border-color: var(--clay); }
+.ck-input:focus, .ck-select:focus, .ck-textarea:focus { outline: none; border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }
+.ck-input[type="file"] { padding: 8px 10px; min-height: 48px; border-style: dashed; cursor: pointer; }
+.ck-input[type="file"]::file-selector-button { font: inherit; font-size: 13px; padding: 6px 12px; margin-inline-end: 10px; border-radius: 9999px; border: 1px solid var(--clay); background: transparent; color: var(--clay); cursor: pointer; }
+.ck-textarea { min-height: 200px; }
+.ck-table tbody tr:hover td { background: var(--paper); }
+
 /* Dark theme: the handful of colours that were hard-coded for the old light
    palette, re-set for the charcoal surface. Everything else follows the tokens
    above automatically. */
