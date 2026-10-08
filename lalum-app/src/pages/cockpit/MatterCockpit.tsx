@@ -8,6 +8,8 @@ import { originals } from "../../lib/cockpit/originals";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
+import { TemplateGenerator } from "./TemplateGenerator";
+import { VersionHistory } from "./VersionHistory";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -50,6 +52,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
   const [timeline, setTimeline] = useState<Array<[string, string]>>([]);
   const [loaded, setLoaded] = useState(false);
   const [rev, setRev] = useState(0);
+  const [vrev, setVrev] = useState(0);
   const prefer = useRef<string | null>(null);
   const [widths, setWidths] = useState<{ w1: number; w3: number }>(() => {
     try { return { w1: Number(localStorage.getItem("ck-w1")) || 300, w3: Number(localStorage.getItem("ck-w3")) || 380 }; } catch { return { w1: 300, w3: 380 }; }
@@ -127,6 +130,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
     dirty.current = false;
     setDocs((ds) => ds.map((d) => (d.id === doc.id ? { ...d, editor_content: saved } : d)));
     await refreshSignoff(doc.id);
+    setVrev((n) => n + 1);
   }
   function onEdit(v: string) {
     setText(v); dirty.current = true; setSaveMsg("יש שינויים שלא נשמרו");
@@ -254,6 +258,8 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <div className="ck-stack">{docs.map((d) => <button key={d.id} className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>)}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+          <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
+            <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <div className="ck-label">מפת ישויות</div>
           {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
           {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
@@ -274,6 +280,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
               <button className="ck-btn danger" onClick={() => { if (window.confirm("לשחזר את המסמך לגרסה שנקלטה? השינויים יימחקו.")) onEdit(doc.baseline_content); }}>שחזור למסמך המקורי המוסתר</button>
               <span className="ck-meta" aria-live="polite">{saveMsg}</span>
             </div>
+            <VersionHistory documentId={doc.id} current={text} version={vrev} onBeforeSnapshot={save} onRestored={() => { prefer.current = doc.id; setRev((n) => n + 1); }} />
             {highlight && (
               <div className="ck-card">
                 <div className="ck-title">{highlight.ruleName}</div>
