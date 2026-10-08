@@ -251,4 +251,74 @@ How can disputes be resolved quickly? The most effective path is decision orient
 
 Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
   },
+
+  "combination-deals-architecture": {
+    title: "Combination Deals and Urban Renewal: LALUM's Legal Architecture",
+    date: "December 2025",
+    excerpt:
+      "LALUM's clinical method for combination deals, pinui binui and Tama 38: net deal structuring, cautionary notes, securities and step in rights, commercial leases, and legal risk management, so a complex real estate transaction holds even when something goes wrong.",
+    body: `A complex real estate transaction is not measured by the profit line alone, but by the legal strength of the contract. In a combination deal or an urban renewal project you bring a partner into your most valuable asset, so the questions that decide the outcome are structural: how is completion of the building secured, how is the landowner protected if the contractor collapses, and how is the consideration negotiated. This article sets out LALUM's clinical method: precise legal accompaniment, well built securities, and risk management at a high standard.
+
+## Real Estate Is Contracts, Not Only Walls
+
+Many people think real estate is a business of bricks and mortar. In truth it is a business of words, definitions and legal mechanisms. When you enter a combination deal or an urban renewal project you are, in effect, forming a long term forced partnership with a developer or a contractor, and the road is full of hazards: construction delays, unforeseen costs, market shifts, and insolvency. Our role is not only to draft a contract but to design the transaction: to anticipate the worst case scenarios and build the legal protections that bring the ship to shore even when the sea is rough.
+
+## The Combination Deal: A Guide for Landowners
+
+A combination deal is the classic and most complex transaction of all. The landowner sells part of the rights to a contractor, and in return receives building services, finished apartments, on the part that remains. On paper it sounds simple. In practice it is a legal minefield, and two principles do most of the protective work.
+
+## The Net Deal, and Why to Insist on It
+
+One of the first principles we fix in negotiation for a landowner is the net deal. Its legal meaning is that the landowner does not pay a shekel out of pocket: the contractor bears all the payments, the levies, the fees, the planning costs, the professional advisers and the building fees. The drafting must be airtight, so that no demand ever arrives later from the municipality or the utility. We define the term turnkey in legal terms, so that it covers everything, down to the electricity meter.
+
+## Cautionary Notes: Control Stays in Your Hands
+
+A cautionary note is a registration at the Land Registry recording that a transaction has been made in the property, and it prevents the same apartment from being sold twice. In a combination deal it is the landowner's central instrument of control: notes are released to the contractor only against progress in the construction, which keeps the contractor from selling the apartments before the work is done.
+
+## Securities: What Happens If the Contractor Stops
+
+The nightmare of every landowner is a contractor that becomes insolvent in the middle of the shell. We require strong legal securities: a bank performance guarantee, liquid funds that can be called if the contractor breaches; a defects guarantee, to secure the repair of faults after delivery; and a step in right, a clause that lets the landowner, or the financing bank, step into the contractor's shoes, remove it from the site, and bring another contractor to finish the building, rather than being stuck for years in court.
+
+## Urban Renewal: Pinui Binui and Tama 38
+
+Urban renewal is a combination deal on steroids. Here it is not one landowner but dozens of residents, each with a different interest, so the legal accompaniment centres on certainty and equality.
+
+## The Fight Over Consideration Is About Value, Not Only Metres
+
+The ordinary conversation asks how many metres will I receive. The professional conversation asks what the final value of the apartment is. We argue over the technical specification, because in the legal contract the specification is money: the floor (the higher the greater the value), the exposures, and a premium specification that spares you from upgrading a kitchen or flooring later at your own expense.
+
+## A Legal Iron Dome for Residents
+
+In a pinui binui project you hand over the old apartment before the new one is ready, which is a critical moment. We insist on closed bank financing, meaning the bank, not the developer, holds the money and stands behind completion of the project. We do not approve signing without full insurance and a Sale Law guarantee equal to the value of the new apartment.
+
+## The Rent Mechanism During Construction
+
+During construction the developer pays your rent. We make sure, in legal terms, that the rent is linked to real market prices rather than to an arbitrary index, and that there is an updating mechanism for the case where the construction runs longer than expected.
+
+## Commercial Real Estate and Yield Deals
+
+Sophisticated investors look for income producing assets, offices, commercial centres, logistics, and here commercial law is king. When you buy an income producing asset, the real asset is the lease. Our due diligence examines the tenant's stability and the securities it has given, whether the tenant has break points that could leave you with an empty asset, and whether the tenant holds an option to extend below market price, which erodes the value of the asset. We also draft Triple Net leases, in which the tenant is responsible for everything, building insurance, systems maintenance, management, municipal tax and electricity, so the owner receives a clean figure at the end of the month. That contract demands specific legal expertise to close the gaps.
+
+## Legal Risk Management
+
+The difference between a good deal and a failed one is often one small clause called a fundamental breach. Our clinical approach centres on managing risk: exit clauses, so that if a building permit is not obtained within an agreed period (for example three years) you can cancel the agreement without a penalty; arbitration clauses, to set fast and discreet mechanisms for resolving disputes rather than being dragged through the courts for years; and, in deals with small development companies, a personal guarantee from the owners for the performance of certain obligations.
+
+## Why the Clinical Approach
+
+Complex real estate transactions demand more than knowledge of the law. They demand a business and strategic eye. We combine the sharpness of litigation, the ability to fight in court, with the sophistication of commercial law, and we are not afraid to go into the smallest details of the technical specification, or to hold firm in negotiation against a large developer, to protect the client.
+
+## Common Questions
+
+What is the difference between a combination deal and a full sale? In a full sale you sell the land, receive the money, and the risk ends at signing. In a combination deal you sell part of the land and receive future apartments in return, so you remain a partner of the contractor throughout the construction. The risk is higher, but the upside is significantly larger, which is why the legal accompaniment must be far tighter.
+
+In a pinui binui project, must I use the lawyer the developer offers? Clearly not. The developer's lawyer represents the developer. The residents need an independent lawyer of their own, whose loyalty is to them alone, to fight for their rights. In most cases the developer funds the fee of the residents' lawyer, but the lawyer's duty remains solely to the residents.
+
+How does a cautionary note protect me? It is a registration at the Land Registry showing that a transaction has been made in the property, and it prevents the owner or developer from selling the same apartment twice. In a combination deal it is the landowner's main control instrument, released to the contractor only against progress in the building.
+
+What is a Triple Net lease? It is a common model in income producing real estate, in which the tenant bears the three main costs: property tax, building insurance, and maintenance or management. The aim is that the rent the owner receives is entirely net. Imprecise drafting can expose the owner to unforeseen costs, such as repairing a roof or a lift.
+
+How is an asset protected if the contractor becomes insolvent? The best protection is a Sale Law guarantee or closed bank financing. The project's money sits in a separate escrow account at the bank rather than in the contractor's pocket, so if the contractor fails, the bank or the insurer takes responsibility for completing the project through another contractor, or returns the buyers' money. We do not approve a transaction without that safety net.
+
+Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
+  },
 };
