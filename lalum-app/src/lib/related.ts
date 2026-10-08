@@ -131,11 +131,16 @@ function analyse(corpus: RelatedSource[]) {
 export function scoreRelated(slug: string, corpus: RelatedSource[], limit = 3): RelatedSource[] {
   const { docs, w } = analyse(corpus);
   const i = corpus.findIndex((a) => a.slug === slug);
-  if (i < 0) return corpus.filter((a) => a.slug !== slug).slice(0, limit);
+  if (i < 0) return dedupeBySlug(corpus.filter((a) => a.slug !== slug)).slice(0, limit);
 
   const mine = docs[i];
   const scored = corpus.map((a, j) => {
-    if (j === i) return { a, score: -1, j };
+    // Exclude by slug, not by index. Eight articles live in both
+    // dict.data.articles and blogMeta, so a slug can appear twice in the
+    // corpus; excluding only index i left the second copy scoring against
+    // itself and winning, which is how an article came to list itself (and a
+    // doubled slug) among its own neighbours.
+    if (corpus[j].slug === slug) return { a, score: -1, j };
     let score = 0;
     for (const t of docs[j]) if (mine.has(t)) score += w.get(t) ?? 0;
     // Longer documents share more tokens with everything, so divide out their
@@ -145,9 +150,33 @@ export function scoreRelated(slug: string, corpus: RelatedSource[], limit = 3): 
   });
 
   // Corpus order breaks ties, so the runtime list and the prerendered list are
-  // the same list.
+  // the same list. Dedupe by slug after sorting, so a slug that sits in the
+  // corpus twice takes one slot and the next distinct neighbour fills the rest.
   scored.sort((x, y) => (y.score - x.score) || (x.j - y.j));
-  return scored.filter((s) => s.score > 0).slice(0, limit).map((s) => s.a);
+  const out: RelatedSource[] = [];
+  const seen = new Set<string>();
+  for (const s of scored) {
+    if (s.score <= 0) break;
+    if (seen.has(s.a.slug)) continue;
+    seen.add(s.a.slug);
+    out.push(s.a);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+// Keep the first entry for each slug, dropping later duplicates. The scoring
+// corpus carries eight slugs twice (they exist in both article sources), so a
+// plain slice could otherwise return the same piece under one slug twice.
+function dedupeBySlug(list: RelatedSource[]): RelatedSource[] {
+  const seen = new Set<string>();
+  const out: RelatedSource[] = [];
+  for (const a of list) {
+    if (seen.has(a.slug)) continue;
+    seen.add(a.slug);
+    out.push(a);
+  }
+  return out;
 }
 
 // The three neighbours of an article, read from the precomputed index. Falls
@@ -156,7 +185,11 @@ export function scoreRelated(slug: string, corpus: RelatedSource[], limit = 3): 
 // three links while the index is regenerated.
 export function relatedTo(slug: string, corpus: RelatedSource[], limit = 3): RelatedSource[] {
   const entry = (articleIndex as Record<string, { related: string[] }>)[slug];
-  if (!entry) return corpus.filter((a) => a.slug !== slug).slice(0, limit);
+  if (!entry) return dedupeBySlug(corpus.filter((a) => a.slug !== slug)).slice(0, limit);
   const bySlug = new Map(corpus.map((a) => [a.slug, a] as const));
-  return entry.related.map((s) => bySlug.get(s)).filter((a): a is RelatedSource => Boolean(a)).slice(0, limit);
+  const picked = entry.related
+    .filter((s) => s !== slug)
+    .map((s) => bySlug.get(s))
+    .filter((a): a is RelatedSource => Boolean(a));
+  return dedupeBySlug(picked).slice(0, limit);
 }
