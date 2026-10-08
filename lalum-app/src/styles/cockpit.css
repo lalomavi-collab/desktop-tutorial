@@ -1,5 +1,31 @@
-/* Case cockpit (partners and admins). Scoped under .ck-root, built on the site's tokens. */
-.ck-root { background: var(--ivory); color: var(--ink); min-height: 100dvh; font-family: var(--sans); }
+/* Case cockpit (partners and admins). Scoped under .ck-root. */
+
+/* Dark management theme, scoped to the cockpit alone: the marketing site keeps
+   its light clay/ivory palette untouched. Every ck- rule reads these tokens, so
+   redefining them here reskins the whole cockpit from one place. The cockpit is
+   always dark (it is a working tool, not a public page), independent of the OS
+   theme. Contrast is held at WCAG AA: the primary and muted text both clear
+   4.5:1 on the surfaces they sit on, the sage accent reads as a link on the
+   charcoal base, and where it fills a button it carries dark text (--on-clay),
+   not white, which on this lighter sage would fail. */
+.ck-root {
+  --ivory: #14161b;      /* app background, a soft near-black charcoal */
+  --paper: #1a1d24;      /* the lighter end of hero and partner gradients */
+  --card: #1e222a;       /* cards, panels, inputs, tables */
+  --ink: #e9ecf0;        /* primary text (about 14:1 on the background) */
+  --slate: #a7aeb9;      /* secondary text (about 7:1 on the background) */
+  --line: rgba(255, 255, 255, .085);
+  --line-strong: rgba(255, 255, 255, .2);
+  --clay: #7fb785;       /* sage accent: a link on dark, a fill under dark text */
+  --clay-tint: #222a24;  /* subtle hover and table-header fill */
+  --clay-soft: rgba(127, 183, 133, .5);
+  --clay-hover: #93c498;
+  --on-clay: #10140f;    /* text on a sage fill (button, active nav, step number) */
+  --danger: #e68478;
+  --warning: #e3b659;
+  --success: #74c98a;
+  background: var(--ivory); color: var(--ink); min-height: 100dvh; font-family: var(--sans);
+}
 .ck-shell { max-width: 1480px; margin: 0 auto; padding: 0 20px 56px; display: flex; flex-direction: column; gap: 16px; }
 .ck-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 18px 0 4px; }
 .ck-top h1 { font-size: 24px; margin: 0; }
@@ -131,29 +157,19 @@
 @media (max-width: 640px) { .ck-hero { flex-direction: column; align-items: flex-start; } .ck-hero-art { width: 100%; max-width: 240px; } }
 @media (prefers-reduced-motion: reduce) { .ck-card { transition: none; } .ck-grid2 > .ck-card:hover { transform: none; } }
 
-/* Calm work surface (design lane). The site's warm ivory suits reading; for long sessions in forms and tables it
-   tires the eye, so the cockpit alone swaps to a cool, low-saturation neutral. Tokens are overridden under
-   .ck-root only: the public site, its brand sage (--clay) and the logo are untouched. */
-.ck-root {
-  --ivory: #eef1ee;
-  --paper: #f7f9f7;
-  --line: #dbe1db;
-  --line-strong: #c3ccc3;
-  --clay-tint: #e3ebe4;
-  background: var(--ivory);
-}
+/* Cockpit chrome and forms (design lane). Colours come only from the theme tokens defined on .ck-root, so this
+   follows the dark management theme and any later palette change. */
 .ck-top {
   position: sticky; top: 0; z-index: 30; margin: 0 -20px; padding: 12px 20px;
   background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-.ck-nav a, .ck-btn, .ck-logout { background: #fff; }
 .ck-logout {
   font: inherit; font-size: 13.5px; padding: 8px 15px; border-radius: 9999px; min-height: 38px; cursor: pointer;
-  display: inline-flex; align-items: center; gap: 6px; color: var(--danger); border: 1px solid var(--line-strong);
+  display: inline-flex; align-items: center; gap: 6px; color: var(--danger); background: var(--card); border: 1px solid var(--line-strong);
   margin-inline-start: 6px;
 }
-.ck-logout:hover { background: rgba(179, 64, 47, .08); border-color: var(--danger); }
+.ck-logout:hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, var(--card)); }
 .ck-logout:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* Forms: labels readable, controls easier to hit, focus unmistakable. */
@@ -161,12 +177,38 @@
 .ck-input, .ck-select, .ck-textarea { min-height: 44px; font-size: 15px; border-color: var(--line-strong); transition: border-color .12s ease, box-shadow .12s ease; }
 .ck-input:hover, .ck-select:hover, .ck-textarea:hover { border-color: var(--clay); }
 .ck-input:focus, .ck-select:focus, .ck-textarea:focus { outline: none; border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }
-.ck-input[type="file"] { padding: 8px 10px; min-height: 48px; background: var(--paper); border-style: dashed; cursor: pointer; }
-.ck-input[type="file"]::file-selector-button { font: inherit; font-size: 13px; padding: 6px 12px; margin-inline-end: 10px; border-radius: 9999px; border: 1px solid var(--clay); background: #fff; color: var(--clay); cursor: pointer; }
+.ck-input[type="file"] { padding: 8px 10px; min-height: 48px; border-style: dashed; cursor: pointer; }
+.ck-input[type="file"]::file-selector-button { font: inherit; font-size: 13px; padding: 6px 12px; margin-inline-end: 10px; border-radius: 9999px; border: 1px solid var(--clay); background: transparent; color: var(--clay); cursor: pointer; }
 .ck-textarea { min-height: 200px; }
-.ck-warn { background: var(--clay-tint); color: var(--ink); border: 1px solid var(--clay-soft); font-weight: 500; line-height: 1.7; }
-.ck-card { border-color: var(--line); }
 .ck-table tbody tr:hover td { background: var(--paper); }
-.ck-table th { background: var(--clay-tint); color: var(--ink); }
-.ck-hero { background: linear-gradient(135deg, #fff 0%, var(--paper) 100%); }
-@media (max-width: 640px) { .ck-top { margin: 0 -20px; } }
+
+/* Dark theme: the handful of colours that were hard-coded for the old light
+   palette, re-set for the charcoal surface. Everything else follows the tokens
+   above automatically. */
+
+/* Sage fills carry dark text, not white (white fails AA on this lighter sage). */
+.ck-nav a[aria-current="page"], .ck-btn.primary, .ck-doc .ck-btn.primary { color: var(--on-clay); }
+.ck-step .n { color: var(--on-clay); }
+
+/* Status messages and badges: a translucent wash of the status hue with a
+   light tint of the same hue for the text, so each stays legible on dark. */
+.ck-warn { background: rgba(227, 182, 89, .15); color: #e8c87a; }
+.ck-err { background: rgba(230, 132, 120, .15); color: #f0a99e; }
+.ck-ok { background: rgba(116, 201, 138, .15); color: #93d6a4; }
+.ck-badge.red { background: rgba(230, 132, 120, .16); color: #f0a99e; }
+.ck-badge.yellow { background: rgba(227, 182, 89, .17); color: #e8c87a; }
+.ck-badge.green { background: rgba(116, 201, 138, .16); color: #93d6a4; }
+.ck-pii { background: rgba(116, 201, 138, .16); color: #93d6a4; }
+.ck-table tr.breach td { background: rgba(230, 132, 120, .12); }
+
+/* The redline editor is a dark drafting surface, not a white sheet, with the
+   insertions and deletions tinted to read on it. */
+.ck-editor { background: #191d23; color: var(--ink); border-color: var(--line-strong); }
+.ck-editor ins { background: rgba(116, 201, 138, .22); color: #aee0ba; }
+.ck-editor del { background: rgba(230, 132, 120, .2); color: #f0a99e; }
+
+/* A touch more depth on dark: lift cards on hover and deepen the drawer shadow
+   so panels read as layered over the charcoal rather than painted onto it. */
+.ck-card { box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.ck-grid2 > .ck-card:hover { box-shadow: 0 8px 22px rgba(0, 0, 0, .4); }
+.ck-drawer { box-shadow: 8px 0 32px rgba(0, 0, 0, .5); }
