@@ -4,32 +4,24 @@ import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STATUS, PRACTICE, RESPONSE, STEPS } from "../../lib/cockpit/shared";
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
-import { originals } from "../../lib/cockpit/originals";
+import { originals, restore, TOKEN_RE, tokenMap } from "../../lib/cockpit/originals";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { KycPanel } from "./KycPanel";
+import { AnnexAssembler } from "./AnnexAssembler";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
 interface SignoffStatus { complete: boolean; steps: Record<string, { valid: boolean }> }
-const TOKEN_RE = /\[[A-Z_]+_\d+\]/g;
 
 const Badge = ({ sev }: { sev: string }) =>
   sev === "RED" ? <span className="ck-badge red">🔴 סיכון גבוה</span> : sev === "YELLOW" ? <span className="ck-badge yellow">🟡 זהירות</span> : <span className="ck-badge green">🟢 תקין</span>;
 const ConflictBadge = ({ c }: { c: string }) => { const [t, l] = CONFLICT[c] ?? ["yellow", c]; return <span className={`ck-badge ${t}`}>{l}</span>; };
 const PiiBadge = () => <span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 PII Masked &amp; Secured</span>;
 
-function tokenMap(docId: string): Map<string, string> | null {
-  const o = originals.get(docId);
-  if (!o) return null;
-  const m = new Map<string, string>();
-  for (const e of o.entities) if (!m.has(e.token)) m.set(e.token, o.text.slice(e.start, e.end));
-  return m;
-}
-const restore = (text: string, map: Map<string, string>): string => text.replace(TOKEN_RE, (t) => map.get(t) ?? t);
 
 export function MatterCockpit({ matterId, member }: { matterId: string; member: Membership }) {
   const [matter, setMatter] = useState<Matter | null>(null);
@@ -261,6 +253,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
+          {docs.length > 0 && <AnnexAssembler docs={docs} matterTitle={matter.title} />}
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
             <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <div className="ck-label">מפת ישויות</div>
