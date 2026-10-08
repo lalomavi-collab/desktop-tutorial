@@ -110,6 +110,14 @@ const SHARED = {
       { slug: "decision-oriented-ai-law", title: `משפט מבוסס בינה מלאכותית מוכוון הכרעה בעידן של אי-ודאות` },
       { slug: "law-algorithm-era", title: `המשפט בעידן האלגוריתם` },
       { slug: "ai-turning-point-2026", title: `2026: שנת המפנה של הבינה המלאכותית במשפט ובנדל״ן` },
+      // Three AI governance pieces that Search Console reported as "Crawled,
+      // currently not indexed": the automatic related-article graph gave each
+      // only three or four inbound links, too few for Google to index them.
+      // The pillar is the highest-authority internal page for the subject, so
+      // a link from here is the strongest nudge toward indexing.
+      { slug: "defensible", title: `בר-הגנה מעצם התכנון: מה ששורד חקירה נגדית` },
+      { slug: "effective-human-oversight-ai-systems", title: `פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל` },
+      { slug: "memory", title: `זיכרון לטווח ארוך: לתת ל-AI המשפטי היסטוריית תיקים` },
     ],
   },
   mediation: {
@@ -134,6 +142,11 @@ const SHARED = {
       { slug: "urban-renewal-mistakes-guide", title: `המדריך לטעויות נפוצות בהתחדשות עירונית` },
       { slug: "urban-renewal-risk", title: `ניהול סיכונים בפרויקטי התחדשות עירונית` },
       { slug: "tenant-urban-renewal-guide", title: `מדריך לדייר בהתחדשות עירונית` },
+      // Reported by Search Console as "Crawled, currently not indexed": the
+      // automatic related graph gave it too few inbound links. A link from the
+      // real estate pillar, its highest-authority internal page, is the
+      // strongest nudge toward indexing.
+      { slug: "urban-renewal-guarantees-sale-law-registration", title: `בטוחות בהתחדשות עירונית: ערבות חוק מכר וערבות רישום` },
       // The page's own hero and "covers" card promise both sides of the
       // border ("בארץ ובחו״ל"), but none of these six slots pointed abroad
       // until an earlier fix swapped one urban-renewal link for the general
