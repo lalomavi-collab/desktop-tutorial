@@ -108,3 +108,25 @@
 }
 .partners-tagline { font-size: 16px; color: var(--ink); line-height: 1.65; max-width: 34ch; margin: 0; font-weight: 500; }
 .partners-art { width: 100%; max-width: 360px; aspect-ratio: 1 / 1; }
+
+/* Cockpit typography and line-art (design lane: no copy changes).
+   Hebrew: Suez One carries display titles (single true weight, so no faux bold), Assistant carries the UI.
+   Latin: Newsreader for titles, Hanken Grotesk for the UI. Both come from the --serif / --sans tokens. */
+.ck-root { font-feature-settings: "kern", "liga"; -webkit-font-smoothing: antialiased; }
+.ck-top h1, .ck-hero-title, .ck-doc h2 { font-family: var(--serif); font-weight: 400; letter-spacing: 0; }
+.ck-top h1 { font-size: clamp(24px, 3vw, 30px); line-height: 1.2; }
+.ck-hero-title { font-size: clamp(20px, 2.4vw, 26px); line-height: 1.25; }
+.ck-doc h2 { font-size: 21px; }
+.ck-title { font-size: 16px; line-height: 1.35; }
+.ck-meta { font-size: 13.5px; line-height: 1.7; }
+.ck-table td, .ck-table th, .ck-badge, .ck-chip { font-variant-numeric: tabular-nums; }
+.ck-label { font-size: 12.5px; letter-spacing: .04em; }
+.ck-card { box-shadow: 0 1px 0 rgba(26, 24, 21, .03); transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.ck-grid2 > .ck-card:hover { border-color: var(--clay-soft); box-shadow: 0 6px 18px rgba(83, 112, 86, .12); transform: translateY(-1px); }
+.ck-card-head { display: flex; align-items: center; gap: 12px; }
+.ck-card-head svg { flex-shrink: 0; }
+.ck-hero { flex-direction: row; align-items: center; gap: 20px; overflow: hidden; background: linear-gradient(135deg, var(--card) 0%, var(--paper) 100%); }
+.ck-hero-art { width: clamp(120px, 26vw, 300px); flex-shrink: 0; }
+.ck-empty { align-items: center; text-align: center; gap: 6px; padding: 28px 18px; }
+@media (max-width: 640px) { .ck-hero { flex-direction: column; align-items: flex-start; } .ck-hero-art { width: 100%; max-width: 240px; } }
+@media (prefers-reduced-motion: reduce) { .ck-card { transition: none; } .ck-grid2 > .ck-card:hover { transform: none; } }
