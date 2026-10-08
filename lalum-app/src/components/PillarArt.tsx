@@ -2,9 +2,9 @@
 // grammar as Partners.tsx's PartnersArt (wash circles, var(--clay) stroke,
 // var(--paper) fill): never a logo substitute, never shown without the real
 // Wordmark somewhere on the page, purely an illustrative companion to the
-// copy. One component, three motifs, so a page picks a theme instead of
+// copy. One component, four motifs, so a page picks a theme instead of
 // carrying its own bespoke SVG.
-export type PillarArtTheme = "ai" | "realestate" | "knowledge";
+export type PillarArtTheme = "ai" | "realestate" | "knowledge" | "clinic";
 
 function Wash() {
   return (
@@ -95,6 +95,27 @@ function KnowledgeMotif() {
   );
 }
 
+function ClinicMotif() {
+  return (
+    <>
+      {/* A balance scale: the practice's own judgment, not either focus area
+          specifically, for the pages (Home, Advisory/Clinic) that speak to
+          the whole practice rather than one pillar. */}
+      <g stroke="var(--clay)" strokeWidth="1.4" fill="none">
+        <line x1="170" y1="90" x2="170" y2="250" />
+        <line x1="110" y1="250" x2="230" y2="250" />
+        <line x1="90" y1="135" x2="250" y2="135" />
+        <path d="M90 135 L70 185 Q90 202 110 185 Z" fill="var(--paper)" />
+        <path d="M250 135 L230 185 Q250 202 270 185 Z" fill="var(--paper)" />
+      </g>
+      <g fill="var(--clay)">
+        <circle cx="170" cy="90" r="5.5" />
+      </g>
+      <line x1="40" y1="290" x2="300" y2="290" stroke="var(--line-strong)" strokeWidth="1" />
+    </>
+  );
+}
+
 export function PillarArt({ theme }: { theme: PillarArtTheme }) {
   return (
     <svg viewBox="0 0 320 320" width="100%" height="100%" role="presentation" aria-hidden="true">
@@ -102,6 +123,7 @@ export function PillarArt({ theme }: { theme: PillarArtTheme }) {
       {theme === "ai" && <AiMotif />}
       {theme === "realestate" && <RealEstateMotif />}
       {theme === "knowledge" && <KnowledgeMotif />}
+      {theme === "clinic" && <ClinicMotif />}
     </svg>
   );
 }

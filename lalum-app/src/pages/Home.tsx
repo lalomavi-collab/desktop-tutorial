@@ -20,6 +20,7 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
+import { PillarArt } from "../components/PillarArt";
 // The hero card used to carry the firm mark instead of a photo, so the front
 // door read as the practice's brand rather than a headshot. Reversed on
 // request: the founder's own portrait (public/founder.webp, the same file
@@ -98,27 +99,34 @@ export function Home() {
           made the front door twenty sections deep; they live on /advisory now,
           which is the page that exists to hold them. */}
 
-      {/* ABOUT */}
+      {/* ABOUT. The one bare-text section on this page (no AmbientBackground,
+          no photo), so it is where a PillarArt illustration adds something
+          rather than competing with it. */}
       <section className="section-line">
-        <div className="wrap section" style={{ maxWidth: 900, textAlign: "center" }}>
-          <p className="eyebrow">{h.aboutEyebrow}</p>
-          <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
-            {h.aboutH2a} <span className="italic-clay">{h.aboutH2b}</span>
-          </h2>
-          {/* Same two paragraphs as before, now inside a panel instead of
-              sitting as bare text between two modules (FocusAreas above,
-              the pillar bands below). Not `.card`: that class's hover lift
-              signals something clickable, and this text goes nowhere.
-              Centered to match the centered eyebrow and heading above. This
-              block carries the `.section` class, so without an explicit
-              center here the global `.section p` rule would justify the body
-              (and fall back to right alignment on mobile), leaving a centered
-              heading over a right-aligned body. Centering keeps the whole
-              block aligned as one. */}
-          <div className="prose-panel" style={{ margin: "0 auto", maxWidth: "68ch", textAlign: "center" }}>
-            <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 0 18px", textAlign: "center" }}>{h.aboutP1}</p>
-            <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: 0, textAlign: "center" }}>{h.aboutP2}</p>
+        <div className="wrap section pillar-hero-layout" style={{ maxWidth: 1140 }}>
+          <div style={{ maxWidth: 900, textAlign: "center" }}>
+            <p className="eyebrow">{h.aboutEyebrow}</p>
+            <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>
+              {h.aboutH2a} <span className="italic-clay">{h.aboutH2b}</span>
+            </h2>
+            {/* Same two paragraphs as before, now inside a panel instead of
+                sitting as bare text between two modules (FocusAreas above,
+                the pillar bands below). Not `.card`: that class's hover lift
+                signals something clickable, and this text goes nowhere.
+                Centered to match the centered eyebrow and heading above. This
+                block carries the `.section` class, so without an explicit
+                center here the global `.section p` rule would justify the body
+                (and fall back to right alignment on mobile), leaving a centered
+                heading over a right-aligned body. Centering keeps the whole
+                block aligned as one. */}
+            <div className="prose-panel" style={{ margin: "0 auto", maxWidth: "68ch", textAlign: "center" }}>
+              <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: "0 0 18px", textAlign: "center" }}>{h.aboutP1}</p>
+              <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--slate)", margin: 0, textAlign: "center" }}>{h.aboutP2}</p>
+            </div>
           </div>
+          <aside className="pillar-hero-art">
+            <PillarArt theme="clinic" />
+          </aside>
         </div>
       </section>
 
