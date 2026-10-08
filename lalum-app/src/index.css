@@ -821,6 +821,13 @@ a.card:focus-visible {
 .pillar-hero .eyebrow { color: var(--clay); }
 .pillar-hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
 
+/* Two-column hero: copy on one side, a themed PillarArt illustration on the
+   other. .pillar-hero keeps its own panel styling unchanged; this is only
+   the grid wrapper around it and the art's sizing. */
+.pillar-hero-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; }
+.pillar-hero-layout .pillar-hero { margin: 0; }
+.pillar-hero-art { max-width: 340px; width: 100%; aspect-ratio: 1 / 1; margin: 0 auto; }
+
 /* Apple-like service cards: airy, with a refined icon tile that inverts on
    hover, so the grid reads as a premium product surface. */
 .pillar-cards .card { padding: 30px 28px; }
@@ -3364,11 +3371,15 @@ html.a11y-reduce-motion *::after {
     grid-template-columns: 1fr !important;
   }
   .hero-grid,
-  .founder-grid {
+  .founder-grid,
+  .pillar-hero-layout {
     grid-template-columns: 1fr !important;
     gap: 36px !important;
     padding-top: 64px !important;
     padding-bottom: 64px !important;
+  }
+  .pillar-hero-layout .pillar-hero-art {
+    display: none;
   }
   .panel-dark {
     padding: 48px 22px !important;
