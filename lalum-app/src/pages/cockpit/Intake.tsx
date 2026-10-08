@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { extractText } from "../../lib/extractText";
 import { originals } from "../../lib/cockpit/originals";
 import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
+import { storeOriginal } from "../../lib/cockpit/storeOriginal";
 
 export async function readFile(file: File): Promise<string> {
   const name = file.name.toLowerCase();
@@ -18,7 +19,7 @@ export async function readFile(file: File): Promise<string> {
   return text;
 }
 
-export function IntakeForm({ matterId, onDone }: { matterId?: string; onDone: (matterId: string, documentId: string) => void }) {
+export function IntakeForm({ matterId, firmId, onDone }: { matterId?: string; firmId?: string; onDone: (matterId: string, documentId: string) => void }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<{ kind: "info" | "warn" | "err"; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -29,9 +30,10 @@ export function IntakeForm({ matterId, onDone }: { matterId?: string; onDone: (m
     const str = (k: string): string => String(f.get(k) ?? "").trim();
     let text = str("text");
     let fileName: string | undefined;
+    let upload: File | undefined;
     try {
       const file = fileRef.current?.files?.[0];
-      if (file) { text = (await readFile(file)).trim(); fileName = file.name; }
+      if (file) { text = (await readFile(file)).trim(); fileName = file.name; upload = file; }
     } catch (err) { setStatus({ kind: "err", text: (err as Error).message }); return; }
     if (!text) { setStatus({ kind: "err", text: "לא הוזן טקסט." }); return; }
     const parties: Array<{ role: string; name?: string; idNumber?: string }> = [];
@@ -45,12 +47,17 @@ export function IntakeForm({ matterId, onDone }: { matterId?: string; onDone: (m
     setBusy(false);
     if (!r.ok || !r.matter_id || !r.document_id) { setStatus({ kind: r.code === "CONFLICT_HALT" ? "warn" : "err", text: errorText(r) }); return; }
     originals.set(r.document_id, { text, entities: r.entities ?? [] });
+    // The original file goes to the private matter vault; pasted text has no file and stays as the masked version only.
+    if (upload && firmId) {
+      const stored = await storeOriginal(firmId, r.matter_id, r.document_id, upload);
+      if (!stored) setStatus({ kind: "warn", text: "המסמך נקלט, אבל הקובץ המקורי לא נשמר בכספת. ניתן לנסות להעלות אותו שוב." });
+    }
     onDone(r.matter_id, r.document_id);
   }
 
   return (
     <form className="ck-stack" onSubmit={submit}>
-      <div className="ck-warn">הטקסט עובר הסתרת מידע מזהה (PII), בדיקת ניגוד עניינים וניתוח פלייבוק לפני שנשמר. המקור אינו נשמר בשרת.</div>
+      <div className="ck-warn">הטקסט עובר הסתרת מידע מזהה (PII), בדיקת ניגוד עניינים וניתוח פלייבוק לפני שנשמר. קובץ שהועלה נשמר גם במקורו בכספת התיק, פרטית ובלתי ניתנת לדריסה, עם חתימת SHA-256 ביומן. טקסט שהודבק נשמר בגרסה מוסתרת בלבד.</div>
       {!matterId && (
         <div className="ck-grid2">
           <label className="ck-field">כותרת התיק (אופציונלי)<input className="ck-input" name="title" autoComplete="off" /></label>
