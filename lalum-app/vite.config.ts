@@ -942,9 +942,15 @@ function seoPrerender(): Plugin {
             const r = resultFor(tr.id, band);
             const title = `${r.title}: מוכנות Tech-Legal ב${tr.blurb}`;
             const path = resultPath(tr.id, band).slice(1);
+            // Decision Room is a tool, not a content cluster (see CLAUDE.md).
+            // Each of the nine track x band outcome pages is three templated
+            // paragraphs, so Google crawled all nine and indexed none. noindex
+            // them (follow still on, so the links out are still discovered) and
+            // drop them from the sitemap, keeping the crawl budget on real
+            // writing. The intro /risk/ page stays indexable.
             let rh = applyMeta(template, {
               title: `${title} | LALUM`, desc: clip(r.body), url: langUrl(`/${path}`, "he"),
-              path, image: `${SITE}/og/risk-${tr.id}-${band}.png`,
+              path, image: `${SITE}/og/risk-${tr.id}-${band}.png`, noindex: true,
             });
             const inner = [
               `        <h1>${esc(title)}</h1>`,
