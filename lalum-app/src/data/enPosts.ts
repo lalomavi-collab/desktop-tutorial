@@ -499,4 +499,158 @@ Use AI to accelerate, but build governance around it: human oversight by someone
 
 Note: nothing here is legal advice or a substitute for it. An international transaction requires an individual review of the applicable law, of the compliance requirements, and of the use of the AI tool, with a licensed lawyer and with local advice in the relevant jurisdiction.`,
   },
+
+  "eu-ai-act-high-risk-classification": {
+    title: "High-Risk AI Under the EU AI Act: How to Tell",
+    date: "August 2026",
+    excerpt:
+      "A practical guide to classifying an AI system as high risk under the EU AI Act: the two routes into the category, the sensitive use areas, self-check questions, the obligations it triggers, and why documenting the decision matters.",
+    body: `Not every artificial intelligence system is subject to the same obligations under the EU AI Act. The act is built on a risk hierarchy, and the heavy obligations fall mainly on systems classified as high risk. The first and most important decision for any organization is therefore to classify its systems correctly. This article gives a practical way to check whether a given system falls into the high-risk category.
+
+## Why Classification Is the First Decision
+
+A wrong classification is expensive in both directions. Classify a high-risk system as low, and you expose the organization to non-compliance, fines, and a delayed market entry. Over-classify, and you spend resources on obligations that are not required. An accurate, documented classification is the basis of any compliance program.
+
+## The Four Risk Levels in Brief
+
+The act sorts systems into four levels: unacceptable risk (prohibited), high risk (strict obligations), limited risk (mainly transparency obligations), and minimal risk (almost unregulated). This article focuses on identifying the second level, high risk, because it triggers the bulk of the regulation.
+
+## The Two Routes to High Risk
+
+A system can enter the high-risk category by two main routes. The first: the system serves as a safety component of a product already subject to EU regulation, such as medical devices, vehicles, or machinery. The second: the system operates in one of the sensitive use areas listed in the act, among them recruitment and employee evaluation, credit scoring and access to financial services, education and student assessment, essential public services, critical infrastructure, biometric identification, and law enforcement. If your system touches one of these, assume high risk until shown otherwise.
+
+## Self-Check Questions
+
+For a first-pass classification, ask: does the system affect a decision with a significant consequence for a person, such as hiring, credit, or access to a service? Is it part of a regulated product? Does it process biometric data? Could its failure harm safety or rights? A yes to any of these is a clear sign that a deeper high-risk analysis is needed.
+
+## What Happens If the System Is High Risk
+
+A high-risk classification triggers significant obligations: a risk management system, data quality and governance, effective human oversight, detailed technical documentation, transparency toward the user, and sometimes registration in a dedicated database. Preparing for all of these starts early, before market entry, not after the fact.
+
+## Exceptions and Documenting the Decision
+
+Even a system operating in a listed area is not necessarily high risk, if it can be shown not to pose a real risk to rights or safety, for example when it performs a narrow, purely supporting task. But relying on such an exception requires an orderly analysis. Documenting the decision and its reasoning is critical: it is the organization's defense before a regulator who asks why you classified as you did.
+
+## A Practical Recommendation
+
+Preparation starts with three steps: map every AI system in the organization, classify each to its risk level by the routes above, and document the reasoning for the classification. An orderly classification infrastructure saves duplicated work, prevents exposure, and lets the organization focus on the right obligations for the right systems.
+
+Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
+  },
+
+  "eu-ai-act-roles-obligations": {
+    title: "EU AI Act Roles: Provider, Deployer, Distributor",
+    date: "September 2026",
+    excerpt:
+      "How the EU AI Act splits obligations by role in the supply chain: what a provider owes, what a deployer owes, what distributors and importers owe, when a deployer becomes a provider, and how a company maps its role before building a compliance program.",
+    body: `The EU AI Act does not place the same obligations on everyone who touches an AI system. It divides the obligations by role in the supply chain: who develops the system, who uses it, and who moves it between the two. A company's first step is not to ask which obligations apply to it, but which role or roles it fills, because the role determines the obligations.
+
+## Why the Role Determines the Obligations
+
+The same AI system passes through several hands before it reaches the end user, and each party along the way carries a different responsibility. The act defines distinct roles and places its own package of obligations on each. One company can fill more than one role, and sometimes it enters a stricter role without noticing. Mapping the role is therefore the basis of any compliance program; without it, it is easy to misjudge the scope of the obligations.
+
+## The Provider
+
+The provider is the party that develops an AI system, or has it developed, and places it on the market under its own name. It carries the heaviest package of obligations, especially when the system is classified as high risk: a risk management system, data quality and governance, technical documentation, transparency, human oversight, and a declaration of conformity. The provider is responsible for the system meeting the requirements before it ever enters the market.
+
+## The Deployer
+
+The deployer is the party that uses an AI system in the course of its professional activity, for example an organization that integrates an AI tool into its workflows. Its obligations are lighter than the provider's, but they are real: use the system according to the instructions, ensure effective human oversight, monitor its operation, and in certain cases inform people that they are subject to an AI system. A deployer that ignores its obligations is exposed, even if the provider did its part.
+
+## The Distributor and the Importer
+
+The distributor and the importer are the links that move the system between the provider and the deployer. The importer is the party that brings a non-EU provider's system into the Union, and it must verify that the provider met its obligations before the system enters the market. The distributor is the party that makes the system available in the supply chain, and it must check that it carries the required marking and documentation. These roles are a kind of gatekeeper: they do not develop the system, but they are responsible for not passing on a system that does not conform.
+
+## When a Deployer Becomes a Provider
+
+A critical point is that the boundary between roles is not fixed. A deployer that makes a substantial modification to a system, that markets it anew under its own name, or that changes its purpose in a way that makes it high risk, may be treated as its provider and carry the heavy package of obligations. A company that thinks it is only a user may find that it has become, in legal terms, a manufacturer. Every substantial change therefore calls for a fresh look at the role.
+
+## What an Israeli Company Should Do
+
+Preparation starts with mapping: for every AI system the company develops, integrates, imports, or distributes in the European context, determine which role it fills. On that map, build the package of obligations that fits each role, and check where the company fills more than one. An Israeli company that exports an AI product to Europe is usually a provider, and sometimes also a deployer of components it integrates itself, so it is important not to narrow the analysis to a single role.
+
+## Summary
+
+Under the EU AI Act, the role determines the obligations. A provider carries the heavy package, a deployer carries use and oversight obligations, and a distributor and importer carry gatekeeper obligations. The boundary between roles is mobile, and a substantial change can turn a deployer into a provider. A company that maps its role, or roles, correctly builds a precise compliance program instead of guessing at the scope of its obligations.
+
+Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
+  },
+
+  "eu-ai-act-conformity-file-preparation": {
+    title: "EU AI Act: Preparing the Conformity File",
+    date: "September 2026",
+    excerpt:
+      "A practical guide to preparing the conformity file (technical documentation) for a high-risk AI system under the EU AI Act: the nine chapters it must include, the link to risk management and the declaration of conformity, the relief for small and medium businesses, and how long to keep it.",
+    body: `The conformity file, also known as the technical documentation of the AI system, is the document meant to prove to a competent authority or a notified body that the system meets the requirements of the EU AI Act. For a high-risk system, holding such a file is not a recommendation but an obligation, and it is the basis on which any conformity assessment is built. This article walks through the structure of the file and the order of preparing it, step by step.
+
+## Why the Conformity File Is the Base of Any Compliance Program
+
+The EU AI Act requires a provider of a high-risk system to prepare technical documentation before the system goes to market, and to keep it updated throughout its life cycle. This documentation is not just an internal memo: it is what is shown to a supervisory authority or a notified body when the system's compliance is examined, and it is the basis on which the declaration of conformity is signed. An organization that arrives at an examination without an orderly file exposes itself to a delayed market entry and to fines.
+
+## The Nine Chapters the File Must Include
+
+Based on a review of current interpretive sources for the relevant annex of the act, the conformity file is built from nine main parts: a general description of the system and its purpose; a detailed description of the development and design process (including data governance, architecture, testing, and cybersecurity measures); information on how the system's operation is monitored and controlled; a description of the metrics chosen to measure performance and their suitability; a description of the risk management system established for the system; documentation of the substantial changes made to the system over its life; a list of the applied harmonized standards or a description of the alternative solutions adopted in their place; a copy of the declaration of conformity itself; and a description of the post-market monitoring plan. Each of these parts is examined separately, so a file missing one part can hold up the whole process.
+
+## The Connection to Risk Management and the Declaration of Conformity
+
+The conformity file does not stand on its own. The risk management chapter in the file must reflect the risk management system the act requires to be established separately for every high-risk system, not be a general summary of it. Likewise, the declaration of conformity attached to the file is the formal document in which the provider declares compliance, and every claim in it must be backed by the matching chapter in the file itself. A mismatch between the declaration and the documentation is exactly what an orderly examination is meant to reveal.
+
+## Post-Market Monitoring
+
+The obligation does not end at market entry. The conformity file also includes a plan to monitor the system's performance after launch, whose role is to detect early any performance drift or faults not foreseen at the development stage. Such a plan must be kept current, not a document written once and forgotten in a drawer.
+
+## Relief for Small and Medium Businesses
+
+A small or medium business, including a start-up, may prepare the chapters of the file in a relatively shortened format compared with a large company, provided the documentation still serves the file's purpose: to prove compliance. The relief is meant to keep the bureaucratic burden from blocking small companies from the market, but it does not exempt them from the obligation itself, only ease how it is carried out.
+
+## How Long to Keep the File
+
+The conformity file is not a one-time document. It must be kept available and updated for many years after the system goes to market, so a competent authority can request it even years later. An organization that stops maintaining the file the moment the system launches, instead of treating it as a living document, risks that in a future examination it no longer reflects the system as it actually is.
+
+## A Practical Recommendation
+
+Preparation starts early, not the moment the system is ready to launch: map which of the organization's systems fall under the documentation obligation, build a uniform template for the nine chapters so that not every team documents in its own way, make sure the risk management chapter in the file actually matches the risk management system established, and assign one owner to keep the file current throughout the system's life, not only at launch.
+
+Note: the information above is based on a current review of interpretive sources for the EU AI Act, and is not a substitute for reading the binding text of the act or for individual legal advice. Using the organization's data to prepare the conformity file, including compliance with the privacy and data protection laws that apply to that data, is the organization's sole responsibility, and nothing here constitutes an examination, an approval, or advice regarding the organization's specific data.`,
+  },
+
+  "eu-ai-act-transparency-generative": {
+    title: "EU AI Act: Transparency for Generative AI",
+    date: "August 2026",
+    excerpt:
+      "From August 2026 the EU AI Act's transparency obligations apply: when you must tell a user they are talking to a machine, when synthetic content must be marked, what is required of foundation-model providers, and what this means for an Israeli company selling to Europe.",
+    body: `The transparency obligations of the EU AI Act are the part that touches the largest number of organizations. Unlike the heavy obligations that apply only to high-risk systems, the transparency obligations apply also to systems considered low risk, among them tools organizations already use today: a chatbot on a website, a tool that generates marketing images, and a system that drafts text. This article explains what is required, from whom, and what it means for an Israeli organization.
+
+## Why Now
+
+The act's timeline is spread over several years, and the transparency obligations come into force at a relatively late stage, in August 2026. Many organizations put off dealing with them for exactly that reason. The result is that many of them run tools today that are subject to obligations already in force, without any check having been done.
+
+## The Four Main Transparency Obligations
+
+The first concerns systems that interact with people. If a user is communicating with an AI system, the user must be informed of this, unless it is obvious to a reasonable person in the circumstances. A customer-service chatbot posing as a human agent is the clear example.
+
+The second concerns emotion-recognition and biometric-categorization systems. Here it is mandatory to inform the person exposed to the system, in addition to the separate obligations that arise from privacy law.
+
+The third concerns providers of systems that generate synthetic content: text, image, audio, or video. The output must be marked in a machine-readable format, so that it can be identified as the product of a system and not of a human.
+
+The fourth concerns the party that operates such a system and publishes the output. Content that is a deepfake requires disclosure, and text published to inform the public on matters of public interest also requires disclosure, unless the content underwent human review and there is a party bearing editorial responsibility for it.
+
+## The Distinction Most People Miss
+
+The obligation to mark synthetic content is not limited to deepfakes and not limited to content meant to mislead. It applies to the output simply because it is synthetic. An organization that generates product images for a campaign, or drafts product descriptions automatically, is within scope even when it has no intention to mislead anyone. The second distinction worth internalizing is between a provider and an operator. The technical marking obligation falls on the provider of the system. The disclosure obligation to the public falls on whoever publishes the content. An organization that uses an external tool is an operator, so the disclosure obligation is its own, even if the provider did its part.
+
+## Foundation Models: A Separate Layer of Obligations
+
+Providers of general-purpose AI models carry their own set of obligations: technical documentation of the model, information that lets downstream providers meet their obligations, a policy for complying with copyright law, and a public summary of the content used for training. Models classified as carrying systemic risk, usually because of exceptional compute power, are subject to a further layer: systematic model evaluation, proactive adversarial testing, reporting of serious incidents, and cybersecurity measures. Most organizations are not foundation-model providers, but almost all are consumers of one. The practical meaning is that the information the provider must supply is the information the organization needs to meet its own obligations. If the provider does not supply it, that is a point to raise in the contract, not after an incident.
+
+## What It Means for an Israeli Company
+
+The act does not ask where the company is registered but where the users are and where the output is used. An Israeli company with clients in Europe, or a product serving users there, is within scope. The question of where the servers sit is not decisive. Another point easy to miss: the obligations travel down the chain. An Israeli provider that integrates a third party's model into its product and sells it to a European client must pass on the information and the marking, not simply rely on its own provider having done so.
+
+## A Practical Recommendation
+
+Preparation starts with mapping: which generative tools operate in the organization, who the provider of each is, and what their output is. Then comes a decision on each tool: is the organization a provider or an operator, and which obligation applies accordingly. Finally, two steps that tend to be put off and should not be: drafting the disclosure wording to be shown to users, and reviewing the contract with the provider to make sure the information the organization needs will actually be supplied. Orderly infrastructure here is cheap. The same work under pressure from a client demanding an answer, or inside a due diligence, is far more expensive.
+
+Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
+  },
 };
