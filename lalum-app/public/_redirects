@@ -302,6 +302,63 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /fr/risk  /risk/  301
 /ar/risk  /risk/  301
 
+# --- Language routes, trailing-slash variants ---
+# The rules above match the bare path (/en/faq), but Google requests these
+# routes with a trailing slash (/en/faq/), which nothing matched, so they fell
+# through to 404. These are the slash variants. Each is an exact path with no
+# wildcard, so the five translated /en/insights/<slug>/ pilot pages are never
+# touched. Non-translated routes resolve to the Hebrew canonical.
+/en/faq/  /faq/  301
+/es/faq/  /faq/  301
+/fr/faq/  /faq/  301
+/ar/faq/  /faq/  301
+/en/insights/  /insights/  301
+/en/training/  /training/  301
+/es/training/  /training/  301
+/fr/training/  /training/  301
+/ar/training/  /training/  301
+/en/risk/  /risk/  301
+/es/risk/  /risk/  301
+/fr/risk/  /risk/  301
+/ar/risk/  /risk/  301
+
+# Login has no per-language page and is noindex, so every language login
+# resolves to the one login page (both slash forms, no prior rule existed).
+/en/login  /login/  301
+/en/login/  /login/  301
+/es/login  /login/  301
+/es/login/  /login/  301
+/fr/login  /login/  301
+/fr/login/  /login/  301
+/ar/login  /login/  301
+/ar/login/  /login/  301
+
+# About and contact have no standalone page (the Hebrew /about/ and /contact/
+# are themselves 404). About resolves to the language home, which does exist;
+# contact resolves to the booking page.
+/en/about  /en/  301
+/en/about/  /en/  301
+/es/about  /es/  301
+/es/about/  /es/  301
+/fr/about  /fr/  301
+/fr/about/  /fr/  301
+/ar/about  /ar/  301
+/ar/about/  /ar/  301
+/en/contact  /book/  301
+/en/contact/  /book/  301
+/es/contact  /book/  301
+/es/contact/  /book/  301
+/fr/contact  /book/  301
+/fr/contact/  /book/  301
+/ar/contact  /book/  301
+/ar/contact/  /book/  301
+
+# A non-pilot article under /en/insights/ has no English page, so it resolves
+# to the Hebrew article. An exact path, not a wildcard, so the pilot pages
+# above keep serving their own English documents.
+/en/insights/combination-deals-architecture  /insights/combination-deals-architecture/  301
+/en/insights/combination-deals-architecture/  /insights/combination-deals-architecture/  301
+
 # --- Legacy /articles blog index -> new articles hub ---
 # An old path that never existed in the current app. Send it, and anything
 # under it, to the articles hub rather than to 404.
