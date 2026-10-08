@@ -101,9 +101,12 @@ export function Home() {
 
       {/* ABOUT. The one bare-text section on this page (no AmbientBackground,
           no photo), so it is where a PillarArt illustration adds something
-          rather than competing with it. */}
+          rather than competing with it. "home-about-art-mobile" keeps the
+          illustration visible below 900px here specifically: the home page
+          is the one place this art stays on mobile, everywhere else it
+          collapses away with the rest of .pillar-hero-art. */}
       <section className="section-line">
-        <div className="wrap section pillar-hero-layout" style={{ maxWidth: 1140 }}>
+        <div className="wrap section pillar-hero-layout home-about-art-mobile" style={{ maxWidth: 1140 }}>
           <div style={{ maxWidth: 900, textAlign: "center" }}>
             <p className="eyebrow">{h.aboutEyebrow}</p>
             <h2 className="serif" style={{ fontSize: "clamp(28px, 6vw, 40px)", lineHeight: 1.18, letterSpacing: "-0.015em", margin: "0 0 26px" }}>

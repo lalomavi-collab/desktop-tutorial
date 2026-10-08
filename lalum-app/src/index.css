@@ -3381,6 +3381,13 @@ html.a11y-reduce-motion *::after {
   .pillar-hero-layout .pillar-hero-art {
     display: none;
   }
+  /* The one exception: Home keeps its illustration on mobile too, centered
+     below the text now that the grid above has collapsed to one column. */
+  .home-about-art-mobile .pillar-hero-art {
+    display: block;
+    max-width: 220px;
+    margin: 8px auto 0;
+  }
   .panel-dark {
     padding: 48px 22px !important;
   }
