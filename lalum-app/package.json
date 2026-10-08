@@ -15,7 +15,8 @@
     "indexnow": "node scripts/indexnow.mjs",
     "split-articles": "node scripts/split-articles.mjs",
     "a11y-audit": "node scripts/a11y-audit.mjs",
-    "template-check": "node scripts/template-check.mjs"
+    "template-check": "node scripts/template-check.mjs",
+    "kyc-check": "node scripts/kyc-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
