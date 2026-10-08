@@ -9,7 +9,7 @@ import { MatterCockpit } from "./MatterCockpit";
 
 interface Row { matter_id: string; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; partner_response: string; dispatched_at: string; sla_breached: boolean }
 
-function MatterList({ firmName, userName, role }: { firmName: string; userName: string; role: string }) {
+function MatterList({ firmId, firmName, userName, role }: { firmId: string; firmName: string; userName: string; role: string }) {
   const nav = useNavigate();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [adding, setAdding] = useState(false);
@@ -35,7 +35,7 @@ function MatterList({ firmName, userName, role }: { firmName: string; userName: 
         <div className="ck-card"><div className="ck-card-head"><CardArt name="security" /><div className="ck-title">אבטחת חשבון</div></div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
-      {adding && <div className="ck-card"><IntakeForm onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
+      {adding && <div className="ck-card"><IntakeForm firmId={firmId} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       <div className="ck-label">תיקים</div>
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th></tr></thead><tbody>
@@ -61,7 +61,7 @@ export function Workspace() {
     <CockpitFrame title="קוקפיט תיקים" description="קוקפיט התיקים של LALUM: כספת, עורך חכם ואולפן סוכני תחום עם אישור אנושי לפני ייצוא." path="/workspace">
       {({ member }) => member && (matterId
         ? <MatterCockpit key={matterId} matterId={matterId} member={member} />
-        : <MatterList firmName={member.lalum_firms.firm_name} userName={member.name} role={member.role} />)}
+        : <MatterList firmId={member.firm_id} firmName={member.lalum_firms.firm_name} userName={member.name} role={member.role} />)}
     </CockpitFrame>
   );
 }
