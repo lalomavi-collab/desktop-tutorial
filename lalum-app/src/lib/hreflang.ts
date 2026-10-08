@@ -93,6 +93,10 @@ export const EN_ARTICLE_SLUGS = new Set<string>([
   "portugal-investment-guide",
   "israeli-realestate-abroad",
   "ai-international-transactions-overview",
+  "eu-ai-act-high-risk-classification",
+  "eu-ai-act-roles-obligations",
+  "eu-ai-act-conformity-file-preparation",
+  "eu-ai-act-transparency-generative",
 ]);
 
 // The slug of an /insights/<slug>/ article path, or null for anything else.
