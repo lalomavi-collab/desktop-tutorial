@@ -41,7 +41,7 @@ export function MarketingLayout() {
   // body, not a wrapper, so the page background goes dark edge to edge.
   useEffect(() => {
     const bare = stripLangPrefix(pathname);
-    const dark = bare === "/login" || bare === "/portal";
+    const dark = bare === "/login" || bare === "/portal" || bare === "/reset-password";
     document.body.classList.toggle("marketing-dark", dark);
     return () => document.body.classList.remove("marketing-dark");
   }, [pathname]);
