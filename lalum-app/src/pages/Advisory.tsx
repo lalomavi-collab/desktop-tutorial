@@ -11,6 +11,7 @@ import { PracticeHub } from "../components/PracticeHub";
 import { FocusAreas } from "../components/FocusAreas";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { ScenarioCard } from "../components/ScenarioCard";
+import { PillarArt } from "../components/PillarArt";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
 import { howToForPath } from "../lib/pageHowTos";
@@ -50,12 +51,19 @@ export function Advisory() {
           here and not only from the home page. */}
       <FocusAreas />
 
-      {/* SERVICES */}
+      {/* SERVICES. The hero above already carries AmbientBackground, so the
+          illustration goes here instead: this header is bare text, same
+          situation as the Home page's ABOUT section. */}
       <section id="services" className="section-line">
         <div className="wrap section">
-          <div style={{ maxWidth: "56ch", margin: "0 auto 52px", textAlign: "center" }}>
-            <p className="eyebrow">{a.servicesEyebrow}</p>
-            <h2 className="serif" style={{ fontSize: 40, lineHeight: 1.18, letterSpacing: "-0.015em" }}>{a.servicesH2}</h2>
+          <div className="pillar-hero-layout" style={{ maxWidth: 1140, margin: "0 auto 52px" }}>
+            <div style={{ maxWidth: "56ch", textAlign: "center" }}>
+              <p className="eyebrow">{a.servicesEyebrow}</p>
+              <h2 className="serif" style={{ fontSize: 40, lineHeight: 1.18, letterSpacing: "-0.015em" }}>{a.servicesH2}</h2>
+            </div>
+            <aside className="pillar-hero-art">
+              <PillarArt theme="clinic" />
+            </aside>
           </div>
           <div className="grid grid-2">
             {t.data.advisoryServices.map((s) => (

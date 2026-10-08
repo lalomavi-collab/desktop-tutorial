@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "real-estate-memorandum-of-understanding-binding": {
+  "topic": "contracts",
+  "related": [
+   "urban-renewal-principles-vs-detailed-agreement",
+   "portugal-purchase-contract",
+   "ai-drafted-real-estate-contract-review"
+  ]
+ },
  "ai-vendor-agreement-dpa-liability-indemnity": {
   "topic": "contracts",
   "related": [
@@ -187,8 +195,8 @@
   "topic": "real-estate",
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
-   "pinui-binui-consideration-valuation",
-   "urban-renewal-owners-representation"
+   "real-estate-memorandum-of-understanding-binding",
+   "pinui-binui-consideration-valuation"
   ]
  },
  "urban-renewal-owners-representation": {
@@ -356,7 +364,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "ai-drafted-real-estate-contract-review",
-   "greece-realestate-israeli-buyer-guide"
+   "real-estate-memorandum-of-understanding-binding"
   ]
  },
  "portugal-real-estate-financing": {
@@ -851,8 +859,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "unfair-advantage-course",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "unfair-advantage-course"
   ]
  },
  "unfair-advantage-course": {
@@ -955,8 +963,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "algorithmic-transparency",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "algorithmic-transparency"
   ]
  },
  "combination-deals-architecture": {
@@ -1283,8 +1291,8 @@
   "topic": "real-estate",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
@@ -1380,7 +1388,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1530,8 +1538,8 @@
  "הכנה-לגישור-מכוון-הכרעה-טיפים-להצלחה": {
   "topic": "mediation",
   "related": [
-   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
    "lalum-clinic-experience",
+   "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-אתגרים-ופתרונות",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה"
   ]
  },

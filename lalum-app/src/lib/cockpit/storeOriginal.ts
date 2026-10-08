@@ -14,14 +14,14 @@ async function sha256Hex(buf: ArrayBuffer): Promise<string> {
   return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function storeOriginal(firmId: string, matterId: string, documentId: string, file: File): Promise<boolean> {
+export async function storeOriginal(firmId: string, matterId: string, documentId: string, file: File, knownHash?: string): Promise<boolean> {
   if (!supabase) return false;
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   const mime = MIME[ext];
   if (!mime || file.size === 0) return false;
   try {
     const buf = await file.arrayBuffer();
-    const hash = await sha256Hex(buf);
+    const hash = knownHash ?? (await sha256Hex(buf));
     const path = `${firmId}/${matterId}/${documentId}/original.${ext}`;
     const up = await supabase.storage.from("matter-originals").upload(path, new Blob([buf], { type: mime }), { contentType: mime, upsert: false });
     if (up.error) return false;
