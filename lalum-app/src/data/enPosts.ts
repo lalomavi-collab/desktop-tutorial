@@ -653,4 +653,80 @@ Preparation starts with mapping: which generative tools operate in the organizat
 
 Note: nothing here is legal advice or a substitute for it, and it is not a binding opinion. Every case requires an individual review with a licensed lawyer.`,
   },
+
+  "greece-realestate-israeli-buyer-guide": {
+    title: "Buying Property in Greece: An Israeli Buyer's Guide",
+    date: "October 2026",
+    excerpt:
+      "Greece is a leading destination for Israeli buyers, but it is not one market, and buying there runs on a legal, registration and tax system different from Israel's. A guide to choosing the area by goal, the rights and cadastre system, the purchase process, taxation and the tax treaty, and short term rental regulation.",
+    body: `Greece has become one of the leading destinations for Israeli buyers, thanks to its proximity, attractive entry prices, and strong tourist demand. But "Greece" is not one market, and buying a property there runs on a legal, registration and tax system different from Israel's. This article walks through what an Israeli buyer should know before buying in Greece: where to buy, how the rights system works, what the purchase process is, and which tax and compliance questions arise on both sides of the border. It does not state tax rates or thresholds, because those are set by Greek law, change, and require a current check with local advice.
+
+## Why Greece, and Who It Suits
+
+Athens, Thessaloniki and the islands are three different markets: a liquid capital with demand for both long and short rental, a second city with lower entry prices, and season-dependent tourist destinations. The first step is therefore not to choose a property but to define a goal: yield, improvement, personal use, or residency. The goal determines where, not the other way around. An Israeli buyer who starts from a specific property they found, rather than from the goal, risks choosing an area that does not fit their needs.
+
+## The Rights and Registration System
+
+Registration in Greece differs from the Israeli land registry, and the country is in a long process of moving to a land cadastre. Verifying rights is therefore not a given, and one must confirm clean ownership, the absence of charges, and a match between the registered state and the state on the ground. A purchase requires a local tax number, and a lawyer and a notary are part of the process. A buyer who relies on the seller's or the broker's representation without an independent verification of the registry is exposed exactly where the foreign law differs from what they know.
+
+## The Purchase Process
+
+The purchase advances in stages, usually through an agreement, verification of rights, and registration of the transfer before a notary. It is important that the lawyer accompanying the buyer be independent of the seller and the broker, and it is usually possible to act through a power of attorney without being physically present at every stage. An Israeli buyer needs dual accompaniment: a local lawyer who knows Greek law, alongside an Israeli lawyer for the reporting and tax questions in Israel.
+
+## Taxation and the Tax Treaty
+
+A purchase in Greece involves local taxes (a purchase or transfer tax, an annual property tax, and tax on rental income), set by Greek law. In parallel, Israel and Greece have a tax treaty meant to prevent double taxation, and an Israeli resident has reporting duties in Israel on a property and on income abroad. The full picture is two sided, so tax planning requires examining both systems together, not only the local tax. Relying on "there is no tax", or on a partial estimate, is a common source of surprises.
+
+## Short Term Rental and Regulation
+
+A large part of the viability in tourist destinations rests on short term rental, and that is exactly the most regulatorily sensitive component: short term rental rules change and are sometimes restricted in certain areas. Anyone building the deal on Airbnb-style yield should check the current regulation and the limits on remote management, and not assume that what is permitted today will stay that way.
+
+## Residency and Investment
+
+Greece has a residency-through-investment program, but its thresholds and conditions have changed and keep changing, and sometimes differ between areas. Do not rely on a number you heard; verify the current conditions against the source before building the deal on it. Residency is not citizenship, and the implications of each route differ, including for tax in Israel.
+
+## Recommendation
+
+Start from the goal, verify every right and registration against the source, get dual legal accompaniment, local and Israeli, and plan the tax on both sides of the border before signing. The firm, led by Dr. Avraham Lalum, Adv., accompanies Israeli buyers in overseas real estate transactions, in coordination with local advice in the relevant jurisdiction. The principle Dr. Lalum returns to consistently: geographic and legal distance increases the risk, so what has not been verified against the source is not a fact but an assumption.
+
+Note: nothing here is legal or tax advice or a substitute for either. Real estate, tax, and residency law in Greece is set by local law and changes, and requires an individual review with a local lawyer and with a lawyer or tax adviser in Israel.`,
+  },
+
+  "cyprus-realestate-israeli-buyer-guide": {
+    title: "Buying Property in Cyprus: An Israeli Buyer's Guide",
+    date: "October 2026",
+    excerpt:
+      "Cyprus draws Israelis with its proximity, English, and common law system, but carries a specific risk: the title deed problem. A guide to the legal and registration system, protecting the buyer (depositing the contract at the registry), taxation and the tax treaty, and caution around marketed holding structures.",
+    body: `Cyprus is popular with Israeli buyers thanks to its proximity, the wide use of English, and a legal system based on common law that is relatively familiar. It is also an EU member. But alongside the advantages there is a specific, well known risk, the title deed problem, so buying there calls for focused caution. This article walks through what an Israeli buyer should know: the legal and registration system, the buyer's protection in the process, taxation and the tax treaty, and holding structures. It does not state rates, which are set by Cypriot law and change.
+
+## Why Cyprus
+
+The proximity to Israel, the widespread English, and a common law legal system make Cyprus familiar and accessible to many Israelis. Limassol, Paphos, Larnaca and Nicosia are different markets in character, demand mix, and prices. The advantage of relative familiarity with the system does not remove the need to check, because even inside a familiar system there are mechanisms unique to Cyprus that an Israeli does not know from home.
+
+## The Legal and Registration System, and the Title Deed Problem
+
+The critical point in Cyprus is the title deed. In some projects, especially in the past, the issue of a separate title deed to the buyer was delayed for years, and buyers who paid the full price were left without ownership registered in their name, exposed to the developer's charges or difficulties. Verifying the state of the title deed and the existence of clean ownership is therefore the first check, not the last. Do not settle for a contract with the developer without clarifying the state of registration and when and how the title deed will be received.
+
+## The Buyer's Protection in the Process
+
+Against this risk there are protection mechanisms that must be used knowingly. It is usually possible to deposit the purchase contract at the land registry, a step that strengthens the buyer's standing and ability to enforce the agreement. It is important that the lawyer accompanying the buyer be independent of the developer and the broker, and that the contract deal explicitly with the timing and conditions for receiving the title deed. As in any overseas deal, dual accompaniment is advisable: a local lawyer versed in Cypriot law, alongside an Israeli lawyer for the reporting and tax matters in Israel.
+
+## Taxation and the Tax Treaty
+
+A purchase in Cyprus involves local taxes and fees (transfer fees, value added tax on new properties, municipal and annual taxes, and tax on rental income), set by local law. Israel and Cyprus have a tax treaty, and an Israeli resident has reporting duties in Israel on a property and on income abroad. As with other destinations, tax planning requires looking at both systems together, not only the local tax, or surprises arise precisely on the Israeli side.
+
+## Holding Structures and "Tax" Promises
+
+Cyprus is often marketed as an arena for holding structures and tax planning. For a buyer of a home or a simple investment, a complex structure is not necessarily needed, and is sometimes even harmful. Beware promises of "zero tax", or a structure presented as a tax trick without real substance, because a structure with no genuine economic content is exposed both in Cyprus and before the Israeli Tax Authority. The decision on a holding structure should follow from the real need, not from marketing.
+
+## Residency and Citizenship
+
+Cyprus has residency-through-investment programs, but they have changed over the years, and the conditions are not fixed. Do not rely on what you heard or on a marketer's representation; verify against the source what is open today and on what conditions, and remember that residency is not citizenship and that each route has different implications, including for tax in Israel.
+
+## Recommendation
+
+In Cyprus, more than in other destinations, the first check is the title deed and the state of registration. Use the protection mechanisms (depositing the contract at the registry), get dual legal accompaniment, and plan the tax on both sides of the border. The firm, led by Dr. Avraham Lalum, Adv., accompanies Israeli buyers in overseas real estate transactions in coordination with local advice. The principle Dr. Lalum returns to consistently: a familiar system is not a safe system, and what has not been verified against the registry is not ownership but a promise.
+
+Note: nothing here is legal or tax advice or a substitute for either. Real estate, tax, and residency law in Cyprus is set by local law and changes, and requires an individual review with a local lawyer and with a lawyer or tax adviser in Israel.`,
+  },
 };
