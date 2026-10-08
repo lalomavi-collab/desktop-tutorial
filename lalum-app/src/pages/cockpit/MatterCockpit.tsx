@@ -8,6 +8,7 @@ import { originals } from "../../lib/cockpit/originals";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
+import { trashDoc } from "../../lib/cockpit/bin";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { KycPanel } from "./KycPanel";
@@ -120,6 +121,14 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
     return () => { live = false; };
   }, [doc, docs, matter, routing, signoff]);
 
+  async function trashDocument(d: MatterDoc) {
+    if (!window.confirm(`להעביר את "${d.file_name}" לסל המיחזור? ניתן לשחזר אותו משם.`)) return;
+    const r = await trashDoc(d.id);
+    if (!r.ok) { window.alert(r.error ?? "הפעולה נכשלה."); return; }
+    const rest = docs.filter((x) => x.id !== d.id);
+    setDocs(rest);
+    if (d.id === docId) { if (rest[0] && matter) selectDoc(rest[0], matter); else { setDocId(null); setText(""); } }
+  }
   async function save() {
     window.clearTimeout(timer.current);
     if (!doc || !dirty.current) { setSaveMsg("נשמר"); return; }
@@ -257,7 +266,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <h2>כספת תיק ומרכז ראיות</h2>
           <div className="ck-row"><PiiBadge /></div>
           <div className="ck-label">מסמכים</div>
-          <div className="ck-stack">{docs.map((d) => <button key={d.id} className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>)}</div>
+          <div className="ck-stack">{docs.map((d) => <div key={d.id} className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>)}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
