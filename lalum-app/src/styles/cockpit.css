@@ -130,3 +130,43 @@
 .ck-empty { align-items: center; text-align: center; gap: 6px; padding: 28px 18px; }
 @media (max-width: 640px) { .ck-hero { flex-direction: column; align-items: flex-start; } .ck-hero-art { width: 100%; max-width: 240px; } }
 @media (prefers-reduced-motion: reduce) { .ck-card { transition: none; } .ck-grid2 > .ck-card:hover { transform: none; } }
+
+/* Calm work surface (design lane). The site's warm ivory suits reading; for long sessions in forms and tables it
+   tires the eye, so the cockpit alone swaps to a cool, low-saturation neutral. Tokens are overridden under
+   .ck-root only: the public site, its brand sage (--clay) and the logo are untouched. */
+.ck-root {
+  --ivory: #eef1ee;
+  --paper: #f7f9f7;
+  --line: #dbe1db;
+  --line-strong: #c3ccc3;
+  --clay-tint: #e3ebe4;
+  background: var(--ivory);
+}
+.ck-top {
+  position: sticky; top: 0; z-index: 30; margin: 0 -20px; padding: 12px 20px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.ck-nav a, .ck-btn, .ck-logout { background: #fff; }
+.ck-logout {
+  font: inherit; font-size: 13.5px; padding: 8px 15px; border-radius: 9999px; min-height: 38px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; color: var(--danger); border: 1px solid var(--line-strong);
+  margin-inline-start: 6px;
+}
+.ck-logout:hover { background: rgba(179, 64, 47, .08); border-color: var(--danger); }
+.ck-logout:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Forms: labels readable, controls easier to hit, focus unmistakable. */
+.ck-field { font-size: 13.5px; font-weight: 600; color: var(--ink); gap: 7px; }
+.ck-input, .ck-select, .ck-textarea { min-height: 44px; font-size: 15px; border-color: var(--line-strong); transition: border-color .12s ease, box-shadow .12s ease; }
+.ck-input:hover, .ck-select:hover, .ck-textarea:hover { border-color: var(--clay); }
+.ck-input:focus, .ck-select:focus, .ck-textarea:focus { outline: none; border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }
+.ck-input[type="file"] { padding: 8px 10px; min-height: 48px; background: var(--paper); border-style: dashed; cursor: pointer; }
+.ck-input[type="file"]::file-selector-button { font: inherit; font-size: 13px; padding: 6px 12px; margin-inline-end: 10px; border-radius: 9999px; border: 1px solid var(--clay); background: #fff; color: var(--clay); cursor: pointer; }
+.ck-textarea { min-height: 200px; }
+.ck-warn { background: var(--clay-tint); color: var(--ink); border: 1px solid var(--clay-soft); font-weight: 500; line-height: 1.7; }
+.ck-card { border-color: var(--line); }
+.ck-table tbody tr:hover td { background: var(--paper); }
+.ck-table th { background: var(--clay-tint); color: var(--ink); }
+.ck-hero { background: linear-gradient(135deg, #fff 0%, var(--paper) 100%); }
+@media (max-width: 640px) { .ck-top { margin: 0 -20px; } }
