@@ -353,11 +353,13 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /ar/contact  /book/  301
 /ar/contact/  /book/  301
 
-# A non-pilot article under /en/insights/ has no English page, so it resolves
-# to the Hebrew article. An exact path, not a wildcard, so the pilot pages
-# above keep serving their own English documents.
-/en/insights/combination-deals-architecture  /insights/combination-deals-architecture/  301
-/en/insights/combination-deals-architecture/  /insights/combination-deals-architecture/  301
+# Note on non-pilot articles under /en/insights/: an exact redirect here does
+# not fire. Cloudflare Pages returns 404 for a third-level path under the
+# /en/insights/ directory (which holds the five pilot pages as index.html
+# subfolders) before the redirect is consulted, and a wildcard cannot be used
+# because it would capture those five pilot pages. These English URLs do not
+# exist and nothing links to them, so a 404 is the correct answer: Google drops
+# a phantom URL on re-crawl, and no link equity is lost.
 
 # --- Legacy /articles blog index -> new articles hub ---
 # An old path that never existed in the current app. Send it, and anything
