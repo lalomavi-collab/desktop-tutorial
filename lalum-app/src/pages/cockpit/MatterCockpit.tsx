@@ -10,6 +10,7 @@ import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
+import { KycPanel } from "./KycPanel";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -53,6 +54,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
   const [loaded, setLoaded] = useState(false);
   const [rev, setRev] = useState(0);
   const [vrev, setVrev] = useState(0);
+  const [kycPending, setKycPending] = useState(0);
   const prefer = useRef<string | null>(null);
   const [widths, setWidths] = useState<{ w1: number; w3: number }>(() => {
     try { return { w1: Number(localStorage.getItem("ck-w1")) || 300, w3: Number(localStorage.getItem("ck-w3")) || 380 }; } catch { return { w1: 300, w3: 380 }; }
@@ -258,6 +260,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <div className="ck-stack">{docs.map((d) => <button key={d.id} className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>)}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+          <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
             <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <div className="ck-label">מפת ישויות</div>
@@ -311,7 +314,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
             {groups[0].length ? groups[0].map((f) => <FindingCard key={f.ruleId} f={f} />) : <span className="ck-meta">לא נמצאו ממצאים בסיכון.</span>}
             {groups[1].length > 0 && <details><summary className="ck-meta">כללים שהתקיימו ({groups[1].length})</summary><div className="ck-stack" style={{ marginTop: 8 }}>{groups[1].map((f) => <FindingCard key={f.ruleId} f={f} />)}</div></details>}
           </div>
-          <ExportGate complete={complete} role={role} signoff={signoff} canRestore={!!map} msg={gateMsg} onToggle={toggleStep} onExport={doExport} />
+          <ExportGate complete={complete} role={role} signoff={signoff} canRestore={!!map} msg={gateMsg} kycPending={kycPending} onToggle={toggleStep} onExport={doExport} />
         </section>
       </div>
 
@@ -331,8 +334,8 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
   );
 }
 
-function ExportGate({ complete, role, signoff, canRestore, msg, onToggle, onExport }: {
-  complete: boolean; role: string; signoff: SignoffStatus | null; canRestore: boolean; msg: string;
+function ExportGate({ complete, role, signoff, canRestore, msg, kycPending, onToggle, onExport }: {
+  complete: boolean; role: string; signoff: SignoffStatus | null; canRestore: boolean; msg: string; kycPending: number;
   onToggle: (step: string, on: boolean) => void; onExport: (k: "word" | "pdf", restore: boolean) => void;
 }) {
   const [restoreNames, setRestoreNames] = useState(true);
@@ -351,6 +354,7 @@ function ExportGate({ complete, role, signoff, canRestore, msg, onToggle, onExpo
         );
       })}
       {msg && <div className="ck-err" aria-live="polite">{msg}</div>}
+      {kycPending > 0 && <div className="ck-warn">בתיק {kycPending === 1 ? "צד אחד" : `${kycPending} צדדים`} במסלול שירות עסקי שהכרת הלקוח שלהם טרם הושלמה. הייצוא אינו חסום, אך כדאי להשלים לפני שמוסרים את המסמך.</div>}
       <label className="ck-meta"><input type="checkbox" checked={restoreNames && canRestore} disabled={!canRestore} onChange={(e) => setRestoreNames(e.target.checked)} /> שחזור פרטים מזהים בקובץ המיוצא (זמין רק בסשן שבו הועלה המקור)</label>
       <div className="ck-row"><button className="ck-btn primary" disabled={!complete} onClick={() => onExport("word", restoreNames && canRestore)}>ייצוא Word</button><button className="ck-btn primary" disabled={!complete} onClick={() => onExport("pdf", restoreNames && canRestore)}>ייצוא PDF</button></div>
       {!complete && <div className="ck-meta">הייצוא נחסם עד שכל ארבעת השלבים מסומנים על הטקסט הנוכחי.</div>}
