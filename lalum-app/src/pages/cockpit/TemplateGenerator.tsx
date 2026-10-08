@@ -3,7 +3,8 @@ import type { FormEvent } from "react";
 import { supabase } from "../../lib/supabase";
 import { originals } from "../../lib/cockpit/originals";
 import { callPipeline, errorText } from "../../lib/cockpit/shared";
-import { extractFields, FIELD_LABEL, mergeTemplate, missingFields, partiesFrom, todayHe, UNMASKED_FIELDS } from "../../lib/cockpit/templates";
+import { activeFields, blankFields, blockingFields, FIELD_LABEL, GENDER_LABEL, mergeTemplate, NUMBER_LABEL, PARTY_LABEL, partiesFrom, TemplateError, todayHe, UNMASKED_FIELDS, YES_LABEL } from "../../lib/cockpit/templates";
+import type { FieldSpec } from "../../lib/cockpit/templates";
 import type { DocTemplate } from "../../lib/cockpit/templates";
 
 /** Creates a document in an existing matter from a firm template. The merged text goes through the
@@ -26,12 +27,19 @@ export function TemplateGenerator({ matterId, practiceArea, onDone }: { matterId
   }, []);
 
   const tpl = useMemo(() => templates?.find((t) => t.id === tplId) ?? null, [templates, tplId]);
-  const fields = useMemo(() => (tpl ? extractFields(tpl.body) : []), [tpl]);
-  const missing = tpl ? missingFields(tpl.body, values) : [];
+  const parsed = useMemo((): { fields: FieldSpec[]; blocking: FieldSpec[]; blanks: string[]; error: string | null } => {
+    if (!tpl) return { fields: [], blocking: [], blanks: [], error: null };
+    try { return { fields: activeFields(tpl.body, values), blocking: blockingFields(tpl.body, values), blanks: blankFields(tpl.body, values), error: null }; }
+    catch (e) { return { fields: [], blocking: [], blanks: [], error: e instanceof TemplateError ? e.message : "התבנית פגומה" }; }
+  }, [tpl, values]);
+  const { fields, blocking, blanks } = parsed;
+  const labelOf = (s: FieldSpec): string => s.kind === "gender" ? `מין ${PARTY_LABEL[s.key.replace(/_gender$/, "")] ?? s.key}` : s.kind === "number" ? `מספר ${PARTY_LABEL[s.key.replace(/_number$/, "")] ?? s.key}` : FIELD_LABEL[s.key] ?? s.key;
+  const optionsFor = (s: FieldSpec): Array<[string, string]> =>
+    s.kind === "gender" ? Object.entries(GENDER_LABEL) : s.kind === "number" ? Object.entries(NUMBER_LABEL) : s.kind === "bool" ? [[YES_LABEL, "כן"], ["no", "לא"]] : s.kind === "choice" ? s.options.map((o) => [o, o]) : [];
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (!tpl) return;
+    if (!tpl || parsed.error || blocking.length) return;
     const text = mergeTemplate(tpl.body, values);
     setBusy(true);
     setStatus({ kind: "info", text: "מעבד: הסתרת מידע מזהה, ניגוד עניינים, ניתוח..." });
@@ -58,15 +66,24 @@ export function TemplateGenerator({ matterId, practiceArea, onDone }: { matterId
       </label>
       {tpl && <>
         <div className="ck-warn">הזינו שמות ומספרי זיהוי רק בשדות הייעודיים. שדות חופשיים (כגון נושא) אינם מוסתרים אלא לפי זיהוי אוטומטי. כתובת אינה מזוהה על ידי מנגנון ההסתרה ולכן אינה נשמרת בשרת: משלימים אותה בקובץ המיוצא.</div>
+        {parsed.error && <div className="ck-err">{parsed.error}</div>}
         <div className="ck-grid2">
-          {fields.map((k) => UNMASKED_FIELDS.has(k)
-            ? <div key={k} className="ck-field"><span>{FIELD_LABEL[k] ?? k}</span><span className="ck-meta">לא נשמרת. תוצג כשדה ריק להשלמה.</span></div>
-            : <label key={k} className="ck-field">{FIELD_LABEL[k] ?? k}
-                <input className="ck-input" autoComplete="off" value={values[k] ?? ""} onChange={(e) => setValues((v) => ({ ...v, [k]: e.target.value }))} />
-              </label>)}
+          {fields.map((s) => UNMASKED_FIELDS.has(s.key)
+            ? <div key={s.key} className="ck-field"><span>{labelOf(s)}</span><span className="ck-meta">לא נשמרת. תוצג כשדה ריק להשלמה.</span></div>
+            : s.kind === "text"
+              ? <label key={s.key} className="ck-field">{labelOf(s)}
+                  <input className="ck-input" autoComplete="off" value={values[s.key] ?? ""} onChange={(e) => setValues((v) => ({ ...v, [s.key]: e.target.value }))} />
+                </label>
+              : <label key={s.key} className="ck-field">{labelOf(s)}
+                  <select className="ck-select" value={values[s.key] ?? ""} onChange={(e) => setValues((v) => ({ ...v, [s.key]: e.target.value }))}>
+                    <option value="">בחרו</option>
+                    {optionsFor(s).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                  </select>
+                </label>)}
         </div>
-        {missing.length > 0 && <div className="ck-meta">שדות ריקים יופיעו כמקום להשלמה: {missing.map((k) => FIELD_LABEL[k] ?? k).join(", ")}.</div>}
-        <div className="ck-row"><button className="ck-btn primary" type="submit" disabled={busy}>יצירת מסמך בתיק</button></div>
+        {blocking.length > 0 && <div className="ck-warn">יש להשלים לפני יצירה: {blocking.map(labelOf).join(", ")}. אלה קובעים איזה נוסח ייכנס למסמך.</div>}
+        {blanks.length > 0 && <div className="ck-meta">שדות טקסט ריקים יופיעו כמקום להשלמה: {blanks.map((k) => FIELD_LABEL[k] ?? k).join(", ")}.</div>}
+        <div className="ck-row"><button className="ck-btn primary" type="submit" disabled={busy || blocking.length > 0 || !!parsed.error}>יצירת מסמך בתיק</button></div>
       </>}
       {status && <div className={status.kind === "info" ? "ck-meta" : status.kind === "warn" ? "ck-warn" : "ck-err"} aria-live="polite">{status.text}</div>}
     </form>
