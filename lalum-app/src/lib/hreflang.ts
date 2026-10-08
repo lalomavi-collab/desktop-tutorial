@@ -90,6 +90,9 @@ export const EN_ARTICLE_SLUGS = new Set<string>([
   "gemini-guide-law",
   "urban-renewal-mistakes-guide",
   "combination-deals-architecture",
+  "portugal-investment-guide",
+  "israeli-realestate-abroad",
+  "ai-international-transactions-overview",
 ]);
 
 // The slug of an /insights/<slug>/ article path, or null for anything else.
