@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-marketing-advertising-privacy-deception-deepfake": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-insurance-underwriting-pricing-regulation",
+   "ai-health-data-privacy",
+   "eu-ai-act-transparency-generative"
+  ]
+ },
  "ai-hr-use-policy": {
   "topic": "ai-governance",
   "related": [
@@ -274,9 +282,9 @@
  "ai-insurance-underwriting-pricing-regulation": {
   "topic": "ai-governance",
   "related": [
+   "ai-marketing-advertising-privacy-deception-deepfake",
    "ai-banking-finance-regulation-risk",
-   "ai-recruitment-screening-discrimination",
-   "israel-ai-regulation-policy"
+   "ai-recruitment-screening-discrimination"
   ]
  },
  "developer-agreement-urban-renewal-critical-clauses": {
@@ -514,8 +522,8 @@
  "ai-risk-frameworks-iso-42001-nist": {
   "topic": "ai-governance",
   "related": [
-   "ai-use-policy-organization",
    "ai-governance-board-framework",
+   "ai-use-policy-organization",
    "eu-ai-act-conformity-file-preparation"
   ]
  },
@@ -939,8 +947,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "algorithmic-transparency",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "algorithmic-transparency"
   ]
  },
  "combination-deals-architecture": {
@@ -1436,7 +1444,7 @@
   "related": [
    "pinui-binui-owner-guide",
    "free-lawyer-illusion",
-   "urban-renewal-required-majority-holdout"
+   "גישור-בהתחדשות-עירונית-פתרונות-סכסוכים-בדרך-יצירתית"
   ]
  },
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
