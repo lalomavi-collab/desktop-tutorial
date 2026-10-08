@@ -1,18 +1,20 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
+import { Icon } from "../../components/Icon";
+import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import "../../styles/cockpit.css";
 
-const NAV: Array<[string, string, boolean]> = [
-  ["/workspace", "תיקים", false],
-  ["/admin/matters", "ניהול", false],
-  ["/settings/billing", "חיוב והגדרות", false],
-  ["/settings/security", "אבטחה", false],
-  ["/workspace/guide", "מדריך", true],
+const NAV: Array<[string, string, boolean, string]> = [
+  ["/workspace", "תיקים", false, "folder"],
+  ["/admin/matters", "ניהול", false, "gavel"],
+  ["/settings/billing", "חיוב והגדרות", false, "card"],
+  ["/settings/security", "אבטחה", false, "shield"],
+  ["/workspace/guide", "מדריך", true, "book"],
 ];
 
 /** Standalone frame for the partner and admin area: Hebrew, RTL, gated by firm membership. */
@@ -47,24 +49,30 @@ export function CockpitFrame({
   }
 
   return (
-    <div className="ck-root" dir="rtl" lang="he">
+    <div className="ck-root ck-with-sidebar" dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
+      <aside className="ck-sidebar">
+        <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
+        <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
+          {NAV.map(([to, label, end, icon]) => (
+            <NavLink key={to} to={to} end={end || to === "/workspace"}>
+              <Icon name={icon} size={18} /><span>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+        <div className="ck-sidebar-foot">
+          <Link to="/portal"><Icon name="user" size={16} /><span>אזור אישי</span></Link>
+          <Link to="/"><Icon name="home" size={16} /><span>לאתר</span></Link>
+          {user && (
+            <button type="button" className="ck-logout" onClick={() => void leave()}>
+              <Icon name="logout" size={16} /><span>התנתקות</span>
+            </button>
+          )}
+        </div>
+      </aside>
       <div className="ck-shell">
         <header className="ck-top">
           <h1 className="serif">{title}</h1>
-          <nav className="ck-nav" aria-label="ניווט הקוקפיט">
-            {NAV.map(([to, label, end]) => (
-              <NavLink key={to} to={to} end={end || to === "/workspace"}>{label}</NavLink>
-            ))}
-            <Link to="/portal">אזור אישי</Link>
-            <Link to="/">לאתר</Link>
-            {user && (
-              <button type="button" className="ck-logout" onClick={() => void leave()}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" /><path d="M16 8l4 4-4 4M20 12H9" /></svg>
-                התנתקות
-              </button>
-            )}
-          </nav>
         </header>
         <main>{body}</main>
       </div>

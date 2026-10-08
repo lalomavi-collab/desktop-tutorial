@@ -4,7 +4,7 @@ import { extractText } from "../../lib/extractText";
 import { originals } from "../../lib/cockpit/originals";
 import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
 
-async function readFile(file: File): Promise<string> {
+export async function readFile(file: File): Promise<string> {
   const name = file.name.toLowerCase();
   if (name.endsWith(".docx") || name.endsWith(".pdf")) {
     // The shared extractor truncates at 14k characters for prompts; a contract must not be cut silently.
