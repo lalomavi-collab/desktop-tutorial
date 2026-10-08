@@ -2,65 +2,65 @@
  "eu-ai-act-2026": {
   "topic": "ai-governance",
   "related": [
-   "eu-ai-act-2026",
    "eu-ai-act-israeli-companies",
-   "ai-governance-board-framework"
+   "ai-governance-board-framework",
+   "israel-ai-regulation-policy"
   ]
  },
  "explainability": {
   "topic": "ai-governance",
   "related": [
-   "explainability",
    "board-liability",
-   "board-liability"
+   "ai-ethics-legal-risks",
+   "ai-recruitment-screening-discrimination"
   ]
  },
  "sovereignty": {
   "topic": "ai-governance",
   "related": [
-   "sovereignty",
    "shadow-it-law-firms",
-   "directors-liability-ai-era"
+   "directors-liability-ai-era",
+   "explainability"
   ]
  },
  "board-liability": {
   "topic": "ai-governance",
   "related": [
-   "board-liability",
    "explainability",
-   "explainability"
+   "directors-liability-ai-era",
+   "ai-governance-board-framework"
   ]
  },
  "procurement": {
   "topic": "ai-governance",
   "related": [
-   "procurement",
    "ai-procurement-tender-local-authority",
-   "ai-risk-frameworks-iso-42001-nist"
+   "ai-risk-frameworks-iso-42001-nist",
+   "defensible"
   ]
  },
  "legal-logic": {
   "topic": "contracts",
   "related": [
-   "legal-logic",
    "defensible",
-   "defensible"
+   "legal-algorist",
+   "explainability"
   ]
  },
  "memory": {
   "topic": "ai-governance",
   "related": [
-   "memory",
    "partnership-dissolution-ai-ownership",
-   "three-minute-legal-check"
+   "three-minute-legal-check",
+   "eu-ai-act-transparency-generative"
   ]
  },
  "defensible": {
   "topic": "ai-governance",
   "related": [
-   "defensible",
    "legal-logic",
-   "legal-logic"
+   "explainability",
+   "ai-risk-frameworks-iso-42001-nist"
   ]
  },
  "ai-hr-use-policy": {
@@ -388,7 +388,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "eu-ai-act-2026"
+   "saas-eu-compliance-israeli-companies"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -491,8 +491,8 @@
   "topic": "ai-governance",
   "related": [
    "eu-ai-act-2026",
-   "eu-ai-act-2026",
-   "ai-use-policy-organization"
+   "ai-use-policy-organization",
+   "directors-liability-ai-era"
   ]
  },
  "directors-liability-ai-era": {
@@ -692,7 +692,7 @@
   "related": [
    "legal-logic",
    "lawyer-wakeup-call",
-   "legal-logic"
+   "why-realestate-needs-ai"
   ]
  },
  "legal-mediation-benefits": {
