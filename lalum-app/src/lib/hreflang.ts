@@ -97,6 +97,8 @@ export const EN_ARTICLE_SLUGS = new Set<string>([
   "eu-ai-act-roles-obligations",
   "eu-ai-act-conformity-file-preparation",
   "eu-ai-act-transparency-generative",
+  "greece-realestate-israeli-buyer-guide",
+  "cyprus-realestate-israeli-buyer-guide",
 ]);
 
 // The slug of an /insights/<slug>/ article path, or null for anything else.
