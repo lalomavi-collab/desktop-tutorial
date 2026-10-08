@@ -1,0 +1,37 @@
+/* Dark theme for the login and client portal routes only. These two pages live
+   inside the marketing layout (so they keep the site header, footer and nav),
+   but they are the entrance to the management system, so the whole page runs on
+   the same charcoal palette as the cockpit. MarketingLayout toggles the
+   body.marketing-dark class on those routes and removes it on every other.
+
+   This only redefines the site's colour tokens on the body for these routes, so
+   the header, footer, the login card and the portal all follow automatically;
+   nothing on any other page changes. Contrast is held at WCAG AA, the same
+   values the cockpit uses. */
+body.marketing-dark {
+  --ivory: #14161b;      /* page background */
+  --paper: #1a1d24;
+  --card: #1e222a;       /* cards, inputs */
+  --ink: #e9ecf0;        /* primary text */
+  --slate: #a7aeb9;      /* secondary text */
+  --line: rgba(255, 255, 255, .085);
+  --line-strong: rgba(255, 255, 255, .2);
+  --clay: #7fb785;       /* sage accent: a link on dark, a fill under dark text */
+  --clay-hover: #93c498;
+  --clay-bright: #8ec594;
+  --clay-soft: rgba(127, 183, 133, .5);
+  --clay-tint: #222a24;
+  --success: #74c98a;
+  --brand-green-on-white: #8ec594;
+  --danger: #e68478;
+  --warning: #e3b659;
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+/* The site's clay buttons fill with the accent and set white text, which fails
+   on the lighter sage. On these routes they carry dark text instead. */
+body.marketing-dark .btn-clay,
+body.marketing-dark .btn-clay-bright {
+  color: #10140f;
+}
