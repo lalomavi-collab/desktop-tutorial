@@ -14,7 +14,8 @@
     "postbuild": "node scripts/build-check.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "split-articles": "node scripts/split-articles.mjs",
-    "a11y-audit": "node scripts/a11y-audit.mjs"
+    "a11y-audit": "node scripts/a11y-audit.mjs",
+    "template-check": "node scripts/template-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
