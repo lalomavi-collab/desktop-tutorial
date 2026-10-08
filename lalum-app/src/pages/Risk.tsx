@@ -45,7 +45,7 @@ export function RiskResult() {
 
   return (
     <>
-      <PageMeta title={`${title} | LALUM`} description={r.body} path={path}
+      <PageMeta title={`${title} | LALUM`} description={r.body} path={path} noindex
         image={`https://lalumapp.com/og/risk-${track}-${band}.png`}
         jsonLd={pageJsonLd([pageNode("WebPage", title, r.body, `https://lalumapp.com${path}`)])} />
       <section className="wrap section" style={{ maxWidth: 760, paddingTop: 72 }}>
