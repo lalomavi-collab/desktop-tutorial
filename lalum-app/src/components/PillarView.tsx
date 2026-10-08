@@ -6,6 +6,14 @@ import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import type { PillarPage } from "../lib/pillars";
 import { DiscussionsTrigger, type DiscussionTopic } from "./DiscussionsPanel";
+import { PillarArt, type PillarArtTheme } from "./PillarArt";
+
+// The mediation pillar gets no illustration: per the two-focus-areas rule,
+// mediation is not a growth area and gets nothing new, PillarArt included.
+const ART_THEME: Record<string, PillarArtTheme | undefined> = {
+  "ai-legal-advisory": "ai",
+  "real-estate-legal-advisory": "realestate",
+};
 
 // Which of the two Discussions topics (see DiscussionsPanel.tsx) this pillar
 // maps to. The mediation pillar maps to none: that cluster gets no new
@@ -27,6 +35,7 @@ const DISCUSSION_TOPIC: Record<string, DiscussionTopic | undefined> = {
 export function PillarView({ P }: { P: PillarPage }) {
   const faqs = P.faqs;
   const discussionTopic = DISCUSSION_TOPIC[P.path];
+  const artTheme = ART_THEME[P.path];
   const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
   // Single open question at a time, same as PracticeFaq. Empty string is
   // "none open", not a valid question text, so it never collides with a q.
@@ -37,17 +46,24 @@ export function PillarView({ P }: { P: PillarPage }) {
       <PageMeta title={`${P.title} | LALUM`} description={P.desc} image={P.og} path={`/${P.path}`} jsonLd={jsonLd} />
 
       {/* HERO */}
-      <section className="wrap section" style={{ maxWidth: 900, paddingTop: 60 }}>
-        <div className="pillar-hero">
-          <p className="eyebrow">{P.heroEyebrow}</p>
-          <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 46px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
-            {P.title}
-          </h1>
-          <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch", margin: 0 }}>{P.lede}</p>
-          <div className="pillar-hero-cta">
-            <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
-            <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
+      <section className="wrap section" style={{ maxWidth: artTheme ? 1140 : 900, paddingTop: 60 }}>
+        <div className={artTheme ? "pillar-hero-layout" : undefined}>
+          <div className="pillar-hero">
+            <p className="eyebrow">{P.heroEyebrow}</p>
+            <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 46px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
+              {P.title}
+            </h1>
+            <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch", margin: 0 }}>{P.lede}</p>
+            <div className="pillar-hero-cta">
+              <Link to="/book" className="btn btn-clay"><Icon name="calendar" size={17} /> {P.ui.book}</Link>
+              <Link to={`/${P.secondary}`} className="btn btn-outline">{P.secondary === "training" ? P.ui.training : P.ui.fullAdvisory}</Link>
+            </div>
           </div>
+          {artTheme && (
+            <aside className="pillar-hero-art">
+              <PillarArt theme={artTheme} />
+            </aside>
+          )}
         </div>
       </section>
 

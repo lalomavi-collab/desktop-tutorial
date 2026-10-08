@@ -6,6 +6,7 @@ import { PageMeta } from "../components/PageMeta";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { OPEN_GUIDE_EVENT } from "../components/UserGuide";
+import { PillarArt } from "../components/PillarArt";
 
 // Central knowledge hub. For now Q&A and Articles link out to the firm site
 // (www.lalum.co); as the content is uploaded into the app, only the hrefs here
@@ -61,12 +62,17 @@ export function Knowledge() {
       <PageMeta title={t.seo.knowledge.title} description={t.seo.knowledge.desc} path="/knowledge" jsonLd={pageJsonLd([pageNode("CollectionPage", t.seo.knowledge.title, t.seo.knowledge.desc, "https://lalumapp.com/knowledge")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 40px", textAlign: "center" }}>
-          <span className="pill">{k.heroPill}</span>
-          <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
-            {k.title}
-          </h1>
-          <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{k.sub}</p>
+        <div className="wrap pillar-hero-layout" style={{ maxWidth: 1140, padding: "96px 32px 40px", alignItems: "center" }}>
+          <div style={{ textAlign: "center" }}>
+            <span className="pill">{k.heroPill}</span>
+            <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
+              {k.title}
+            </h1>
+            <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{k.sub}</p>
+          </div>
+          <aside className="pillar-hero-art">
+            <PillarArt theme="knowledge" />
+          </aside>
         </div>
       </section>
 
