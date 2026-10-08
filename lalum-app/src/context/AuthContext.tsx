@@ -12,6 +12,7 @@ type AuthValue = {
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
+  verifyRecoveryCode: (email: string, code: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
 };
 
@@ -89,6 +90,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
+  // The same reset email also carries a one-time code ({{ .Token }} in the
+  // Supabase "Reset Password" template), for a visitor who would rather type
+  // a code than follow a link. Verifying it establishes the same recovery
+  // session a clicked link would (fires PASSWORD_RECOVERY), so everything
+  // downstream (the MFA gate, the new-password form) stays the one path.
+  const verifyRecoveryCode: AuthValue["verifyRecoveryCode"] = async (email, code) => {
+    if (!supabase) {
+      if (code.trim().length < 6) return { error: "Enter the 6-digit code from the email." };
+      return { error: null };
+    }
+    const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: "recovery" });
+    return { error: error?.message ?? null };
+  };
+
   const updatePassword: AuthValue["updatePassword"] = async (password) => {
     if (!supabase) {
       if (password.length < 6) return { error: "Enter a password of at least 6 characters." };
@@ -99,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut, resetPassword, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut, resetPassword, verifyRecoveryCode, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );
