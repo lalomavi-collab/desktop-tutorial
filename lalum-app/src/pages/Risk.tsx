@@ -4,6 +4,7 @@ import { Icon } from "../components/Icon";
 import { TechLegalCalculator } from "../components/TechLegalCalculator";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE, type TrackId, type BandId } from "../lib/riskScore";
+import { PillarArt } from "../components/PillarArt";
 
 const TITLE = `מבדק מוכנות Tech-Legal: כמה הארגון שלכם חשוף?`;
 const DESC = `מבדק קצר בן שמונה שאלות שמעריך את מוכנות הארגון בממשל בינה מלאכותית, בבדיקת חוזים, בסודיות מידע, באחריות מול ספקים ובתיעוד החלטות. תיאור עצמי, בלי להעלות שום מסמך.`;
@@ -13,14 +14,19 @@ export function Risk() {
     <>
       <PageMeta title={`${TITLE} | LALUM`} description={DESC} path="/risk"
         jsonLd={pageJsonLd([pageNode("WebPage", TITLE, DESC, "https://lalumapp.com/risk")])} />
-      <section className="wrap section" style={{ maxWidth: 820, paddingTop: 72 }}>
-        <p className="eyebrow">מבדק מוכנות</p>
-        <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 44px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
-          {TITLE}
-        </h1>
-        <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "62ch" }}>
-          רוב הארגונים לא יודעים היכן הם חשופים עד שמשהו משתבש. שמונה שאלות על התנהלות בפועל, שש משותפות ושתיים לפי תחום הפעילות, מספיקות כדי לסמן את הפער העיקרי ולדעת מה הצעד הבא.
-        </p>
+      <section className="wrap section pillar-hero-layout" style={{ maxWidth: 1140, paddingTop: 72, alignItems: "center" }}>
+        <div>
+          <p className="eyebrow">מבדק מוכנות</p>
+          <h1 className="serif" style={{ fontSize: "clamp(30px, 6.5vw, 44px)", lineHeight: 1.16, letterSpacing: "-0.015em", margin: "12px 0 18px" }}>
+            {TITLE}
+          </h1>
+          <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "62ch" }}>
+            רוב הארגונים לא יודעים היכן הם חשופים עד שמשהו משתבש. שמונה שאלות על התנהלות בפועל, שש משותפות ושתיים לפי תחום הפעילות, מספיקות כדי לסמן את הפער העיקרי ולדעת מה הצעד הבא.
+          </p>
+        </div>
+        <aside className="pillar-hero-art">
+          <PillarArt theme="clinic" />
+        </aside>
       </section>
       <section className="wrap section" style={{ maxWidth: 820, paddingTop: 0 }}>
         <TechLegalCalculator />
