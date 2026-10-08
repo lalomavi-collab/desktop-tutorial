@@ -10,6 +10,7 @@ import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
+import { DeleteDoc, DocMeta } from "./DocControls";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -30,7 +31,7 @@ function tokenMap(docId: string): Map<string, string> | null {
 }
 const restore = (text: string, map: Map<string, string>): string => text.replace(TOKEN_RE, (t) => map.get(t) ?? t);
 
-export function MatterCockpit({ matterId, member }: { matterId: string; member: Membership }) {
+export function MatterCockpit({ matterId, member, platformAdmin = false }: { matterId: string; member: Membership; platformAdmin?: boolean }) {
   const [matter, setMatter] = useState<Matter | null>(null);
   const [routing, setRouting] = useState<Routing | null>(null);
   const [docs, setDocs] = useState<MatterDoc[]>([]);
@@ -82,7 +83,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
       const [mr, rr, dr] = await Promise.all([
         supabase.from("lalum_cockpit_matters").select("*").eq("id", matterId).maybeSingle(),
         supabase.from("lalum_intake_routings").select("*").eq("matter_id", matterId).maybeSingle(),
-        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at").eq("matter_id", matterId).order("created_at"),
+        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date").eq("matter_id", matterId).order("created_at"),
       ]);
       if (!live) return;
       const m = mr.data as Matter | null;
@@ -255,7 +256,12 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <h2>כספת תיק ומרכז ראיות</h2>
           <div className="ck-row"><PiiBadge /></div>
           <div className="ck-label">מסמכים</div>
-          <div className="ck-stack">{docs.map((d) => <button key={d.id} className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>)}</div>
+          <div className="ck-stack">{docs.map((d) => (
+            <div key={d.id} className="ck-stack">
+              <button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>
+              <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
+              {platformAdmin && <DeleteDoc doc={d} onDeleted={() => { prefer.current = null; setRev((n) => n + 1); }} />}
+            </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
