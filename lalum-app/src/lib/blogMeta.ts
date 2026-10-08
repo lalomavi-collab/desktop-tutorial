@@ -12,6 +12,13 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "ai-vendor-agreement-dpa-liability-indemnity",
+    "title": "הסכם עם ספק בינה מלאכותית: מידע, אחריות ושיפוי שכדאי להסדיר לפני חתימה",
+    "excerpt": "ספק AI שמציג תנאים אחידים מציג חלוקת סיכונים שנוחה לו. מדריך לשלוש השאלות שמכריעות בחוזה: מה קורה למידע שמוזנים (DPA, אימון, תתי-מעבדים), מי אחראי לפלט שגוי ואיפה התקרה, ומה שווה סעיף השיפוי.",
+    "date": "אוקטובר 2026",
+    "cover": "/images/covers/contract-review-before-signing.webp"
+  },
+  {
     "slug": "ai-marketing-advertising-privacy-deception-deepfake",
     "title": "בינה מלאכותית בשיווק ובפרסום: פרטיות, הטעיה וזיוף עמוק",
     "excerpt": "שימוש בבינה מלאכותית בקמפיינים, בהתאמה אישית ובתוכן מסונתז מעורר שלוש חשיפות: פרטיות, הטעיית צרכנים והשימוש בדמות אמיתית. מדריך לבקרות ולנוהל אישור לפני פרסום.",

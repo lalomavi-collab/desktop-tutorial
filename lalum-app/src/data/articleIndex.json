@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-vendor-agreement-dpa-liability-indemnity": {
+  "topic": "contracts",
+  "related": [
+   "ai-marketing-advertising-privacy-deception-deepfake",
+   "ai-health-data-privacy",
+   "gdpr-israeli-companies-ai"
+  ]
+ },
  "ai-marketing-advertising-privacy-deception-deepfake": {
   "topic": "ai-governance",
   "related": [
    "ai-insurance-underwriting-pricing-regulation",
-   "ai-health-data-privacy",
-   "eu-ai-act-transparency-generative"
+   "ai-vendor-agreement-dpa-liability-indemnity",
+   "ai-health-data-privacy"
   ]
  },
  "ai-hr-use-policy": {
@@ -460,7 +468,7 @@
   "related": [
    "gdpr-israeli-companies-ai",
    "ip-value-collapse-ai-acquisition",
-   "partnership-dissolution-ai-ownership"
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "overseas-property-holding-structure": {
@@ -484,7 +492,7 @@
   "related": [
    "tama-38-1-vs-38-2-comparison",
    "tenant-urban-renewal-guide",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -571,8 +579,8 @@
   "topic": "contracts",
   "related": [
    "attorney-client-privilege-ai",
-   "ai-health-data-privacy",
-   "partnership-dissolution-ai-ownership"
+   "ai-vendor-agreement-dpa-liability-indemnity",
+   "ai-health-data-privacy"
   ]
  },
  "portugal-investment-guide": {
@@ -932,7 +940,7 @@
   "related": [
    "homeowners-iron-dome",
    "free-lawyer-illusion",
-   "combination-deals-architecture"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "law-algorithm-era": {
@@ -947,8 +955,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "digital-lawyers-2026",
-   "algorithmic-transparency"
+   "algorithmic-transparency",
+   "digital-lawyers-2026"
   ]
  },
  "combination-deals-architecture": {
@@ -1372,7 +1380,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1386,8 +1394,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
@@ -1586,8 +1594,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
