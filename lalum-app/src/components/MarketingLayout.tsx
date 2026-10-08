@@ -20,6 +20,7 @@ import { SosMenu } from "./SosMenu";
 import { useLang } from "../context/LangContext";
 import { useScrollReveal } from "../lib/useScrollReveal";
 import { hasHebrewOnlyContent, stripLangPrefix } from "../lib/hreflang";
+import "../styles/marketing-dark.css";
 
 export function MarketingLayout() {
   const { pathname, hash } = useLocation();
@@ -33,6 +34,17 @@ export function MarketingLayout() {
   useEffect(() => {
     if (!hash) window.scrollTo(0, 0);
   }, [pathname, hash]);
+
+  // Login and the client portal are the entrance to the management system, so
+  // they run dark (header, footer and nav included) while every other route
+  // stays light. The class carries the dark token palette; it is toggled on the
+  // body, not a wrapper, so the page background goes dark edge to edge.
+  useEffect(() => {
+    const bare = stripLangPrefix(pathname);
+    const dark = bare === "/login" || bare === "/portal";
+    document.body.classList.toggle("marketing-dark", dark);
+    return () => document.body.classList.remove("marketing-dark");
+  }, [pathname]);
 
   return (
     <>
