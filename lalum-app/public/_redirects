@@ -353,14 +353,18 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /ar/contact  /book/  301
 /ar/contact/  /book/  301
 
-# A non-pilot article under /en/insights/ (no English page) routed to the
-# Hebrew article. An exact rule does not fire here: Cloudflare Pages returns
-# 404 for a third-level path under the /en/insights/ directory (which holds the
-# five pilot pages as index.html subfolders) before an exact redirect is
-# consulted. A splat rule is still evaluated there (that is how the es, fr and
-# ar /insights/* rules work), so this uses one, scoped tightly to this one slug
-# so it cannot capture any of the five pilot pages.
-/en/insights/combination-deals-architecture*  /insights/combination-deals-architecture/  301
+# No redirect is possible for a non-pilot article under /en/insights/. The
+# directory holds the five English pilot pages as index.html subfolders, and
+# Cloudflare Pages serves an asset 404 for any missing third-level path there
+# WITHOUT consulting _redirects at all: verified that neither an exact rule nor
+# a slug-scoped splat fires (while the es, fr and ar /insights/* splats do,
+# because those directories carry no static children). A broad /en/insights/*
+# splat would fire but would also 301 the five pilot pages to Hebrew, undoing
+# their English versions. So these phantom English URLs stay 404, which is the
+# correct answer: no English page exists, nothing links to them, and Google
+# drops them on re-crawl. The only way to turn one into a 200 is to publish a
+# real English translation (add the slug to EN_ARTICLE_SLUGS with an enPosts
+# entry).
 
 # --- Legacy /articles blog index -> new articles hub ---
 # An old path that never existed in the current app. Send it, and anything
