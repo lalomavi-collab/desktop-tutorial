@@ -55,7 +55,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
             <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
               <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{x.title}</Link></td>
               <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
-              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${x.title} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>למחיקה</button></td>}
+              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${x.title} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
             </tr>); })}
         </tbody></table></div>
       )}
