@@ -51,7 +51,7 @@ export function CockpitFrame({
   else {
     const inner = children({ member: access.member, platformAdmin: access.platformAdmin });
     const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");
-    body = mfa && partnerLike ? <MfaGate required={access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
+    body = mfa && partnerLike ? <MfaGate required={access.platformAdmin || access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
   }
 
   return (
