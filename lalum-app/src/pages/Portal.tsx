@@ -9,6 +9,7 @@ import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { GroupChat } from "../components/GroupChat";
+import { PortalSigning } from "../components/PortalSigning";
 import { bcp47For, type Lang } from "../lib/hreflang";
 import { topicBySlug } from "../lib/topics";
 
@@ -1082,6 +1083,9 @@ export function Portal() {
         {msgResult && <div className={`notice ${msgResult.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{msgResult.text}</div>}
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
       </div>
+
+      {/* CLIENT DOCUMENTS TO SIGN */}
+      {!isAdmin && <PortalSigning />}
 
       {/* CLIENT CONVERSATION THREAD */}
       {!isAdmin && thread.length > 0 && (
