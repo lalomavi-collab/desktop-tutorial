@@ -6,9 +6,10 @@ import type { FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
+import { ArchiveTab } from "./ArchiveTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"]];
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId }: { firmId: string }) {
@@ -78,6 +79,7 @@ export function FinanceHome({ firmId }: { firmId: string }) {
       )}
       {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} onChange={() => void load()} />}
       {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
+      {tab === "archive" && loaded && <ArchiveTab />}
       {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
     </div>
   );

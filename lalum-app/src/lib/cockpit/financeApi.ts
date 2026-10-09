@@ -53,3 +53,35 @@ export async function issueDocument(documentId: string, action: "issue" | "recon
     clearTimeout(timer);
   }
 }
+
+export interface ImportReply {
+  ok?: boolean; code?: string; fetched?: number; inserted?: number; updated?: number; linked?: number; skipped?: number;
+  doc_type?: number; errors?: string[]; per_type?: Record<string, number>;
+}
+const IMPORT_ERRORS: Record<string, string> = {
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. נדרש שותף במשרד עם אימות דו שלבי.",
+  invoice4u_not_configured: "החיבור ל-Invoice4U לא הוגדר בשרת.", invoice4u_rejected: "Invoice4U דחה את הבקשה. בדקו שמפתח ה-API תקף לסביבה שנבחרה.",
+  archive_conflict: "Invoice4U מדווח סכומים שונים ממה שכבר נשמר לאחד המספרים. הייבוא נעצר ודורש בדיקה ידנית.",
+  bad_range: "טווח תאריכים לא תקין.", db_error: "שמירה למסד הנתונים נכשלה.", fetch_failed: "שגיאת תקשורת מול Invoice4U.",
+};
+export const importError = (r: ImportReply): string => `${IMPORT_ERRORS[r.code ?? ""] ?? "הייבוא נכשל."}${r.doc_type ? ` (סוג מסמך ${r.doc_type})` : ""}`;
+
+/** Read-only import from Invoice4U. Never creates or changes anything there. */
+export async function importFromInvoice4u(body: { action: "customers" } | { action: "documents"; from: string; to: string }): Promise<ImportReply> {
+  if (!supabase) return { ok: false, code: "fetch_failed" };
+  const { data } = await supabase.auth.getSession();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 120000);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-import`, {
+      method: "POST", signal: ctl.signal,
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
+      body: JSON.stringify(body),
+    });
+    try { return (await res.json()) as ImportReply; } catch { return { ok: false, code: "fetch_failed" }; }
+  } catch {
+    return { ok: false, code: "fetch_failed" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
