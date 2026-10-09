@@ -11,20 +11,42 @@ export const isSupabaseConfigured = Boolean(url && anonKey);
 // auth token lives only in sessionStorage and is cleared when the browser
 // closes; otherwise it persists in localStorage so they stay signed in on this
 // device and the browser's password manager can offer to save the password.
+//
+// Every call is wrapped in try/catch: some browsers throw a SecurityError on
+// localStorage/sessionStorage access rather than just returning an empty
+// store (seen in Chrome Incognito under a strict site-data policy). Before
+// this guard, that throw happened inside the Supabase client's own auth
+// init, at module scope, which every page imports: one visitor whose browser
+// blocks storage got a blank page everywhere, not just a signed-out /portal.
 export const REMEMBER_KEY = "lalum_remember";
 const authStorage =
   typeof window !== "undefined"
     ? {
-        getItem: (k: string) => window.localStorage.getItem(k) ?? window.sessionStorage.getItem(k),
+        getItem: (k: string) => {
+          try {
+            return window.localStorage.getItem(k) ?? window.sessionStorage.getItem(k);
+          } catch {
+            return null;
+          }
+        },
         setItem: (k: string, v: string) => {
-          const remember = window.localStorage.getItem(REMEMBER_KEY) !== "0";
-          (remember ? window.localStorage : window.sessionStorage).setItem(k, v);
-          // Never let the token linger in the other store after a switch.
-          (remember ? window.sessionStorage : window.localStorage).removeItem(k);
+          try {
+            const remember = window.localStorage.getItem(REMEMBER_KEY) !== "0";
+            (remember ? window.localStorage : window.sessionStorage).setItem(k, v);
+            // Never let the token linger in the other store after a switch.
+            (remember ? window.sessionStorage : window.localStorage).removeItem(k);
+          } catch {
+            // Storage blocked: the session simply will not persist across
+            // reloads, which is the same experience as "remember me" off.
+          }
         },
         removeItem: (k: string) => {
-          window.localStorage.removeItem(k);
-          window.sessionStorage.removeItem(k);
+          try {
+            window.localStorage.removeItem(k);
+            window.sessionStorage.removeItem(k);
+          } catch {
+            /* ignore */
+          }
         },
       }
     : undefined;
