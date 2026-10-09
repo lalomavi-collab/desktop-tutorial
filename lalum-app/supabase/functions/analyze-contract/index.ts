@@ -17,7 +17,10 @@
 //      a citation nobody can trace does not get to look like a checked one.
 //
 // Deploy: supabase functions deploy analyze-contract --no-verify-jwt
-// Requires env: ANTHROPIC_API_KEY (server only, already set for lalum-assistant).
+// Requires env: ANTHROPIC_API_KEY (server only, already set for lalum-assistant),
+// SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (auto) for the rate limiter below.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "claude-sonnet-5";
 const MAX_OUTPUT_TOKENS = 8192;
@@ -41,6 +44,24 @@ const CORS: Record<string, string> = {
 
 const json = (status: number, data: unknown) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, "content-type": "application/json" } });
+
+// Abuse guard: a hashed client key per route, counted in Postgres (lalum_rate_limit,
+// already used by lalum-book and lalum-discussion-submit). Fails open: a limiter
+// error never blocks a real visitor. This endpoint is public, unauthenticated, and
+// a single Sonnet-class call with an 8192-token ceiling, so it needs one more than
+// the char-length bound already in place.
+async function sha(s: string): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+// deno-lint-ignore no-explicit-any
+async function allowed(admin: any, key: string, max: number, windowSeconds: number): Promise<boolean> {
+  try {
+    const { data, error } = await admin.rpc("lalum_rate_limit", { p_key: key, p_max: max, p_window_seconds: windowSeconds });
+    return error ? true : data !== false;
+  } catch { return true; }
+}
+const clientIp = (req: Request): string => (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
 
 const DISCLAIMER =
   "המידע לעיל הופק על ידי מנוע בינה מלאכותית לצורכי ייעול וסיוע ראשוני בלבד, אינו ייעוץ משפטי, ואינו יוצר יחסי עורך דין לקוח. אין להסתמך עליו לפני בדיקה ואישור של עורך דין מוסמך.";
@@ -164,6 +185,18 @@ Deno.serve(async (req) => {
   const documentName = typeof body.document_name === "string" ? body.document_name.trim().slice(0, 200) : "";
   if (contractText.length < MIN_CONTRACT_CHARS) return json(400, { code: "contract_too_short" });
   if (contractText.length > MAX_CONTRACT_CHARS) return json(400, { code: "contract_too_long", max_chars: MAX_CONTRACT_CHARS });
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (supabaseUrl && serviceKey) {
+    const admin = createClient(supabaseUrl, serviceKey);
+    // Ten reviews an hour per client: generous for a real session reviewing
+    // several contracts, bounded against an anonymous caller running up the
+    // model bill in a loop.
+    if (!(await allowed(admin, `analyze-contract:ip:${await sha(clientIp(req))}`, 10, 3600))) {
+      return json(429, { code: "too_many_requests" });
+    }
+  }
 
   const playbookCriteria =
     typeof body.playbook_criteria === "string" ? body.playbook_criteria.trim().slice(0, MAX_PLAYBOOK_CHARS) : "";

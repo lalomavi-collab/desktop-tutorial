@@ -20,7 +20,10 @@
 //      concatenation of all of them.
 //
 // Deploy: supabase functions deploy compare-contracts --no-verify-jwt
-// Requires env: ANTHROPIC_API_KEY (server only, already set for lalum-assistant).
+// Requires env: ANTHROPIC_API_KEY (server only, already set for lalum-assistant),
+// SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (auto) for the rate limiter below.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "claude-sonnet-5";
 const MAX_OUTPUT_TOKENS = 8192;
@@ -37,6 +40,22 @@ const CORS: Record<string, string> = {
 
 const json = (status: number, data: unknown) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, "content-type": "application/json" } });
+
+// Abuse guard: same pattern as analyze-contract (and lalum-book, lalum-discussion-submit
+// before it) — a hashed client key per route, counted in Postgres (lalum_rate_limit).
+// Fails open: a limiter error never blocks a real visitor.
+async function sha(s: string): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+// deno-lint-ignore no-explicit-any
+async function allowed(admin: any, key: string, max: number, windowSeconds: number): Promise<boolean> {
+  try {
+    const { data, error } = await admin.rpc("lalum_rate_limit", { p_key: key, p_max: max, p_window_seconds: windowSeconds });
+    return error ? true : data !== false;
+  } catch { return true; }
+}
+const clientIp = (req: Request): string => (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
 
 const DISCLAIMER =
   "המידע לעיל הופק על ידי מנוע בינה מלאכותית לצורכי ייעול וסיוע ראשוני בלבד, אינו ייעוץ משפטי, ואינו יוצר יחסי עורך דין לקוח. אין להסתמך עליו לפני בדיקה ואישור של עורך דין מוסמך.";
@@ -169,6 +188,18 @@ Deno.serve(async (req) => {
   for (const d of documents) {
     if (d.text.length < MIN_DOC_CHARS) return json(400, { code: "document_too_short" });
     if (d.text.length > MAX_DOC_CHARS) return json(400, { code: "document_too_long", max_chars: MAX_DOC_CHARS });
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (supabaseUrl && serviceKey) {
+    const admin = createClient(supabaseUrl, serviceKey);
+    // Ten comparisons an hour per client, same bound as analyze-contract: this
+    // is the same Sonnet-class, 8192-token-ceiling cost profile, just fed
+    // several documents instead of one.
+    if (!(await allowed(admin, `compare-contracts:ip:${await sha(clientIp(req))}`, 10, 3600))) {
+      return json(429, { code: "too_many_requests" });
+    }
   }
 
   const playbookCriteria = typeof body.playbook_criteria === "string" ? body.playbook_criteria.trim().slice(0, 4000) : "";
