@@ -86,7 +86,7 @@ export function useInstall() {
 export function AppInstall() {
   const { t } = useLang();
   const f = t.ui.footer;
-  const { installed, canPrompt, promptInstall } = useInstall();
+  const { installed, promptInstall } = useInstall();
   const [showHow, setShowHow] = useState(false);
 
   async function onInstall() {
@@ -104,10 +104,14 @@ export function AppInstall() {
       <div className="footer-download-text">
         <h3 className="footer-download-title">{f.downloadTitle}</h3>
         <p className="footer-download-sub">{f.downloadSub}</p>
-        {/* Install control. CSS shows it on phones (where the QR is hidden) and
-            keeps it out of the way on desktop, unless a native install prompt is
-            available, in which case it is offered everywhere. */}
-        <div className={`footer-install${canPrompt ? " has-prompt" : ""}`}>
+        {/* Install control. Shown on both phone and desktop: desktop also has
+            the QR as a secondary path, but the button should not be the one
+            thing a desktop visitor cannot reach just because they are not
+            installable yet (see index.css .footer-install for the history:
+            it used to be desktop-hidden unless a native prompt had already
+            fired, which meant it simply never appeared for most desktop
+            visitors). */}
+        <div className="footer-install">
           <button type="button" className="btn btn-clay footer-install-btn" onClick={onInstall} aria-expanded={showHow}>
             <DownloadIcon /> {f.installApp}
           </button>

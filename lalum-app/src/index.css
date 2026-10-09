@@ -2820,16 +2820,17 @@ html.a11y-reduce-motion *::after {
   color: var(--clay);
 }
 
-/* Install control: primary path on phones, offered on desktop only when the
-   browser exposes a native install prompt (.has-prompt). */
+/* Install control: shown everywhere, phone and desktop alike. Clicking it
+   triggers the native one-tap prompt where the browser offers one; where it
+   does not (desktop Safari/Firefox, or before beforeinstallprompt has fired),
+   onInstall falls back to the per-platform "how to install" steps below, the
+   same fallback iOS already needed, so there is no dead "install" button
+   that silently does nothing when clicked. */
 .footer-install {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 14px;
-}
-.footer-install.has-prompt {
-  display: flex;
 }
 .footer-install-btn {
   align-self: flex-start;
