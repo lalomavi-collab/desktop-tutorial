@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { readFile } from "./Intake";
-import { callPipeline, errorText } from "../../lib/cockpit/shared";
+import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
 import { storeOriginal } from "../../lib/cockpit/storeOriginal";
 import { findExisting, sha256File } from "../../lib/cockpit/dedupe";
 import { supabase } from "../../lib/supabase";
@@ -17,7 +17,9 @@ const MAX_FILES_PER_MATTER = 200;
 
 interface Entry { name: string; file: File; hash: string }
 // files = new, unique files to import. existing = already in the vault (matched by SHA-256). dupes = repeats inside the folder.
-interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean }
+interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[] }
+// Folders that are usually a sorting place, not a matter: left unchecked until the partner decides.
+const SORTING = /(דואר|נכנס|יוצא|inbox|outbox|סריק|scan|הורד|download|\btmp\b|\btemp\b|טיוטות|ארכיון|archive|שונות|misc|new folder|תיקייה חדשה)/i;
 type Row = { folder: string; state: "wait" | "run" | "done" | "warn" | "err"; text: string };
 
 // Minimal typing for the File System Access API (Chrome, Edge).
@@ -43,18 +45,40 @@ function Importer({ firmId }: { firmId: string }) {
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
   const [progress, setProgress] = useState("");
+  const [root, setRoot] = useState<DirHandle | null>(null);
+  const [level, setLevel] = useState<1 | 2>(1);
 
   async function pick() {
     setNote(""); setRows([]);
     try {
-      const root = await (window as unknown as { showDirectoryPicker(o: { mode: "read" }): Promise<DirHandle> }).showDirectoryPicker({ mode: "read" });
+      const r = await (window as unknown as { showDirectoryPicker(o: { mode: "read" }): Promise<DirHandle> }).showDirectoryPicker({ mode: "read" });
+      setRoot(r);
+      await scan(r, level);
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") setNote("לא ניתן לקרוא את התיקייה.");
+    }
+  }
+
+  // level 1: every direct sub folder is a matter. level 2: folders are clients and their sub folders are the matters.
+  async function scan(rootDir: DirHandle, lvl: 1 | 2) {
+    setNote(""); setRows([]); setPlans(null);
+    try {
       const raw: Array<{ folder: string; files: Array<{ name: string; file: File }>; skipped: number }> = [];
-      for await (const h of root.values()) {
-        if (h.kind !== "directory" || h.name.startsWith(".")) continue;
+      let loose = 0;
+      const addMatter = async (dir: DirHandle, label: string) => {
         const all: Array<{ name: string; file: File }> = [];
-        await collect(h, all, "", 0);
+        await collect(dir, all, "", 0);
         const ok = all.filter((e) => EXT.some((x) => e.name.toLowerCase().endsWith(x)) && e.file.size > 0 && e.file.size <= MAX_BYTES).slice(0, MAX_FILES_PER_MATTER);
-        if (ok.length) raw.push({ folder: h.name, files: ok, skipped: all.length - ok.length });
+        if (ok.length) raw.push({ folder: label, files: ok, skipped: all.length - ok.length });
+      };
+      for await (const h of rootDir.values()) {
+        if (h.name.startsWith(".")) continue;
+        if (h.kind === "file") { loose++; continue; }
+        if (lvl === 1) { await addMatter(h, h.name); continue; }
+        for await (const g of h.values()) {
+          if (g.name.startsWith(".")) continue;
+          if (g.kind === "file") loose++; else await addMatter(g, `${h.name} / ${g.name}`);
+        }
       }
       // Fingerprint every file, then ask the vault which of them it already holds.
       const hashed: Array<{ folder: string; skipped: number; files: Entry[] }> = [];
@@ -77,7 +101,8 @@ function Importer({ firmId }: { firmId: string }) {
         const best = [...overlap.entries()].sort((x, y) => y[1] - x[1])[0];
         const target = best && best[1] * 2 >= unique.length ? best[0] : null;
         const fresh = unique.filter((f) => !target || !(known.get(f.hash) ?? []).includes(target));
-        return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 };
+        const flag = SORTING.test(h.folder) ? "נראית כתיקיית מיון ולא כתיק" : null;
+        return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 && !flag, flag, practice: "", sample: fresh.slice(0, 3).map((f) => f.name) };
       });
       const ids = [...new Set(found.map((p) => p.targetMatter).filter((x): x is string => !!x))];
       if (ids.length && supabase) {
@@ -87,9 +112,12 @@ function Importer({ firmId }: { firmId: string }) {
       }
       found.sort((a, b) => a.folder.localeCompare(b.folder, "he"));
       setPlans(found);
-      if (!found.length) setNote("לא נמצאו תתי-תיקיות עם מסמכים נתמכים (Word, PDF, טקסט, HTML).");
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") setNote("לא ניתן לקרוא את התיקייה.");
+      const msgs: string[] = [];
+      if (!found.length) msgs.push("לא נמצאו תיקיות עם מסמכים נתמכים (Word, PDF, טקסט, HTML) ברמה שנבחרה.");
+      if (loose) msgs.push(`${loose} קבצים עומדים מחוץ לתיקיות התיקים ולכן לא ייובאו (קובץ שאינו בתיקיית תיק אינו משויך לתיק).`);
+      setNote(msgs.join(" "));
+    } catch {
+      setNote("לא ניתן לקרוא את התיקייה.");
     }
   }
 
@@ -109,7 +137,7 @@ function Importer({ firmId }: { firmId: string }) {
         let text: string;
         try { text = (await readFile(e.file)).trim(); } catch { failed++; continue; }
         if (!text) { failed++; continue; }
-        const r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, parties: [] });
+        const r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
         if (!r.ok || !r.matter_id) {
           if (r.code === "CONFLICT_HALT") { halted = true; set(p.folder, { state: "warn", text: errorText(r) }); break; }
           failed++; continue;
@@ -127,13 +155,18 @@ function Importer({ firmId }: { firmId: string }) {
       <div className="ck-warn">הקריאה היא לקריאה בלבד: הקבצים בתיקייה לא משתנים ולא נמחקים. כל קובץ עובר הסתרת מידע מזהה ובדיקת ניגוד עניינים, והטקסט המוסתר הוא זה שמשמש לעבודה ולבינה מלאכותית. הקובץ המקורי נשמר בכספת התיק, פרטית ובלתי ניתנת לדריסה, עם חתימת SHA-256 ביומן. אל תמחקו את התיקייה המקורית לפני שוידאתם שהכול נקלט. תיקים סגורים חייבים להישמר לפי חוק לשכת עורכי הדין.</div>
       {!hasPicker && <div className="ck-err">הדפדפן אינו תומך בבחירת תיקייה. השתמשו ב-Chrome או Edge במחשב.</div>}
       <div className="ck-row"><button className="ck-btn primary" disabled={!hasPicker || busy} onClick={() => void pick()}>בחירת תיקייה</button>
-        <span className="ck-meta">בחרו את התיקייה שמכילה תיקייה לכל תיק. תופיע רשימה לבדיקה לפני הייבוא.</span></div>
+        <label className="ck-row ck-meta">מה נחשב תיק:
+          <select className="ck-select" style={{ width: "auto" }} value={level} disabled={busy} onChange={(e) => { const v = Number(e.target.value) as 1 | 2; setLevel(v); if (root) void scan(root, v); }}>
+            <option value={1}>כל תיקייה ישירה היא תיק</option>
+            <option value={2}>תיקיית לקוח ובתוכה תיקייה לכל תיק</option>
+          </select></label>
+        <span className="ck-meta">כל תיק נקלט בנפרד ולא מתערב באחר. תופיע רשימה לבדיקה לפני הייבוא.</span></div>
       {note && <div className="ck-meta" role="status">{note}</div>}
       {progress && <div className="ck-meta" role="status">{progress}</div>}
       {plans && plans.length > 0 && rows.length === 0 && (
         <>
           <div className="ck-label">נמצאו {plans.length} תיקיות. קבצים שכבר קיימים בכספת (לפי חתימת תוכן) ולא ייקלטו שוב, וקבצים כפולים בתוך התיקייה ידולגו. תיקייה שלפחות חצי מקבציה כבר בתיק קיים תתווסף לאותו תיק. תקנו כותרות שמכילות פרטים מזהים.</div>
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>ייבוא</th><th>כותרת התיק</th><th>תיקייה</th><th>קבצים חדשים</th><th>כבר קיימים</th><th>כפולים בתיקייה</th><th>דולגו (סוג לא נתמך)</th></tr></thead><tbody>
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>ייבוא</th><th>כותרת התיק</th><th>תחום</th><th>תיקייה</th><th>קבצים חדשים</th><th>כבר קיימים</th><th>כפולים בתיקייה</th><th>דולגו (סוג לא נתמך)</th></tr></thead><tbody>
             {plans.map((p) => (
               <tr key={p.folder}>
                 <td><input type="checkbox" aria-label={`ייבוא ${p.folder}`} checked={p.include} disabled={p.files.length === 0} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, include: e.target.checked } : x)) ?? ps)} /></td>
@@ -142,7 +175,12 @@ function Importer({ firmId }: { firmId: string }) {
                     ? <span className="ck-badge yellow">{p.files.length ? `יתווסף לתיק קיים: ${p.targetTitle}` : `כבר קיים בתיק: ${p.targetTitle}`}</span>
                     : <input className="ck-input" value={p.title} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, title: e.target.value } : x)) ?? ps)} />}
                 </td>
-                <td>{p.folder}</td><td>{p.files.length}</td><td>{p.existing || ""}</td><td>{p.dupes || ""}</td><td>{p.skipped || ""}</td>
+                <td>{p.targetMatter ? "" : (
+                  <select className="ck-select" aria-label={`תחום ${p.folder}`} value={p.practice} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, practice: e.target.value } : x)) ?? ps)}>
+                    <option value="">זיהוי אוטומטי</option>
+                    {Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                  </select>)}</td>
+                <td style={{ whiteSpace: "normal", maxWidth: 260 }}>{p.folder}{p.flag && <div><span className="ck-badge yellow">{p.flag}</span></div>}<div className="ck-meta" dir="auto">{p.sample.join(" , ")}</div></td><td>{p.files.length}</td><td>{p.existing || ""}</td><td>{p.dupes || ""}</td><td>{p.skipped || ""}</td>
               </tr>))}
           </tbody></table></div>
           <div className="ck-row"><button className="ck-btn primary" disabled={busy || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים</button></div>
