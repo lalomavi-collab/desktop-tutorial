@@ -118,6 +118,14 @@ const SHARED = {
       { slug: "defensible", title: `בר-הגנה מעצם התכנון: מה ששורד חקירה נגדית` },
       { slug: "effective-human-oversight-ai-systems", title: `פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל` },
       { slug: "memory", title: `זיכרון לטווח ארוך: לתת ל-AI המשפטי היסטוריית תיקים` },
+      // Three AI pieces that Search Console shows on the second page (positions
+      // ~11 to 14): impressions, almost no clicks, because the automatic related
+      // graph gave them too few inbound links to climb. A link from the pillar,
+      // the highest-authority internal page for the subject, speeds recrawl and
+      // lifts them toward page one.
+      { slug: "israel-ai-regulation-policy", title: `רגולציית בינה מלאכותית בישראל: מה חל היום ומה צפוי` },
+      { slug: "attorney-client-privilege-ai", title: `חיסיון עורך דין ולקוח בעידן ה-AI: מה באמת מסתכן` },
+      { slug: "ai-risk-frameworks-iso-42001-nist", title: `מסגרות לניהול סיכוני AI: ISO 42001 מול NIST AI RMF` },
     ],
   },
   mediation: {
@@ -162,8 +170,19 @@ const SHARED = {
       // queries share, and its content already folds in the Lisbon overview
       // the roadmap once considered a separate article.
       { slug: "portugal-porto-vs-lisbon", title: `נדל״ן בפורטוגל: פורטו מול ליסבון, איך בוחרים עיר למשקיע הישראלי` },
+      // Portugal cluster anchor. The comprehensive guide, now titled with the
+      // exact head term the top Portugal queries share ("השקעות נדל״ן בפורטוגל").
+      // Linking to it from the pillar, alongside the porto-vs-lisbon spoke above,
+      // makes it the cluster's high-authority entry point so the ~500 monthly
+      // Portugal impressions consolidate on one page rather than scattering.
+      { slug: "portugal-investment-guide", title: `השקעות נדל״ן בפורטוגל: מדריך משפטי למשקיע הישראלי` },
       { slug: "ai-realestate-risk-management", title: `ניהול סיכונים בנדל״ן מבוסס בינה מלאכותית` },
       { slug: "contract-review-before-signing", title: `בדיקת חוזה לפני חתימה` },
+      // Three more second-page articles from Search Console, linked from their
+      // highest-authority internal page to speed recrawl and lift ranking.
+      { slug: "pinui-binui-owner-guide", title: `פינוי-בינוי: המדריך המלא לבעלי הדירות` },
+      { slug: "overseas-property-holding", title: `החזקת נדל״ן בחו״ל: מבנה נכון, מס וטעויות יקרות` },
+      { slug: "lalum-clinic-realestate-advice", title: `חוות דעת שנייה לעסקת נדל״ן: קליניקת LALUM` },
     ],
   },
 } as const;
