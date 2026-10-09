@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "buying-apartment-from-contractor-guarantee-bank-financing": {
+  "topic": "real-estate",
+  "related": [
+   "urban-renewal-guarantees-sale-law-registration",
+   "portugal-purchase-contract",
+   "caution-note-real-estate-registration-removal"
+  ]
+ },
  "caution-note-real-estate-registration-removal": {
   "topic": "real-estate",
   "related": [
    "overseas-property-due-diligence",
    "portugal-legal-due-diligence",
-   "portugal-purchase-contract"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "real-estate-memorandum-of-understanding-binding": {
@@ -76,7 +84,7 @@
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
    "portugal-purchase-contract",
-   "ai-drafted-real-estate-contract-review"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "ai-vendor-agreement-dpa-liability-indemnity": {
@@ -299,8 +307,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-purchase-contract",
-   "urban-renewal-guarantees-sale-law-registration",
-   "three-minute-legal-check"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "urban-renewal-guarantees-sale-law-registration"
   ]
  },
  "ai-insurance-underwriting-pricing-regulation": {
@@ -339,8 +347,8 @@
   "topic": "real-estate",
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
-   "ai-drafted-real-estate-contract-review",
-   "caution-note-real-estate-registration-removal"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -371,8 +379,8 @@
   "topic": "contracts",
   "related": [
    "portugal-legal-due-diligence",
-   "ai-drafted-real-estate-contract-review",
-   "real-estate-memorandum-of-understanding-binding"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "portugal-real-estate-financing": {
@@ -380,7 +388,7 @@
   "related": [
    "portugal-porto-vs-lisbon",
    "portugal-real-estate-taxation",
-   "portugal-legal-due-diligence"
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -507,8 +515,8 @@
   "topic": "real-estate",
   "related": [
    "tama-38-1-vs-38-2-comparison",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "tenant-urban-renewal-guide"
+   "tenant-urban-renewal-guide",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -867,8 +875,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
@@ -987,8 +995,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "overseas-partnership-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
