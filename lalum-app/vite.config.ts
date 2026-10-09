@@ -15,7 +15,7 @@ import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
 import { LEGAL_TOOLS, TOOLS_PAGE, type LegalTool } from "./src/lib/legalTools";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
-import { toBlocks, blocksToText } from "./src/lib/articleBlocks";
+import { toBlocks, blocksToText, parseInline } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import { rulings, areaLabel, rulingTitle } from "./src/lib/rulings";
@@ -180,15 +180,22 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
 // Block component in the Article route: "## " sections become <h2>, prose
 // becomes <p>. React discards this the moment it mounts, so a visitor never
 // sees it; only crawlers and AI answer engines that skip JS do.
+// Render a prose string to HTML, turning its [label](/path) markup into real
+// anchors. Mirrors inline() in the Article route so the crawler HTML and the
+// mounted DOM carry the same links.
+function inlineHtml(text: string): string {
+  return parseInline(text).map((s) => (s.href ? `<a href="${esc(s.href)}">${esc(s.text)}</a>` : esc(s.text))).join("");
+}
+
 function blocksToHtml(blocks: ArticleBlock[]): string {
   const out: string[] = [];
   for (const b of blocks) {
     switch (b.type) {
       case "h2":
-        out.push(`<h2>${esc(b.text)}</h2>`);
+        out.push(`<h2>${inlineHtml(b.text)}</h2>`);
         break;
       case "p":
-        out.push(`<p>${esc(b.text)}</p>`);
+        out.push(`<p>${inlineHtml(b.text)}</p>`);
         break;
       case "quote":
         out.push(`<blockquote>${esc(b.text)}</blockquote>`);
