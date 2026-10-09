@@ -32,6 +32,35 @@ export function toBlocks(body: string): ArticleBlock[] {
   return blocks;
 }
 
+// Inline links inside prose. A body may carry internal links written as
+// [label](/path): only root-relative paths are accepted, so a body can never
+// inject an off-site or javascript: link. parseInline splits a run of text into
+// plain-text and link segments, and both renderers (the Article route at
+// runtime and the SEO prerender at build time) build their output from it, so
+// the DOM a visitor sees and the HTML a crawler reads carry the same anchors.
+export type InlineSeg = { text: string; href?: string };
+const INLINE_LINK_RE = /\[([^\]]+)\]\((\/[^)\s]+)\)/g;
+
+export function parseInline(text: string): InlineSeg[] {
+  const segs: InlineSeg[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  INLINE_LINK_RE.lastIndex = 0;
+  while ((m = INLINE_LINK_RE.exec(text)) !== null) {
+    if (m.index > last) segs.push({ text: text.slice(last, m.index) });
+    segs.push({ text: m[1], href: m[2] });
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) segs.push({ text: text.slice(last) });
+  return segs;
+}
+
+// The same text with each link reduced to its label, for plain-text uses
+// (schema.org articleBody) where raw [label](/path) markup would leak.
+export function stripInline(text: string): string {
+  return text.replace(INLINE_LINK_RE, "$1");
+}
+
 // The reading text of an article, as one plain string: every prose block joined
 // with blank lines, headings included. Used for schema.org articleBody so an AI
 // answer engine that reads only the structured data still gets the full piece.
@@ -42,7 +71,7 @@ export function blocksToText(blocks: ArticleBlock[]): string {
       case "p":
       case "h2":
       case "quote":
-        out.push(b.text);
+        out.push(stripInline(b.text));
         break;
       case "list":
         out.push(b.items.join("\n"));

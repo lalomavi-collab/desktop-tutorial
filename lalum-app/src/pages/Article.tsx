@@ -11,7 +11,7 @@ import { enPosts } from "../data/enPosts";
 import { articleCorpus, relatedTo } from "../lib/related";
 import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
-import { toBlocks } from "../lib/articleBlocks";
+import { toBlocks, parseInline } from "../lib/articleBlocks";
 
 // One module per article body, so a page loads its own and nothing else. The
 // whole corpus used to arrive as one chunk on every content page, including the
@@ -23,12 +23,22 @@ function bodyLoader(slug: string) {
   return bodies[`../data/posts/${slug}.ts`];
 }
 
+// Render a prose string, turning its [label](/path) markup into real links.
+// Internal links use the SPA-aware Link so navigation stays client side.
+function inline(text: string) {
+  return parseInline(text).map((s, i) =>
+    s.href
+      ? <Link key={i} to={s.href} style={{ color: "var(--clay)", textDecoration: "underline" }}>{s.text}</Link>
+      : <span key={i}>{s.text}</span>,
+  );
+}
+
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
     case "p":
-      return <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--ink)", margin: "0 0 24px", maxWidth: "66ch" }}>{block.text}</p>;
+      return <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--ink)", margin: "0 0 24px", maxWidth: "66ch" }}>{inline(block.text)}</p>;
     case "h2":
-      return <h2 className="serif" style={{ fontSize: 28, fontWeight: 500, lineHeight: 1.25, margin: "44px 0 18px" }}>{block.text}</h2>;
+      return <h2 className="serif" style={{ fontSize: 28, fontWeight: 500, lineHeight: 1.25, margin: "44px 0 18px" }}>{inline(block.text)}</h2>;
     case "quote":
       return (
         <blockquote style={{ margin: "36px 0", padding: "4px 26px", borderInlineStart: "3px solid var(--clay)", fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 24, lineHeight: 1.5, color: "var(--clay)" }}>
