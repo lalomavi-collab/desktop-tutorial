@@ -117,6 +117,7 @@ type OsCopy = {
   siteLinks: { to: string; label: string }[];
   demo: string;
   error: string;
+  rateLimited: string;
   sevRed: string;
   sevYellow: string;
   sevGreen: string;
@@ -182,6 +183,7 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "המנוע אינו מחובר בסביבה זו. הגדירו את משתני Supabase כדי להפעיל את העוזר.",
     error: "אירעה תקלה זמנית. נסו שוב, או קבעו שיחת אבחון עם ד״ר עו״ד אברהם ללום.",
+    rateLimited: "הגעתם למספר הבדיקות המרבי לשעה. נסו שוב בעוד זמן מה, או קבעו שיחת אבחון עם ד״ר עו״ד אברהם ללום.",
     sevRed: "סיכון גבוה",
     sevYellow: "לתשומת לב",
     sevGreen: "תקין",
@@ -249,6 +251,7 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "The engine is not connected in this environment. Configure Supabase to enable the assistant.",
     error: "A temporary error occurred. Try again, or book a diagnosis with Dr. Avraham Lalum, Adv.",
+    rateLimited: "You've reached the hourly review limit. Try again shortly, or book a diagnosis with Dr. Avraham Lalum, Adv.",
     sevRed: "High risk",
     sevYellow: "Worth flagging",
     sevGreen: "Standard",
@@ -316,6 +319,7 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "El motor no está conectado en este entorno. Configura Supabase para habilitar el asistente.",
     error: "Ocurrió un error temporal. Inténtalo de nuevo o reserva un diagnóstico con Dr. Avraham Lalum, Adv.",
+    rateLimited: "Has alcanzado el límite de revisiones por hora. Inténtalo de nuevo en un momento, o reserva un diagnóstico con Dr. Avraham Lalum, Adv.",
     sevRed: "Riesgo alto",
     sevYellow: "Para señalar",
     sevGreen: "Estándar",
@@ -383,6 +387,7 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "Le moteur n'est pas connecté dans cet environnement. Configurez Supabase pour activer l'assistant.",
     error: "Une erreur temporaire s'est produite. Réessayez, ou réservez un diagnostic avec Dr. Avraham Lalum, Adv.",
+    rateLimited: "Vous avez atteint la limite horaire de révisions. Réessayez bientôt, ou réservez un diagnostic avec Dr. Avraham Lalum, Adv.",
     sevRed: "Risque élevé",
     sevYellow: "À signaler",
     sevGreen: "Standard",
@@ -450,6 +455,7 @@ const OS: Record<Lang, OsCopy> = {
     ],
     demo: "المحرك غير متصل في هذه البيئة. اضبط إعدادات Supabase لتفعيل المساعد.",
     error: "حدث خطأ مؤقت. حاول مرة أخرى، أو احجز تشخيصًا مع Dr. Avraham Lalum, Adv.",
+    rateLimited: "لقد وصلت إلى الحد الأقصى من المراجعات بالساعة. حاول مرة أخرى بعد قليل، أو احجز تشخيصًا مع Dr. Avraham Lalum, Adv.",
     sevRed: "مخاطرة عالية",
     sevYellow: "يستحق الانتباه",
     sevGreen: "قياسي",
@@ -672,7 +678,11 @@ export function LegalOS() {
     setVaultError("");
     setExtracting(true);
     try {
-      const text = await extractText(file);
+      // Matches analyze-contract's MAX_CONTRACT_CHARS: extractText's own
+      // 14,000-char default was built for the chat composer, not a full
+      // contract, and was silently truncating anything past a few pages
+      // before it ever reached the server's much more generous limit.
+      const text = await extractText(file, 150_000);
       setAttachment({ name: file.name, text });
     } catch {
       setAttachment({ name: file.name, text: "" });
@@ -694,10 +704,11 @@ export function LegalOS() {
     setVaultError("");
     setVaultExtracting(true);
     try {
+      // Matches compare-contracts's MAX_DOC_CHARS (per document).
       const extracted = await Promise.all(
         files.map(async (file) => {
           try {
-            return { name: file.name, text: await extractText(file) };
+            return { name: file.name, text: await extractText(file, 60_000) };
           } catch {
             return { name: file.name, text: "" };
           }
@@ -797,8 +808,12 @@ export function LegalOS() {
         setMsgs((m) => [...m, { role: "assistant", content: reply }]);
         if (readAloud) speak(reply);
       }
-    } catch {
-      setMsgs((m) => [...m, { role: "assistant", content: copy.error }]);
+    } catch (err) {
+      // analyze-contract and compare-contracts return 429 once the hourly
+      // per-client limit is hit; surface that distinctly from a generic
+      // failure so a legitimate reviewer knows to wait, not retry blindly.
+      const status = (err as { context?: { status?: number } } | null)?.context?.status;
+      setMsgs((m) => [...m, { role: "assistant", content: status === 429 ? copy.rateLimited : copy.error }]);
     } finally {
       setLoading(false);
     }
