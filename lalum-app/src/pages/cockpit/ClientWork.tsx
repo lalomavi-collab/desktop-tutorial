@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { fmt } from "../../lib/cockpit/shared";
 import {
-  CHANNEL, VIA, closeTask, createTask, dur, firmPeople, fmtExact, handleInquiry, listInquiries, listTasks, logReply, matterOptions, openRaw, scorecard,
+  CHANNEL, VIA, closeTask, createTask, dur, firmPeople, fmtExact, myInquiryAddress, handleInquiry, listInquiries, listTasks, logReply, matterOptions, openRaw, scorecard,
 } from "../../lib/cockpit/work";
 import type { Inquiry, Person, Reply, Scorecard, Task } from "../../lib/cockpit/work";
 
@@ -18,6 +18,8 @@ function InquiriesView() {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [raw, setRaw] = useState<{ id: string; text: string } | null>(null);
   const [via, setVia] = useState("PHONE");
+  const [addr, setAddr] = useState<string | null>(null);
+  useEffect(() => { void myInquiryAddress().then(setAddr); }, []);
   const load = useCallback(async () => { setData(await listInquiries()); setPeople(await firmPeople()); }, []);
   useEffect(() => { void load(); }, [load]);
   const name = (id: string) => people.find((p) => p.user_id === id)?.display_name ?? "חבר צוות";
@@ -34,6 +36,7 @@ function InquiriesView() {
   return (
     <div className="ck-stack">
       <div className="ck-warn">כאן נרשם שהלקוח קיבל מענה ומתי. תוכן המענה אינו נשמר במערכת. זמן המענה הראשון נמדד משעת קבלת הפנייה עד לרישום הראשון, והוא מזין את מדד התגובה. הפתיחה של הטקסט המקורי נרשמת ביומן הביקורת.</div>
+      {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של המשרד</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <b dir="ltr">{addr}</b>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
       <div className="ck-row">
         <select className="ck-select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value as "open" | "all")}><option value="open">פניות פתוחות</option><option value="all">כל הפניות</option></select>
         <label className="ck-row ck-meta">ערוץ המענה שיירשם:
