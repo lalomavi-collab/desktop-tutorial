@@ -18,7 +18,7 @@ function homeFaqs(t: Dict): QA[] {
   return t.data.faqs.map((f) => ({ q: f.q, a: f.a }));
 }
 
-// The practice-area FAQ (rendered by <PracticeFaq/> on Home and Advisory).
+// The practice-area FAQ (rendered by <PracticeFaq/> on Advisory only).
 function practiceFaqs(t: Dict): QA[] {
   return t.practice.faq.cats.flatMap((c) => c.items.map((it) => ({ q: it.q, a: it.a })));
 }
@@ -30,8 +30,10 @@ function faqPageFaqs(): QA[] {
 }
 
 // Exact-path FAQ sets. A page emits ONE FAQPage built from its entry here.
-// Home combines both visible FAQ blocks (general + practice) into a single page
-// FAQPage rather than emitting two competing blocks.
+// Home carries only the general FAQ it actually renders. It used to add the practice
+// FAQ too, but Home does not show that block: the FAQPage (and the static fallback
+// built from it) declared nine questions the page does not display, and made /advisory
+// a near copy of Home, so Google kept Home as the canonical for both.
 // Pillar page Q&A. The copy lives with the rest of that page's content in
 // pillars.ts, in all five languages, so the visible accordion and the
 // FAQPage schema are built from one source and cannot drift.
@@ -49,7 +51,7 @@ function mediationFaqs(lang: Lang): QA[] {
 
 function exactSets(t: Dict, lang: Lang): Record<string, QA[]> {
   return {
-    "/": [...homeFaqs(t), ...practiceFaqs(t)],
+    "/": homeFaqs(t),
     "/advisory": practiceFaqs(t),
     "/faq": faqPageFaqs(),
     "/ai-legal-advisory": aiLegalAdvisoryFaqs(lang),
