@@ -10,6 +10,21 @@ import { RULINGS } from "./rulings.data.ts";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
+// The case law search engine's own structured format opens every result with
+// this marker (see INSTRUCTIONS below), so a reply that contains it is, by
+// construction, a case law answer, not a "limit was reached" refusal: a
+// deterministic, server-side signal to count against, rather than asking the
+// model to track its own turn count across the conversation (it had been
+// doing exactly that, in the prompt alone, and nothing stopped a user from
+// rephrasing past it). This endpoint has no accounts and no session of its
+// own, but the client already sends the full conversation on every call, so
+// the count can be computed fresh each time from that history: no database,
+// no rate-limit table, nothing to persist.
+const CASE_LAW_MARKER = "⚖️";
+const FREE_CASE_LAW_LOOKUPS = 3;
+const CASE_LAW_LIMIT_REPLY =
+  "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
+
 // The assistant's operating instructions, as set by the firm. Two rules carry
 // the weight: answer only from what is provided here, and when the answer is
 // not here, say so instead of producing one. The case law it may cite is the
@@ -58,7 +73,7 @@ When a user asks for a precedent, a court ruling, or a "פסק דין" on a topi
 3. If nothing in the database matches, do NOT invent a ruling. Say: "לא נמצא פסק דין מדויק במאגר שלי בנושא זה. באפשרותך לחפש במאגר הפסיקה של האתר בכתובת lalumapp.com/rulings, שם מוצעות גם שאילתות מוכנות למאגרים הרשמיים."
 
 Conversion:
-- Limit free web queries to 3 case law tasks per conversation. On the fourth, answer: "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד."
+- Limit free web queries to ${FREE_CASE_LAW_LOOKUPS} case law tasks per conversation. On the fourth, answer: "${CASE_LAW_LIMIT_REPLY}"
 - Point to lalumapp.com/risk for the readiness assessment and lalumapp.com/book for scheduling a Tech-Legal diagnosis.
 
 Tone and Language:
@@ -98,6 +113,17 @@ Deno.serve(async (req) => {
     .map((m) => ({ role: m.role, content: m.content }));
   if (!messages.length) return json(400, { code: "no_messages" });
 
+  // Computed from the history the client just sent, not from any count the
+  // model itself has kept: how many case law answers already happened in
+  // this conversation, before whatever the model is about to generate now.
+  // Scoped to the same last-12-message window already sliced above (the only
+  // window the model itself ever saw either), so a lookup from much earlier
+  // in a very long conversation can scroll out of view for both of them. Not
+  // a new gap this introduces, just one this inherits.
+  const priorCaseLawLookups = messages.filter(
+    (m) => m.role === "assistant" && m.content.includes(CASE_LAW_MARKER)
+  ).length;
+
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -109,9 +135,17 @@ Deno.serve(async (req) => {
       return json(502, { code: "upstream_error", status: res.status });
     }
     const data = await res.json();
-    const reply = Array.isArray(data?.content)
+    let reply = Array.isArray(data?.content)
       ? data.content.filter((b: { type?: string }) => b?.type === "text").map((b: { text?: string }) => b.text ?? "").join("").trim()
       : "";
+    // The prompt already asks the model to stop at the limit itself; this is
+    // the backstop that holds even when it doesn't. A reply past the limit
+    // is replaced outright, never trimmed or partially shown: the point is
+    // that no case law past the free count reaches the caller, in code, not
+    // just in the system prompt's own wording.
+    if (reply.includes(CASE_LAW_MARKER) && priorCaseLawLookups >= FREE_CASE_LAW_LOOKUPS) {
+      reply = CASE_LAW_LIMIT_REPLY;
+    }
     return json(200, { reply });
   } catch (e) {
     console.error(`lalum-assistant: fetch_failed ${String(e).slice(0, 200)}`);
