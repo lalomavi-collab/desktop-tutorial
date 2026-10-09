@@ -45,6 +45,7 @@ const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ de
 const Kyc = lazy(() => import("./pages/cockpit/Kyc").then((m) => ({ default: m.Kyc })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const ImportFolderPage = lazy(() => import("./pages/cockpit/ImportFolder").then((m) => ({ default: m.ImportFolderPage })));
+const BinPage = lazy(() => import("./pages/cockpit/Bin").then((m) => ({ default: m.BinPage })));
 const CockpitGuide = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.CockpitGuide })));
 const SaasTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.SaasTerms })));
 const ClientDisclosure = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.ClientDisclosure })));
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="partners" element={<Suspense fallback={null}><Partners /></Suspense>} />
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="workspace/import" element={<Suspense fallback={null}><ImportFolderPage /></Suspense>} />
+          <Route path="workspace/bin" element={<Suspense fallback={null}><BinPage /></Suspense>} />
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/kyc" element={<Suspense fallback={null}><Kyc /></Suspense>} />
           <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
