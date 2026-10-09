@@ -25,6 +25,15 @@ export async function extractText(file: File, maxChars: number = MAX_CHARS): Pro
       if (parts.join("\n").length > maxChars) break;
     }
     text = parts.join("\n");
+  } else if (name.endsWith(".txt")) {
+    text = await file.text();
+  } else {
+    // Legacy binary .doc (pre-2007 Word) has no reliable in-browser parser,
+    // mammoth only reads the modern .docx (OOXML) format. Fail loudly here
+    // rather than falling through to an empty string: a caller that treats
+    // "" as "could not read this file" (see LegalOS.tsx) depends on this
+    // throwing for every unsupported type, not just silently degrading.
+    throw new Error("unsupported_file_type");
   }
   text = text.replace(/\n{3,}/g, "\n\n").trim();
   return text.length > maxChars ? text.slice(0, maxChars) + "…" : text;
