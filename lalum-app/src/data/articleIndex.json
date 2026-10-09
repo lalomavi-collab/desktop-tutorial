@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "caution-note-real-estate-registration-removal": {
+  "topic": "real-estate",
+  "related": [
+   "overseas-property-due-diligence",
+   "portugal-legal-due-diligence",
+   "portugal-purchase-contract"
+  ]
+ },
  "real-estate-memorandum-of-understanding-binding": {
   "topic": "contracts",
   "related": [
@@ -332,7 +340,7 @@
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
    "ai-drafted-real-estate-contract-review",
-   "urban-renewal-taxation-owner"
+   "caution-note-real-estate-registration-removal"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -467,8 +475,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "overseas-property-holding-structure",
-   "greece-realestate-israeli-buyer-guide"
+   "caution-note-real-estate-registration-removal",
+   "overseas-property-holding-structure"
   ]
  },
  "ai-due-diligence-tech-acquisition": {
@@ -699,8 +707,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "the-code-realestate",
-   "why-realestate-needs-ai"
+   "why-realestate-needs-ai",
+   "the-code-realestate"
   ]
  },
  "decision-oriented-ai-law": {
@@ -1635,8 +1643,8 @@
   "topic": "real-estate",
   "related": [
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי",
-   "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה"
+   "caution-note-real-estate-registration-removal",
+   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
   ]
  },
  "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה": {
