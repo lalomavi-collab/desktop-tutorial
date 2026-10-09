@@ -538,6 +538,7 @@ export function LegalOS() {
   const [vaultFiles, setVaultFiles] = useState<{ name: string; text: string }[]>([]);
   const [vaultExtracting, setVaultExtracting] = useState(false);
   const [vaultError, setVaultError] = useState("");
+  const [fileError, setFileError] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -676,6 +677,7 @@ export function LegalOS() {
     if (!file) return;
     setVaultFiles([]);
     setVaultError("");
+    setFileError("");
     setExtracting(true);
     try {
       // Matches analyze-contract's MAX_CONTRACT_CHARS: extractText's own
@@ -685,7 +687,12 @@ export function LegalOS() {
       const text = await extractText(file, 150_000);
       setAttachment({ name: file.name, text });
     } catch {
-      setAttachment({ name: file.name, text: "" });
+      // A file extractText can't read (legacy .doc, a corrupt PDF/DOCX)
+      // used to attach anyway with an empty text, which silently misrouted
+      // the message to plain chat instead of a contract review. No
+      // attachment at all, plus a visible error, is the honest outcome.
+      setAttachment(null);
+      setFileError(copy.fileErr);
     } finally {
       setExtracting(false);
       inputRef.current?.focus();
@@ -702,19 +709,30 @@ export function LegalOS() {
     if (files.length === 0) return;
     setAttachment(null);
     setVaultError("");
+    setFileError("");
     setVaultExtracting(true);
     try {
-      // Matches compare-contracts's MAX_DOC_CHARS (per document).
-      const extracted = await Promise.all(
+      // Matches compare-contracts's MAX_DOC_CHARS (per document). A file
+      // extractText can't read (legacy .doc, a corrupt PDF/DOCX) is dropped
+      // here, named in vaultError, rather than queued with an empty text:
+      // that used to reach compare-contracts as a near-empty document and
+      // fail only after the round trip (document_too_short), instead of
+      // being caught up front with a clear reason.
+      const results = await Promise.all(
         files.map(async (file) => {
           try {
-            return { name: file.name, text: await extractText(file, 60_000) };
+            return { name: file.name, text: await extractText(file, 60_000), ok: true as const };
           } catch {
-            return { name: file.name, text: "" };
+            return { name: file.name, ok: false as const };
           }
         })
       );
+      const extracted = results
+        .filter((r): r is { name: string; text: string; ok: true } => r.ok)
+        .map(({ name, text }) => ({ name, text }));
+      const failed = results.filter((r) => !r.ok).map((r) => r.name);
       setVaultFiles((prev) => [...prev, ...extracted].slice(0, 5));
+      if (failed.length > 0) setVaultError(`${copy.fileErr} (${failed.join(", ")})`);
     } finally {
       setVaultExtracting(false);
       inputRef.current?.focus();
@@ -1046,6 +1064,7 @@ export function LegalOS() {
         </div>
 
         <div className="los-composer">
+          {fileError && <p className="los-vault-error">{fileError}</p>}
           {attachment && (
             <div className="los-attach">
               <span>📎 {attachment.name}</span>
