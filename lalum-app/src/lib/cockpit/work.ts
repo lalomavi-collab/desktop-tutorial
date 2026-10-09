@@ -95,3 +95,10 @@ export function dur(mins: number | null | undefined): string {
 /** Date and time down to the second: reply times are evidence of service levels, so they are shown exactly. */
 export const fmtExact = (iso: string | null | undefined): string =>
   iso ? new Date(iso).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "medium" }) : "";
+
+/** The firm's inbound e-mail address for client inquiries. */
+export async function myInquiryAddress(): Promise<string | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc("lalum_my_inquiry_address");
+  return error ? null : (data as string);
+}
