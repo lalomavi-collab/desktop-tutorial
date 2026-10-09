@@ -786,16 +786,16 @@
  "building-ai-agents-realestate": {
   "topic": "ai-governance",
   "related": [
-   "ai-workspace-encyclopedia",
    "gemini-guide-law",
+   "ai-workspace-encyclopedia",
    "legal-clinic-business-realestate"
   ]
  },
  "claude-guide-realestate-law": {
   "topic": "real-estate",
   "related": [
-   "gemini-guide-law",
    "integrated-toolbox-israel",
+   "gemini-guide-law",
    "ai-presentation-tools"
   ]
  },
@@ -826,8 +826,8 @@
  "claude-cowork-agent": {
   "topic": "ai-governance",
   "related": [
-   "gemini-guide-law",
    "digital-lawyers-2026",
+   "gemini-guide-law",
    "notebooklm-focus"
   ]
  },
@@ -852,7 +852,7 @@
   "related": [
    "claude-guide-realestate-law",
    "ai-workspace-encyclopedia",
-   "digital-lawyers-2026"
+   "building-ai-agents-realestate"
   ]
  },
  "digital-toolbox-part1": {
