@@ -15,6 +15,7 @@ import { DocMeta } from "./DocControls";
 import { KycPanel } from "./KycPanel";
 import { AnnexAssembly } from "./AnnexAssembly";
 import { SignatureRequests } from "./SignatureRequests";
+import { ConflictReview } from "./ConflictReview";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -281,6 +282,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
           <SignatureRequests matterId={matter.id} firmId={member.firm_id} documentId={doc?.id ?? null} canManage={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} />
+          <ConflictReview matterId={matter.id} conflictStatus={matter.conflict_status} canDecide={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
           <div className="ck-label">מפת ישויות</div>
           {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
           {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
