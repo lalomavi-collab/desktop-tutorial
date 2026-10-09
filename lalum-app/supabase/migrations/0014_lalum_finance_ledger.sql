@@ -4,7 +4,9 @@
 -- returned number, allocation number and PDF link. A document that is ISSUED is immutable here.
 -- Totals are computed once, server side, in lalum_fin_save_draft; the client mirror in
 -- src/lib/cockpit/finance.ts is verified against the same cases by `npm run finance-check`.
--- Access: firm partners and admins only, behind MFA. Not yet applied to a project.
+-- Access: firm partners and admins only, behind MFA.
+-- Applied to project meoymkcotomoluwlwues as migrations "lalum_finance_ledger_*". lalum_fin_documents_guard
+-- carries search_path public (set by a follow-up ALTER).
 
 create table if not exists public.lalum_fin_customers (
   id           uuid primary key default gen_random_uuid(),
@@ -139,7 +141,7 @@ create trigger lalum_fin_expenses_touch before update on public.lalum_fin_expens
 -- An issued tax document is a legal record: no edit of its content, no delete. Only the
 -- edge function (service role) may fill the issuing fields, and only while it is still a draft.
 create or replace function public.lalum_fin_documents_guard() returns trigger
-language plpgsql as $$
+language plpgsql set search_path to 'public' as $$
 begin
   if tg_op = 'DELETE' then
     if old.status = 'ISSUED' then raise exception 'ISSUED_DOCUMENT_IMMUTABLE'; end if;
@@ -164,7 +166,7 @@ create trigger lalum_fin_documents_guard_t before update or delete on public.lal
 create or replace function public.lalum_fin_totals(p_lines jsonb, p_vat numeric, p_included boolean)
 returns table (subtotal numeric, vat_amount numeric, total numeric)
 language plpgsql immutable set search_path to 'public' as $$
-declare s numeric := 0; l jsonb; n numeric; net numeric; vat numeric;
+declare s numeric := 0; l jsonb; net numeric; vat numeric;
 begin
   for l in select * from jsonb_array_elements(p_lines) loop
     s := s + (l->>'qty')::numeric * (l->>'price')::numeric;

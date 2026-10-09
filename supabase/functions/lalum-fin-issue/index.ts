@@ -6,7 +6,8 @@
 //
 // Env (SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are injected):
 //   INVOICE4U_API_KEY   organization API key (GUID); passed as `token` per the Invoice4U docs
-//   INVOICE4U_ENV       "qa" (default) or "prod". Documents issued in qa are stamped is_test and
+//   FIN_INVOICE4U_ENV   "qa" (default) or "prod". Separate from the clearing flow's INVOICE4U_ENV on purpose,
+//                       so live payments cannot switch the books to live. Documents issued in qa are stamped is_test and
 //                       never count in reports, so a rehearsal cannot pollute the books.
 //
 // Access: the draft is read with the caller's own JWT, so the same row level security that guards
@@ -37,7 +38,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
   const apiKey = Deno.env.get("INVOICE4U_API_KEY")?.trim();
-  const prod = (Deno.env.get("INVOICE4U_ENV") ?? "qa").toLowerCase().startsWith("prod");
+  const prod = (Deno.env.get("FIN_INVOICE4U_ENV") ?? "qa").toLowerCase().startsWith("prod");
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
