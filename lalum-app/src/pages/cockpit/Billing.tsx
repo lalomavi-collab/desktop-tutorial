@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { money, ROLE } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
+import { FinanceHome } from "./finance/FinanceHome";
 
 interface Plan { tier: string; display_name: string; description: string; monthly_fee_ils: number | null; seat_limit: number | null }
 interface Member { name: string; email: string; role: string }
@@ -88,10 +89,25 @@ function Panel({ member }: { member: Membership }) {
   );
 }
 
+function BillingTabs({ member }: { member: Membership }) {
+  const canManage = ["FIRM_PARTNER", "ADMIN"].includes(member.role);
+  const [tab, setTab] = useState<"books" | "plan">(canManage ? "books" : "plan");
+  if (!canManage) return <Panel member={member} />;
+  return (
+    <div className="ck-stack">
+      <div className="ck-row" role="tablist" aria-label="חיוב והגדרות">
+        <button role="tab" aria-selected={tab === "books"} className={`ck-btn${tab === "books" ? " primary" : ""}`} onClick={() => setTab("books")}>הנהלת חשבונות</button>
+        <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי המשרד והגדרות</button>
+      </div>
+      {tab === "books" ? <FinanceHome firmId={member.firm_id} /> : <Panel member={member} />}
+    </div>
+  );
+}
+
 export function Billing() {
   return (
-    <CockpitFrame title="חיוב והגדרות משרד" description="מסלול המנוי הקבוע של המשרד, הקצאת מושבים, יומן חשבוניות וחיבור קליטה אוטומטית." path="/settings/billing">
-      {({ member }) => (member ? <Panel member={member} /> : null)}
+    <CockpitFrame title="חיוב והגדרות משרד" description="הנהלת חשבונות של המשרד: מסמכי מס, לקוחות, הוצאות ודוחות, לצד מסלול המנוי, המושבים וחיבור הקליטה האוטומטית." path="/settings/billing">
+      {({ member }) => (member ? <BillingTabs member={member} /> : null)}
     </CockpitFrame>
   );
 }
