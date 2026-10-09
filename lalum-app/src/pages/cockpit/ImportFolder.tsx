@@ -8,6 +8,7 @@ import { CockpitFrame } from "./CockpitFrame";
 import { readFile } from "./Intake";
 import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
 import { storeOriginal } from "../../lib/cockpit/storeOriginal";
+import { DOC_ORIGIN, DOC_TYPE } from "../../lib/cockpit/docMeta";
 import { findExisting, sha256File } from "../../lib/cockpit/dedupe";
 import { supabase } from "../../lib/supabase";
 
@@ -44,6 +45,8 @@ function Importer({ firmId }: { firmId: string }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
+  const [docType, setDocType] = useState("");
+  const [docOrigin, setDocOrigin] = useState("");
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
   const [level, setLevel] = useState<1 | 2>(1);
@@ -143,6 +146,7 @@ function Importer({ firmId }: { firmId: string }) {
           failed++; continue;
         }
         matterId = r.matter_id; okFiles++;
+        if (r.document_id && supabase) await supabase.rpc("lalum_set_document_meta", { p_doc: r.document_id, p_type: docType, p_origin: docOrigin, p_date: null });
         if (r.document_id && !(await storeOriginal(firmId, r.matter_id, r.document_id, e.file, e.hash))) noOriginal++;
       }
       if (!halted) set(p.folder, { state: failed || noOriginal ? (okFiles ? "warn" : "err") : "done", text: `${okFiles} קבצים נקלטו${failed ? `, ${failed} נכשלו` : ""}${noOriginal ? `, למקור לא נשמר: ${noOriginal}` : ""}` });
@@ -183,7 +187,15 @@ function Importer({ firmId }: { firmId: string }) {
                 <td style={{ whiteSpace: "normal", maxWidth: 260 }}>{p.folder}{p.flag && <div><span className="ck-badge yellow">{p.flag}</span></div>}<div className="ck-meta" dir="auto">{p.sample.join(" , ")}</div></td><td>{p.files.length}</td><td>{p.existing || ""}</td><td>{p.dupes || ""}</td><td>{p.skipped || ""}</td>
               </tr>))}
           </tbody></table></div>
-          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים</button></div>
+          <div className="ck-label">שתי שאלות לפני הייבוא, כדי שכל מסמך יסווג ולא יישאר לא מסודר</div>
+          <div className="ck-grid2">
+            <label className="ck-field">מה סוג רוב המסמכים בתיקיות שנבחרו?
+              <select className="ck-select" value={docType} onChange={(e) => setDocType(e.target.value)}><option value="">בחרו סוג</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+            <label className="ck-field">ממי הגיעו בדרך כלל?
+              <select className="ck-select" value={docOrigin} onChange={(e) => setDocOrigin(e.target.value)}><option value="">בחרו מקור</option>{Object.entries(DOC_ORIGIN).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+          </div>
+          <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד במשרד, וכל קובץ נשמר בתוכו.</div>
+          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים</button></div>
         </>
       )}
       {rows.length > 0 && (

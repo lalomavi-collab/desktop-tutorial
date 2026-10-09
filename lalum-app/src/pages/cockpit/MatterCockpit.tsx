@@ -11,6 +11,7 @@ import { ArchiveExport } from "./ArchiveExport";
 import { trashDoc } from "../../lib/cockpit/bin";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
+import { DocMeta } from "./DocControls";
 import { KycPanel } from "./KycPanel";
 import { AnnexAssembly } from "./AnnexAssembly";
 
@@ -33,7 +34,7 @@ function tokenMap(docId: string): Map<string, string> | null {
 }
 const restore = (text: string, map: Map<string, string>): string => text.replace(TOKEN_RE, (t) => map.get(t) ?? t);
 
-export function MatterCockpit({ matterId, member }: { matterId: string; member: Membership }) {
+export function MatterCockpit({ matterId, member, platformAdmin = false }: { matterId: string; member: Membership; platformAdmin?: boolean }) {
   const [matter, setMatter] = useState<Matter | null>(null);
   const [routing, setRouting] = useState<Routing | null>(null);
   const [docs, setDocs] = useState<MatterDoc[]>([]);
@@ -86,7 +87,7 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
       const [mr, rr, dr] = await Promise.all([
         supabase.from("lalum_cockpit_matters").select("*").eq("id", matterId).maybeSingle(),
         supabase.from("lalum_intake_routings").select("*").eq("matter_id", matterId).maybeSingle(),
-        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at").eq("matter_id", matterId).order("created_at"),
+        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date").eq("matter_id", matterId).order("created_at"),
       ]);
       if (!live) return;
       const m = mr.data as Matter | null;
@@ -267,7 +268,11 @@ export function MatterCockpit({ matterId, member }: { matterId: string; member: 
           <h2>כספת תיק ומרכז ראיות</h2>
           <div className="ck-row"><PiiBadge /></div>
           <div className="ck-label">מסמכים</div>
-          <div className="ck-stack">{docs.map((d) => <div key={d.id} className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>)}</div>
+          <div className="ck-stack">{docs.map((d) => (
+            <div key={d.id} className="ck-stack">
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>
+              <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
+            </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />

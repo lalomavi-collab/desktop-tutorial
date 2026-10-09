@@ -10,14 +10,14 @@ import { MatterCockpit } from "./MatterCockpit";
 
 interface Row { matter_id: string; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; partner_response: string; dispatched_at: string; sla_breached: boolean }
 
-function MatterList({ firmId, firmName, userName, role }: { firmId: string; firmName: string; userName: string; role: string }) {
+function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmId: string; firmName: string; userName: string; role: string; platformAdmin: boolean }) {
   const nav = useNavigate();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [trashing, setTrashing] = useState<Row | null>(null);
   const [reason, setReason] = useState("");
   const [trashMsg, setTrashMsg] = useState("");
-  const isPartner = role === "FIRM_PARTNER";
+  const isPartner = platformAdmin && role === "FIRM_PARTNER"; // trash and permanent deletion are for the platform admin only
   async function moveToBin() {
     if (!trashing) return;
     const r = await trashMatter(trashing.matter_id, reason);
@@ -47,7 +47,7 @@ function MatterList({ firmId, firmName, userName, role }: { firmId: string; firm
         <div className="ck-card"><div className="ck-card-head"><CardArt name="security" /><div className="ck-title">אבטחת חשבון</div></div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
-      {adding && <div className="ck-card"><IntakeForm firmId={firmId} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
+      {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: x.title }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       <div className="ck-label">תיקים</div>
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
@@ -84,9 +84,9 @@ export function Workspace() {
   const matterId = param ?? (fromQuery && /^[0-9a-f-]{36}$/i.test(fromQuery) ? fromQuery : undefined);
   return (
     <CockpitFrame title="קוקפיט תיקים" description="קוקפיט התיקים של LALUM: כספת, עורך חכם ואולפן סוכני תחום עם אישור אנושי לפני ייצוא." path="/workspace">
-      {({ member }) => member && (matterId
-        ? <MatterCockpit key={matterId} matterId={matterId} member={member} />
-        : <MatterList firmId={member.firm_id} firmName={member.lalum_firms.firm_name} userName={member.name} role={member.role} />)}
+      {({ member, platformAdmin }) => member && (matterId
+        ? <MatterCockpit key={matterId} matterId={matterId} member={member} platformAdmin={platformAdmin} />
+        : <MatterList platformAdmin={platformAdmin} firmId={member.firm_id} firmName={member.lalum_firms.firm_name} userName={member.name} role={member.role} />)}
     </CockpitFrame>
   );
 }

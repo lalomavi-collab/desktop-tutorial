@@ -72,6 +72,9 @@ export interface MatterDoc {
   entity_counts: Record<string, number>;
   analysis: { findings?: Finding[]; risk?: Risk };
   created_at: string;
+  doc_type?: string | null;
+  doc_origin?: string | null;
+  doc_date?: string | null;
 }
 export interface Membership {
   firm_id: string;
