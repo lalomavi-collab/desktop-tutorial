@@ -32,7 +32,7 @@ function BinView({ isPartner }: { isPartner: boolean }) {
     await load();
   }
 
-  if (!isPartner) return <div className="ck-card"><div className="ck-meta">סל המיחזור זמין לשותף במשרד בלבד.</div></div>;
+  if (!isPartner) return <div className="ck-card"><div className="ck-meta">סל המיחזור זמין לאדמין בלבד.</div></div>;
   return (
     <div className="ck-stack">
       <div className="ck-warn">פריט בסל מוסתר מכל המסכים וניתן לשחזור. מחיקה סופית מוחקת גם את הקובץ המקורי מהכספת ואינה ניתנת לביטול. היא נחסמת בתיק שיש עליו עיכוב משפטי, ובתיק שסיום הטיפול בו הוא בתוך תקופת השמירה החוקית. כל פעולה נרשמת ביומן הביקורת (כמות בלבד, ללא פרטים).</div>
@@ -76,7 +76,7 @@ function BinView({ isPartner }: { isPartner: boolean }) {
 export function BinPage() {
   return (
     <CockpitFrame title="סל מיחזור" description="תיקים ומסמכים שהועברו לסל, עם שחזור ומחיקה סופית." path="/workspace/bin">
-      {({ member }) => member && <BinView isPartner={member.role === "FIRM_PARTNER"} />}
+      {({ member, platformAdmin }) => member && <BinView isPartner={platformAdmin && member.role === "FIRM_PARTNER"} />}
     </CockpitFrame>
   );
 }

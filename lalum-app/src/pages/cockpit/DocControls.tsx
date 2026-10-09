@@ -31,22 +31,3 @@ export function DocMeta({ doc, canEdit, onSaved }: { doc: MatterDoc; canEdit: bo
     </div>
   );
 }
-
-const DELETE_ERRORS: Array<[string, string]> = [
-  ["legal hold", "התיק מוחזק בצו שימור משפטי ולא ניתן למחוק ממנו."],
-  ["original is held", "למסמך יש מקור בכספת, והוא נשמר לפי חוק. מחיקה אפשרית רק במסגרת מחיקת התיק לפי כללי השמירה."],
-  ["only an administrator", "המחיקה מותרת לאדמין בלבד."],
-];
-
-/** Visible to platform admins only. The same rule is enforced on the server by lalum_delete_document. */
-export function DeleteDoc({ doc, onDeleted }: { doc: MatterDoc; onDeleted: () => void }) {
-  const [msg, setMsg] = useState("");
-  async function del() {
-    if (!supabase) return;
-    if (!window.confirm("למחוק את המסמך מהתיק? הפעולה אינה הפיכה ותירשם ביומן הביקורת.")) return;
-    const { error } = await supabase.rpc("lalum_delete_document", { p_doc: doc.id });
-    if (!error) { onDeleted(); return; }
-    setMsg(DELETE_ERRORS.find(([k]) => error.message.includes(k))?.[1] ?? "המחיקה נכשלה.");
-  }
-  return <div className="ck-row"><button className="ck-btn danger" onClick={() => void del()}>מחיקת המסמך (אדמין)</button>{msg && <span className="ck-err" role="alert">{msg}</span>}</div>;
-}

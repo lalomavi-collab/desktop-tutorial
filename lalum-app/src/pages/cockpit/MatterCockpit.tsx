@@ -11,7 +11,7 @@ import { ArchiveExport } from "./ArchiveExport";
 import { trashDoc } from "../../lib/cockpit/bin";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
-import { DeleteDoc, DocMeta } from "./DocControls";
+import { DocMeta } from "./DocControls";
 import { KycPanel } from "./KycPanel";
 import { AnnexAssembly } from "./AnnexAssembly";
 
@@ -270,9 +270,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-label">מסמכים</div>
           <div className="ck-stack">{docs.map((d) => (
             <div key={d.id} className="ck-stack">
-              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
-              {platformAdmin && <DeleteDoc doc={d} onDeleted={() => { prefer.current = null; setRev((n) => n + 1); }} />}
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
