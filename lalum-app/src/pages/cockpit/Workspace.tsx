@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { supabase } from "../../lib/supabase";
 import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
+import { trashMatter } from "../../lib/cockpit/bin";
 import { CardArt, EmptyArt, HeroArt } from "../../components/cockpit/CockpitArt";
 import { IntakeForm } from "./Intake";
 import { MatterCockpit } from "./MatterCockpit";
@@ -13,6 +14,17 @@ function MatterList({ firmId, firmName, userName, role }: { firmId: string; firm
   const nav = useNavigate();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [adding, setAdding] = useState(false);
+  const [trashing, setTrashing] = useState<Row | null>(null);
+  const [reason, setReason] = useState("");
+  const [trashMsg, setTrashMsg] = useState("");
+  const isPartner = role === "FIRM_PARTNER";
+  async function moveToBin() {
+    if (!trashing) return;
+    const r = await trashMatter(trashing.matter_id, reason);
+    if (!r.ok) { setTrashMsg(r.error ?? "הפעולה נכשלה."); return; }
+    setRows((rs) => rs?.filter((x) => x.matter_id !== trashing.matter_id) ?? rs);
+    setTrashing(null); setReason(""); setTrashMsg("");
+  }
   useEffect(() => {
     let live = true;
     (async () => {
@@ -38,13 +50,26 @@ function MatterList({ firmId, firmName, userName, role }: { firmId: string; firm
       {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: x.title }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       <div className="ck-label">תיקים</div>
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
-        <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th></tr></thead><tbody>
+        <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
           {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
             <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
               <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{x.title}</Link></td>
               <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
+              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${x.title} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>למחיקה</button></td>}
             </tr>); })}
         </tbody></table></div>
+      )}
+      {trashing && (
+        <aside className="ck-drawer" aria-label="העברה לסל המיחזור">
+          <div className="ck-title">העברת התיק לסל המיחזור</div>
+          <div className="ck-card" style={{ whiteSpace: "normal" }}>{trashing.title}</div>
+          <div className="ck-meta">התיק יוסתר מכל המסכים וניתן יהיה לשחזר אותו מסל המיחזור. מחיקה סופית נעשית משם בלבד.</div>
+          <label className="ck-field">סיבה (נרשמת בתיק)
+            <input className="ck-input" value={reason} onChange={(e) => setReason(e.target.value)} autoComplete="off" />
+          </label>
+          {trashMsg && <div className="ck-err" role="status">{trashMsg}</div>}
+          <div className="ck-row"><button className="ck-btn danger" disabled={reason.trim().length < 3} onClick={() => void moveToBin()}>העברה לסל</button><button className="ck-btn" onClick={() => setTrashing(null)}>ביטול</button></div>
+        </aside>
       )}
     </div>
   );

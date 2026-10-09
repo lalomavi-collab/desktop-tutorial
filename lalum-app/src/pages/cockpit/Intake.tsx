@@ -6,6 +6,7 @@ import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
 import { storeOriginal } from "../../lib/cockpit/storeOriginal";
 import { DOC_ORIGIN, DOC_TYPE } from "../../lib/cockpit/docMeta";
 import { supabase } from "../../lib/supabase";
+import { findExisting, sha256File } from "../../lib/cockpit/dedupe";
 
 export async function readFile(file: File): Promise<string> {
   const name = file.name.toLowerCase();
@@ -44,6 +45,12 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
     const docType = str("doc_type");
     const docOrigin = str("doc_origin");
     if (!(docType in DOC_TYPE) || !(docOrigin in DOC_ORIGIN)) { setStatus({ kind: "err", text: "יש לבחור סוג מסמך ומקור המסמך." }); return; }
+    let fileHash: string | undefined;
+    if (upload) {
+      fileHash = await sha256File(upload);
+      const inMatters = (await findExisting([fileHash])).get(fileHash) ?? [];
+      if (matterId && inMatters.includes(matterId)) { setStatus({ kind: "warn", text: "הקובץ הזה כבר קיים בכספת של התיק, ולכן לא נקלט שוב." }); return; }
+    }
     const parties: Array<{ role: string; name?: string; idNumber?: string }> = [];
     if (str("client_name") || str("client_id")) parties.push({ role: "CLIENT", name: str("client_name") || undefined, idNumber: str("client_id") || undefined });
     if (str("adverse_name") || str("adverse_id")) parties.push({ role: "ADVERSE", name: str("adverse_name") || undefined, idNumber: str("adverse_id") || undefined });
@@ -61,7 +68,7 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
     }
     // The original file goes to the private matter vault; pasted text has no file and stays as the masked version only.
     if (upload && firmId) {
-      const stored = await storeOriginal(firmId, r.matter_id, r.document_id, upload);
+      const stored = await storeOriginal(firmId, r.matter_id, r.document_id, upload, fileHash);
       if (!stored) setStatus({ kind: "warn", text: "המסמך נקלט, אבל הקובץ המקורי לא נשמר בכספת. ניתן לנסות להעלות אותו שוב." });
     }
     onDone(r.matter_id, r.document_id);

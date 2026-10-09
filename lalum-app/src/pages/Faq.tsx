@@ -7,6 +7,7 @@ import { scriptDir } from "../lib/hreflang";
 import { faqCategories } from "../lib/faq";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { faqsForPath } from "../lib/pageFaqs";
+import { PillarArt } from "../components/PillarArt";
 
 // In-app Q&A page. Questions and answers are imported from the firm's Wix FAQ,
 // grouped by category, each an accessible accordion.
@@ -25,10 +26,15 @@ export function Faq() {
       />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 40px", textAlign: "center" }}>
-          <span className="pill">{f.heroPill}</span>
-          <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>{f.title}</h1>
-          <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{f.lede}</p>
+        <div className="wrap pillar-hero-layout" style={{ maxWidth: 1140, padding: "96px 32px 40px", alignItems: "center" }}>
+          <div style={{ textAlign: "center" }}>
+            <span className="pill">{f.heroPill}</span>
+            <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>{f.title}</h1>
+            <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{f.lede}</p>
+          </div>
+          <aside className="pillar-hero-art">
+            <PillarArt theme="clinic" />
+          </aside>
         </div>
       </section>
 

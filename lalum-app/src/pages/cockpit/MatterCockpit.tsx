@@ -8,9 +8,12 @@ import { originals } from "../../lib/cockpit/originals";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
+import { trashDoc } from "../../lib/cockpit/bin";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { DeleteDoc, DocMeta } from "./DocControls";
+import { KycPanel } from "./KycPanel";
+import { AnnexAssembly } from "./AnnexAssembly";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -54,6 +57,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   const [loaded, setLoaded] = useState(false);
   const [rev, setRev] = useState(0);
   const [vrev, setVrev] = useState(0);
+  const [kycPending, setKycPending] = useState(0);
   const prefer = useRef<string | null>(null);
   const [widths, setWidths] = useState<{ w1: number; w3: number }>(() => {
     try { return { w1: Number(localStorage.getItem("ck-w1")) || 300, w3: Number(localStorage.getItem("ck-w3")) || 380 }; } catch { return { w1: 300, w3: 380 }; }
@@ -119,6 +123,14 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
     return () => { live = false; };
   }, [doc, docs, matter, routing, signoff]);
 
+  async function trashDocument(d: MatterDoc) {
+    if (!window.confirm(`להעביר את "${d.file_name}" לסל המיחזור? ניתן לשחזר אותו משם.`)) return;
+    const r = await trashDoc(d.id);
+    if (!r.ok) { window.alert(r.error ?? "הפעולה נכשלה."); return; }
+    const rest = docs.filter((x) => x.id !== d.id);
+    setDocs(rest);
+    if (d.id === docId) { if (rest[0] && matter) selectDoc(rest[0], matter); else { setDocId(null); setText(""); } }
+  }
   async function save() {
     window.clearTimeout(timer.current);
     if (!doc || !dirty.current) { setSaveMsg("נשמר"); return; }
@@ -258,14 +270,16 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-label">מסמכים</div>
           <div className="ck-stack">{docs.map((d) => (
             <div key={d.id} className="ck-stack">
-              <button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start" }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
               {platformAdmin && <DeleteDoc doc={d} onDeleted={() => { prefer.current = null; setRev((n) => n + 1); }} />}
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+          <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
             <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+          {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
           <div className="ck-label">מפת ישויות</div>
           {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
           {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
@@ -317,7 +331,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             {groups[0].length ? groups[0].map((f) => <FindingCard key={f.ruleId} f={f} />) : <span className="ck-meta">לא נמצאו ממצאים בסיכון.</span>}
             {groups[1].length > 0 && <details><summary className="ck-meta">כללים שהתקיימו ({groups[1].length})</summary><div className="ck-stack" style={{ marginTop: 8 }}>{groups[1].map((f) => <FindingCard key={f.ruleId} f={f} />)}</div></details>}
           </div>
-          <ExportGate complete={complete} role={role} signoff={signoff} canRestore={!!map} msg={gateMsg} onToggle={toggleStep} onExport={doExport} />
+          <ExportGate complete={complete} role={role} signoff={signoff} canRestore={!!map} msg={gateMsg} kycPending={kycPending} onToggle={toggleStep} onExport={doExport} />
         </section>
       </div>
 
@@ -337,8 +351,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   );
 }
 
-function ExportGate({ complete, role, signoff, canRestore, msg, onToggle, onExport }: {
-  complete: boolean; role: string; signoff: SignoffStatus | null; canRestore: boolean; msg: string;
+function ExportGate({ complete, role, signoff, canRestore, msg, kycPending, onToggle, onExport }: {
+  complete: boolean; role: string; signoff: SignoffStatus | null; canRestore: boolean; msg: string; kycPending: number;
   onToggle: (step: string, on: boolean) => void; onExport: (k: "word" | "pdf", restore: boolean) => void;
 }) {
   const [restoreNames, setRestoreNames] = useState(true);
@@ -357,6 +371,7 @@ function ExportGate({ complete, role, signoff, canRestore, msg, onToggle, onExpo
         );
       })}
       {msg && <div className="ck-err" aria-live="polite">{msg}</div>}
+      {kycPending > 0 && <div className="ck-warn">בתיק {kycPending === 1 ? "צד אחד" : `${kycPending} צדדים`} במסלול שירות עסקי שהכרת הלקוח שלהם טרם הושלמה. הייצוא אינו חסום, אך כדאי להשלים לפני שמוסרים את המסמך.</div>}
       <label className="ck-meta"><input type="checkbox" checked={restoreNames && canRestore} disabled={!canRestore} onChange={(e) => setRestoreNames(e.target.checked)} /> שחזור פרטים מזהים בקובץ המיוצא (זמין רק בסשן שבו הועלה המקור)</label>
       <div className="ck-row"><button className="ck-btn primary" disabled={!complete} onClick={() => onExport("word", restoreNames && canRestore)}>ייצוא Word</button><button className="ck-btn primary" disabled={!complete} onClick={() => onExport("pdf", restoreNames && canRestore)}>ייצוא PDF</button></div>
       {!complete && <div className="ck-meta">הייצוא נחסם עד שכל ארבעת השלבים מסומנים על הטקסט הנוכחי.</div>}

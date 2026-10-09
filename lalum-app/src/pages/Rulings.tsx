@@ -12,6 +12,7 @@ import {
   rulingTitle, searchRulings, siteSearchUrl, webSearchUrl,
   type AreaId, type Ruling, type Sort,
 } from "../lib/rulings";
+import { PillarArt } from "../components/PillarArt";
 
 // Case law search.
 //
@@ -188,12 +189,17 @@ export function Rulings() {
 
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="wrap" style={{ maxWidth: 900, padding: "96px 32px 32px", textAlign: "center" }}>
-          <span className="pill">{c.heroPill}</span>
-          <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
-            {c.title}
-          </h1>
-          <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{c.sub}</p>
+        <div className="wrap pillar-hero-layout" style={{ maxWidth: 1140, padding: "96px 32px 32px", alignItems: "center" }}>
+          <div style={{ textAlign: "center" }}>
+            <span className="pill">{c.heroPill}</span>
+            <h1 className="serif" style={{ fontSize: "clamp(30px, 7.5vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", margin: "26px auto 0", maxWidth: "20ch" }}>
+              {c.title}
+            </h1>
+            <p className="lede" style={{ maxWidth: "62ch", margin: "26px auto 0" }}>{c.sub}</p>
+          </div>
+          <aside className="pillar-hero-art">
+            <PillarArt theme="clinic" />
+          </aside>
         </div>
       </section>
 

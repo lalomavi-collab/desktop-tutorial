@@ -11,7 +11,9 @@ import "../../styles/cockpit.css";
 
 const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace", "תיקים", false, "folder"],
+  ["/workspace/kyc", "הכר את הלקוח", false, "search"],
   ["/admin/matters", "ניהול", false, "gavel"],
+  ["/workspace/bin", "סל מיחזור", true, "trash"],
   ["/settings/billing", "חיוב והגדרות", false, "card"],
   ["/settings/security", "אבטחה", false, "shield"],
   ["/workspace/guide", "מדריך", true, "book"],
