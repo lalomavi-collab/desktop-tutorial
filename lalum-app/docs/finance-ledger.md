@@ -21,6 +21,6 @@ issued by Invoice4U through the `lalum-fin-issue` edge function.
 ## Known limits of phase 1
 
 - Customers that already exist in Invoice4U must be linked by pasting their Invoice4U customer number; a duplicate name is rejected by Invoice4U on creation.
-- History from Invoice4U is mirrored read-only in the "ארכיון Invoice4U" tab (migration 0015, function `lalum-fin-import`, env `FIN_IMPORT_ENV`, default prod). The archive is not part of the revenue and VAT reports yet, which start from the first document issued here.
+- History from Invoice4U is mirrored read-only in the "ארכיון Invoice4U" tab (migration 0015, function `lalum-fin-import`, env `FIN_IMPORT_ENV`, default prod). The overview report adds archived invoices, invoice-receipts and credits to revenue and VAT by issue date, shows that part separately, and counts a document once if it also exists in the ledger. Open balances on archived invoices are Invoice4U's own figure and are shown apart from ledger balances.
 - Expenses are entered by hand. The invoice-processing agent under `python/agents` is the natural feeder later.
 - Allocation number thresholds and the 18 percent VAT default are not hard law in this code: the rate is stored on each document, and thresholds are enforced by Invoice4U and the Tax Authority, not here.
