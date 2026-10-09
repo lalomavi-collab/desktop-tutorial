@@ -16,7 +16,7 @@ export interface FinDocument {
   id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
   tax_included: boolean; vat_rate: number; lines: Line[]; subtotal: number; vat_amount: number; total: number;
   issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
-  related_doc_id: string | null; send_email: boolean; doc_number: number | null; allocation_number: string | null;
+  related_doc_id: string | null; send_email: boolean; doc_number: number | null; i4u_doc_id: string | null; allocation_number: string | null;
   pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
 }
 export interface FinPayment {
@@ -105,18 +105,47 @@ export function openBalance(inv: FinDocument, docs: FinDocument[], pays: FinPaym
 export interface Period { from: string; to: string }
 const within = (iso: string, p: Period): boolean => iso >= p.from && iso <= p.to;
 
-export interface Summary { revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number }
+export interface Summary {
+  revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number;
+  /** Part of revenueNet / vatOut that comes from the Invoice4U archive, shown separately so it is never hidden in the total. */
+  archiveNet: number; archiveVat: number;
+  /** Open balance on archived invoices, as reported by Invoice4U. Not added to `outstanding`. */
+  archiveOutstanding: number;
+}
+
+/**
+ * Revenue effect of an archived Invoice4U document. Invoices and invoice-receipts add, credits subtract
+ * (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive or
+ * negative). Receipts and pro formas are not revenue. Only ILS documents are counted.
+ */
+export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number } {
+  if (a.currency && a.currency !== "ILS") return { net: 0, vat: 0 };
+  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net: Math.abs(a.subtotal), vat: Math.abs(a.vat_amount) };
+  if (a.i4u_doc_type === 4) return { net: -Math.abs(a.subtotal), vat: -Math.abs(a.vat_amount) };
+  return { net: 0, vat: 0 };
+}
 
 /** One period summary: revenue by issue date, expenses by spend date, VAT as output less recoverable input. */
-export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period): Summary {
+export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = []): Summary {
   let revenueNet = 0, vatOut = 0;
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
+  // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
+  const inLedger = new Set(docs.filter((d) => d.status === "ISSUED" && d.i4u_doc_id).map((d) => d.i4u_doc_id as string));
+  let archiveNet = 0, archiveVat = 0, archiveOutstanding = 0;
+  for (const a of archive) {
+    if (inLedger.has(a.i4u_doc_id)) continue;
+    if (a.i4u_doc_type === 1 && (a.balance ?? 0) > 0) archiveOutstanding += a.balance as number;
+    if (!within(a.issue_date, p)) continue;
+    const e = archiveRevenueEffect(a); archiveNet += e.net; archiveVat += e.vat;
+  }
+  revenueNet += archiveNet; vatOut += archiveVat;
   let expenses = 0, vatIn = 0;
   for (const e of exps) if (within(e.spent_on, p)) { expenses += e.total - e.vat_amount; vatIn += recoverableVat(e); }
   const outstanding = docs.reduce((a, d) => a + openBalance(d, docs, pays), 0);
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
+    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat), archiveOutstanding: r2(archiveOutstanding),
   };
 }
 
@@ -131,7 +160,7 @@ export function monthPeriod(year: number, month1: number): Period {
 
 export interface ArchiveDoc {
   id: string; i4u_doc_id: string; i4u_doc_type: number; doc_number: number; issue_date: string; i4u_client_id: number | null;
-  subject: string | null; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
+  subject: string | null; currency: string; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
   status_id: number | null; paid: number | null; balance: number | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */

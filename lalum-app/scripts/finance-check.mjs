@@ -1,13 +1,13 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary } from "../src/lib/cockpit/finance.ts";
+import { computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
   id: "d1", customer_id: "c1", doc_type: "INVOICE", status: "ISSUED", subject: "", tax_included: false, vat_rate: 18,
   lines: [], subtotal: 1000, vat_amount: 180, total: 1180, issue_date: "2026-10-05", due_date: null, payment_method: null,
-  payment_ref: null, related_doc_id: null, send_email: false, doc_number: 1, allocation_number: null, pdf_url: null,
+  payment_ref: null, related_doc_id: null, send_email: false, doc_number: 1, i4u_doc_id: null, allocation_number: null, pdf_url: null,
   is_test: false, last_error: null, issued_at: null, ...o,
 });
 const exp = (o) => ({ id: "e1", spent_on: "2026-10-03", supplier: "x", category: "OTHER", description: null, total: 118, vat_amount: 18, vat_recoverable_pct: 100, supplier_doc_ref: null, payment_method: null, ...o });
@@ -72,10 +72,36 @@ t("numbering gaps are found and formatted", () => {
   assert.equal(formatRanges([3, 4, 5, 9, 11, 12]), "3 עד 5, 9, 11 עד 12");
 });
 t("archive summary groups by type and year", () => {
-  const a = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-03-01", i4u_client_id: null, subject: null, subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+  const a = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-03-01", i4u_client_id: null, subject: null, currency: "ILS", subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
   const rows = archiveSummary([a({}), a({ doc_number: 2, subtotal: 50.1, vat_amount: 9.02, total: 59.12 }), a({ i4u_doc_type: 4 }), a({ issue_date: "2025-12-31" })]);
   assert.deepEqual(rows[0], { type: 1, year: "2026", count: 2, subtotal: 150.1, vat: 27.02, total: 177.12 });
   assert.equal(rows.length, 3);
   assert.equal(rows[2].year, "2025");
+});
+const arch = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-10-05", i4u_client_id: null, subject: null, currency: "ILS", subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+t("archive revenue: invoices add, credits subtract whatever their stored sign, receipts and pro formas are not revenue", () => {
+  assert.deepEqual(archiveRevenueEffect(arch({})), { net: 100, vat: 18 });
+  assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 3 })), { net: 100, vat: 18 });
+  assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 4 })), { net: -100, vat: -18 });
+  assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 4, subtotal: -100, vat_amount: -18 })), { net: -100, vat: -18 });
+  assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 2 })), { net: 0, vat: 0 });
+  assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 5 })), { net: 0, vat: 0 });
+  assert.deepEqual(archiveRevenueEffect(arch({ currency: "USD" })), { net: 0, vat: 0 });
+});
+t("archive joins the period summary once; a document also held in the ledger is not double counted", () => {
+  const p = monthPeriod(2026, 10);
+  const archive = [arch({ i4u_doc_id: "a" }), arch({ i4u_doc_id: "b", i4u_doc_type: 4, subtotal: 40, vat_amount: 7.2 }), arch({ i4u_doc_id: "old", issue_date: "2026-09-30" }), arch({ i4u_doc_id: "dup" })];
+  const s0 = summarize([], [], [], p, archive);
+  assert.equal(s0.revenueNet, 100 + 100 - 40);
+  assert.equal(s0.vatOut, 18 + 18 - 7.2);
+  assert.equal(s0.archiveNet, s0.revenueNet);
+  const ledgerCopy = doc({ id: "L", i4u_doc_id: "dup", subtotal: 100, vat_amount: 18, total: 118 });
+  const s1 = summarize([ledgerCopy], [], [], p, archive);
+  assert.equal(s1.revenueNet, s0.revenueNet);
+});
+t("archive open balance is reported apart from ledger balances", () => {
+  const s = summarize([], [], [], monthPeriod(2026, 10), [arch({ balance: 118 }), arch({ i4u_doc_id: "z", balance: 0 }), arch({ i4u_doc_id: "r", i4u_doc_type: 2, balance: 50 })]);
+  assert.equal(s.archiveOutstanding, 118);
+  assert.equal(s.outstanding, 0);
 });
 console.log("\nAll finance checks passed");
