@@ -1,0 +1,128 @@
+// Client mirror of the finance ledger rules (migration 0014). The database computes the totals that
+// are stored; this file computes the same numbers for the live preview and for the reports, and
+// `npm run finance-check` pins both to the same cases.
+
+export type DocType = "PROFORMA" | "INVOICE" | "RECEIPT" | "INVOICE_RECEIPT" | "CREDIT";
+export type PayMethod = "CARD" | "CHEQUE" | "TRANSFER" | "CASH" | "BIT" | "PAYBOX";
+
+export interface Line { name: string; qty: number; price: number }
+export interface Totals { subtotal: number; vat: number; total: number }
+
+export interface FinCustomer {
+  id: string; name: string; tax_id: string | null; email: string | null; phone: string | null;
+  address: string | null; city: string | null; notes: string | null; archived: boolean; i4u_customer_id: number | null;
+}
+export interface FinDocument {
+  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
+  tax_included: boolean; vat_rate: number; lines: Line[]; subtotal: number; vat_amount: number; total: number;
+  issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
+  related_doc_id: string | null; send_email: boolean; doc_number: number | null; allocation_number: string | null;
+  pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
+}
+export interface FinPayment {
+  id: string; customer_id: string | null; document_id: string | null; paid_on: string; amount: number;
+  method: PayMethod; reference: string | null; notes: string | null;
+}
+export interface FinExpense {
+  id: string; spent_on: string; supplier: string; category: string; description: string | null; total: number;
+  vat_amount: number; vat_recoverable_pct: number; supplier_doc_ref: string | null; payment_method: PayMethod | null;
+}
+
+export const DOC_TYPE: Record<DocType, string> = {
+  PROFORMA: "חשבון עסקה",
+  INVOICE: "חשבונית מס",
+  RECEIPT: "קבלה",
+  INVOICE_RECEIPT: "חשבונית מס קבלה",
+  CREDIT: "חשבונית זיכוי",
+};
+export const PAY_METHOD: Record<PayMethod, string> = {
+  CARD: "כרטיס אשראי", CHEQUE: "שיק", TRANSFER: "העברה בנקאית", CASH: "מזומן", BIT: "ביט", PAYBOX: "פייבוקס",
+};
+export const EXPENSE_CATEGORY: Record<string, string> = {
+  OFFICE: "משרד וציוד", SOFTWARE: "תוכנה ומנויים", PROFESSIONAL: "שירותים מקצועיים", TRAVEL: "נסיעות",
+  VEHICLE: "רכב", COMMUNICATION: "תקשורת", MARKETING: "שיווק ופרסום", FEES: "אגרות ודמי חבר",
+  EDUCATION: "השתלמויות", OTHER: "אחר",
+};
+
+/** Default VAT rate for a new document. Stored on each document, so a later change never rewrites history. */
+export const DEFAULT_VAT_RATE = 18;
+
+/** Documents that carry a payment, and so need a payment method. */
+export const NEEDS_PAYMENT: DocType[] = ["RECEIPT", "INVOICE_RECEIPT"];
+
+const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
+
+/** Same rounding as lalum_fin_totals: sum the lines first, round once. */
+export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boolean): Totals {
+  const s = lines.reduce((a, l) => a + l.qty * l.price, 0);
+  if (taxIncluded) {
+    const total = r2(s);
+    const subtotal = r2(s / (1 + vatRate / 100));
+    return { subtotal, vat: r2(total - subtotal), total };
+  }
+  const subtotal = r2(s);
+  const vat = r2((subtotal * vatRate) / 100);
+  return { subtotal, vat, total: r2(subtotal + vat) };
+}
+
+/** Reasons a draft cannot be saved or issued yet. Empty means ready. */
+export function draftProblems(d: {
+  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null;
+}): string[] {
+  const out: string[] = [];
+  if (!d.customer_id) out.push("בחרו לקוח");
+  if (d.lines.length === 0) out.push("הוסיפו שורה אחת לפחות");
+  if (d.lines.some((l) => !l.name.trim())) out.push("לכל שורה נדרש תיאור");
+  if (d.lines.some((l) => !(l.qty > 0) || !(l.price > 0))) out.push("כמות ומחיר חייבים להיות גדולים מאפס");
+  if (NEEDS_PAYMENT.includes(d.doc_type) && !d.payment_method) out.push("בחרו אמצעי תשלום");
+  if ((d.doc_type === "CREDIT" || d.doc_type === "RECEIPT") && !d.related_doc_id) out.push("קבלה וחשבונית זיכוי חייבות להתייחס למסמך מקור");
+  return out;
+}
+
+/** VAT that can be claimed back on one expense. */
+export const recoverableVat = (e: Pick<FinExpense, "vat_amount" | "vat_recoverable_pct">): number =>
+  r2((e.vat_amount * e.vat_recoverable_pct) / 100);
+
+const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
+
+/** Signed effect of an issued document on revenue. Receipts and pro formas are not revenue. */
+export function revenueEffect(d: FinDocument): { net: number; vat: number } {
+  if (!isLive(d)) return { net: 0, vat: 0 };
+  if (d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") return { net: d.subtotal, vat: d.vat_amount };
+  if (d.doc_type === "CREDIT") return { net: -d.subtotal, vat: -d.vat_amount };
+  return { net: 0, vat: 0 };
+}
+
+/** What a customer still owes on an issued invoice: total, less payments and receipts, less credits. */
+export function openBalance(inv: FinDocument, docs: FinDocument[], pays: FinPayment[]): number {
+  if (inv.doc_type !== "INVOICE" || !isLive(inv)) return 0;
+  const received = pays.filter((p) => p.document_id === inv.id).reduce((a, p) => a + p.amount, 0);
+  const viaDocs = docs.filter((d) => isLive(d) && d.related_doc_id === inv.id && (d.doc_type === "RECEIPT" || d.doc_type === "CREDIT"))
+    .reduce((a, d) => a + d.total, 0);
+  return Math.max(0, r2(inv.total - received - viaDocs));
+}
+
+export interface Period { from: string; to: string }
+const within = (iso: string, p: Period): boolean => iso >= p.from && iso <= p.to;
+
+export interface Summary { revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number }
+
+/** One period summary: revenue by issue date, expenses by spend date, VAT as output less recoverable input. */
+export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period): Summary {
+  let revenueNet = 0, vatOut = 0;
+  for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
+  let expenses = 0, vatIn = 0;
+  for (const e of exps) if (within(e.spent_on, p)) { expenses += e.total - e.vat_amount; vatIn += recoverableVat(e); }
+  const outstanding = docs.reduce((a, d) => a + openBalance(d, docs, pays), 0);
+  return {
+    revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
+    vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
+  };
+}
+
+/** First and last day of a calendar month as ISO dates. */
+export function monthPeriod(year: number, month1: number): Period {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const last = new Date(year, month1, 0).getDate();
+  return { from: `${year}-${pad(month1)}-01`, to: `${year}-${pad(month1)}-${pad(last)}` };
+}

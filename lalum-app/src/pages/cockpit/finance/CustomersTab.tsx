@@ -1,0 +1,75 @@
+import { useState } from "react";
+import { supabase } from "../../../lib/supabase";
+import type { FinCustomer } from "../../../lib/cockpit/finance";
+
+type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string };
+const blank: Draft = { name: "", tax_id: "", email: "", phone: "", address: "", city: "", notes: "", i4u: "" };
+
+export function CustomersTab({ firmId, customers, onChange }: { firmId: string; customers: FinCustomer[]; onChange: () => void }) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [f, setF] = useState<Draft>(blank);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [q, setQ] = useState("");
+  const set = (k: keyof Draft) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
+
+  function open(c?: FinCustomer) {
+    setEditing(c?.id ?? "new"); setMsg(null);
+    setF(c ? { name: c.name, tax_id: c.tax_id ?? "", email: c.email ?? "", phone: c.phone ?? "", address: c.address ?? "", city: c.city ?? "", notes: c.notes ?? "", i4u: c.i4u_customer_id ? String(c.i4u_customer_id) : "" } : blank);
+  }
+  async function save() {
+    if (!supabase) return;
+    if (!f.name.trim()) { setMsg({ ok: false, text: "שם הלקוח חובה." }); return; }
+    if (f.tax_id && !/^\d{5,9}$/.test(f.tax_id)) { setMsg({ ok: false, text: "ת.ז. או ח.פ. הם ספרות בלבד (5 עד 9)." }); return; }
+    if (f.i4u && !/^\d+$/.test(f.i4u)) { setMsg({ ok: false, text: "מספר לקוח ב-Invoice4U הוא ספרות בלבד." }); return; }
+    const row = {
+      name: f.name.trim(), tax_id: f.tax_id || null, email: f.email.trim() || null, phone: f.phone.trim() || null,
+      address: f.address.trim() || null, city: f.city.trim() || null, notes: f.notes.trim() || null,
+      i4u_customer_id: f.i4u ? Number(f.i4u) : null,
+    };
+    const { error } = editing === "new"
+      ? await supabase.from("lalum_fin_customers").insert({ ...row, firm_id: firmId })
+      : await supabase.from("lalum_fin_customers").update(row).eq("id", editing);
+    if (error) { setMsg({ ok: false, text: error.message }); return; }
+    setEditing(null); onChange();
+  }
+  async function archive(c: FinCustomer) {
+    if (!supabase) return;
+    await supabase.from("lalum_fin_customers").update({ archived: !c.archived }).eq("id", c.id);
+    onChange();
+  }
+  const shown = customers.filter((c) => !q.trim() || c.name.includes(q.trim()) || (c.tax_id ?? "").includes(q.trim()));
+
+  return (
+    <div className="ck-stack">
+      <div className="ck-row" style={{ justifyContent: "space-between" }}>
+        <input className="ck-input" aria-label="חיפוש לקוח" placeholder="חיפוש לפי שם או ת.ז." value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
+        <button className="ck-btn primary" onClick={() => open()}>לקוח חדש</button>
+      </div>
+      {editing && (
+        <div className="ck-card ck-stack">
+          <div className="ck-title">{editing === "new" ? "לקוח חדש" : "עריכת לקוח"}</div>
+          <div className="ck-grid2">
+            <label className="ck-field">שם<input className="ck-input" value={f.name} onChange={set("name")} /></label>
+            <label className="ck-field">ת.ז. / ח.פ.<input className="ck-input" dir="ltr" inputMode="numeric" value={f.tax_id} onChange={set("tax_id")} /></label>
+            <label className="ck-field">דוא"ל<input className="ck-input" dir="ltr" type="email" value={f.email} onChange={set("email")} /></label>
+            <label className="ck-field">טלפון<input className="ck-input" dir="ltr" inputMode="tel" value={f.phone} onChange={set("phone")} /></label>
+            <label className="ck-field">כתובת<input className="ck-input" value={f.address} onChange={set("address")} /></label>
+            <label className="ck-field">עיר<input className="ck-input" value={f.city} onChange={set("city")} /></label>
+            <label className="ck-field">מספר לקוח ב-Invoice4U (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>
+            <label className="ck-field">הערות<input className="ck-input" value={f.notes} onChange={set("notes")} /></label>
+          </div>
+          {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
+          <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
+        </div>
+      )}
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>ת.ז. / ח.פ.</th><th>דוא"ל</th><th>טלפון</th><th>Invoice4U</th><th></th></tr></thead><tbody>
+        {shown.length ? shown.map((c) => (
+          <tr key={c.id} style={c.archived ? { opacity: 0.55 } : undefined}>
+            <td>{c.name}</td><td dir="ltr">{c.tax_id ?? ""}</td><td dir="ltr">{c.email ?? ""}</td><td dir="ltr">{c.phone ?? ""}</td>
+            <td>{c.i4u_customer_id ? "מקושר" : "יפתח בהפקה ראשונה"}</td>
+            <td><div className="ck-row"><button className="ck-btn" onClick={() => open(c)}>עריכה</button><button className="ck-btn" onClick={() => void archive(c)}>{c.archived ? "שחזור" : "העברה לארכיון"}</button></div></td>
+          </tr>)) : <tr><td colSpan={6}>אין לקוחות עדיין</td></tr>}
+      </tbody></table></div>
+    </div>
+  );
+}
