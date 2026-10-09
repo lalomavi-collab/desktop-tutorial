@@ -45,6 +45,9 @@ const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ de
 const Kyc = lazy(() => import("./pages/cockpit/Kyc").then((m) => ({ default: m.Kyc })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const ImportFolderPage = lazy(() => import("./pages/cockpit/ImportFolder").then((m) => ({ default: m.ImportFolderPage })));
+const InquiriesPage = lazy(() => import("./pages/cockpit/ClientWork").then((m) => ({ default: m.InquiriesPage })));
+const TasksPage = lazy(() => import("./pages/cockpit/ClientWork").then((m) => ({ default: m.TasksPage })));
+const ScorecardPage = lazy(() => import("./pages/cockpit/ClientWork").then((m) => ({ default: m.ScorecardPage })));
 const BinPage = lazy(() => import("./pages/cockpit/Bin").then((m) => ({ default: m.BinPage })));
 const CockpitGuide = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.CockpitGuide })));
 const SaasTerms = lazy(() => import("./pages/cockpit/CockpitDocs").then((m) => ({ default: m.SaasTerms })));
@@ -94,6 +97,9 @@ export default function App() {
           <Route path="partners" element={<Suspense fallback={null}><Partners /></Suspense>} />
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="workspace/import" element={<Suspense fallback={null}><ImportFolderPage /></Suspense>} />
+          <Route path="workspace/inquiries" element={<Suspense fallback={null}><InquiriesPage /></Suspense>} />
+          <Route path="workspace/tasks" element={<Suspense fallback={null}><TasksPage /></Suspense>} />
+          <Route path="workspace/scorecard" element={<Suspense fallback={null}><ScorecardPage /></Suspense>} />
           <Route path="workspace/bin" element={<Suspense fallback={null}><BinPage /></Suspense>} />
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/kyc" element={<Suspense fallback={null}><Kyc /></Suspense>} />
