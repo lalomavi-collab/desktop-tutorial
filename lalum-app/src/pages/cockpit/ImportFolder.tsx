@@ -2,7 +2,7 @@
 // (read-only, the source is never changed or deleted) and sends each file through the normal intake pipeline, so PII is
 // masked, conflicts are checked and everything is audited exactly as for a manual upload. One matter per request chain:
 // no file from one matter ever travels with another.
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { readFile } from "./Intake";
@@ -126,32 +126,76 @@ function Importer({ firmId }: { firmId: string }) {
 
   const set = (folder: string, patch: Partial<Row>) => setRows((rs) => rs.map((r) => (r.folder === folder ? { ...r, ...patch } : r)));
 
+  const stopRef = useRef(false);
+  const failedRef = useRef<Record<string, string[]>>({});
+  const [conc, setConc] = useState(3);
+  const [stats, setStats] = useState<{ done: number; total: number; started: number } | null>(null);
+  const [stopping, setStopping] = useState(false);
+
+  // Warn before the tab is closed while an import runs, and keep the screen awake (a sleeping laptop stops the import).
+  useEffect(() => {
+    if (!busy) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", warn);
+    let lock: { release(): Promise<void> } | null = null;
+    void (navigator as unknown as { wakeLock?: { request(t: "screen"): Promise<{ release(): Promise<void> }> } }).wakeLock?.request("screen").then((l) => { lock = l; }).catch(() => undefined);
+    return () => { window.removeEventListener("beforeunload", warn); void lock?.release(); };
+  }, [busy]);
+
+  const retryable = (c?: string) => !!c && /RATE|429|BUSY|OVERLOAD/i.test(c);
+
+  // One matter: its files go in order (the first creates the matter, the rest join it). Matters run side by side, never mixed.
+  async function importPlan(p: Plan) {
+    set(p.folder, { state: "run", text: "מעבד..." });
+    let matterId: string | undefined = p.targetMatter ?? undefined;
+    let okFiles = 0; let failed = 0; let halted = false; let noOriginal = 0;
+    const failedNames: string[] = [];
+    for (const [i, e] of p.files.entries()) {
+      if (stopRef.current) { failedNames.push(...p.files.slice(i).map((f) => f.name)); break; }
+      set(p.folder, { text: `קובץ ${i + 1} מתוך ${p.files.length}` });
+      let text = "";
+      try { text = (await readFile(e.file)).trim(); } catch { text = ""; }
+      if (!text) { failed++; failedNames.push(e.name); setStats((s) => s && { ...s, done: s.done + 1 }); continue; }
+      let r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
+      // Only an explicit rate limit is retried: after a network failure the server may already have stored the file, and a blind retry could create a second matter.
+      for (let t = 0; t < 3 && !r.ok && retryable(r.code); t++) {
+        await new Promise((res) => setTimeout(res, 2000 * (t + 1)));
+        r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
+      }
+      setStats((s) => s && { ...s, done: s.done + 1 });
+      if (!r.ok || !r.matter_id) {
+        if (r.code === "CONFLICT_HALT") { halted = true; failedNames.push(...p.files.slice(i).map((f) => f.name)); set(p.folder, { state: "warn", text: errorText(r) }); break; }
+        failed++; failedNames.push(e.name); continue;
+      }
+      matterId = r.matter_id; okFiles++;
+      if (r.document_id && supabase) await supabase.rpc("lalum_set_document_meta", { p_doc: r.document_id, p_type: docType, p_origin: docOrigin, p_date: null });
+      if (r.document_id && !(await storeOriginal(firmId, r.matter_id, r.document_id, e.file, e.hash))) { noOriginal++; failedNames.push(`${e.name} (המקור לא נשמר)`); }
+    }
+    failedRef.current[p.folder] = failedNames;
+    if (!halted) set(p.folder, { state: failed || noOriginal || stopRef.current ? (okFiles ? "warn" : "err") : "done", text: `${okFiles} קבצים נקלטו${failed ? `, ${failed} נכשלו` : ""}${noOriginal ? `, למקור לא נשמר: ${noOriginal}` : ""}${stopRef.current && failedNames.length > failed + noOriginal ? ", נעצר" : ""}` });
+  }
+
   async function run() {
     if (!plans) return;
     const chosen = plans.filter((p) => p.include);
+    stopRef.current = false; setStopping(false); failedRef.current = {};
     setBusy(true);
+    setStats({ done: 0, total: chosen.reduce((a, p) => a + p.files.length, 0), started: Date.now() });
     setRows(chosen.map((p) => ({ folder: p.folder, state: "wait", text: "ממתין" })));
-    for (const p of chosen) {
-      set(p.folder, { state: "run", text: "מעבד..." });
-      let matterId: string | undefined = p.targetMatter ?? undefined;
-      let okFiles = 0; let failed = 0; let halted = false; let noOriginal = 0;
-      for (const [i, e] of p.files.entries()) {
-        set(p.folder, { text: `קובץ ${i + 1} מתוך ${p.files.length}` });
-        let text: string;
-        try { text = (await readFile(e.file)).trim(); } catch { failed++; continue; }
-        if (!text) { failed++; continue; }
-        const r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
-        if (!r.ok || !r.matter_id) {
-          if (r.code === "CONFLICT_HALT") { halted = true; set(p.folder, { state: "warn", text: errorText(r) }); break; }
-          failed++; continue;
-        }
-        matterId = r.matter_id; okFiles++;
-        if (r.document_id && supabase) await supabase.rpc("lalum_set_document_meta", { p_doc: r.document_id, p_type: docType, p_origin: docOrigin, p_date: null });
-        if (r.document_id && !(await storeOriginal(firmId, r.matter_id, r.document_id, e.file, e.hash))) noOriginal++;
-      }
-      if (!halted) set(p.folder, { state: failed || noOriginal ? (okFiles ? "warn" : "err") : "done", text: `${okFiles} קבצים נקלטו${failed ? `, ${failed} נכשלו` : ""}${noOriginal ? `, למקור לא נשמר: ${noOriginal}` : ""}` });
-    }
+    let next = 0;
+    const worker = async () => { while (!stopRef.current) { const i = next++; if (i >= chosen.length) break; await importPlan(chosen[i]); } };
+    await Promise.all(Array.from({ length: Math.min(conc, chosen.length) }, worker));
     setBusy(false);
+  }
+
+  function stop() { stopRef.current = true; setStopping(true); }
+
+  function downloadReport() {
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const lines = [["תיקייה", "מצב", "קבצים שלא נקלטו"].map(esc).join(",")];
+    for (const r of rows) lines.push([r.folder, r.text, (failedRef.current[r.folder] ?? []).join(" | ")].map(esc).join(","));
+    const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `import-report-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
   }
 
   return (
@@ -195,15 +239,31 @@ function Importer({ firmId }: { firmId: string }) {
               <select className="ck-select" value={docOrigin} onChange={(e) => setDocOrigin(e.target.value)}><option value="">בחרו מקור</option>{Object.entries(DOC_ORIGIN).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
           </div>
           <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד במשרד, וכל קובץ נשמר בתוכו.</div>
-          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים</button></div>
+          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים ({plans.filter((p) => p.include).reduce((a, p) => a + p.files.length, 0)} קבצים)</button>
+            <label className="ck-row ck-meta">מהירות:
+              <select className="ck-select" style={{ width: "auto" }} value={conc} onChange={(e) => setConc(Number(e.target.value))}>
+                <option value={1}>רגילה (תיק אחד בכל פעם)</option><option value={3}>מהירה (שלושה תיקים במקביל)</option><option value={5}>מהירה מאוד (חמישה)</option>
+              </select></label></div>
+          {plans.filter((p) => p.include).length > 20 && <div className="ck-meta">ייבוא גדול: השאירו את הלשונית פתוחה והמחשב ער. אפשר לעצור בכל רגע ולהמשיך אחר כך באותה תיקייה: קבצים שכבר נקלטו לא ייקלטו שוב.</div>}
         </>
       )}
+      {stats && rows.length > 0 && (() => {
+        const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 100;
+        const secs = (Date.now() - stats.started) / 1000;
+        const eta = stats.done > 0 && busy ? Math.max(0, Math.round((secs / stats.done) * (stats.total - stats.done) / 60)) : 0;
+        return (
+          <div className="ck-stack" role="status">
+            <div className="ck-meta">{stats.done} מתוך {stats.total} קבצים ({pct}%){busy && eta > 0 ? `, נותרו בערך ${eta} דקות` : ""}</div>
+            <div className="ck-bar"><div style={{ width: `${pct}%` }} /></div>
+            {busy && <div className="ck-row"><button className="ck-btn danger" disabled={stopping} onClick={stop}>{stopping ? "עוצר אחרי הקובץ הנוכחי..." : "עצירה"}</button></div>}
+          </div>);
+      })()}
       {rows.length > 0 && (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיקייה</th><th>מצב</th></tr></thead><tbody>
           {rows.map((r) => <tr key={r.folder}><td>{r.folder}</td><td><span className={`ck-badge ${r.state === "done" ? "green" : r.state === "err" ? "red" : "yellow"}`}>{r.text}</span></td></tr>)}
         </tbody></table></div>
       )}
-      {!busy && rows.length > 0 && <div className="ck-row"><Link className="ck-btn primary" to="/workspace">לרשימת התיקים</Link></div>}
+      {!busy && rows.length > 0 && <div className="ck-row"><Link className="ck-btn primary" to="/workspace">לרשימת התיקים</Link><button className="ck-btn" onClick={downloadReport}>הורדת דוח</button></div>}
     </div>
   );
 }

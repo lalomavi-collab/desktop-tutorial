@@ -270,7 +270,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-label">מסמכים</div>
           <div className="ck-stack">{docs.map((d) => (
             <div key={d.id} className="ck-stack">
-              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברה לסל המיחזור" onClick={() => void trashDocument(d)}>למחיקה</button>}</div>
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>

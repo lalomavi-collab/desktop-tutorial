@@ -26,7 +26,12 @@ export async function storeOriginal(firmId: string, matterId: string, documentId
     const up = await supabase.storage.from("matter-originals").upload(path, new Blob([buf], { type: mime }), { contentType: mime, upsert: false });
     if (up.error) return false;
     const { error } = await supabase.rpc("lalum_attach_original", { p_doc: documentId, p_path: path, p_sha256: hash, p_size: file.size, p_mime: mime });
-    return !error;
+    if (error) {
+      // Never leave a file in the vault that is not linked to its document: the uploader may remove its own unreferenced object.
+      await supabase.storage.from("matter-originals").remove([path]);
+      return false;
+    }
+    return true;
   } catch {
     return false;
   }
