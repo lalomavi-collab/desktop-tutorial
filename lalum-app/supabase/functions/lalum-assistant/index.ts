@@ -25,6 +25,43 @@ const FREE_CASE_LAW_LOOKUPS = 3;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
 
+// The four engine frames, keyed exactly as the sidebar buttons name them
+// (LegalOS.tsx: engines[].key, cmd "/contracts" etc). Held once here, not
+// copied into the Engines bullet list below and again into a detection
+// table, since a button in the UI only ever inserts its literal command
+// into the text box: recognising it used to depend entirely on the model
+// noticing that string inside the long Engines prose below, which a future
+// rewrite of that prose could silently break with no error anywhere. The
+// detection below instead runs in code against the actual command prefix,
+// and restates the matching frame explicitly, so the button's effect no
+// longer depends on how the surrounding instructions happen to be worded.
+const FRAME_BY_KEY = {
+  contracts:
+    "(1) an executive summary of the deal structure; (2) a forensic exposure matrix as a Markdown table covering latent ambiguity, unbalanced indemnity, termination asymmetry, and economic exposure; (3) redline rewrites with the economic rationale beside each. Do not invent facts the document does not contain.",
+  dom:
+    "dispute and settlement work, offered as a service the practice provides. (1) separate the legal claims from the economic and psychological drivers; (2) assess BATNA and WATNA in probabilistic terms, naming your assumptions rather than presenting invented odds as fact; (3) structure a concrete, bracketed settlement proposal. Do not fabricate case law to support a position.",
+  recir:
+    "the full span of real estate and urban renewal, in Israel and abroad: purchase and sale agreements, residential and commercial leasing, pinui binui and tama 38, condominium registration, planning and zoning before local and district committees, construction permits, betterment levy, purchase tax and appreciation tax, developer bank guarantees under the Sale Law (חוק המכר דירות), receivership and foreclosure on real property, and cross border acquisition and investment structuring for an Israeli buyer or developer abroad. Weigh municipal planning exposure, owner signature thresholds, bank guarantees, tax liability, and developer solvency throughout. State a rate or a threshold only when it is grounded, otherwise describe the mechanism without a number.",
+  srme:
+    "the full span of AI advisory, accompaniment, and training for an organization: procurement and vendor contracts for AI systems, corporate governance and board oversight of AI use, EU AI Act conformity and risk classification, data protection and privacy inside an AI pipeline, intellectual property in AI generated output and training data, liability allocation between model provider, integrator, and deployer, algorithmic decision making audits, and workforce policy for AI adoption. Weigh transparency, model liability, reliance architecture, and audit readiness throughout.",
+} as const;
+type EngineKey = keyof typeof FRAME_BY_KEY;
+
+// Detects the sidebar's own command prefix in the newest user message, the
+// one thing the button actually commits to (LegalOS.tsx's useCommand just
+// prepends "/contracts" etc to the text box). Plain text that happens to
+// discuss the same subject, without the leading command, is left to the
+// model's own judgment exactly as before: this only catches the deterministic
+// case the button itself produces.
+function detectEngine(content: string): EngineKey | null {
+  const head = content.trim().toLowerCase();
+  for (const key of Object.keys(FRAME_BY_KEY) as EngineKey[]) {
+    const cmd = `/${key}`;
+    if (head === cmd || head.startsWith(`${cmd} `)) return key;
+  }
+  return null;
+}
+
 // The assistant's operating instructions, as set by the firm. Two rules carry
 // the weight: answer only from what is provided here, and when the answer is
 // not here, say so instead of producing one. The case law it may cite is the
@@ -55,10 +92,10 @@ Core Mandate: STRICT GROUNDING (this overrides the tone above)
 4. Every answer is informational only, is not legal advice, and creates no attorney client relationship. State this whenever an answer carries legal consequence. Prioritise safety, confidentiality, and professional ethics.
 
 Engines (apply the matching frame; none of them lifts the grounding rule above):
-• /contracts : (1) an executive summary of the deal structure; (2) a forensic exposure matrix as a Markdown table covering latent ambiguity, unbalanced indemnity, termination asymmetry, and economic exposure; (3) redline rewrites with the economic rationale beside each. Do not invent facts the document does not contain.
-• /dom : dispute and settlement work, offered as a service the practice provides. (1) separate the legal claims from the economic and psychological drivers; (2) assess BATNA and WATNA in probabilistic terms, naming your assumptions rather than presenting invented odds as fact; (3) structure a concrete, bracketed settlement proposal. Do not fabricate case law to support a position.
-• /recir : the full span of real estate and urban renewal, in Israel and abroad: purchase and sale agreements, residential and commercial leasing, pinui binui and tama 38, condominium registration, planning and zoning before local and district committees, construction permits, betterment levy, purchase tax and appreciation tax, developer bank guarantees under the Sale Law (חוק המכר דירות), receivership and foreclosure on real property, and cross border acquisition and investment structuring for an Israeli buyer or developer abroad. Weigh municipal planning exposure, owner signature thresholds, bank guarantees, tax liability, and developer solvency throughout. State a rate or a threshold only when it is grounded, otherwise describe the mechanism without a number.
-• /srme : the full span of AI advisory, accompaniment, and training for an organization: procurement and vendor contracts for AI systems, corporate governance and board oversight of AI use, EU AI Act conformity and risk classification, data protection and privacy inside an AI pipeline, intellectual property in AI generated output and training data, liability allocation between model provider, integrator, and deployer, algorithmic decision making audits, and workforce policy for AI adoption. Weigh transparency, model liability, reliance architecture, and audit readiness throughout.
+• /contracts : ${FRAME_BY_KEY.contracts}
+• /dom : ${FRAME_BY_KEY.dom}
+• /recir : ${FRAME_BY_KEY.recir}
+• /srme : ${FRAME_BY_KEY.srme}
 
 Case Law Search Engine:
 When a user asks for a precedent, a court ruling, or a "פסק דין" on a topic (for example "דייר סרבן", "פינוי בינוי", "זכויות יוצרים ב-AI"):
@@ -124,11 +161,21 @@ Deno.serve(async (req) => {
     (m) => m.role === "assistant" && m.content.includes(CASE_LAW_MARKER)
   ).length;
 
+  // Restated on top of SYSTEM, not instead of it: the Engines section above
+  // still carries the full description for a model reading the conversation
+  // normally. This is the deterministic backstop for the one case the
+  // sidebar buttons themselves produce.
+  const lastUser = [...messages].reverse().find((m) => m.role === "user");
+  const engine = lastUser ? detectEngine(lastUser.content) : null;
+  const system = engine
+    ? `${SYSTEM}\n\nThe user just invoked the /${engine} engine explicitly, via the command bar in the app, not by typing the words themselves. Apply exactly this frame to the reply, and no other: ${FRAME_BY_KEY[engine]}`
+    : SYSTEM;
+
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 1200, system: SYSTEM, messages }),
+      body: JSON.stringify({ model: MODEL, max_tokens: 1200, system, messages }),
     });
     if (!res.ok) {
       console.error(`lalum-assistant: upstream ${res.status}`);
