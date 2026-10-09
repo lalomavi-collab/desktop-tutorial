@@ -126,3 +126,45 @@ export function monthPeriod(year: number, month1: number): Period {
   const last = new Date(year, month1, 0).getDate();
   return { from: `${year}-${pad(month1)}-01`, to: `${year}-${pad(month1)}-${pad(last)}` };
 }
+
+// ---- Invoice4U archive (read-only mirror, migration 0015) ----
+
+export interface ArchiveDoc {
+  id: string; i4u_doc_id: string; i4u_doc_type: number; doc_number: number; issue_date: string; i4u_client_id: number | null;
+  subject: string | null; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
+  status_id: number | null; paid: number | null; balance: number | null;
+}
+/** Invoice4U DocumentType codes, as documented by Invoice4U. */
+export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };
+
+/** Document numbers missing between the lowest and highest number held. Numbering must be continuous, so a gap is a finding. */
+export function numberingGaps(numbers: number[]): number[] {
+  const sorted = [...new Set(numbers)].sort((a, b) => a - b);
+  const out: number[] = [];
+  for (let i = 1; i < sorted.length; i++) for (let n = sorted[i - 1] + 1; n < sorted[i] && out.length < 500; n++) out.push(n);
+  return out;
+}
+/** Compresses [3,4,5,9] into "3 עד 5, 9". */
+export function formatRanges(nums: number[]): string {
+  const parts: string[] = [];
+  for (let i = 0; i < nums.length; ) {
+    let j = i;
+    while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++;
+    parts.push(j > i ? `${nums[i]} עד ${nums[j]}` : String(nums[i]));
+    i = j + 1;
+  }
+  return parts.join(", ");
+}
+
+export interface ArchiveRow { type: number; year: string; count: number; subtotal: number; vat: number; total: number }
+/** Totals per document type and year, for reconciling the archive against Invoice4U's own reports. Credits are shown as positive amounts of their own type. */
+export function archiveSummary(docs: ArchiveDoc[]): ArchiveRow[] {
+  const m = new Map<string, ArchiveRow>();
+  for (const d of docs) {
+    const year = d.issue_date.slice(0, 4), k = `${d.i4u_doc_type}|${year}`;
+    const r = m.get(k) ?? { type: d.i4u_doc_type, year, count: 0, subtotal: 0, vat: 0, total: 0 };
+    r.count++; r.subtotal = r2(r.subtotal + d.subtotal); r.vat = r2(r.vat + d.vat_amount); r.total = r2(r.total + d.total);
+    m.set(k, r);
+  }
+  return [...m.values()].sort((a, b) => b.year.localeCompare(a.year) || a.type - b.type);
+}

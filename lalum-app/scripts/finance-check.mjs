@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat } from "../src/lib/cockpit/finance.ts";
+import { computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -64,5 +64,18 @@ t("monthly summary: revenue, credits, recoverable VAT, payable VAT", () => {
 t("recoverable VAT follows the stated share", () => {
   assert.equal(recoverableVat({ vat_amount: 36, vat_recoverable_pct: 25 }), 9);
   assert.equal(recoverableVat({ vat_amount: 36, vat_recoverable_pct: 0 }), 0);
+});
+t("numbering gaps are found and formatted", () => {
+  assert.deepEqual(numberingGaps([1, 2, 3]), []);
+  assert.deepEqual(numberingGaps([5, 1, 2, 2, 9]), [3, 4, 6, 7, 8]);
+  assert.deepEqual(numberingGaps([]), []);
+  assert.equal(formatRanges([3, 4, 5, 9, 11, 12]), "3 עד 5, 9, 11 עד 12");
+});
+t("archive summary groups by type and year", () => {
+  const a = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-03-01", i4u_client_id: null, subject: null, subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+  const rows = archiveSummary([a({}), a({ doc_number: 2, subtotal: 50.1, vat_amount: 9.02, total: 59.12 }), a({ i4u_doc_type: 4 }), a({ issue_date: "2025-12-31" })]);
+  assert.deepEqual(rows[0], { type: 1, year: "2026", count: 2, subtotal: 150.1, vat: 27.02, total: 177.12 });
+  assert.equal(rows.length, 3);
+  assert.equal(rows[2].year, "2025");
 });
 console.log("\nAll finance checks passed");
