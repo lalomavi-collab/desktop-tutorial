@@ -50,6 +50,22 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /insights/portugal-realestate-legal-guide  /insights/portugal-investment-guide/  301
 /insights/portugal-realestate-legal-guide/  /insights/portugal-investment-guide/  301
 
+# --- Second-opinion / legal-clinic pitch consolidation ---
+# Four articles opened with the identical "second opinion before surgery,
+# just like in medicine" pitch for the LALUM Legal Clinic, written three
+# times over in November 2025 alone with no distinguishing angle between
+# them (distinct from second-opinion-revolution, three-minute-legal-check,
+# and second-opinion-real-estate-urban-renewal, each of which has its own
+# specific hook and stays). Kept lalum-clinic-realestate-advice: the
+# longest, already linked from the real-estate pillar page, and the only
+# one explicitly framed as both Israel and abroad.
+/insights/realestate-second-opinion  /insights/lalum-clinic-realestate-advice/  301
+/insights/realestate-second-opinion/  /insights/lalum-clinic-realestate-advice/  301
+/insights/quiet-legal-revolution  /insights/lalum-clinic-realestate-advice/  301
+/insights/quiet-legal-revolution/  /insights/lalum-clinic-realestate-advice/  301
+/insights/medicine-meets-law  /insights/lalum-clinic-realestate-advice/  301
+/insights/medicine-meets-law/  /insights/lalum-clinic-realestate-advice/  301
+
 # --- Legacy Wix blog index -> new articles hub ---
 /post   /insights/   301
 
@@ -119,7 +135,7 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/המדריך-שמונע-טעויות-חוזרות-בהתחדשות-עירונית  /insights/urban-renewal-mistakes-guide/  301
 /post/המהפכה-האלגוריתמית-ניתוח-רב-ממדי-של-שילוב-צ-אט-בוטים-ובינה-מלאכותית-גנרטיבית-בעולם-המשפט-המודרני-וב  /insights/legal-ai-chatbots-analysis/  301
 /post/המהפכה-השקטה-בחדר-הישיבות-המדריך-האסטרטגי-לאימוץ-timeless-בעולמות-המשפט-הנדל-ן-והעסקים  /insights/timeless-meeting-revolution/  301
-/post/המהפכה-השקטה-בעולם-המשפט-חוות-דעת-משפטית-שנייה  /insights/quiet-legal-revolution/  301
+/post/המהפכה-השקטה-בעולם-המשפט-חוות-דעת-משפטית-שנייה  /insights/lalum-clinic-realestate-advice/  301
 /post/הסוד-שבזמן-הנכון-ומה-שבאמת-קובע  /insights/הסוד-שבזמן-הנכון-ומה-שבאמת-קובע/  301
 /post/הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה  /insights/הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה/  301
 /post/העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות  /insights/העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות/  301
@@ -145,7 +161,7 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה  /insights/כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה/  301
 /post/כלים-למגשר-לגישור-מוצלחai-שפת-גוף-וניסיון-שדה-מארג-אחד-שמוביל-להסכמות-מהירות-איכותיות-ובר-קיימא  /insights/mediator-tools-body-language-field-experience/  301
 /post/כשהמודל-מציע-פסיקה-מי-בעצם-מאמת  /insights/ai-hallucinations-citations/  301
-/post/כשעולם-הרפואה-פוגש-את-עולם-המשפט  /insights/medicine-meets-law/  301
+/post/כשעולם-הרפואה-פוגש-את-עולם-המשפט  /insights/lalum-clinic-realestate-advice/  301
 /post/לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025  /insights/לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025/  301
 /post/לא-רק-מילים-מדריך-יישומי-לבחירת-כלי-תמלול-מבוססי-ai-למשרד-המודרני  /insights/transcription-tools-guide/  301
 /post/ליווי-עסקאות-נדל-ן-בינלאומיות-המפתח-להשקעה-בטוחה-בעולם-משתנה  /insights/intl-realestate-transactions/  301
@@ -160,7 +176,7 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים  /insights/מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים/  301
 /post/מדריך-עסקאות-בינלאומיות-בישראל-2026-מהם-הסיכונים-המשפטיים-שצריך-לדעת  /insights/international-trade-guide-2026/  301
 /post/מה-עושים-כשאין-מנגנון-מוסכם-מראש  /insights/מה-עושים-כשאין-מנגנון-מוסכם-מראש/  301
-/post/מה-עסקת-חייכם-חייבת-חוות-דעת-שנייה-בדיוק-כמו-ברפואה  /insights/realestate-second-opinion/  301
+/post/מה-עסקת-חייכם-חייבת-חוות-דעת-שנייה-בדיוק-כמו-ברפואה  /insights/lalum-clinic-realestate-advice/  301
 /post/מה-קורה-כשיזם-פושט-רגל-באמצע-פינוי-בינוי-ואיך-מגשר-מלווה-יכול-להציל-את-הפרויקט  /insights/מה-קורה-כשיזם-פושט-רגל-באמצע-פינוי-בינוי-ואיך-מגשר-מלווה-יכול-להציל-את-הפרויקט/  301
 /post/מהאינדיקציה-להחלטה-פרוטוקול-bl-לגישור-מתקדם-גישור-מכוון-הכרעה  /insights/מהאינדיקציה-להחלטה-פרוטוקול-bl-לגישור-מתקדם-גישור-מכוון-הכרעה/  301
 /post/מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי  /insights/מהו-גישור-מכוון-הכרעה-וכיצד-הוא-שונה-מגישור-מסורתי/  301
