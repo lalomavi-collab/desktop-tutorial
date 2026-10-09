@@ -226,8 +226,8 @@
  "urban-renewal-required-majority-holdout": {
   "topic": "real-estate",
   "related": [
-   "urban-renewal-taxation-owner",
    "pinui-binui-owner-guide",
+   "urban-renewal-taxation-owner",
    "tama-38-1-vs-38-2-comparison"
   ]
  },
@@ -348,7 +348,7 @@
   "related": [
    "portugal-real-estate-financing",
    "greece-realestate-israeli-buyer-guide",
-   "portugal-real-estate-taxation"
+   "portugal-investment-guide"
   ]
  },
  "portugal-real-estate-taxation": {
@@ -499,8 +499,8 @@
   "topic": "real-estate",
   "related": [
    "tama-38-1-vs-38-2-comparison",
-   "tenant-urban-renewal-guide",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "developer-agreement-urban-renewal-critical-clauses",
+   "tenant-urban-renewal-guide"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -595,8 +595,8 @@
   "topic": "real-estate",
   "related": [
    "intl-realestate-transactions",
-   "israeli-realestate-abroad",
-   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
+   "portugal-porto-vs-lisbon",
+   "israeli-realestate-abroad"
   ]
  },
  "ai-legal-practice": {
@@ -898,8 +898,8 @@
  "tenant-urban-renewal-guide": {
   "topic": "real-estate",
   "related": [
-   "pinui-binui-owner-guide",
    "second-opinion-revolution",
+   "pinui-binui-owner-guide",
    "free-lawyer-illusion"
   ]
  },
@@ -914,8 +914,8 @@
  "overseas-property-holding": {
   "topic": "real-estate",
   "related": [
-   "overseas-partnership-guide",
    "israeli-realestate-abroad",
+   "overseas-partnership-guide",
    "portugal-real-estate-taxation"
   ]
  },
@@ -939,8 +939,8 @@
   "topic": "real-estate",
   "related": [
    "intl-realestate-transactions",
-   "overseas-property-holding",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
+   "overseas-property-holding-structure"
   ]
  },
  "second-opinion-revolution": {
@@ -948,7 +948,7 @@
   "related": [
    "homeowners-iron-dome",
    "free-lawyer-illusion",
-   "lalum-clinic-realestate-advice"
+   "combination-deals-architecture"
   ]
  },
  "law-algorithm-era": {
@@ -979,8 +979,8 @@
   "topic": "real-estate",
   "related": [
    "combination-deals-architecture",
-   "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "homeowners-iron-dome"
   ]
  },
  "israeli-realestate-abroad": {
@@ -988,7 +988,7 @@
   "related": [
    "intl-realestate-transactions",
    "overseas-property-holding",
-   "portugal-investment-guide"
+   "urban-renewal-risk"
   ]
  },
  "war-end-scenarios-analysis": {
@@ -1036,7 +1036,7 @@
   "related": [
    "medicine-meets-law",
    "quiet-legal-revolution",
-   "second-opinion-revolution"
+   "realestate-second-opinion"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1338,8 +1338,8 @@
  "the-decision-room-החדר-שבו-נולדה-ההכרעה": {
   "topic": "mediation",
   "related": [
-   "lalum-clinic-realestate-advice",
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
+   "lalum-clinic-realestate-advice",
    "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
@@ -1370,8 +1370,8 @@
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
   "topic": "real-estate",
   "related": [
-   "lalum-clinic-realestate-advice",
    "intl-realestate-transactions",
+   "lalum-clinic-realestate-advice",
    "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
