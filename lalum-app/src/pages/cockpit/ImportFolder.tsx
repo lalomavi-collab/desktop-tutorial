@@ -28,12 +28,13 @@ interface DirHandle { kind: "directory"; name: string; values(): AsyncIterable<D
 interface FileHandle { kind: "file"; name: string; getFile(): Promise<File> }
 const hasPicker = typeof window !== "undefined" && "showDirectoryPicker" in window;
 
+// A file the browser cannot open (a OneDrive "online only" placeholder, a locked file) is counted, never fatal to the scan.
+const unreadable = { n: 0 };
 async function collect(dir: DirHandle, out: Array<{ name: string; file: File }>, prefix: string, depth: number): Promise<void> {
   for await (const h of dir.values()) {
     if (h.name.startsWith(".") || h.name.startsWith("~$")) continue; // hidden and Office lock files
     if (h.kind === "file") {
-      const f = await h.getFile();
-      out.push({ name: prefix + h.name, file: f });
+      try { out.push({ name: prefix + h.name, file: await h.getFile() }); } catch { unreadable.n++; }
     } else if (depth < 3) {
       await collect(h, out, `${prefix}${h.name}/`, depth + 1);
     }
@@ -49,7 +50,7 @@ function Importer({ firmId }: { firmId: string }) {
   const [docOrigin, setDocOrigin] = useState("");
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
-  const [level, setLevel] = useState<1 | 2>(1);
+  const [level, setLevel] = useState<0 | 1 | 2>(1);
 
   async function pick() {
     setNote(""); setRows([]);
@@ -58,31 +59,42 @@ function Importer({ firmId }: { firmId: string }) {
       setRoot(r);
       await scan(r, level);
     } catch (e) {
-      if ((e as Error).name !== "AbortError") setNote("לא ניתן לקרוא את התיקייה.");
+      const n = (e as Error).name;
+      if (n === "AbortError") return;
+      setNote(n === "SecurityError"
+        ? "Chrome חוסם בחירה של תיקיית מערכת (שולחן העבודה, מסמכים, הורדות) או תיקייה שמכילה קבצי מערכת. בחרו את תיקיית התיקים עצמה, שנמצאת בתוך אחת מהן, ולא את התיקייה העליונה."
+        : "לא ניתן לקרוא את התיקייה. נסו שוב או בחרו תיקייה אחרת.");
     }
   }
 
   // level 1: every direct sub folder is a matter. level 2: folders are clients and their sub folders are the matters.
-  async function scan(rootDir: DirHandle, lvl: 1 | 2) {
-    setNote(""); setRows([]); setPlans(null);
+  async function scan(rootDir: DirHandle, lvl: 0 | 1 | 2) {
+    setNote(""); setRows([]); setPlans(null); unreadable.n = 0;
     try {
       const raw: Array<{ folder: string; files: Array<{ name: string; file: File }>; skipped: number }> = [];
-      let loose = 0;
+      let loose = 0; let looseUnsupported = 0;
+      const rootLoose: Array<{ name: string; file: File }> = [];
       const addMatter = async (dir: DirHandle, label: string) => {
         const all: Array<{ name: string; file: File }> = [];
         await collect(dir, all, "", 0);
         const ok = all.filter((e) => EXT.some((x) => e.name.toLowerCase().endsWith(x)) && e.file.size > 0 && e.file.size <= MAX_BYTES).slice(0, MAX_FILES_PER_MATTER);
         if (ok.length) raw.push({ folder: label, files: ok, skipped: all.length - ok.length });
       };
-      for await (const h of rootDir.values()) {
-        if (h.name.startsWith(".")) continue;
-        if (h.kind === "file") { loose++; continue; }
+      if (lvl === 0) await addMatter(rootDir, rootDir.name);
+      else for await (const h of rootDir.values()) {
+        if (h.name.startsWith(".") || h.name.startsWith("~$")) continue;
+        if (h.kind === "file") {
+          if (EXT.some((x) => h.name.toLowerCase().endsWith(x))) { try { const f = await h.getFile(); if (f.size > 0 && f.size <= MAX_BYTES) rootLoose.push({ name: h.name, file: f }); else looseUnsupported++; } catch { unreadable.n++; } } else looseUnsupported++;
+          loose++; continue;
+        }
         if (lvl === 1) { await addMatter(h, h.name); continue; }
         for await (const g of h.values()) {
           if (g.name.startsWith(".")) continue;
           if (g.kind === "file") loose++; else await addMatter(g, `${h.name} / ${g.name}`);
         }
       }
+      // Loose files at the top of the chosen folder belong to no matter: offered as one group, off until the partner names it.
+      if (rootLoose.length) raw.push({ folder: "קבצים בשורש התיקייה (ללא תיק)", files: rootLoose.slice(0, MAX_FILES_PER_MATTER), skipped: 0 });
       // Fingerprint every file, then ask the vault which of them it already holds.
       const hashed: Array<{ folder: string; skipped: number; files: Entry[] }> = [];
       let n = 0; const total = raw.reduce((a, r) => a + r.files.length, 0);
@@ -104,7 +116,7 @@ function Importer({ firmId }: { firmId: string }) {
         const best = [...overlap.entries()].sort((x, y) => y[1] - x[1])[0];
         const target = best && best[1] * 2 >= unique.length ? best[0] : null;
         const fresh = unique.filter((f) => !target || !(known.get(f.hash) ?? []).includes(target));
-        const flag = SORTING.test(h.folder) ? "נראית כתיקיית מיון ולא כתיק" : null;
+        const flag = h.folder.startsWith("קבצים בשורש התיקייה") ? "קבצים ללא תיק: תנו כותרת ורק אז סמנו לייבוא" : SORTING.test(h.folder) ? "נראית כתיקיית מיון ולא כתיק" : null;
         return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 && !flag, flag, practice: "", sample: fresh.slice(0, 3).map((f) => f.name) };
       });
       const ids = [...new Set(found.map((p) => p.targetMatter).filter((x): x is string => !!x))];
@@ -116,8 +128,11 @@ function Importer({ firmId }: { firmId: string }) {
       found.sort((a, b) => a.folder.localeCompare(b.folder, "he"));
       setPlans(found);
       const msgs: string[] = [];
-      if (!found.length) msgs.push("לא נמצאו תיקיות עם מסמכים נתמכים (Word, PDF, טקסט, HTML) ברמה שנבחרה.");
-      if (loose) msgs.push(`${loose} קבצים עומדים מחוץ לתיקיות התיקים ולכן לא ייובאו (קובץ שאינו בתיקיית תיק אינו משויך לתיק).`);
+      if (!found.length) msgs.push(lvl === 1 ? "לא נמצאו תיקיות תיקים עם מסמכים נתמכים (Word, PDF, טקסט, HTML). אם בחרתם תיקיית לקוחות, בחרו \"תיקיית לקוח ובתוכה תיקייה לכל תיק\"; אם בחרתם תיק בודד, בחרו \"התיקייה שבחרתי היא תיק אחד\"." : "לא נמצאו מסמכים נתמכים (Word, PDF, טקסט, HTML) ברמה שנבחרה.");
+      if (rootLoose.length) msgs.push(`${rootLoose.length} קבצים עומדים בשורש התיקייה ללא תיק: הם מוצגים כקבוצה נפרדת שאינה מסומנת, ורק לאחר מתן כותרת ייקלטו כתיק.`);
+      if (loose - rootLoose.length > 0 && lvl === 2) msgs.push(`${loose - rootLoose.length} קבצים עומדים בתיקיות לקוח מחוץ לתיקיות התיקים ולא ייובאו.`);
+      if (looseUnsupported) msgs.push(`${looseUnsupported} קבצים בשורש בסוג לא נתמך או גדולים מדי לא ייובאו.`);
+      if (unreadable.n) msgs.push(`${unreadable.n} קבצים לא ניתנו לפתיחה (למשל קבצי OneDrive במצב "זמין רק באינטרנט"): סמנו את התיקייה ב-OneDrive "שמור תמיד במכשיר זה" וסרקו שוב.`);
       setNote(msgs.join(" "));
     } catch {
       setNote("לא ניתן לקרוא את התיקייה.");
@@ -204,7 +219,8 @@ function Importer({ firmId }: { firmId: string }) {
       {!hasPicker && <div className="ck-err">הדפדפן אינו תומך בבחירת תיקייה. השתמשו ב-Chrome או Edge במחשב.</div>}
       <div className="ck-row"><button className="ck-btn primary" disabled={!hasPicker || busy} onClick={() => void pick()}>בחירת תיקייה</button>
         <label className="ck-row ck-meta">מה נחשב תיק:
-          <select className="ck-select" style={{ width: "auto" }} value={level} disabled={busy} onChange={(e) => { const v = Number(e.target.value) as 1 | 2; setLevel(v); if (root) void scan(root, v); }}>
+          <select className="ck-select" style={{ width: "auto" }} value={level} disabled={busy} onChange={(e) => { const v = Number(e.target.value) as 0 | 1 | 2; setLevel(v); if (root) void scan(root, v); }}>
+            <option value={0}>התיקייה שבחרתי היא תיק אחד</option>
             <option value={1}>כל תיקייה ישירה היא תיק</option>
             <option value={2}>תיקיית לקוח ובתוכה תיקייה לכל תיק</option>
           </select></label>
