@@ -13,6 +13,9 @@ import "../../styles/cockpit-mint.css";
 
 const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace/dashboard", "לוח בקרה", false, "home"],
+  ["/workspace/partner", "תמונת מצב לשותף", false, "scale"],
+  ["/workspace/matters/m1", "תיק 360 (הדגמה)", false, "folder"],
+  ["/workspace/portal-preview", "תצוגת פורטל", false, "user"],
   ["/workspace", "תיקים", false, "folder"],
   ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
   ["/workspace/tasks", "משימות", false, "check"],

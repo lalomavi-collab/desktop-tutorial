@@ -17,7 +17,8 @@
     "a11y-audit": "node scripts/a11y-audit.mjs",
     "template-check": "node scripts/template-check.mjs",
     "kyc-check": "node scripts/kyc-check.mjs",
-    "finance-check": "node scripts/finance-check.mjs"
+    "finance-check": "node scripts/finance-check.mjs",
+    "crm-check": "node scripts/crm-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",
