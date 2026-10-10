@@ -10,7 +10,7 @@ import { ArchiveTab } from "./ArchiveTab";
 
 type Tab = "overview" | "documents" | "customers" | "expenses" | "archive";
 const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"]];
-const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate";
+const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId }: { firmId: string }) {
@@ -82,16 +82,16 @@ export function FinanceHome({ firmId }: { firmId: string }) {
             <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">רווח לפני מס</div><div className="fin-figure">{money(s.profit)}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>{s.archiveVat !== 0 && <> (מהארכיון <bdi>{money(s.archiveVat)}</bdi>)</>}, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div>{s.archiveVat !== 0 && <div className="fin-note">מתוך העסקאות, מארכיון Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</div>}</div>
           </div>
           <div className="ck-card fin-stat"><div className="ck-meta">יתרות פתוחות מלקוחות (כל התקופות)</div><div className="fin-figure">{money(s.outstanding)}</div>
             {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
-      {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} onChange={() => void load()} />}
+      {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} />}
       {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
-      {tab === "archive" && loaded && <ArchiveTab docs={archive} onChange={() => void load()} />}
+      {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
     </div>
   );
