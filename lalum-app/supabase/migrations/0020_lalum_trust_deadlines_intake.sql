@@ -1,5 +1,5 @@
 -- Trust ledger, disbursements, deadlines with client visibility, client document intake gate,
--- and a manual weekly cash forecast. Builds on 0017.
+-- and a manual weekly cash forecast. Builds on 0019.
 --
 -- Design rules
 --  * The trust ledger is append only and every balance is computed from its rows. There is no
@@ -491,7 +491,7 @@ create policy lalum_cash_forecast_all on public.lalum_cash_forecast_items for al
   using ((select public.lalum_fin_can(firm_id))) with check ((select public.lalum_fin_can(firm_id)));
 grant select, insert, update, delete on public.lalum_cash_forecast_items to authenticated;
 
--- ───────────────────────── 0017 functions, now aware of trust ─────────────────────────
+-- ───────────────────────── 0019 functions, now aware of trust ─────────────────────────
 
 create or replace function public.lalum_partner_overview() returns jsonb
 language plpgsql security definer set search_path to 'public' as $$

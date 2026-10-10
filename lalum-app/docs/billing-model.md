@@ -15,7 +15,7 @@ separate pull request, and the client portal after that.
 Authorization is enforced in RLS and in SECURITY DEFINER functions. The UI hides nothing that the
 database would allow.
 
-## Tables (migration 0017)
+## Tables (migration 0019)
 
 `lalum_matter_team`, `lalum_matter_fees` (one row per matter, `billing_active` needs a stored fee
 agreement path), `lalum_rate_cards`, `lalum_time_entries`, `lalum_milestones`,
@@ -48,33 +48,37 @@ guard that billing cannot be switched on without an agreement file.
 ## Hardening found while testing
 
 `lalum_fin_can` returned NULL for a user who is not a firm member, and `if not <NULL>` does not
-raise. 0017 redefines it to always return true or false. The same NULL pattern exists in the RPCs of
+raise. 0019 redefines it to always return true or false. The same NULL pattern exists in the RPCs of
 0014 (`lalum_fin_save_draft`, `lalum_fin_delete_draft`). Those cannot do harm today because the
 inserts fail on a NOT NULL firm id, and the redefinition closes the gap for them too.
 
 ## Schema drift
 
 `lalum_firms`, `lalum_firm_members`, `lalum_cockpit_matters` and the role helpers existed only in
-the live project. Migration 0016 records their live definition and is idempotent. Many other tables
+the live project. Migration 0018 records their live definition and is idempotent. Many other tables
 used by the app are still live only (tasks, events, invoices, matter documents and more), so a replay
 of the repo from scratch is not yet possible.
+
+This started as 0016 and 0017, renumbered to 0018 and 0019 after the own document engine (numbering
+and sealing, `lalum-app/docs/finance-engine-design.md`) merged and took those numbers first. No
+content changed, only the file names and the numbers quoted below and in this PR's own commands.
 
 ## Tests
 
 `supabase/tests/billing_rls.sql` runs 51 assertions as distinct users on plain Postgres 16, with
-`00_supabase_stubs.sql` standing in for Supabase auth. Order: stubs, 0016, 0014, 0017, then the
+`00_supabase_stubs.sql` standing in for Supabase auth. Order: stubs, 0018, 0014, 0019, then the
 test file. It rolls its own fixtures back.
 
 ```
 psql -v ON_ERROR_STOP=1 -d <db> -f supabase/tests/00_supabase_stubs.sql
-psql -v ON_ERROR_STOP=1 -d <db> -f supabase/migrations/0016_lalum_firm_core_baseline.sql
+psql -v ON_ERROR_STOP=1 -d <db> -f supabase/migrations/0018_lalum_firm_core_baseline.sql
 psql -v ON_ERROR_STOP=1 -d <db> -f supabase/migrations/0014_lalum_finance_ledger.sql
-psql -v ON_ERROR_STOP=1 -d <db> -f supabase/migrations/0017_lalum_billing_model.sql
+psql -v ON_ERROR_STOP=1 -d <db> -f supabase/migrations/0019_lalum_billing_model.sql
 psql -v ON_ERROR_STOP=1 -d <db> -f supabase/tests/billing_rls.sql
 ```
 
 ## Rollout
 
-1. Apply 0016 (no change on the live project) then 0017.
+1. Apply 0018 (no change on the live project) then 0019.
 2. Next pull request: partner overview, hours and fee tabs on `/settings/billing`.
 3. After: client portal financial tab and matter messages, once the client grant flow exists.

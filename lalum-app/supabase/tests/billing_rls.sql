@@ -1,4 +1,4 @@
--- RLS and function tests for migration 0017. Run after 00_supabase_stubs.sql, 0016, 0014, 0017:
+-- RLS and function tests for migration 0019. Run after 00_supabase_stubs.sql, 0018, 0014, 0019:
 --   psql -v ON_ERROR_STOP=1 -f billing_rls.sql
 -- Every assertion raises on failure, so a clean run is the pass signal.
 create schema if not exists t;
