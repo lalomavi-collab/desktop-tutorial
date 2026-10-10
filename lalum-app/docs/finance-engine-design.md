@@ -30,13 +30,20 @@ Status of each fact is marked. Nothing here is legal advice.
 - Shaam onboarding (permissions, sandbox access): deferred on purpose. The practice owner and a future session do this
   together, directly on the Tax Authority site, only at the final stage before the 2027-01-01 switch, not before.
 
-## Still NOT verified. Ask the accountant, then the Tax Authority API support (APISupport@taxes.gov.il)
+## Decided by the practice owner (2026-10-10), not independently verified
 
-1. Bookkeeping instructions for self-built software used only by the practice: required sequence integrity,
-   original and copy handling, signing, backup, retention period.
-2. Whether the uniform-structure file module is required for own-use software.
-3. Treatment of a number consumed by a document that fails before issue (see below, already built in the database
-   layer as the `VOID` status; the open part is purely the accountant question, not the code).
+These three were never confirmed against a primary Tax Authority or accountant source (the accountant email
+drafted for them was not sent). The owner chose to proceed on the strict reading rather than wait, so the design
+takes the safer side of each question. If a verified answer later turns out looser, nothing here needs to get
+stricter; if it turns out stricter still, revisit.
+
+1. Sequence integrity: numbering must be strictly continuous, no gaps. Already the design's own rule regardless
+   (see Numbering and sealing below): a number is never reused or deleted, and a failed document is marked VOID in
+   place rather than skipped, so there is no gap, only an explained VOID entry.
+2. Uniform-structure file module: build it, on the assumption that the stricter, common-practice reading applies
+   even though own-use software may be exempt. Not yet built (see Phases).
+3. A number consumed by a document that fails before issue: confirmed no requirement beyond what is already built,
+   the `VOID` status with its reason. No code change needed here.
 
 ## Numbering and sealing
 
@@ -71,6 +78,8 @@ Rules the design enforces regardless of the answers above:
      live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
      practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
      site, not before.
+   - Still to build, not blocked: the uniform-structure file export module (the owner's decision above, taking
+     the stricter reading rather than wait for a verified answer). Can be built independently of Shaam.
 4. Parallel run: each real document produced twice (here as shadow, Invoice4U as the issuing source) for several VAT
    periods; totals and numbering compared.
 5. Switch: issuing moves here. Invoice4U stays read-only for the archive and as an emergency fallback.
