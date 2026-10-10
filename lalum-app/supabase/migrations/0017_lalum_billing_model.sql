@@ -222,15 +222,15 @@ begin
 end $$;
 revoke execute on function public.lalum_audit_write(uuid, text, text, text, jsonb) from public, anon, authenticated;
 
-create or replace function public.lalum_audit_immutable() returns trigger
+create or replace function public.lalum_billing_audit_block() returns trigger
 language plpgsql set search_path to 'public' as $$
 begin raise exception 'AUDIT_LOG_IMMUTABLE'; end $$;
 drop trigger if exists lalum_audit_no_change on public.lalum_audit_log;
 create trigger lalum_audit_no_change before update or delete on public.lalum_audit_log
-  for each row execute function public.lalum_audit_immutable();
+  for each row execute function public.lalum_billing_audit_block();
 drop trigger if exists lalum_audit_no_truncate on public.lalum_audit_log;
 create trigger lalum_audit_no_truncate before truncate on public.lalum_audit_log
-  for each statement execute function public.lalum_audit_immutable();
+  for each statement execute function public.lalum_billing_audit_block();
 
 -- One trigger function for every billing table.
 create or replace function public.lalum_billing_audit_trg() returns trigger
