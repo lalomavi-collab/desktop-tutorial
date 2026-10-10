@@ -11,6 +11,7 @@ const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.C
 const VideoBubble = lazy(() => import("./VideoBubble").then((m) => ({ default: m.VideoBubble })));
 import { BottomTabBar } from "./BottomTabBar";
 import { ContactRail } from "./ContactRail";
+import { QuickAccessDot } from "./QuickAccessDot";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
@@ -77,6 +78,16 @@ export function MarketingLayout() {
       <Suspense fallback={null}>
         <VideoBubble />
       </Suspense>
+      {/* The dot has to be mounted for the panel above it to be reachable at
+          all: VideoBubble renders nothing until it receives OPEN_VIDEO_EVENT,
+          and this is the only component that emits it. Without this line the
+          intro video, the readiness check and the app install all have no
+          entry point on the site, which is how they were for several weeks.
+          Mounted out here rather than inside a route for the usual reason:
+          .route-view carries an animation whose keyframes set a transform,
+          and a transformed ancestor becomes the containing block for its
+          position:fixed descendants. */}
+      <QuickAccessDot />
       <ContactRail />
       <BottomTabBar />
       <AccessibilityMenu />
