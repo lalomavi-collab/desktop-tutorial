@@ -22,8 +22,8 @@ const blankEditor = (): Editor => ({
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
 
-export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
-  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
+export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
+  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
 }) {
   const [ed, setEd] = useState<Editor | null>(null);
   const [note, setNote] = useState<Note>(null);
@@ -141,6 +141,9 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
       </div>
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
+      {archiveCount > 0 && (
+        <div className="ck-meta">מסמכים שהופקו ב-Invoice4U (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון Invoice4U" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
+      )}
 
       {ed && totals && (
         <div className="ck-card ck-stack">

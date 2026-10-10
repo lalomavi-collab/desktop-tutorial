@@ -170,6 +170,8 @@ export interface ArchiveDoc {
   status_id: number | null; paid: number | null; balance: number | null;
   /** ConversionRate Invoice4U stored on the document (units of NIS per unit of currency). Read from the raw record. */
   rate?: number | string | null;
+  /** Name of a casual (one-off) customer, from the raw record. Empty when the document has a customer card. */
+  gname?: string | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */
 export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };
