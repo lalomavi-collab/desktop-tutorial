@@ -8,8 +8,10 @@ import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
+import { BookArt, CardArt2, ChartArt, GavelArt, ImportArt, InboxArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
+import "../../styles/cockpit-dashboard.css";
 
 const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace/dashboard", "לוח בקרה", false, "home"],
@@ -25,6 +27,13 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/settings/security", "אבטחה", false, "shield"],
   ["/workspace/guide", "מדריך", true, "book"],
 ];
+
+// Every framed screen opens with a band: an illustration beside its own description. The dashboard and the matter list carry their own hero.
+const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
+  "/workspace/inquiries": InboxArt, "/workspace/tasks": TasksArt, "/workspace/scorecard": ChartArt, "/workspace/import": ImportArt,
+  "/workspace/kyc": SearchArt, "/admin/matters": GavelArt, "/workspace/bin": TrashArt, "/settings/billing": CardArt2,
+  "/settings/security": ShieldArt, "/workspace/guide": BookArt,
+};
 
 type CkTheme = "mint" | "dark";
 // The cockpit opens in the light mint look; the choice is remembered per browser (storage may be blocked, so every access is guarded).
@@ -94,6 +103,7 @@ export function CockpitFrame({
         <header className="ck-top">
           <h1 className="serif">{title}</h1>
         </header>
+        {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
         <main>{body}</main>
       </div>
     </div>
