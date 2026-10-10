@@ -10,7 +10,7 @@ import { ArchiveTab } from "./ArchiveTab";
 
 type Tab = "overview" | "documents" | "customers" | "expenses" | "archive";
 const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"]];
-const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance";
+const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId }: { firmId: string }) {
@@ -85,7 +85,6 @@ export function FinanceHome({ firmId }: { firmId: string }) {
             <div className="ck-card"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="ck-title">{money(s.vatPayable)}</div><div className="ck-meta">עסקאות {money(s.vatOut)}{s.archiveVat !== 0 ? ` (מהארכיון ${money(s.archiveVat)})` : ""} · תשומות לניכוי {money(s.vatIn)}</div></div>
           </div>
           <div className="ck-card"><div className="ck-meta">יתרות פתוחות מלקוחות (כל התקופות)</div><div className="ck-title">{money(s.outstanding)}</div>
-            {s.archiveOutstanding > 0 && <div className="ck-meta">בנוסף, לפי Invoice4U יתרה פתוחה בחשבוניות שהופקו שם: {money(s.archiveOutstanding)}. הנתון כפי שדווח שם ולא נבדק מול תשלומים.</div>}
             {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
