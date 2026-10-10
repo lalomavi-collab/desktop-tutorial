@@ -20,8 +20,10 @@ Status of each fact is marked. Nothing here is legal advice.
 
 ## Answered by the practice owner (2026-10-10)
 
-- Software registration field: the practice's business id (`עוסק מורשה`) is `0314717261`. Use this, not `99999999`,
-  wherever the registration field is required.
+- Software registration field: the practice's business id (`עוסק מורשה`) is the owner's own Teudat Zehut, `031471261`
+  (9 digits, Israeli ID check digit valid: digit sum 30, divisible by 10). The first number given, `0314717261`, was
+  10 digits and did not pass the check; the owner retyped it directly from the ID card. Use `031471261`, not
+  `99999999`, wherever the registration field is required.
 - Numbering: must continue from the last Invoice4U number per document type, not restart. `lalum_fin_series` has to be
   seeded from the archive's highest `doc_number` per type before the own engine seals its first document of that type.
   Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) does this seeding;
@@ -78,8 +80,14 @@ Rules the design enforces regardless of the answers above:
      live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
      practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
      site, not before.
-   - Still to build, not blocked: the uniform-structure file export module (the owner's decision above, taking
-     the stricter reading rather than wait for a verified answer). Can be built independently of Shaam.
+   - Done: the uniform-structure file export module (the owner's decision above, taking the stricter reading
+     rather than wait for a verified answer), `src/lib/cockpit/shaamExport.ts`. Builds INI.TXT and BKMVDATA.TXT
+     from the finance ledger via `@accounter/shaam-uniform-format-generator` (pinned exactly at `0.2.6`: its
+     `latest`, `0.2.7`, ships a broken `dist/`). Round trips through that package's own parser and
+     cross-validator (`npm run shaam-check`). Scope: documents only (C100/D110/D120), no B100/B110/M100, since
+     the practice issues sales documents and keeps no general ledger. Not yet run through the Tax Authority's
+     own official file-checker at misim.gov.il: that is a required step before this output is ever used for a
+     real filing, not something this module's own tests can substitute for.
 4. Parallel run: each real document produced twice (here as shadow, Invoice4U as the issuing source) for several VAT
    periods; totals and numbering compared.
 5. Switch: issuing moves here. Invoice4U stays read-only for the archive and as an emergency fallback.
