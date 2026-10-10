@@ -50,8 +50,14 @@ Rules the design enforces regardless of the answers above:
 
 1. Done: read-only archive of Invoice4U history, reconciliation by type and year, gap detection.
 2. Next: run the ledger in parallel on the Invoice4U QA environment; fix what the rehearsal exposes.
-3. Build: series and sealing in the database (`lalum_fin_series`, sealing RPC, hash chain), PDF, Shaam client against the
-   Tax Authority sandbox. Production Shaam only after questions 1 to 6 are answered.
+3. Build, split in two:
+   - Done: `lalum_fin_series` (per firm and type, numbers never reused or deleted), the DRAFT -> SEALING
+     state machine, and the hash chain (`lalum_fin_seal_document`, `lalum_fin_void_document`). Database
+     only, no Tax Authority call. Migration `0016_lalum_finance_series.sql`.
+   - Still to build: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the live
+     gov.il call), plus PDF generation. Blocked on questions 1 to 6 above: Production Shaam only after
+     they are answered. The sandbox call can likely start once Shaam onboarding (question 4) is done,
+     even before the others are settled.
 4. Parallel run: each real document produced twice (here as shadow, Invoice4U as the issuing source) for several VAT
    periods; totals and numbering compared.
 5. Switch: issuing moves here. Invoice4U stays read-only for the archive and as an emergency fallback.
