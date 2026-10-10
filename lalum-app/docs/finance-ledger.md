@@ -13,7 +13,7 @@ issued by Invoice4U through the `lalum-fin-issue` edge function.
 ## Rollout order
 
 1. Apply migration 0014 to the Supabase project.
-2. Deploy `lalum-fin-issue` (default JWT verification on). It reuses the `INVOICE4U_API_KEY` secret.
+2. Deploy `lalum-fin-issue` (default JWT verification on). QA mode reads its own secret, `FIN_INVOICE4U_QA_KEY`, and refuses without it; the production key `INVOICE4U_API_KEY` is read only when `FIN_INVOICE4U_ENV=prod`.
 3. Leave `FIN_INVOICE4U_ENV` unset (QA). Issue rehearsal documents. They are stamped `is_test` and never count in reports.
 4. Before switching to `prod`, verify against Invoice4U: that your QA key issues all five types, the allocation number appears for a document above the threshold, and a credit invoice and a receipt against a rehearsal invoice are accepted.
 5. Set `FIN_INVOICE4U_ENV=prod` with the production key. Stop issuing from Invoice4U's own screen at the same moment, so numbering has one source.

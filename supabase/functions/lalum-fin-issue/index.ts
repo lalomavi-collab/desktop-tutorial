@@ -5,7 +5,9 @@
 // POST { document_id, action?: "issue" | "reconcile" }   (default "issue")
 //
 // Env (SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are injected):
-//   INVOICE4U_API_KEY   organization API key (GUID); passed as `token` per the Invoice4U docs
+//   INVOICE4U_API_KEY   PRODUCTION organization API key (GUID); passed as `token` per the Invoice4U docs.
+//                       Used only when FIN_INVOICE4U_ENV is "prod". It is never sent to the QA host.
+//   FIN_INVOICE4U_QA_KEY  key of the Invoice4U QA account. Required in qa mode; without it the function refuses.
 //   FIN_INVOICE4U_ENV   "qa" (default) or "prod". Separate from the clearing flow's INVOICE4U_ENV on purpose,
 //                       so live payments cannot switch the books to live. Documents issued in qa are stamped is_test and
 //                       never count in reports, so a rehearsal cannot pollute the books.
@@ -37,13 +39,14 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
-  const apiKey = Deno.env.get("INVOICE4U_API_KEY")?.trim();
   const prod = (Deno.env.get("FIN_INVOICE4U_ENV") ?? "qa").toLowerCase().startsWith("prod");
+  // The production key must never travel to the QA host, so each mode reads its own secret.
+  const apiKey = (prod ? Deno.env.get("INVOICE4U_API_KEY") : Deno.env.get("FIN_INVOICE4U_QA_KEY"))?.trim();
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !anon || !serviceKey) return json(500, { code: "not_configured" });
-  if (!apiKey) return json(500, { code: "invoice4u_not_configured" });
+  if (!apiKey) return json(500, { code: prod ? "invoice4u_not_configured" : "qa_key_missing" });
   const base = prod ? "https://api.invoice4u.co.il/Services/ApiService.svc" : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
 
   const authHeader = req.headers.get("Authorization") ?? "";

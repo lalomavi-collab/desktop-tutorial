@@ -16,6 +16,7 @@ const ISSUE_ERRORS: Record<string, string> = {
   customer_sync_failed: "פתיחת הלקוח ב-Invoice4U נכשלה. אם הלקוח כבר קיים שם, הזינו את מספר הלקוח שלו בכרטיס הלקוח.",
   invoice4u_rejected: "Invoice4U דחה את המסמך. הפרטים מופיעים בשורת המסמך.",
   invoice4u_not_configured: "החיבור ל-Invoice4U לא הוגדר בשרת.",
+  qa_key_missing: "לא הוגדר מפתח לסביבת הניסוי של Invoice4U (FIN_INVOICE4U_QA_KEY). הפקה בניסוי דורשת מפתח נפרד מהמפתח האמיתי.",
   outcome_uncertain: "לא התקבלה תשובה סופית. אל תפיקו שוב. לחצו על בדיקת סטטוס מול Invoice4U.",
   not_found_at_provider: "Invoice4U לא מכיר מסמך עם המזהה הזה. אפשר להפיק מחדש.",
   never_attempted: "לא בוצע ניסיון הפקה למסמך הזה.",
