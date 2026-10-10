@@ -20,6 +20,7 @@ export function FounderIntroVideo() {
   const V = t.ui.videoBubble;
   return (
     <figure
+      id="founder-film"
       className="founder-film"
       aria-label={V.open}
       style={{

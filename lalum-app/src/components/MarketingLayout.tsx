@@ -8,10 +8,8 @@ import { InAppBrowserBanner } from "./InAppBrowserBanner";
 const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
 // Same treatment for the floating video bubble: it carries a video element and
 // is pure marketing, so it has no business in the first paint.
-const VideoBubble = lazy(() => import("./VideoBubble").then((m) => ({ default: m.VideoBubble })));
 import { BottomTabBar } from "./BottomTabBar";
 import { ContactRail } from "./ContactRail";
-import { QuickAccessDot } from "./QuickAccessDot";
 import { A11yWidget } from "./A11yWidget";
 import { AccessibilityMenu } from "./AccessibilityMenu";
 import { CookieConsent } from "./CookieConsent";
@@ -75,19 +73,12 @@ export function MarketingLayout() {
       <Suspense fallback={null}>
         <ChatWidget />
       </Suspense>
-      <Suspense fallback={null}>
-        <VideoBubble />
-      </Suspense>
-      {/* The dot has to be mounted for the panel above it to be reachable at
-          all: VideoBubble renders nothing until it receives OPEN_VIDEO_EVENT,
-          and this is the only component that emits it. Without this line the
-          intro video, the readiness check and the app install all have no
-          entry point on the site, which is how they were for several weeks.
-          Mounted out here rather than inside a route for the usual reason:
-          .route-view carries an animation whose keyframes set a transform,
-          and a transformed ancestor becomes the containing block for its
-          position:fixed descendants. */}
-      <QuickAccessDot />
+      {/* The quick-access dot now lives in the header (components/Header.tsx),
+          together with the chat launcher. The corner video panel it used to
+          open is gone with it: the intro film already plays in its own section
+          on the home page, with the browser's own controls, and that is the
+          copy that works. Two players for one clip meant the broken one was
+          the one the menu pointed at. */}
       <ContactRail />
       <BottomTabBar />
       <AccessibilityMenu />
