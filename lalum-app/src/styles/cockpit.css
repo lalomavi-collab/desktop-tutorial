@@ -116,27 +116,30 @@
    sidebar (one is pre-auth, the other is a public document). Colours are
    all theme tokens, so this follows the dark management theme above. */
 .ck-with-sidebar { display: flex; align-items: stretch; min-height: 100dvh; }
-.ck-sidebar { width: 232px; flex-shrink: 0; background: var(--card); border-inline-end: 1px solid var(--line); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; }
-.ck-sidebar-brand { padding: 4px 10px 16px; }
-.ck-sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
-.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 14px; color: var(--ink); text-decoration: none; width: 100%; }
+.ck-sidebar { width: 252px; flex-shrink: 0; background: var(--card); border-inline-end: 1px solid var(--line); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; }
+.ck-sidebar-brand { padding: 4px 10px 18px; }
+.ck-sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
+/* Each row is a full-width button, not a plain text link: a resting fill at low
+   opacity already reads as a button, hover and the active page state go stronger
+   from there, so the whole bar looks like a set of controls, per the reference. */
+.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 14px; font-size: 15.5px; font-weight: 600; color: var(--ink); text-decoration: none; width: 100%; background: color-mix(in srgb, var(--ink) 4%, transparent); transition: background .12s ease; }
 .ck-sidebar-nav a:hover, .ck-sidebar-foot a:hover { background: var(--clay-tint); }
 .ck-sidebar-nav a[aria-current="page"] { background: var(--clay); color: var(--on-clay); }
 .ck-sidebar-nav svg, .ck-sidebar-foot svg { color: var(--clay); flex-shrink: 0; }
 .ck-sidebar-nav a[aria-current="page"] svg { color: var(--on-clay); }
-.ck-sidebar-foot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
-.ck-sidebar-foot a { font-size: 13px; color: var(--slate); }
-.ck-sidebar-foot button.ck-logout { background: none; border: 0; min-height: 0; margin: 0; font-size: 13px; color: var(--danger); justify-content: flex-start; }
+.ck-sidebar-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.ck-sidebar-foot a { font-size: 14px; font-weight: 500; color: var(--slate); }
+.ck-sidebar-foot button.ck-logout { background: none; border: 0; min-height: 0; margin: 0; font-size: 14px; font-weight: 500; color: var(--danger); justify-content: flex-start; }
 .ck-sidebar-foot button.ck-logout:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
 .ck-sidebar-foot button.ck-logout svg { color: var(--danger); }
 .ck-with-sidebar .ck-shell { flex: 1; min-width: 0; }
 @media (max-width: 860px) {
   .ck-with-sidebar { display: block; min-height: 0; }
-  .ck-sidebar { position: static; height: auto; width: auto; flex-direction: row; align-items: center; gap: 2px; overflow-x: auto; border-inline-end: none; border-bottom: 1px solid var(--line); padding: 8px 12px; }
+  .ck-sidebar { position: static; height: auto; width: auto; flex-direction: row; align-items: center; gap: 4px; overflow-x: auto; border-inline-end: none; border-bottom: 1px solid var(--line); padding: 10px 12px; }
   .ck-sidebar-brand { display: none; }
-  .ck-sidebar-nav { flex-direction: row; }
+  .ck-sidebar-nav { flex-direction: row; gap: 4px; }
   .ck-sidebar-nav a span, .ck-sidebar-foot a span, .ck-sidebar-foot button.ck-logout span { display: none; }
-  .ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { padding: 10px; flex-shrink: 0; width: auto; }
+  .ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { padding: 12px; flex-shrink: 0; width: auto; }
   .ck-sidebar-foot { flex-direction: row; margin: 0 0 0 auto; padding: 0; border-top: none; }
 }
 
