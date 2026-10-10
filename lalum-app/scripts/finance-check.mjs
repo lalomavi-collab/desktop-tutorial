@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -78,7 +78,7 @@ t("archive summary groups by type and year", () => {
   assert.equal(rows.length, 3);
   assert.equal(rows[2].year, "2025");
 });
-const arch = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-10-05", i4u_client_id: null, subject: null, currency: "ILS", subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+const arch = (o) => ({ id: "x", i4u_doc_id: "x", i4u_doc_type: 1, doc_number: 1, issue_date: "2026-10-05", i4u_client_id: null, subject: null, currency: "₪", subtotal: 100, vat_amount: 18, total: 118, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
 t("archive revenue: invoices add, credits subtract whatever their stored sign, receipts and pro formas are not revenue", () => {
   assert.deepEqual(archiveRevenueEffect(arch({})), { net: 100, vat: 18 });
   assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 3 })), { net: 100, vat: 18 });
@@ -86,7 +86,12 @@ t("archive revenue: invoices add, credits subtract whatever their stored sign, r
   assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 4, subtotal: -100, vat_amount: -18 })), { net: -100, vat: -18 });
   assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 2 })), { net: 0, vat: 0 });
   assert.deepEqual(archiveRevenueEffect(arch({ i4u_doc_type: 5 })), { net: 0, vat: 0 });
-  assert.deepEqual(archiveRevenueEffect(arch({ currency: "USD" })), { net: 0, vat: 0 });
+  assert.deepEqual(archiveRevenueEffect(arch({ currency: "ILS" })), { net: 100, vat: 18 });
+  assert.deepEqual(archiveRevenueEffect(arch({ currency: "US$", rate: "3.612" })), { net: 361.2, vat: 65.02 });
+  assert.deepEqual(archiveRevenueEffect(arch({ currency: "US$" })), { net: 0, vat: 0 });
+  assert.deepEqual(archiveRevenueEffect(arch({ currency: "€", rate: 0 })), { net: 0, vat: 0 });
+  assert.equal(isShekel("₪") && isShekel("NIS") && isShekel("ILS") && isShekel(""), true);
+  assert.equal(isShekel("US$"), false);
 });
 t("archive joins the period summary once; a document also held in the ledger is not double counted", () => {
   const p = monthPeriod(2026, 10);
@@ -98,10 +103,5 @@ t("archive joins the period summary once; a document also held in the ledger is 
   const ledgerCopy = doc({ id: "L", i4u_doc_id: "dup", subtotal: 100, vat_amount: 18, total: 118 });
   const s1 = summarize([ledgerCopy], [], [], p, archive);
   assert.equal(s1.revenueNet, s0.revenueNet);
-});
-t("archive open balance is reported apart from ledger balances", () => {
-  const s = summarize([], [], [], monthPeriod(2026, 10), [arch({ balance: 118 }), arch({ i4u_doc_id: "z", balance: 0 }), arch({ i4u_doc_id: "r", i4u_doc_type: 2, balance: 50 })]);
-  assert.equal(s.archiveOutstanding, 118);
-  assert.equal(s.outstanding, 0);
 });
 console.log("\nAll finance checks passed");

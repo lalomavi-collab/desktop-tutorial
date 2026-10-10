@@ -109,19 +109,26 @@ export interface Summary {
   revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number;
   /** Part of revenueNet / vatOut that comes from the Invoice4U archive, shown separately so it is never hidden in the total. */
   archiveNet: number; archiveVat: number;
-  /** Open balance on archived invoices, as reported by Invoice4U. Not added to `outstanding`. */
-  archiveOutstanding: number;
 }
 
+/** Invoice4U writes the shekel as the symbol, not as the ISO code. Foreign currencies come as "US$", "€" and so on. */
+export const isShekel = (c: string | null | undefined): boolean => !c || ["₪", "ILS", "NIS"].includes(c.trim().toUpperCase());
+
 /**
- * Revenue effect of an archived Invoice4U document. Invoices and invoice-receipts add, credits subtract
- * (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive or
- * negative). Receipts and pro formas are not revenue. Only ILS documents are counted.
+ * Revenue effect of an archived Invoice4U document, in shekels. Invoices and invoice-receipts add, credits
+ * subtract (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive
+ * or negative). Receipts and pro formas are not revenue. A foreign currency document is converted with the rate
+ * Invoice4U stored on it; one without a usable rate is left out rather than guessed.
  */
 export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number } {
-  if (a.currency && a.currency !== "ILS") return { net: 0, vat: 0 };
-  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net: Math.abs(a.subtotal), vat: Math.abs(a.vat_amount) };
-  if (a.i4u_doc_type === 4) return { net: -Math.abs(a.subtotal), vat: -Math.abs(a.vat_amount) };
+  let k = 1;
+  if (!isShekel(a.currency)) {
+    k = Number(a.rate);
+    if (!(k > 0)) return { net: 0, vat: 0 };
+  }
+  const net = r2(Math.abs(a.subtotal) * k), vat = r2(Math.abs(a.vat_amount) * k);
+  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net, vat };
+  if (a.i4u_doc_type === 4) return { net: -net, vat: -vat };
   return { net: 0, vat: 0 };
 }
 
@@ -131,10 +138,9 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
   // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
   const inLedger = new Set(docs.filter((d) => d.status === "ISSUED" && d.i4u_doc_id).map((d) => d.i4u_doc_id as string));
-  let archiveNet = 0, archiveVat = 0, archiveOutstanding = 0;
+  let archiveNet = 0, archiveVat = 0;
   for (const a of archive) {
     if (inLedger.has(a.i4u_doc_id)) continue;
-    if (a.i4u_doc_type === 1 && (a.balance ?? 0) > 0) archiveOutstanding += a.balance as number;
     if (!within(a.issue_date, p)) continue;
     const e = archiveRevenueEffect(a); archiveNet += e.net; archiveVat += e.vat;
   }
@@ -145,7 +151,7 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
-    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat), archiveOutstanding: r2(archiveOutstanding),
+    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat),
   };
 }
 
@@ -162,6 +168,8 @@ export interface ArchiveDoc {
   id: string; i4u_doc_id: string; i4u_doc_type: number; doc_number: number; issue_date: string; i4u_client_id: number | null;
   subject: string | null; currency: string; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
   status_id: number | null; paid: number | null; balance: number | null;
+  /** ConversionRate Invoice4U stored on the document (units of NIS per unit of currency). Read from the raw record. */
+  rate?: number | string | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */
 export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };
