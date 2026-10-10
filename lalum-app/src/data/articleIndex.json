@@ -63,6 +63,22 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "suing-foreign-company-jurisdiction-service-enforcement": {
+  "topic": "contracts",
+  "related": [
+   "delay-delivery-overseas-property-buyer-rights",
+   "portugal-purchase-contract",
+   "overseas-property-due-diligence"
+  ]
+ },
+ "delay-delivery-overseas-property-buyer-rights": {
+  "topic": "contracts",
+  "related": [
+   "suing-foreign-company-jurisdiction-service-enforcement",
+   "caution-note-real-estate-registration-removal",
+   "overseas-property-holding-structure"
+  ]
+ },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
   "topic": "real-estate",
   "related": [
@@ -76,7 +92,7 @@
   "related": [
    "overseas-property-due-diligence",
    "portugal-legal-due-diligence",
-   "buying-apartment-from-contractor-guarantee-bank-financing"
+   "delay-delivery-overseas-property-buyer-rights"
   ]
  },
  "real-estate-memorandum-of-understanding-binding": {
@@ -500,7 +516,7 @@
   "related": [
    "overseas-property-due-diligence",
    "overseas-partnership-guide",
-   "portugal-real-estate-taxation"
+   "delay-delivery-overseas-property-buyer-rights"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -948,7 +964,7 @@
   "related": [
    "intl-realestate-transactions",
    "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
-   "overseas-property-holding-structure"
+   "legal-clinic-business-realestate"
   ]
  },
  "second-opinion-revolution": {
@@ -1060,7 +1076,7 @@
   "related": [
    "lalum-investment-model-launch",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "israeli-realestate-abroad"
+   "overseas-partnership-guide"
   ]
  },
  "lalum-together": {
@@ -1140,7 +1156,7 @@
   "related": [
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה",
    "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה",
-   "behind-the-mask-mediation-language"
+   "realestate-master-course"
   ]
  },
  "behind-the-mask-mediation-language": {
@@ -1212,7 +1228,7 @@
   "related": [
    "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
    "real-estate-arbitration",
-   "urban-renewal-risk"
+   "mediator-tools-body-language-field-experience"
   ]
  },
  "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות": {
@@ -1356,7 +1372,7 @@
   "related": [
    "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
    "contract-review-before-signing",
-   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
@@ -1594,8 +1610,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
