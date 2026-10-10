@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "buying-apartment-from-contractor-guarantee-bank-financing": {
+  "topic": "real-estate",
+  "related": [
+   "urban-renewal-guarantees-sale-law-registration",
+   "portugal-purchase-contract",
+   "caution-note-real-estate-registration-removal"
+  ]
+ },
  "caution-note-real-estate-registration-removal": {
   "topic": "real-estate",
   "related": [
    "overseas-property-due-diligence",
    "portugal-legal-due-diligence",
-   "portugal-purchase-contract"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "real-estate-memorandum-of-understanding-binding": {
@@ -76,7 +84,7 @@
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
    "portugal-purchase-contract",
-   "ai-drafted-real-estate-contract-review"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "ai-vendor-agreement-dpa-liability-indemnity": {
@@ -299,8 +307,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-purchase-contract",
-   "urban-renewal-guarantees-sale-law-registration",
-   "three-minute-legal-check"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "urban-renewal-guarantees-sale-law-registration"
   ]
  },
  "ai-insurance-underwriting-pricing-regulation": {
@@ -339,8 +347,8 @@
   "topic": "real-estate",
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
-   "ai-drafted-real-estate-contract-review",
-   "caution-note-real-estate-registration-removal"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -371,8 +379,8 @@
   "topic": "contracts",
   "related": [
    "portugal-legal-due-diligence",
-   "ai-drafted-real-estate-contract-review",
-   "real-estate-memorandum-of-understanding-binding"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "portugal-real-estate-financing": {
@@ -380,7 +388,7 @@
   "related": [
    "portugal-porto-vs-lisbon",
    "portugal-real-estate-taxation",
-   "portugal-legal-due-diligence"
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -420,7 +428,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "decision-oriented-ai-law"
+   "saas-eu-compliance-israeli-companies"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -507,8 +515,8 @@
   "topic": "real-estate",
   "related": [
    "tama-38-1-vs-38-2-comparison",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "tenant-urban-renewal-guide"
+   "tenant-urban-renewal-guide",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -580,7 +588,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "combination-deals-architecture",
-   "urban-renewal-principles-vs-detailed-agreement"
+   "caution-note-real-estate-registration-removal"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -747,8 +755,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-drafted-real-estate-contract-review",
-   "contract-review-before-signing"
+   "contract-review-before-signing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "ai-presentation-tools": {
@@ -1052,7 +1060,7 @@
   "related": [
    "lalum-investment-model-launch",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "overseas-partnership-guide"
+   "israeli-realestate-abroad"
   ]
  },
  "lalum-together": {
@@ -1250,8 +1258,8 @@
  "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה": {
   "topic": "mediation",
   "related": [
-   "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
    "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
   ]
  },
@@ -1275,8 +1283,8 @@
   "topic": "real-estate",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
@@ -1586,8 +1594,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
