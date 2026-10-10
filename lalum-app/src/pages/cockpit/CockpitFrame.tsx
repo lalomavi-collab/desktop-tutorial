@@ -84,17 +84,17 @@ export function CockpitFrame({
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
           {NAV.map(([to, label, end, icon]) => (
             <NavLink key={to} to={to} end={end || to === "/workspace"}>
-              <Icon name={icon} size={18} /><span>{label}</span>
+              <Icon name={icon} size={22} /><span>{label}</span>
             </NavLink>
           ))}
         </nav>
         <div className="ck-sidebar-foot">
-          <button type="button" className="ck-theme" onClick={flipTheme}><Icon name="spark" size={16} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
-          <Link to="/portal"><Icon name="user" size={16} /><span>אזור אישי</span></Link>
-          <Link to="/"><Icon name="home" size={16} /><span>לאתר</span></Link>
+          <button type="button" className="ck-theme" onClick={flipTheme}><Icon name="spark" size={19} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
+          <Link to="/portal"><Icon name="user" size={19} /><span>אזור אישי</span></Link>
+          <Link to="/"><Icon name="home" size={19} /><span>לאתר</span></Link>
           {user && (
             <button type="button" className="ck-logout" onClick={() => void leave()}>
-              <Icon name="logout" size={16} /><span>התנתקות</span>
+              <Icon name="logout" size={19} /><span>התנתקות</span>
             </button>
           )}
         </div>
