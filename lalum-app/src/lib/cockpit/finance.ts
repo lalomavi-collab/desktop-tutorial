@@ -11,6 +11,8 @@ export interface Totals { subtotal: number; vat: number; total: number }
 export interface FinCustomer {
   id: string; name: string; tax_id: string | null; email: string | null; phone: string | null;
   address: string | null; city: string | null; notes: string | null; archived: boolean; i4u_customer_id: number | null;
+  /** A one-off customer with no card in Invoice4U. Only allowed on the document types in CASUAL_TYPES. */
+  is_casual: boolean;
 }
 export interface FinDocument {
   id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
@@ -47,6 +49,12 @@ export const EXPENSE_CATEGORY: Record<string, string> = {
 /** Default VAT rate for a new document. Stored on each document, so a later change never rewrites history. */
 export const DEFAULT_VAT_RATE = 18;
 
+/**
+ * Document types that may go to a casual (one-off) customer. In the practice's history every casual customer
+ * document is an invoice-receipt (42 of 145) or a credit (1); invoices, receipts and pro formas always had a card.
+ */
+export const CASUAL_TYPES: DocType[] = ["INVOICE_RECEIPT", "CREDIT"];
+
 /** Documents that carry a payment, and so need a payment method. */
 export const NEEDS_PAYMENT: DocType[] = ["RECEIPT", "INVOICE_RECEIPT"];
 
@@ -67,9 +75,10 @@ export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boole
 
 /** Reasons a draft cannot be saved or issued yet. Empty means ready. */
 export function draftProblems(d: {
-  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null;
+  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null; casual?: boolean;
 }): string[] {
   const out: string[] = [];
+  if (d.casual && !CASUAL_TYPES.includes(d.doc_type)) out.push("לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי");
   if (!d.customer_id) out.push("בחרו לקוח");
   if (d.lines.length === 0) out.push("הוסיפו שורה אחת לפחות");
   if (d.lines.some((l) => !l.name.trim())) out.push("לכל שורה נדרש תיאור");
@@ -217,4 +226,34 @@ export function splitName(raw: string): { name: string; address: string | null }
   if (!m) return { name: raw.trim(), address: null };
   const name = raw.slice(0, m.index).trim(), address = raw.slice(m.index + m[0].length).trim();
   return name ? { name, address: address || null } : { name: raw.trim(), address: null };
+}
+
+// ---- Customer rules ----
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+/**
+ * Reasons a customer cannot be saved. A new regular customer needs a valid e-mail (the document is sent to it and the
+ * accountant's report needs it); a casual customer needs a name only. Editing an existing customer does not demand an
+ * e-mail, so customers imported without one can still be archived or corrected.
+ */
+export function customerProblems(f: { name: string; email: string; tax_id: string; i4u: string; casual: boolean; isNew: boolean }): string[] {
+  const out: string[] = [];
+  if (!f.name.trim()) out.push("שם הלקוח חובה");
+  if (f.tax_id && !/^\d{5,9}$/.test(f.tax_id)) out.push("ת.ז. או ח.פ. הם ספרות בלבד (5 עד 9)");
+  if (f.email.trim() && !EMAIL_RE.test(f.email.trim())) out.push('כתובת הדוא"ל אינה תקינה');
+  if (!f.casual) {
+    if (f.isNew && !f.email.trim()) out.push('לקוח חדש דורש כתובת דוא"ל');
+    if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח ב-Invoice4U הוא ספרות בלבד");
+  }
+  return out;
+}
+
+/** Details a regular customer is still missing, shown as a prompt to complete the card. */
+export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casual">): string[] {
+  if (c.is_casual) return [];
+  const out: string[] = [];
+  if (!c.email) out.push('דוא"ל');
+  if (!c.tax_id) out.push("ת.ז. או ח.פ.");
+  return out;
 }

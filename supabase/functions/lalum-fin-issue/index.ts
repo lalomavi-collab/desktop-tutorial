@@ -123,9 +123,14 @@ Deno.serve(async (req) => {
       related = r;
     }
 
+    // A casual customer has no card in Invoice4U: the document carries a name and an optional id instead.
+    // The practice's history shows this only on invoice-receipts and credits, so nothing else is allowed.
+    const casual = cust.is_casual === true;
+    if (casual && !["INVOICE_RECEIPT", "CREDIT"].includes(doc.doc_type)) return json(409, { code: "casual_not_allowed" });
+
     // Link the ledger customer to an Invoice4U customer, creating one only when none is linked.
     let clientId = cust.i4u_customer_id as number | null;
-    if (!clientId) {
+    if (!casual && !clientId) {
       const { d, errors } = await call("CreateCustomer", {
         cu: {
           Name: cust.name, UniqueID: cust.tax_id ?? "", Email: cust.email ?? "", Phone: cust.phone ?? "",
@@ -153,13 +158,14 @@ Deno.serve(async (req) => {
     const invoiceDoc: Obj = {
       DocumentType: DOC_TYPE[doc.doc_type],
       Subject: doc.subject || undefined,
-      ClientID: clientId,
       Currency: "ILS",
       TaxIncluded: doc.tax_included,
       IssueDate: wcfDate(doc.issue_date),
       ApiIdentifier: `lalum-fin-${doc.id}`,
       Language: 1,
     };
+    if (casual) invoiceDoc.GeneralCustomer = { Name: String(cust.name), Identifier: cust.tax_id ?? "" };
+    else invoiceDoc.ClientID = clientId;
     // A receipt carries no VAT of its own; the VAT sits on the invoice it settles.
     if (doc.doc_type !== "RECEIPT") invoiceDoc.TaxPercentage = Number(doc.vat_rate);
     if (doc.due_date) invoiceDoc.PaymentDueDate = wcfDate(doc.due_date);
