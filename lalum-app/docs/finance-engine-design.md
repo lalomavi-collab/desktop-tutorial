@@ -24,8 +24,9 @@ Status of each fact is marked. Nothing here is legal advice.
   wherever the registration field is required.
 - Numbering: must continue from the last Invoice4U number per document type, not restart. `lalum_fin_series` has to be
   seeded from the archive's highest `doc_number` per type before the own engine seals its first document of that type.
-  Not yet done: `lalum_fin_seal_document` today starts a type's series at 1 on first use (see migration
-  `0016_lalum_finance_series.sql`); a seeding step from `lalum_fin_archive` is still needed before any real sealing.
+  Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) does this seeding;
+  it is a callable function, not run automatically, so it must actually be called once per firm before the first real
+  `lalum_fin_seal_document` call, or that call will start the type's series at 1.
 - Shaam onboarding (permissions, sandbox access): deferred on purpose. The practice owner and a future session do this
   together, directly on the Tax Authority site, only at the final stage before the 2027-01-01 switch, not before.
 
@@ -52,7 +53,8 @@ Rules the design enforces regardless of the answers above:
 - PDF: original once, copies marked as copies, allocation number printed per the rule above. Produced after SEALED so the
   PDF is a pure function of stored data.
 - Continuity with Invoice4U: confirmed. The first number per type is set from the archive's highest number plus one.
-  The archive tab already reports numbering gaps; `lalum_fin_series` still needs a one-time seed from it (not built yet).
+  The archive tab already reports numbering gaps; `lalum_fin_seed_series_from_archive(firm)` does the one-time seed
+  from it, built, but must be called per firm before the first real seal (see Phases below).
 
 ## Phases
 
@@ -62,9 +64,9 @@ Rules the design enforces regardless of the answers above:
    - Done: `lalum_fin_series` (per firm and type, numbers never reused or deleted), the DRAFT -> SEALING
      state machine, and the hash chain (`lalum_fin_seal_document`, `lalum_fin_void_document`). Database
      only, no Tax Authority call. Migration `0016_lalum_finance_series.sql`.
-   - Still to build, not blocked: seed `lalum_fin_series.last_number` per firm and type from
-     `lalum_fin_archive`'s highest `doc_number`, so the series continues from Invoice4U instead of starting
-     at 1. Needed before any real sealing, regardless of the Shaam timeline.
+   - Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) seeds
+     `lalum_fin_series.last_number` per type from `lalum_fin_archive`'s highest `doc_number`. Not yet called
+     for the practice's firm: still to do, before any real sealing, regardless of the Shaam timeline.
    - Still to build, blocked: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the
      live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
      practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
