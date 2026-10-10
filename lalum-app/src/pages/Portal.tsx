@@ -727,6 +727,20 @@ export function Portal() {
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
 
+      {/* Firm members reach their work in the management cockpit, not the client
+          area. A clear entry here keeps the two apart: the portal for clients,
+          the cockpit for the firm (where matters, documents and client signing
+          requests are created, each scoped by the member's role). */}
+      {isAdmin && (
+        <a href="/workspace/" className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 28, textDecoration: "none", color: "inherit" }}>
+          <div>
+            <div className="label" style={{ margin: 0 }}>מערכת ניהול התיקים</div>
+            <p className="muted" style={{ margin: "4px 0 0" }}>כספת התיקים, מסמכים, החתמת לקוחות, בדיקת ניגוד עניינים ועוד. לכניסה לפי ההרשאות שלכם.</p>
+          </div>
+          <span className="btn btn-clay btn-sm" style={{ flex: "none" }}>כניסה לניהול</span>
+        </a>
+      )}
+
       {/* SHARED GROUP CHAT: one open room for everyone signed in, client and
           firm alike, meant to replace the firm's WhatsApp group so the
           conversation is saved and can later be searched or analysed. */}
