@@ -11,6 +11,7 @@ import { supabase } from "../lib/supabase";
 interface SigReq {
   id: string; title: string; content: string; status: string;
   sent_at: string | null; signed_at: string | null; signed_name: string | null; declined_at: string | null;
+  provider: string; signed_document_url: string | null;
 }
 
 const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" }) : "");
@@ -31,7 +32,7 @@ export function PortalSigning() {
     (async () => {
       if (!supabase) return;
       const { data } = await supabase.from("lalum_signature_requests")
-        .select("id, title, content, status, sent_at, signed_at, signed_name, declined_at")
+        .select("id, title, content, status, sent_at, signed_at, signed_name, declined_at, provider, signed_document_url")
         .order("created_at", { ascending: false });
       if (live) setRows((data as SigReq[] | null) ?? []);
     })();
@@ -74,7 +75,9 @@ export function PortalSigning() {
       {pending.map((r) => (
         <div key={r.id} className="card" style={{ marginTop: 16 }}>
           <div className="label">{r.title}</div>
-          {active === r.id ? (
+          {r.provider === "DOCUSEAL" ? (
+            <p className="muted" style={{ marginTop: 8 }}>מסמך זה נשלח לחתימה דרך DocuSeal. בדקו את תיבת הדוא״ל שלכם וחתמו דרך הקישור שנשלח אליכם.</p>
+          ) : active === r.id ? (
             <div style={{ marginTop: 10 }}>
               <div style={{ whiteSpace: "pre-wrap", maxHeight: 320, overflow: "auto", padding: "14px 16px", border: "1px solid var(--line)", borderRadius: 12, lineHeight: 1.8 }}>{r.content}</div>
               {!declining ? (
@@ -113,7 +116,7 @@ export function PortalSigning() {
         <div key={r.id} className="card" style={{ marginTop: 12 }}>
           <div className="label">{r.title}</div>
           {r.status === "SIGNED"
-            ? <p className="muted" style={{ margin: "6px 0 0" }}>נחתם על ידי „{r.signed_name}" בתאריך {fmt(r.signed_at)}.</p>
+            ? <p className="muted" style={{ margin: "6px 0 0" }}>נחתם{r.signed_name ? ` על ידי „${r.signed_name}"` : ""} בתאריך {fmt(r.signed_at)}.{r.signed_document_url ? <> <a href={r.signed_document_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>המסמך החתום</a></> : null}</p>
             : <p className="muted" style={{ margin: "6px 0 0" }}>סורב בתאריך {fmt(r.declined_at)}.</p>}
         </div>
       ))}

@@ -1,0 +1,97 @@
+/* Cockpit "mint" theme: a light, soft-green management look with glass cards, a floating green rail and rounded controls.
+   Scoped to .ck-root[data-ck-theme="mint"]; the dark theme in cockpit.css stays the other option. Tokens first, so every ck- rule
+   follows them; the rest only adds shape (radius, shadow, gradient) and the few colours that were hard-coded for dark. */
+.ck-root[data-ck-theme="mint"] {
+  --ivory: #e6f3d6;
+  --paper: #f2f9e8;
+  --card: rgba(255, 255, 255, .78);
+  --ink: #17301a;
+  --slate: #566f55;
+  --line: rgba(47, 111, 38, .12);
+  --line-strong: rgba(47, 111, 38, .3);
+  --clay: #3d8d2e;
+  --clay-tint: #e4f3d2;
+  --clay-soft: rgba(61, 141, 46, .32);
+  --clay-hover: #327a25;
+  --on-clay: #ffffff;
+  --danger: #cf4b3a;
+  --warning: #d99a0b;
+  --success: #3d8d2e;
+  --mint-deep: #2f6f26;
+  --mint-rail: linear-gradient(180deg, #4d9f37 0%, #2f7a27 100%);
+  --sun: #f5c431;
+  --sun-soft: #ffe58a;
+  --glass-shadow: 0 10px 28px rgba(54, 110, 40, .13), inset 0 1px 0 rgba(255, 255, 255, .95);
+  font-family: "Heebo", "Assistant", var(--sans);
+  background:
+    radial-gradient(900px 520px at 85% -5%, rgba(255, 255, 255, .85) 0%, transparent 60%),
+    radial-gradient(800px 600px at -5% 105%, rgba(190, 228, 150, .7) 0%, transparent 60%),
+    var(--ivory);
+}
+.ck-root[data-ck-theme="mint"] .ck-top h1, .ck-root[data-ck-theme="mint"] .ck-hero-title, .ck-root[data-ck-theme="mint"] .ck-doc h2 { font-family: "Heebo", var(--sans); font-weight: 700; }
+.ck-root[data-ck-theme="mint"] .ck-top { background: color-mix(in srgb, var(--ivory) 80%, transparent); border-bottom: 0; }
+
+/* Glass cards */
+[data-ck-theme="mint"] .ck-card, [data-ck-theme="mint"] .ck-table-wrap, [data-ck-theme="mint"] .ck-panel {
+  background: var(--card); border: 1px solid rgba(255, 255, 255, .9); border-radius: 22px; box-shadow: var(--glass-shadow); backdrop-filter: blur(10px);
+}
+[data-ck-theme="mint"] .ck-grid2 > .ck-card:hover { border-color: rgba(255, 255, 255, .95); box-shadow: 0 16px 34px rgba(54, 110, 40, .2), inset 0 1px 0 #fff; transform: translateY(-2px); }
+[data-ck-theme="mint"] .ck-hero { background: linear-gradient(135deg, rgba(255, 255, 255, .9) 0%, #dff0c8 100%); }
+[data-ck-theme="mint"] .ck-table th { background: rgba(61, 141, 46, .08); color: var(--mint-deep); }
+[data-ck-theme="mint"] .ck-table tbody tr:hover td { background: rgba(61, 141, 46, .06); }
+[data-ck-theme="mint"] .ck-table tr.breach td { background: rgba(207, 75, 58, .09); }
+
+/* Buttons and fields: pill shapes, soft depth */
+[data-ck-theme="mint"] .ck-btn, [data-ck-theme="mint"] .ck-nav a, [data-ck-theme="mint"] .ck-logout {
+  background: rgba(255, 255, 255, .85); border: 1px solid rgba(61, 141, 46, .25); color: var(--mint-deep); font-weight: 600; box-shadow: 0 2px 6px rgba(54, 110, 40, .08);
+}
+[data-ck-theme="mint"] .ck-btn:hover, [data-ck-theme="mint"] .ck-nav a:hover { background: #fff; border-color: var(--clay); }
+[data-ck-theme="mint"] .ck-btn.primary, [data-ck-theme="mint"] .ck-nav a[aria-current="page"], [data-ck-theme="mint"] .ck-doc .ck-btn.primary {
+  background: linear-gradient(180deg, #56a63f 0%, #3a8a2b 100%); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(61, 141, 46, .35);
+}
+[data-ck-theme="mint"] .ck-btn.primary:hover { background: linear-gradient(180deg, #4c9b37 0%, #327a25 100%); }
+[data-ck-theme="mint"] .ck-btn.danger { color: var(--danger); border-color: rgba(207, 75, 58, .35); }
+[data-ck-theme="mint"] .ck-input, [data-ck-theme="mint"] .ck-select, [data-ck-theme="mint"] .ck-textarea { background: rgba(255, 255, 255, .92); border-color: rgba(61, 141, 46, .22); border-radius: 14px; }
+[data-ck-theme="mint"] .ck-input:focus, [data-ck-theme="mint"] .ck-select:focus, [data-ck-theme="mint"] .ck-textarea:focus { box-shadow: 0 0 0 3px rgba(61, 141, 46, .22); }
+[data-ck-theme="mint"] .ck-field { color: var(--mint-deep); }
+[data-ck-theme="mint"] .ck-bar { background: rgba(61, 141, 46, .14); height: 8px; border-radius: 4px; }
+[data-ck-theme="mint"] .ck-bar > div { background: linear-gradient(90deg, #6cbf4c, #3d8d2e); }
+
+/* Status colours for a light surface */
+[data-ck-theme="mint"] .ck-warn { background: rgba(245, 196, 49, .22); color: #6b4d00; }
+[data-ck-theme="mint"] .ck-err { background: rgba(207, 75, 58, .13); color: #8c2a1d; }
+[data-ck-theme="mint"] .ck-ok, [data-ck-theme="mint"] .ck-pii { background: rgba(61, 141, 46, .15); color: #23591a; }
+[data-ck-theme="mint"] .ck-badge.red { background: rgba(207, 75, 58, .14); color: #8c2a1d; }
+[data-ck-theme="mint"] .ck-badge.yellow { background: rgba(245, 196, 49, .28); color: #6b4d00; }
+[data-ck-theme="mint"] .ck-badge.green { background: rgba(61, 141, 46, .16); color: #23591a; }
+[data-ck-theme="mint"] .ck-editor { background: #fff; color: var(--ink); }
+[data-ck-theme="mint"] .ck-editor ins { background: rgba(61, 141, 46, .2); color: #23591a; }
+[data-ck-theme="mint"] .ck-editor del { background: rgba(207, 75, 58, .16); color: #8c2a1d; }
+[data-ck-theme="mint"] .ck-drawer { background: #f7fcef; box-shadow: 8px 0 32px rgba(54, 110, 40, .25); }
+
+/* Floating green rail (the sidebar) */
+[data-ck-theme="mint"].ck-with-sidebar { gap: 0; padding: 14px 14px 14px 0; }
+[data-ck-theme="mint"] .ck-sidebar {
+  background: var(--mint-rail); border: 0; border-radius: 30px; margin: 0 0 0 14px; height: calc(100dvh - 28px); top: 14px; width: 224px;
+  box-shadow: 0 18px 40px rgba(47, 111, 38, .4), inset 0 1px 0 rgba(255, 255, 255, .25);
+}
+[data-ck-theme="mint"] .ck-sidebar-brand { padding: 6px 12px 18px; }
+[data-ck-theme="mint"] .ck-sidebar-brand svg, [data-ck-theme="mint"] .ck-sidebar-brand { color: #fff; }
+[data-ck-theme="mint"] .ck-sidebar-nav a, [data-ck-theme="mint"] .ck-sidebar-foot a, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-logout, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme { color: rgba(255, 255, 255, .92); border-radius: 16px; }
+[data-ck-theme="mint"] .ck-sidebar-nav a:hover, [data-ck-theme="mint"] .ck-sidebar-foot a:hover { background: rgba(255, 255, 255, .16); }
+[data-ck-theme="mint"] .ck-sidebar-nav a[aria-current="page"] { background: #fff; color: var(--mint-deep); font-weight: 700; box-shadow: 0 6px 14px rgba(0, 0, 0, .15); }
+[data-ck-theme="mint"] .ck-sidebar-nav svg, [data-ck-theme="mint"] .ck-sidebar-foot svg { color: rgba(255, 255, 255, .95); }
+[data-ck-theme="mint"] .ck-sidebar-nav a[aria-current="page"] svg { color: var(--clay); }
+[data-ck-theme="mint"] .ck-sidebar-foot { border-top: 1px solid rgba(255, 255, 255, .25); }
+[data-ck-theme="mint"] .ck-sidebar-foot button.ck-logout { color: #ffe0da; }
+[data-ck-theme="mint"] .ck-sidebar-foot button.ck-logout svg { color: #ffe0da; }
+@media (max-width: 860px) {
+  [data-ck-theme="mint"].ck-with-sidebar { padding: 10px; }
+  [data-ck-theme="mint"] .ck-sidebar { height: auto; width: auto; margin: 0 0 10px; border-radius: 22px; top: 0; }
+}
+
+/* Theme switch button in the rail */
+.ck-sidebar-foot button.ck-theme { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font: inherit; font-size: 13px; background: none; border: 0; color: var(--slate); cursor: pointer; width: 100%; border-radius: 10px; }
+.ck-sidebar-foot button.ck-theme:hover { background: var(--clay-tint); }
+[data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme:hover { background: rgba(255, 255, 255, .16); }
+@media (max-width: 860px) { .ck-sidebar-foot button.ck-theme span { display: none; } .ck-sidebar-foot button.ck-theme { width: auto; padding: 10px; } }

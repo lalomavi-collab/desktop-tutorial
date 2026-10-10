@@ -831,13 +831,6 @@ export const blogMeta: BlogMeta[] = [
     "cover": "/images/covers/overseas-property-holding.webp"
   },
   {
-    "slug": "realestate-second-opinion",
-    "title": "מה עסקת חייכם חייבת 'חוות דעת שנייה'? (בדיוק כמו ברפואה)",
-    "excerpt": "מדוע כדאי לקבל חוות דעת משפטית שנייה ובלתי תלויה לפני חתימה על עסקת נדל״ן, בדיוק כמו בהחלטה רפואית.",
-    "date": "ינואר 2026",
-    "cover": "/images/covers/realestate-second-opinion.webp"
-  },
-  {
     "slug": "contract-review-before-signing",
     "title": "בדיקת חוזה לפני חתימה: כך מקבלים החלטה משפטית נכונה",
     "excerpt": "מדוע בדיקת חוזה לפני חתימה היא רגע של קבלת החלטה משפטית מחייבת, ולא פעולה טכנית של קריאת סעיפים.",
@@ -908,25 +901,11 @@ export const blogMeta: BlogMeta[] = [
     "cover": "/images/covers/homeowners-iron-dome.webp"
   },
   {
-    "slug": "medicine-meets-law",
-    "title": "כשעולם הרפואה פוגש את עולם המשפט: חוות דעת שנייה לפני חתימה על עסקה",
-    "excerpt": "כיצד קליניקות משפטיות פרטיות מציעות חוות דעת שנייה לפני חתימה על עסקאות, בדומה למודל הרפואי.",
-    "date": "נובמבר 2025",
-    "cover": "/images/covers/medicine-meets-law.webp"
-  },
-  {
     "slug": "lalum-clinic-experience",
     "title": "LALUM | הקליניקה המשפטית: ניסיון שמוביל לפתרון",
     "excerpt": "מודל הקליניקה המשפטית של LALUM, חוות דעת שנייה, ניתוח סיכונים וגישור מכוון הכרעה לפני שסכסוך הופך להליך משפטי.",
     "date": "נובמבר 2025",
     "cover": "/images/covers/lalum-clinic-experience.webp"
-  },
-  {
-    "slug": "quiet-legal-revolution",
-    "title": "המהפכה השקטה בעולם המשפט: חוות דעת משפטית שנייה",
-    "excerpt": "מדוע חוות דעת משפטית שנייה בלתי תלויה לפני חתימה היא צעד של אחריות, המחזק גם את הלקוח וגם את עורך הדין המייצג.",
-    "date": "נובמבר 2025",
-    "cover": "/images/covers/quiet-legal-revolution.webp"
   },
   {
     "slug": "lalum-clinic-realestate-advice",

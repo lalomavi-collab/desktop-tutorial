@@ -428,7 +428,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "decision-oriented-ai-law"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -587,8 +587,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "realestate-second-opinion",
-   "quiet-legal-revolution"
+   "combination-deals-architecture",
+   "urban-renewal-principles-vs-detailed-agreement"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -683,8 +683,8 @@
   "topic": "ai-governance",
   "related": [
    "california-sb574-ai-adjudication-ban",
-   "quiet-legal-revolution",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "ai-liability-ruling"
   ]
  },
  "international-trade-guide-2026": {
@@ -754,9 +754,9 @@
  "three-minute-legal-check": {
   "topic": "real-estate",
   "related": [
-   "quiet-legal-revolution",
    "ai-legal-practice",
-   "ai-drafted-real-estate-contract-review"
+   "ai-drafted-real-estate-contract-review",
+   "contract-review-before-signing"
   ]
  },
  "ai-presentation-tools": {
@@ -935,20 +935,12 @@
    "portugal-real-estate-taxation"
   ]
  },
- "realestate-second-opinion": {
-  "topic": "real-estate",
-  "related": [
-   "lalum-clinic-realestate-advice",
-   "homeowners-iron-dome",
-   "quiet-legal-revolution"
-  ]
- },
  "contract-review-before-signing": {
   "topic": "contracts",
   "related": [
    "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
-   "quiet-legal-revolution",
-   "three-minute-legal-check"
+   "three-minute-legal-check",
+   "real-estate-dispute-arbitration"
   ]
  },
  "overseas-partnership-guide": {
@@ -1019,16 +1011,8 @@
   "topic": "real-estate",
   "related": [
    "second-opinion-revolution",
-   "quiet-legal-revolution",
-   "realestate-second-opinion"
-  ]
- },
- "medicine-meets-law": {
-  "topic": "contracts",
-  "related": [
-   "lalum-clinic-realestate-advice",
-   "quiet-legal-revolution",
-   "realestate-second-opinion"
+   "free-lawyer-illusion",
+   "combination-deals-architecture"
   ]
  },
  "lalum-clinic-experience": {
@@ -1039,20 +1023,12 @@
    "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן"
   ]
  },
- "quiet-legal-revolution": {
-  "topic": "contracts",
-  "related": [
-   "lalum-clinic-realestate-advice",
-   "homeowners-iron-dome",
-   "medicine-meets-law"
-  ]
- },
  "lalum-clinic-realestate-advice": {
   "topic": "real-estate",
   "related": [
-   "medicine-meets-law",
-   "quiet-legal-revolution",
-   "realestate-second-opinion"
+   "second-opinion-revolution",
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
+   "the-decision-room-החדר-שבו-נולדה-ההכרעה"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1084,7 +1060,7 @@
   "related": [
    "lalum-investment-model-launch",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "israeli-realestate-abroad"
+   "overseas-partnership-guide"
   ]
  },
  "lalum-together": {
@@ -1220,7 +1196,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "legal-mediation-benefits"
+   "free-lawyer-illusion"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
@@ -1307,8 +1283,8 @@
   "topic": "real-estate",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
-   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
+   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
@@ -1380,7 +1356,7 @@
   "related": [
    "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
    "contract-review-before-signing",
-   "medicine-meets-law"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
@@ -1404,7 +1380,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1618,8 +1594,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
