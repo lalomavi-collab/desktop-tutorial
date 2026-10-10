@@ -62,10 +62,10 @@ export function FinanceHome({ firmId }: { firmId: string }) {
   const overdue = docs.filter((d) => d.doc_type === "INVOICE" && d.status === "ISSUED" && !d.is_test && d.due_date && d.due_date < new Date().toISOString().slice(0, 10));
 
   return (
-    <div className="ck-stack">
-      <div className="ck-row" role="tablist" aria-label="הנהלת חשבונות" style={{ flexWrap: "wrap" }}>
+    <div className="ck-stack ck-fin">
+      <div className="fin-subtabs" role="tablist" aria-label="הנהלת חשבונות">
         {TABS.map(([k, label]) => (
-          <button key={k} role="tab" aria-selected={tab === k} className={`ck-btn${tab === k ? " primary" : ""}`} onClick={() => setTab(k)}>{label}</button>
+          <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label}</button>
         ))}
       </div>
       {error && <div className="ck-err" aria-live="polite">{error}</div>}
@@ -79,12 +79,12 @@ export function FinanceHome({ firmId }: { firmId: string }) {
             <select className="ck-select" aria-label="שנה" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ maxWidth: 120 }}>{[0, 1, 2, 3].map((k) => <option key={k} value={now.getFullYear() - k}>{now.getFullYear() - k}</option>)}</select>
           </div>
           <div className="ck-grid2">
-            <div className="ck-card"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="ck-title">{money(s.revenueNet)}</div><div className="ck-meta">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך{s.archiveNet !== 0 ? ` · מתוכם מארכיון Invoice4U: ${money(s.archiveNet)}` : ""}</div></div>
-            <div className="ck-card"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="ck-title">{money(s.expenses)}</div></div>
-            <div className="ck-card"><div className="ck-meta">רווח לפני מס</div><div className="ck-title">{money(s.profit)}</div></div>
-            <div className="ck-card"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="ck-title">{money(s.vatPayable)}</div><div className="ck-meta">עסקאות {money(s.vatOut)}{s.archiveVat !== 0 ? ` (מהארכיון ${money(s.archiveVat)})` : ""} · תשומות לניכוי {money(s.vatIn)}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">רווח לפני מס</div><div className="fin-figure">{money(s.profit)}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>{s.archiveVat !== 0 && <> (מהארכיון <bdi>{money(s.archiveVat)}</bdi>)</>}, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div></div>
           </div>
-          <div className="ck-card"><div className="ck-meta">יתרות פתוחות מלקוחות (כל התקופות)</div><div className="ck-title">{money(s.outstanding)}</div>
+          <div className="ck-card fin-stat"><div className="ck-meta">יתרות פתוחות מלקוחות (כל התקופות)</div><div className="fin-figure">{money(s.outstanding)}</div>
             {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>

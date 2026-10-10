@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import { splitName } from "../../../lib/cockpit/finance";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
 type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string };
@@ -62,13 +63,17 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>ת.ז. / ח.פ.</th><th>דוא"ל</th><th>טלפון</th><th>Invoice4U</th><th></th></tr></thead><tbody>
-        {shown.length ? shown.map((c) => (
-          <tr key={c.id} style={c.archived ? { opacity: 0.55 } : undefined}>
-            <td>{c.name}</td><td dir="ltr">{c.tax_id ?? ""}</td><td dir="ltr">{c.email ?? ""}</td><td dir="ltr">{c.phone ?? ""}</td>
-            <td>{c.i4u_customer_id ? "מקושר" : "יפתח בהפקה ראשונה"}</td>
-            <td><div className="ck-row"><button className="ck-btn" onClick={() => open(c)}>עריכה</button><button className="ck-btn" onClick={() => void archive(c)}>{c.archived ? "שחזור" : "העברה לארכיון"}</button></div></td>
-          </tr>)) : <tr><td colSpan={6}>אין לקוחות עדיין</td></tr>}
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th className="fin-num">ת.ז. / ח.פ.</th><th className="fin-num">דוא"ל</th><th className="fin-num">טלפון</th><th>Invoice4U</th><th></th></tr></thead><tbody>
+        {shown.length ? shown.map((c) => {
+          const n = splitName(c.name), addr = n.address ?? c.address;
+          return (
+            <tr key={c.id} style={c.archived ? { opacity: 0.55 } : undefined}>
+              <td className="fin-text"><span className="fin-name" title={c.name}>{n.name}</span>{addr && <span className="fin-sub" title={addr}>{addr}</span>}</td>
+              <td className="fin-ltr">{c.tax_id ?? ""}</td><td className="fin-ltr">{c.email ?? ""}</td><td className="fin-ltr">{c.phone ?? ""}</td>
+              <td>{c.i4u_customer_id ? "מקושר" : "יפתח בהפקה ראשונה"}</td>
+              <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm" onClick={() => open(c)}>עריכה</button><button className="ck-btn sm" onClick={() => void archive(c)}>{c.archived ? "שחזור" : "לארכיון"}</button></div></td>
+            </tr>);
+        }): <tr><td colSpan={6}>אין לקוחות עדיין</td></tr>}
       </tbody></table></div>
     </div>
   );

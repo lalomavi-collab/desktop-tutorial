@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -103,5 +103,11 @@ t("archive joins the period summary once; a document also held in the ledger is 
   const ledgerCopy = doc({ id: "L", i4u_doc_id: "dup", subtotal: 100, vat_amount: 18, total: 118 });
   const s1 = summarize([ledgerCopy], [], [], p, archive);
   assert.equal(s1.revenueNet, s0.revenueNet);
+});
+t("a customer name that carries its address is split, others are untouched", () => {
+  assert.deepEqual(splitName("OZ Investment Holdings Company Limited Address: Landscape House, Dublin 22"), { name: "OZ Investment Holdings Company Limited", address: "Landscape House, Dublin 22" });
+  assert.deepEqual(splitName("אקמה בע\"מ כתובת: הרצל 1, תל אביב"), { name: "אקמה בע\"מ", address: "הרצל 1, תל אביב" });
+  assert.deepEqual(splitName("G-intentional"), { name: "G-intentional", address: null });
+  assert.deepEqual(splitName("Address: only"), { name: "Address: only", address: null });
 });
 console.log("\nAll finance checks passed");

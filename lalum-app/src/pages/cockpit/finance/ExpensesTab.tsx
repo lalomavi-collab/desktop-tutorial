@@ -57,12 +57,12 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setF(null)}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th>סה"כ</th><th>מע"מ</th><th>לניכוי</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th></th></tr></thead><tbody>
         {expenses.length ? expenses.map((e) => (
-          <tr key={e.id}><td>{e.spent_on}</td><td>{e.supplier}{e.description ? <div className="ck-meta">{e.description}</div> : null}</td>
-            <td>{EXPENSE_CATEGORY[e.category] ?? e.category}</td><td>{money(e.total)}</td><td>{money(e.vat_amount)}</td>
-            <td>{money(recoverableVat(e))}{e.payment_method ? <div className="ck-meta">{PAY_METHOD[e.payment_method as PayMethod]}</div> : null}</td>
-            <td><button className="ck-btn danger" onClick={() => void remove(e.id)}>מחיקה</button></td></tr>)) : <tr><td colSpan={7}>אין הוצאות עדיין</td></tr>}
+          <tr key={e.id}><td>{e.spent_on}</td><td className="fin-text">{e.supplier}{e.description ? <div className="ck-meta">{e.description}</div> : null}</td>
+            <td>{EXPENSE_CATEGORY[e.category] ?? e.category}</td><td className="fin-num">{money(e.total)}</td><td className="fin-num">{money(e.vat_amount)}</td>
+            <td className="fin-num">{money(recoverableVat(e))}{e.payment_method ? <div className="ck-meta">{PAY_METHOD[e.payment_method as PayMethod]}</div> : null}</td>
+            <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm danger" onClick={() => void remove(e.id)}>מחיקה</button></div></td></tr>)) : <tr><td colSpan={7}>אין הוצאות עדיין</td></tr>}
       </tbody></table></div>
     </div>
   );
