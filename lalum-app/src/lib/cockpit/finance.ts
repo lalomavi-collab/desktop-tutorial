@@ -205,3 +205,14 @@ export function archiveSummary(docs: ArchiveDoc[]): ArchiveRow[] {
   }
   return [...m.values()].sort((a, b) => b.year.localeCompare(a.year) || a.type - b.type);
 }
+
+/**
+ * Some Invoice4U customer names carry the address inside the name ("Acme Ltd Address: 1 Main St"). The part after
+ * the marker is the address; the part before is the name. Names without the marker are returned unchanged.
+ */
+export function splitName(raw: string): { name: string; address: string | null } {
+  const m = /\s+(?:Address|כתובת)\s*:\s*/i.exec(raw);
+  if (!m) return { name: raw.trim(), address: null };
+  const name = raw.slice(0, m.index).trim(), address = raw.slice(m.index + m[0].length).trim();
+  return name ? { name, address: address || null } : { name: raw.trim(), address: null };
+}

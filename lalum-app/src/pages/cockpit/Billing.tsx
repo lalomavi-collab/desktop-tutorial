@@ -94,8 +94,8 @@ function BillingTabs({ member }: { member: Membership }) {
   const [tab, setTab] = useState<"books" | "plan">(canManage ? "books" : "plan");
   if (!canManage) return <Panel member={member} />;
   return (
-    <div className="ck-stack">
-      <div className="ck-row" role="tablist" aria-label="חיוב והגדרות">
+    <div className="ck-stack ck-fin">
+      <div className="fin-tabs" role="tablist" aria-label="חיוב והגדרות">
         <button role="tab" aria-selected={tab === "books"} className={`ck-btn${tab === "books" ? " primary" : ""}`} onClick={() => setTab("books")}>הנהלת חשבונות</button>
         <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי המשרד והגדרות</button>
       </div>

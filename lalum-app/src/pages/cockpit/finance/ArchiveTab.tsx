@@ -74,8 +74,8 @@ export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: (
       {(
         <>
           <div className="ck-label">התאמה לדוחות Invoice4U</div>
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שנה</th><th>סוג</th><th>כמות</th><th>לפני מע"מ</th><th>מע"מ</th><th>סה"כ</th></tr></thead><tbody>
-            {summary.length ? summary.map((r) => <tr key={`${r.year}${r.type}`}><td>{r.year}</td><td>{I4U_TYPE[r.type] ?? r.type}</td><td>{r.count}</td><td>{money(r.subtotal)}</td><td>{money(r.vat)}</td><td>{money(r.total)}</td></tr>) : <tr><td colSpan={6}>עדיין לא יובאו מסמכים</td></tr>}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שנה</th><th>סוג</th><th className="fin-num">כמות</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">סה"כ</th></tr></thead><tbody>
+            {summary.length ? summary.map((r) => <tr key={`${r.year}${r.type}`}><td>{r.year}</td><td>{I4U_TYPE[r.type] ?? r.type}</td><td className="fin-num">{r.count}</td><td className="fin-num">{money(r.subtotal)}</td><td className="fin-num">{money(r.vat)}</td><td className="fin-num">{money(r.total)}</td></tr>) : <tr><td colSpan={6}>עדיין לא יובאו מסמכים</td></tr>}
           </tbody></table></div>
           <div className="ck-meta">השוו שורות אלה לדוח ההכנסות של Invoice4U לאותה שנה. פער פירושו שחסר מסמך בייבוא או שהטווח לא מלא.</div>
 
@@ -96,8 +96,8 @@ export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: (
 
           <div className="ck-label">מסמכים אחרונים</div>
           <input className="ck-input" aria-label="חיפוש לפי מספר מסמך" placeholder="חיפוש לפי מספר מסמך" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 260 }} />
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>תאריך</th><th>סה"כ</th><th>הקצאה</th></tr></thead><tbody>
-            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td>{d.issue_date}</td><td>{money(d.total)}</td><td dir="ltr">{d.allocation_number ?? ""}</td></tr>)}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th></tr></thead><tbody>
+            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{d.allocation_number ?? ""}</td></tr>)}
           </tbody></table></div>
         </>
       )}
