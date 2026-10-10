@@ -16,6 +16,7 @@ const ISSUE_ERRORS: Record<string, string> = {
   customer_sync_failed: "פתיחת הלקוח ב-Invoice4U נכשלה. אם הלקוח כבר קיים שם, הזינו את מספר הלקוח שלו בכרטיס הלקוח.",
   invoice4u_rejected: "Invoice4U דחה את המסמך. הפרטים מופיעים בשורת המסמך.",
   invoice4u_not_configured: "החיבור ל-Invoice4U לא הוגדר בשרת.",
+  casual_not_allowed: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.",
   qa_key_missing: "לא הוגדר מפתח לסביבת הניסוי של Invoice4U (FIN_INVOICE4U_QA_KEY). הפקה בניסוי דורשת מפתח נפרד מהמפתח האמיתי.",
   outcome_uncertain: "לא התקבלה תשובה סופית. אל תפיקו שוב. לחצו על בדיקת סטטוס מול Invoice4U.",
   not_found_at_provider: "Invoice4U לא מכיר מסמך עם המזהה הזה. אפשר להפיק מחדש.",
@@ -27,7 +28,7 @@ export const issueError = (r: IssueReply): string => ISSUE_ERRORS[r.code ?? ""] 
 
 const RPC_ERRORS: Record<string, string> = {
   FORBIDDEN: "אין הרשאה לפעולה.", BAD_TYPE: "סוג מסמך לא תקין.", BAD_CUSTOMER: "הלקוח לא נמצא.",
-  BAD_LINES: "יש להזין בין שורה אחת ל-60 שורות.", BAD_LINE_NAME: "לכל שורה נדרש תיאור.",
+  CASUAL_NOT_ALLOWED: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.", BAD_LINES: "יש להזין בין שורה אחת ל-60 שורות.", BAD_LINE_NAME: "לכל שורה נדרש תיאור.",
   BAD_LINE_AMOUNT: "כמות ומחיר חייבים להיות גדולים מאפס.", NOT_A_DRAFT: "אפשר לערוך או למחוק טיוטה בלבד.",
   ISSUED_DOCUMENT_IMMUTABLE: "מסמך שהופק אינו ניתן לשינוי. לביטול הפיקו חשבונית זיכוי.",
 };
