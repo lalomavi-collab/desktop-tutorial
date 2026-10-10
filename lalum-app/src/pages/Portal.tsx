@@ -1084,8 +1084,10 @@ export function Portal() {
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
       </div>
 
-      {/* CLIENT DOCUMENTS TO SIGN */}
-      {!isAdmin && <PortalSigning />}
+      {/* DOCUMENTS TO SIGN. Shown to anyone who has requests addressed to their
+          login email (the panel self-hides when there are none), so a firm member
+          who is also a signer sees their own documents, not only plain clients. */}
+      <PortalSigning />
 
       {/* CLIENT CONVERSATION THREAD */}
       {!isAdmin && thread.length > 0 && (
