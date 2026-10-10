@@ -8,7 +8,6 @@ import { InAppBrowserBanner } from "./InAppBrowserBanner";
 const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
 // Same treatment for the floating video bubble: it carries a video element and
 // is pure marketing, so it has no business in the first paint.
-const VideoBubble = lazy(() => import("./VideoBubble").then((m) => ({ default: m.VideoBubble })));
 import { BottomTabBar } from "./BottomTabBar";
 import { ContactRail } from "./ContactRail";
 import { A11yWidget } from "./A11yWidget";
@@ -74,9 +73,12 @@ export function MarketingLayout() {
       <Suspense fallback={null}>
         <ChatWidget />
       </Suspense>
-      <Suspense fallback={null}>
-        <VideoBubble />
-      </Suspense>
+      {/* The quick-access dot now lives in the header (components/Header.tsx),
+          together with the chat launcher. The corner video panel it used to
+          open is gone with it: the intro film already plays in its own section
+          on the home page, with the browser's own controls, and that is the
+          copy that works. Two players for one clip meant the broken one was
+          the one the menu pointed at. */}
       <ContactRail />
       <BottomTabBar />
       <AccessibilityMenu />

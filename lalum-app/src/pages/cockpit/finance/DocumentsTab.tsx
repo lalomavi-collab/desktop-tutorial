@@ -22,8 +22,8 @@ const blankEditor = (): Editor => ({
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
 
-export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
-  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
+export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
+  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
 }) {
   const [ed, setEd] = useState<Editor | null>(null);
   const [note, setNote] = useState<Note>(null);
@@ -141,6 +141,9 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
       </div>
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
+      {archiveCount > 0 && (
+        <div className="ck-meta">מסמכים שהופקו ב-Invoice4U (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון Invoice4U" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
+      )}
 
       {ed && totals && (
         <div className="ck-card ck-stack">
@@ -205,7 +208,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
         </div>
       )}
 
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th>סה"כ</th><th>יתרה</th><th>סטטוס</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">יתרה</th><th>סטטוס</th><th></th></tr></thead><tbody>
         {shown.length ? shown.map((d) => {
           const bal = openBalance(d, docs, payments);
           const src = d.related_doc_id ? docById.get(d.related_doc_id) : null;
@@ -214,23 +217,23 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
               <td>{d.doc_number ?? ""}</td>
               <td>{DOC_TYPE[d.doc_type]}{src ? <div className="ck-meta">מול {src.doc_number}</div> : null}</td>
               <td>{byId.get(d.customer_id)?.name ?? ""}</td><td>{d.issue_date}</td>
-              <td>{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
-              <td>{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
+              <td className="fin-num">{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
+              <td className="fin-num">{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
               <td>
                 {d.status === "DRAFT" ? <span className={`ck-badge ${uncertain(d) ? "red" : "yellow"}`}>{uncertain(d) ? "תוצאה לא ודאית" : "טיוטה"}</span>
                   : d.is_test ? <span className="ck-badge yellow">בדיקה</span> : <span className="ck-badge green">הופק</span>}
                 {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {d.allocation_number}</div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>
-              <td><div className="ck-row" style={{ flexWrap: "wrap" }}>
-                {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
-                {uncertain(d) && <button className="ck-btn" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול Invoice4U</button>}
-                {d.status === "ISSUED" && d.pdf_url && <a className="ck-btn" href={d.pdf_url} target="_blank" rel="noopener noreferrer">PDF</a>}
-                {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
+              <td className="fin-actions-cell"><div className="fin-actions" style={{ flexWrap: "wrap" }}>
+                {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
+                {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול Invoice4U</button>}
+                {d.status === "ISSUED" && d.pdf_url && <a className="ck-btn sm" href={d.pdf_url} target="_blank" rel="noopener noreferrer">PDF</a>}
+                {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
                 {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
-                  <button className="ck-btn" onClick={() => receiptFor(d)}>הפקת קבלה</button>
-                  <button className="ck-btn" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
-                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn" onClick={() => creditFor(d)}>זיכוי</button>}
+                  <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
+                  <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
+                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
               </div></td>
             </tr>);
         }) : <tr><td colSpan={8}>אין מסמכים עדיין</td></tr>}

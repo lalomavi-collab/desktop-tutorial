@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
 import { Icon } from "../../components/Icon";
@@ -7,9 +8,13 @@ import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
+import { BookArt, CardArt2, ChartArt, GavelArt, ImportArt, InboxArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
+import "../../styles/cockpit-mint.css";
+import "../../styles/cockpit-dashboard.css";
 
 const NAV: Array<[string, string, boolean, string]> = [
+  ["/workspace/dashboard", "לוח בקרה", false, "home"],
   ["/workspace", "תיקים", false, "folder"],
   ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
   ["/workspace/tasks", "משימות", false, "check"],
@@ -22,6 +27,22 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/settings/security", "אבטחה", false, "shield"],
   ["/workspace/guide", "מדריך", true, "book"],
 ];
+
+// Every framed screen opens with a band: an illustration beside its own description. The dashboard and the matter list carry their own hero.
+const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
+  "/workspace/inquiries": InboxArt, "/workspace/tasks": TasksArt, "/workspace/scorecard": ChartArt, "/workspace/import": ImportArt,
+  "/workspace/kyc": SearchArt, "/admin/matters": GavelArt, "/workspace/bin": TrashArt, "/settings/billing": CardArt2,
+  "/settings/security": ShieldArt, "/workspace/guide": BookArt,
+};
+
+type CkTheme = "mint" | "dark";
+// The cockpit opens in the light mint look; the choice is remembered per browser (storage may be blocked, so every access is guarded).
+function useCkTheme(): [CkTheme, () => void] {
+  const [theme, setTheme] = useState<CkTheme>("mint");
+  useEffect(() => { try { const t = localStorage.getItem("ck-theme"); if (t === "dark" || t === "mint") setTheme(t); } catch { /* storage blocked */ } }, []);
+  const flip = () => setTheme((t) => { const n = t === "mint" ? "dark" : "mint"; try { localStorage.setItem("ck-theme", n); } catch { /* storage blocked */ } return n; });
+  return [theme, flip];
+}
 
 /** Standalone frame for the partner and admin area: Hebrew, RTL, gated by firm membership. */
 export function CockpitFrame({
@@ -43,6 +64,7 @@ export function CockpitFrame({
   const nav = useNavigate();
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
+  const [theme, flipTheme] = useCkTheme();
   let body: ReactNode;
   if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
   else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
@@ -55,7 +77,7 @@ export function CockpitFrame({
   }
 
   return (
-    <div className="ck-root ck-with-sidebar" dir="rtl" lang="he">
+    <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
         <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
@@ -67,6 +89,7 @@ export function CockpitFrame({
           ))}
         </nav>
         <div className="ck-sidebar-foot">
+          <button type="button" className="ck-theme" onClick={flipTheme}><Icon name="spark" size={16} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
           <Link to="/portal"><Icon name="user" size={16} /><span>אזור אישי</span></Link>
           <Link to="/"><Icon name="home" size={16} /><span>לאתר</span></Link>
           {user && (
@@ -80,6 +103,7 @@ export function CockpitFrame({
         <header className="ck-top">
           <h1 className="serif">{title}</h1>
         </header>
+        {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
         <main>{body}</main>
       </div>
     </div>

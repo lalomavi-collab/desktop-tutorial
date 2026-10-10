@@ -52,6 +52,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "partners", title: "כניסה לשותפים | LALUM", desc: "כניסה למשרדים שותפים ולמנהלי LALUM.", noindex: true },
   { path: "workspace", title: "קוקפיט תיקים | LALUM", desc: "קוקפיט התיקים של LALUM.", noindex: true },
   { path: "workspace/import", title: "ייבוא תיקים מתיקייה | LALUM", desc: "יצירת תיקים מתיקיית העבודה של המשרד.", noindex: true },
+  { path: "workspace/dashboard", title: "לוח בקרה | LALUM", desc: "תמונת מצב של התיקים, הפניות והמשימות במשרד.", noindex: true },
   { path: "workspace/inquiries", title: "פניות לקוחות | LALUM", desc: "פניות של לקוחות שהגיעו לתיקים.", noindex: true },
   { path: "workspace/tasks", title: "משימות | LALUM", desc: "משימות פתוחות בתיקים.", noindex: true },
   { path: "workspace/scorecard", title: "מדדי שירות | LALUM", desc: "זמני מענה ועמידה במשימות.", noindex: true },

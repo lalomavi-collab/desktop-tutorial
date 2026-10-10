@@ -244,3 +244,50 @@
 .ck-card { box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .ck-grid2 > .ck-card:hover { box-shadow: 0 8px 22px rgba(0, 0, 0, .4); }
 .ck-drawer { box-shadow: 8px 0 32px rgba(0, 0, 0, .5); }
+
+/* Finance screens (חיוב והגדרות > הנהלת חשבונות). Scoped under .ck-fin so no other cockpit page changes.
+   Goals: a readable base size for Hebrew, a clear hierarchy, money that lines up, and rows whose actions
+   never run off the edge of the table. */
+.ck-fin { font-size: 15px; line-height: 1.55; letter-spacing: 0; }
+.ck-fin .ck-label { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 6px; }
+.ck-fin .ck-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.ck-fin .ck-meta { font-size: 13.5px; line-height: 1.6; color: var(--slate); }
+.ck-fin .ck-ok, .ck-fin .ck-warn, .ck-fin .ck-err { font-size: 14.5px; line-height: 1.6; padding: 12px 14px; }
+.ck-fin .ck-field { font-size: 13.5px; font-weight: 600; }
+.ck-fin .ck-input, .ck-fin .ck-select { font-size: 15px; }
+
+/* Tabs: a solid pill row for the two top sections, an underline row for the sections inside. */
+.fin-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.fin-tabs .ck-btn { font-size: 15px; font-weight: 600; min-height: 42px; padding: 8px 20px; }
+.fin-subtabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line-strong); }
+.fin-subtab { font: inherit; font-size: 15px; font-weight: 600; color: var(--slate); background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 16px; margin-bottom: -1px; cursor: pointer; }
+.fin-subtab:hover { color: var(--ink); }
+.fin-subtab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--clay); }
+.fin-subtab:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 6px; }
+
+/* Tables: roomier rows, bold headers, text columns wrap or truncate, numbers and dates never break. */
+.ck-fin .ck-table { font-size: 14.5px; }
+.ck-fin .ck-table th { font-size: 13px; font-weight: 700; color: var(--ink); padding: 12px 14px; opacity: .85; }
+.ck-fin .ck-table td { padding: 13px 14px; vertical-align: middle; line-height: 1.5; }
+.ck-fin .ck-table td.fin-text { white-space: normal; min-width: 180px; max-width: 360px; }
+.ck-fin .fin-name { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+.ck-fin .fin-sub { display: block; font-size: 12.5px; color: var(--slate); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+.ck-fin .ck-table th.fin-num, .ck-fin .ck-table td.fin-num { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ck-fin .ck-table td.fin-ltr { direction: ltr; text-align: left; unicode-bidi: isolate; white-space: nowrap; }
+.ck-fin .ck-table td.fin-actions-cell { width: 1%; }
+.fin-actions { display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-end; }
+.ck-fin .ck-btn.sm { min-height: 34px; padding: 5px 14px; font-size: 13.5px; white-space: nowrap; }
+
+/* Numbers that matter: a clear label above a large figure. */
+.fin-stat .ck-meta:first-child { font-size: 13.5px; font-weight: 600; color: var(--ink); opacity: .8; }
+.fin-stat .fin-figure { font-size: 28px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; margin: 4px 0; }
+.fin-stat .fin-note { font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+@media (max-width: 720px) {
+  .ck-fin { font-size: 15px; }
+  .fin-subtab { padding: 9px 12px; }
+  .ck-fin .ck-table td.fin-text { min-width: 150px; }
+  .fin-actions { flex-wrap: wrap; }
+  /* The table scrolls sideways on a phone; keep the row actions in view. */
+  .ck-fin .ck-table td.fin-actions-cell { position: sticky; left: 0; background: var(--card); box-shadow: 6px 0 10px -6px rgba(0, 0, 0, .35); }
+}

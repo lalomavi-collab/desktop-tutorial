@@ -3,6 +3,7 @@ import { CockpitFrame } from "./CockpitFrame";
 import { binList, CONFIRM_TEXT, purge, restoreDoc, restoreMatter } from "../../lib/cockpit/bin";
 import type { BinItem } from "../../lib/cockpit/bin";
 import { fmt } from "../../lib/cockpit/shared";
+import { TrashArt } from "../../components/cockpit/CockpitIllustrations";
 
 function BinView({ isPartner }: { isPartner: boolean }) {
   const [rows, setRows] = useState<BinItem[] | null>(null);
@@ -38,7 +39,7 @@ function BinView({ isPartner }: { isPartner: boolean }) {
       <div className="ck-warn">פריט בסל מוסתר מכל המסכים וניתן לשחזור. מחיקה סופית מוחקת גם את הקובץ המקורי מהכספת ואינה ניתנת לביטול. היא נחסמת בתיק שיש עליו עיכוב משפטי, ובתיק שסיום הטיפול בו הוא בתוך תקופת השמירה החוקית. כל פעולה נרשמת ביומן הביקורת (כמות בלבד, ללא פרטים).</div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} role="status">{msg.text}</div>}
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? (
-        <div className="ck-card ck-empty"><div className="ck-meta">סל המיחזור ריק.</div></div>
+        <div className="ck-card ck-empty"><TrashArt size={104} /><div className="ck-meta">סל המיחזור ריק.</div></div>
       ) : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>סוג</th><th>שם</th><th>הועבר לסל</th><th>סיבה</th><th>פריטים</th><th>מצב</th><th>פעולות</th></tr></thead><tbody>
           {rows.map((i) => (

@@ -169,6 +169,19 @@ export function ChatWidget() {
                 <div style={{ fontSize: 11, color: "#B7B1A6" }}>{C.subtitle}</div>
               </div>
             </div>
+            {/* Closing the panel used to be the corner launcher's second job.
+                The launcher is in the header now, so the panel carries its own
+                close control: a dialog with no way out is the one state this
+                must never be in. */}
+            <button
+              type="button"
+              onClick={() => { setOpen(false); recRef.current?.stop(); if (ttsOK) window.speechSynthesis.cancel(); }}
+              aria-label={C.close}
+              title={C.close}
+              style={{ flex: "none", width: 34, height: 34, borderRadius: 9999, border: "1px solid rgba(255,255,255,.22)", background: "transparent", color: "#B7B1A6", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 19, lineHeight: 1 }}
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
             {ttsOK && (
               <button
                 type="button"
@@ -275,15 +288,8 @@ export function ChatWidget() {
         </div>
       )}
 
-      <button onClick={() => setOpen((o) => { const nx = !o; if (!nx) { recRef.current?.stop(); if (ttsOK) window.speechSynthesis.cancel(); } return nx; })} aria-label={C.open} className="btn-clay" style={{ width: 60, height: 60, border: 0, borderRadius: "50%", color: "var(--paper)", boxShadow: "0 12px 30px -8px rgba(193,95,60,.6)", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-        {open ? (
-          <span style={{ fontSize: 24, lineHeight: 1 }}>×</span>
-        ) : (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} style={{ display: "block" }} aria-hidden="true">
-            <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6A8.5 8.5 0 0 1 4 11.5 8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z" />
-          </svg>
-        )}
-      </button>
+      {/* The launcher moved to the header (components/Header.tsx), which opens
+          the chat through OPEN_CHAT_EVENT. What stays here is the panel. */}
     </div>
   );
 }
