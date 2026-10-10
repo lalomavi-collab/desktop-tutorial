@@ -61,3 +61,11 @@
 .ck-root[data-ck-theme="dark"] .db-list li a, .ck-root[data-ck-theme="dark"] .db-list li > div { background: var(--card); border-color: var(--line); color: var(--ink); }
 .ck-root[data-ck-theme="dark"] .db-search input { background: var(--card); border-color: var(--line-strong); }
 .ck-root[data-ck-theme="dark"] .db-kpi b, .ck-root[data-ck-theme="dark"] .db-card h3, .ck-root[data-ck-theme="dark"] .db-greet h2 { color: var(--ink); }
+
+/* Screen band (illustration + description) and chart strips used across the cockpit screens */
+.ck-band { display: flex; align-items: center; gap: 16px; padding: 10px 18px; margin: 4px 0 6px; border-radius: 24px; background: linear-gradient(135deg, rgba(255, 255, 255, .85), #e3f3d0); border: 1px solid #fff; box-shadow: var(--glass-shadow); }
+.ck-band-art { flex-shrink: 0; filter: drop-shadow(0 8px 10px rgba(47, 111, 38, .18)); }
+.ck-band p { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.6; }
+.ck-root[data-ck-theme="dark"] .ck-band { background: var(--card); border: 1px solid var(--line); box-shadow: none; }
+.ck-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+@media (max-width: 700px) { .ck-insights > .ck-card[style*="span 2"] { grid-column: auto !important; } .ck-band { padding: 8px 12px; } .ck-band-art svg { width: 64px; height: 64px; } }

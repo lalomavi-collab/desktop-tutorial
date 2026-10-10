@@ -88,3 +88,54 @@ export function StatusBar({ pct, tone }: { pct: number; tone: "green" | "yellow"
   const c = tone === "green" ? [GREEN_L, GREEN] : tone === "yellow" ? ["#ffe58a", SUN_D] : ["#f0a79c", RED];
   return <div style={{ height: 10, borderRadius: 6, background: "rgba(47,111,38,.12)", overflow: "hidden", minWidth: 90 }}><div style={{ width: `${pct}%`, height: "100%", borderRadius: 6, background: `linear-gradient(90deg, ${c[0]}, ${c[1]})` }} /></div>;
 }
+
+/** Half-circle gauge for one percentage, with the number in the middle. */
+export function Gauge({ pct, label, sub }: { pct: number; label: string; sub: string }) {
+  const p = Math.max(0, Math.min(100, pct));
+  const R = 60, C = Math.PI * R;
+  const color = p >= 80 ? GREEN : p >= 60 ? SUN_D : RED;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+      <svg viewBox="0 0 150 90" width="190" role="img" aria-label={`${label}: ${p}%`}>
+        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke="rgba(47,111,38,.14)" strokeWidth="16" strokeLinecap="round" />
+        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke={color} strokeWidth="16" strokeLinecap="round" strokeDasharray={`${(p / 100) * C} ${C}`} />
+        <text x="75" y="70" textAnchor="middle" fontSize="26" fontWeight="800" fill="var(--ink)">{p}%</text>
+      </svg>
+      <b style={{ fontSize: 13.5 }}>{label}</b>
+      <span style={{ fontSize: 12, color: "var(--slate)" }}>{sub}</span>
+    </div>
+  );
+}
+
+/** Horizontal labelled bars with the value at the end. */
+export function BarsH({ items, max }: { items: Array<{ label: string; value: number; color?: string; suffix?: string }>; max?: number }) {
+  const m = max ?? Math.max(1, ...items.map((i) => i.value));
+  return (
+    <div role="img" aria-label={items.map((i) => `${i.label}: ${i.value}${i.suffix ?? ""}`).join(", ")} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {items.map((i) => (
+        <div key={i.label} style={{ display: "grid", gridTemplateColumns: "minmax(80px, 150px) 1fr 44px", alignItems: "center", gap: 10, fontSize: 13 }}>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.label}</span>
+          <div style={{ height: 12, borderRadius: 7, background: "rgba(47,111,38,.12)", overflow: "hidden" }}>
+            <div style={{ width: `${Math.max(3, (i.value / m) * 100)}%`, height: "100%", borderRadius: 7, background: `linear-gradient(90deg, ${GREEN_L}, ${i.color ?? GREEN})` }} />
+          </div>
+          <b style={{ textAlign: "end" }}>{i.value}{i.suffix ?? ""}</b>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Tiny column chart (one bar per bucket), for a strip under a heading. */
+export function MiniBars({ values, labels, color = GREEN }: { values: number[]; labels: string[]; color?: string }) {
+  const m = Math.max(1, ...values);
+  return (
+    <div role="img" aria-label={values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 96 }}>
+      {values.map((v, i) => (
+        <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 0 }}>
+          <div style={{ width: "100%", maxWidth: 26, height: Math.max(6, 66 * (v / m)), borderRadius: 8, background: `linear-gradient(180deg, ${GREEN_L}, ${color})` }} />
+          <span style={{ fontSize: 10.5, color: "var(--slate)" }}>{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}

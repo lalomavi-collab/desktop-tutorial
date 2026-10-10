@@ -113,3 +113,81 @@ export function HeadsetArt({ size }: { size?: number }) {
     </Svg>
   );
 }
+
+export function SearchArt({ size }: { size?: number }) {
+  return (
+    <Svg id="sra" size={size}>
+      <rect x="14" y="30" width="62" height="68" rx="8" fill="url(#sra-w)" /><path d="M24 46h42M24 58h42M24 70h26" stroke="#b9e0a6" strokeWidth="3.2" strokeLinecap="round" />
+      <circle cx="74" cy="60" r="24" fill="#ffffff" fillOpacity=".55" stroke="url(#sra-d)" strokeWidth="9" />
+      <circle cx="74" cy="60" r="24" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="2" strokeDasharray="30 120" strokeLinecap="round" />
+      <path d="M92 78l16 18" stroke="url(#sra-d)" strokeWidth="11" strokeLinecap="round" />
+      <circle cx="102" cy="26" r="11" fill="url(#sra-s)" /><path d="M98 26l3 3 6-6" fill="none" stroke="#7a5300" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function GavelArt({ size }: { size?: number }) {
+  return (
+    <Svg id="ga" size={size}>
+      <rect x="22" y="92" width="70" height="12" rx="6" fill="url(#ga-d)" />
+      <g transform="rotate(-35 62 52)"><rect x="34" y="28" width="52" height="26" rx="8" fill="url(#ga-g)" /><rect x="40" y="31" width="40" height="5" rx="2.5" fill="#fff" fillOpacity=".4" /></g>
+      <g transform="rotate(-35 62 52)"><rect x="56" y="50" width="9" height="52" rx="4.5" fill="url(#ga-s)" /></g>
+      <circle cx="94" cy="34" r="14" fill="#fff" fillOpacity=".8" /><path d="M94 26v16M86 34h16" stroke="#3d8d2e" strokeWidth="3.4" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function CardArt2({ size }: { size?: number }) {
+  return (
+    <Svg id="ca" size={size}>
+      <rect x="10" y="30" width="88" height="56" rx="10" fill="url(#ca-d)" transform="rotate(-8 54 58)" />
+      <rect x="22" y="38" width="88" height="56" rx="10" fill="url(#ca-g)" />
+      <rect x="22" y="52" width="88" height="12" fill="#2f7a27" fillOpacity=".55" />
+      <rect x="32" y="74" width="26" height="6" rx="3" fill="#fff" fillOpacity=".8" /><rect x="64" y="74" width="14" height="6" rx="3" fill="#fff" fillOpacity=".5" />
+      <circle cx="96" cy="32" r="15" fill="url(#ca-s)" /><text x="96" y="38" textAnchor="middle" fontSize="17" fontWeight="800" fill="#7a5300">₪</text>
+    </Svg>
+  );
+}
+
+export function BookArt({ size }: { size?: number }) {
+  return (
+    <Svg id="ba" size={size}>
+      <path d="M12 38c14-6 32-6 48 4v58c-16-10-34-10-48-4z" fill="url(#ba-d)" />
+      <path d="M108 38c-14-6-32-6-48 4v58c16-10 34-10 48-4z" fill="url(#ba-g)" />
+      <path d="M20 46c10-3 24-2 36 5M20 58c10-3 24-2 36 5M20 70c10-3 24-2 36 5" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="3" strokeLinecap="round" />
+      <path d="M100 46c-10-3-24-2-36 5M100 58c-10-3-24-2-36 5" fill="none" stroke="#fff" strokeOpacity=".6" strokeWidth="3" strokeLinecap="round" />
+      <path d="M84 14l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="url(#ba-s)" />
+    </Svg>
+  );
+}
+
+export function TrashArt({ size }: { size?: number }) {
+  return (
+    <Svg id="tra" size={size}>
+      <path d="M30 40h60l-5 58a8 8 0 0 1-8 7H43a8 8 0 0 1-8-7z" fill="url(#tra-g)" />
+      <rect x="24" y="30" width="72" height="12" rx="6" fill="url(#tra-d)" /><rect x="50" y="20" width="20" height="12" rx="5" fill="url(#tra-d)" />
+      <path d="M48 54v38M60 54v38M72 54v38" stroke="#fff" strokeOpacity=".5" strokeWidth="4" strokeLinecap="round" />
+      <path d="M96 40a14 14 0 1 0 8 14" fill="none" stroke="url(#tra-s)" strokeWidth="6" strokeLinecap="round" /><path d="M102 30l-2 12-11-4z" fill="#f6c93b" />
+    </Svg>
+  );
+}
+
+export function ChartArt({ size }: { size?: number }) {
+  return (
+    <Svg id="cha" size={size}>
+      <rect x="12" y="22" width="96" height="76" rx="12" fill="url(#cha-w)" />
+      <rect x="26" y="62" width="16" height="28" rx="8" fill="url(#cha-g)" /><rect x="50" y="46" width="16" height="44" rx="8" fill="url(#cha-d)" /><rect x="74" y="34" width="16" height="56" rx="8" fill="url(#cha-s)" />
+      <path d="M22 58l22-14 20 8 30-24" fill="none" stroke="#2f7a27" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" /><circle cx="94" cy="28" r="5" fill="#fff" stroke="#2f7a27" strokeWidth="3" />
+    </Svg>
+  );
+}
+
+export function CheckArt({ size }: { size?: number }) {
+  return (
+    <Svg id="ka" size={size}>
+      <circle cx="60" cy="58" r="40" fill="url(#ka-g)" /><circle cx="60" cy="58" r="40" fill="none" stroke="#fff" strokeOpacity=".4" strokeWidth="3" />
+      <path d="M40 60l14 14 28-30" fill="none" stroke="#fff" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="98" cy="24" r="9" fill="url(#ka-s)" />
+    </Svg>
+  );
+}
