@@ -17,9 +17,11 @@
     "a11y-audit": "node scripts/a11y-audit.mjs",
     "template-check": "node scripts/template-check.mjs",
     "kyc-check": "node scripts/kyc-check.mjs",
-    "finance-check": "node scripts/finance-check.mjs"
+    "finance-check": "node scripts/finance-check.mjs",
+    "shaam-check": "node scripts/shaam-check.mjs"
   },
   "dependencies": {
+    "@accounter/shaam-uniform-format-generator": "0.2.6",
     "@supabase/supabase-js": "^2.47.10",
     "jszip": "^3.10.1",
     "mammoth": "^1.12.0",
