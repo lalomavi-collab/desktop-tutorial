@@ -156,7 +156,7 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Documents list (`/reports/document`) | Done in part: columns, filters, statuses (open, closed, credited, partly credited) and actions are known (section 11 and 4.8) |
 | Customers screen and customer card | Done (section 10) |
 | Reports and accounting exports | Done (section 11) |
-| Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
+| Settings | Done (section 16). Not found: the starting number per document type, the Tax Authority connection status, and the business name fields. Ask Chrome for those three only |
 | Expenses | Not activated (separate legacy app). Section 14. Recommended not to activate |
 | Inventory, time clock, marketplace, add-ons | Done (section 15) |
 | Standing orders, clearing, payment page, transfers | Done in part (section 13); standing orders and tokens are paid add-ons, locked |
@@ -371,6 +371,46 @@ Nothing was installed, activated or saved; four activation windows were closed w
 | Lead CRM | Exists in other lanes of this app (inquiries, leads). Not part of finance |
 | Document signing | Already exists in this app (`lalum_signature_requests`, `lalum-esign`). Linking a signed fee agreement to a matter is a later step |
 | API access to the books | Later and read only, behind the permission levels of section 12 |
+
+## 16. Account settings (L unless marked)
+
+Nothing was saved, no API key generated, no payment made. Thirteen sub sections; the facts that matter:
+
+- **Users and permissions:** locked in this package; opens only from the 100 documents a month plan. Per translation file (C): a
+  user has e-mail, name, mobile and a predefined permission type. Open or closed per module (issuing, customers, reports,
+  clearing, settings). **No permission per customer, matter or branch.**
+- **Branches:** name, description, e-mail, default account, status; can show on the document next to or instead of the business
+  name. The account has **2 businesses**.
+- **Design and templates:** 21 default settings (language, original and copy, dates, rounding, decimals, pay button, reminders,
+  line discount and more), logo, graphic signature and illustration, 18 templates, 13 colours, a fixed text per document type.
+- **E-mail templates:** exactly one, rich text, global to all documents, no variables, none per type.
+- **Notifications:** payment reminder 2, 5, 7 or 10 days after the due date, SMS per document type, the accountant report. No
+  notification centre.
+- **Integrations and API:** one key per account. The existing key is never displayed and **creating a new key overwrites it**. No
+  webhooks. "Israel Invoices": the Tax Authority authorisation, valid for a year, with renew and disconnect.
+- **Plan:** 50 documents a month, valid until 5 March 2027. Four yearly plans at 21, 31, 44 or 89 NIS a month before VAT for 50 to
+  500 documents and 2 to 5 businesses.
+- **Security:** second factor (off or on), change of e-mail and password (8 to 16 characters with upper, lower, digit, symbol).
+  **No login log and no change log.**
+- **Backup and export:** no full backup and no export of all data. The nearest are the uniform structure file, Excel from each
+  report, and the API.
+- **Hidden expenses menu (step 6 addendum):** also holds income entry, equipment purchase, tax year setting and a monthly profit
+  and loss report.
+
+**Consequences for LALUM**
+
+| Finding | Action |
+| --- | --- |
+| One API key; a new key overwrites the old one | **Never generate a key from the Invoice4U screen** while LALUM issues through it. The stored `INVOICE4U_API_KEY` would stop working at once. If a rotation is ever needed, change the secret and the key in the same minute, in a quiet hour |
+| Two businesses in the account | Confirm which business our key issues under before the first production document. The issuing function does not choose a branch or business today |
+| Plan ends 5 March 2027 | The renewal date is the natural deadline for the parallel run. Decide by February whether to renew for one more year as a fallback, because the archive stays readable only while the account is alive |
+| No full export and no change log at Invoice4U | Our archive is the only independent copy of the history. Schedule the read only import (monthly, and after each issuing day) and keep the immutable archive trigger. Keep exporting the uniform structure file from Invoice4U once a quarter until the switch |
+| No second factor enabled at Invoice4U | The owner should switch it on now. It protects the only key that can issue legal documents |
+| Permissions only per module, none per customer or matter | LALUM: levels per user (section 12) plus an optional matter reference now, matter level rules later when the billing model lands |
+| One key, no webhooks | LALUM: several keys with scopes and rotation, and webhooks, only if an external API is ever offered. Not needed for own use |
+| One e-mail template, no variables | LALUM: templates with variables per document type and per reminder step. P2, together with e-mail sending from avraham@lalum.co |
+| No audit log | LALUM: append only audit of issue, cancel, export, permission change and login. Part of the permission migration |
+| Tax Authority authorisation valid a year | Shaam onboarding for LALUM: ask the authority whether the authorisation is per software or per business, and its renewal period |
 
 ## 9. Build order for LALUM
 
