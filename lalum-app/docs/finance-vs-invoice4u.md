@@ -9,8 +9,8 @@ Items marked "not verified" were not visible in the screenshots or the data.
 | Invoice4U | LALUM today | Gap and priority |
 | --- | --- | --- |
 | Quick document: type buttons (tax invoice, receipt, tax invoice-receipt, credit) and a customer search on one card | A full editor in the documents tab, five types | Equivalent, but slower for the common case. P2: a "new document" shortcut on the overview with type and customer |
-| Existing customers and casual customers toggle | Existing customers only. 42 of 145 historic invoice-receipts (29 percent) and one credit were issued to casual customers | **P1.** The issuing function sends a customer id and cannot send a one-off customer. Without this, a third of real work cannot be issued here |
-| Duplicate an existing document | None | **P1.** Most documents repeat (see monthly invoices below) |
+| Existing customers and casual customers toggle | Existing customers only. 42 of 145 historic invoice-receipts (29 percent) and one credit were issued to casual customers | **Done (P1, migration 0018, function v5).** Casual customers are name only, limited to invoice-receipt and credit, sent as `GeneralCustomer`. New regular customers require a valid e-mail |
+| Duplicate an existing document | Done: "שכפול" in the documents list copies lines and customer into a new draft | Done (P1) |
 | Last 10 documents with email, view and duplicate icons per row | List with edit, delete, PDF link, receipt, credit | Email after issue and in-app view are missing. P2 |
 | Tab of open pro formas (חשבונות עסקה פתוחים) | Pro formas appear in the list, with no "open" view and no conversion | **P1.** Pro forma is the step before most tax documents here (91 pro formas against 145 invoice-receipts). Needs a filter and "convert to invoice-receipt" |
 | Revenue chart, 12 months, before VAT, with a toggle | Numbers per month, no chart | P2. The figures already match Invoice4U to the shekel |

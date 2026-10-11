@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -109,5 +109,28 @@ t("a customer name that carries its address is split, others are untouched", () 
   assert.deepEqual(splitName("אקמה בע\"מ כתובת: הרצל 1, תל אביב"), { name: "אקמה בע\"מ", address: "הרצל 1, תל אביב" });
   assert.deepEqual(splitName("G-intentional"), { name: "G-intentional", address: null });
   assert.deepEqual(splitName("Address: only"), { name: "Address: only", address: null });
+});
+const cf = (o) => ({ name: "Acme", email: "a@b.co", tax_id: "", i4u: "", casual: false, isNew: true, ...o });
+t("a new regular customer needs a name and a valid e-mail; a casual one needs a name only", () => {
+  assert.deepEqual(customerProblems(cf({})), []);
+  assert.ok(customerProblems(cf({ email: "" })).includes('לקוח חדש דורש כתובת דוא"ל'));
+  assert.ok(customerProblems(cf({ email: "not-an-email" })).includes('כתובת הדוא"ל אינה תקינה'));
+  assert.deepEqual(customerProblems(cf({ email: "", casual: true })), []);
+  assert.ok(customerProblems(cf({ name: " ", casual: true })).includes("שם הלקוח חובה"));
+  assert.deepEqual(customerProblems(cf({ email: "", isNew: false })), []);
+  assert.ok(customerProblems(cf({ tax_id: "12" })).length === 1);
+  assert.ok(customerProblems(cf({ i4u: "x1" })).length === 1);
+});
+t("casual customers are limited to invoice-receipts and credits", () => {
+  assert.deepEqual(CASUAL_TYPES, ["INVOICE_RECEIPT", "CREDIT"]);
+  const base = { customer_id: "c", doc_type: "INVOICE_RECEIPT", lines: [{ name: "a", qty: 1, price: 5 }], payment_method: "CASH", related_doc_id: null, casual: true };
+  assert.deepEqual(draftProblems(base), []);
+  assert.ok(draftProblems({ ...base, doc_type: "INVOICE" }).includes("לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי"));
+  assert.ok(draftProblems({ ...base, doc_type: "PROFORMA" }).length >= 1);
+});
+t("incomplete regular customers are flagged, casual ones are not", () => {
+  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: false }), ['דוא"ל', "ת.ז. או ח.פ."]);
+  assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: "123456789", is_casual: false }), []);
+  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), []);
 });
 console.log("\nAll finance checks passed");

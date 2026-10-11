@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
+import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
+import { splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
 import { issueDocument, issueError, rpcError } from "../../../lib/cockpit/financeApi";
 
@@ -9,7 +10,7 @@ interface EditLine { name: string; qty: string; price: string }
 interface Editor {
   id: string | null; customer_id: string; doc_type: DocType; subject: string; tax_included: boolean; vat_rate: string;
   lines: EditLine[]; issue_date: string; due_date: string; payment_method: PayMethod | ""; payment_ref: string;
-  related_doc_id: string; send_email: boolean;
+  related_doc_id: string; send_email: boolean; internal_note: string; matter_ref: string;
 }
 type Note = { ok: boolean; text: string } | null;
 
@@ -17,7 +18,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const blankEditor = (): Editor => ({
   id: null, customer_id: "", doc_type: "INVOICE", subject: "", tax_included: false, vat_rate: String(DEFAULT_VAT_RATE),
   lines: [{ name: "", qty: "1", price: "" }], issue_date: today(), due_date: "", payment_method: "", payment_ref: "",
-  related_doc_id: "", send_email: false,
+  related_doc_id: "", send_email: false, internal_note: "", matter_ref: "",
 });
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
@@ -34,7 +35,9 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
   const docById = useMemo(() => new Map(docs.map((d) => [d.id, d])), [docs]);
 
   const totals = ed ? computeTotals(toLines(ed), Number(ed.vat_rate) || 0, ed.tax_included) : null;
-  const problems = ed ? draftProblems({ customer_id: ed.customer_id, doc_type: ed.doc_type, lines: toLines(ed), payment_method: ed.payment_method || null, related_doc_id: ed.related_doc_id || null }) : [];
+  const edCustomer = ed ? byId.get(ed.customer_id) : undefined;
+  const casual = edCustomer?.is_casual === true;
+  const problems = ed ? draftProblems({ customer_id: ed.customer_id, doc_type: ed.doc_type, lines: toLines(ed), payment_method: ed.payment_method || null, related_doc_id: ed.related_doc_id || null, casual }) : [];
   const relatedChoices = ed ? docs.filter((d) => d.status === "ISSUED" && d.customer_id === ed.customer_id && (ed.doc_type === "RECEIPT" ? d.doc_type === "INVOICE" : d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT")) : [];
   const label = (d: FinDocument) => `${DOC_TYPE[d.doc_type]} ${d.doc_number ?? ""}${d.is_test ? " (בדיקה)" : ""} · ${money(d.total)}`;
 
@@ -43,7 +46,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
     setEd({
       id: d.id, customer_id: d.customer_id, doc_type: d.doc_type, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
       lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), issue_date: d.issue_date, due_date: d.due_date ?? "",
-      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email,
+      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email, internal_note: d.internal_note ?? "", matter_ref: d.matter_ref ?? "",
     });
   }
   function receiptFor(inv: FinDocument) {
@@ -58,6 +61,21 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
     setEd({
       ...blankEditor(), doc_type: "CREDIT", customer_id: inv.customer_id, related_doc_id: inv.id, tax_included: inv.tax_included, vat_rate: String(inv.vat_rate),
       subject: `זיכוי לחשבונית ${inv.doc_number ?? ""}`, lines: inv.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })),
+    });
+  }
+  function pickCustomer(id: string) {
+    if (!ed) return;
+    const c = byId.get(id);
+    // A casual customer is only allowed on invoice-receipts and credits, so move a draft of another type there.
+    const fix = c?.is_casual && !CASUAL_TYPES.includes(ed.doc_type) ? { doc_type: "INVOICE_RECEIPT" as DocType, tax_included: false, vat_rate: ed.vat_rate === "0" ? String(DEFAULT_VAT_RATE) : ed.vat_rate } : {};
+    setEd({ ...ed, ...fix, customer_id: id, related_doc_id: "" });
+  }
+  /** A new draft from an existing document of a repeating kind. Dates and payment reference start fresh. */
+  function duplicateDoc(d: FinDocument) {
+    setNote(null);
+    setEd({
+      ...blankEditor(), doc_type: d.doc_type, customer_id: d.customer_id, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
+      lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), payment_method: d.payment_method ?? "", send_email: d.send_email,
     });
   }
   function setType(t: DocType) {
@@ -77,7 +95,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
       p: {
         customer_id: ed.customer_id, doc_type: ed.doc_type, subject: ed.subject, tax_included: ed.tax_included, vat_rate: Number(ed.vat_rate) || 0,
         lines: toLines(ed), issue_date: ed.issue_date, due_date: ed.due_date || null, payment_method: ed.payment_method, payment_ref: ed.payment_ref,
-        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email,
+        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email, internal_note: ed.internal_note, matter_ref: ed.matter_ref,
       },
     });
     if (error) { setNote({ ok: false, text: rpcError(error.message) }); return null; }
@@ -149,8 +167,8 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
         <div className="ck-card ck-stack">
           <div className="ck-title">{ed.id ? "עריכת טיוטה" : "מסמך חדש"}</div>
           <div className="ck-grid2">
-            <label className="ck-field">סוג מסמך<select className="ck-select" value={ed.doc_type} onChange={(e) => setType(e.target.value as DocType)}>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => setEd({ ...ed, customer_id: e.target.value, related_doc_id: "" })}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+            <label className="ck-field">סוג מסמך<select className="ck-select" value={ed.doc_type} onChange={(e) => setType(e.target.value as DocType)}>{Object.entries(DOC_TYPE).filter(([k]) => !casual || CASUAL_TYPES.includes(k as DocType)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => pickCustomer(e.target.value)}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{splitName(c.name).name}{c.is_casual ? " (מזדמן)" : ""}</option>)}</select></label>
             <label className="ck-field">תאריך המסמך<input className="ck-input" type="date" value={ed.issue_date} onChange={(e) => setEd({ ...ed, issue_date: e.target.value })} /></label>
             <label className="ck-field">לתשלום עד<input className="ck-input" type="date" value={ed.due_date} onChange={(e) => setEd({ ...ed, due_date: e.target.value })} /></label>
           </div>
@@ -180,6 +198,8 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
               <label className="ck-field">אסמכתא (מספר שיק, 4 ספרות אחרונות)<input className="ck-input" dir="ltr" value={ed.payment_ref} onChange={(e) => setEd({ ...ed, payment_ref: e.target.value })} /></label>
             </div>
           )}
+          <label className="ck-field">הערה פנימית (לא מודפסת ולא נשלחת)<textarea className="ck-input" rows={2} maxLength={5000} value={ed.internal_note} onChange={(e) => setEd({ ...ed, internal_note: e.target.value })} /></label>
+          <label className="ck-field">הפניה לתיק (אופציונלי, פנימי)<input className="ck-input" maxLength={100} value={ed.matter_ref} onChange={(e) => setEd({ ...ed, matter_ref: e.target.value })} /></label>
           <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" checked={ed.send_email} onChange={(e) => setEd({ ...ed, send_email: e.target.checked })} />לשלוח את המסמך בדוא"ל ללקוח בעת ההפקה</label>
           <div className="ck-card">
             <div className="ck-row" style={{ justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{money(totals.subtotal)}</b></div>
@@ -233,6 +253,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
                 {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
                   <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
                   <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
+                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT" || d.doc_type === "PROFORMA") && <button className="ck-btn sm" onClick={() => duplicateDoc(d)}>שכפול</button>}
                 {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
               </div></td>
             </tr>);
