@@ -23,6 +23,7 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace/scorecard", "מדדי שירות", false, "scale"],
   ["/workspace/import", "ייבוא תיקים", false, "plus"],
   ["/workspace/kyc", "הכר את הלקוח", false, "search"],
+  ["/workspace/client-docs", "מסמכי לקוחות", false, "file"],
   ["/admin/matters", "ניהול", false, "gavel"],
   ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
   ["/workspace/bin", "סל מיחזור", true, "trash"],
