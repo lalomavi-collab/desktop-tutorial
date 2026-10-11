@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -132,5 +132,16 @@ t("incomplete regular customers are flagged, casual ones are not", () => {
   assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: false }), ['דוא"ל', "ת.ז. או ח.פ."]);
   assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: "123456789", is_casual: false }), []);
   assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), []);
+});t("a pro forma is open until an ISSUED document settles it; drafts and test documents do not count", () => {
+  const pf = doc({ id: "p1", doc_type: "PROFORMA" });
+  assert.equal(isOpenProforma(pf, [pf]), true);
+  const draft = doc({ id: "i1", doc_type: "INVOICE", status: "DRAFT", source_proforma_id: "p1" });
+  assert.equal(isOpenProforma(pf, [pf, draft]), true);
+  const inv = doc({ id: "i1", doc_type: "INVOICE", source_proforma_id: "p1", doc_number: 10015 });
+  assert.equal(isOpenProforma(pf, [pf, inv]), false);
+  assert.equal(closedBy(pf, [pf, inv])?.doc_number, 10015);
+  assert.equal(isOpenProforma(doc({ id: "p2", doc_type: "PROFORMA", is_test: true }), []), false);
+  assert.equal(isOpenProforma(doc({ id: "p3", doc_type: "PROFORMA", status: "DRAFT" }), []), false);
+  assert.equal(isOpenProforma(doc({ id: "x", doc_type: "INVOICE" }), []), false);
 });
 console.log("\nAll finance checks passed");
