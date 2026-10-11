@@ -157,7 +157,7 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Customers screen and customer card | Done (section 10) |
 | Reports and accounting exports | Done (section 11) |
 | Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
-| Expenses | Locked in the account (menu entries are inert). Not mapped |
+| Expenses | Not activated (separate legacy app). Section 14. Recommended not to activate |
 | Standing orders, clearing, payment page, transfers | Done in part (section 13); standing orders and tokens are paid add-ons, locked |
 
 ## 10. Customers module (L unless marked)
@@ -308,9 +308,40 @@ Nothing was charged, credited, transferred or subscribed to during mapping.
 | Payment page and transfer links | P3, only through `lalum-pay`. An Open Finance provider is worth a look for large fees because it avoids clearing commission. Not before the core ledger is in use |
 | Clearing log | Not applicable without clearing |
 
+## 14. Expenses and accounting export (L for the export, expenses not activated)
+
+**Expenses and bookkeeping** are a separate legacy application (its own host, embedded in a frame) that is not activated in this
+account. Clicking "manage expenses" opens a sign up window; the transactions list fails with a server error from that host.
+Live mapping would need joining the service, which is irreversible in the account. **Decision (recommended): do not activate.**
+LALUM already has its own expenses tab, and the mapped features (receipt upload, OCR with an approval queue, suppliers, profit
+and loss, VAT, advance payments, PCN) are things we build ourselves on our own data. Known without activation: expense entry,
+supplier invoice upload from computer or phone, OCR with a "to analyse and approve" queue, supplier management and the reports
+above. Expense categories: no information found.
+
+**Export to a bookkeeping package (L, fully mapped)**
+- Packages: Hashavshevet (Windows or DOS; ZIP with `Movein.doc`, `.dat`, `.prm`) and "Financit". No other package.
+- Dates: sequential only. Cannot export a date earlier than the last export, cannot include today; only the last export can be
+  cancelled.
+- Content: income documents only (7 kinds of invoices, receipts and credits) as debit and credit journal lines. Expenses are not
+  exported.
+- Card mapping: about 25 cards: cash boxes by payment method and currency, income, output and input VAT, tax withheld, and two
+  cards for lawyers: lawyer expenses and lawyer deposits.
+- Uniform structure file: start and end date, e-mail; the files arrive by e-mail within an hour. No template builder.
+
+**LALUM position**
+
+| Item | Decision |
+| --- | --- |
+| Trust money and disbursements | A separate entity with a ledger per matter, not a column on income. Invoice4U separates them from fee income only at export. This is a Bar Association rule, not only bookkeeping. #732 (billing model) already carries trust tables; do not duplicate them here, consume them |
+| Income and expenses in one database | Yes. Required for profit and loss, net VAT and PCN874 straight from our data |
+| Period lock after export | Adopt. After an export, documents dated inside the exported range are frozen for the export purposes, and a later export starts after the last one |
+| Hashavshevet export | Build only after the accountant confirms the package and sends her card list. The mapping above is the checklist |
+| Uniform structure file | #755 builds it in this repository. It must pass the Tax Authority's own validator before any use |
+| Expenses OCR | Later. Use the existing invoice agent under `python/agents`, with an approval queue and the client never trusted |
+
 ## 9. Build order for LALUM
 
-P1 part 2 (next):
+P1 part 2 (next). Step A is done: migration 0022 (`internal_note`, `matter_ref`, retainer fields on the customer, the date rule at issue) is applied and the editor and customer form carry the fields. Remaining:
 1. Open pro formas view with filter, and conversion to invoice-receipt or receipt through a link record. Linked documents
    close the source. Block linking when the exchange rates differ.
 2. Receipt on account: customer balance of receipts not yet matched to an invoice, and "issue invoice for receipts".

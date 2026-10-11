@@ -13,6 +13,8 @@ export interface FinCustomer {
   address: string | null; city: string | null; notes: string | null; archived: boolean; i4u_customer_id: number | null;
   /** A one-off customer with no card in Invoice4U. Only allowed on the document types in CASUAL_TYPES. */
   is_casual: boolean;
+  /** Template for a monthly DRAFT. Never issued automatically. */
+  retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
 }
 export interface FinDocument {
   // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
@@ -24,6 +26,8 @@ export interface FinDocument {
   issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
   related_doc_id: string | null; send_email: boolean; doc_number: number | null; i4u_doc_id: string | null; allocation_number: string | null;
   pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
+  /** Never printed or sent. */
+  internal_note: string | null; matter_ref: string | null;
 }
 export interface FinPayment {
   id: string; customer_id: string | null; document_id: string | null; paid_on: string; amount: number;
