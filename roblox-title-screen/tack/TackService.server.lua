@@ -44,7 +44,7 @@ local function clearSlot(horse, slot)
 	end
 end
 
-local function equip(horse, itemId)
+local function equip(horse, itemId, color)
 	if not TackData.isValid(itemId) then
 		return false
 	end
@@ -60,6 +60,13 @@ local function equip(horse, itemId)
 	local clone = template:Clone()
 	clone.Name = "Tack_" .. item.Slot
 	clone:PivotTo(attachment.WorldCFrame)
+	if typeof(color) == "Color3" then
+		for _, d in ipairs(clone:GetDescendants()) do
+			if d:IsA("BasePart") then
+				d.Color = color
+			end
+		end
+	end
 	clone.Parent = horse
 
 	local weld = Instance.new("WeldConstraint")
@@ -137,4 +144,25 @@ game:BindToClose(function()
 	for horse in pairs(equipped) do
 		save(horse)
 	end
+end)
+
+-- Remote used by the customization UI: (itemId, optional Color3)
+local remote = Instance.new("RemoteEvent")
+remote.Name = "TackEquip"
+remote.Parent = ReplicatedStorage
+
+local lastUse = {}
+remote.OnServerEvent:Connect(function(player, itemId, color)
+	local now = os.clock()
+	if lastUse[player] and now - lastUse[player] < 0.2 then
+		return
+	end
+	lastUse[player] = now
+	local horse = nearestHorse(player)
+	if horse and equip(horse, itemId, color) then
+		save(horse)
+	end
+end)
+Players.PlayerRemoving:Connect(function(player)
+	lastUse[player] = nil
 end)
