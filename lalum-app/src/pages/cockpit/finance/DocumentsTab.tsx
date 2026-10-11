@@ -23,8 +23,8 @@ const blankEditor = (): Editor => ({
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
 
-export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
-  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
+export function DocumentsTab({ level, firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
+  level: number; firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
 }) {
   const [ed, setEd] = useState<Editor | null>(null);
   const [note, setNote] = useState<Note>(null);
@@ -222,7 +222,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
           {problems.length > 0 && <div className="ck-warn">{problems.join(". ")}</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
-            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
+            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
             <button className="ck-btn" onClick={() => setEd(null)}>סגירה</button>
           </div>
         </div>

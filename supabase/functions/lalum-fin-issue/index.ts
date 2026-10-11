@@ -61,9 +61,12 @@ Deno.serve(async (req) => {
   const action = body.action === "reconcile" ? "reconcile" : "issue";
   if (!docId) return json(400, { code: "missing_document" });
 
-  // RLS decides: only a firm partner or admin with MFA can read the row at all.
+  // RLS decides who can read the row at all (finance level 1 or higher, behind MFA).
   const { data: doc } = await asUser.from("lalum_fin_documents").select("*").eq("id", docId).maybeSingle();
   if (!doc) return json(404, { code: "not_found" });
+  // Reading is allowed from level 1; issuing, reconciling and cancelling need level 3 (issue).
+  const { data: canIssue } = await asUser.rpc("lalum_fin_can", { p_firm: doc.firm_id, p_min: 3 });
+  if (canIssue !== true) return json(403, { code: "forbidden" });
   const admin = createClient(url, serviceKey);
 
   async function call(op: string, payload: Obj): Promise<{ d: Obj; errors: I4uError[] }> {
