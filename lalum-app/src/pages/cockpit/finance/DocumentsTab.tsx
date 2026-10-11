@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
-import { splitName } from "../../../lib/cockpit/finance";
+import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
 import { issueDocument, issueError, rpcError } from "../../../lib/cockpit/financeApi";
 
@@ -10,7 +10,7 @@ interface EditLine { name: string; qty: string; price: string }
 interface Editor {
   id: string | null; customer_id: string; doc_type: DocType; subject: string; tax_included: boolean; vat_rate: string;
   lines: EditLine[]; issue_date: string; due_date: string; payment_method: PayMethod | ""; payment_ref: string;
-  related_doc_id: string; send_email: boolean; internal_note: string; matter_ref: string;
+  related_doc_id: string; send_email: boolean; internal_note: string; matter_ref: string; source_proforma_id: string;
 }
 type Note = { ok: boolean; text: string } | null;
 
@@ -18,7 +18,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const blankEditor = (): Editor => ({
   id: null, customer_id: "", doc_type: "INVOICE", subject: "", tax_included: false, vat_rate: String(DEFAULT_VAT_RATE),
   lines: [{ name: "", qty: "1", price: "" }], issue_date: today(), due_date: "", payment_method: "", payment_ref: "",
-  related_doc_id: "", send_email: false, internal_note: "", matter_ref: "",
+  related_doc_id: "", send_email: false, internal_note: "", matter_ref: "", source_proforma_id: "",
 });
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
@@ -46,7 +46,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     setEd({
       id: d.id, customer_id: d.customer_id, doc_type: d.doc_type, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
       lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), issue_date: d.issue_date, due_date: d.due_date ?? "",
-      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email, internal_note: d.internal_note ?? "", matter_ref: d.matter_ref ?? "",
+      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email, internal_note: d.internal_note ?? "", matter_ref: d.matter_ref ?? "", source_proforma_id: d.source_proforma_id ?? "",
     });
   }
   function receiptFor(inv: FinDocument) {
@@ -69,6 +69,14 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     // A casual customer is only allowed on invoice-receipts and credits, so move a draft of another type there.
     const fix = c?.is_casual && !CASUAL_TYPES.includes(ed.doc_type) ? { doc_type: "INVOICE_RECEIPT" as DocType, tax_included: false, vat_rate: ed.vat_rate === "0" ? String(DEFAULT_VAT_RATE) : ed.vat_rate } : {};
     setEd({ ...ed, ...fix, customer_id: id, related_doc_id: "" });
+  }
+  /** A draft invoice or invoice-receipt that settles an issued pro forma. The pro forma closes when that draft is issued. */
+  function convertProforma(p: FinDocument, to: "INVOICE" | "INVOICE_RECEIPT") {
+    setNote(null);
+    setEd({
+      ...blankEditor(), doc_type: to, customer_id: p.customer_id, subject: p.subject, tax_included: p.tax_included, vat_rate: String(p.vat_rate),
+      lines: p.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), source_proforma_id: p.id, matter_ref: p.matter_ref ?? "",
+    });
   }
   /** A new draft from an existing document of a repeating kind. Dates and payment reference start fresh. */
   function duplicateDoc(d: FinDocument) {
@@ -95,7 +103,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
       p: {
         customer_id: ed.customer_id, doc_type: ed.doc_type, subject: ed.subject, tax_included: ed.tax_included, vat_rate: Number(ed.vat_rate) || 0,
         lines: toLines(ed), issue_date: ed.issue_date, due_date: ed.due_date || null, payment_method: ed.payment_method, payment_ref: ed.payment_ref,
-        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email, internal_note: ed.internal_note, matter_ref: ed.matter_ref,
+        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email, internal_note: ed.internal_note, matter_ref: ed.matter_ref, source_proforma_id: ed.source_proforma_id || null,
       },
     });
     if (error) { setNote({ ok: false, text: rpcError(error.message) }); return null; }
@@ -156,14 +164,14 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     setPay(null); setNote({ ok: true, text: "התשלום נרשם. זהו רישום פנימי בלבד, לא מסמך מס. להפקת קבלה השתמשו ב\"הפקת קבלה\"." }); onChange();
   }
 
-  const shown = docs.filter((d) => !typeFilter || d.doc_type === typeFilter);
+  const shown = docs.filter((d) => !typeFilter || (typeFilter === "OPEN_PROFORMA" ? isOpenProforma(d, docs) : d.doc_type === typeFilter));
   const receiptMode = ed?.doc_type === "RECEIPT";
 
   return (
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <select className="ck-select" aria-label="סינון לפי סוג" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ maxWidth: 220 }}>
-          <option value="">כל המסמכים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          <option value="">כל המסמכים</option><option value="OPEN_PROFORMA">חשבונות עסקה פתוחים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <div className="ck-row">
           <button className="ck-btn" disabled={busy !== null || !customers.some((c) => c.retainer_active)} title="יוצר טיוטות בלבד, ללא הפקה" onClick={() => void retainerDrafts()}>טיוטות ריטיינר לחודש הנוכחי</button>
@@ -256,6 +264,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
                 {d.status === "DRAFT" ? <span className={`ck-badge ${uncertain(d) ? "red" : "yellow"}`}>{uncertain(d) ? "תוצאה לא ודאית" : "טיוטה"}</span>
                   : d.is_test ? <span className="ck-badge yellow">בדיקה</span> : <span className="ck-badge green">הופק</span>}
                 {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {d.allocation_number}</div>}
+                {d.doc_type === "PROFORMA" && d.status === "ISSUED" && !d.is_test && (closedBy(d, docs) ? <div className="ck-meta">נסגר ע"י מסמך <bdi>{closedBy(d, docs)?.doc_number}</bdi></div> : <span className="ck-badge yellow">פתוח</span>)}
+                {d.source_proforma_id && <div className="ck-meta">נוצר מחשבון עסקה</div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>
               <td className="fin-actions-cell"><div className="fin-actions" style={{ flexWrap: "wrap" }}>
@@ -266,6 +276,9 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
                 {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
                   <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
                   <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
+                {isOpenProforma(d, docs) && <>
+                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE")}>המרה לחשבונית מס</button>
+                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE_RECEIPT")}>המרה לחשבונית מס קבלה</button></>}
                 {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT" || d.doc_type === "PROFORMA") && <button className="ck-btn sm" onClick={() => duplicateDoc(d)}>שכפול</button>}
                 {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
               </div></td>
