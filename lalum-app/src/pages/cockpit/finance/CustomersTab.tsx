@@ -3,8 +3,8 @@ import { supabase } from "../../../lib/supabase";
 import { customerGaps, customerProblems, splitName } from "../../../lib/cockpit/finance";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
-type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean };
-const blank: Draft = { name: "", tax_id: "", email: "", phone: "", address: "", city: "", notes: "", i4u: "", casual: false };
+type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean; ret: boolean; retDesc: string; retAmt: string };
+const blank: Draft = { name: "", tax_id: "", email: "", phone: "", address: "", city: "", notes: "", i4u: "", casual: false, ret: false, retDesc: "", retAmt: "" };
 
 export function CustomersTab({ firmId, customers, onChange }: { firmId: string; customers: FinCustomer[]; onChange: () => void }) {
   const [editing, setEditing] = useState<string | null>(null);
@@ -16,16 +16,18 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
 
   function open(c?: FinCustomer) {
     setEditing(c?.id ?? "new"); setMsg(null);
-    setF(c ? { name: c.name, tax_id: c.tax_id ?? "", email: c.email ?? "", phone: c.phone ?? "", address: c.address ?? "", city: c.city ?? "", notes: c.notes ?? "", i4u: c.i4u_customer_id ? String(c.i4u_customer_id) : "", casual: c.is_casual } : blank);
+    setF(c ? { name: c.name, tax_id: c.tax_id ?? "", email: c.email ?? "", phone: c.phone ?? "", address: c.address ?? "", city: c.city ?? "", notes: c.notes ?? "", i4u: c.i4u_customer_id ? String(c.i4u_customer_id) : "", casual: c.is_casual, ret: c.retainer_active, retDesc: c.retainer_description ?? "", retAmt: c.retainer_amount != null ? String(c.retainer_amount) : "" } : blank);
   }
   async function save() {
     if (!supabase) return;
     const problems = customerProblems({ name: f.name, email: f.email, tax_id: f.tax_id, i4u: f.i4u, casual: f.casual, isNew });
     if (problems.length) { setMsg({ ok: false, text: problems.join(". ") + "." }); return; }
+    if (f.ret && (!f.retDesc.trim() || !(Number(f.retAmt) > 0))) { setMsg({ ok: false, text: "לריטיינר חודשי נדרשים תיאור וסכום גדול מאפס." }); return; }
     const row = {
       name: f.name.trim(), tax_id: f.tax_id || null, email: f.email.trim() || null, phone: f.phone.trim() || null,
       address: f.address.trim() || null, city: f.city.trim() || null, notes: f.notes.trim() || null,
       i4u_customer_id: f.casual ? null : f.i4u ? Number(f.i4u) : null,
+      retainer_active: f.casual ? false : f.ret, retainer_description: f.ret ? f.retDesc.trim() : null, retainer_amount: f.ret ? Number(f.retAmt) : null,
     };
     const { error } = isNew
       ? await supabase.from("lalum_fin_customers").insert({ ...row, firm_id: firmId, is_casual: f.casual })
@@ -66,6 +68,17 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
             {!f.casual && <label className="ck-field">מספר לקוח ב-Invoice4U (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
             <label className="ck-field">הערות<input className="ck-input" value={f.notes} onChange={set("notes")} /></label>
           </div>
+          {!f.casual && (
+            <div className="ck-stack">
+              <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" checked={f.ret} onChange={(e) => setF({ ...f, ret: e.target.checked })} />ריטיינר חודשי (נוצרת טיוטה בלבד, לעולם לא הפקה אוטומטית)</label>
+              {f.ret && (
+                <div className="ck-grid2">
+                  <label className="ck-field">תיאור השורה<input className="ck-input" maxLength={500} value={f.retDesc} onChange={set("retDesc")} /></label>
+                  <label className="ck-field">סכום לפני מע"מ<input className="ck-input" dir="ltr" inputMode="decimal" value={f.retAmt} onChange={set("retAmt")} /></label>
+                </div>
+              )}
+            </div>
+          )}
           {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
         </div>
