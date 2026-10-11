@@ -1,5 +1,5 @@
 -- Finance: collections control (receivables aging by due date) and the 13 week cash forecast.
--- Not yet applied to the project. Access follows the finance levels of 0024: collections work (lock, reminders, DSO) needs level 3,
+-- Applied to project meoymkcotomoluwlwues as "lalum_finance_collections_cashflow". Access follows the finance levels of 0024: collections work (lock, reminders, DSO) needs level 3,
 -- the cash plan needs level 4, the same as lalum_cash_forecast_items. Additive only: nothing here changes an existing table's meaning.
 --
 -- Boundaries kept on purpose:
