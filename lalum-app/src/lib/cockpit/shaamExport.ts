@@ -59,6 +59,10 @@ const abs2 = (n: number) => Math.abs(n).toFixed(2);
  *  verified. See finance-engine-design.md, "Answered by the practice owner". */
 export const LALUM_TAX_ID = "031471261";
 
+/** The practice's business address, for the A000 record only: internal to the compliance file, never
+ *  shown on the public site. No postal code: not given, and not guessed. */
+export const LALUM_BUSINESS_ADDRESS = { street: "האיריסים", houseNum: "8", city: "נתניה", zip: "" };
+
 export interface ShaamBusiness {
   /** The practice's own business id (עוסק מורשה), 9 digits, Israeli ID check digit valid for a
    *  sole proprietor. Goes in both the VAT ID field and the software registration field (field
@@ -218,7 +222,8 @@ export function buildShaamReport(
       companyRegId: "",
       withholdingFileNum: "",
       businessName: business.name,
-      businessStreet: "", businessHouseNum: "", businessCity: "", businessZip: "",
+      businessStreet: LALUM_BUSINESS_ADDRESS.street, businessHouseNum: LALUM_BUSINESS_ADDRESS.houseNum,
+      businessCity: LALUM_BUSINESS_ADDRESS.city, businessZip: LALUM_BUSINESS_ADDRESS.zip,
       taxYear: business.taxYear,
       startDate: ymd(business.periodStart),
       endDate: ymd(business.periodEnd),
