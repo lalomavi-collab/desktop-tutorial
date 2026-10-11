@@ -67,6 +67,12 @@ local function equip(horse, itemId, color)
 			end
 		end
 	end
+	for _, d in ipairs(clone:GetDescendants()) do
+		if d:IsA("BasePart") then
+			d.Anchored = false
+			d.CanCollide = false
+		end
+	end
 	clone.Parent = horse
 
 	local weld = Instance.new("WeldConstraint")
