@@ -8,9 +8,14 @@ import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
+import { ArAgingTab } from "./ArAgingTab";
+import { CashFlowTab } from "./CashFlowTab";
+import type { SettingsRow } from "./CashFlowTab";
+import type { DunningEntry } from "../../../lib/cockpit/arAging";
+import type { CashItem } from "../../../lib/cockpit/cashFlow";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -21,6 +26,9 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [payments, setPayments] = useState<FinPayment[]>([]);
   const [expenses, setExpenses] = useState<FinExpense[]>([]);
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
+  const [dunning, setDunning] = useState<DunningEntry[]>([]);
+  const [cashSettings, setCashSettings] = useState<SettingsRow | null>(null);
+  const [cashItems, setCashItems] = useState<CashItem[]>([]);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
   const now = new Date();
@@ -29,12 +37,19 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
 
   const load = useCallback(async () => {
     if (!supabase) return;
-    const [c, d, p, e] = await Promise.all([
+    const [c, d, p, e, dl, cs, ci] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
       supabase.from("lalum_fin_expenses").select("*").order("spent_on", { ascending: false }),
+      supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
+      supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
+      supabase.from("lalum_fin_cashflow_items").select("*").eq("active", true).order("created_at"),
     ]);
+    // Collections and cash plan tables arrive with migration 0023; until it is applied they are empty and say nothing is wrong.
+    setDunning((dl.data as DunningEntry[] | null) ?? []);
+    setCashSettings(cs.data ? { ...(cs.data as SettingsRow), opening_balance: Number((cs.data as SettingsRow).opening_balance), credit_facility: Number((cs.data as SettingsRow).credit_facility), safety_reserve: Number((cs.data as SettingsRow).safety_reserve) } : null);
+    setCashItems(((ci.data as Array<CashItem & { amount: number | string }> | null) ?? []).map((i) => ({ ...i, amount: Number(i.amount) })));
     // The archive can exceed the 1000 row page limit, so it is read page by page.
     const arch: ArchiveDoc[] = [];
     let archErr = false;
@@ -94,6 +109,8 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
+      {tab === "aging" && loaded && <ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} onChange={() => void load()} />}
+      {tab === "cashflow" && loaded && <CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} items={cashItems} onChange={() => void load()} />}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
   );
