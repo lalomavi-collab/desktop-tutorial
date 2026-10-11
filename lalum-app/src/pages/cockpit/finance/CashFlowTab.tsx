@@ -3,16 +3,16 @@ import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import type { FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
 import { fmtDay, todayIL } from "../../../lib/cockpit/arAging";
-import { SCENARIO_LABEL, applyScenario, buildForecast, compareToBase, planInflows } from "../../../lib/cockpit/cashFlow";
-import type { CashItem, CashSettings, Scenario } from "../../../lib/cockpit/cashFlow";
+import { MANUAL_LABEL, SCENARIO_LABEL, applyScenario, buildForecast, compareToBase, manualToItems, monthlyToWeekly, planInflows } from "../../../lib/cockpit/cashFlow";
+import type { CashSettings, ManualRow, Scenario } from "../../../lib/cockpit/cashFlow";
 
 export interface SettingsRow { opening_balance: number; balance_as_of: string | null; credit_facility: number; safety_reserve: number }
 type ScenarioKey = Scenario["kind"];
 const KEYS: ScenarioKey[] = ["BASE", "DELAY_TOP_CLIENTS", "FIRM_DSO_SHOCK", "WINDFALL"];
-const SCHEDULE: Record<string, string> = { MONTHLY: "חודשי", ONCE: "חד פעמי" };
+const RULE_CATEGORIES = Object.keys(MANUAL_LABEL);
 
-export function CashFlowTab({ firmId, customers, docs, payments, settings, items, onChange }: {
-  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; settings: SettingsRow | null; items: CashItem[]; onChange: () => void;
+export function CashFlowTab({ firmId, customers, docs, payments, settings, rows, onChange }: {
+  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; settings: SettingsRow | null; rows: ManualRow[]; onChange: () => void;
 }) {
   const today = todayIL();
   const cfg: CashSettings = { openingBalance: settings?.opening_balance ?? 0, creditFacility: settings?.credit_facility ?? 0, safetyReserve: settings?.safety_reserve ?? 50000 };
@@ -23,7 +23,8 @@ export function CashFlowTab({ firmId, customers, docs, payments, settings, items
   const [week, setWeek] = useState("6");
   const [form, setForm] = useState({ opening: String(cfg.openingBalance), facility: String(cfg.creditFacility), reserve: String(cfg.safetyReserve) });
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [item, setItem] = useState({ label: "", direction: "OUT", schedule: "MONTHLY", day: "1", on: today, amount: "" });
+  const [rule, setRule] = useState({ category: "OUTFLOW_PAYROLL", days: "1,9", amount: "" });
+  const items = useMemo(() => manualToItems(rows), [rows]);
 
   const plan = useMemo(() => planInflows(customers, docs, payments, today), [customers, docs, payments, today]);
   const base = useMemo(() => buildForecast(plan.inflows, items, cfg, today), [plan, items, cfg.openingBalance, cfg.creditFacility, cfg.safetyReserve, today]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -45,24 +46,27 @@ export function CashFlowTab({ firmId, customers, docs, payments, settings, items
     if (error) return setMsg({ ok: false, text: error.message });
     setMsg({ ok: true, text: "יתרת הפתיחה נשמרה, בתאריך של היום." }); onChange();
   }
-  async function addItem() {
+  /** Fills the weekly manual plan (lalum_cash_forecast_items) from a monthly amount and its days. Weekly actuals are never touched. */
+  async function applyRule() {
     if (!supabase) return;
-    const amt = Number(item.amount), day = Number(item.day);
-    if (!item.label.trim()) return setMsg({ ok: false, text: "שם הסעיף חובה." });
+    const amt = Number(rule.amount);
+    const days = rule.days.split(",").map((x) => Number(x.trim())).filter((n) => n >= 1 && n <= 31);
     if (!(amt > 0)) return setMsg({ ok: false, text: "הסכום חייב להיות גדול מאפס." });
-    if (item.schedule === "MONTHLY" && !(day >= 1 && day <= 31)) return setMsg({ ok: false, text: "יום בחודש הוא בין 1 ל-31." });
-    const { error } = await supabase.from("lalum_fin_cashflow_items").insert({
-      firm_id: firmId, label: item.label.trim(), direction: item.direction, schedule: item.schedule, amount: amt,
-      day_of_month: item.schedule === "MONTHLY" ? day : null, on_date: item.schedule === "ONCE" ? item.on : null,
-    });
+    if (!days.length || days.length !== rule.days.split(",").length) return setMsg({ ok: false, text: "ימים בחודש הם מספרים בין 1 ל-31, מופרדים בפסיק." });
+    const weekly = monthlyToWeekly(amt, days, today);
+    const payload = [...weekly.entries()].map(([week_ending, projected_amount]) => ({ firm_id: firmId, week_ending, category: rule.category, projected_amount }));
+    const { error } = await supabase.from("lalum_cash_forecast_items").upsert(payload, { onConflict: "firm_id,week_ending,category" });
     if (error) return setMsg({ ok: false, text: error.message });
-    setItem({ ...item, label: "", amount: "" }); setMsg(null); onChange();
+    setMsg({ ok: true, text: `התכנית השבועית עודכנה: ${MANUAL_LABEL[rule.category]}.` }); onChange();
   }
-  async function removeItem(id: string) {
-    if (!supabase || !window.confirm("למחוק את הסעיף?")) return;
-    await supabase.from("lalum_fin_cashflow_items").delete().eq("id", id);
+  async function clearCategory(category: string) {
+    if (!supabase || !window.confirm(`לאפס את "${MANUAL_LABEL[category]}" בכל השבועות בתחזית?`)) return;
+    const weeks = base.weeks.map((w) => w.weekEnding);
+    const { error } = await supabase.from("lalum_cash_forecast_items").update({ projected_amount: 0 }).eq("category", category).in("week_ending", weeks);
+    if (error) return setMsg({ ok: false, text: error.message });
     onChange();
   }
+  const totals = RULE_CATEGORIES.map((c) => [c, rows.filter((r) => r.category === c && base.weeks.some((w) => w.weekEnding === r.week_ending)).reduce((a, r) => a + r.projected_amount, 0)] as const).filter(([, n]) => n > 0);
 
   return (
     <div className="ck-stack">
@@ -118,23 +122,18 @@ export function CashFlowTab({ firmId, customers, docs, payments, settings, items
       </div>
 
       <div className="ck-card ck-stack">
-        <b>תשלומים ותקבולים קבועים (שכר, שכר דירה, מע"מ, הלוואות)</b>
+        <b>תכנית שבועית ידנית: שכר, שכר דירה, מע"מ ומקדמות</b>
+        <div className="ck-meta">נשמרת בתכנית התזרים של מודל החיוב, לצד הביצוע בפועל. מזינים סכום חודשי וימים בחודש, והמערכת פורסת אותו לימי השישי. ריטיינר ושאר התקבולים הקבועים נכנסים כאן; תקבולי חשבוניות מחושבים לבד.</div>
         <div className="ck-grid2">
-          <label className="ck-field">שם הסעיף<input className="ck-input" value={item.label} onChange={(e) => setItem({ ...item, label: e.target.value })} /></label>
-          <label className="ck-field">סכום<input className="ck-input" dir="ltr" inputMode="decimal" value={item.amount} onChange={(e) => setItem({ ...item, amount: e.target.value })} /></label>
-          <label className="ck-field">כיוון<select className="ck-select" value={item.direction} onChange={(e) => setItem({ ...item, direction: e.target.value })}><option value="OUT">תשלום</option><option value="IN">תקבול</option></select></label>
-          <label className="ck-field">תדירות<select className="ck-select" value={item.schedule} onChange={(e) => setItem({ ...item, schedule: e.target.value })}><option value="MONTHLY">חודשי</option><option value="ONCE">חד פעמי</option></select></label>
-          {item.schedule === "MONTHLY"
-            ? <label className="ck-field">יום בחודש<input className="ck-input" dir="ltr" inputMode="numeric" value={item.day} onChange={(e) => setItem({ ...item, day: e.target.value })} /></label>
-            : <label className="ck-field">תאריך<input className="ck-input" dir="ltr" type="date" value={item.on} onChange={(e) => setItem({ ...item, on: e.target.value })} /></label>}
+          <label className="ck-field">סעיף<select className="ck-select" value={rule.category} onChange={(e) => setRule({ ...rule, category: e.target.value })}>{RULE_CATEGORIES.map((c) => <option key={c} value={c}>{MANUAL_LABEL[c]}</option>)}</select></label>
+          <label className="ck-field">סכום בכל מועד<input className="ck-input" dir="ltr" inputMode="decimal" value={rule.amount} onChange={(e) => setRule({ ...rule, amount: e.target.value })} /></label>
+          <label className="ck-field">ימים בחודש (למשל 1,9 לשכר, 15 למע"מ)<input className="ck-input" dir="ltr" value={rule.days} onChange={(e) => setRule({ ...rule, days: e.target.value })} /></label>
         </div>
-        <div className="ck-row"><button className="ck-btn primary" onClick={() => void addItem()}>הוספת סעיף</button></div>
-        <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>סעיף</th><th>כיוון</th><th>תדירות</th><th className="fin-num">סכום</th><th></th></tr></thead><tbody>
-          {items.length ? items.map((i) => (
-            <tr key={i.id}><td>{i.label}</td><td>{i.direction === "OUT" ? "תשלום" : "תקבול"}</td>
-              <td>{SCHEDULE[i.schedule]}{i.schedule === "MONTHLY" ? `, ב-${i.day_of_month} בחודש` : `, ${i.on_date ? fmtDay(i.on_date) : ""}`}</td>
-              <td className="fin-num">{money(i.amount)}</td><td className="fin-actions-cell"><button className="ck-btn sm" onClick={() => void removeItem(i.id)}>מחיקה</button></td></tr>))
-            : <tr><td colSpan={5}>לא הוגדרו סעיפים קבועים</td></tr>}
+        <div className="ck-row"><button className="ck-btn primary" onClick={() => void applyRule()}>החלה על 13 השבועות</button></div>
+        <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>סעיף</th><th className="fin-num">סה"כ ב-13 השבועות</th><th></th></tr></thead><tbody>
+          {totals.length ? totals.map(([c, n]) => (
+            <tr key={c}><td>{MANUAL_LABEL[c]}</td><td className="fin-num">{money(n)}</td><td className="fin-actions-cell"><button className="ck-btn sm" onClick={() => void clearCategory(c)}>איפוס</button></td></tr>))
+            : <tr><td colSpan={3}>לא הוזנה תכנית. התחזית כוללת תקבולי חשבוניות בלבד.</td></tr>}
         </tbody></table></div>
       </div>
     </div>

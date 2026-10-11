@@ -5,9 +5,11 @@
 --  * Aging, DSO and the forecast are computed in src/lib/cockpit/arAging.ts and cashFlow.ts from the ledger
 --    tables that already exist (documents, payments, customers). They are verified by `npm run ar-aging-check`
 --    and `npm run cashflow-check`. This migration stores only what cannot be derived: a cached DSO, the billing
---    lock, the reminder log and the partner's own cash plan.
---  * Client trust money is NOT read or written here. It belongs to the billing model (PR 732) and must never
---    enter an operating cash forecast. Enforcing the lock on time entries also waits for that model.
+--    lock, the reminder log and the cash plan settings.
+--  * Client trust money is NOT read or written here. It belongs to the billing model (0020) and must never
+--    enter an operating cash forecast.
+--  * The lock is a flag and a decision record. Making lalum_time_entries refuse new rows for a locked customer is a
+--    separate change in the billing lane, with a partner override, and is not part of this migration.
 --  * Reminders are only RECORDED here. Nothing is sent from this migration or from the screens that use it.
 
 -- ---- customers: DSO cache and billing lock ----
@@ -84,7 +86,7 @@ end $$;
 revoke execute on function public.lalum_fin_log_reminder(uuid, int, text, text) from public, anon;
 grant execute on function public.lalum_fin_log_reminder(uuid, int, text, text) to authenticated;
 
--- ---- the partner's cash plan (operating money only) ----
+-- ---- cash plan settings (operating money only) ----
 create table if not exists public.lalum_fin_cashflow_settings (
   firm_id          uuid primary key references public.lalum_firms(id) on delete cascade,
   opening_balance  numeric(14,2) not null default 0,
@@ -95,36 +97,15 @@ create table if not exists public.lalum_fin_cashflow_settings (
   updated_at       timestamptz not null default now()
 );
 
--- Known cash movements that are not customer invoices: payroll, rent, VAT remittance, a loan instalment.
--- MONTHLY repeats on day_of_month (clamped to the month's last day); ONCE happens on on_date.
-create table if not exists public.lalum_fin_cashflow_items (
-  id            uuid primary key default gen_random_uuid(),
-  firm_id       uuid not null references public.lalum_firms(id) on delete cascade,
-  label         text not null check (length(btrim(label)) between 1 and 120),
-  direction     text not null check (direction in ('IN','OUT')),
-  schedule      text not null check (schedule in ('MONTHLY','ONCE')),
-  day_of_month  smallint check (day_of_month between 1 and 31),
-  on_date       date,
-  amount        numeric(14,2) not null check (amount > 0),
-  active        boolean not null default true,
-  created_by    uuid,
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now(),
-  check ((schedule = 'MONTHLY' and day_of_month is not null and on_date is null)
-      or (schedule = 'ONCE' and on_date is not null and day_of_month is null))
-);
-create index if not exists lalum_fin_cashflow_items_firm_idx on public.lalum_fin_cashflow_items (firm_id, active);
+-- Outflows and non invoice inflows (payroll, rent, VAT remittance) are NOT stored here. They live in lalum_cash_forecast_items
+-- (migration 0020, billing model), which also holds the weekly actuals and variance reasons. This table adds only what that
+-- one lacks: the opening balance, the unused credit facility and the safety reserve.
 
 alter table public.lalum_fin_cashflow_settings enable row level security;
-alter table public.lalum_fin_cashflow_items enable row level security;
 create policy lalum_fin_cashflow_settings_all on public.lalum_fin_cashflow_settings for all
   using ((select public.lalum_fin_can(firm_id))) with check ((select public.lalum_fin_can(firm_id)));
-create policy lalum_fin_cashflow_items_all on public.lalum_fin_cashflow_items for all
-  using ((select public.lalum_fin_can(firm_id))) with check ((select public.lalum_fin_can(firm_id)));
-revoke all on public.lalum_fin_cashflow_settings, public.lalum_fin_cashflow_items from anon, authenticated;
-grant select, insert, update, delete on public.lalum_fin_cashflow_settings, public.lalum_fin_cashflow_items to authenticated;
+revoke all on public.lalum_fin_cashflow_settings from anon, authenticated;
+grant select, insert, update, delete on public.lalum_fin_cashflow_settings to authenticated;
 
-create trigger lalum_fin_cashflow_items_touch before update on public.lalum_fin_cashflow_items
-  for each row execute function public.lalum_touch_updated_at();
 create trigger lalum_fin_cashflow_settings_touch before update on public.lalum_fin_cashflow_settings
   for each row execute function public.lalum_touch_updated_at();

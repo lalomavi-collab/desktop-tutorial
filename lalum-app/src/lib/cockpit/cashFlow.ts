@@ -13,6 +13,7 @@
 //    rule, else the invoice's own payment term (due date minus issue date).
 //  * An invoice whose expected date has already passed is moved to today plus LATE_PUSH_DAYS, never into the past.
 //  * An invoice more than EXCLUDE_AFTER_DAYS past due is left out of the forecast and reported separately.
+// Outflows come from the partner's weekly plan in lalum_cash_forecast_items (see manualToItems), not from a second store.
 import { r2 } from "./finance.ts";
 import type { FinCustomer, FinDocument, FinPayment } from "./finance.ts";
 import { addDays, agingReport, computeDso, daysBetween, DSO_MIN_SAMPLE, dueDateOf } from "./arAging.ts";
@@ -69,6 +70,35 @@ export function itemDates(it: CashItem, from: string, to: string): string[] {
     const iso = `${y}-${String(m).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     if (iso >= from && iso <= to) out.push(iso);
     m += 1; if (m > 12) { m = 1; y += 1; }
+  }
+  return out;
+}
+
+// ---- manual plan: lalum_cash_forecast_items (billing model, migration 0020) ----
+
+/** A row of lalum_cash_forecast_items. INFLOW_COLLECTIONS rows are the partner's manual guess and the actuals; they are not used. */
+export interface ManualRow { week_ending: string; category: string; projected_amount: number }
+export const MANUAL_LABEL: Record<string, string> = {
+  INFLOW_RETAINER: "ריטיינר", OUTFLOW_PAYROLL: "שכר", OUTFLOW_PAYROLL_TAX: "מסי שכר",
+  OUTFLOW_RENT_OFFICE: "שכר דירה למשרד", OUTFLOW_DISBURSEMENTS_PREPAID: "הוצאות שהוקדמו ללקוחות", OUTFLOW_TAX_REMITTANCE: 'מע"מ ומקדמות מס',
+};
+/**
+ * The manual rows as one-off cash items on their week-ending Friday. Collections are left out on purpose: they come from the
+ * invoices, and counting the manual figure as well would count the same money twice.
+ */
+export function manualToItems(rows: ManualRow[]): CashItem[] {
+  return rows.filter((r) => r.category !== "INFLOW_COLLECTIONS" && r.category in MANUAL_LABEL && r.projected_amount > 0)
+    .map((r) => ({
+      id: `${r.week_ending}:${r.category}`, label: MANUAL_LABEL[r.category], direction: r.category.startsWith("INFLOW") ? "IN" as const : "OUT" as const,
+      schedule: "ONCE" as const, day_of_month: null, on_date: r.week_ending, amount: r.projected_amount, active: true,
+    }));
+}
+/** Weekly sums, keyed by week-ending Friday, of a monthly amount paid on the given days of the month. For filling the manual plan. */
+export function monthlyToWeekly(amount: number, days: number[], today: string): Map<string, number> {
+  const ends = weekEndings(today), last = ends[ends.length - 1], out = new Map<string, number>(ends.map((e) => [e, 0]));
+  for (const day of days) {
+    const it: CashItem = { id: "r", label: "r", direction: "OUT", schedule: "MONTHLY", day_of_month: day, on_date: null, amount, active: true };
+    for (const d of itemDates(it, today, last)) { const f = fridayOnOrAfter(d); out.set(f, r2((out.get(f) ?? 0) + amount)); }
   }
   return out;
 }

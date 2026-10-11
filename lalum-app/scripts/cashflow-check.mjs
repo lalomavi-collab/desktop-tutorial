@@ -1,7 +1,7 @@
 // Checks the 13 week direct cash forecast and the what-if scenarios.
 // Run with: npm run cashflow-check
 import assert from "node:assert/strict";
-import { weekEndings, fridayOnOrAfter, itemDates, planInflows, applyScenario, buildForecast, compareToBase, LATE_PUSH_DAYS } from "../src/lib/cockpit/cashFlow.ts";
+import { weekEndings, fridayOnOrAfter, itemDates, manualToItems, monthlyToWeekly, planInflows, applyScenario, buildForecast, compareToBase, LATE_PUSH_DAYS } from "../src/lib/cockpit/cashFlow.ts";
 import { addDays } from "../src/lib/cockpit/arAging.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -134,4 +134,24 @@ t("money expected after the last Friday is reported, not silently counted", () =
   const far = [{ documentId: "z", customerId: "c1", customerName: "x", balance: 700, expectedOn: "2027-03-01", basis: "TERMS" }];
   const fc = buildForecast(far, [], S, TODAY);
   assert.equal(fc.beyondHorizon, 700); assert.equal(fc.finalEnding, S.openingBalance);
+});
+t("the manual plan feeds outflows, but its collections row is never counted a second time", () => {
+  const rows = [
+    { week_ending: "2026-10-16", category: "INFLOW_COLLECTIONS", projected_amount: 999999 },
+    { week_ending: "2026-10-16", category: "OUTFLOW_PAYROLL", projected_amount: 30000 },
+    { week_ending: "2026-10-23", category: "INFLOW_RETAINER", projected_amount: 5000 },
+    { week_ending: "2026-10-23", category: "OUTFLOW_RENT_OFFICE", projected_amount: 0 },
+  ];
+  const items = manualToItems(rows);
+  assert.equal(items.length, 2);
+  const fc = buildForecast([], items, S, TODAY);
+  assert.equal(fc.weeks[0].outflows, 30000); assert.equal(fc.weeks[0].invoiceInflows, 0); assert.equal(fc.weeks[1].otherInflows, 5000);
+  assert.equal(fc.weeks[0].endingCash, 70000);
+});
+t("monthly payroll on the 1st and 9th is spread into the right Fridays", () => {
+  const m = monthlyToWeekly(1000, [1, 9], TODAY);
+  assert.equal(m.size, 13);
+  assert.equal(m.get("2026-11-06"), 1000); // the 1st of November is a Sunday, so its Friday is the 6th
+  assert.equal(m.get("2026-11-13"), 1000); // the 9th is a Monday, so its Friday is the 13th
+  assert.equal([...m.values()].reduce((a, b) => a + b, 0), 5000); // Nov 1 and 9, Dec 1 and 9, Jan 1. Jan 9 is after the horizon, Oct 1 and 9 are past
 });
