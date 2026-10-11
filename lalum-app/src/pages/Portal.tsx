@@ -5,7 +5,6 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
-import { SchedulingConsole } from "../components/SchedulingConsole";
 import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { GroupChat } from "../components/GroupChat";
@@ -635,14 +634,6 @@ export function Portal() {
     return groups;
   }, [calls]);
 
-  // Headline counts for the admin "at a glance" strip.
-  const overview = useMemo(() => ({
-    needReply: inbox.filter((m) => !m.handled).length,
-    callsToProcess: calls.filter((c) => !c.is_processed).length,
-    unpaid: allBills.filter((b) => b.status !== "paid").length,
-    clientCount: new Set(inbox.map((m) => (m.user_email || "").toLowerCase()).filter(Boolean)).size,
-  }), [inbox, calls, allBills]);
-
   // One call card, reused inside each caller folder.
   function renderCallCard(c: CallRow) {
     const task = c.lalum_crm_tasks?.[0];
@@ -751,26 +742,11 @@ export function Portal() {
           conversation is saved and can later be searched or analysed. */}
       <GroupChat />
 
-      {/* ADMIN AT A GLANCE (firm only): headline counts across the whole desk. */}
-      {isAdmin && (
-        <div className="admin-overview" style={{ marginBottom: 28 }}>
-          {[
-            { icon: "gavel", label: P.overview.needReply, value: overview.needReply, hot: overview.needReply > 0 },
-            { icon: "phone", label: P.overview.calls, value: overview.callsToProcess, hot: overview.callsToProcess > 0 },
-            { icon: "scale", label: P.overview.unpaid, value: overview.unpaid, hot: overview.unpaid > 0 },
-            { icon: "folder", label: P.overview.clients, value: overview.clientCount, hot: false },
-          ].map((s) => (
-            <div key={s.label} className={"admin-stat" + (s.hot ? " hot" : "")}>
-              <span className="admin-stat-badge"><Icon name={s.icon} size={18} /></span>
-              <span className="admin-stat-value">{s.value}</span>
-              <span className="admin-stat-label">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* FIRM SCHEDULING CONSOLE (firm only) */}
-      {isAdmin && <SchedulingConsole />}
+      {/* The firm's at-a-glance counts and the scheduling console now live in
+          the cockpit (dashboard and /workspace/scheduling), not the client
+          portal. Firm members reach them through the "management" card above.
+          The remaining admin surfaces below move to the cockpit next, one at a
+          time. */}
 
       {/* CLIENT DOCUMENTS, folder per client (firm only) */}
       {isAdmin && docsState !== "unavailable" && (
