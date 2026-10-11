@@ -2,7 +2,8 @@ import { useState } from "react";
 import { money } from "../../../lib/cockpit/shared";
 import { monthPeriod } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
-import { AGING_BUCKETS, INCOME_KIND_LABEL, incomeByKind, incomeRows, receivablesAging, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
+import { supabase } from "../../../lib/supabase";
+import { AGING_BUCKETS, INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows, receivablesAging, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -18,6 +19,17 @@ export function ReportsTab({ docs, archive, customers, payments }: { docs: FinDo
   const aging = receivablesAging(docs, payments, customers, today);
   const title = month === 0 ? `${year}` : `${MONTHS[month - 1]} ${year}`;
 
+  const [mail, setMail] = useState<{ ok: boolean; text: string } | null>(null);
+  async function sendTest() {
+    if (!supabase) return;
+    setMail(null);
+    const csv = toCsv(["סוג", "תאריך", "מספר מסמך", "לקוח", "לפני מע\"מ", "מע\"מ", "כולל מע\"מ"],
+      rows.map((r) => [INCOME_KIND_LABEL[r.kind], r.date, r.number != null ? String(r.number) : "", r.customer, r.net, r.vat, r.total]));
+    const { data, error } = await supabase.functions.invoke("lalum-fin-report-mail", {
+      body: { subject: `דוח הכנסות ${title}`, html: incomeHtml(`דוח הכנסות להנהלת חשבונות, ${title}`, income), csv_name: `income-${period.from}-${period.to}.csv`, csv_text: csv },
+    });
+    setMail(error || !data?.ok ? { ok: false, text: "השליחה נכשלה. בדקו שהמייל מוגדר בשרת." } : { ok: true, text: `נשלחה הודעת בדיקה אל ${data.to}. לרואה החשבון לא נשלח דבר.` });
+  }
   function download(name: string, csv: string) {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
@@ -42,8 +54,10 @@ export function ReportsTab({ docs, archive, customers, payments }: { docs: FinDo
           {[0, 1, 2, 3].map((k) => <option key={k} value={now.getFullYear() - k}>{now.getFullYear() - k}</option>)}
         </select>
         <button className="ck-btn" onClick={() => window.print()}>הדפסה או שמירה כ-PDF</button>
+        <button className="ck-btn" onClick={() => void sendTest()} title="נשלח רק אליך">שליחת בדיקה אליי במייל</button>
       </div>
 
+      {mail && <div className={mail.ok ? "ck-ok" : "ck-err"} aria-live="polite">{mail.text}</div>}
       <div className="ck-card ck-stack">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
           <div className="ck-title">דוח הכנסות להנהלת חשבונות, {title}</div>
