@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-recruitment-screening-discrimination"
+   "ai-generated-content-ownership-protection-contracts"
   ]
  },
  "sovereignty": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "explainability",
    "ai-risk-frameworks-iso-42001-nist"
+  ]
+ },
+ "ai-generated-content-ownership-protection-contracts": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-marketing-advertising-privacy-deception-deepfake",
+   "ai-due-diligence-tech-acquisition",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "purchase-group-agreement-tax-risks": {
@@ -114,17 +122,17 @@
  "ai-vendor-agreement-dpa-liability-indemnity": {
   "topic": "contracts",
   "related": [
+   "ai-generated-content-ownership-protection-contracts",
    "ai-marketing-advertising-privacy-deception-deepfake",
-   "ai-health-data-privacy",
-   "gdpr-israeli-companies-ai"
+   "ai-health-data-privacy"
   ]
  },
  "ai-marketing-advertising-privacy-deception-deepfake": {
   "topic": "ai-governance",
   "related": [
    "ai-insurance-underwriting-pricing-regulation",
-   "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-health-data-privacy"
+   "ai-generated-content-ownership-protection-contracts",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "ai-hr-use-policy": {
@@ -515,8 +523,8 @@
   "topic": "ai-governance",
   "related": [
    "gdpr-israeli-companies-ai",
-   "ip-value-collapse-ai-acquisition",
-   "ai-vendor-agreement-dpa-liability-indemnity"
+   "ai-generated-content-ownership-protection-contracts",
+   "ip-value-collapse-ai-acquisition"
   ]
  },
  "overseas-property-holding-structure": {
@@ -987,8 +995,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "algorithmic-transparency",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "algorithmic-transparency"
   ]
  },
  "combination-deals-architecture": {
@@ -1610,8 +1618,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
