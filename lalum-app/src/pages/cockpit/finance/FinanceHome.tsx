@@ -80,8 +80,8 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
             <select className="ck-select" aria-label="שנה" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ maxWidth: 120 }}>{[0, 1, 2, 3].map((k) => <option key={k} value={now.getFullYear() - k}>{now.getFullYear() - k}</option>)}</select>
           </div>
           <div className="ck-grid2">
-            <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div></div>
+            <div className="ck-card fin-stat fin-inflow"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
+            <div className="ck-card fin-stat fin-outflow"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">רווח לפני מס</div><div className="fin-figure">{money(s.profit)}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div>{s.archiveVat !== 0 && <div className="fin-note">מתוך העסקאות, מארכיון Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</div>}</div>
           </div>
