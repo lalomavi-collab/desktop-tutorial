@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, trustBalance, trustProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -132,5 +132,25 @@ t("incomplete regular customers are flagged, casual ones are not", () => {
   assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: false }), ['דוא"ל', "ת.ז. או ח.פ."]);
   assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: "123456789", is_casual: false }), []);
   assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), []);
+});
+const te = (o) => ({ id: "t", customer_id: "c1", entry_type: "DEPOSIT", amount: 1000, entry_date: "2026-10-05", matter_ref: null, reference: null, note: null, document_id: null, ...o });
+t("trust balance: deposits add, releases and refunds subtract, per customer", () => {
+  const es = [te({ amount: 1000 }), te({ entry_type: "RELEASE_FIRM", amount: 300, document_id: "d1" }), te({ entry_type: "REFUND", amount: 100 }), te({ customer_id: "c2", amount: 50 })];
+  assert.equal(trustBalance(es, "c1"), 600);
+  assert.equal(trustBalance(es, "c2"), 50);
+  assert.equal(trustBalance(es), 650);
+});
+t("trust movements cannot overdraw, and a release needs an issued invoice", () => {
+  const es = [te({ amount: 500 })];
+  const base = { customer_id: "c1", entry_type: "REFUND", amount: 500, entry_date: "2026-10-06", document_id: null };
+  assert.deepEqual(trustProblems(base, es), []);
+  assert.ok(trustProblems({ ...base, amount: 500.01 }, es).includes("הסכום גבוה מהיתרה המוחזקת עבור הלקוח"));
+  assert.ok(trustProblems({ ...base, entry_type: "RELEASE_FIRM" }, es).includes("העברה למשרד דורשת חשבונית מס שהופקה"));
+  assert.deepEqual(trustProblems({ ...base, entry_type: "DEPOSIT", amount: 9999 }, es), []);
+});
+t("trust money is never revenue: the summary has no trust figure and revenue ignores it", () => {
+  const sm = summarize([doc({})], [], [], { from: "2026-10-01", to: "2026-10-31" });
+  assert.equal(sm.revenueNet, 1000);
+  assert.ok(!Object.keys(sm).some((k) => /trust/i.test(k)));
 });
 console.log("\nAll finance checks passed");

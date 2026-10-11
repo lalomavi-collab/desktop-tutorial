@@ -265,3 +265,35 @@ export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casua
   if (!c.tax_id) out.push("ת.ז. או ח.פ.");
   return out;
 }
+
+// ---- Client trust funds (migration 0023) ----
+// Money held for a client. Never revenue: summarize() does not read these, and finance-check pins that.
+
+export type TrustType = "DEPOSIT" | "RELEASE_FIRM" | "REFUND";
+export interface TrustEntry {
+  id: string; customer_id: string; entry_type: TrustType; amount: number; entry_date: string;
+  matter_ref: string | null; reference: string | null; note: string | null; document_id: string | null;
+}
+export const TRUST_TYPE: Record<TrustType, string> = {
+  DEPOSIT: "הפקדה לנאמנות", RELEASE_FIRM: "העברה למשרד כנגד חשבונית", REFUND: "החזרה או תשלום לפי הוראת הלקוח",
+};
+
+/** Signed effect on the held balance. */
+export const trustEffect = (e: Pick<TrustEntry, "entry_type" | "amount">): number => (e.entry_type === "DEPOSIT" ? e.amount : -e.amount);
+
+/** Balance held for one customer, or for everyone when no customer is given. */
+export function trustBalance(entries: TrustEntry[], customerId?: string): number {
+  return r2(entries.filter((e) => !customerId || e.customer_id === customerId).reduce((a, e) => a + trustEffect(e), 0));
+}
+
+/** Reasons a trust movement cannot be saved. A release or refund may never exceed what is held for that customer. */
+export function trustProblems(f: { customer_id: string; entry_type: TrustType; amount: number; entry_date: string; document_id: string | null }, entries: TrustEntry[]): string[] {
+  const out: string[] = [];
+  if (!f.customer_id) out.push("בחרו לקוח");
+  if (!(f.amount > 0)) out.push("הסכום חייב להיות גדול מאפס");
+  if (!f.entry_date) out.push("חסר תאריך");
+  if (f.entry_type === "RELEASE_FIRM" && !f.document_id) out.push("העברה למשרד דורשת חשבונית מס שהופקה");
+  if (f.customer_id && f.entry_type !== "DEPOSIT" && f.amount > trustBalance(entries, f.customer_id)) out.push("הסכום גבוה מהיתרה המוחזקת עבור הלקוח");
+  return out;
+}
+

@@ -2,15 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
-import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../lib/cockpit/finance";
+import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, TrustEntry } from "../../../lib/cockpit/finance";
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
+import { TrustTab } from "./TrustTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -20,6 +21,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [docs, setDocs] = useState<FinDocument[]>([]);
   const [payments, setPayments] = useState<FinPayment[]>([]);
   const [expenses, setExpenses] = useState<FinExpense[]>([]);
+  const [trust, setTrust] = useState<TrustEntry[]>([]);
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -29,11 +31,12 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
 
   const load = useCallback(async () => {
     if (!supabase) return;
-    const [c, d, p, e] = await Promise.all([
+    const [c, d, p, e, tr] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
       supabase.from("lalum_fin_expenses").select("*").order("spent_on", { ascending: false }),
+      supabase.from("lalum_fin_trust_entries").select("*").order("entry_date", { ascending: false }).order("created_at", { ascending: false }),
     ]);
     // The archive can exceed the 1000 row page limit, so it is read page by page.
     const arch: ArchiveDoc[] = [];
@@ -45,12 +48,13 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       if (!r.data || r.data.length < 1000) break;
     }
     setArchive(arch);
-    const err = c.error ?? d.error ?? p.error ?? e.error ?? (archErr ? { message: "archive" } : null);
+    const err = c.error ?? d.error ?? p.error ?? e.error ?? tr.error ?? (archErr ? { message: "archive" } : null);
     setError(err ? "הנתונים לא נטענו. ודאו שהתחברתם עם אימות דו שלבי כשותף במשרד." : "");
     setCustomers((c.data as FinCustomer[] | null) ?? []);
     setDocs((d.data as FinDocument[] | null) ?? []);
     setPayments((p.data as FinPayment[] | null) ?? []);
     setExpenses((e.data as FinExpense[] | null) ?? []);
+    setTrust((tr.data as TrustEntry[] | null) ?? []);
     setLoaded(true);
   }, []);
   // Initial fetch from the database; setState happens after the awaited queries resolve.
@@ -92,6 +96,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       )}
       {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} />}
       {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
+      {tab === "trust" && loaded && <TrustTab firmId={firmId} customers={customers} docs={docs} entries={trust} onChange={() => void load()} />}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
