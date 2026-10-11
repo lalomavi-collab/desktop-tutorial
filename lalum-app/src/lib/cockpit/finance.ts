@@ -342,13 +342,13 @@ export const canReverse = (t: TrustTx, rows: TrustTx[]): boolean =>
 // ---- Trust account setup (lalum_trust_accounts) ----
 
 /** Reasons a trust account cannot be saved. Bank, branch and account are digits or text the bank prints; the pair (bank, branch, account) is unique per firm. */
-export function trustAccountProblems(f: { bank_name: string; branch: string; account_number: string }, existing: TrustAccount[]): string[] {
+export function trustAccountProblems(f: { bank_name: string; branch: string; account_number: string }, existing: TrustAccount[], exceptId?: string): string[] {
   const out: string[] = [];
   const bank = f.bank_name.trim(), branch = f.branch.trim(), acct = f.account_number.trim();
   if (!bank) out.push("שם הבנק חובה");
   if (!/^\d{1,4}$/.test(branch)) out.push("מספר הסניף הוא ספרות בלבד (עד 4)");
   if (!/^\d{4,12}$/.test(acct)) out.push("מספר החשבון הוא ספרות בלבד (4 עד 12)");
-  if (bank && existing.some((a) => a.bank_name === bank && a.branch === branch && a.account_number === acct)) out.push("החשבון כבר קיים");
+  if (bank && existing.some((a) => a.id !== exceptId && a.bank_name === bank && a.branch === branch && a.account_number === acct)) out.push("החשבון כבר קיים");
   return out;
 }
 

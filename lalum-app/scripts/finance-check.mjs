@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
+import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -192,6 +192,10 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
   assert.ok(c.startsWith("\uFEFF"));
   assert.ok(c.includes('"x""y",1234.50'));
+});t("e-mail html escapes customer names", () => {
+  const rows = incomeRows([doc({ id: "z", doc_type: "INVOICE" })], [], [cust({ id: "c1", name: "<b>x</b> & co" })], { from: "2026-10-01", to: "2026-10-31" });
+  const h = incomeHtml("t", incomeByKind(rows));
+  assert.ok(!h.includes("<b>x</b>") && h.includes("&lt;b&gt;x&lt;/b&gt; &amp; co"));
 });
 t("trust posting: withdrawals are capped by matter and account balance, a fee transfer needs an invoice within its open amount", () => {
   const rows = [tx({ amount: 500 }), tx({ id: 2, matter_id: "m2", trust_account_id: "a1", amount: 200 })];
@@ -218,6 +222,10 @@ t("trust account setup: digits only, no duplicate, and no closing while money is
   assert.ok(trustAccountProblems({ ...ok, branch: "ab" }, ex).length === 1);
   assert.ok(trustAccountProblems({ ...ok, account_number: "12" }, ex).length === 1);
   assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex), ["החשבון כבר קיים"]);
+  // editing an account must not collide with itself, only with another account
+  assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex, "a1"), []);
+  const two = [...ex, { id: "a2", bank_name: "פועלים", branch: "600", account_number: "998877", closed_on: null }];
+  assert.deepEqual(trustAccountProblems({ bank_name: "פועלים", branch: "600", account_number: "998877" }, two, "a1"), ["החשבון כבר קיים"]);
   assert.equal(trustCloseProblem("a1", [tx({ amount: 5 })]) !== null, true);
   assert.equal(trustCloseProblem("a1", [tx({ amount: 5 }), tx({ id: 2, tx_type: "REFUND_TO_CLIENT", amount: -5 })]), null);
 });
