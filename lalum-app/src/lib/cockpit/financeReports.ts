@@ -96,3 +96,22 @@ export function toCsv(header: string[], lines: Array<Array<string | number | nul
   const cell = (v: string | number | null): string => (typeof v === "number" ? v.toFixed(2) : `"${String(v ?? "").replace(/"/g, '""')}"`);
   return "﻿" + [header.map((h) => cell(h)).join(","), ...lines.map((l) => l.map(cell).join(","))].join("\r\n");
 }
+
+const esc = (s: string): string => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const num = (n: number): string => n.toLocaleString("he-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** The income report as e-mail HTML: one table per document type and the grand total. Every text is escaped. */
+export function incomeHtml(title: string, income: ReturnType<typeof incomeByKind>): string {
+  const cell = "padding:4px 8px;border-bottom:1px solid #ddd;text-align:right";
+  const parts = [`<h2>${esc(title)}</h2>`];
+  for (const g of income.groups) {
+    parts.push(`<h3>${esc(INCOME_KIND_LABEL[g.kind])} (${g.rows.length})</h3>`);
+    if (!g.rows.length) continue;
+    parts.push(`<table style="border-collapse:collapse"><tr><th style="${cell}">תאריך</th><th style="${cell}">מספר</th><th style="${cell}">לקוח</th><th style="${cell}">לפני מע"מ</th><th style="${cell}">מע"מ</th><th style="${cell}">כולל מע"מ</th></tr>`);
+    for (const r of g.rows) parts.push(`<tr><td style="${cell}">${esc(r.date)}</td><td style="${cell}">${r.number ?? ""}</td><td style="${cell}">${esc(r.customer)}</td><td style="${cell}">${num(r.net)}</td><td style="${cell}">${num(r.vat)}</td><td style="${cell}">${num(r.total)}</td></tr>`);
+    parts.push(`<tr><td colspan="3" style="${cell}"><b>סה"כ</b></td><td style="${cell}"><b>${num(g.net)}</b></td><td style="${cell}"><b>${num(g.vat)}</b></td><td style="${cell}"><b>${num(g.total)}</b></td></tr></table>`);
+  }
+  parts.push(`<p><b>סה"כ הכנסות לפני מע"מ: ${num(income.net)}</b><br>מע"מ עסקאות: ${num(income.vat)}<br>כולל מע"מ: ${num(income.total)}</p>`);
+  parts.push(`<p style="color:#666">דוח לעיון. זיכויים מופחתים. לפי תאריך המסמך.</p>`);
+  return parts.join("");
+}
