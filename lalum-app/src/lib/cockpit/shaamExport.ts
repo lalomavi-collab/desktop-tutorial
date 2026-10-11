@@ -55,6 +55,10 @@ const ymd = (isoDate: string) => isoDate.replaceAll("-", "");
 // what tells the Tax Authority it is a credit, not the sign of the amount.
 const abs2 = (n: number) => Math.abs(n).toFixed(2);
 
+/** The practice's own business id (owner's Teudat Zehut, used as the עוסק מורשה number), checksum
+ *  verified. See finance-engine-design.md, "Answered by the practice owner". */
+export const LALUM_TAX_ID = "031471261";
+
 export interface ShaamBusiness {
   /** The practice's own business id (עוסק מורשה), 9 digits, Israeli ID check digit valid for a
    *  sole proprietor. Goes in both the VAT ID field and the software registration field (field
