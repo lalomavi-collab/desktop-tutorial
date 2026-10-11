@@ -15,7 +15,7 @@ export interface FinCustomer {
   is_casual: boolean;
   /** Template for a monthly DRAFT. Never issued automatically. */
   retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
-  /** Collections control (migration 0023). DSO is a cache of what arAging.ts computes from the ledger. */
+  /** Collections control (migration 0026). DSO is a cache of what arAging.ts computes from the ledger. */
   historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
   is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
 }
@@ -31,6 +31,8 @@ export interface FinDocument {
   pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
   /** Never printed or sent. */
   internal_note: string | null; matter_ref: string | null;
+  /** The issued pro forma this invoice or invoice-receipt settles. */
+  source_proforma_id: string | null;
 }
 export interface FinPayment {
   id: string; customer_id: string | null; document_id: string | null; paid_on: string; amount: number;
@@ -268,3 +270,11 @@ export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casua
   if (!c.tax_id) out.push("ת.ז. או ח.פ.");
   return out;
 }
+
+/** The issued document that closed a pro forma, if any. A draft pointing at it does not close it yet. */
+export const closedBy = (p: FinDocument, docs: FinDocument[]): FinDocument | undefined =>
+  docs.find((d) => d.source_proforma_id === p.id && d.status === "ISSUED");
+
+/** An issued, real (non test) pro forma that no issued document has settled. */
+export const isOpenProforma = (p: FinDocument, docs: FinDocument[]): boolean =>
+  p.doc_type === "PROFORMA" && p.status === "ISSUED" && !p.is_test && !closedBy(p, docs);

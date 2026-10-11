@@ -14,8 +14,11 @@ import type { SettingsRow } from "./CashFlowTab";
 import type { DunningEntry } from "../../../lib/cockpit/arAging";
 import type { ManualRow } from "../../../lib/cockpit/cashFlow";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
+import { PermissionsTab } from "./PermissionsTab";
+import { Gate } from "./Gate";
+
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "permissions" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -31,12 +34,16 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [cashRows, setCashRows] = useState<ManualRow[]>([]);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
+  // Finance level of the signed-in user: 0 none, 1 view, 2 drafts, 3 issue, 4 admin. The database enforces it.
+  const [level, setLevel] = useState(0);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
 
   const load = useCallback(async () => {
     if (!supabase) return;
+    const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
+    setLevel(typeof lv.data === "number" ? lv.data : 0);
     const [c, d, p, e, dl, cs, ci] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
@@ -46,7 +53,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
       supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
     ]);
-    // The reminder log and cash settings arrive with migration 0023; until it is applied they read empty and the tabs still render.
+    // The reminder log and cash settings arrive with migration 0026; until it is applied they read empty and the tabs still render.
     setDunning((dl.data as DunningEntry[] | null) ?? []);
     setCashSettings(cs.data ? { ...(cs.data as SettingsRow), opening_balance: Number((cs.data as SettingsRow).opening_balance), credit_facility: Number((cs.data as SettingsRow).credit_facility), safety_reserve: Number((cs.data as SettingsRow).safety_reserve) } : null);
     setCashRows(((ci.data as Array<ManualRow & { projected_amount: number | string }> | null) ?? []).map((r) => ({ ...r, projected_amount: Number(r.projected_amount) })));
@@ -67,7 +74,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     setPayments((p.data as FinPayment[] | null) ?? []);
     setExpenses((e.data as FinExpense[] | null) ?? []);
     setLoaded(true);
-  }, []);
+  }, [firmId]);
   // Initial fetch from the database; setState happens after the awaited queries resolve.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
@@ -80,7 +87,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   return (
     <div className="ck-stack ck-fin">
       <div className="fin-subtabs" role="tablist" aria-label="הנהלת חשבונות">
-        {TABS.map(([k, label]) => (
+        {TABS.filter(([k]) => k !== "permissions" || level >= 4).map(([k, label]) => (
           <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label}</button>
         ))}
       </div>
@@ -105,12 +112,13 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
-      {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} />}
-      {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
+      {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
+      {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
-      {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
-      {tab === "aging" && loaded && <ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} onChange={() => void load()} />}
-      {tab === "cashflow" && loaded && <CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} />}
+      {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
+      {tab === "permissions" && level >= 4 && <PermissionsTab />}
+      {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} onChange={() => void load()} /></Gate>}
+      {tab === "cashflow" && loaded && <Gate level={level} need={4}><CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} /></Gate>}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
   );

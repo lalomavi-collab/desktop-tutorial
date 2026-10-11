@@ -29,6 +29,8 @@ export const issueError = (r: IssueReply): string => ISSUE_ERRORS[r.code ?? ""] 
 const RPC_ERRORS: Record<string, string> = {
   FORBIDDEN: "אין הרשאה לפעולה.", BAD_TYPE: "סוג מסמך לא תקין.", BAD_CUSTOMER: "הלקוח לא נמצא.",
   DATE_IN_FUTURE: "אי אפשר להפיק מסמך בתאריך עתידי.", DATE_BEFORE_LAST: "התאריך מוקדם ממסמך שכבר הופק מאותו סוג. בחרו תאריך זהה או מאוחר ממנו.",
+  BAD_SOURCE: "חשבון העסקה חייב להיות מסמך שהופק לאותו לקוח, וההמרה אפשרית רק לחשבונית מס או לחשבונית מס קבלה.",
+  BAD_PERIOD: "חודש לא תקין.",
   CASUAL_NOT_ALLOWED: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.", BAD_LINES: "יש להזין בין שורה אחת ל-60 שורות.", BAD_LINE_NAME: "לכל שורה נדרש תיאור.",
   BAD_LINE_AMOUNT: "כמות ומחיר חייבים להיות גדולים מאפס.", NOT_A_DRAFT: "אפשר לערוך או למחוק טיוטה בלבד.",
   ISSUED_DOCUMENT_IMMUTABLE: "מסמך שהופק אינו ניתן לשינוי. לביטול הפיקו חשבונית זיכוי.",

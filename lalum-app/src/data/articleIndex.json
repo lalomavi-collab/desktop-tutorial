@@ -19,8 +19,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "directors-liability-ai-era",
-   "explainability"
+   "explainability",
+   "directors-liability-ai-era"
   ]
  },
  "board-liability": {
@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "explainability",
    "ai-risk-frameworks-iso-42001-nist"
+  ]
+ },
+ "purchase-group-agreement-tax-risks": {
+  "topic": "contracts",
+  "related": [
+   "overseas-partnership-guide",
+   "developer-agreement-urban-renewal-critical-clauses",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "suing-foreign-company-jurisdiction-service-enforcement": {
@@ -284,7 +292,7 @@
   "related": [
    "ai-clinical-system-deployment",
    "ai-use-policy-local-authority",
-   "ai-municipal-chatbot-resident-liability"
+   "procurement"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -444,7 +452,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "decision-oriented-ai-law"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -659,15 +667,15 @@
   "topic": "mediation",
   "related": [
    "real-estate-arbitration",
-   "real-estate-dispute-arbitration",
-   "business-mediation-relations"
+   "business-mediation-relations",
+   "lalum-mediation-arbitration"
   ]
  },
  "ai-liability-ruling": {
   "topic": "ai-governance",
   "related": [
-   "decision-oriented-ai-law",
    "ai-hallucinations-citations",
+   "decision-oriented-ai-law",
    "lalum-clinic-experience"
   ]
  },
@@ -709,14 +717,6 @@
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "eu-ai-act-conformity-file-preparation"
-  ]
- },
- "real-estate-dispute-arbitration": {
-  "topic": "mediation",
-  "related": [
-   "business-arbitration",
-   "real-estate-arbitration",
-   "business-mediation-relations"
   ]
  },
  "ai-ethics-legal-risks": {
@@ -771,8 +771,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "contract-review-before-signing",
-   "ai-drafted-real-estate-contract-review"
+   "ai-drafted-real-estate-contract-review",
+   "contract-review-before-signing"
   ]
  },
  "ai-presentation-tools": {
@@ -843,8 +843,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
@@ -956,15 +956,15 @@
   "related": [
    "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
    "three-minute-legal-check",
-   "real-estate-dispute-arbitration"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "overseas-partnership-guide": {
   "topic": "real-estate",
   "related": [
+   "purchase-group-agreement-tax-risks",
    "intl-realestate-transactions",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
-   "legal-clinic-business-realestate"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -987,8 +987,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "digital-lawyers-2026",
-   "algorithmic-transparency"
+   "algorithmic-transparency",
+   "digital-lawyers-2026"
   ]
  },
  "combination-deals-architecture": {
@@ -1092,7 +1092,7 @@
   "related": [
    "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
    "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
-   "real-estate-dispute-arbitration"
+   "urban-renewal-risk"
   ]
  },
  "body-language-ai-future": {
@@ -1212,7 +1212,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "free-lawyer-illusion"
+   "legal-mediation-benefits"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
@@ -1228,7 +1228,7 @@
   "related": [
    "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
    "real-estate-arbitration",
-   "mediator-tools-body-language-field-experience"
+   "decision-oriented-mediation-benefits"
   ]
  },
  "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות": {
@@ -1372,7 +1372,7 @@
   "related": [
    "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
    "contract-review-before-signing",
-   "lalum-clinic-realestate-advice"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
@@ -1563,8 +1563,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "understanding-mediation-process",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "understanding-mediation-process"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {

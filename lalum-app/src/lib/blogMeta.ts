@@ -12,6 +12,13 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "purchase-group-agreement-tax-risks",
+    "title": "קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים",
+    "excerpt": "קבוצת רכישה מאפשרת לקנות נדל״ן בכוח משותף, אבל בלי הסכם שיתוף ברור היא הופכת למקור לסכסוכים. מדריך להסכם, למבנה המשפטי, לשאלת המיסוי ולסיכונים שכדאי לסגור מראש.",
+    "date": "אוקטובר 2026",
+    "cover": "/images/covers/combination-deals-architecture.webp"
+  },
+  {
     "slug": "suing-foreign-company-jurisdiction-service-enforcement",
     "title": "תביעה נגד חברה זרה: איפה תובעים, איך מוסרים כתב תביעה ואיך אוכפים",
     "excerpt": "תביעה נגד חברה זרה נבחנת בארבע שאלות: באיזו ערכאה, לפי איזה דין, איך מוסרים את כתב התביעה, ואיך גובים בפועל. מדריך שמתחיל מהסוף, מנכסי הנתבעת, וממשיך לסעיף שיפוט ובוררות, מסירה מחוץ לתחום, אכיפת פסק זר, עלויות וצעדים לפני תביעה.",
@@ -633,13 +640,6 @@ export const blogMeta: BlogMeta[] = [
     "excerpt": "מדריך מעשי לעסקאות מסחר בינלאומיות בישראל 2026: סיכונים מרכזיים, בדיקת נאותות, תנאי חוזה ודרישות ציות.",
     "date": "אפריל 2026",
     "cover": "/images/covers/international-trade-guide-2026.webp"
-  },
-  {
-    "slug": "real-estate-dispute-arbitration",
-    "title": "פתרון סכסוכים בנדל״ן: החשיבות של בוררות בתחום הנדל״ן",
-    "excerpt": "מדוע בוררות היא הכלי היעיל, המהיר והחסוי לפתרון סכסוכי נדל״ן, ושמירה על יחסים עסקיים.",
-    "date": "אפריל 2026",
-    "cover": "/images/covers/real-estate-dispute-arbitration.webp"
   },
   {
     "slug": "ai-ethics-legal-risks",

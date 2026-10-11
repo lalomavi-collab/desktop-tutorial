@@ -1,5 +1,6 @@
 -- Finance: collections control (receivables aging by due date) and the 13 week cash forecast.
--- Not yet applied to the project. Additive only: nothing here changes an existing table's meaning.
+-- Not yet applied to the project. Access follows the finance levels of 0024: collections work (lock, reminders, DSO) needs level 3,
+-- the cash plan needs level 4, the same as lalum_cash_forecast_items. Additive only: nothing here changes an existing table's meaning.
 --
 -- Boundaries kept on purpose:
 --  * Aging, DSO and the forecast are computed in src/lib/cockpit/arAging.ts and cashFlow.ts from the ledger
@@ -31,7 +32,7 @@ returns void language plpgsql security definer set search_path to 'public' as $$
 declare v_firm uuid;
 begin
   select firm_id into v_firm from public.lalum_fin_customers where id = p_customer;
-  if v_firm is null or not public.lalum_fin_can(v_firm) then raise exception 'FORBIDDEN'; end if;
+  if v_firm is null or not public.lalum_fin_can(v_firm, 3) then raise exception 'FORBIDDEN'; end if;
   if p_locked and length(btrim(coalesce(p_reason, ''))) = 0 then raise exception 'LOCK_REASON_REQUIRED'; end if;
   update public.lalum_fin_customers set
     is_collections_locked = p_locked,
@@ -60,7 +61,7 @@ create table if not exists public.lalum_fin_dunning_log (
 create index if not exists lalum_fin_dunning_log_customer_idx on public.lalum_fin_dunning_log (customer_id, sent_on desc);
 alter table public.lalum_fin_dunning_log enable row level security;
 create policy lalum_fin_dunning_log_read on public.lalum_fin_dunning_log for select
-  using ((select public.lalum_fin_can(firm_id)));
+  using ((select public.lalum_fin_can(firm_id, 3)));
 revoke all on public.lalum_fin_dunning_log from anon, authenticated;
 grant select on public.lalum_fin_dunning_log to authenticated;
 -- No insert grant: the only writer is lalum_fin_log_reminder, which enforces the cooldown.
@@ -71,7 +72,7 @@ returns uuid language plpgsql security definer set search_path to 'public' as $$
 declare v_firm uuid; v_today date := (now() at time zone 'Asia/Jerusalem')::date; v_id uuid;
 begin
   select firm_id into v_firm from public.lalum_fin_customers where id = p_customer;
-  if v_firm is null or not public.lalum_fin_can(v_firm) then raise exception 'FORBIDDEN'; end if;
+  if v_firm is null or not public.lalum_fin_can(v_firm, 3) then raise exception 'FORBIDDEN'; end if;
   if p_tier not between 1 and 3 then raise exception 'BAD_TIER'; end if;
   -- serialise per customer so two concurrent calls cannot both pass the cooldown check
   perform pg_advisory_xact_lock(hashtext('lalum_fin_dunning:' || p_customer::text));
