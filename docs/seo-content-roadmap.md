@@ -168,7 +168,7 @@
 - מס שבח במכירת דירה: פטורים וחישוב לינארי
 - V זיכרון דברים בעסקת נדל"ן: מתי הוא מחייב וכיצד מבטלים (real-estate-memorandum-of-understanding-binding)
 - V הערת אזהרה: רישום, משמעות ומחיקה (caution-note-real-estate-registration-removal)
-- קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים
+- V קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים (purchase-group-agreement-tax-risks)
 - V רכישת דירה מקבלן: חוק המכר, ערבות חוק מכר וליווי בנקאי (buying-apartment-from-contractor-guarantee-bank-financing)
 - חכירה מרשות מקרקעי ישראל: היוון, דמי היתר והעברת זכויות
 - ליווי משפטי בעסקת נדל"ן מניב ומסחרי
