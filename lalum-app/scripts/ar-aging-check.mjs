@@ -1,6 +1,7 @@
 // Checks receivables aging (from the due date), historical DSO and the reminder rules.
 // Run with: npm run ar-aging-check
 import assert from "node:assert/strict";
+import { receivablesAging } from "../src/lib/cockpit/financeReports.ts";
 import { bucketOf, agingReport, settlementDate, computeDso, tierFor, cooldownState, reminderBlock, daysBetween, addDays, LOCK_AFTER_DAYS } from "../src/lib/cockpit/arAging.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -104,4 +105,13 @@ t("reminderBlock: nothing is due under 31 days; cooldown blocks otherwise", () =
 t("date helpers", () => {
   assert.equal(daysBetween("2026-10-01", "2026-10-14"), 13);
   assert.equal(addDays("2026-12-30", 3), "2027-01-02");
+});
+t("the collections aging agrees with the Reports tab aging on the same data", () => {
+  const mk = (id, past, total) => inv({ id, customer_id: id.startsWith("x") ? "c2" : "c1", due_date: addDays(TODAY, -past), total });
+  const docs = [mk("a", -5, 70), mk("b", 10, 100), mk("c", 40, 200), mk("d", 70, 300), mk("xe", 120, 400), mk("xf", 31, 50)];
+  const custs = [cust({}), cust({ id: "c2", name: "לקוח ב" })];
+  const mine = agingReport(custs, docs, [], TODAY).totals;
+  const theirs = receivablesAging(docs, [], custs, TODAY).totals;
+  assert.equal(mine.CURRENT, theirs[0] + theirs[1]);
+  assert.equal(mine.D31_60, theirs[2]); assert.equal(mine.D61_90, theirs[3]); assert.equal(mine.D90_PLUS, theirs[4]);
 });
