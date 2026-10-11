@@ -158,6 +158,7 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Reports and accounting exports | Done (section 11) |
 | Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
 | Expenses | Not activated (separate legacy app). Section 14. Recommended not to activate |
+| Inventory, time clock, marketplace, add-ons | Done (section 15) |
 | Standing orders, clearing, payment page, transfers | Done in part (section 13); standing orders and tokens are paid add-ons, locked |
 
 ## 10. Customers module (L unless marked)
@@ -319,7 +320,7 @@ supplier invoice upload from computer or phone, OCR with a "to analyse and appro
 above. Expense categories: no information found.
 
 **Export to a bookkeeping package (L, fully mapped)**
-- Packages: Hashavshevet (Windows or DOS; ZIP with `Movein.doc`, `.dat`, `.prm`) and "Financit". No other package.
+- Packages: Hashavshevet (Windows or DOS; ZIP with `Movein.doc`, `.dat`, `.prm`) and "Financit" as export formats. Other packages (Rivhit, Priority, double entry bookkeeping) exist only as marketplace services, not as export formats (corrected after step 7).
 - Dates: sequential only. Cannot export a date earlier than the last export, cannot include today; only the last export can be
   cancelled.
 - Content: income documents only (7 kinds of invoices, receipts and credits) as debit and credit journal lines. Expenses are not
@@ -338,6 +339,38 @@ above. Expense categories: no information found.
 | Hashavshevet export | Build only after the accountant confirms the package and sends her card list. The mapping above is the checklist |
 | Uniform structure file | #755 builds it in this repository. It must pass the Tax Authority's own validator before any use |
 | Expenses OCR | Later. Use the existing invoice agent under `python/agents`, with an approval queue and the client never trusted |
+
+## 15. Inventory, time clock, marketplace and add-ons (L unless marked)
+
+Nothing was installed, activated or saved; four activation windows were closed without confirming.
+
+- **Inventory:** items, warehouses, suppliers, quantities, sale and purchase price lists. Locked in the package; mapped from the
+  page structure and the translation file only (C). An inventory item has purchase price, supplier, warehouse, stock alert and
+  serial number. A price list has a name, a discount (percent or amount) and assigned customers, assigned from the price list
+  screen, not from the customer card. Not needed by a law practice. A per customer price list would be useful, but it exists
+  only in the locked module.
+- **Time clock:** it is an **employee attendance clock** (in and out, hour quotas, overtime at 125 to 200 percent, a payroll
+  employee number), not billable time. The service is active but the only employee is inactive, so adding a report was blocked.
+  Screens: employees, projects, reports, an employee entry link, self reporting per customer, and conversion of hours to a tax
+  invoice or pro forma. It passes hours only: no hourly rate, no activity description, no time rounding; a project is a name and a
+  status. Weak for a law practice.
+- **Marketplace:** 30 integrations, "details" button only, no direct install. Clearing (Pay, Isracard, Upay, Bit, Apple Pay, Google
+  Pay), web shops (WordPress, Shopify, Magento, Cashcow), automation (Zapier, Integromat), mailing (several), bookkeeping
+  (Hashavshevet, Rivhit, Priority, Financit, Taxplanner, double entry).
+- **Add-ons:** mailing, lead CRM, API and document signing. The CRM is built on old pages: a lead form with source, agent,
+  contact and address; no sales stages and no conversion to a matter. The API screen was deliberately not opened, to avoid
+  exposing keys.
+
+**LALUM position**
+
+| Item | Decision |
+| --- | --- |
+| Billable time, rates, fee agreements, detailed fee invoice | This is the largest gap against what a law practice needs, but it is **not the finance ledger's lane**. The billing model PR (#732) already carries time entries, rate cards, fee terms per matter, milestones and the link from ledger to matter. Do not rebuild it here. The finance module's job is to accept a draft generated from those entries. Order: settle #732, then a "draft from time entries" action. Rate priority matter, then client, then default |
+| Inventory and price lists | Not needed |
+| Marketplace, mailing, shop and automation integrations | Not needed |
+| Lead CRM | Exists in other lanes of this app (inquiries, leads). Not part of finance |
+| Document signing | Already exists in this app (`lalum_signature_requests`, `lalum-esign`). Linking a signed fee agreement to a matter is a later step |
+| API access to the books | Later and read only, behind the permission levels of section 12 |
 
 ## 9. Build order for LALUM
 
