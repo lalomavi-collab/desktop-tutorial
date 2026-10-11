@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { TrustAccounts } from "./TrustAccounts";
+import { TrustRecon } from "./TrustRecon";
 import { trustError } from "../../../lib/cockpit/financeApi";
 import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, trustHeld, trustPostProblems } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment, TrustAccount, TrustPostType, TrustTx } from "../../../lib/cockpit/finance";
@@ -97,6 +98,7 @@ export function TrustTab({ firmId, customers, matters, accounts, rows, docs, pay
       {!f && msg && <div className="ck-err" aria-live="polite">{msg}</div>}
 
       <TrustAccounts firmId={firmId} accounts={accounts} rows={rows} onChange={onChange} />
+      <TrustRecon firmId={firmId} accounts={accounts} onChange={onChange} />
 
       <div className="ck-grid2">
         <div className="ck-stack">

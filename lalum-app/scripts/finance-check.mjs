@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -220,5 +220,21 @@ t("trust account setup: digits only, no duplicate, and no closing while money is
   assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex), ["החשבון כבר קיים"]);
   assert.equal(trustCloseProblem("a1", [tx({ amount: 5 })]) !== null, true);
   assert.equal(trustCloseProblem("a1", [tx({ amount: 5 }), tx({ id: 2, tx_type: "REFUND_TO_CLIENT", amount: -5 })]), null);
+});
+t("reconciliation: zero difference is matched, none is a missing statement, anything else is different", () => {
+  assert.equal(reconState({ difference_at_statement_date: null }), "NO_STATEMENT");
+  assert.equal(reconState({ difference_at_statement_date: 0 }), "MATCHED");
+  assert.equal(reconState({ difference_at_statement_date: 0.004 }), "MATCHED");
+  assert.equal(reconState({ difference_at_statement_date: -12.5 }), "DIFFERENT");
+});
+t("bank statement entry: account, a past date, a numeric balance, and no repeat of the same account and date", () => {
+  const ex = [{ trust_account_id: "a1", statement_as_of: "2026-09-30" }];
+  const ok = { account_id: "a1", as_of: "2026-10-05", balance: "1500.50" };
+  assert.deepEqual(statementProblems(ok, "2026-10-11", ex), []);
+  assert.ok(statementProblems({ ...ok, as_of: "2026-12-01" }, "2026-10-11", ex).includes("תאריך הדף לא יכול להיות עתידי"));
+  assert.ok(statementProblems({ ...ok, balance: "abc" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
+  assert.ok(statementProblems({ ...ok, balance: "" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
+  assert.ok(statementProblems({ ...ok, as_of: "2026-09-30" }, "2026-10-11", ex).includes("כבר הוזן דף לחשבון הזה בתאריך הזה"));
+  assert.deepEqual(statementProblems({ ...ok, balance: "-20" }, "2026-10-11", ex), []);
 });
 console.log("\nAll finance checks passed");

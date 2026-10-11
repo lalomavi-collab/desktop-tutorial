@@ -358,3 +358,25 @@ export function trustCloseProblem(accountId: string, rows: TrustTx[]): string | 
   return bal === 0 ? null : "אי אפשר לסגור חשבון שיש בו יתרה. העבירו או החזירו את הכספים קודם.";
 }
 
+// ---- Trust reconciliation: ledger against the bank statement (lalum_trust_reconciliation, lalum_trust_bank_statements) ----
+
+export interface TrustRecon {
+  trust_account_id: string; bank_name: string; branch: string; account_number: string; ledger_balance: number;
+  statement_as_of: string | null; statement_balance: number | null; difference_at_statement_date: number | null;
+}
+export type ReconState = "NO_STATEMENT" | "MATCHED" | "DIFFERENT";
+/** Ledger as of the statement date minus the statement balance. Zero is matched; anything else is a finding to explain. */
+export const reconState = (r: Pick<TrustRecon, "difference_at_statement_date">): ReconState =>
+  r.difference_at_statement_date == null ? "NO_STATEMENT" : r2(r.difference_at_statement_date) === 0 ? "MATCHED" : "DIFFERENT";
+
+/** Reasons a bank statement balance cannot be saved. A statement is append only and unique per account and date. */
+export function statementProblems(f: { account_id: string; as_of: string; balance: string }, today: string, existing: Array<{ trust_account_id: string; statement_as_of: string | null }>): string[] {
+  const out: string[] = [];
+  if (!f.account_id) out.push("בחרו חשבון");
+  if (!f.as_of) out.push("חסר תאריך הדף");
+  else if (f.as_of > today) out.push("תאריך הדף לא יכול להיות עתידי");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  if (f.account_id && f.as_of && existing.some((e) => e.trust_account_id === f.account_id && e.statement_as_of === f.as_of)) out.push("כבר הוזן דף לחשבון הזה בתאריך הזה");
+  return out;
+}
+
