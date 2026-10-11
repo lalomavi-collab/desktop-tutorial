@@ -156,7 +156,7 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Documents list (`/reports/document`) | Done in part: columns, filters, statuses (open, closed, credited, partly credited) and actions are known (section 11 and 4.8) |
 | Customers screen and customer card | Done (section 10) |
 | Reports and accounting exports | Done (section 11) |
-| Settings | Done (section 16). Not found: the starting number per document type, the Tax Authority connection status, and the business name fields. Ask Chrome for those three only |
+| Settings | Done (section 16). Business details, bank details and numbering were reported by the owner earlier and are not repeated in the map |
 | Expenses | Not activated (separate legacy app). Section 14. Recommended not to activate |
 | Inventory, time clock, marketplace, add-ons | Done (section 15) |
 | Standing orders, clearing, payment page, transfers | Done in part (section 13); standing orders and tokens are paid add-ons, locked |
@@ -396,6 +396,20 @@ Nothing was saved, no API key generated, no payment made. Thirteen sub sections;
   report, and the API.
 - **Hidden expenses menu (step 6 addendum):** also holds income entry, equipment purchase, tax year setting and a monthly profit
   and loss report.
+
+**Account level switches worth copying or checking (L, from the full settings report)**
+
+| Setting at Invoice4U | Current value | LALUM |
+| --- | --- | --- |
+| Accounting basis (accrual or cash) | cash is the practice's basis per the owner (open question A5 for the accountant) | Store it as a firm setting, because revenue recognition by issue date versus receipt date depends on it |
+| Allocation number for every document (yes or no) | decided per document today | Own engine: request for every document above the threshold and on customer request |
+| Business type (licensed dealer, exempt, company and others) | licensed dealer | Firm setting, drives VAT defaults |
+| VAT rate in the system (0 or 18) | 18 | Per document already; keep a firm default |
+| Document date: manual or current | manual | Manual, bounded by the date rule of migration 0022 |
+| Automatic invoice at the due date | off | Same stance: drafts only, never automatic issue |
+| Document defaults | language Hebrew, 2 decimals, rounding on, reminder none, item discount off, send for signature off | Reminder and discount options at P2 and P3 as listed above |
+| Credit card companies | five defaults, each with a bookkeeping number | Only relevant to the accounting export |
+| Business switch and "copy customer list" | 2 businesses | Not needed for a single practice |
 
 **Consequences for LALUM**
 
