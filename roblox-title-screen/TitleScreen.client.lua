@@ -8,11 +8,11 @@ local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 
 local CONFIG = {
-	GameName = "אמי ללום",
+	GameName = "Emmy",
 	LogoImageId = "rbxassetid://0", -- replace with the uploaded logo asset id
 	NewsTitle = "MOVING DAY",
 	NewsBody = "The game has officially been moved! It will remain under the group from here out.",
-	Credits = "Created by Dr. Avraham Lalum, Adv.\nBuilt with Roblox Studio.",
+	Credits = "Made for Emmy\nby her father, Dr. Avraham Lalum, Adv.",
 	Font = Enum.Font.GothamBold,
 	Button = Color3.fromRGB(35, 35, 40),
 	Text = Color3.fromRGB(255, 255, 255),
