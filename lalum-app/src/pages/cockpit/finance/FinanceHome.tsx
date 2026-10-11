@@ -113,7 +113,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       )}
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
-      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
+      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} />}

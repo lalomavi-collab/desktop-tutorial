@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -209,5 +209,16 @@ t("a trust row can be reversed once, and a reversal cannot be reversed", () => {
   assert.equal(canReverse(a, [a]), true);
   assert.equal(canReverse(a, [a, r]), false);
   assert.equal(canReverse(r, [a, r]), false);
+});
+t("trust account setup: digits only, no duplicate, and no closing while money is held", () => {
+  const ex = [{ id: "a1", bank_name: "לאומי", branch: "800", account_number: "12345678", closed_on: null }];
+  const ok = { bank_name: "פועלים", branch: "600", account_number: "998877" };
+  assert.deepEqual(trustAccountProblems(ok, ex), []);
+  assert.ok(trustAccountProblems({ ...ok, bank_name: " " }, ex).includes("שם הבנק חובה"));
+  assert.ok(trustAccountProblems({ ...ok, branch: "ab" }, ex).length === 1);
+  assert.ok(trustAccountProblems({ ...ok, account_number: "12" }, ex).length === 1);
+  assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex), ["החשבון כבר קיים"]);
+  assert.equal(trustCloseProblem("a1", [tx({ amount: 5 })]) !== null, true);
+  assert.equal(trustCloseProblem("a1", [tx({ amount: 5 }), tx({ id: 2, tx_type: "REFUND_TO_CLIENT", amount: -5 })]), null);
 });
 console.log("\nAll finance checks passed");

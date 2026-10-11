@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
+import { TrustAccounts } from "./TrustAccounts";
 import { trustError } from "../../../lib/cockpit/financeApi";
 import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, trustHeld, trustPostProblems } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment, TrustAccount, TrustPostType, TrustTx } from "../../../lib/cockpit/finance";
@@ -11,8 +12,8 @@ type Draft = { matter_id: string; account_id: string; type: TrustPostType; amoun
 const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accountId, type: "DEPOSIT", amount: "", counterparty: "", notes: "", doc_id: "" });
 
 /** Read side of the trust ledger. Posting goes through the lalum_trust_post RPC, which enforces zero overdraft. */
-export function TrustTab({ customers, matters, accounts, rows, docs, payments, onChange }: {
-  customers: FinCustomer[]; matters: MatterRef[]; accounts: TrustAccount[]; rows: TrustTx[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
+export function TrustTab({ firmId, customers, matters, accounts, rows, docs, payments, onChange }: {
+  firmId: string; customers: FinCustomer[]; matters: MatterRef[]; accounts: TrustAccount[]; rows: TrustTx[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
 }) {
   const openAccounts = accounts.filter((a) => !a.closed_on);
   const [f, setF] = useState<Draft | null>(null);
@@ -95,10 +96,7 @@ export function TrustTab({ customers, matters, accounts, rows, docs, payments, o
       )}
       {!f && msg && <div className="ck-err" aria-live="polite">{msg}</div>}
 
-      <div className="ck-title">חשבונות נאמנות</div>
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>בנק</th><th>סניף</th><th>חשבון</th><th className="fin-num">יתרה בספר</th></tr></thead><tbody>
-        {accounts.length ? accounts.map((a) => <tr key={a.id}><td>{a.bank_name}</td><td>{a.branch}</td><td className="fin-ltr">{maskAccount(a.account_number)}{a.closed_on ? " (סגור)" : ""}</td><td className="fin-num">{money(trustHeld(rows, { account: a.id }))}</td></tr>) : <tr><td colSpan={4}>לא הוגדר חשבון נאמנות</td></tr>}
-      </tbody></table></div>
+      <TrustAccounts firmId={firmId} accounts={accounts} rows={rows} onChange={onChange} />
 
       <div className="ck-grid2">
         <div className="ck-stack">
