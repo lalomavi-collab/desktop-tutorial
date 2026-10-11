@@ -43,6 +43,7 @@ export const KIND_HE: Record<string, string> = {
   LAND_PARCEL: "גוש / חלקה",
   CLIENT_NAME: "שם צד",
   BANK_ACCOUNT: "חשבון בנק",
+  ADDRESS: "כתובת",
 };
 export const STEPS: Array<[string, string]> = [
   ["FACT_VERIFICATION", "אימות עובדות"],
