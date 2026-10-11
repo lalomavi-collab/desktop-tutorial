@@ -19,8 +19,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "directors-liability-ai-era",
-   "explainability"
+   "explainability",
+   "directors-liability-ai-era"
   ]
  },
  "board-liability": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "explainability",
    "ai-risk-frameworks-iso-42001-nist"
+  ]
+ },
+ "purchase-group-agreement-tax-risks": {
+  "topic": "contracts",
+  "related": [
+   "overseas-partnership-guide",
+   "developer-agreement-urban-renewal-critical-clauses",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "suing-foreign-company-jurisdiction-service-enforcement": {
@@ -444,7 +452,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "decision-oriented-ai-law"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -954,9 +962,9 @@
  "overseas-partnership-guide": {
   "topic": "real-estate",
   "related": [
+   "purchase-group-agreement-tax-risks",
    "intl-realestate-transactions",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
-   "legal-clinic-business-realestate"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -1364,7 +1372,7 @@
   "related": [
    "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
    "contract-review-before-signing",
-   "lalum-clinic-realestate-advice"
+   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
   ]
  },
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
