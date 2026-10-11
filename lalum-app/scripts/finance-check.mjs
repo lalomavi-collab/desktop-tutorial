@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -192,5 +192,22 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
   assert.ok(c.startsWith("\uFEFF"));
   assert.ok(c.includes('"x""y",1234.50'));
+});
+t("trust posting: withdrawals are capped by matter and account balance, a fee transfer needs an invoice within its open amount", () => {
+  const rows = [tx({ amount: 500 }), tx({ id: 2, matter_id: "m2", trust_account_id: "a1", amount: 200 })];
+  const ok = { matter_id: "m1", account_id: "a1", type: "REFUND_TO_CLIENT", amount: 500, doc_open: null, doc_id: null };
+  assert.deepEqual(trustPostProblems(ok, rows), []);
+  assert.ok(trustPostProblems({ ...ok, amount: 501 }, rows).includes("הסכום גבוה מהיתרה המוחזקת בתיק"));
+  assert.deepEqual(trustPostProblems({ ...ok, type: "DEPOSIT", amount: 99999 }, rows), []);
+  const fee = { ...ok, type: "EARNED_FEE_TRANSFER", amount: 100 };
+  assert.ok(trustPostProblems(fee, rows).includes("בחרו חשבונית מס שהופקה"));
+  assert.ok(trustPostProblems({ ...fee, doc_id: "d1", doc_open: 50 }, rows).includes("הסכום גבוה מהיתרה הפתוחה בחשבונית"));
+  assert.deepEqual(trustPostProblems({ ...fee, doc_id: "d1", doc_open: 100 }, rows), []);
+});
+t("a trust row can be reversed once, and a reversal cannot be reversed", () => {
+  const a = tx({ id: 1 }), r = tx({ id: 2, tx_type: "REVERSAL", amount: -1000, reverses_entry_id: 1 });
+  assert.equal(canReverse(a, [a]), true);
+  assert.equal(canReverse(a, [a, r]), false);
+  assert.equal(canReverse(r, [a, r]), false);
 });
 console.log("\nAll finance checks passed");

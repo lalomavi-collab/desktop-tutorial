@@ -310,3 +310,32 @@ export function trustBreakdown(rows: TrustTx[], key: "customer_id" | "matter_id"
 /** Account number shown as its last four digits only. */
 export const maskAccount = (n: string): string => (n.length > 4 ? `***${n.slice(-4)}` : n);
 
+/** Movements the posting screen can create. Earned-fee transfers go through lalum_trust_apply_to_invoice, the rest through lalum_trust_post. */
+export type TrustPostType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "REFUND_TO_CLIENT" | "EARNED_FEE_TRANSFER";
+export const TRUST_POST_TYPES: TrustPostType[] = ["DEPOSIT", "DISBURSEMENT_TO_THIRD_PARTY", "REFUND_TO_CLIENT", "EARNED_FEE_TRANSFER"];
+
+/**
+ * Pre-check before calling the database. The database is the authority (zero overdraft per matter and per account under
+ * locks, invoice must belong to the matter); this only saves a round trip and words the reason.
+ */
+export function trustPostProblems(
+  f: { matter_id: string; account_id: string; type: TrustPostType; amount: number; doc_open: number | null; doc_id: string | null },
+  rows: TrustTx[],
+): string[] {
+  const out: string[] = [];
+  if (!f.matter_id) out.push("בחרו תיק");
+  if (!f.account_id) out.push("בחרו חשבון נאמנות");
+  if (!(f.amount > 0)) out.push("הסכום חייב להיות גדול מאפס");
+  if (f.type !== "DEPOSIT" && f.matter_id && f.amount > trustHeld(rows, { matter: f.matter_id })) out.push("הסכום גבוה מהיתרה המוחזקת בתיק");
+  if (f.type !== "DEPOSIT" && f.account_id && f.amount > trustHeld(rows, { account: f.account_id })) out.push("הסכום גבוה מיתרת חשבון הנאמנות");
+  if (f.type === "EARNED_FEE_TRANSFER") {
+    if (!f.doc_id) out.push("בחרו חשבונית מס שהופקה");
+    else if (f.doc_open != null && f.amount > f.doc_open) out.push("הסכום גבוה מהיתרה הפתוחה בחשבונית");
+  }
+  return out;
+}
+
+/** True when a ledger row may still be corrected: not itself a reversal and not already reversed. */
+export const canReverse = (t: TrustTx, rows: TrustTx[]): boolean =>
+  t.tx_type !== "REVERSAL" && !rows.some((x) => x.reverses_entry_id === t.id);
+

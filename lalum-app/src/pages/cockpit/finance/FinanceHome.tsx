@@ -41,7 +41,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     if (!supabase) return;
     const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
     setLevel(typeof lv.data === "number" ? lv.data : 0);
-    const [c, d, p, e, tr, ta, mt] = await Promise.all([
+    const [c, d, p, e, tr, ta, mt, mf] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
@@ -49,6 +49,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_trust_ledger").select("id, trust_account_id, matter_id, customer_id, tx_type, amount, receipt_no, reference_doc_id, reverses_entry_id, counterparty, notes, created_at").order("id", { ascending: false }),
       supabase.from("lalum_trust_accounts").select("id, bank_name, branch, account_number, closed_on").order("bank_name"),
       supabase.from("lalum_cockpit_matters").select("id, title"),
+      supabase.from("lalum_matter_fees").select("matter_id, fin_customer_id"),
     ]);
     // The archive can exceed the 1000 row page limit, so it is read page by page.
     const arch: ArchiveDoc[] = [];
@@ -60,7 +61,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       if (!r.data || r.data.length < 1000) break;
     }
     setArchive(arch);
-    const err = c.error ?? d.error ?? p.error ?? e.error ?? tr.error ?? ta.error ?? mt.error ?? (archErr ? { message: "archive" } : null);
+    const err = c.error ?? d.error ?? p.error ?? e.error ?? (archErr ? { message: "archive" } : null);
     setError(err ? "הנתונים לא נטענו. ודאו שהתחברתם עם אימות דו שלבי כשותף במשרד." : "");
     setCustomers((c.data as FinCustomer[] | null) ?? []);
     setDocs((d.data as FinDocument[] | null) ?? []);
@@ -68,7 +69,9 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     setExpenses((e.data as FinExpense[] | null) ?? []);
     setTrust((tr.data as TrustTx[] | null) ?? []);
     setTrustAccounts((ta.data as TrustAccount[] | null) ?? []);
-    setMatters((mt.data as MatterRef[] | null) ?? []);
+    // Trust data needs finance level 4. A lower level gets an empty tab (behind the Gate), not a failed screen.
+    const cust = new Map(((mf.data as Array<{ matter_id: string; fin_customer_id: string | null }> | null) ?? []).map((x) => [x.matter_id, x.fin_customer_id]));
+    setMatters((((mt.data as Array<{ id: string; title: string }> | null) ?? [])).map((m) => ({ ...m, customer_id: cust.get(m.id) ?? null })));
     setLoaded(true);
   }, [firmId]);
   // Initial fetch from the database; setState happens after the awaited queries resolve.
@@ -110,7 +113,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       )}
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
-      {tab === "trust" && loaded && <TrustTab customers={customers} matters={matters} accounts={trustAccounts} rows={trust} />}
+      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} />}

@@ -90,3 +90,16 @@ export async function importFromInvoice4u(body: { action: "customers" } | { acti
     clearTimeout(timer);
   }
 }
+
+const TRUST_ERRORS: Record<string, string> = {
+  FORBIDDEN: "אין הרשאה לפעולה. כספי נאמנות דורשים רמת מנהל.",
+  BAD_TYPE: "סוג התנועה לא תקין.", BAD_AMOUNT: "הסכום חייב להיות גדול מאפס.",
+  MATTER_HAS_NO_CUSTOMER: "לתיק לא מקושר לקוח בכרטיס הכספי. קשרו לקוח לתיק לפני רישום תנועה.",
+  REVERSAL_TARGET_MISSING: "התנועה לתיקון לא נמצאה.", REVERSAL_MISMATCH: "התיקון חייב להתאים לתנועה המקורית.",
+  TRUST_OVERDRAFT_MATTER: "התנועה נדחתה: היא תוריד את יתרת התיק מתחת לאפס.",
+  TRUST_OVERDRAFT_ACCOUNT: "התנועה נדחתה: היא תוריד את יתרת חשבון הנאמנות מתחת לאפס.",
+  INVOICE_NOT_FOR_THIS_MATTER: "החשבונית אינה שייכת ללקוח של התיק.", INVOICE_NOT_PAYABLE: "אפשר לשלם מנאמנות רק חשבונית מס שהופקה, לא מסמך בדיקה.",
+  EXCEEDS_OPEN_AMOUNT: "הסכום גבוה מהיתרה הפתוחה בחשבונית.",
+};
+export const trustError = (message: string): string => TRUST_ERRORS[Object.keys(TRUST_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
+
