@@ -428,7 +428,7 @@ Nothing was saved, no API key generated, no payment made. Thirteen sub sections;
 
 ## 9. Build order for LALUM
 
-P1 part 2 (next). Step A is done: migration 0022 (`internal_note`, `matter_ref`, retainer fields on the customer, the date rule at issue) is applied and the editor and customer form carry the fields. Remaining:
+P1 part 2 (next). Step A is done: migration 0022 (`internal_note`, `matter_ref`, retainer fields on the customer, the date rule at issue) is applied and the editor and customer form carry the fields. Step B is done too: migration 0023 and the button "retainer drafts for the current month" create one DRAFT tax invoice per active retainer customer, idempotent per customer and month, never issued automatically. Tested in a rolled back transaction. Not applied on purpose: the series and sealing migrations 0016 and 0017, because 0016 replaces the guard on the issued documents table and nothing uses it until the own engine starts. Remaining:
 1. Open pro formas view with filter, and conversion to invoice-receipt or receipt through a link record. Linked documents
    close the source. Block linking when the exchange rates differ.
 2. Receipt on account: customer balance of receipts not yet matched to an invoice, and "issue invoice for receipts".
