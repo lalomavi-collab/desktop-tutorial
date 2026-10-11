@@ -117,7 +117,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, onChange }: {
               {open && tier && (
                 <div className="ck-stack" style={{ marginTop: 8 }}>
                   <textarea className="ck-input" rows={5} readOnly value={reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue))} onFocus={(e) => e.currentTarget.select()} />
-                  <div className="ck-meta">הטיוטה לעיון ולהעתקה. נוסח השהיית טיפול בתיק בדרגה 2 טעון אישורו של עורך הדין המטפל לפני שליחה.</div>
+                  <div className="ck-meta">הטיוטה לעיון ולהעתקה. השליחה בפועל נעשית מחוץ למערכת.</div>
                   <button className="ck-btn sm primary" disabled={busy || blocked !== null} onClick={() => logReminder(c.customerId, tier)}>{blocked === "COOLDOWN" ? "בהמתנה" : "רישום שהתזכורת נשלחה"}</button>
                 </div>
               )}</td>
