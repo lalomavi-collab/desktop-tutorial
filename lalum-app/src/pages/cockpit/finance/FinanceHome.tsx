@@ -12,9 +12,10 @@ import { TrustTab } from "./TrustTab";
 import type { MatterRef } from "./TrustTab";
 import { PermissionsTab } from "./PermissionsTab";
 import { Gate } from "./Gate";
+import { ReportsTab } from "./ReportsTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "permissions";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -112,6 +113,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "trust" && loaded && <TrustTab customers={customers} matters={matters} accounts={trustAccounts} rows={trust} />}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
+      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>

@@ -1,6 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
+import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -164,5 +165,32 @@ t("trust money is never revenue: the summary has no trust figure", () => {
   const sm = summarize([doc({})], [], [], { from: "2026-10-01", to: "2026-10-31" });
   assert.equal(sm.revenueNet, 1000);
   assert.ok(!Object.keys(sm).some((k) => /trust/i.test(k)));
+});
+const cust = (o) => ({ id: "c1", name: "לקוח א", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: 77, is_casual: false, ...o });
+const archDoc = (o) => ({ id: "a1", i4u_doc_id: "A1", i4u_doc_type: 1, doc_number: 10001, issue_date: "2026-10-02", i4u_client_id: 77, subject: null, currency: "₪", subtotal: 10000, vat_amount: 1800, total: 11800, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+t("income report: invoices and invoice-receipts add, credits subtract, a document in both places counts once", () => {
+  const period = { from: "2026-10-01", to: "2026-10-31" };
+  const ledgerInv = doc({ id: "l1", doc_type: "INVOICE", i4u_doc_id: "A1", doc_number: 10001, subtotal: 10000, vat_amount: 1800, total: 11800 });
+  const rows = incomeRows([ledgerInv], [archDoc({}), archDoc({ id: "a2", i4u_doc_id: "A2", i4u_doc_type: 4, doc_number: 50001, subtotal: 1000, vat_amount: 180 }), archDoc({ id: "a3", i4u_doc_id: "A3", i4u_doc_type: 2, doc_number: 30001 }), archDoc({ id: "a4", i4u_doc_id: "A4", issue_date: "2026-09-30" })], [cust({})], period);
+  assert.equal(rows.length, 2);
+  const g = incomeByKind(rows);
+  assert.equal(g.net, 9000); assert.equal(g.vat, 1620); assert.equal(g.total, 10620);
+  assert.equal(revenueByCustomer(rows)[0].documents, 2);
+});
+t("test documents and drafts are not income", () => {
+  const rows = incomeRows([doc({ is_test: true }), doc({ status: "DRAFT" })], [], [cust({})], { from: "2026-10-01", to: "2026-10-31" });
+  assert.equal(rows.length, 0);
+});
+t("aging puts each open invoice in a bucket by days past the due date", () => {
+  const inv = (id, due) => doc({ id, doc_type: "INVOICE", total: 100, due_date: due });
+  const docs = [inv("a", "2026-10-20"), inv("b", "2026-10-01"), inv("c", "2026-08-20"), inv("d", "2026-06-01")];
+  const a = receivablesAging(docs, [], [cust({ id: "c1", i4u_customer_id: null })], "2026-10-10");
+  assert.deepEqual(a.totals, [100, 100, 100, 0, 100]);
+  assert.equal(a.total, 400);
+});
+t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers", () => {
+  const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
+  assert.ok(c.startsWith("\uFEFF"));
+  assert.ok(c.includes('"x""y",1234.50'));
 });
 console.log("\nAll finance checks passed");
