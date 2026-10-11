@@ -1,7 +1,8 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName } from "../src/lib/cockpit/finance.ts";
+import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml } from "../src/lib/cockpit/financeReports.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -109,5 +110,70 @@ t("a customer name that carries its address is split, others are untouched", () 
   assert.deepEqual(splitName("אקמה בע\"מ כתובת: הרצל 1, תל אביב"), { name: "אקמה בע\"מ", address: "הרצל 1, תל אביב" });
   assert.deepEqual(splitName("G-intentional"), { name: "G-intentional", address: null });
   assert.deepEqual(splitName("Address: only"), { name: "Address: only", address: null });
+});
+const cf = (o) => ({ name: "Acme", email: "a@b.co", tax_id: "", i4u: "", casual: false, isNew: true, ...o });
+t("a new regular customer needs a name and a valid e-mail; a casual one needs a name only", () => {
+  assert.deepEqual(customerProblems(cf({})), []);
+  assert.ok(customerProblems(cf({ email: "" })).includes('לקוח חדש דורש כתובת דוא"ל'));
+  assert.ok(customerProblems(cf({ email: "not-an-email" })).includes('כתובת הדוא"ל אינה תקינה'));
+  assert.deepEqual(customerProblems(cf({ email: "", casual: true })), []);
+  assert.ok(customerProblems(cf({ name: " ", casual: true })).includes("שם הלקוח חובה"));
+  assert.deepEqual(customerProblems(cf({ email: "", isNew: false })), []);
+  assert.ok(customerProblems(cf({ tax_id: "12" })).length === 1);
+  assert.ok(customerProblems(cf({ i4u: "x1" })).length === 1);
+});
+t("casual customers are limited to invoice-receipts and credits", () => {
+  assert.deepEqual(CASUAL_TYPES, ["INVOICE_RECEIPT", "CREDIT"]);
+  const base = { customer_id: "c", doc_type: "INVOICE_RECEIPT", lines: [{ name: "a", qty: 1, price: 5 }], payment_method: "CASH", related_doc_id: null, casual: true };
+  assert.deepEqual(draftProblems(base), []);
+  assert.ok(draftProblems({ ...base, doc_type: "INVOICE" }).includes("לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי"));
+  assert.ok(draftProblems({ ...base, doc_type: "PROFORMA" }).length >= 1);
+});
+t("incomplete regular customers are flagged, casual ones are not", () => {
+  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: false }), ['דוא"ל', "ת.ז. או ח.פ."]);
+  assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: "123456789", is_casual: false }), []);
+  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), []);
+});t("a pro forma is open until an ISSUED document settles it; drafts and test documents do not count", () => {
+  const pf = doc({ id: "p1", doc_type: "PROFORMA" });
+  assert.equal(isOpenProforma(pf, [pf]), true);
+  const draft = doc({ id: "i1", doc_type: "INVOICE", status: "DRAFT", source_proforma_id: "p1" });
+  assert.equal(isOpenProforma(pf, [pf, draft]), true);
+  const inv = doc({ id: "i1", doc_type: "INVOICE", source_proforma_id: "p1", doc_number: 10015 });
+  assert.equal(isOpenProforma(pf, [pf, inv]), false);
+  assert.equal(closedBy(pf, [pf, inv])?.doc_number, 10015);
+  assert.equal(isOpenProforma(doc({ id: "p2", doc_type: "PROFORMA", is_test: true }), []), false);
+  assert.equal(isOpenProforma(doc({ id: "p3", doc_type: "PROFORMA", status: "DRAFT" }), []), false);
+  assert.equal(isOpenProforma(doc({ id: "x", doc_type: "INVOICE" }), []), false);
+});
+const cust = (o) => ({ id: "c1", name: "לקוח א", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: 77, is_casual: false, ...o });
+const archDoc = (o) => ({ id: "a1", i4u_doc_id: "A1", i4u_doc_type: 1, doc_number: 10001, issue_date: "2026-10-02", i4u_client_id: 77, subject: null, currency: "₪", subtotal: 10000, vat_amount: 1800, total: 11800, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
+t("income report: invoices and invoice-receipts add, credits subtract, a document in both places counts once", () => {
+  const period = { from: "2026-10-01", to: "2026-10-31" };
+  const ledgerInv = doc({ id: "l1", doc_type: "INVOICE", i4u_doc_id: "A1", doc_number: 10001, subtotal: 10000, vat_amount: 1800, total: 11800 });
+  const rows = incomeRows([ledgerInv], [archDoc({}), archDoc({ id: "a2", i4u_doc_id: "A2", i4u_doc_type: 4, doc_number: 50001, subtotal: 1000, vat_amount: 180 }), archDoc({ id: "a3", i4u_doc_id: "A3", i4u_doc_type: 2, doc_number: 30001 }), archDoc({ id: "a4", i4u_doc_id: "A4", issue_date: "2026-09-30" })], [cust({})], period);
+  assert.equal(rows.length, 2);
+  const g = incomeByKind(rows);
+  assert.equal(g.net, 9000); assert.equal(g.vat, 1620); assert.equal(g.total, 10620);
+  assert.equal(revenueByCustomer(rows)[0].documents, 2);
+});
+t("test documents and drafts are not income", () => {
+  const rows = incomeRows([doc({ is_test: true }), doc({ status: "DRAFT" })], [], [cust({})], { from: "2026-10-01", to: "2026-10-31" });
+  assert.equal(rows.length, 0);
+});
+t("aging puts each open invoice in a bucket by days past the due date", () => {
+  const inv = (id, due) => doc({ id, doc_type: "INVOICE", total: 100, due_date: due });
+  const docs = [inv("a", "2026-10-20"), inv("b", "2026-10-01"), inv("c", "2026-08-20"), inv("d", "2026-06-01")];
+  const a = receivablesAging(docs, [], [cust({ id: "c1", i4u_customer_id: null })], "2026-10-10");
+  assert.deepEqual(a.totals, [100, 100, 100, 0, 100]);
+  assert.equal(a.total, 400);
+});
+t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers", () => {
+  const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
+  assert.ok(c.startsWith("\uFEFF"));
+  assert.ok(c.includes('"x""y",1234.50'));
+});t("e-mail html escapes customer names", () => {
+  const rows = incomeRows([doc({ id: "z", doc_type: "INVOICE" })], [], [cust({ id: "c1", name: "<b>x</b> & co" })], { from: "2026-10-01", to: "2026-10-31" });
+  const h = incomeHtml("t", incomeByKind(rows));
+  assert.ok(!h.includes("<b>x</b>") && h.includes("&lt;b&gt;x&lt;/b&gt; &amp; co"));
 });
 console.log("\nAll finance checks passed");

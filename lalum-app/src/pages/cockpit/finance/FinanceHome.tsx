@@ -7,13 +7,17 @@ import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
+import { ShaamExportTab } from "./ShaamExportTab";
+import { PermissionsTab } from "./PermissionsTab";
+import { Gate } from "./Gate";
+import { ReportsTab } from "./ReportsTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"]];
-const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate";
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "reports" | "permissions";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["reports", "דוחות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
+const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
-export function FinanceHome({ firmId }: { firmId: string }) {
+export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: string }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [customers, setCustomers] = useState<FinCustomer[]>([]);
   const [docs, setDocs] = useState<FinDocument[]>([]);
@@ -22,12 +26,16 @@ export function FinanceHome({ firmId }: { firmId: string }) {
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
+  // Finance level of the signed-in user: 0 none, 1 view, 2 drafts, 3 issue, 4 admin. The database enforces it.
+  const [level, setLevel] = useState(0);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
 
   const load = useCallback(async () => {
     if (!supabase) return;
+    const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
+    setLevel(typeof lv.data === "number" ? lv.data : 0);
     const [c, d, p, e] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
@@ -51,7 +59,7 @@ export function FinanceHome({ firmId }: { firmId: string }) {
     setPayments((p.data as FinPayment[] | null) ?? []);
     setExpenses((e.data as FinExpense[] | null) ?? []);
     setLoaded(true);
-  }, []);
+  }, [firmId]);
   // Initial fetch from the database; setState happens after the awaited queries resolve.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
@@ -64,7 +72,7 @@ export function FinanceHome({ firmId }: { firmId: string }) {
   return (
     <div className="ck-stack ck-fin">
       <div className="fin-subtabs" role="tablist" aria-label="הנהלת חשבונות">
-        {TABS.map(([k, label]) => (
+        {TABS.filter(([k]) => k !== "permissions" || level >= 4).map(([k, label]) => (
           <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label}</button>
         ))}
       </div>
@@ -82,17 +90,20 @@ export function FinanceHome({ firmId }: { firmId: string }) {
             <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div></div>
             <div className="ck-card fin-stat"><div className="ck-meta">רווח לפני מס</div><div className="fin-figure">{money(s.profit)}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>{s.archiveVat !== 0 && <> (מהארכיון <bdi>{money(s.archiveVat)}</bdi>)</>}, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.</div>{s.archiveVat !== 0 && <div className="fin-note">מתוך העסקאות, מארכיון Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</div>}</div>
           </div>
           <div className="ck-card fin-stat"><div className="ck-meta">יתרות פתוחות מלקוחות (כל התקופות)</div><div className="fin-figure">{money(s.outstanding)}</div>
             {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
-      {tab === "documents" && loaded && <DocumentsTab firmId={firmId} customers={customers} docs={docs} payments={payments} onChange={() => void load()} />}
-      {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
-      {tab === "archive" && loaded && <ArchiveTab docs={archive} onChange={() => void load()} />}
-      {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
+      {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
+      {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
+      {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
+      {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
+      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
+      {tab === "permissions" && level >= 4 && <PermissionsTab />}
+      {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
   );
 }

@@ -72,13 +72,15 @@
 /* Floating green rail (the sidebar) */
 [data-ck-theme="mint"].ck-with-sidebar { gap: 0; padding: 14px 14px 14px 0; }
 [data-ck-theme="mint"] .ck-sidebar {
-  background: var(--mint-rail); border: 0; border-radius: 30px; margin: 0 0 0 14px; height: calc(100dvh - 28px); top: 14px; width: 224px;
+  background: var(--mint-rail); border: 0; border-radius: 30px; margin: 0 0 0 14px; height: calc(100dvh - 28px); top: 14px; width: 252px;
   box-shadow: 0 18px 40px rgba(47, 111, 38, .4), inset 0 1px 0 rgba(255, 255, 255, .25);
 }
 [data-ck-theme="mint"] .ck-sidebar-brand { padding: 6px 12px 18px; }
 [data-ck-theme="mint"] .ck-sidebar-brand svg, [data-ck-theme="mint"] .ck-sidebar-brand { color: #fff; }
-[data-ck-theme="mint"] .ck-sidebar-nav a, [data-ck-theme="mint"] .ck-sidebar-foot a, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-logout, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme { color: rgba(255, 255, 255, .92); border-radius: 16px; }
-[data-ck-theme="mint"] .ck-sidebar-nav a:hover, [data-ck-theme="mint"] .ck-sidebar-foot a:hover { background: rgba(255, 255, 255, .16); }
+/* Resting fill (not just hover) so every row already reads as its own button on
+   the green rail, same idea as the base theme above. */
+[data-ck-theme="mint"] .ck-sidebar-nav a, [data-ck-theme="mint"] .ck-sidebar-foot a, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-logout, [data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme { color: rgba(255, 255, 255, .95); border-radius: 16px; background: rgba(255, 255, 255, .1); }
+[data-ck-theme="mint"] .ck-sidebar-nav a:hover, [data-ck-theme="mint"] .ck-sidebar-foot a:hover { background: rgba(255, 255, 255, .22); }
 [data-ck-theme="mint"] .ck-sidebar-nav a[aria-current="page"] { background: #fff; color: var(--mint-deep); font-weight: 700; box-shadow: 0 6px 14px rgba(0, 0, 0, .15); }
 [data-ck-theme="mint"] .ck-sidebar-nav svg, [data-ck-theme="mint"] .ck-sidebar-foot svg { color: rgba(255, 255, 255, .95); }
 [data-ck-theme="mint"] .ck-sidebar-nav a[aria-current="page"] svg { color: var(--clay); }
@@ -91,7 +93,7 @@
 }
 
 /* Theme switch button in the rail */
-.ck-sidebar-foot button.ck-theme { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font: inherit; font-size: 13px; background: none; border: 0; color: var(--slate); cursor: pointer; width: 100%; border-radius: 10px; }
+.ck-sidebar-foot button.ck-theme { display: flex; align-items: center; gap: 12px; padding: 13px 16px; font: inherit; font-size: 14px; font-weight: 500; background: color-mix(in srgb, var(--ink) 4%, transparent); border: 0; color: var(--slate); cursor: pointer; width: 100%; border-radius: 14px; }
 .ck-sidebar-foot button.ck-theme:hover { background: var(--clay-tint); }
 [data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme:hover { background: rgba(255, 255, 255, .16); }
 @media (max-width: 860px) { .ck-sidebar-foot button.ck-theme span { display: none; } .ck-sidebar-foot button.ck-theme { width: auto; padding: 10px; } }

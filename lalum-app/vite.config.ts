@@ -59,7 +59,12 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/bin", title: "סל מיחזור | LALUM", desc: "תיקים ומסמכים שהועברו לסל, עם שחזור ומחיקה סופית.", noindex: true },
   { path: "workspace/guide", title: "מדריך הקוקפיט | LALUM", desc: "מה הקוקפיט עושה ואיך משתמשים בו.", noindex: true },
   { path: "admin/matters", title: "ניהול תיקים | LALUM", desc: "מסך הניהול של תיקי הקליטה.", noindex: true },
+  { path: "workspace/scheduling", title: "יומן ופגישות | LALUM", desc: "יומן המשרד: אירועים, זמנים פנויים ושיבוץ משימות.", noindex: true },
+  { path: "workspace/discussions", title: "דיונים ציבוריים | LALUM", desc: "אישור שאלות מהפאנל הציבורי לפני פרסומן באתר.", noindex: true },
+  { path: "workspace/client-docs", title: "מסמכי לקוחות | LALUM", desc: "קבצים שהעלו הלקוחות, בתיקייה לכל לקוח.", noindex: true },
+  { path: "workspace/calls", title: "שיחות נכנסות | LALUM", desc: "שיחות שטיפל בהן סוכן הקול, מקובצות לפי מתקשר.", noindex: true },
   { path: "settings/security", title: "אבטחת חשבון | LALUM", desc: "הפעלה וניהול של אימות דו-שלבי לחשבון.", noindex: true },
+  { path: "settings/members", title: "חברי המשרד | LALUM", desc: "צוות המשרד, התפקידים וההרשאות לפי שיוך ומחלקה.", noindex: true },
   { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },
   { path: "legal/saas-terms", title: "תנאי שירות SaaS | LALUM", desc: "תנאי השירות למשרדי עורכי דין המשתמשים בקוקפיט.", noindex: true },
   { path: "legal/client-disclosure", title: "גילוי ללקוח | LALUM", desc: "נוסח גילוי ללקוחות על שימוש במערכת קליטה אוטומטית.", noindex: true },
@@ -1106,13 +1111,15 @@ function seoPrerender(): Plugin {
         writeFileSync(file, html, "utf8");
         written++;
       }
-      // Stamp a dynamic lastmod on every sitemap URL at build time, so crawlers
-      // see a fresh, self-updating date on each deploy instead of a hand-edited
-      // one that drifts. Only URLs that do not already carry a <lastmod> are
-      // stamped, so any hand-set date is preserved.
+      // lastmod is only worth sending when it is true. It used to be today's build date on every
+      // URL, so each deploy claimed all ~290 pages had changed, and crawlers learn to ignore a
+      // lastmod that always says "now". It is now derived from what the site actually knows: an
+      // article carries its publication month (the first of that month, the same date its
+      // schema.org datePublished uses), and the two listing levels (the index and each topic hub)
+      // carry the date of their newest article. Every other URL gets no lastmod: leaving it out is
+      // honest, a made-up date is not. A hand-set <lastmod> in public/sitemap.xml is preserved.
       const sitemapPath = join(outDir, "sitemap.xml");
       try {
-        const today = new Date().toISOString().slice(0, 10);
         let xml = readFileSync(sitemapPath, "utf8");
         // Add the language variants. They are real, indexable addresses, so a
         // crawler should find them in the sitemap and not only by following an
@@ -1156,7 +1163,22 @@ function seoPrerender(): Plugin {
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>`);
         if (articleRows.length) xml = sub(xml, "</urlset>", () => `${articleRows.join("\n")}\n</urlset>`);
-        const stamped = xml.replace(/(<loc>[^<]*<\/loc>)(?!\s*<lastmod>)/g, `$1<lastmod>${today}</lastmod>`);
+        const hasMonth = (d: string) => Object.keys(MONTHS).some((k) => d.toLowerCase().includes(k));
+        const dateOf = (d: string | undefined): string => (d && hasMonth(d) ? toIsoDate(d) : "");
+        const lastmod = new Map<string, string>();
+        const newest = (ds: string[]) => ds.filter(Boolean).sort().pop() ?? "";
+        const bySlug = new Map<string, string>();
+        for (const m of blogMeta) { bySlug.set(m.slug, dateOf(m.date)); lastmod.set(`${SITE}/insights/${encodeURI(m.slug)}/`, dateOf(m.date)); }
+        for (const a of strings.he.data.articles) { bySlug.set(a.slug, dateOf(a.date)); lastmod.set(`${SITE}/insights/${a.slug}/`, dateOf(a.date)); }
+        for (const slug of EN_ARTICLE_SLUGS) if (enPosts[slug]) lastmod.set(langUrl(`/insights/${slug}`, "en"), dateOf(enPosts[slug].date));
+        lastmod.set(`${SITE}/insights/`, newest([...bySlug.values()]));
+        for (const t of TOPICS_IN_ORDER) {
+          lastmod.set(`${SITE}${topicPath(t.slug)}/`, newest((articlesByTopic(strings.he).get(t.slug) ?? []).map((r) => bySlug.get(r.slug) ?? "")));
+        }
+        const stamped = xml.replace(/(<loc>([^<]*)<\/loc>)(?!\s*<lastmod>)/g, (m, whole: string, loc: string) => {
+          const d = lastmod.get(loc);
+          return d ? `${whole}<lastmod>${d}</lastmod>` : m;
+        });
         writeFileSync(sitemapPath, stamped, "utf8");
       } catch {
         // No sitemap in the build output; nothing to stamp.
