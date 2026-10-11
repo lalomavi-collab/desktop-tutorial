@@ -185,6 +185,25 @@ document, with no card and no ledger).
 **Deleting** is allowed only for a customer with no documents (C, from the translation file, not tried).
 Price lists live in the locked inventory module and were not mapped.
 
+**Details from the full customers report (L unless marked)**
+
+- Card tabs: details, contact, monthly retainer; an existing customer adds balance adjustment and card token management.
+- Several extra e-mail addresses, each with a "send documents here too" tick (default on). LALUM has one e-mail. P2: extra
+  addresses with the same flag, needed for sending.
+- A non numeric tax id field (C: used for foreign customers). LALUM accepts any text in `tax_id`; keep it free text and skip
+  checksum validation for foreign customers.
+- External bookkeeping number: auto filled running number, unique, 10 chars. Not needed unless the accountant's software asks.
+- Retainer tab holds the monthly pro forma template per customer: a flag, a description, and an amount (before or with VAT).
+  One billing line per customer. LALUM design: store `retainer_description` and `retainer_amount` on the customer and create a
+  monthly draft from them (decided already as draft only, never auto issue).
+- The ledger has a separate column for pro formas, which are not accounting documents and stay out of debit. The amounts are
+  shown in shekels after conversion. The open invoices report offers filters for overdue or not and for type (tax invoice or
+  pro forma), and totals per currency.
+- Standing orders and a stored card token are managed from the customer card (service paid, not active in this account).
+  Out of scope.
+- Importing customers rejects duplicates by name, tax id or bookkeeping number; no merge exists.
+- Whether an inactive customer is hidden from the document form's customer picker is not verified.
+
 **LALUM position**
 
 | Item | Today | Action |
