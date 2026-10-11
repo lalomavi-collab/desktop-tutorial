@@ -70,12 +70,20 @@ Rules the design enforces regardless of the answers above:
 1. Done: read-only archive of Invoice4U history, reconciliation by type and year, gap detection.
 2. Next: run the ledger in parallel on the Invoice4U QA environment; fix what the rehearsal exposes.
 3. Build, split in three:
-   - Done: `lalum_fin_series` (per firm and type, numbers never reused or deleted), the DRAFT -> SEALING
-     state machine, and the hash chain (`lalum_fin_seal_document`, `lalum_fin_void_document`). Database
-     only, no Tax Authority call. Migration `0016_lalum_finance_series.sql`.
-   - Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) seeds
-     `lalum_fin_series.last_number` per type from `lalum_fin_archive`'s highest `doc_number`. Not yet called
-     for the practice's firm: still to do, before any real sealing, regardless of the Shaam timeline.
+   - Done, and live: `lalum_fin_series` (per firm and type, numbers never reused or deleted), the DRAFT ->
+     SEALING state machine, and the hash chain (`lalum_fin_seal_document`, `lalum_fin_void_document`).
+     Database only, no Tax Authority call. Migration `0016_lalum_finance_series.sql`. Note: this migration
+     and `0017` below sat merged on `main` for weeks without being applied to the real project
+     (`meoymkcotomoluwlwues`); `lalum_fin_series` did not exist there until 11 October 2026, after two
+     further migrations (`0018`, `0022`) had already landed on top of the gap. Checked both for conflicts
+     before applying late: neither touches the guard trigger or status constraint this migration owns, so
+     applying out of order was safe. Flagging this so the same gap is checked for on the next migration.
+   - Done, and seeded: `lalum_fin_seed_series_from_archive(firm)` (migration
+     `0017_lalum_finance_series_seed.sql`) seeds `lalum_fin_series.last_number` per type from
+     `lalum_fin_archive`'s highest `doc_number`. Run for the practice's firm on 11 October 2026: INVOICE
+     10014, RECEIPT 30019, INVOICE_RECEIPT 70145, CREDIT 50004, PROFORMA 90091 (273 archive rows total,
+     matching the archive's own row count exactly). The first number sealed by the own engine for each
+     type will be one above these.
    - Still to build, blocked: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the
      live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
      practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
@@ -88,6 +96,11 @@ Rules the design enforces regardless of the answers above:
      the practice issues sales documents and keeps no general ledger. Not yet run through the Tax Authority's
      own official file-checker at misim.gov.il: that is a required step before this output is ever used for a
      real filing, not something this module's own tests can substitute for.
+   - Done: a "קובץ מבנה אחיד" screen in the finance cockpit (`ShaamExportTab.tsx`). Owner picks a period
+     (defaults to the quarter just ended), the screen filters to `SEALED` documents in range and downloads
+     the two files. Pure client-side; nothing to export yet since the own engine cannot reach SEALED
+     without the Shaam edge function below, and Invoice4U already files its own uniform-structure file for
+     the current period. Becomes useful the moment that edge function ships.
 4. Parallel run: each real document produced twice (here as shadow, Invoice4U as the issuing source) for several VAT
    periods; totals and numbering compared.
 5. Switch: issuing moves here. Invoice4U stays read-only for the archive and as an emergency fallback.

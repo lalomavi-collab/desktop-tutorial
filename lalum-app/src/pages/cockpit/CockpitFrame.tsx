@@ -8,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
+import { supabase } from "../../lib/supabase";
 import { BookArt, CardArt2, ChartArt, GavelArt, ImportArt, InboxArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
@@ -18,11 +19,15 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace", "תיקים", false, "folder"],
   ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
   ["/workspace/tasks", "משימות", false, "check"],
+  ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
   ["/workspace/scorecard", "מדדי שירות", false, "scale"],
   ["/workspace/import", "ייבוא תיקים", false, "plus"],
   ["/workspace/kyc", "הכר את הלקוח", false, "search"],
+  ["/workspace/client-docs", "מסמכי לקוחות", false, "file"],
   ["/admin/matters", "ניהול", false, "gavel"],
+  ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
   ["/workspace/bin", "סל מיחזור", true, "trash"],
+  ["/settings/members", "חברי המשרד", false, "user"],
   ["/settings/billing", "חיוב והגדרות", false, "card"],
   ["/settings/security", "אבטחה", false, "shield"],
   ["/workspace/guide", "מדריך", true, "book"],
@@ -65,6 +70,17 @@ export function CockpitFrame({
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   const [theme, flipTheme] = useCkTheme();
+  // Number of unanswered inquiries, shown on the nav item (counts only; the rows themselves load on the inquiries screen).
+  const [newInq, setNewInq] = useState(0);
+  const hasMember = access.state !== "loading" && access.state !== "none" && !!access.member;
+  useEffect(() => {
+    if (!hasMember || !supabase) return;
+    let live = true;
+    const load = () => { void supabase!.from("lalum_matter_inquiries").select("id", { count: "exact", head: true }).eq("status", "NEW").then((r) => { if (live && r.count != null) setNewInq(r.count); }); };
+    load();
+    const t = setInterval(load, 60000);
+    return () => { live = false; clearInterval(t); };
+  }, [hasMember]);
   let body: ReactNode;
   if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
   else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
@@ -84,7 +100,7 @@ export function CockpitFrame({
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
           {NAV.map(([to, label, end, icon]) => (
             <NavLink key={to} to={to} end={end || to === "/workspace"}>
-              <Icon name={icon} size={22} /><span>{label}</span>
+              <Icon name={icon} size={22} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
             </NavLink>
           ))}
         </nav>
