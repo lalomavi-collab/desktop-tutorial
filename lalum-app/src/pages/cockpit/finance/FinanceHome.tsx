@@ -101,7 +101,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
-      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} />}
+      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
