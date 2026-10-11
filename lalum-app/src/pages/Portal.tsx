@@ -145,6 +145,7 @@ export function Portal() {
   }, [loadFiles]);
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFirmMember, setIsFirmMember] = useState(false);
   const [thread, setThread] = useState<MsgRow[]>([]);
   const [inbox, setInbox] = useState<MsgRow[]>([]);
   const [calls, setCalls] = useState<CallRow[]>([]);
@@ -251,6 +252,10 @@ export function Portal() {
       admin = Boolean(data?.is_admin);
     }
     setIsAdmin(admin);
+    // Any firm member (attorney, partner, admin) gets the entry to the management
+    // cockpit; a plain client does not. The cockpit itself scopes what each role sees.
+    const fm = await supabase.from("lalum_firm_members").select("user_id").eq("user_id", user.id).maybeSingle();
+    setIsFirmMember(admin || Boolean(fm.data));
     const own = await supabase.from("lalum_messages").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     if (own.data) setThread(own.data as MsgRow[]);
     const mine = await supabase.from("billing_milestones").select("*").order("created_at", { ascending: false });
@@ -731,7 +736,7 @@ export function Portal() {
           area. A clear entry here keeps the two apart: the portal for clients,
           the cockpit for the firm (where matters, documents and client signing
           requests are created, each scoped by the member's role). */}
-      {isAdmin && (
+      {isFirmMember && (
         <a href="/workspace/" className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 28, textDecoration: "none", color: "inherit" }}>
           <div>
             <div className="label" style={{ margin: 0 }}>מערכת ניהול התיקים</div>
