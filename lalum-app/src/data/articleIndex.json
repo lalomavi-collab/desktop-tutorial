@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -292,7 +292,7 @@
   "related": [
    "ai-clinical-system-deployment",
    "ai-use-policy-local-authority",
-   "ai-municipal-chatbot-resident-liability"
+   "procurement"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -1610,8 +1610,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
