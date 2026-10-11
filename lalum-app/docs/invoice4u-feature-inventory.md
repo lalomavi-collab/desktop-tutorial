@@ -153,9 +153,9 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Linking, conversion, cancel matrix | Done, partly (C) |
 | Drafts, item catalog, CSV templates | Done |
 | Email dialog, signature, partial credit | (C) only. Needs a test customer and a rehearsal in the QA environment |
-| Documents list (`/reports/document`) | **Not mapped.** Columns, filters and export are missing |
+| Documents list (`/reports/document`) | Done in part: columns, filters, statuses (open, closed, credited, partly credited) and actions are known (section 11 and 4.8) |
 | Customers screen and customer card | Done (section 10) |
-| Reports (VAT, accountant report, uniform structure file) | **Not mapped** |
+| Reports and accounting exports | Done (section 11) |
 | Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
 | Expenses | Locked in the account (menu entries are inert). Not mapped |
 | Standing orders | Not mapped |
@@ -218,6 +218,63 @@ Price lists live in the locked inventory module and were not mapped.
 | Manual balance adjustment | None | Do not build. Corrections go through credit documents. If ever needed: reason, audit trail, partner only |
 | Client, matter, document hierarchy | Client and document | **Not now.** The mapping suggested it, but it is not required to replace Invoice4U and it changes every table and every report. Add an optional free text `matter_ref` on the document first, and revisit only if reports by matter become a real need |
 
+## 11. Reports (L unless marked)
+
+Seven reports in the menu: documents list, customer ledger, income for bookkeeping, income chart, open invoices, income by
+item, payments. Common parts: date range with quick buttons, branch, per column filter, totals row, paging. Export to Excel
+and PDF, e-mail and print (the e-mail dialog takes one address and offers no format or body). **No CSV export.** Amounts are
+converted to shekels at an undeclared rate, except the open invoices report which totals per currency.
+
+| Report | Shows | Note for LALUM |
+| --- | --- | --- |
+| Documents list | One tab per type. Header: period total, daily average, monthly and yearly forecast. Status filter: open, closed, credited, partly credited | We have a list. Add the status filter and the forecast line, P2 |
+| Customer ledger | Debit, credit, pro forma column, balance | P2, after receipt on account |
+| Income for bookkeeping | One table per document type (tax invoice, invoice-receipt, credit) with net, VAT, rounding, total and a link to each document | The accountant report. Our archive summary already matches it by month |
+| Income chart | Monthly net income, 12 months, current or previous year | P2 |
+| Open invoices | Overdue filter, type filter, totals per currency | P2, per currency |
+| Income by item | Quantity, average price and total per item | Needs an item catalog. P3 |
+| Payments | By payment method, with cheque number and last card digits | P2, after the payment methods table |
+
+**Not in this account:** VAT report and PCN874 (inside a locked bookkeeping module; the accountant prepares both from her own
+software), an aging report by day ranges, and income by customer. These three are the real gaps, and each can be built from
+data we hold: a VAT report by period, `ar_aging` (0 to 30, 31 to 60, 61 to 90, over 90) and `revenue_by_customer`.
+
+**Accounting exports (inside account settings, sent by e-mail only, never downloaded):**
+- Export to a bookkeeping package: card mapping (cash, credit, cheques, transfers by currency, other; purchases, input VAT,
+  tax withheld, output VAT, income, exempt income, casual customer card, lawyer expenses, lawyer deposits), Windows or DOS
+  format, optional separate card for deposits and for casual customers.
+- Uniform structure file (Directive 36): period and e-mail, then "produce".
+
+**Automatic income report to the accountant (L for the settings, C for the content).** In account settings: frequency (none,
+monthly, every two months), accountant e-mail, day of month 1 to 28. This account: monthly on the 1st. The content is the
+income report of the previous period split by tax invoices, invoice-receipts and credits, each with a link to the document.
+The e-mail format (probably a PDF with links) is **not verified**; ask the accountant for one real e-mail.
+
+**LALUM decision (owner, 11 October 2026):** the accountant report is built as a feature of the system, not as an accountant
+login. It is a scheduled report with PDF and Excel attached together, several recipients, an editable subject and body, a send
+log and a "send now" button. Nothing is sent before the owner approves a test to himself. Add direct download for
+accounting exports with an audit log entry.
+
+## 12. Users and permission levels (decision, 11 October 2026)
+
+The owner runs the practice alone today. The finance module is built so that staff can be added later without redesign.
+Today `lalum_fin_can(firm)` allows only partners and admins with a second factor, which is one level. Replace it with a
+level per user.
+
+| Level | Can do |
+| --- | --- |
+| none | No access to finance |
+| view | Read documents, customers, reports |
+| draft | view, plus create and edit drafts and customers. Cannot issue |
+| issue | draft, plus issue, cancel through a credit, record payments and expenses |
+| admin | issue, plus settings, series, users, exports, manual corrections |
+
+Rules: the level is stored in `lalum_fin_permissions (firm_id, user_id, level)` and read by `lalum_fin_can(firm, min_level)`;
+the second factor stays mandatory for `issue` and `admin`; the owner is `admin` and cannot remove the last admin; every
+issue, cancel, export and permission change writes an audit row with user and time; an accountant, if ever added, gets `view`
+limited to reports and exports, created on request only. Row level security and the edge functions both check the level,
+because the browser is never the control.
+
 ## 9. Build order for LALUM
 
 P1 part 2 (next):
@@ -231,9 +288,11 @@ P1 part 2 (next):
 6. Cancellation matrix: cancellation receipt for a receipt.
 7. Payment methods table: eight methods with their fields, card last four digits only.
 
-P2: customer payment terms and due date, exempt line status, discount (line and document), foreign currency rate field,
+P2 (reports): accountant report feature with log, VAT report, aging view, revenue by customer. P2: customer payment terms and due date, exempt line status, discount (line and document), foreign currency rate field,
 email to customer with status, bulk close, catalog of items, draft auto save, overview shortcut and chart, accountant
 monthly report.
+
+P1 part 2 also gets the permission levels of section 12 as a migration of its own, before any second user exists.
 
 P3: attachments, payment reminders, pay on document, language, CSV import and export of customers.
 
