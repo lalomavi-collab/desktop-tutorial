@@ -635,13 +635,6 @@ export const blogMeta: BlogMeta[] = [
     "cover": "/images/covers/international-trade-guide-2026.webp"
   },
   {
-    "slug": "real-estate-dispute-arbitration",
-    "title": "פתרון סכסוכים בנדל״ן: החשיבות של בוררות בתחום הנדל״ן",
-    "excerpt": "מדוע בוררות היא הכלי היעיל, המהיר והחסוי לפתרון סכסוכי נדל״ן, ושמירה על יחסים עסקיים.",
-    "date": "אפריל 2026",
-    "cover": "/images/covers/real-estate-dispute-arbitration.webp"
-  },
-  {
     "slug": "ai-ethics-legal-risks",
     "title": "AI ethics legal risks: בין משפט, בינה מלאכותית והצורך הדחוף במסגרת רגולטורית",
     "excerpt": "מדוע היעדר מסגרת רגולטורית לבינה מלאכותית מגדיל את הסיכונים המשפטיים, עם הרכב האוטונומי כמקרה מבחן לאחריות אלגוריתמית.",

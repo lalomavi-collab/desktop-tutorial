@@ -659,15 +659,15 @@
   "topic": "mediation",
   "related": [
    "real-estate-arbitration",
-   "real-estate-dispute-arbitration",
-   "business-mediation-relations"
+   "business-mediation-relations",
+   "lalum-mediation-arbitration"
   ]
  },
  "ai-liability-ruling": {
   "topic": "ai-governance",
   "related": [
-   "decision-oriented-ai-law",
    "ai-hallucinations-citations",
+   "decision-oriented-ai-law",
    "lalum-clinic-experience"
   ]
  },
@@ -709,14 +709,6 @@
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "eu-ai-act-conformity-file-preparation"
-  ]
- },
- "real-estate-dispute-arbitration": {
-  "topic": "mediation",
-  "related": [
-   "business-arbitration",
-   "real-estate-arbitration",
-   "business-mediation-relations"
   ]
  },
  "ai-ethics-legal-risks": {
@@ -771,8 +763,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "contract-review-before-signing",
-   "ai-drafted-real-estate-contract-review"
+   "ai-drafted-real-estate-contract-review",
+   "contract-review-before-signing"
   ]
  },
  "ai-presentation-tools": {
@@ -956,7 +948,7 @@
   "related": [
    "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
    "three-minute-legal-check",
-   "real-estate-dispute-arbitration"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "overseas-partnership-guide": {
@@ -987,8 +979,8 @@
   "topic": "real-estate",
   "related": [
    "realestate-master-course",
-   "digital-lawyers-2026",
-   "algorithmic-transparency"
+   "algorithmic-transparency",
+   "digital-lawyers-2026"
   ]
  },
  "combination-deals-architecture": {
@@ -1092,7 +1084,7 @@
   "related": [
    "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
    "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
-   "real-estate-dispute-arbitration"
+   "urban-renewal-risk"
   ]
  },
  "body-language-ai-future": {
@@ -1228,7 +1220,7 @@
   "related": [
    "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
    "real-estate-arbitration",
-   "mediator-tools-body-language-field-experience"
+   "decision-oriented-mediation-benefits"
   ]
  },
  "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות": {
@@ -1563,8 +1555,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "understanding-mediation-process",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "understanding-mediation-process"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
@@ -1610,8 +1602,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
@@ -1660,7 +1652,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "החלטת-בנק-ישראל-והשלכותיה-על-מערכת-היחסים-החוזית-בענף-הנדל-ן-בחינה-משפטית-של-גישור-מכוון-הכרעה-כמוד",
-   "urban-renewal-risk"
+   "ai-realestate-risk-management"
   ]
  },
  "california-sb574-ai-adjudication-ban": {
