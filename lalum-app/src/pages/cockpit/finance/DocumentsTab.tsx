@@ -130,6 +130,16 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
     setBusy(null); onChange();
     setNote(r.ok ? { ok: true, text: `נמצא ב-Invoice4U: מסמך מספר ${r.doc_number}. הסטטוס עודכן.` } : { ok: false, text: issueError(r) });
   }
+  async function retainerDrafts() {
+    if (!supabase) return;
+    const now = new Date(), period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    setBusy("retainer");
+    const { data, error } = await supabase.rpc("lalum_fin_generate_retainer_drafts", { p_period: period });
+    setBusy(null);
+    if (error) { setNote({ ok: false, text: rpcError(error.message) }); return; }
+    const n = Number(data ?? 0);
+    setNote({ ok: true, text: n ? `נוצרו ${n} טיוטות ריטיינר לחודש ${period.slice(5)}/${period.slice(0, 4)}. בדקו והפיקו כל אחת בנפרד.` : "אין טיוטות חדשות. כל לקוחות הריטיינר כבר קיבלו טיוטה לחודש הזה, או שלא הוגדר לקוח ריטיינר." }); onChange();
+  }
   async function removeDraft(d: FinDocument) {
     if (!supabase || !window.confirm("למחוק את הטיוטה?")) return;
     const { error } = await supabase.rpc("lalum_fin_delete_draft", { p_id: d.id });
@@ -155,7 +165,10 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
         <select className="ck-select" aria-label="סינון לפי סוג" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ maxWidth: 220 }}>
           <option value="">כל המסמכים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <button className="ck-btn primary" disabled={!customers.length} onClick={() => { setNote(null); setEd(blankEditor()); }}>מסמך חדש</button>
+        <div className="ck-row">
+          <button className="ck-btn" disabled={busy !== null || !customers.some((c) => c.retainer_active)} title="יוצר טיוטות בלבד, ללא הפקה" onClick={() => void retainerDrafts()}>טיוטות ריטיינר לחודש הנוכחי</button>
+          <button className="ck-btn primary" disabled={!customers.length} onClick={() => { setNote(null); setEd(blankEditor()); }}>מסמך חדש</button>
+        </div>
       </div>
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
