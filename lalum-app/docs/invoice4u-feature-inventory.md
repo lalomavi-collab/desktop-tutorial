@@ -22,7 +22,7 @@ Header, transaction details, footer. The differences between types are in sectio
 | Customer | Existing, casual (name, ID, email), or self invoice (tax invoice only) | Existing and casual (invoice-receipt and credit) | Done. Self invoice is not needed |
 | Subject | Optional free text | Exists | None |
 | Lines | VAT status per line (taxable or exempt), code, description (500), quantity (default 1), price before VAT and price with VAT computed both ways | Lines with quantity and price, VAT per document | P2. Add exempt line status (foreign client, Eilat) |
-| Discount | Document level only, amount or percent. No line level discount | None | **Improve on Invoice4U.** Line level discount is useful for a law practice. Document level too. P2 |
+| Discount | Document level, amount or percent. A line level discount exists but is off by default and enabled in account settings, so it does not show on the form (corrected after the customers round) | None | P2. Both levels, line level on from the start |
 | Rounding | "Round amount" checkbox, default on | Totals computed in the database | Decide with the accountant whether rounding to whole shekels is allowed. P2 |
 | Notes | One external note (5,000 chars) printed at the bottom. Fixed text block printed from settings. **No internal note that is not printed** | Notes field on the document | **Improve.** Add `internal_note`, never printed, never in the PDF |
 | Attachments | Up to 3 files (JPG, PDF, PNG), 2MB each, 5MB total | None | P3 |
@@ -154,11 +154,50 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Drafts, item catalog, CSV templates | Done |
 | Email dialog, signature, partial credit | (C) only. Needs a test customer and a rehearsal in the QA environment |
 | Documents list (`/reports/document`) | **Not mapped.** Columns, filters and export are missing |
-| Customers screen and customer card | **Not mapped.** Retainer flag, payment terms and internal note fields are known only from references |
+| Customers screen and customer card | Done (section 10) |
 | Reports (VAT, accountant report, uniform structure file) | **Not mapped** |
 | Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
 | Expenses | Locked in the account (menu entries are inert). Not mapped |
 | Standing orders | Not mapped |
+
+## 10. Customers module (L unless marked)
+
+Invoice4U's customer module is thin. Mapped read-only; nothing saved. No names, tax ids, emails or amounts were recorded.
+
+**List.** Simple search plus advanced search on 9 fields (one shows only customers created from leads). Four columns; the
+external bookkeeping number is editable inline. Four row actions: customer report, update details, issue document, notes log.
+Export to Excel only.
+
+**Card.** Three tabs for a new customer; two more for an existing one ("balance adjustment", "card details management").
+Payment terms: 8 options from immediate to net 30 plus 120, default immediate. Name, tax id and bookkeeping number must each
+be unique. One internal note field per customer, shown on quotes only if ticked, otherwise private. One contact and one
+accounting contact, as plain text fields.
+
+**Notes log.** Activity journal per customer, 3 entry types, each can be emailed.
+
+**Ledger (כרטסת).** Debit, credit and balance columns, plus a separate column for pro formas. A statement can be emailed to the
+customer. The open invoices report totals each currency separately.
+
+**Absent:** customer groups or tags, a standing customer discount, several contacts, merge, archive (a customer is marked
+inactive), an aging report by day ranges, and a casual customer entity (a casual customer exists only as fields on the
+document, with no card and no ledger).
+
+**Deleting** is allowed only for a customer with no documents (C, from the translation file, not tried).
+Price lists live in the locked inventory module and were not mapped.
+
+**LALUM position**
+
+| Item | Today | Action |
+| --- | --- | --- |
+| Uniqueness | Not enforced | Enforce unique tax id when present (23 of 109 have none, so it cannot be mandatory) and unique name. 7 e-mails are shared, so e-mail stays non unique |
+| Payment terms | Not built (decision G4) | P2, with due date on invoice and pro forma |
+| Internal note per customer | `notes` exists | Keep, never printed |
+| Contacts | One e-mail, one phone | P3: a separate contacts table, accounting contact for statements |
+| Archive | `archived` flag exists | Better than Invoice4U. Merge with soft delete is P3 |
+| Statement and ledger | Archive revenue only, no balances | P1 part 2 (receipt on account) then P2 customer statement by e-mail |
+| Aging report | None | P2, per currency |
+| Manual balance adjustment | None | Do not build. Corrections go through credit documents. If ever needed: reason, audit trail, partner only |
+| Client, matter, document hierarchy | Client and document | **Not now.** The mapping suggested it, but it is not required to replace Invoice4U and it changes every table and every report. Add an optional free text `matter_ref` on the document first, and revisit only if reports by matter become a real need |
 
 ## 9. Build order for LALUM
 
