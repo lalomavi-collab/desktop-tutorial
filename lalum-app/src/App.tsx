@@ -44,6 +44,7 @@ const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ defa
 const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ default: m.Security })));
 const Kyc = lazy(() => import("./pages/cockpit/Kyc").then((m) => ({ default: m.Kyc })));
 const Scheduling = lazy(() => import("./pages/cockpit/Scheduling").then((m) => ({ default: m.Scheduling })));
+const Discussions = lazy(() => import("./pages/cockpit/Discussions").then((m) => ({ default: m.Discussions })));
 const Members = lazy(() => import("./pages/cockpit/Members").then((m) => ({ default: m.Members })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const ImportFolderPage = lazy(() => import("./pages/cockpit/ImportFolder").then((m) => ({ default: m.ImportFolderPage })));
@@ -108,6 +109,7 @@ export default function App() {
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/kyc" element={<Suspense fallback={null}><Kyc /></Suspense>} />
           <Route path="workspace/scheduling" element={<Suspense fallback={null}><Scheduling /></Suspense>} />
+          <Route path="workspace/discussions" element={<Suspense fallback={null}><Discussions /></Suspense>} />
           <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="admin/matters" element={<Suspense fallback={null}><AdminMatters /></Suspense>} />
           <Route path="settings/security" element={<Suspense fallback={null}><Security /></Suspense>} />

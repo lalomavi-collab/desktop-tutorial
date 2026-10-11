@@ -60,6 +60,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/guide", title: "מדריך הקוקפיט | LALUM", desc: "מה הקוקפיט עושה ואיך משתמשים בו.", noindex: true },
   { path: "admin/matters", title: "ניהול תיקים | LALUM", desc: "מסך הניהול של תיקי הקליטה.", noindex: true },
   { path: "workspace/scheduling", title: "יומן ופגישות | LALUM", desc: "יומן המשרד: אירועים, זמנים פנויים ושיבוץ משימות.", noindex: true },
+  { path: "workspace/discussions", title: "דיונים ציבוריים | LALUM", desc: "אישור שאלות מהפאנל הציבורי לפני פרסומן באתר.", noindex: true },
   { path: "settings/security", title: "אבטחת חשבון | LALUM", desc: "הפעלה וניהול של אימות דו-שלבי לחשבון.", noindex: true },
   { path: "settings/members", title: "חברי המשרד | LALUM", desc: "צוות המשרד, התפקידים וההרשאות לפי שיוך ומחלקה.", noindex: true },
   { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },
