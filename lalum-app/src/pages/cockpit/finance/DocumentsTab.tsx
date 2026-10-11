@@ -10,7 +10,7 @@ interface EditLine { name: string; qty: string; price: string }
 interface Editor {
   id: string | null; customer_id: string; doc_type: DocType; subject: string; tax_included: boolean; vat_rate: string;
   lines: EditLine[]; issue_date: string; due_date: string; payment_method: PayMethod | ""; payment_ref: string;
-  related_doc_id: string; send_email: boolean;
+  related_doc_id: string; send_email: boolean; internal_note: string; matter_ref: string;
 }
 type Note = { ok: boolean; text: string } | null;
 
@@ -18,7 +18,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const blankEditor = (): Editor => ({
   id: null, customer_id: "", doc_type: "INVOICE", subject: "", tax_included: false, vat_rate: String(DEFAULT_VAT_RATE),
   lines: [{ name: "", qty: "1", price: "" }], issue_date: today(), due_date: "", payment_method: "", payment_ref: "",
-  related_doc_id: "", send_email: false,
+  related_doc_id: "", send_email: false, internal_note: "", matter_ref: "",
 });
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
@@ -46,7 +46,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
     setEd({
       id: d.id, customer_id: d.customer_id, doc_type: d.doc_type, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
       lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), issue_date: d.issue_date, due_date: d.due_date ?? "",
-      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email,
+      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email, internal_note: d.internal_note ?? "", matter_ref: d.matter_ref ?? "",
     });
   }
   function receiptFor(inv: FinDocument) {
@@ -95,7 +95,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
       p: {
         customer_id: ed.customer_id, doc_type: ed.doc_type, subject: ed.subject, tax_included: ed.tax_included, vat_rate: Number(ed.vat_rate) || 0,
         lines: toLines(ed), issue_date: ed.issue_date, due_date: ed.due_date || null, payment_method: ed.payment_method, payment_ref: ed.payment_ref,
-        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email,
+        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email, internal_note: ed.internal_note, matter_ref: ed.matter_ref,
       },
     });
     if (error) { setNote({ ok: false, text: rpcError(error.message) }); return null; }
@@ -198,6 +198,8 @@ export function DocumentsTab({ firmId, customers, docs, payments, archiveCount, 
               <label className="ck-field">אסמכתא (מספר שיק, 4 ספרות אחרונות)<input className="ck-input" dir="ltr" value={ed.payment_ref} onChange={(e) => setEd({ ...ed, payment_ref: e.target.value })} /></label>
             </div>
           )}
+          <label className="ck-field">הערה פנימית (לא מודפסת ולא נשלחת)<textarea className="ck-input" rows={2} maxLength={5000} value={ed.internal_note} onChange={(e) => setEd({ ...ed, internal_note: e.target.value })} /></label>
+          <label className="ck-field">הפניה לתיק (אופציונלי, פנימי)<input className="ck-input" maxLength={100} value={ed.matter_ref} onChange={(e) => setEd({ ...ed, matter_ref: e.target.value })} /></label>
           <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" checked={ed.send_email} onChange={(e) => setEd({ ...ed, send_email: e.target.checked })} />לשלוח את המסמך בדוא"ל ללקוח בעת ההפקה</label>
           <div className="ck-card">
             <div className="ck-row" style={{ justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{money(totals.subtotal)}</b></div>
