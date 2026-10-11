@@ -275,3 +275,38 @@ export const closedBy = (p: FinDocument, docs: FinDocument[]): FinDocument | und
 /** An issued, real (non test) pro forma that no issued document has settled. */
 export const isOpenProforma = (p: FinDocument, docs: FinDocument[]): boolean =>
   p.doc_type === "PROFORMA" && p.status === "ISSUED" && !p.is_test && !closedBy(p, docs);
+
+// ---- Client trust funds: read side of lalum_trust_ledger (migration 0020) ----
+// The ledger is append only and signed (deposits positive, withdrawals negative). Writes go through the
+// lalum_trust_post / lalum_trust_apply_to_invoice RPCs, which enforce zero overdraft and the receipt series.
+// Trust money is never revenue: summarize() does not read it, and finance-check pins that.
+
+export type TrustTxType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "EARNED_FEE_TRANSFER" | "REFUND_TO_CLIENT" | "REVERSAL";
+export interface TrustTx {
+  id: number; trust_account_id: string; matter_id: string; customer_id: string; tx_type: TrustTxType; amount: number;
+  receipt_no: string; reference_doc_id: string | null; reverses_entry_id: number | null; counterparty: string | null;
+  notes: string | null; created_at: string;
+}
+export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null }
+export const TRUST_TX: Record<TrustTxType, string> = {
+  DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה למשרד",
+  REFUND_TO_CLIENT: "החזר ללקוח", REVERSAL: "תיקון (ביטול תנועה)",
+};
+
+/** Held balance for the whole ledger, or narrowed to one customer, matter or trust account. */
+export function trustHeld(rows: TrustTx[], by: { customer?: string; matter?: string; account?: string } = {}): number {
+  return r2(rows
+    .filter((t) => (!by.customer || t.customer_id === by.customer) && (!by.matter || t.matter_id === by.matter) && (!by.account || t.trust_account_id === by.account))
+    .reduce((a, t) => a + t.amount, 0));
+}
+
+/** Balances per key (customer or matter), largest first, zero balances left out. */
+export function trustBreakdown(rows: TrustTx[], key: "customer_id" | "matter_id"): Array<{ id: string; balance: number }> {
+  const m = new Map<string, number>();
+  for (const t of rows) m.set(t[key], (m.get(t[key]) ?? 0) + t.amount);
+  return [...m.entries()].map(([id, b]) => ({ id, balance: r2(b) })).filter((x) => x.balance !== 0).sort((a, b) => b.balance - a.balance);
+}
+
+/** Account number shown as its last four digits only. */
+export const maskAccount = (n: string): string => (n.length > 4 ? `***${n.slice(-4)}` : n);
+

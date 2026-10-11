@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -143,5 +143,26 @@ t("incomplete regular customers are flagged, casual ones are not", () => {
   assert.equal(isOpenProforma(doc({ id: "p2", doc_type: "PROFORMA", is_test: true }), []), false);
   assert.equal(isOpenProforma(doc({ id: "p3", doc_type: "PROFORMA", status: "DRAFT" }), []), false);
   assert.equal(isOpenProforma(doc({ id: "x", doc_type: "INVOICE" }), []), false);
+});
+const tx = (o) => ({ id: 1, trust_account_id: "a1", matter_id: "m1", customer_id: "c1", tx_type: "DEPOSIT", amount: 1000, receipt_no: "TR-000001", reference_doc_id: null, reverses_entry_id: null, counterparty: null, notes: null, created_at: "2026-10-05", ...o });
+t("trust held: the ledger is signed, so the balance is the plain sum, narrowed by customer, matter or account", () => {
+  const rows = [tx({}), tx({ id: 2, tx_type: "EARNED_FEE_TRANSFER", amount: -300 }), tx({ id: 3, customer_id: "c2", matter_id: "m2", trust_account_id: "a2", amount: 50 })];
+  assert.equal(trustHeld(rows), 750);
+  assert.equal(trustHeld(rows, { customer: "c1" }), 700);
+  assert.equal(trustHeld(rows, { matter: "m2" }), 50);
+  assert.equal(trustHeld(rows, { account: "a1" }), 700);
+});
+t("trust breakdown drops zero balances and sorts largest first", () => {
+  const rows = [tx({}), tx({ id: 2, tx_type: "REVERSAL", amount: -1000 }), tx({ id: 3, customer_id: "c2", amount: 50 }), tx({ id: 4, customer_id: "c3", amount: 90 })];
+  assert.deepEqual(trustBreakdown(rows, "customer_id"), [{ id: "c3", balance: 90 }, { id: "c2", balance: 50 }]);
+});
+t("bank account numbers are shown masked", () => {
+  assert.equal(maskAccount("123456789"), "***6789");
+  assert.equal(maskAccount("123"), "123");
+});
+t("trust money is never revenue: the summary has no trust figure", () => {
+  const sm = summarize([doc({})], [], [], { from: "2026-10-01", to: "2026-10-31" });
+  assert.equal(sm.revenueNet, 1000);
+  assert.ok(!Object.keys(sm).some((k) => /trust/i.test(k)));
 });
 console.log("\nAll finance checks passed");
