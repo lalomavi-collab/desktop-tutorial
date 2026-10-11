@@ -26,27 +26,27 @@
 .db-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; }
 .db-grid.b { grid-template-columns: 1fr 1.5fr; }
 .db-card { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.db-card h3 { margin: 0; font-size: 16.5px; font-weight: 800; color: var(--ink); }
+.db-card h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--ink); }
 .db-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .db-toggle { display: inline-flex; background: rgba(61, 141, 46, .12); border-radius: 9999px; padding: 3px; }
 .db-toggle button { font: inherit; font-size: 12.5px; font-weight: 700; border: 0; background: none; color: var(--mint-deep); padding: 5px 14px; border-radius: 9999px; cursor: pointer; }
 .db-toggle button[aria-pressed="true"] { background: linear-gradient(180deg, #56a63f, #3a8a2b); color: #fff; box-shadow: 0 3px 8px rgba(61, 141, 46, .35); }
-.db-overview { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; }
+.db-overview { display: grid; grid-template-columns: 138px 1fr; gap: 14px; align-items: center; }
 .db-kpis { display: flex; flex-direction: column; gap: 12px; }
 .db-kpi { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
-.db-kpi i { font-style: normal; font-size: 11.5px; font-weight: 800; padding: 2px 9px; border-radius: 9999px; }
+.db-kpi i { font-style: normal; font-size: 12px; font-weight: 800; padding: 2px 9px; border-radius: 9999px; }
 .db-kpi i.up { background: rgba(61, 141, 46, .16); color: #23591a; }
 .db-kpi i.down { background: rgba(245, 196, 49, .3); color: #6b4d00; }
 .db-kpi i.flat { background: rgba(47, 111, 38, .1); color: var(--slate); }
-.db-kpi b { font-size: 22px; font-weight: 800; line-height: 1.15; }
-.db-kpi small { font-size: 11.5px; color: var(--slate); }
+.db-kpi b { font-size: 29px; font-weight: 800; line-height: 1.15; }
+.db-kpi small { font-size: 12.5px; color: var(--slate); font-weight: 500; }
 .db-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .db-list li a, .db-list li > div { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 18px; background: rgba(255, 255, 255, .85); border: 1px solid rgba(61, 141, 46, .18); box-shadow: 0 3px 8px rgba(54, 110, 40, .07); text-decoration: none; color: var(--ink); }
 .db-list li a:hover { border-color: var(--clay); }
-.db-list em { font-style: normal; font-weight: 700; font-size: 13.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.db-list small { color: var(--slate); font-size: 11.5px; white-space: nowrap; }
+.db-list em { font-style: normal; font-weight: 700; font-size: 14.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-list small { color: var(--slate); font-size: 12px; white-space: nowrap; }
 .db-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.db-tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.db-tbl { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 .db-tbl th { text-align: start; font-size: 12px; color: var(--slate); font-weight: 600; padding: 6px 10px; }
 .db-tbl td { padding: 9px 10px; border-top: 1px solid rgba(61, 141, 46, .1); }
 .db-tbl a { color: var(--ink); font-weight: 700; text-decoration: none; }
