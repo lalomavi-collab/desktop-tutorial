@@ -31,6 +31,10 @@ Status of each fact is marked. Nothing here is legal advice.
   `lalum_fin_seal_document` call, or that call will start the type's series at 1.
 - Shaam onboarding (permissions, sandbox access): deferred on purpose. The practice owner and a future session do this
   together, directly on the Tax Authority site, only at the final stage before the 2027-01-01 switch, not before.
+- Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
+  8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
+  owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
+  still carries the Herzliya Pituach office address. No postal code: not given, not guessed.
 
 ## Decided by the practice owner (2026-10-10), not independently verified
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../../../lib/supabase";
 import { buildShaamReport, LALUM_TAX_ID } from "../../../lib/cockpit/shaamExport";
 import type { FinCustomer, FinDocument } from "../../../lib/cockpit/finance";
 
@@ -49,6 +50,7 @@ export function ShaamExportTab({ docs, customers, firmName }: { docs: FinDocumen
       );
       download("INI.TXT", iniText);
       download("BKMVDATA.TXT", dataText);
+      void supabase?.rpc("lalum_fin_log_export", { p_kind: "shaam_uniform_format", p_meta: { from, to, counts } });
       setDone({ counts });
     } catch (e) {
       setError(e instanceof Error ? e.message : "הייצוא נכשל.");

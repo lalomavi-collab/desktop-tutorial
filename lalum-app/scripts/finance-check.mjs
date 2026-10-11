@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv } from "../src/lib/cockpit/financeReports.ts";
+import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -171,5 +171,9 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
   assert.ok(c.startsWith("\uFEFF"));
   assert.ok(c.includes('"x""y",1234.50'));
+});t("e-mail html escapes customer names", () => {
+  const rows = incomeRows([doc({ id: "z", doc_type: "INVOICE" })], [], [cust({ id: "c1", name: "<b>x</b> & co" })], { from: "2026-10-01", to: "2026-10-31" });
+  const h = incomeHtml("t", incomeByKind(rows));
+  assert.ok(!h.includes("<b>x</b>") && h.includes("&lt;b&gt;x&lt;/b&gt; &amp; co"));
 });
 console.log("\nAll finance checks passed");
