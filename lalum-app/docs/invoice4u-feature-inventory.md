@@ -158,7 +158,7 @@ fails card industry rules. LALUM: customer CSV import and export are P3. Never i
 | Reports and accounting exports | Done (section 11) |
 | Settings (business, numbering, design, users, API, Tax Authority connection, security) | **Not mapped** |
 | Expenses | Locked in the account (menu entries are inert). Not mapped |
-| Standing orders | Not mapped |
+| Standing orders, clearing, payment page, transfers | Done in part (section 13); standing orders and tokens are paid add-ons, locked |
 
 ## 10. Customers module (L unless marked)
 
@@ -274,6 +274,39 @@ the second factor stays mandatory for `issue` and `admin`; the owner is `admin` 
 issue, cancel, export and permission change writes an audit row with user and time; an accountant, if ever added, gets `view`
 limited to reports and exports, created on request only. Row level security and the edge functions both check the level,
 because the browser is never the control.
+
+## 13. Clearing, payment page and transfers (L for screens, C for the locked add-ons)
+
+Nothing was charged, credited, transferred or subscribed to during mapping.
+
+- **Clearing setup:** there is no screen to choose a clearing company. The terminal is set up through Invoice4U's customer
+  service; the charge screen shows read only that the account is connected to Cardcom. The number of credit installments and
+  charging without CVV are terminal settings, not interface settings.
+- **Charge types:** regular, installments (2 to 12) and a credit transaction whose range is set in the terminal. With
+  installments there is an option to issue the receipt now and a tax invoice on each due date (an automatic process the owner
+  must confirm). This is a good feature to copy later.
+- **Payment page for the customer:** title, price, 4 currencies, page state, the document type produced; design with a logo or
+  image and 10 background templates; payment by card and/or PayPal, with or without installments. The customer fills name,
+  phone, e-mail and tax id, then sees the processor's card window.
+- **Clearing log:** filters by status, transaction type, currency, card number and customer; an error detail column; export to
+  Excel, e-mail and print, no PDF.
+- **Card refund:** only against an existing transaction in the system. Partial refund allowed. Can issue a credit invoice
+  automatically.
+- **Paid add-ons, locked in this account:** saved cards (token) 12 NIS a month, standing orders 29 NIS, sales pages 19 NIS.
+  Fields known from the translation file only.
+- **"Transfers"** is not an outgoing bank transfer. It is a service that sends the customer a payment link for a bank transfer
+  (Open Finance); when the money arrives, an invoice-receipt is produced automatically. 2 NIS plus VAT per operation, not
+  enabled here. It includes setting the practice's receiving bank accounts and a transfers report with 9 statuses.
+
+**LALUM position**
+
+| Item | Decision |
+| --- | --- |
+| Own clearing adapter with stored tokens | **Not now.** The mapping suggests a Cardcom adapter with built in tokens. That puts card handling and its processor obligations inside our system for a practice that charges a handful of customers by transfer or cheque. Keep `lalum-pay` links as they are (decision G5). Revisit only if card charges become a meaningful share |
+| Card data | Never store a card number or CVV. If clearing is ever added: last four digits and the processor token only, refunds tied to a charge id and capped at the remaining amount, an automatic credit invoice |
+| Receipt now, invoice at each installment date | Not needed. Our pattern is a monthly retainer and prepaid cheques, handled by receipts on account (section 9) |
+| Payment page and transfer links | P3, only through `lalum-pay`. An Open Finance provider is worth a look for large fees because it avoids clearing commission. Not before the core ledger is in use |
+| Clearing log | Not applicable without clearing |
 
 ## 9. Build order for LALUM
 
