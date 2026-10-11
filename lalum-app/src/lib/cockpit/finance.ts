@@ -15,7 +15,11 @@ export interface FinCustomer {
   is_casual: boolean;
 }
 export interface FinDocument {
-  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
+  // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
+  // SEALED/VOID (migration 0016) belong to the own engine's not-yet-live sealing pipeline: today a
+  // document can reach SEALING (lalum_fin_seal_document), never ALLOCATED or SEALED, since the edge
+  // function for the Tax Authority call is deliberately not built yet (finance-engine-design.md).
+  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED" | "SEALING" | "ALLOCATED" | "SEALED" | "VOID"; subject: string;
   tax_included: boolean; vat_rate: number; lines: Line[]; subtotal: number; vat_amount: number; total: number;
   issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
   related_doc_id: string | null; send_email: boolean; doc_number: number | null; i4u_doc_id: string | null; allocation_number: string | null;

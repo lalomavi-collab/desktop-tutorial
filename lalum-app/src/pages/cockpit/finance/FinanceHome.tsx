@@ -7,13 +7,14 @@ import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
+import { ShaamExportTab } from "./ShaamExportTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
-export function FinanceHome({ firmId }: { firmId: string }) {
+export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: string }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [customers, setCustomers] = useState<FinCustomer[]>([]);
   const [docs, setDocs] = useState<FinDocument[]>([]);
@@ -93,6 +94,7 @@ export function FinanceHome({ firmId }: { firmId: string }) {
       {tab === "customers" && loaded && <CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} />}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} />}
+      {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
   );
 }
