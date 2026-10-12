@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { Icon } from "../../components/Icon";
+import { Wordmark } from "../../components/Wordmark";
 import { AreaChart, Donut, PillBars, StatusBar } from "../../components/cockpit/CockpitCharts";
 import { FolderArt, ImportArt, InboxArt, ShieldArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
@@ -59,7 +60,11 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
       </div>
 
       <div className="db-hero">
-        <div className="db-greet"><small>{greeting()}</small><h2>{name}</h2><p>{firmName}</p></div>
+        <div className="db-greet">
+          <div className="db-brand"><Wordmark height={30} className="db-logo" /></div>
+          <p className="db-hello"><small>{greeting()}</small><strong>{name}</strong></p>
+          {firmName.trim().toLowerCase() !== "lalum" && <p className="db-firm">{firmName}</p>}
+        </div>
         <div className="db-actions">
           <Link className="db-act" to="/workspace"><FolderArt size={84} /><span>תיק חדש<small>העלאת מסמך או הדבקת טקסט</small></span></Link>
           <Link className="db-act" to="/workspace/import"><ImportArt size={84} /><span>ייבוא תיקים<small>תיקייה שלמה בבת אחת</small></span></Link>

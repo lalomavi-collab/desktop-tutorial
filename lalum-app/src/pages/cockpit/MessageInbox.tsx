@@ -137,11 +137,6 @@ function MessageInboxInner({ canView }: { canView: boolean }) {
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-        <span className="icon-badge"><Icon name="gavel" size={20} /></span>
-        <h2 className="h3" style={{ fontSize: 22 }}>{P.inbox.title}</h2>
-      </div>
-      <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.inbox.intro}</p>
       {inbox.length === 0 ? (
         <p className="muted" style={{ fontSize: 14 }}>{P.inbox.none}</p>
       ) : (

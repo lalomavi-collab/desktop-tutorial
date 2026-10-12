@@ -70,11 +70,6 @@ function ClientDocumentsInner({ canView }: { canView: boolean }) {
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-        <span className="icon-badge"><Icon name="folder" size={20} /></span>
-        <h2 className="h3" style={{ fontSize: 22 }}>מסמכי לקוחות</h2>
-      </div>
-      <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>כל הקבצים שהעלו הלקוחות, מסודרים בתיקייה לכל לקוח. אפשר להוריד קובץ בודד, או את כל תיקיית הלקוח כקובץ zip אחד למחשב.</p>
       {docsState === "loading" && <p className="muted" style={{ fontSize: 14 }}>טוען מסמכים...</p>}
       {docsState === "unavailable" && <p className="muted" style={{ fontSize: 14 }}>שירות המסמכים אינו פעיל כרגע.</p>}
       {docsState === "ready" && adminDocs.length === 0 && <p className="muted" style={{ fontSize: 14 }}>אין עדיין מסמכי לקוחות.</p>}

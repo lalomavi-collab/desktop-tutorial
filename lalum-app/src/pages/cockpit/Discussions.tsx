@@ -78,18 +78,7 @@ function DiscussionsInner({ canModerate }: { canModerate: boolean }) {
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-        <span className="icon-badge"><Icon name="quote" size={20} /></span>
-        <h2 className="h3" style={{ fontSize: 22 }}>דיונים ציבוריים</h2>
-        {pending > 0 && (
-          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>
-            {pending} ממתינות
-          </span>
-        )}
-      </div>
-      <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>
-        שאלות מהפאנל הציבורי בעמודי הנדל״ן וה-AI. שאלה מתפרסמת רק אחרי שנענתה כאן.
-      </p>
+      {pending > 0 && <div className="ck-meta" style={{ marginBottom: 16 }}>{pending} ממתינות לאישור</div>}
       {visible.length === 0 ? (
         <p className="muted" style={{ fontSize: 14 }}>אין שאלות עדיין.</p>
       ) : (
