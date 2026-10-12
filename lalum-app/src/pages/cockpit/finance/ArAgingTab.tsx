@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { rpcError, sendReminder, sendReminderError } from "../../../lib/cockpit/financeApi";
-import { ACCOUNTING_BASIS } from "../../../lib/cockpit/finance";
+import { ACCOUNTING_BASIS, whatsappConsentActive } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
 import {
   BUCKETS, BUCKET_LABEL, COOLDOWN_DAYS, DSO_MIN_SAMPLE, TIER_LABEL, agingReport, cooldownState, dsoByCustomer, lastReminderOn,
@@ -152,7 +152,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
                   <div className="ck-meta">אפשר לערוך את הטיוטה. ההודעה נשלחת כפי שהיא מופיעה כאן, ללקוח בכתובת שבכרטיסו. וואטסאפ נשלח כתבנית מאושרת ואינו משתמש בנוסח הזה.</div>
                   <div className="fin-actions">
                     <button className="ck-btn sm primary" disabled={busy || blocked !== null || !byId.get(c.customerId)?.email} onClick={() => void send(c, tier, "EMAIL", false, edited[c.customerId] ?? reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue)))}>{blocked === "COOLDOWN" ? "בהמתנה" : "שליחה בדוא\"ל"}</button>
-                    <button className="ck-btn sm" disabled={busy || blocked !== null || !byId.get(c.customerId)?.phone} onClick={() => void send(c, tier, "WHATSAPP", false, "")}>שליחה ב-WhatsApp</button>
+                    <button className="ck-btn sm" disabled={busy || blocked !== null || !byId.get(c.customerId)?.phone || !whatsappConsentActive(byId.get(c.customerId))} title={whatsappConsentActive(byId.get(c.customerId)) ? undefined : "אין הסכמה רשומה ל-WhatsApp. רשמו אותה בכרטיס הלקוח."} onClick={() => void send(c, tier, "WHATSAPP", false, "")}>שליחה ב-WhatsApp</button>
                     <button className="ck-btn sm" disabled={busy} onClick={() => void send(c, tier, "EMAIL", true, edited[c.customerId] ?? reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue)))}>בדיקה אליי</button>
                     <button className="ck-btn sm" disabled={busy || blocked !== null} onClick={() => logReminder(c.customerId, tier)}>רישום ידני (נשלח מחוץ למערכת)</button>
                   </div>

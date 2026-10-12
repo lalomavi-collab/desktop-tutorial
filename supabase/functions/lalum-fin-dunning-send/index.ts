@@ -6,6 +6,7 @@
 //    [בדיקה], and is neither logged nor counted toward the cooldown.
 //  * WHATSAPP: sent only as an approved template (WHATSAPP_DUNNING_TEMPLATE_1/2/3), because Meta rejects business-initiated free text outside
 //    the 24 hour window. name, amount and days fill the template. Without a configured template the call fails with template_not_configured.
+//    Needs the customer's recorded consent to WhatsApp messages (migration 0036); without it the call fails with no_whatsapp_consent.
 //  * The 7 day cooldown and the send record are kept by the database (lalum_fin_dunning_reserve / lalum_fin_dunning_finish): a row is
 //    reserved BEFORE sending, so a double click cannot send twice, and marked SENT or FAILED after. A FAILED send does not use the cooldown.
 //
@@ -45,7 +46,7 @@ Deno.serve(async (req) => {
   const test = b.test === true;
   if (test && b.channel !== "EMAIL") return json(400, { code: "test_email_only" });
 
-  const { data: c } = await asUser.from("lalum_fin_customers").select("id, firm_id, name, email, phone, archived").eq("id", b.customer_id).maybeSingle();
+  const { data: c } = await asUser.from("lalum_fin_customers").select("id, firm_id, name, email, phone, archived, whatsapp_consent_at, whatsapp_consent_revoked_at").eq("id", b.customer_id).maybeSingle();
   if (!c || c.firm_id !== firmId) return json(404, { code: "customer_not_found" });
   if (c.archived) return json(409, { code: "customer_archived" });
 
@@ -58,6 +59,8 @@ Deno.serve(async (req) => {
     if (!isEmail(to)) return json(422, { code: test ? "no_own_email" : "no_email" });
     if (!env("RESEND_API_KEY")) return json(500, { code: "mail_not_configured" });
   } else {
+    // Meta requires the customer's consent to WhatsApp messages from the business. The database enforces it too (lalum_fin_dunning_reserve).
+    if (!c.whatsapp_consent_at || c.whatsapp_consent_revoked_at) return json(422, { code: "no_whatsapp_consent" });
     const phone = normalizeIsraeliPhone(c.phone);
     if (!phone) return json(422, { code: "no_mobile" });
     const tpl = templateName(tier, env);
@@ -75,8 +78,8 @@ Deno.serve(async (req) => {
     const { data: id, error } = await asUser.rpc("lalum_fin_dunning_reserve", { p_customer: c.id, p_tier: tier, p_channel: b.channel, p_recipient: to, p_body: bodyText });
     if (error) {
       const m = error.message ?? "";
-      const code = ["COOLDOWN_ACTIVE", "FORBIDDEN", "BAD_TIER", "BAD_CHANNEL", "NO_RECIPIENT"].find((k) => m.includes(k)) ?? "reserve_failed";
-      return json(code === "COOLDOWN_ACTIVE" ? 409 : code === "FORBIDDEN" ? 403 : 400, { code: code.toLowerCase() });
+      const code = ["COOLDOWN_ACTIVE", "FORBIDDEN", "BAD_TIER", "BAD_CHANNEL", "NO_RECIPIENT", "NO_WHATSAPP_CONSENT"].find((k) => m.includes(k)) ?? "reserve_failed";
+      return json(code === "COOLDOWN_ACTIVE" ? 409 : code === "FORBIDDEN" ? 403 : code === "NO_WHATSAPP_CONSENT" ? 422 : 400, { code: code.toLowerCase() });
     }
     rowId = id as string;
   }
