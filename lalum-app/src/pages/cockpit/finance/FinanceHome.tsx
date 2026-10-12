@@ -54,7 +54,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
       supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
     ]);
-    // The reminder log and cash settings arrive with migration 0026; until it is applied they read empty and the tabs still render.
+    // The reminder log and cash settings arrive with migration 0031; until it is applied they read empty and the tabs still render.
     setDunning((dl.data as DunningEntry[] | null) ?? []);
     setCashSettings(cs.data ? { ...(cs.data as SettingsRow), opening_balance: Number((cs.data as SettingsRow).opening_balance), credit_facility: Number((cs.data as SettingsRow).credit_facility), safety_reserve: Number((cs.data as SettingsRow).safety_reserve) } : null);
     setCashRows(((ci.data as Array<ManualRow & { projected_amount: number | string }> | null) ?? []).map((r) => ({ ...r, projected_amount: Number(r.projected_amount) })));
@@ -117,7 +117,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
-      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} />}
+      {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
       {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} onChange={() => void load()} /></Gate>}
       {tab === "cashflow" && loaded && <Gate level={level} need={4}><CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} /></Gate>}

@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { money } from "../../../lib/cockpit/shared";
-import { monthPeriod } from "../../../lib/cockpit/finance";
-import type { ArchiveDoc, FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
+import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
+import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../lib/cockpit/finance";
 import { supabase } from "../../../lib/supabase";
 import { AGING_BUCKETS, INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows, receivablesAging, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
-export function ReportsTab({ docs, archive, customers, payments }: { docs: FinDocument[]; archive: ArchiveDoc[]; customers: FinCustomer[]; payments: FinPayment[] }) {
+export function ReportsTab({ docs, archive, customers, payments, expenses }: { docs: FinDocument[]; archive: ArchiveDoc[]; customers: FinCustomer[]; payments: FinPayment[]; expenses: FinExpense[] }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1); // 0 means the whole year
-  const period = month === 0 ? { from: `${year}-01-01`, to: `${year}-12-31` } : monthPeriod(year, month);
+  // 0 is the whole year, 1 to 12 a month, 101 to 106 a two month VAT period (January and February, and so on).
+  const period = month === 0 ? { from: `${year}-01-01`, to: `${year}-12-31` }
+    : month > 100 ? { from: monthPeriod(year, (month - 100) * 2 - 1).from, to: monthPeriod(year, (month - 100) * 2).to }
+    : monthPeriod(year, month);
   const rows = incomeRows(docs, archive, customers, period);
   const income = incomeByKind(rows);
   const byCustomer = revenueByCustomer(rows);
   const today = now.toISOString().slice(0, 10);
   const aging = receivablesAging(docs, payments, customers, today);
-  const title = month === 0 ? `${year}` : `${MONTHS[month - 1]} ${year}`;
+  const title = month === 0 ? `${year}` : month > 100 ? `${MONTHS[(month - 100) * 2 - 2]} עד ${MONTHS[(month - 100) * 2 - 1]} ${year}` : `${MONTHS[month - 1]} ${year}`;
+  const vat = summarize(docs, payments, expenses, period, archive);
 
   const [mail, setMail] = useState<{ ok: boolean; text: string } | null>(null);
   async function sendTest() {
@@ -48,7 +52,7 @@ export function ReportsTab({ docs, archive, customers, payments }: { docs: FinDo
     <div className="ck-stack">
       <div className="ck-row">
         <select className="ck-select" aria-label="חודש" value={month} onChange={(e) => setMonth(Number(e.target.value))} style={{ maxWidth: 160 }}>
-          <option value={0}>כל השנה</option>{MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+          <option value={0}>כל השנה</option>{MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}{[1, 2, 3, 4, 5, 6].map((k) => <option key={k} value={100 + k}>{MONTHS[k * 2 - 2]} עד {MONTHS[k * 2 - 1]}</option>)}
         </select>
         <select className="ck-select" aria-label="שנה" value={year} onChange={(e) => setYear(Number(e.target.value))} style={{ maxWidth: 120 }}>
           {[0, 1, 2, 3].map((k) => <option key={k} value={now.getFullYear() - k}>{now.getFullYear() - k}</option>)}
@@ -72,6 +76,17 @@ export function ReportsTab({ docs, archive, customers, payments }: { docs: FinDo
           </div>))}
         <div className="fin-figure">סה"כ הכנסות לפני מע"מ: {money(income.net)}</div>
         <div className="ck-meta">מע"מ עסקאות <bdi>{money(income.vat)}</bdi>, סה"כ כולל מע"מ <bdi>{money(income.total)}</bdi>. זיכויים מופחתים. לפי תאריך המסמך. מסמכי בדיקה לא נכללים. דוח לעיון, ושיטת ההכרה בהכנסה נקבעת מול רואה החשבון.</div>
+      </div>
+
+      <div className="ck-card ck-stack">
+        <div className="ck-title">דוח מע"מ לתקופה, {title}</div>
+        <div className="ck-table-wrap"><table className="ck-table"><tbody>
+          <tr><td>עסקאות חייבות לפני מע"מ</td><td className="fin-ltr">{money(vat.revenueNet)}</td></tr>
+          <tr><td>מע"מ עסקאות</td><td className="fin-ltr">{money(vat.vatOut)}</td></tr>
+          <tr><td>מע"מ תשומות לניכוי</td><td className="fin-ltr">{money(vat.vatIn)}</td></tr>
+          <tr><td><b>מע"מ לתשלום (או להחזר)</b></td><td className="fin-ltr"><b>{money(vat.vatPayable)}</b></td></tr>
+        </tbody></table></div>
+        <div className="ck-meta">נתוני עזר לרואה החשבון, לא דיווח. התשומות לפי ההוצאות שהוזנו ידנית ושיעור הניכוי שנקבע בכל הוצאה. כוללים את הארכיון של Invoice4U. קובץ PCN874 עדיין לא מופק, והוא ייבנה רק אחרי שהרו"ח תאשר את המבנה.</div>
       </div>
 
       <div className="ck-card ck-stack">

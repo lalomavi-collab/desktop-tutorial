@@ -15,7 +15,7 @@ export interface FinCustomer {
   is_casual: boolean;
   /** Template for a monthly DRAFT. Never issued automatically. */
   retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
-  /** Collections control (migration 0026). DSO is a cache of what arAging.ts computes from the ledger. */
+  /** Collections control (migration 0031). DSO is a cache of what arAging.ts computes from the ledger. */
   historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
   is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
 }
