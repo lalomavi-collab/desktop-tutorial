@@ -5,7 +5,7 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
-import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { GroupChat } from "../components/GroupChat";
 import { PortalSigning } from "../components/PortalSigning";
@@ -121,16 +121,7 @@ export function Portal() {
   const [thread, setThread] = useState<MsgRow[]>([]);
 
   const [myBills, setMyBills] = useState<Milestone[]>([]);
-  const [allBills, setAllBills] = useState<Milestone[]>([]);
   const [payBusy, setPayBusy] = useState<string | undefined>();
-  const [billEmail, setBillEmail] = useState("");
-  const [billName, setBillName] = useState("");
-  const [billPhone, setBillPhone] = useState("");
-  const [billTitle, setBillTitle] = useState("");
-  const [billAmount, setBillAmount] = useState("");
-  const [billCurrency, setBillCurrency] = useState("ILS");
-  const [billBusy, setBillBusy] = useState(false);
-  const [billMsg, setBillMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   // Bank-transfer (Bank Leumi) declaration by the client.
   const [transferOpen, setTransferOpen] = useState(false);
@@ -157,9 +148,6 @@ export function Portal() {
     if (own.data) setThread(own.data as MsgRow[]);
     const mine = await supabase.from("billing_milestones").select("*").order("created_at", { ascending: false });
     if (mine.data) setMyBills(mine.data as Milestone[]);
-    if (admin) {
-      setAllBills((mine.data as Milestone[]) ?? []);
-    }
   }, [user]);
 
   async function payMilestone(id: string) {
@@ -181,46 +169,6 @@ export function Portal() {
       else throw new Error("no_url");
     } catch {
       window.alert(t.ui.portal.billing.payErr);
-      setPayBusy(undefined);
-    }
-  }
-
-  async function createMilestone(e: FormEvent) {
-    e.preventDefault();
-    const B = t.ui.portal.billing;
-    if (!supabase || !billTitle.trim() || !billAmount) return;
-    setBillBusy(true);
-    setBillMsg(null);
-    try {
-      const { error } = await supabase.from("billing_milestones").insert({ client_email: billEmail || null, client_name: billName || null, client_phone: billPhone || null, title: billTitle.trim(), amount: Number(billAmount), currency: billCurrency });
-      if (error) throw error;
-      setBillMsg({ tone: "ok", text: B.createdOk });
-      setBillTitle("");
-      setBillAmount("");
-      setBillEmail("");
-      setBillName("");
-      setBillPhone("");
-      await loadMessages();
-    } catch (err) {
-      setBillMsg({ tone: "err", text: err instanceof Error ? err.message : B.err });
-    } finally {
-      setBillBusy(false);
-    }
-  }
-
-  async function copyPayLink(id: string) {
-    if (!supabase) return;
-    setPayBusy(id);
-    try {
-      const { data, error } = await supabase.functions.invoke("lalum-pay-create", { body: { milestone_id: id } });
-      if (error) throw error;
-      if (data?.url) {
-        try { await navigator.clipboard.writeText(data.url as string); } catch { window.prompt("Link", data.url as string); }
-        await loadMessages();
-      }
-    } catch {
-      window.alert(t.ui.portal.billing.payErr);
-    } finally {
       setPayBusy(undefined);
     }
   }
@@ -441,88 +389,8 @@ export function Portal() {
       {/* The public-discussions review queue now lives in the cockpit
           (/workspace/discussions), reached from the "management" card. */}
 
-      {/* ADMIN BILLING (firm only) */}
-      {isAdmin && (
-        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", rowGap: 10, marginBottom: 8 }}>
-            <span className="icon-badge"><Icon name="scale" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.billing.adminTitle}</h2>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{P.billing.adminOnly}</span>
-            {accountingDashboardEnabled && (
-              <a
-                className="btn btn-ghost btn-sm"
-                href={accountingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginInlineStart: "auto" }}
-              >
-                <Icon name="file" size={15} /> {P.billing.dashboard}
-              </a>
-            )}
-          </div>
-          <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.billing.adminIntro}</p>
-          <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
-            <div className="grid grid-2" style={{ gap: 12 }}>
-              <div>
-                <div className="label">{P.billing.clientEmail}</div>
-                <input className="field" value={billEmail} onChange={(e) => setBillEmail(e.target.value)} placeholder={P.billing.clientEmailPh} dir="ltr" />
-              </div>
-              <div>
-                <div className="label">{P.billing.itemTitle}</div>
-                <input className="field" value={billTitle} onChange={(e) => setBillTitle(e.target.value)} placeholder={P.billing.itemTitlePh} />
-              </div>
-            </div>
-            <div className="grid grid-2" style={{ gap: 12 }}>
-              <div>
-                <div className="label">{P.billing.clientName}</div>
-                <input className="field" value={billName} onChange={(e) => setBillName(e.target.value)} placeholder={P.billing.clientNamePh} />
-              </div>
-              <div>
-                <div className="label">{P.billing.clientPhone}</div>
-                <input className="field" value={billPhone} onChange={(e) => setBillPhone(e.target.value)} placeholder={P.billing.clientPhonePh} dir="ltr" inputMode="tel" />
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
-              <div style={{ flex: 1 }}>
-                <div className="label">{P.billing.amount}</div>
-                <input className="field" value={billAmount} onChange={(e) => setBillAmount(e.target.value.replace(/[^\d.]/g, ""))} placeholder={P.billing.amountPh} dir="ltr" inputMode="decimal" />
-              </div>
-              <div style={{ width: 100 }}>
-                <select className="field" value={billCurrency} onChange={(e) => setBillCurrency(e.target.value)} dir="ltr">
-                  <option value="ILS">ILS ₪</option>
-                  <option value="USD">USD $</option>
-                  <option value="EUR">EUR €</option>
-                </select>
-              </div>
-              <button className="btn btn-clay btn-sm" disabled={billBusy || !billTitle.trim() || !billAmount} style={{ whiteSpace: "nowrap" }}>
-                {billBusy ? P.billing.creating : P.billing.create}
-              </button>
-            </div>
-          </form>
-          {billMsg && <div className={`notice ${billMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginBottom: 16 }}>{billMsg.text}</div>}
-
-          {allBills.length > 0 && (
-            <div>
-              <div className="label">{P.billing.allTitle}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-                {allBills.map((bl) => (
-                  <div key={bl.id} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
-                    <div style={{ flex: 1, minWidth: 140 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14 }}>{bl.title}</div>
-                      <div className="muted" style={{ fontSize: 12 }} dir="ltr">{bl.client_email}</div>
-                    </div>
-                    <span dir="ltr" style={{ fontWeight: 700 }}>{fmtMoney(bl.amount, bl.currency)}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</span>
-                    {bl.status !== "paid" && (
-                      <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : P.billing.copyLink}</button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Client billing (payment requests) now lives in the cockpit
+          (/workspace/payments), reached from the "management" card. */}
 
       {/* CUSTOMER SERVICE MESSAGE */}
       <div className="card" style={{ padding: 34, marginBottom: 28 }}>

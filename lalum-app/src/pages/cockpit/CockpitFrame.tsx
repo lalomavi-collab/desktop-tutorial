@@ -20,6 +20,7 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
   ["/workspace/calls", "שיחות נכנסות", false, "headset"],
   ["/workspace/inbox", "תיבת הודעות", false, "gavel"],
+  ["/workspace/payments", "גביית לקוחות", false, "scale"],
   ["/workspace/tasks", "משימות", false, "check"],
   ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
   ["/workspace/scorecard", "מדדי שירות", false, "scale"],
