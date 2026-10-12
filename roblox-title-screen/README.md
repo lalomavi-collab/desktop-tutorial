@@ -13,6 +13,7 @@ Sample Luau scripts. They were syntax checked only, never run in Roblox Studio.
 | `tack/TestSetup.server.lua` | ServerScriptService (test horse and racks, delete when real assets exist) |
 | `WorldBuilder.server.lua` | ServerScriptService (terrain, river with banks, stable, paddock, trees) |
 | `HorseAI.server.lua` | ServerScriptService (horses wander in the paddock) |
+| `SettingsUI.client.lua` | StarterPlayer > StarterPlayerScripts (the SETTINGS button opens it) |
 | `LightingSetup.server.lua` | ServerScriptService (light, haze, day and night cycle) |
 | `MaterialSetup.server.lua` | ServerScriptService (PBR textures on tagged parts) |
 
