@@ -4,7 +4,8 @@
 // Direct method: only cash movements, never accruals. Weeks end on Friday. Week 1 runs from today to the first Friday
 // on or after today, so it can be shorter than seven days.
 //
-// What counts as an inflow: the open balance of issued, non test INVOICE documents (via agingReport), placed in the
+// What counts as an inflow: the open receivables (via agingReport, which follows ACCOUNTING_BASIS: open pro formas on the cash
+// basis, unpaid invoices on the accrual basis), placed in the
 // week of its EXPECTED payment date, issue date plus the customer's historical DSO, not the contractual due date.
 // Pro formas, drafts and test documents are never inflows. Client trust money is not in this ledger at all.
 //
@@ -15,7 +16,8 @@
 //  * An invoice more than EXCLUDE_AFTER_DAYS past due is left out of the forecast and reported separately.
 // Outflows come from the partner's weekly plan in lalum_cash_forecast_items (see manualToItems), not from a second store.
 import { r2 } from "./finance.ts";
-import type { FinCustomer, FinDocument, FinPayment } from "./finance.ts";
+import { ACCOUNTING_BASIS } from "./finance.ts";
+import type { Basis, FinCustomer, FinDocument, FinPayment } from "./finance.ts";
 import { addDays, agingReport, computeDso, daysBetween, DSO_MIN_SAMPLE, dueDateOf } from "./arAging.ts";
 
 export const HORIZON_WEEKS = 13;
@@ -105,17 +107,18 @@ export function monthlyToWeekly(amount: number, days: number[], today: string): 
 
 // ---- inflow plan ----
 
-export interface PlanOptions { latePushDays?: number; excludeAfterDays?: number; minSample?: number }
+export interface PlanOptions { latePushDays?: number; excludeAfterDays?: number; minSample?: number; basis?: Basis }
 
 /** Expected payment date per open invoice, from DSO behaviour and not from the contractual due date. */
 export function planInflows(customers: FinCustomer[], docs: FinDocument[], pays: FinPayment[], today: string, opt: PlanOptions = {}): Plan {
   const push = opt.latePushDays ?? LATE_PUSH_DAYS, cutoff = opt.excludeAfterDays ?? EXCLUDE_AFTER_DAYS, minSample = opt.minSample ?? DSO_MIN_SAMPLE;
-  const aging = agingReport(customers, docs, pays, today);
-  const firm = computeDso(docs, pays, today);
+  const basis = opt.basis ?? ACCOUNTING_BASIS;
+  const aging = agingReport(customers, docs, pays, today, basis);
+  const firm = computeDso(docs, pays, today, undefined, basis);
   const invoiceById = new Map(docs.map((d) => [d.id, d]));
   const inflows: Inflow[] = [], excluded: Excluded[] = [];
   for (const c of aging.customers) {
-    const own = computeDso(docs, pays, today, c.customerId);
+    const own = computeDso(docs, pays, today, c.customerId, basis);
     for (const row of c.rows) {
       if (row.daysPastDue > cutoff) { excluded.push({ documentId: row.documentId, customerName: c.name, balance: row.balance, daysPastDue: row.daysPastDue }); continue; }
       const inv = invoiceById.get(row.documentId)!;

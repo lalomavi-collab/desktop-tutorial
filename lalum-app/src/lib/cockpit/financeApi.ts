@@ -33,6 +33,7 @@ const RPC_ERRORS: Record<string, string> = {
   BAD_PERIOD: "חודש לא תקין.",
   CASUAL_NOT_ALLOWED: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.", BAD_LINES: "יש להזין בין שורה אחת ל-60 שורות.", BAD_LINE_NAME: "לכל שורה נדרש תיאור.",
   BAD_LINE_AMOUNT: "כמות ומחיר חייבים להיות גדולים מאפס.", NOT_A_DRAFT: "אפשר לערוך או למחוק טיוטה בלבד.",
+  BILLING_LOCKED: "החיוב ללקוח הזה חסום בגלל חובות פתוחים מעל 60 יום. שותף יכול לאשר חריג מוגבל בזמן.",
   ISSUED_DOCUMENT_IMMUTABLE: "מסמך שהופק אינו ניתן לשינוי. לביטול הפיקו חשבונית זיכוי.",
 };
 export const rpcError = (message: string): string => RPC_ERRORS[Object.keys(RPC_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
