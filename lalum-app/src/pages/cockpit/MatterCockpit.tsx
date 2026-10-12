@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STATUS, PRACTICE, RESPONSE, STEPS } from "../../lib/cockpit/shared";
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
 import { originals } from "../../lib/cockpit/originals";
+import { BLOCKED, openPendingWindow, printInto } from "../../lib/cockpit/printWindow";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
@@ -189,8 +190,11 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   }
   async function doExport(kind: "word" | "pdf", restoreNames: boolean) {
     if (!doc) return;
+    // Open the print window now, inside the click, before waiting for the server (see printWindow.ts).
+    const w = kind === "pdf" ? openPendingWindow() : null;
+    if (kind === "pdf" && !w) { setGateMsg(BLOCKED); return; }
     const r = await callPipeline("/api/v1/documents/export", { document_id: doc.id });
-    if (!r.ok || r.content == null) { setGateMsg(errorText(r)); return; }
+    if (!r.ok || r.content == null) { w?.close(); setGateMsg(errorText(r)); return; }
     const map = tokenMap(doc.id);
     const content = map && restoreNames ? restore(r.content, map) : r.content;
     const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -200,10 +204,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       a.href = URL.createObjectURL(new Blob(["﻿", html], { type: "application/msword" }));
       a.download = `${(r.file_name ?? "document").replace(/\.[^.]+$/, "") || "document"}.doc`;
       document.body.appendChild(a); a.click(); a.remove();
-    } else {
-      const w = window.open("", "_blank");
-      if (!w) { setGateMsg("הדפדפן חסם את חלון ההדפסה."); return; }
-      w.document.write(html); w.document.close(); w.focus(); window.setTimeout(() => w.print(), 300);
+    } else if (w) {
+      printInto(w, html);
     }
   }
   async function setResponse(v: string) {
