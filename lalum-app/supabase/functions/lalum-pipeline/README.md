@@ -40,7 +40,7 @@ no import map). Deploy with the Supabase MCP `deploy_edge_function` or `supabase
 lalum-pipeline`, with `verify_jwt` false as it is today. The change is safe in any order against the
 migration: if `lalum_token_floor` is missing the route falls back to the old behaviour.
 
-## Version 22 (in the repo, not deployed): conflict role policy
+## Version 22 (deployed 2026-10-12): conflict role policy
 
 A name that repeats across matters is flagged only when at least one side is a declared party (CLIENT or
 ADVERSE). Two undeclared mentions (OTHER on both sides) are ignored. Why: in production 8 of 10 matters were
