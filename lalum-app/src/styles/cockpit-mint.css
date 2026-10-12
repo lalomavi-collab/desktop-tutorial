@@ -97,3 +97,58 @@
 .ck-sidebar-foot button.ck-theme:hover { background: var(--clay-tint); }
 [data-ck-theme="mint"] .ck-sidebar-foot button.ck-theme:hover { background: rgba(255, 255, 255, .16); }
 @media (max-width: 860px) { .ck-sidebar-foot button.ck-theme span { display: none; } .ck-sidebar-foot button.ck-theme { width: auto; padding: 10px; } }
+
+/* ------------------------------------------------------------------
+   Professional icon rail (desktop). A narrow, flush rail: the icon above a
+   short label, three groups split by hairlines, the current page marked by a
+   tinted tile and an accent bar on the outer edge. It replaces the wide
+   floating green block and its filled pill buttons, and works in both the
+   mint and the dark theme because every colour is a theme token. Below
+   861px the existing compact row above the content is kept untouched.
+   ------------------------------------------------------------------ */
+@media (min-width: 861px) {
+  .ck-root.ck-with-sidebar[data-ck-theme] { padding: 0; gap: 0; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar {
+    width: 96px; margin: 0; top: 0; height: 100dvh; border-radius: 0; padding: 14px 8px 10px; gap: 0; overflow: hidden;
+    background: var(--card); border: 0; border-inline-end: 1px solid var(--line); box-shadow: none;
+  }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand { padding: 4px 4px 14px; margin-bottom: 6px; border-bottom: 1px solid var(--line); display: flex; justify-content: center; color: var(--ink); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand svg { height: 11px; width: auto; max-width: 100%; color: var(--ink); }
+  /* Only the list scrolls (scrollbar hidden), so the footer actions never leave the screen on a short window. */
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav { gap: 1px; flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav::-webkit-scrollbar { display: none; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[data-group-start] { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); border-top-left-radius: 0; border-top-right-radius: 0; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme {
+    flex-shrink: 0; position: relative; flex-direction: column; justify-content: flex-start; gap: 3px; width: 100%; min-height: 0;
+    padding: 7px 3px 6px; border-radius: 10px; background: transparent; box-shadow: none; border: 0;
+    font-size: 11.5px; font-weight: 600; line-height: 1.2; text-align: center; color: var(--slate);
+    text-wrap: balance; overflow-wrap: anywhere;
+  }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a svg,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a svg,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button svg { width: 20px; height: 20px; color: var(--slate); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a:hover,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a:hover,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme:hover { background: color-mix(in srgb, var(--clay) 9%, transparent); color: var(--ink); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a:hover svg,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a:hover svg { color: var(--clay); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] { background: color-mix(in srgb, var(--clay) 14%, transparent); color: var(--ink); font-weight: 700; box-shadow: none; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] svg { color: var(--clay); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"]::after {
+    content: ""; position: absolute; inset-block: 8px; inset-inline-start: -8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--clay);
+  }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a:focus-visible,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a:focus-visible,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  /* Unread count sits on the icon's corner instead of pushing the label sideways. */
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav .ck-navbadge { position: absolute; top: 1px; inset-inline-end: 18px; margin: 0; min-width: 18px; height: 18px; font-size: 10.5px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot { border-top: 1px solid var(--line); padding-top: 6px; gap: 0; flex-shrink: 0; margin-top: 4px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout svg { color: var(--danger); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout:hover { background: color-mix(in srgb, var(--danger) 10%, transparent); }
+  /* The labels of the footer buttons were hidden at 860px by an older rule; on desktop they show again under the icon. */
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme span { display: inline; }
+}

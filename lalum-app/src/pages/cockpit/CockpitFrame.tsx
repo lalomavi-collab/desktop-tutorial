@@ -36,6 +36,9 @@ const NAV: Array<[string, string, boolean, string]> = [
   ["/workspace/guide", "מדריך", true, "book"],
 ];
 
+// The rail is drawn in three groups with a hairline between them: daily work, working tools, and the firm's settings.
+const GROUP_START = new Set(["/workspace/scorecard", "/settings/members"]);
+
 // Every framed screen opens with a band: an illustration beside its own description. The dashboard and the matter list carry their own hero.
 const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/workspace/inquiries": InboxArt, "/workspace/tasks": TasksArt, "/workspace/scorecard": ChartArt, "/workspace/import": ImportArt,
@@ -102,7 +105,7 @@ export function CockpitFrame({
         <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
           {NAV.map(([to, label, end, icon]) => (
-            <NavLink key={to} to={to} end={end || to === "/workspace"}>
+            <NavLink key={to} to={to} end={end || to === "/workspace"} data-group-start={GROUP_START.has(to) ? "" : undefined}>
               <Icon name={icon} size={22} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
             </NavLink>
           ))}
