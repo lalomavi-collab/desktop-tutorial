@@ -105,6 +105,7 @@ const TRUST_ERRORS: Record<string, string> = {
   "lalum_trust_statement_correct": "תיקון דפי בנק עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0032.",
   VALUE_DATE_IN_FUTURE: "תאריך ערך לא יכול להיות עתידי.", VALUE_DATE_BEFORE_ACCOUNT_OPENED: "תאריך ערך מוקדם מפתיחת חשבון הנאמנות.",
   "p_value_date": "תאריך ערך עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0033, או לרשום בלי תאריך ערך.",
+  ACCOUNT_LOCKED_HAS_MOVEMENTS: "בחשבון יש תנועות או דפי בנק, ולכן פרטיו נעולים. סגרו אותו (ביתרה אפס) ופתחו חשבון חדש.",
   EXCEEDS_OPEN_AMOUNT: "הסכום גבוה מהיתרה הפתוחה בחשבונית.",
 };
 export const trustError = (message: string): string => TRUST_ERRORS[Object.keys(TRUST_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
