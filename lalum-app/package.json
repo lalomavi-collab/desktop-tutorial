@@ -21,6 +21,7 @@
     "shaam-check": "node scripts/shaam-check.mjs",
     "ar-aging-check": "node scripts/ar-aging-check.mjs",
     "cashflow-check": "node scripts/cashflow-check.mjs",
+    "dunning-send-check": "node scripts/dunning-send-check.mjs",
     "token-floor-check": "node scripts/token-floor-check.mjs",
     "address-check": "node scripts/address-check.mjs",
     "popup-check": "node scripts/popup-check.mjs"

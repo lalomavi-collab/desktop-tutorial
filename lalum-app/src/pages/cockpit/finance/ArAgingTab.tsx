@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { rpcError } from "../../../lib/cockpit/financeApi";
+import { rpcError, sendReminder, sendReminderError } from "../../../lib/cockpit/financeApi";
 import { ACCOUNTING_BASIS } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
 import {
@@ -26,6 +26,8 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
   const dso = useMemo(() => dsoByCustomer(customers, docs, payments, today), [customers, docs, payments, today]);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [draftFor, setDraftFor] = useState<string | null>(null);
+  const [edited, setEdited] = useState<Record<string, string>>({});
+  const byId = useMemo(() => new Map(customers.map((c) => [c.id, c])), [customers]);
   const [channel, setChannel] = useState("EMAIL");
   const [busy, setBusy] = useState(false);
 
@@ -58,6 +60,20 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
     } else if (!window.confirm("לבטל את החריג? רישום שעות חדשות ייחסם שוב.")) return;
     void run(() => supabase!.rpc("lalum_fin_override_collections_lock", { p_customer: id, p_days: days, p_reason: reason }), cancel ? "החריג בוטל." : "החריג אושר.");
   };
+  /** Sends on the partner's click. The recipient is chosen by the server from the customer card; the dialog only shows it for confirmation. */
+  async function send(row: { customerId: string; name: string; total: number; oldestDaysPastDue: number }, tier: 1 | 2 | 3, channel: "EMAIL" | "WHATSAPP", test: boolean, text: string) {
+    if (busy) return;
+    const card = byId.get(row.customerId);
+    const dest = test ? "הכתובת שלכם (בדיקה)" : channel === "EMAIL" ? card?.email : card?.phone;
+    if (!dest) return setMsg({ ok: false, text: sendReminderError({ code: channel === "EMAIL" ? "no_email" : "no_mobile" }) });
+    if (!window.confirm(test ? "לשלוח הודעת בדיקה אליכם? היא לא תיספר כתזכורת ללקוח." : `לשלוח ${TIER_LABEL[tier]} ל${row.name} (${dest})? לא ניתן לבטל שליחה.`)) return;
+    setBusy(true);
+    const r = await sendReminder({ customer_id: row.customerId, tier, channel, test, body: text, name: row.name, amount: row.total, days: Math.max(0, row.oldestDaysPastDue) });
+    setBusy(false);
+    if (!r.ok) return setMsg({ ok: false, text: sendReminderError(r) });
+    setMsg({ ok: true, text: test ? "הודעת הבדיקה נשלחה אליכם." : `התזכורת נשלחה${r.warning ? ", אך הרישום ביומן לא הושלם. בדקו ביומן" : " ונרשמה ביומן"}.` });
+    if (!test) onChange();
+  }
   const logReminder = (id: string, tier: number) => {
     if (!supabase) return;
     void run(() => supabase!.rpc("lalum_fin_log_reminder", { p_customer: id, p_tier: tier, p_channel: channel, p_note: null }), "התזכורת נרשמה.");
@@ -80,7 +96,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
     <div className="ck-stack">
       <div className="ck-meta">
         הגיול נמדד ממועד התשלום שנקבע במסמך (ללא מועד, ממועד ההפקה). {ACCOUNTING_BASIS === "CASH" ? "בבסיס מזומן החוב הוא חשבון עסקה שהופק ועדיין לא נסגר במסמך מס." : "נספרות חשבוניות מס שהופקו, בניכוי תשלומים, קבלות וזיכויים."}
-        כספי נאמנות אינם חלק מהמסך הזה. תזכורות נרשמות כאן אך אינן נשלחות אוטומטית.
+        כספי נאמנות אינם חלק מהמסך הזה. תזכורת נשלחת רק בלחיצה של שותף, אחרי עיון בנוסח, ואף פעם לא אוטומטית.
       </div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
       <div className="ck-grid2">
@@ -132,9 +148,14 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
               </div>
               {open && tier && (
                 <div className="ck-stack" style={{ marginTop: 8 }}>
-                  <textarea className="ck-input" rows={5} readOnly value={reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue))} onFocus={(e) => e.currentTarget.select()} />
-                  <div className="ck-meta">הטיוטה לעיון ולהעתקה. השליחה בפועל נעשית מחוץ למערכת.</div>
-                  <button className="ck-btn sm primary" disabled={busy || blocked !== null} onClick={() => logReminder(c.customerId, tier)}>{blocked === "COOLDOWN" ? "בהמתנה" : "רישום שהתזכורת נשלחה"}</button>
+                  <textarea className="ck-input" rows={6} value={edited[c.customerId] ?? reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue))} onChange={(e) => setEdited({ ...edited, [c.customerId]: e.target.value })} />
+                  <div className="ck-meta">אפשר לערוך את הטיוטה. ההודעה נשלחת כפי שהיא מופיעה כאן, ללקוח בכתובת שבכרטיסו. וואטסאפ נשלח כתבנית מאושרת ואינו משתמש בנוסח הזה.</div>
+                  <div className="fin-actions">
+                    <button className="ck-btn sm primary" disabled={busy || blocked !== null || !byId.get(c.customerId)?.email} onClick={() => void send(c, tier, "EMAIL", false, edited[c.customerId] ?? reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue)))}>{blocked === "COOLDOWN" ? "בהמתנה" : "שליחה בדוא\"ל"}</button>
+                    <button className="ck-btn sm" disabled={busy || blocked !== null || !byId.get(c.customerId)?.phone} onClick={() => void send(c, tier, "WHATSAPP", false, "")}>שליחה ב-WhatsApp</button>
+                    <button className="ck-btn sm" disabled={busy} onClick={() => void send(c, tier, "EMAIL", true, edited[c.customerId] ?? reminderText(tier, c.name, c.total, Math.max(0, c.oldestDaysPastDue)))}>בדיקה אליי</button>
+                    <button className="ck-btn sm" disabled={busy || blocked !== null} onClick={() => logReminder(c.customerId, tier)}>רישום ידני (נשלח מחוץ למערכת)</button>
+                  </div>
                 </div>
               )}</td>
             </tr>);

@@ -109,3 +109,36 @@ const TRUST_ERRORS: Record<string, string> = {
 };
 export const trustError = (message: string): string => TRUST_ERRORS[Object.keys(TRUST_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
 
+
+export interface SendReminderReply { ok?: boolean; code?: string; to?: string; warning?: string; detail?: string }
+const SEND_ERRORS: Record<string, string> = {
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה לשליחת תזכורות. נדרשת רמת הנפקה.",
+  customer_not_found: "הלקוח לא נמצא.", customer_archived: "הלקוח בארכיון.", no_email: "אין ללקוח כתובת דוא\"ל.", no_own_email: "לא נמצאה כתובת דוא\"ל להתחברות שלכם.",
+  no_mobile: "אין ללקוח מספר נייד תקין בכרטיס. WhatsApp נשלח לנייד ישראלי בלבד.",
+  template_not_configured: "לא הוגדרה תבנית WhatsApp מאושרת לדרגה הזו. הודעה יזומה ב-WhatsApp נשלחת רק כתבנית מאושרת.",
+  whatsapp_not_configured: "החיבור ל-WhatsApp לא הוגדר בשרת.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
+  cooldown_active: "כבר נשלחה ללקוח תזכורת בשבעת הימים האחרונים.", bad_content: "תוכן ההודעה לא תקין. הטקסט צריך להיות בין 20 ל-2000 תווים.",
+  send_failed: "השליחה נכשלה. התזכורת לא נספרה, אפשר לנסות שוב.", uncertain: "לא התקבלה תשובה סופית. בדקו ביומן התזכורות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.", test_email_only: "בדיקה אפשרית בדוא\"ל בלבד.",
+};
+export const sendReminderError = (r: SendReminderReply): string => SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
+
+/** Sends one reminder on a partner's click. The recipient comes from the customer record on the server. */
+export async function sendReminder(body: { customer_id: string; tier: 1 | 2 | 3; channel: "EMAIL" | "WHATSAPP"; body?: string; test?: boolean; name?: string; amount?: number; days?: number }): Promise<SendReminderReply> {
+  if (!supabase) return { ok: false, code: "send_failed" };
+  const { data } = await supabase.auth.getSession();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-dunning-send`, {
+      method: "POST", signal: ctl.signal,
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
+      body: JSON.stringify(body),
+    });
+    try { return (await res.json()) as SendReminderReply; } catch { return { ok: false, code: "send_failed" }; }
+  } catch {
+    // A timeout is not proof that nothing was sent: the server reserved the cooldown before sending.
+    return { ok: false, code: "uncertain" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
