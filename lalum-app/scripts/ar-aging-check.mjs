@@ -12,7 +12,7 @@ const inv = (o) => ({
   issue_date: "2026-09-01", due_date: "2026-10-01", related_doc_id: null, doc_number: 1, is_test: false, ...o,
 });
 const pay = (o) => ({ id: "p1", document_id: "i1", customer_id: "c1", paid_on: "2026-10-01", amount: 100, ...o });
-const only = (docs, pays = [], customers = [cust({})]) => agingReport(customers, docs, pays, TODAY);
+const only = (docs, pays = [], customers = [cust({})]) => agingReport(customers, docs, pays, TODAY, "ACCRUAL");
 
 t("bucket boundaries: 30 is current, 31 and 60 are one bucket, 61 and 90, 91 is critical", () => {
   assert.equal(bucketOf(-10), "CURRENT"); assert.equal(bucketOf(30), "CURRENT");
@@ -64,13 +64,13 @@ t("not yet due is reported apart from overdue", () => {
 t("settlement date: the day payments and receipts together reach the amount owed", () => {
   const i = inv({ total: 1000 });
   const r1 = { id: "r1", customer_id: "c1", doc_type: "RECEIPT", status: "ISSUED", is_test: false, related_doc_id: "i1", total: 400, issue_date: "2026-09-20" };
-  assert.equal(settlementDate(i, [i, r1], [pay({ paid_on: "2026-09-25", amount: 600 })]), "2026-09-25");
-  assert.equal(settlementDate(i, [i, r1], [pay({ paid_on: "2026-09-25", amount: 500 })]), null);
+  assert.equal(settlementDate(i, [i, r1], [pay({ paid_on: "2026-09-25", amount: 600 })], "ACCRUAL"), "2026-09-25");
+  assert.equal(settlementDate(i, [i, r1], [pay({ paid_on: "2026-09-25", amount: 500 })], "ACCRUAL"), null);
 });
 t("a credit lowers the target, so a smaller payment still settles it", () => {
   const i = inv({ total: 1000 });
   const cr = { id: "k", customer_id: "c1", doc_type: "CREDIT", status: "ISSUED", is_test: false, related_doc_id: "i1", total: 300, issue_date: "2026-09-10" };
-  assert.equal(settlementDate(i, [i, cr], [pay({ paid_on: "2026-09-30", amount: 700 })]), "2026-09-30");
+  assert.equal(settlementDate(i, [i, cr], [pay({ paid_on: "2026-09-30", amount: 700 })], "ACCRUAL"), "2026-09-30");
 });
 t("DSO is the amount weighted lag, over the last year only, and ignores INVOICE_RECEIPT", () => {
   const a = inv({ id: "a", issue_date: "2026-06-01", total: 1000 }), b = inv({ id: "b", issue_date: "2026-06-01", total: 3000 });
@@ -81,9 +81,9 @@ t("DSO is the amount weighted lag, over the last year only, and ignores INVOICE_
     pay({ id: "pb", document_id: "b", paid_on: "2026-07-31", amount: 3000 }),   // 60 days
     pay({ id: "po", document_id: "o", paid_on: "2024-03-01", amount: 9999 }),   // outside the window
   ];
-  const d = computeDso([a, b, old, ir], pays, TODAY, "c1");
+  const d = computeDso([a, b, old, ir], pays, TODAY, "c1", "ACCRUAL");
   assert.equal(d.sample, 2); assert.equal(d.days, 50);                           // (20*1000 + 60*3000) / 4000
-  assert.deepEqual(computeDso([], [], TODAY, "c1"), { days: null, sample: 0 });
+  assert.deepEqual(computeDso([], [], TODAY, "c1", "ACCRUAL"), { days: null, sample: 0 });
 });
 
 t("reminder tiers follow days past due: 31 to 60, 61 to 90, over 90, none under 31", () => {
@@ -110,8 +110,8 @@ t("the collections aging agrees with the Reports tab aging on the same data", ()
   const mk = (id, past, total) => inv({ id, customer_id: id.startsWith("x") ? "c2" : "c1", due_date: addDays(TODAY, -past), total });
   const docs = [mk("a", -5, 70), mk("b", 10, 100), mk("c", 40, 200), mk("d", 70, 300), mk("xe", 120, 400), mk("xf", 31, 50)];
   const custs = [cust({}), cust({ id: "c2", name: "לקוח ב" })];
-  const mine = agingReport(custs, docs, [], TODAY).totals;
-  const theirs = receivablesAging(docs, [], custs, TODAY).totals;
+  const mine = agingReport(custs, docs, [], TODAY, "ACCRUAL").totals;
+  const theirs = receivablesAging(docs, [], custs, TODAY, "ACCRUAL").totals;
   assert.equal(mine.CURRENT, theirs[0] + theirs[1]);
   assert.equal(mine.D31_60, theirs[2]); assert.equal(mine.D61_90, theirs[3]); assert.equal(mine.D90_PLUS, theirs[4]);
 });
@@ -125,4 +125,32 @@ t("aging reports an active override on the customer and drops an expired one", (
   assert.equal(live.overrideUntil, addDays(TODAY, 3));
   const gone = only([inv({})], [], [cust({ is_collections_locked: true, collections_override_until: addDays(TODAY, -1) })]).customers[0];
   assert.equal(gone.overrideUntil, null);
+});
+
+// ---- cash basis: the practice's own accounting basis, where the debt is an open pro forma ----
+const pf = (o) => inv({ id: "pf", doc_type: "PROFORMA", status: "ISSUED", total: 500, source_proforma_id: null, ...o });
+const closer = (o) => inv({ id: "cl", doc_type: "INVOICE_RECEIPT", status: "ISSUED", total: 500, source_proforma_id: "pf", issue_date: addDays(TODAY, -3), ...o });
+const cashOnly = (docs, customers = [cust({})]) => agingReport(customers, docs, [], TODAY, "CASH");
+t("cash basis: an open pro forma is the debt, an issued tax invoice is not", () => {
+  const r = cashOnly([pf({ due_date: addDays(TODAY, -40) }), inv({ id: "tax", due_date: addDays(TODAY, -40), total: 9999 })]);
+  assert.equal(r.total, 500); assert.equal(r.totals.D31_60, 500);
+});
+t("cash basis: a pro forma closed by an issued document stops being a debt; a draft closer does not close it", () => {
+  assert.equal(cashOnly([pf({}), closer({})]).total, 0);
+  assert.equal(cashOnly([pf({}), closer({ status: "DRAFT" })]).total, 500);
+});
+t("cash basis: draft and test pro formas are never debt", () => {
+  assert.equal(cashOnly([pf({ status: "DRAFT" }), pf({ id: "pt", is_test: true })]).total, 0);
+});
+t("cash basis: DSO is the days from the pro forma to the document that closed it", () => {
+  const docs = [pf({ issue_date: addDays(TODAY, -33) }), closer({})];
+  assert.equal(settlementDate(docs[0], docs, [], "CASH"), addDays(TODAY, -3));
+  const d = computeDso(docs, [], TODAY, "c1", "CASH");
+  assert.equal(d.sample, 1); assert.equal(d.days, 30);
+  assert.equal(settlementDate(inv({}), [inv({})], [], "CASH"), null);
+});
+t("the collections aging agrees with the Reports tab aging on the cash basis too", () => {
+  const docs = [pf({ id: "a", due_date: addDays(TODAY, -5), total: 70 }), pf({ id: "b", due_date: addDays(TODAY, -45), total: 100 }), pf({ id: "c", due_date: addDays(TODAY, -100), total: 300 })];
+  const mine = agingReport([cust({})], docs, [], TODAY, "CASH").totals, theirs = receivablesAging(docs, [], [cust({})], TODAY, "CASH").totals;
+  assert.equal(mine.CURRENT, theirs[0] + theirs[1]); assert.equal(mine.D31_60, theirs[2]); assert.equal(mine.D61_90, theirs[3]); assert.equal(mine.D90_PLUS, theirs[4]);
 });

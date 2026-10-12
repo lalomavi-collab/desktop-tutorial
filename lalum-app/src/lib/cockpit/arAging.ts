@@ -4,8 +4,8 @@
 // Aging is measured from the DUE DATE, not the issue date. An invoice with no due date is treated as due on its issue
 // date, which is the conservative reading. Only issued, non test INVOICE documents carry a receivable; pro formas,
 // drafts and test documents never do. Client trust money is not in this ledger and is never counted here.
-import { isLive, openBalance, r2 } from "./finance.ts";
-import type { FinCustomer, FinDocument, FinPayment } from "./finance.ts";
+import { ACCOUNTING_BASIS, closedBy, isLive, r2, receivable } from "./finance.ts";
+import type { Basis, FinCustomer, FinDocument, FinPayment } from "./finance.ts";
 
 export type Bucket = "CURRENT" | "D31_60" | "D61_90" | "D90_PLUS";
 export const BUCKETS: Bucket[] = ["CURRENT", "D31_60", "D61_90", "D90_PLUS"];
@@ -69,13 +69,13 @@ export interface AgingReport {
 
 const emptyBuckets = (): Record<Bucket, number> => ({ CURRENT: 0, D31_60: 0, D61_90: 0, D90_PLUS: 0 });
 
-export function agingReport(customers: FinCustomer[], docs: FinDocument[], pays: FinPayment[], today: string): AgingReport {
+export function agingReport(customers: FinCustomer[], docs: FinDocument[], pays: FinPayment[], today: string, basis: Basis = ACCOUNTING_BASIS): AgingReport {
   const byId = new Map(customers.map((c) => [c.id, c]));
   const per = new Map<string, CustomerAging>();
   const totals = emptyBuckets();
   let notYetDue = 0;
   for (const inv of docs) {
-    const balance = openBalance(inv, docs, pays);
+    const balance = receivable(inv, docs, pays, basis);
     if (balance <= 0) continue;
     const dueDate = dueDateOf(inv);
     const daysPastDue = daysBetween(dueDate, today);
@@ -108,10 +108,16 @@ export function agingReport(customers: FinCustomer[], docs: FinDocument[], pays:
 // ---- historical DSO ----
 
 /**
- * The day an invoice was fully settled: the first date on which payments and receipts linked to it, together,
- * reach what was owed after credits. Null when it is not fully settled, or was credited away entirely.
+ * The day a receivable was settled. Cash basis: the issue date of the tax document that closed the pro forma (it is issued when the
+ * money arrives). Accrual basis: the first date on which payments and receipts linked to the invoice, together, reach what was owed
+ * after credits. Null when it is not settled, or was credited away entirely.
  */
-export function settlementDate(inv: FinDocument, docs: FinDocument[], pays: FinPayment[]): string | null {
+export function settlementDate(doc: FinDocument, docs: FinDocument[], pays: FinPayment[], basis: Basis = ACCOUNTING_BASIS): string | null {
+  if (basis === "CASH") {
+    if (doc.doc_type !== "PROFORMA" || doc.status !== "ISSUED" || doc.is_test) return null;
+    return closedBy(doc, docs)?.issue_date ?? null;
+  }
+  const inv = doc;
   if (inv.doc_type !== "INVOICE" || !isLive(inv)) return null;
   const linked = docs.filter((d) => isLive(d) && d.related_doc_id === inv.id);
   const credited = linked.filter((d) => d.doc_type === "CREDIT").reduce((a, d) => a + d.total, 0);
@@ -131,14 +137,14 @@ export interface Dso { days: number | null; sample: number }
 /**
  * Average days from issue to full settlement, weighted by invoice amount, over invoices settled in the last year.
  * Pass customerId to restrict to one customer; omit it for the firm as a whole.
- * INVOICE_RECEIPT is paid on the spot and says nothing about how long a customer takes, so it is not counted.
+ * On the accrual basis INVOICE_RECEIPT is paid on the spot and says nothing about how long a customer takes, so it is not counted.
  */
-export function computeDso(docs: FinDocument[], pays: FinPayment[], today: string, customerId?: string): Dso {
+export function computeDso(docs: FinDocument[], pays: FinPayment[], today: string, customerId?: string, basis: Basis = ACCOUNTING_BASIS): Dso {
   const from = addDays(today, -DSO_WINDOW_DAYS);
   let weighted = 0, weight = 0, sample = 0;
   for (const inv of docs) {
     if (customerId && inv.customer_id !== customerId) continue;
-    const settled = settlementDate(inv, docs, pays);
+    const settled = settlementDate(inv, docs, pays, basis);
     if (!settled || settled < from || settled > today) continue;
     const lag = Math.max(0, daysBetween(inv.issue_date, settled));
     weighted += lag * inv.total; weight += inv.total; sample += 1;
@@ -146,8 +152,8 @@ export function computeDso(docs: FinDocument[], pays: FinPayment[], today: strin
   return { days: sample > 0 && weight > 0 ? Math.round(weighted / weight) : null, sample };
 }
 
-export function dsoByCustomer(customers: FinCustomer[], docs: FinDocument[], pays: FinPayment[], today: string): Map<string, Dso> {
-  return new Map(customers.map((c) => [c.id, computeDso(docs, pays, today, c.id)]));
+export function dsoByCustomer(customers: FinCustomer[], docs: FinDocument[], pays: FinPayment[], today: string, basis: Basis = ACCOUNTING_BASIS): Map<string, Dso> {
+  return new Map(customers.map((c) => [c.id, computeDso(docs, pays, today, c.id, basis)]));
 }
 
 // ---- reminders ----

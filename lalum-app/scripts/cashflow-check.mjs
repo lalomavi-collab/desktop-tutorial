@@ -6,6 +6,7 @@ import { addDays } from "../src/lib/cockpit/arAging.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const TODAY = "2026-10-14"; // a Wednesday
+const ACC = { basis: "ACCRUAL" }; // these cases are written on invoices; the cash basis is covered at the end
 const S = { openingBalance: 100000, creditFacility: 200000, safetyReserve: 50000 };
 const cust = (id, name) => ({ id, name, is_collections_locked: false });
 const customers = [cust("c1", "אלפא"), cust("c2", "בטא"), cust("c3", "גמא")];
@@ -31,7 +32,7 @@ t("13 weeks, every one ending on a Friday, the first on or after today", () => {
 });
 t("an invoice with a 45 day client DSO lands in the 45 day Friday, not the 30 day due date Friday", () => {
   const open = inv({ id: "open", issue_date: "2026-10-05", due_date: "2026-11-04", total: 2360 });
-  const plan = planInflows(customers, [...history, open], historyPays, TODAY);
+  const plan = planInflows(customers, [...history, open], historyPays, TODAY, ACC);
   const f = plan.inflows.find((i) => i.documentId === "open");
   assert.equal(f.expectedOn, "2026-11-19"); assert.equal(f.basis, "CUSTOMER_DSO");
   const fc = buildForecast(plan.inflows, [], S, TODAY);
@@ -42,25 +43,25 @@ t("an invoice with a 45 day client DSO lands in the 45 day Friday, not the 30 da
 });
 t("without enough history the firm DSO, then the invoice's own term, is used", () => {
   const open = inv({ id: "open", customer_id: "c2", issue_date: "2026-10-05", due_date: "2026-11-04", total: 500 });
-  const withFirm = planInflows(customers, [...history, open], historyPays, TODAY).inflows.find((i) => i.documentId === "open");
+  const withFirm = planInflows(customers, [...history, open], historyPays, TODAY, ACC).inflows.find((i) => i.documentId === "open");
   assert.equal(withFirm.basis, "FIRM_DSO"); assert.equal(withFirm.expectedOn, "2026-11-19");
-  const alone = planInflows(customers, [open], [], TODAY).inflows[0];
+  const alone = planInflows(customers, [open], [], TODAY, ACC).inflows[0];
   assert.equal(alone.basis, "TERMS"); assert.equal(alone.expectedOn, "2026-11-04");
 });
 t("pro forma, draft and test documents (and so any deposit request) never become inflows", () => {
   const docs = [inv({ id: "a", doc_type: "PROFORMA", total: 640000 }), inv({ id: "b", status: "DRAFT", total: 5000 }), inv({ id: "c", is_test: true, total: 7000 })];
-  const plan = planInflows(customers, docs, [], TODAY);
+  const plan = planInflows(customers, docs, [], TODAY, ACC);
   assert.equal(plan.inflows.length, 0);
   assert.deepEqual(none(buildForecast(plan.inflows, [], S, TODAY).weeks), Array(13).fill(0));
 });
 t("an expected date already in the past is pushed to today plus the late push, never into the past", () => {
   const late = inv({ id: "l", issue_date: "2026-08-01", due_date: "2026-08-31", total: 800 });
-  const f = planInflows(customers, [late], [], TODAY).inflows[0];
+  const f = planInflows(customers, [late], [], TODAY, ACC).inflows[0];
   assert.equal(f.expectedOn, addDays(TODAY, LATE_PUSH_DAYS));
 });
 t("an invoice more than 90 days past due is left out and reported", () => {
   const dead = inv({ id: "d", issue_date: "2026-05-01", due_date: "2026-06-01", total: 900 });
-  const plan = planInflows(customers, [dead], [], TODAY);
+  const plan = planInflows(customers, [dead], [], TODAY, ACC);
   assert.equal(plan.inflows.length, 0); assert.equal(plan.excludedTotal, 900); assert.equal(plan.excluded[0].daysPastDue, 135);
 });
 t("rent on the 1st, payroll on the 1st and 9th, VAT on the 15th; day 31 clamps to the month's end", () => {
@@ -76,7 +77,7 @@ t("ending cash of every week is the starting cash of the next, and the chain add
     { id: "v", label: "מעמ", direction: "OUT", schedule: "MONTHLY", day_of_month: 15, on_date: null, amount: 12000, active: true },
   ];
   const open = inv({ id: "open", total: 40000 });
-  const fc = buildForecast(planInflows(customers, [...history, open], historyPays, TODAY).inflows, items, S, TODAY);
+  const fc = buildForecast(planInflows(customers, [...history, open], historyPays, TODAY, ACC).inflows, items, S, TODAY);
   for (let k = 1; k < 13; k++) assert.equal(fc.weeks[k].startingCash, fc.weeks[k - 1].endingCash);
   assert.equal(fc.weeks[0].startingCash, S.openingBalance);
   const sumNet = fc.weeks.reduce((a, w) => a + w.net, 0);
@@ -96,7 +97,7 @@ t("delaying the top two clients 30 days lowers the early week and raises a later
     inv({ id: "b", customer_id: "c2", issue_date: "2026-09-20", due_date: "2026-10-20", total: 40000 }),
     inv({ id: "c", customer_id: "c3", issue_date: "2026-09-20", due_date: "2026-10-20", total: 1000 }),
   ];
-  const plan = planInflows(customers, docs, historyPays, TODAY);
+  const plan = planInflows(customers, docs, historyPays, TODAY, ACC);
   const base = buildForecast(plan.inflows, [], S, TODAY);
   const sc = applyScenario(plan.inflows, { kind: "DELAY_TOP_CLIENTS", clients: 2, days: 30 }, TODAY);
   const sim = buildForecast(sc.inflows, [], S, TODAY, sc.extra);
@@ -108,7 +109,7 @@ t("delaying the top two clients 30 days lowers the early week and raises a later
 });
 t("a firm wide delay never changes the total collected, only when", () => {
   const docs = [...history, inv({ id: "a", total: 20000 })];
-  const plan = planInflows(customers, docs, historyPays, TODAY);
+  const plan = planInflows(customers, docs, historyPays, TODAY, ACC);
   const shifted = applyScenario(plan.inflows, { kind: "FIRM_DSO_SHOCK", days: 14 }, TODAY);
   const sum = (l) => l.reduce((a, i) => a + i.balance, 0);
   assert.equal(sum(shifted.inflows), sum(plan.inflows));
@@ -123,7 +124,7 @@ t("a windfall lands in the chosen week and lifts every week after it by that amo
 });
 t("running a scenario never changes the base data", () => {
   const docs = Object.freeze([...history, inv({ id: "a", total: 20000 })].map((d) => Object.freeze({ ...d })));
-  const plan = planInflows(customers, docs, historyPays, TODAY);
+  const plan = planInflows(customers, docs, historyPays, TODAY, ACC);
   const snapshot = JSON.stringify(plan.inflows);
   const sc = applyScenario(plan.inflows, { kind: "DELAY_TOP_CLIENTS", clients: 2, days: 30 }, TODAY);
   buildForecast(sc.inflows, [], S, TODAY, sc.extra);
@@ -154,4 +155,15 @@ t("monthly payroll on the 1st and 9th is spread into the right Fridays", () => {
   assert.equal(m.get("2026-11-06"), 1000); // the 1st of November is a Sunday, so its Friday is the 6th
   assert.equal(m.get("2026-11-13"), 1000); // the 9th is a Monday, so its Friday is the 13th
   assert.equal([...m.values()].reduce((a, b) => a + b, 0), 5000); // Nov 1 and 9, Dec 1 and 9, Jan 1. Jan 9 is after the horizon, Oct 1 and 9 are past
+});
+t("cash basis: an open pro forma is the inflow, placed by the customer's DSO measured pro forma to closing document", () => {
+  const pf = (o) => inv({ doc_type: "PROFORMA", status: "ISSUED", source_proforma_id: null, ...o });
+  const closer = (id, src, on) => inv({ id, doc_type: "INVOICE_RECEIPT", status: "ISSUED", source_proforma_id: src, issue_date: on });
+  const hist = ["a", "b", "c"].map((k, i) => pf({ id: "p" + k, issue_date: `2026-06-0${i + 1}`, total: 1000 }));
+  const closers = hist.map((h, i) => closer("c" + i, h.id, `2026-07-1${i + 1}`)); // each closed about 40 days after issue
+  const open = pf({ id: "openpf", issue_date: "2026-10-05", due_date: "2026-11-04", total: 3000 });
+  const plan = planInflows(customers, [...hist, ...closers, open, inv({ id: "taxinv", total: 8888 })], [], TODAY, { basis: "CASH" });
+  assert.equal(plan.inflows.length, 1); assert.equal(plan.inflows[0].documentId, "openpf"); assert.equal(plan.inflows[0].balance, 3000);
+  assert.equal(plan.inflows[0].basis, "CUSTOMER_DSO");
+  assert.equal(plan.inflows[0].expectedOn, addDays("2026-10-05", 40));
 });

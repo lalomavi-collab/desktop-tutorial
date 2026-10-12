@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { rpcError } from "../../../lib/cockpit/financeApi";
+import { ACCOUNTING_BASIS } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
 import {
   BUCKETS, BUCKET_LABEL, COOLDOWN_DAYS, DSO_MIN_SAMPLE, TIER_LABEL, agingReport, cooldownState, dsoByCustomer, lastReminderOn,
@@ -78,7 +79,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
   return (
     <div className="ck-stack">
       <div className="ck-meta">
-        הגיול נמדד ממועד התשלום שנקבע בחשבונית (ללא מועד, ממועד ההפקה). נספרות חשבוניות מס שהופקו בלבד, בניכוי תשלומים, קבלות וזיכויים.
+        הגיול נמדד ממועד התשלום שנקבע במסמך (ללא מועד, ממועד ההפקה). {ACCOUNTING_BASIS === "CASH" ? "בבסיס מזומן החוב הוא חשבון עסקה שהופק ועדיין לא נסגר במסמך מס." : "נספרות חשבוניות מס שהופקו, בניכוי תשלומים, קבלות וזיכויים."}
         כספי נאמנות אינם חלק מהמסך הזה. תזכורות נרשמות כאן אך אינן נשלחות אוטומטית.
       </div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
