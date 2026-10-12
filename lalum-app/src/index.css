@@ -4683,255 +4683,6 @@ html.a11y-reduce-motion *::after {
 .riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
 .riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }
 
-/* ============================================================
-   Floating video bubble (components/VideoBubble.tsx)
-   ------------------------------------------------------------
-   Deep navy and royal gold, the Tech-Legal premium pairing, kept
-   deliberately apart from the clay/ivory page palette so the
-   bubble reads as an invitation laid over the site rather than a
-   piece of it. The four values below are the whole palette: swap
-   them here and the bubble follows.
-   Positioning is logical (inset-inline-*), so the dock lands on
-   the correct side in Hebrew and Arabic (RTL) as well as in the
-   Latin languages, and it sits stacked above the chat button in
-   the same column rather than in a corner of its own.
-   ============================================================ */
-.vbub-dock {
-  /* Warm near-black rather than navy: the player stays dark, which is right
-     for video, but in the site's own family instead of a second brand. */
-  --vbub-navy: #17140f;
-  --vbub-navy-soft: #221d16;
-  --vbub-gold: var(--clay-bright);
-  --vbub-gold-soft: var(--clay-soft);
-
-  position: fixed;
-  /* Clear of the chat button (60px) that sits at bottom: 24px. */
-  bottom: 98px;
-  inset-inline-end: 24px;
-  z-index: 82;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
-/* Expanded, the player takes the whole corner: it covers the chat button, so
-   there is no reason to keep the gap above it. */
-.vbub-dock.is-open {
-  bottom: 24px;
-}
-
-/* ---------- expanded player ---------- */
-.vbub-panel {
-  position: relative;
-  width: 330px;
-  max-width: calc(100vw - 32px);
-  height: 560px;
-  max-height: calc(100vh - 130px);
-  background: var(--vbub-navy);
-  border: 1px solid rgba(212, 175, 55, 0.32);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 34px 70px -28px rgba(10, 25, 47, 0.8);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-panel { animation: vbub-rise 0.28s ease; }
-}
-@keyframes vbub-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.vbub-panel-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: var(--vbub-navy);
-  cursor: pointer;
-}
-
-/* The message, over the clip. The speaker is silent, so this is the voice:
-   large enough to read on a phone at arm's length, and lifted off the picture
-   by a gradient rather than a box, so it does not cover the face. */
-/* Read by assistive technology, never painted: the visible lines move too
-   fast to follow, so the message is also present once, whole. */
-.vbub-script-full {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-.vbub-script {
-  position: absolute;
-  inset-inline: 0;
-  /* Under the tool row and well clear of the footer, which already covers the
-     bottom third of the player with the name and the two buttons. */
-  inset-block-start: 0;
-  padding: 54px 22px 34px;
-  background: linear-gradient(to bottom, rgba(23, 20, 15, 0.9) 42%, rgba(23, 20, 15, 0.6) 72%, rgba(23, 20, 15, 0));
-  pointer-events: none;
-  text-align: center;
-}
-.vbub-script-line {
-  margin: 0;
-  color: #fff;
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1.35;
-  text-wrap: balance;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-script { animation: vbub-caption 0.32s ease both; }
-}
-@keyframes vbub-caption {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: none; }
-}
-
-.vbub-panel-tools {
-  position: absolute;
-  top: 12px;
-  inset-inline-start: 12px;
-  z-index: 2;
-  display: flex;
-  gap: 8px;
-}
-.vbub-tool {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(10, 25, 47, 0.75);
-  color: #ffffff;
-  font-size: 17px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-.vbub-tool:hover {
-  color: var(--vbub-gold);
-  border-color: var(--vbub-gold);
-}
-
-/* The metadata and calls to action, over a navy fade so the text stays readable
-   whatever frame is behind it. */
-.vbub-panel-foot {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 74px 18px 18px;
-  background: linear-gradient(to top, var(--vbub-navy) 42%, rgba(10, 25, 47, 0.72) 72%, rgba(10, 25, 47, 0));
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.vbub-seek {
-  width: 100%;
-  height: 4px;
-  margin: 0;
-  accent-color: var(--vbub-gold);
-  cursor: pointer;
-}
-.vbub-seek:disabled { opacity: 0.4; cursor: default; }
-
-.vbub-meta { text-align: start; }
-.vbub-badge {
-  display: inline-block;
-  background: var(--vbub-gold);
-  color: var(--vbub-navy);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 9px;
-  border-radius: 999px;
-}
-.vbub-name {
-  margin: 7px 0 0;
-  color: #ffffff;
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-.vbub-tagline {
-  margin: 5px 0 0;
-  color: #cfd6e2;
-  font-size: 12.5px;
-  line-height: 1.6;
-}
-
-.vbub-ctas {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.vbub-cta-gold,
-.vbub-cta-ghost {
-  display: block;
-  text-align: center;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-}
-.vbub-cta-gold {
-  background: var(--vbub-gold);
-  color: var(--vbub-navy);
-  font-size: 14px;
-  font-weight: 800;
-  padding: 11px 14px;
-  box-shadow: 0 10px 24px -12px rgba(212, 175, 55, 0.9);
-}
-.vbub-cta-gold:hover {
-  background: var(--vbub-gold-soft);
-  transform: translateY(-1px);
-}
-.vbub-cta-ghost {
-  background: rgba(17, 34, 64, 0.85);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 9px 14px;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-}
-.vbub-cta-ghost:hover {
-  background: var(--vbub-navy-soft);
-  border-color: var(--vbub-gold);
-}
-
-/* Keyboard focus has to stay obvious against a dark, moving background. */
-.vbub-tool:focus-visible,
-.vbub-seek:focus-visible,
-.vbub-cta-gold:focus-visible,
-.vbub-cta-ghost:focus-visible {
-  outline: 3px solid var(--vbub-gold);
-  outline-offset: 3px;
-}
-
-@media (max-width: 900px) {
-  .vbub-dock {
-    /* The chat button is itself lifted above the bottom tab bar on phones. */
-    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
-    inset-inline-end: 16px;
-  }
-  .vbub-dock.is-open {
-    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-  }
-  .vbub-panel {
-    height: min(560px, calc(100vh - 190px));
-  }
-}
-
 /* The spacer that holds the page's height while a code-split route chunk
    loads. It was 70vh, which on a phone left the footer sitting at the bottom of
    the first screen: the chunk then arrived, the page grew from 1967px to
@@ -4984,8 +4735,7 @@ html.a11y-reduce-motion *::after {
   .contact-rail,
   .chat-dock,
   .a11y-dock,
-  .tabbar,
-  [class^="vbub-"] { display: none !important; }
+  .tabbar { display: none !important; }
 
   body { background: #fff; }
 
@@ -5014,29 +4764,26 @@ html.a11y-reduce-motion *::after {
    it is the visitor's own choice, once, on request.
    ============================================================ */
 .qad-dock {
-  position: fixed;
-  bottom: 98px;
-  inset-inline-end: 24px;
-  z-index: 82;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
+/* Sized off the same --ctrl-h the rest of the toolbar uses, so the three
+   round controls in the header line up instead of one of them standing a head
+   taller. It was 56px when it floated in a corner of its own. */
 .qad-button {
-  width: 56px;
-  height: 56px;
+  width: var(--ctrl-h, 40px);
+  height: var(--ctrl-h, 40px);
+  flex: none;
   border-radius: 50%;
   padding: 0;
-  border: 2px solid var(--clay-soft);
-  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
+  border: 1px solid var(--clay-soft);
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 .qad-button:hover {
   border-color: var(--clay);
-  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
 }
 .qad-button:focus-visible {
   outline: 3px solid var(--clay);
@@ -5054,8 +4801,9 @@ html.a11y-reduce-motion *::after {
 
 .qad-menu {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 12px);
   inset-inline-end: 0;
+  z-index: 82;
   width: min(272px, calc(100vw - 48px));
   background: var(--paper);
   border: 1px solid var(--line);
@@ -5070,7 +4818,7 @@ html.a11y-reduce-motion *::after {
   .qad-menu { animation: qad-menu-in 0.16s ease both; }
 }
 @keyframes qad-menu-in {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: none; }
 }
 .qad-item {
@@ -5124,13 +4872,6 @@ html.a11y-reduce-motion *::after {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-@media (max-width: 900px) {
-  .qad-dock {
-    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
-    inset-inline-end: 16px;
-  }
 }
 
 /* ---------- bottom sheets (phones) ---------- */

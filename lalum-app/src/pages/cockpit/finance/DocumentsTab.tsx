@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
+import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
+import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
 import { issueDocument, issueError, rpcError } from "../../../lib/cockpit/financeApi";
 
@@ -9,7 +10,7 @@ interface EditLine { name: string; qty: string; price: string }
 interface Editor {
   id: string | null; customer_id: string; doc_type: DocType; subject: string; tax_included: boolean; vat_rate: string;
   lines: EditLine[]; issue_date: string; due_date: string; payment_method: PayMethod | ""; payment_ref: string;
-  related_doc_id: string; send_email: boolean;
+  related_doc_id: string; send_email: boolean; internal_note: string; matter_ref: string; source_proforma_id: string;
 }
 type Note = { ok: boolean; text: string } | null;
 
@@ -17,13 +18,13 @@ const today = () => new Date().toISOString().slice(0, 10);
 const blankEditor = (): Editor => ({
   id: null, customer_id: "", doc_type: "INVOICE", subject: "", tax_included: false, vat_rate: String(DEFAULT_VAT_RATE),
   lines: [{ name: "", qty: "1", price: "" }], issue_date: today(), due_date: "", payment_method: "", payment_ref: "",
-  related_doc_id: "", send_email: false,
+  related_doc_id: "", send_email: false, internal_note: "", matter_ref: "", source_proforma_id: "",
 });
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
 
-export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
-  firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
+export function DocumentsTab({ level, firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
+  level: number; firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
 }) {
   const [ed, setEd] = useState<Editor | null>(null);
   const [note, setNote] = useState<Note>(null);
@@ -34,7 +35,9 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
   const docById = useMemo(() => new Map(docs.map((d) => [d.id, d])), [docs]);
 
   const totals = ed ? computeTotals(toLines(ed), Number(ed.vat_rate) || 0, ed.tax_included) : null;
-  const problems = ed ? draftProblems({ customer_id: ed.customer_id, doc_type: ed.doc_type, lines: toLines(ed), payment_method: ed.payment_method || null, related_doc_id: ed.related_doc_id || null }) : [];
+  const edCustomer = ed ? byId.get(ed.customer_id) : undefined;
+  const casual = edCustomer?.is_casual === true;
+  const problems = ed ? draftProblems({ customer_id: ed.customer_id, doc_type: ed.doc_type, lines: toLines(ed), payment_method: ed.payment_method || null, related_doc_id: ed.related_doc_id || null, casual }) : [];
   const relatedChoices = ed ? docs.filter((d) => d.status === "ISSUED" && d.customer_id === ed.customer_id && (ed.doc_type === "RECEIPT" ? d.doc_type === "INVOICE" : d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT")) : [];
   const label = (d: FinDocument) => `${DOC_TYPE[d.doc_type]} ${d.doc_number ?? ""}${d.is_test ? " (בדיקה)" : ""} · ${money(d.total)}`;
 
@@ -43,7 +46,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
     setEd({
       id: d.id, customer_id: d.customer_id, doc_type: d.doc_type, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
       lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), issue_date: d.issue_date, due_date: d.due_date ?? "",
-      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email,
+      payment_method: d.payment_method ?? "", payment_ref: d.payment_ref ?? "", related_doc_id: d.related_doc_id ?? "", send_email: d.send_email, internal_note: d.internal_note ?? "", matter_ref: d.matter_ref ?? "", source_proforma_id: d.source_proforma_id ?? "",
     });
   }
   function receiptFor(inv: FinDocument) {
@@ -58,6 +61,29 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
     setEd({
       ...blankEditor(), doc_type: "CREDIT", customer_id: inv.customer_id, related_doc_id: inv.id, tax_included: inv.tax_included, vat_rate: String(inv.vat_rate),
       subject: `זיכוי לחשבונית ${inv.doc_number ?? ""}`, lines: inv.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })),
+    });
+  }
+  function pickCustomer(id: string) {
+    if (!ed) return;
+    const c = byId.get(id);
+    // A casual customer is only allowed on invoice-receipts and credits, so move a draft of another type there.
+    const fix = c?.is_casual && !CASUAL_TYPES.includes(ed.doc_type) ? { doc_type: "INVOICE_RECEIPT" as DocType, tax_included: false, vat_rate: ed.vat_rate === "0" ? String(DEFAULT_VAT_RATE) : ed.vat_rate } : {};
+    setEd({ ...ed, ...fix, customer_id: id, related_doc_id: "" });
+  }
+  /** A draft invoice or invoice-receipt that settles an issued pro forma. The pro forma closes when that draft is issued. */
+  function convertProforma(p: FinDocument, to: "INVOICE" | "INVOICE_RECEIPT") {
+    setNote(null);
+    setEd({
+      ...blankEditor(), doc_type: to, customer_id: p.customer_id, subject: p.subject, tax_included: p.tax_included, vat_rate: String(p.vat_rate),
+      lines: p.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), source_proforma_id: p.id, matter_ref: p.matter_ref ?? "",
+    });
+  }
+  /** A new draft from an existing document of a repeating kind. Dates and payment reference start fresh. */
+  function duplicateDoc(d: FinDocument) {
+    setNote(null);
+    setEd({
+      ...blankEditor(), doc_type: d.doc_type, customer_id: d.customer_id, subject: d.subject, tax_included: d.tax_included, vat_rate: String(d.vat_rate),
+      lines: d.lines.map((l) => ({ name: l.name, qty: String(l.qty), price: String(l.price) })), payment_method: d.payment_method ?? "", send_email: d.send_email,
     });
   }
   function setType(t: DocType) {
@@ -77,7 +103,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
       p: {
         customer_id: ed.customer_id, doc_type: ed.doc_type, subject: ed.subject, tax_included: ed.tax_included, vat_rate: Number(ed.vat_rate) || 0,
         lines: toLines(ed), issue_date: ed.issue_date, due_date: ed.due_date || null, payment_method: ed.payment_method, payment_ref: ed.payment_ref,
-        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email,
+        related_doc_id: ed.related_doc_id || null, send_email: ed.send_email, internal_note: ed.internal_note, matter_ref: ed.matter_ref, source_proforma_id: ed.source_proforma_id || null,
       },
     });
     if (error) { setNote({ ok: false, text: rpcError(error.message) }); return null; }
@@ -112,6 +138,16 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
     setBusy(null); onChange();
     setNote(r.ok ? { ok: true, text: `נמצא ב-Invoice4U: מסמך מספר ${r.doc_number}. הסטטוס עודכן.` } : { ok: false, text: issueError(r) });
   }
+  async function retainerDrafts() {
+    if (!supabase) return;
+    const now = new Date(), period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    setBusy("retainer");
+    const { data, error } = await supabase.rpc("lalum_fin_generate_retainer_drafts", { p_period: period });
+    setBusy(null);
+    if (error) { setNote({ ok: false, text: rpcError(error.message) }); return; }
+    const n = Number(data ?? 0);
+    setNote({ ok: true, text: n ? `נוצרו ${n} טיוטות ריטיינר לחודש ${period.slice(5)}/${period.slice(0, 4)}. בדקו והפיקו כל אחת בנפרד.` : "אין טיוטות חדשות. כל לקוחות הריטיינר כבר קיבלו טיוטה לחודש הזה, או שלא הוגדר לקוח ריטיינר." }); onChange();
+  }
   async function removeDraft(d: FinDocument) {
     if (!supabase || !window.confirm("למחוק את הטיוטה?")) return;
     const { error } = await supabase.rpc("lalum_fin_delete_draft", { p_id: d.id });
@@ -128,26 +164,32 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
     setPay(null); setNote({ ok: true, text: "התשלום נרשם. זהו רישום פנימי בלבד, לא מסמך מס. להפקת קבלה השתמשו ב\"הפקת קבלה\"." }); onChange();
   }
 
-  const shown = docs.filter((d) => !typeFilter || d.doc_type === typeFilter);
+  const shown = docs.filter((d) => !typeFilter || (typeFilter === "OPEN_PROFORMA" ? isOpenProforma(d, docs) : d.doc_type === typeFilter));
   const receiptMode = ed?.doc_type === "RECEIPT";
 
   return (
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <select className="ck-select" aria-label="סינון לפי סוג" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ maxWidth: 220 }}>
-          <option value="">כל המסמכים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          <option value="">כל המסמכים</option><option value="OPEN_PROFORMA">חשבונות עסקה פתוחים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <button className="ck-btn primary" disabled={!customers.length} onClick={() => { setNote(null); setEd(blankEditor()); }}>מסמך חדש</button>
+        <div className="ck-row">
+          <button className="ck-btn" disabled={busy !== null || !customers.some((c) => c.retainer_active)} title="יוצר טיוטות בלבד, ללא הפקה" onClick={() => void retainerDrafts()}>טיוטות ריטיינר לחודש הנוכחי</button>
+          <button className="ck-btn primary" disabled={!customers.length} onClick={() => { setNote(null); setEd(blankEditor()); }}>מסמך חדש</button>
+        </div>
       </div>
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
+      {archiveCount > 0 && (
+        <div className="ck-meta">מסמכים שהופקו ב-Invoice4U (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון Invoice4U" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
+      )}
 
       {ed && totals && (
         <div className="ck-card ck-stack">
           <div className="ck-title">{ed.id ? "עריכת טיוטה" : "מסמך חדש"}</div>
           <div className="ck-grid2">
-            <label className="ck-field">סוג מסמך<select className="ck-select" value={ed.doc_type} onChange={(e) => setType(e.target.value as DocType)}>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => setEd({ ...ed, customer_id: e.target.value, related_doc_id: "" })}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+            <label className="ck-field">סוג מסמך<select className="ck-select" value={ed.doc_type} onChange={(e) => setType(e.target.value as DocType)}>{Object.entries(DOC_TYPE).filter(([k]) => !casual || CASUAL_TYPES.includes(k as DocType)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => pickCustomer(e.target.value)}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{splitName(c.name).name}{c.is_casual ? " (מזדמן)" : ""}</option>)}</select></label>
             <label className="ck-field">תאריך המסמך<input className="ck-input" type="date" value={ed.issue_date} onChange={(e) => setEd({ ...ed, issue_date: e.target.value })} /></label>
             <label className="ck-field">לתשלום עד<input className="ck-input" type="date" value={ed.due_date} onChange={(e) => setEd({ ...ed, due_date: e.target.value })} /></label>
           </div>
@@ -177,6 +219,8 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
               <label className="ck-field">אסמכתא (מספר שיק, 4 ספרות אחרונות)<input className="ck-input" dir="ltr" value={ed.payment_ref} onChange={(e) => setEd({ ...ed, payment_ref: e.target.value })} /></label>
             </div>
           )}
+          <label className="ck-field">הערה פנימית (לא מודפסת ולא נשלחת)<textarea className="ck-input" rows={2} maxLength={5000} value={ed.internal_note} onChange={(e) => setEd({ ...ed, internal_note: e.target.value })} /></label>
+          <label className="ck-field">הפניה לתיק (אופציונלי, פנימי)<input className="ck-input" maxLength={100} value={ed.matter_ref} onChange={(e) => setEd({ ...ed, matter_ref: e.target.value })} /></label>
           <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" checked={ed.send_email} onChange={(e) => setEd({ ...ed, send_email: e.target.checked })} />לשלוח את המסמך בדוא"ל ללקוח בעת ההפקה</label>
           <div className="ck-card">
             <div className="ck-row" style={{ justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{money(totals.subtotal)}</b></div>
@@ -186,7 +230,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
           {problems.length > 0 && <div className="ck-warn">{problems.join(". ")}</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
-            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
+            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
             <button className="ck-btn" onClick={() => setEd(null)}>סגירה</button>
           </div>
         </div>
@@ -205,7 +249,7 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
         </div>
       )}
 
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th>סה"כ</th><th>יתרה</th><th>סטטוס</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">יתרה</th><th>סטטוס</th><th></th></tr></thead><tbody>
         {shown.length ? shown.map((d) => {
           const bal = openBalance(d, docs, payments);
           const src = d.related_doc_id ? docById.get(d.related_doc_id) : null;
@@ -214,23 +258,29 @@ export function DocumentsTab({ firmId, customers, docs, payments, onChange }: {
               <td>{d.doc_number ?? ""}</td>
               <td>{DOC_TYPE[d.doc_type]}{src ? <div className="ck-meta">מול {src.doc_number}</div> : null}</td>
               <td>{byId.get(d.customer_id)?.name ?? ""}</td><td>{d.issue_date}</td>
-              <td>{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
-              <td>{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
+              <td className="fin-num">{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
+              <td className="fin-num">{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
               <td>
                 {d.status === "DRAFT" ? <span className={`ck-badge ${uncertain(d) ? "red" : "yellow"}`}>{uncertain(d) ? "תוצאה לא ודאית" : "טיוטה"}</span>
                   : d.is_test ? <span className="ck-badge yellow">בדיקה</span> : <span className="ck-badge green">הופק</span>}
                 {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {d.allocation_number}</div>}
+                {d.doc_type === "PROFORMA" && d.status === "ISSUED" && !d.is_test && (closedBy(d, docs) ? <div className="ck-meta">נסגר ע"י מסמך <bdi>{closedBy(d, docs)?.doc_number}</bdi></div> : <span className="ck-badge yellow">פתוח</span>)}
+                {d.source_proforma_id && <div className="ck-meta">נוצר מחשבון עסקה</div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>
-              <td><div className="ck-row" style={{ flexWrap: "wrap" }}>
-                {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
-                {uncertain(d) && <button className="ck-btn" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול Invoice4U</button>}
-                {d.status === "ISSUED" && d.pdf_url && <a className="ck-btn" href={d.pdf_url} target="_blank" rel="noopener noreferrer">PDF</a>}
-                {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
+              <td className="fin-actions-cell"><div className="fin-actions" style={{ flexWrap: "wrap" }}>
+                {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
+                {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול Invoice4U</button>}
+                {d.status === "ISSUED" && d.pdf_url && <a className="ck-btn sm" href={d.pdf_url} target="_blank" rel="noopener noreferrer">PDF</a>}
+                {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
                 {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
-                  <button className="ck-btn" onClick={() => receiptFor(d)}>הפקת קבלה</button>
-                  <button className="ck-btn" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
-                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn" onClick={() => creditFor(d)}>זיכוי</button>}
+                  <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
+                  <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
+                {isOpenProforma(d, docs) && <>
+                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE")}>המרה לחשבונית מס</button>
+                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE_RECEIPT")}>המרה לחשבונית מס קבלה</button></>}
+                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT" || d.doc_type === "PROFORMA") && <button className="ck-btn sm" onClick={() => duplicateDoc(d)}>שכפול</button>}
+                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
               </div></td>
             </tr>);
         }) : <tr><td colSpan={8}>אין מסמכים עדיין</td></tr>}

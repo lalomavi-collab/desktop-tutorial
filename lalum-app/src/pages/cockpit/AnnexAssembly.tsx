@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { callPipeline, errorText } from "../../lib/cockpit/shared";
 import type { MatterDoc } from "../../lib/cockpit/shared";
+import { BLOCKED, openPendingWindow, printInto } from "../../lib/cockpit/printWindow";
 
 // Annex assembly (הכנת נספחים). Compose a matter's main document with an ordered set of
 // appendices and produce one RTL deliverable (Word or PDF): a cover index, the main document,
@@ -121,6 +122,10 @@ export function AnnexAssembly({
 
   async function compose(kind: "word" | "pdf", restoreNames: boolean) {
     if (!supabase) return;
+    // Open the print window now, inside the click, before the several awaits below (see printWindow.ts).
+    const w = kind === "pdf" ? openPendingWindow() : null;
+    if (kind === "pdf" && !w) { setMsg({ ok: false, text: BLOCKED }); return; }
+    let printed = false;
     setBusy(true); setMsg(null);
     try {
       const included = rows.filter((r) => r.status !== "WAIVED");
@@ -167,14 +172,13 @@ export function AnnexAssembly({
         a.href = URL.createObjectURL(new Blob(["﻿", html], { type: "application/msword" }));
         a.download = `${parent.file_name.replace(/\.[^.]+$/, "") || "document"}-עם-נספחים.doc`;
         document.body.appendChild(a); a.click(); a.remove();
-      } else {
-        const w = window.open("", "_blank");
-        if (!w) { setMsg({ ok: false, text: "הדפדפן חסם את חלון ההדפסה." }); setBusy(false); return; }
-        w.document.write(html); w.document.close(); w.focus(); window.setTimeout(() => w.print(), 300);
+      } else if (w) {
+        printed = printInto(w, html);
       }
       await supabase.rpc("lalum_log_annex_export", { p_matter: matterId, p_parent: parent.id, p_annexes: included.length });
       setMsg({ ok: true, text: `הופק מסמך עם ${included.length} נספחים.` });
     } finally {
+      if (w && !printed) w.close();
       setBusy(false);
     }
   }

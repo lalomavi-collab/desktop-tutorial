@@ -40,8 +40,9 @@ export const FIELD_LABEL: Record<string, string> = {
 export const PARTY_LABEL: Record<string, string> = { client: "הלקוח", counterparty: "הצד שכנגד" };
 
 /** Fields the PII shield has no detector for. They never reach the server: the document keeps a
- *  visible blank and the attorney fills the value into the exported file. */
-export const UNMASKED_FIELDS = new Set(["client_address"]);
+ *  visible blank and the attorney fills the value into the exported file. Empty since the shield gained
+ *  an address detector (lalum-pipeline v21); keep a key here only for a field the shield cannot detect. */
+export const UNMASKED_FIELDS = new Set<string>();
 
 export class TemplateError extends Error {}
 

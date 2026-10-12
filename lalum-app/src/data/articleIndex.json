@@ -19,8 +19,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "directors-liability-ai-era",
-   "explainability"
+   "explainability",
+   "directors-liability-ai-era"
   ]
  },
  "board-liability": {
@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -63,12 +63,60 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "israel-land-authority-lease-capitalization-transfer": {
+  "topic": "real-estate",
+  "related": [
+   "caution-note-real-estate-registration-removal",
+   "purchase-group-agreement-tax-risks",
+   "cyprus-realestate-israeli-buyer-guide"
+  ]
+ },
+ "ai-generated-content-ownership-protection-contracts": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-marketing-advertising-privacy-deception-deepfake",
+   "ai-due-diligence-tech-acquisition",
+   "ai-vendor-agreement-dpa-liability-indemnity"
+  ]
+ },
+ "purchase-group-agreement-tax-risks": {
+  "topic": "contracts",
+  "related": [
+   "overseas-partnership-guide",
+   "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses"
+  ]
+ },
+ "suing-foreign-company-jurisdiction-service-enforcement": {
+  "topic": "contracts",
+  "related": [
+   "delay-delivery-overseas-property-buyer-rights",
+   "portugal-purchase-contract",
+   "overseas-property-due-diligence"
+  ]
+ },
+ "delay-delivery-overseas-property-buyer-rights": {
+  "topic": "contracts",
+  "related": [
+   "suing-foreign-company-jurisdiction-service-enforcement",
+   "caution-note-real-estate-registration-removal",
+   "overseas-property-holding-structure"
+  ]
+ },
+ "buying-apartment-from-contractor-guarantee-bank-financing": {
+  "topic": "real-estate",
+  "related": [
+   "urban-renewal-guarantees-sale-law-registration",
+   "portugal-purchase-contract",
+   "caution-note-real-estate-registration-removal"
+  ]
+ },
  "caution-note-real-estate-registration-removal": {
   "topic": "real-estate",
   "related": [
    "overseas-property-due-diligence",
-   "portugal-legal-due-diligence",
-   "portugal-purchase-contract"
+   "israel-land-authority-lease-capitalization-transfer",
+   "portugal-legal-due-diligence"
   ]
  },
  "real-estate-memorandum-of-understanding-binding": {
@@ -76,23 +124,23 @@
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
    "portugal-purchase-contract",
-   "ai-drafted-real-estate-contract-review"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "ai-vendor-agreement-dpa-liability-indemnity": {
   "topic": "contracts",
   "related": [
+   "ai-generated-content-ownership-protection-contracts",
    "ai-marketing-advertising-privacy-deception-deepfake",
-   "ai-health-data-privacy",
-   "gdpr-israeli-companies-ai"
+   "ai-health-data-privacy"
   ]
  },
  "ai-marketing-advertising-privacy-deception-deepfake": {
   "topic": "ai-governance",
   "related": [
    "ai-insurance-underwriting-pricing-regulation",
-   "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-health-data-privacy"
+   "ai-generated-content-ownership-protection-contracts",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "ai-hr-use-policy": {
@@ -179,8 +227,8 @@
   "topic": "real-estate",
   "related": [
    "greece-realestate-israeli-buyer-guide",
-   "portugal-purchase-contract",
-   "urban-renewal-taxation-owner"
+   "israel-land-authority-lease-capitalization-transfer",
+   "portugal-purchase-contract"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -260,7 +308,7 @@
   "related": [
    "ai-clinical-system-deployment",
    "ai-use-policy-local-authority",
-   "ai-municipal-chatbot-resident-liability"
+   "procurement"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -299,8 +347,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-purchase-contract",
-   "urban-renewal-guarantees-sale-law-registration",
-   "three-minute-legal-check"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "urban-renewal-guarantees-sale-law-registration"
   ]
  },
  "ai-insurance-underwriting-pricing-regulation": {
@@ -339,8 +387,8 @@
   "topic": "real-estate",
   "related": [
    "developer-agreement-urban-renewal-critical-clauses",
-   "ai-drafted-real-estate-contract-review",
-   "caution-note-real-estate-registration-removal"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "effective-human-oversight-ai-systems": {
@@ -371,8 +419,8 @@
   "topic": "contracts",
   "related": [
    "portugal-legal-due-diligence",
-   "ai-drafted-real-estate-contract-review",
-   "real-estate-memorandum-of-understanding-binding"
+   "buying-apartment-from-contractor-guarantee-bank-financing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "portugal-real-estate-financing": {
@@ -380,7 +428,7 @@
   "related": [
    "portugal-porto-vs-lisbon",
    "portugal-real-estate-taxation",
-   "portugal-legal-due-diligence"
+   "tama-38-1-vs-38-2-comparison"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -420,7 +468,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "decision-oriented-ai-law"
+   "saas-eu-compliance-israeli-companies"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -483,8 +531,8 @@
   "topic": "ai-governance",
   "related": [
    "gdpr-israeli-companies-ai",
-   "ip-value-collapse-ai-acquisition",
-   "ai-vendor-agreement-dpa-liability-indemnity"
+   "ai-generated-content-ownership-protection-contracts",
+   "ip-value-collapse-ai-acquisition"
   ]
  },
  "overseas-property-holding-structure": {
@@ -492,7 +540,7 @@
   "related": [
    "overseas-property-due-diligence",
    "overseas-partnership-guide",
-   "portugal-real-estate-taxation"
+   "delay-delivery-overseas-property-buyer-rights"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -507,8 +555,8 @@
   "topic": "real-estate",
   "related": [
    "tama-38-1-vs-38-2-comparison",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "tenant-urban-renewal-guide"
+   "tenant-urban-renewal-guide",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -580,7 +628,7 @@
   "related": [
    "portugal-legal-due-diligence",
    "combination-deals-architecture",
-   "urban-renewal-principles-vs-detailed-agreement"
+   "caution-note-real-estate-registration-removal"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -635,15 +683,15 @@
   "topic": "mediation",
   "related": [
    "real-estate-arbitration",
-   "real-estate-dispute-arbitration",
-   "business-mediation-relations"
+   "business-mediation-relations",
+   "lalum-mediation-arbitration"
   ]
  },
  "ai-liability-ruling": {
   "topic": "ai-governance",
   "related": [
-   "decision-oriented-ai-law",
    "ai-hallucinations-citations",
+   "decision-oriented-ai-law",
    "lalum-clinic-experience"
   ]
  },
@@ -685,14 +733,6 @@
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "eu-ai-act-conformity-file-preparation"
-  ]
- },
- "real-estate-dispute-arbitration": {
-  "topic": "mediation",
-  "related": [
-   "business-arbitration",
-   "real-estate-arbitration",
-   "business-mediation-relations"
   ]
  },
  "ai-ethics-legal-risks": {
@@ -819,8 +859,8 @@
   "topic": "real-estate",
   "related": [
    "transcription-tools-guide",
-   "unfair-advantage-course",
-   "law-algorithm-era"
+   "law-algorithm-era",
+   "unfair-advantage-course"
   ]
  },
  "digital-lawyers-2026": {
@@ -932,15 +972,15 @@
   "related": [
    "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת",
    "three-minute-legal-check",
-   "real-estate-dispute-arbitration"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "overseas-partnership-guide": {
   "topic": "real-estate",
   "related": [
+   "purchase-group-agreement-tax-risks",
    "intl-realestate-transactions",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון",
-   "overseas-property-holding-structure"
+   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
   ]
  },
  "second-opinion-revolution": {
@@ -1068,7 +1108,7 @@
   "related": [
    "העתיד-של-ניהול-סיכונים-בהשקעות-נדל-ן-הצגת-מודל-recir-מבוסס-ai",
    "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
-   "real-estate-dispute-arbitration"
+   "urban-renewal-risk"
   ]
  },
  "body-language-ai-future": {
@@ -1132,7 +1172,7 @@
   "related": [
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה",
    "סכסוכים-בינלאומיים-וגישור-מכוון-הכרעה-בין-תרבות-להסכמה",
-   "behind-the-mask-mediation-language"
+   "realestate-master-course"
   ]
  },
  "behind-the-mask-mediation-language": {
@@ -1204,7 +1244,7 @@
   "related": [
    "מעבר-למילים-גישור-מכוון-הכרעה-עם-רגשות-שפת-גוף-וטכנולוגיה-חכמה",
    "real-estate-arbitration",
-   "urban-renewal-risk"
+   "decision-oriented-mediation-benefits"
   ]
  },
  "פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות": {
@@ -1250,8 +1290,8 @@
  "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה": {
   "topic": "mediation",
   "related": [
-   "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
    "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "הסוד-שבזמן-הנכון-ומה-שבאמת-קובע",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה"
   ]
  },
@@ -1275,16 +1315,16 @@
   "topic": "real-estate",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "one-board-הדלת-לעולם-חדש-של-ליווי-אסטרטגי-אישי-לעסקים-ועמותות"
   ]
  },
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
    "ai-local-authorities-uses-legal-limits",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
+   "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1586,8 +1626,8 @@
  "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "משרדי-גישור-מול-משרדי-עורכי-דין-מה-מתאים-יותר-לסכסוך-שלך-כיצד-בחרו-הצדדים-בגישור-מכוון-הכרעה-ומה",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה"
   ]
  },
@@ -1618,9 +1658,9 @@
  "זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית": {
   "topic": "real-estate",
   "related": [
+   "israel-land-authority-lease-capitalization-transfer",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "caution-note-real-estate-registration-removal",
-   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
+   "caution-note-real-estate-registration-removal"
   ]
  },
  "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה": {

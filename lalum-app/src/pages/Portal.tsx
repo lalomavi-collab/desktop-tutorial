@@ -5,13 +5,11 @@ import { useLang } from "../context/LangContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
-import { SchedulingConsole } from "../components/SchedulingConsole";
-import { accountingUrl, paymentsEnabled, accountingDashboardEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
 import { LeumiMark, PaymentStrip } from "../components/BrandMarks";
 import { GroupChat } from "../components/GroupChat";
 import { PortalSigning } from "../components/PortalSigning";
 import { bcp47For, type Lang } from "../lib/hreflang";
-import { topicBySlug } from "../lib/topics";
 
 // When set, an embedded scheduling widget (Zoho Bookings) replaces the manual
 // day/time picker.
@@ -65,17 +63,6 @@ type MsgRow = {
   user_email: string | null;
 };
 
-type DiscussionRow = {
-  id: string;
-  topic: string;
-  question: string;
-  asker_name: string | null;
-  asker_email: string | null;
-  status: "pending" | "answered" | "rejected";
-  reply: string | null;
-  answered_at: string | null;
-  created_at: string;
-};
 
 type Milestone = {
   id: string;
@@ -88,26 +75,11 @@ type Milestone = {
   created_at: string;
 };
 
-type CallRow = {
-  id: string;
-  caller_phone: string;
-  duration_seconds: number;
-  client_intent: string | null;
-  is_billable: boolean;
-  is_processed: boolean;
-  summary: string | null;
-  created_at: string;
-  // PostgREST embeds one-to-many relations as arrays.
-  lalum_crm_tasks: { title: string; priority: string; due_date: string; status: string }[] | null;
-  lalum_billing_ledgers: { amount: number; currency: string; billed_hours: number }[] | null;
-};
-
 export function Portal() {
   const { user, signOut, demoMode } = useAuth();
   const { t, lang } = useLang();
   const P = t.ui.portal;
   const M = P.messages;
-  const C = P.calls;
   const days = useMemo(() => nextBusinessDays(6, lang), [lang]);
 
   const [day, setDay] = useState("");
@@ -145,25 +117,11 @@ export function Portal() {
   }, [loadFiles]);
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFirmMember, setIsFirmMember] = useState(false);
   const [thread, setThread] = useState<MsgRow[]>([]);
-  const [inbox, setInbox] = useState<MsgRow[]>([]);
-  const [calls, setCalls] = useState<CallRow[]>([]);
-  const [chargingId, setChargingId] = useState<string | undefined>();
-  const [chargedIds, setChargedIds] = useState<Set<string>>(new Set());
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [rowBusy, setRowBusy] = useState<Record<string, "draft" | "send" | undefined>>({});
 
   const [myBills, setMyBills] = useState<Milestone[]>([]);
-  const [allBills, setAllBills] = useState<Milestone[]>([]);
   const [payBusy, setPayBusy] = useState<string | undefined>();
-  const [billEmail, setBillEmail] = useState("");
-  const [billName, setBillName] = useState("");
-  const [billPhone, setBillPhone] = useState("");
-  const [billTitle, setBillTitle] = useState("");
-  const [billAmount, setBillAmount] = useState("");
-  const [billCurrency, setBillCurrency] = useState("ILS");
-  const [billBusy, setBillBusy] = useState(false);
-  const [billMsg, setBillMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   // Bank-transfer (Bank Leumi) declaration by the client.
   const [transferOpen, setTransferOpen] = useState(false);
@@ -172,75 +130,6 @@ export function Portal() {
   const [transferBusy, setTransferBusy] = useState(false);
   const [transferMsg, setTransferMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
-  // Admin-only, firm-wide view of every client's uploaded documents.
-  type AdminFile = { name: string; raw_name: string; path: string; size: number; created_at: string | null; url: string };
-  type AdminClient = { client_id: string; email: string; name: string; file_count: number; files: AdminFile[] };
-  const [adminDocs, setAdminDocs] = useState<AdminClient[]>([]);
-  const [docsState, setDocsState] = useState<"idle" | "loading" | "ready" | "unavailable">("idle");
-  const [zipBusy, setZipBusy] = useState<string | undefined>();
-  const [openClient, setOpenClient] = useState<string | undefined>();
-
-  // Admin inbox: grouped into a folder per client, with a search box and a
-  // "needs reply" filter so a long list stays easy to work through.
-  const [inboxQuery, setInboxQuery] = useState("");
-  const [inboxUnhandledOnly, setInboxUnhandledOnly] = useState(false);
-  const [openInboxClient, setOpenInboxClient] = useState<string | undefined>();
-  const [openCaller, setOpenCaller] = useState<string | undefined>();
-
-  // Public "Discussions" review queue (firm only). A question submitted from
-  // the DiscussionsPanel on the site sits here as 'pending', invisible to
-  // everyone but an admin, until it is answered or rejected below.
-  const [discussions, setDiscussions] = useState<DiscussionRow[]>([]);
-  const [discussionDrafts, setDiscussionDrafts] = useState<Record<string, string>>({});
-  const [discussionBusy, setDiscussionBusy] = useState<Record<string, "send" | "reject" | undefined>>({});
-
-  const loadAdminDocs = useCallback(async () => {
-    if (!supabase) return;
-    setDocsState("loading");
-    try {
-      const { data, error } = await supabase.functions.invoke("lalum-admin-files", { body: { action: "list" } });
-      if (error) throw error;
-      setAdminDocs(((data?.clients ?? []) as AdminClient[]));
-      setDocsState("ready");
-    } catch {
-      // Function not deployed yet, or the caller is not authorised: hide quietly.
-      setDocsState("unavailable");
-    }
-  }, []);
-
-  async function downloadAllZip(c: AdminClient) {
-    if (!supabase) return;
-    setZipBusy(c.client_id);
-    try {
-      const JSZip = (await import("jszip")).default;
-      const zip = new JSZip();
-      for (const f of c.files) {
-        let url = f.url;
-        if (!url) {
-          const { data } = await supabase.functions.invoke("lalum-admin-files", { body: { action: "sign", path: f.path } });
-          url = (data?.url as string) ?? "";
-        }
-        if (!url) continue;
-        const blob = await (await fetch(url)).blob();
-        zip.file(f.name, blob);
-      }
-      const out = await zip.generateAsync({ type: "blob" });
-      const label = (c.name || c.email || c.client_id).replace(/[^\w.@-]+/g, "_");
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(out);
-      a.download = `${label}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    } finally {
-      setZipBusy(undefined);
-    }
-  }
-
-  useEffect(() => {
-    if (isAdmin) void loadAdminDocs();
-  }, [isAdmin, loadAdminDocs]);
 
   const loadMessages = useCallback(async () => {
     if (!supabase || !user) return;
@@ -251,87 +140,15 @@ export function Portal() {
       admin = Boolean(data?.is_admin);
     }
     setIsAdmin(admin);
+    // Any firm member (attorney, partner, admin) gets the entry to the management
+    // cockpit; a plain client does not. The cockpit itself scopes what each role sees.
+    const fm = await supabase.from("lalum_firm_members").select("user_id").eq("user_id", user.id).maybeSingle();
+    setIsFirmMember(admin || Boolean(fm.data));
     const own = await supabase.from("lalum_messages").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     if (own.data) setThread(own.data as MsgRow[]);
     const mine = await supabase.from("billing_milestones").select("*").order("created_at", { ascending: false });
     if (mine.data) setMyBills(mine.data as Milestone[]);
-    if (admin) {
-      const all = await supabase.from("lalum_messages").select("*").order("created_at", { ascending: false });
-      if (all.data) setInbox(all.data as MsgRow[]);
-      setAllBills((mine.data as Milestone[]) ?? []);
-      const callRes = await supabase
-        .from("lalum_calls_meta")
-        .select(
-          "id, caller_phone, duration_seconds, client_intent, is_billable, is_processed, summary, created_at, lalum_crm_tasks(title, priority, due_date, status), lalum_billing_ledgers(amount, currency, billed_hours)"
-        )
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (callRes.data) setCalls(callRes.data as unknown as CallRow[]);
-      const discRes = await supabase.from("lalum_discussions").select("*").order("created_at", { ascending: false }).limit(150);
-      if (discRes.data) setDiscussions(discRes.data as DiscussionRow[]);
-    }
   }, [user]);
-
-  // Answer (or reject) a pending public question. Once answered it becomes
-  // visible in the DiscussionsPanel for anyone browsing that topic.
-  async function replyDiscussion(id: string) {
-    if (!supabase) return;
-    const text = (discussionDrafts[id] ?? "").trim();
-    if (!text) return;
-    setDiscussionBusy((b) => ({ ...b, [id]: "send" }));
-    try {
-      const { error } = await supabase.from("lalum_discussions")
-        .update({ reply: text, status: "answered", answered_at: new Date().toISOString() }).eq("id", id);
-      if (error) throw error;
-      setDiscussions((rows) => rows.map((r) => (r.id === id ? { ...r, reply: text, status: "answered", answered_at: new Date().toISOString() } : r)));
-      setDiscussionDrafts((d) => { const n = { ...d }; delete n[id]; return n; });
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : "הפרסום נכשל");
-    } finally {
-      setDiscussionBusy((b) => ({ ...b, [id]: undefined }));
-    }
-  }
-
-  async function rejectDiscussion(id: string) {
-    if (!supabase) return;
-    setDiscussionBusy((b) => ({ ...b, [id]: "reject" }));
-    try {
-      const { error } = await supabase.from("lalum_discussions").update({ status: "rejected" }).eq("id", id);
-      if (error) throw error;
-      setDiscussions((rows) => rows.map((r) => (r.id === id ? { ...r, status: "rejected" } : r)));
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : "הפעולה נכשלה");
-    } finally {
-      setDiscussionBusy((b) => ({ ...b, [id]: undefined }));
-    }
-  }
-
-  // One-click: turn a billable call into a payment request, reusing the amount
-  // the voice billing already computed (gross, VAT included).
-  async function chargeForCall(c: CallRow) {
-    const bill = c.lalum_billing_ledgers?.[0];
-    if (!supabase || !bill || chargingId) return;
-    setChargingId(c.id);
-    try {
-      const title = `${t.ui.portal.calls.chargeTitle} · ${c.caller_phone}`;
-      const { error } = await supabase.from("billing_milestones").insert({
-        title,
-        amount: bill.amount,
-        currency: bill.currency,
-        client_email: null,
-        // The caller's real number, so an Invoice4U payment page can be issued.
-        client_phone: c.caller_phone,
-        client_name: t.ui.portal.calls.chargeTitle,
-      });
-      if (error) throw error;
-      setChargedIds((s) => new Set(s).add(c.id));
-      await loadMessages();
-    } catch {
-      window.alert(t.ui.portal.billing.err);
-    } finally {
-      setChargingId(undefined);
-    }
-  }
 
   async function payMilestone(id: string) {
     if (!supabase) return;
@@ -352,46 +169,6 @@ export function Portal() {
       else throw new Error("no_url");
     } catch {
       window.alert(t.ui.portal.billing.payErr);
-      setPayBusy(undefined);
-    }
-  }
-
-  async function createMilestone(e: FormEvent) {
-    e.preventDefault();
-    const B = t.ui.portal.billing;
-    if (!supabase || !billTitle.trim() || !billAmount) return;
-    setBillBusy(true);
-    setBillMsg(null);
-    try {
-      const { error } = await supabase.from("billing_milestones").insert({ client_email: billEmail || null, client_name: billName || null, client_phone: billPhone || null, title: billTitle.trim(), amount: Number(billAmount), currency: billCurrency });
-      if (error) throw error;
-      setBillMsg({ tone: "ok", text: B.createdOk });
-      setBillTitle("");
-      setBillAmount("");
-      setBillEmail("");
-      setBillName("");
-      setBillPhone("");
-      await loadMessages();
-    } catch (err) {
-      setBillMsg({ tone: "err", text: err instanceof Error ? err.message : B.err });
-    } finally {
-      setBillBusy(false);
-    }
-  }
-
-  async function copyPayLink(id: string) {
-    if (!supabase) return;
-    setPayBusy(id);
-    try {
-      const { data, error } = await supabase.functions.invoke("lalum-pay-create", { body: { milestone_id: id } });
-      if (error) throw error;
-      if (data?.url) {
-        try { await navigator.clipboard.writeText(data.url as string); } catch { window.prompt("Link", data.url as string); }
-        await loadMessages();
-      }
-    } catch {
-      window.alert(t.ui.portal.billing.payErr);
-    } finally {
       setPayBusy(undefined);
     }
   }
@@ -447,41 +224,6 @@ export function Portal() {
   useEffect(() => {
     void loadMessages();
   }, [loadMessages]);
-
-  async function draftReply(id: string) {
-    if (!supabase) return;
-    setRowBusy((b) => ({ ...b, [id]: "draft" }));
-    try {
-      const { data, error } = await supabase.functions.invoke("lalum-draft-reply", { body: { message_id: id } });
-      if (error) throw error;
-      setDrafts((d) => ({ ...d, [id]: (data?.draft as string) ?? "" }));
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : "Draft failed");
-    } finally {
-      setRowBusy((b) => ({ ...b, [id]: undefined }));
-    }
-  }
-
-  async function sendReply(id: string, fallback: string) {
-    if (!supabase) return;
-    const text = (drafts[id] ?? fallback).trim();
-    if (!text) return;
-    setRowBusy((b) => ({ ...b, [id]: "send" }));
-    try {
-      const { error } = await supabase.functions.invoke("lalum-send-reply", { body: { message_id: id, reply: text } });
-      if (error) throw error;
-      setDrafts((d) => {
-        const n = { ...d };
-        delete n[id];
-        return n;
-      });
-      await loadMessages();
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : "Send failed");
-    } finally {
-      setRowBusy((b) => ({ ...b, [id]: undefined }));
-    }
-  }
 
   async function submitBooking(e: FormEvent) {
     e.preventDefault();
@@ -572,8 +314,12 @@ export function Portal() {
 
   async function downloadFile(path: string) {
     if (!supabase) return;
+    // Open the tab now, inside the click: a window opened after the await below is the one browsers block.
+    const w = window.open("", "_blank");
     const { data } = await supabase.storage.from("client-files").createSignedUrl(path, 60);
-    if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
+    if (!data?.signedUrl) { w?.close(); return; }
+    if (w) { w.opener = null; w.location.href = data.signedUrl; }
+    else window.open(data.signedUrl, "_blank", "noopener");
   }
 
   async function removeFile(path: string) {
@@ -589,127 +335,6 @@ export function Portal() {
     const sym: Record<string, string> = { ILS: "₪", USD: "$", EUR: "€" };
     return `${sym[currency] ?? ""}${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
-  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(bcp47For(lang), { day: "numeric", month: "short" });
-
-  // Admin inbox grouped into a folder per client, with search + "needs reply"
-  // filtering, most-urgent client first.
-  const inboxGroups = useMemo(() => {
-    const q = inboxQuery.trim().toLowerCase();
-    const map = new Map<string, MsgRow[]>();
-    for (const m of inbox) {
-      const key = (m.user_email || "").toLowerCase() || "__none__";
-      const arr = map.get(key) ?? [];
-      arr.push(m);
-      map.set(key, arr);
-    }
-    let groups = [...map.entries()].map(([key, msgs]) => ({ key, email: key === "__none__" ? "" : key, msgs }));
-    if (q) {
-      groups = groups
-        .map((g) => ({ ...g, msgs: g.msgs.filter((m) => `${m.user_email ?? ""} ${m.subject ?? ""} ${m.body}`.toLowerCase().includes(q)) }))
-        .filter((g) => g.msgs.length > 0);
-    }
-    if (inboxUnhandledOnly) {
-      groups = groups.map((g) => ({ ...g, msgs: g.msgs.filter((m) => !m.handled) })).filter((g) => g.msgs.length > 0);
-    }
-    const withCounts = groups.map((g) => ({ ...g, unhandled: g.msgs.filter((m) => !m.handled).length }));
-    withCounts.sort((a, b) => (b.unhandled > 0 ? 1 : 0) - (a.unhandled > 0 ? 1 : 0) || (b.msgs[0]?.created_at ?? "").localeCompare(a.msgs[0]?.created_at ?? ""));
-    return withCounts;
-  }, [inbox, inboxQuery, inboxUnhandledOnly]);
-
-  // Calls grouped into a folder per caller, most-recent-with-open-work first.
-  const callGroups = useMemo(() => {
-    const map = new Map<string, CallRow[]>();
-    for (const c of calls) {
-      const key = c.caller_phone || "ללא מספר";
-      const arr = map.get(key) ?? [];
-      arr.push(c);
-      map.set(key, arr);
-    }
-    const groups = [...map.entries()].map(([phone, rows]) => ({ phone, rows, unprocessed: rows.filter((r) => !r.is_processed).length }));
-    groups.sort((a, b) => (b.unprocessed > 0 ? 1 : 0) - (a.unprocessed > 0 ? 1 : 0) || (b.rows[0]?.created_at ?? "").localeCompare(a.rows[0]?.created_at ?? ""));
-    return groups;
-  }, [calls]);
-
-  // Headline counts for the admin "at a glance" strip.
-  const overview = useMemo(() => ({
-    needReply: inbox.filter((m) => !m.handled).length,
-    callsToProcess: calls.filter((c) => !c.is_processed).length,
-    unpaid: allBills.filter((b) => b.status !== "paid").length,
-    clientCount: new Set(inbox.map((m) => (m.user_email || "").toLowerCase()).filter(Boolean)).size,
-  }), [inbox, calls, allBills]);
-
-  // One call card, reused inside each caller folder.
-  function renderCallCard(c: CallRow) {
-    const task = c.lalum_crm_tasks?.[0];
-    const bill = c.lalum_billing_ledgers?.[0];
-    const intent = c.client_intent ? (C.intents[c.client_intent as keyof typeof C.intents] ?? c.client_intent) : null;
-    const dueDays = task ? Math.max(0, Math.round((new Date(task.due_date).getTime() - Date.now()) / 86400000)) : null;
-    return (
-      <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
-          {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
-          {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
-          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(c.created_at)}</span>
-        </div>
-        {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
-        {task && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 13.5, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
-            <span style={{ fontWeight: 700, color: "var(--clay)" }}>{C.task}:</span>
-            <span>{task.title}</span>
-            <span className="muted">({C.priorities[task.priority as keyof typeof C.priorities] ?? task.priority})</span>
-            {dueDays !== null && <span className="muted" style={{ marginInlineStart: "auto" }}>{C.due} {dueDays} {C.days}</span>}
-          </div>
-        )}
-        {paymentsEnabled && c.is_billable && bill && (
-          <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
-            {chargedIds.has(c.id) ? (
-              <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.charged}</span>
-            ) : (
-              <button type="button" className="btn btn-clay btn-sm" disabled={chargingId === c.id} onClick={() => chargeForCall(c)}>
-                <Icon name="scale" size={15} /> {chargingId === c.id ? C.charging : C.charge} · {bill.amount} {bill.currency}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // One client message with its AI-draft reply controls, reused inside each
-  // client folder in the admin inbox.
-  function renderInboxMessage(m: MsgRow) {
-    const catLabel = M.categories[m.category as keyof typeof M.categories] ?? m.category;
-    const busy = rowBusy[m.id];
-    return (
-      <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
-          {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
-          {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
-          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(m.created_at)}</span>
-        </div>
-        {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
-        <p style={{ margin: "0 0 14px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
-        <textarea
-          className="field"
-          rows={4}
-          value={drafts[m.id] ?? m.ai_draft ?? m.reply ?? ""}
-          onChange={(e) => setDrafts((d) => ({ ...d, [m.id]: e.target.value }))}
-          placeholder={P.inbox.replyPlaceholder}
-          style={{ resize: "vertical", marginBottom: 12 }}
-        />
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <button type="button" onClick={() => draftReply(m.id)} className="btn btn-ghost btn-sm" disabled={!!busy}>
-            <Icon name="spark" size={16} /> {busy === "draft" ? P.inbox.drafting : P.inbox.draftAi}
-          </button>
-          <button type="button" onClick={() => sendReply(m.id, m.ai_draft ?? "")} className="btn btn-clay btn-sm" disabled={!!busy}>
-            <Icon name="send" size={15} /> {busy === "send" ? P.inbox.sending : P.inbox.send}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <section className="wrap" style={{ padding: "56px 32px 120px" }}>
@@ -727,327 +352,45 @@ export function Portal() {
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
 
+      {/* Firm members reach their work in the management cockpit, not the client
+          area. A clear entry here keeps the two apart: the portal for clients,
+          the cockpit for the firm (where matters, documents and client signing
+          requests are created, each scoped by the member's role). */}
+      {isFirmMember && (
+        <a href="/workspace/" className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 28, textDecoration: "none", color: "inherit" }}>
+          <div>
+            <div className="label" style={{ margin: 0 }}>מערכת ניהול התיקים</div>
+            <p className="muted" style={{ margin: "4px 0 0" }}>כספת התיקים, מסמכים, החתמת לקוחות, בדיקת ניגוד עניינים ועוד. לכניסה לפי ההרשאות שלכם.</p>
+          </div>
+          <span className="btn btn-clay btn-sm" style={{ flex: "none" }}>כניסה לניהול</span>
+        </a>
+      )}
+
       {/* SHARED GROUP CHAT: one open room for everyone signed in, client and
           firm alike, meant to replace the firm's WhatsApp group so the
           conversation is saved and can later be searched or analysed. */}
       <GroupChat />
 
-      {/* ADMIN AT A GLANCE (firm only): headline counts across the whole desk. */}
-      {isAdmin && (
-        <div className="admin-overview" style={{ marginBottom: 28 }}>
-          {[
-            { icon: "gavel", label: P.overview.needReply, value: overview.needReply, hot: overview.needReply > 0 },
-            { icon: "phone", label: P.overview.calls, value: overview.callsToProcess, hot: overview.callsToProcess > 0 },
-            { icon: "scale", label: P.overview.unpaid, value: overview.unpaid, hot: overview.unpaid > 0 },
-            { icon: "folder", label: P.overview.clients, value: overview.clientCount, hot: false },
-          ].map((s) => (
-            <div key={s.label} className={"admin-stat" + (s.hot ? " hot" : "")}>
-              <span className="admin-stat-badge"><Icon name={s.icon} size={18} /></span>
-              <span className="admin-stat-value">{s.value}</span>
-              <span className="admin-stat-label">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* The firm's at-a-glance counts and the scheduling console now live in
+          the cockpit (dashboard and /workspace/scheduling), not the client
+          portal. Firm members reach them through the "management" card above.
+          The remaining admin surfaces below move to the cockpit next, one at a
+          time. */}
 
-      {/* FIRM SCHEDULING CONSOLE (firm only) */}
-      {isAdmin && <SchedulingConsole />}
+      {/* Firm-wide client documents now live in the cockpit
+          (/workspace/client-docs), reached from the "management" card. */}
 
-      {/* CLIENT DOCUMENTS, folder per client (firm only) */}
-      {isAdmin && docsState !== "unavailable" && (
-        <div className="card" style={{ padding: 34, marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-            <span className="icon-badge"><Icon name="folder" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>{P.clientDocs.title}</h2>
-          </div>
-          <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.clientDocs.intro}</p>
-          {docsState === "loading" && <p className="muted" style={{ fontSize: 14 }}>{P.clientDocs.loading}</p>}
-          {docsState === "ready" && adminDocs.length === 0 && <p className="muted" style={{ fontSize: 14 }}>{P.clientDocs.none}</p>}
-          {docsState === "ready" && adminDocs.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {adminDocs.map((c) => {
-                const open = openClient === c.client_id;
-                const label = c.name || c.email || P.clientDocs.noName;
-                return (
-                  <div key={c.client_id} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", flexWrap: "wrap" }}>
-                      <button type="button" onClick={() => setOpenClient(open ? undefined : c.client_id)}
-                        style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", flex: 1, minWidth: 180, textAlign: "start", font: "inherit", color: "inherit" }}>
-                        <Icon name="folder" size={18} />
-                        <span>
-                          <span style={{ fontWeight: 600, display: "block" }}>{label}</span>
-                          {c.email && c.name && <span className="muted" style={{ fontSize: 12 }} dir="ltr">{c.email}</span>}
-                        </span>
-                        <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{c.file_count} {P.clientDocs.files}</span>
-                      </button>
-                      <button type="button" className="btn btn-clay btn-sm" disabled={zipBusy === c.client_id} onClick={() => downloadAllZip(c)}>
-                        <Icon name="folder" size={14} /> {zipBusy === c.client_id ? P.clientDocs.zipping : P.clientDocs.downloadAll}
-                      </button>
-                    </div>
-                    {open && (
-                      <div style={{ borderTop: "1px solid var(--line)", padding: "8px 16px 14px", display: "flex", flexDirection: "column", gap: 4 }}>
-                        {c.files.map((f) => (
-                          <div key={f.path} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
-                            <Icon name="file" size={15} />
-                            <span style={{ flex: 1, fontSize: 14, wordBreak: "break-word" }}>{f.name}</span>
-                            <span className="muted" style={{ fontSize: 12 }}>{prettySize(f.size)}</span>
-                            {f.url
-                              ? <a className="btn btn-ghost btn-sm" href={f.url} target="_blank" rel="noopener noreferrer">{P.clientDocs.download}</a>
-                              : null}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Incoming AI calls now live in the cockpit (/workspace/calls),
+          reached from the "management" card. */}
 
-      {/* INCOMING AI CALLS (firm only) */}
-      {isAdmin && (
-        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-            <span className="icon-badge"><Icon name="phone" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>{C.title}</h2>
-          </div>
-          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{C.intro}</p>
-          {calls.length === 0 ? (
-            <p className="muted" style={{ fontSize: 14 }}>{C.none}</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {callGroups.map((g) => {
-                const open = openCaller === g.phone;
-                return (
-                  <div key={g.phone} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden" }}>
-                    <button type="button" onClick={() => setOpenCaller(open ? undefined : g.phone)}
-                      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
-                      <Icon name="phone" size={17} />
-                      <span dir="ltr" style={{ fontWeight: 600 }}>{g.phone}</span>
-                      {g.unprocessed > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unprocessed} {C.toProcess}</span>}
-                      <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.rows.length} {C.callsWord}</span>
-                      <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
-                    </button>
-                    {open && (
-                      <div style={{ borderTop: "1px solid var(--line)", padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
-                        {g.rows.map((c) => renderCallCard(c))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      {/* The client-message inbox now lives in the cockpit
+          (/workspace/inbox), reached from the "management" card. */}
 
-      {/* ADMIN INBOX (firm only) */}
-      {isAdmin && (
-        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-            <span className="icon-badge"><Icon name="gavel" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>{P.inbox.title}</h2>
-          </div>
-          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{P.inbox.intro}</p>
-          {inbox.length === 0 ? (
-            <p className="muted" style={{ fontSize: 14 }}>{P.inbox.none}</p>
-          ) : (
-            <>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 16 }}>
-                <div style={{ flex: 1, minWidth: 200, display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--line-strong)", borderRadius: 9999, padding: "9px 14px", background: "var(--card)" }}>
-                  <Icon name="search" size={16} />
-                  <input value={inboxQuery} onChange={(e) => setInboxQuery(e.target.value)} placeholder={P.inbox.searchPh}
-                    style={{ border: "none", outline: "none", background: "transparent", flex: 1, font: "inherit", fontSize: 14, color: "var(--ink)", minWidth: 0 }} />
-                </div>
-                <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13.5, cursor: "pointer", whiteSpace: "nowrap" }}>
-                  <input type="checkbox" checked={inboxUnhandledOnly} onChange={(e) => setInboxUnhandledOnly(e.target.checked)} />
-                  {P.inbox.unhandledOnly}
-                </label>
-                <span className="muted" style={{ fontSize: 12.5 }}>{inboxGroups.length} {P.inbox.clients}</span>
-              </div>
-              {inboxGroups.length === 0 ? (
-                <p className="muted" style={{ fontSize: 14 }}>{P.inbox.noneFiltered}</p>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {inboxGroups.map((g) => {
-                    const open = openInboxClient === g.key;
-                    const label = g.email || P.inbox.noEmail;
-                    return (
-                      <div key={g.key} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden" }}>
-                        <button type="button" onClick={() => setOpenInboxClient(open ? undefined : g.key)}
-                          style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
-                          <Icon name="user" size={17} />
-                          <span dir="ltr" style={{ fontWeight: 600, wordBreak: "break-all" }}>{label}</span>
-                          {g.unhandled > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unhandled} {P.inbox.newBadge}</span>}
-                          <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.msgs.length} {P.inbox.msgsWord}</span>
-                          <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
-                        </button>
-                        {open && (
-                          <div style={{ borderTop: "1px solid var(--line)", padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
-                            {g.msgs.map((m) => renderInboxMessage(m))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {/* The public-discussions review queue now lives in the cockpit
+          (/workspace/discussions), reached from the "management" card. */}
 
-      {/* DISCUSSIONS REVIEW QUEUE (firm only): public questions asked from the
-          real-estate and AI pillar pages. Nothing here is visible on the site
-          until answered, so this is the one gate that content passes through. */}
-      {isAdmin && (
-        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-            <span className="icon-badge"><Icon name="quote" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22 }}>דיונים ציבוריים</h2>
-            {discussions.filter((d) => d.status === "pending").length > 0 && (
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>
-                {discussions.filter((d) => d.status === "pending").length} ממתינות
-              </span>
-            )}
-          </div>
-          <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>
-            שאלות מהפאנל הציבורי בעמודי הנדל״ן וה-AI. שאלה מתפרסמת רק אחרי שנענתה כאן.
-          </p>
-          {discussions.filter((d) => d.status !== "rejected").length === 0 ? (
-            <p className="muted" style={{ fontSize: 14 }}>אין שאלות עדיין.</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {discussions.filter((d) => d.status !== "rejected").map((d) => {
-                const busy = discussionBusy[d.id];
-                const pending = d.status === "pending";
-                return (
-                  <div key={d.id} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 16 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>
-                        {topicBySlug.get(d.topic)?.name ?? d.topic}
-                      </span>
-                      {pending
-                        ? <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>ממתינה</span>
-                        : <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>פורסמה ✓</span>}
-                      {(d.asker_name || d.asker_email) && (
-                        <span className="muted" style={{ fontSize: 12 }} dir="ltr">{d.asker_name}{d.asker_name && d.asker_email ? " · " : ""}{d.asker_email}</span>
-                      )}
-                      <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{new Date(d.created_at).toLocaleDateString(bcp47For(lang))}</span>
-                    </div>
-                    <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{d.question}</p>
-                    {pending ? (
-                      <>
-                        <textarea className="field" rows={3} value={discussionDrafts[d.id] ?? ""}
-                          onChange={(e) => setDiscussionDrafts((dr) => ({ ...dr, [d.id]: e.target.value }))}
-                          placeholder="כתבו תשובה לפרסום…" style={{ resize: "vertical", marginBottom: 10 }} />
-                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                          <button type="button" className="btn btn-clay btn-sm" disabled={!!busy || !(discussionDrafts[d.id] ?? "").trim()} onClick={() => replyDiscussion(d.id)}>
-                            <Icon name="send" size={15} /> {busy === "send" ? "מפרסם…" : "פרסום תשובה"}
-                          </button>
-                          <button type="button" className="btn btn-ghost btn-sm" disabled={!!busy} onClick={() => rejectDiscussion(d.id)} style={{ color: "var(--clay)" }}>
-                            {busy === "reject" ? "…" : "דחייה, ללא פרסום"}
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 12 }}>
-                        <div className="label" style={{ color: "var(--clay)", fontSize: 11 }}>התשובה שפורסמה</div>
-                        <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14 }}>{d.reply}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ADMIN BILLING (firm only) */}
-      {isAdmin && (
-        <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", rowGap: 10, marginBottom: 8 }}>
-            <span className="icon-badge"><Icon name="scale" size={20} /></span>
-            <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{P.billing.adminTitle}</h2>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "3px 10px" }}>{P.billing.adminOnly}</span>
-            {accountingDashboardEnabled && (
-              <a
-                className="btn btn-ghost btn-sm"
-                href={accountingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginInlineStart: "auto" }}
-              >
-                <Icon name="file" size={15} /> {P.billing.dashboard}
-              </a>
-            )}
-          </div>
-          <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{P.billing.adminIntro}</p>
-          <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
-            <div className="grid grid-2" style={{ gap: 12 }}>
-              <div>
-                <div className="label">{P.billing.clientEmail}</div>
-                <input className="field" value={billEmail} onChange={(e) => setBillEmail(e.target.value)} placeholder={P.billing.clientEmailPh} dir="ltr" />
-              </div>
-              <div>
-                <div className="label">{P.billing.itemTitle}</div>
-                <input className="field" value={billTitle} onChange={(e) => setBillTitle(e.target.value)} placeholder={P.billing.itemTitlePh} />
-              </div>
-            </div>
-            <div className="grid grid-2" style={{ gap: 12 }}>
-              <div>
-                <div className="label">{P.billing.clientName}</div>
-                <input className="field" value={billName} onChange={(e) => setBillName(e.target.value)} placeholder={P.billing.clientNamePh} />
-              </div>
-              <div>
-                <div className="label">{P.billing.clientPhone}</div>
-                <input className="field" value={billPhone} onChange={(e) => setBillPhone(e.target.value)} placeholder={P.billing.clientPhonePh} dir="ltr" inputMode="tel" />
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
-              <div style={{ flex: 1 }}>
-                <div className="label">{P.billing.amount}</div>
-                <input className="field" value={billAmount} onChange={(e) => setBillAmount(e.target.value.replace(/[^\d.]/g, ""))} placeholder={P.billing.amountPh} dir="ltr" inputMode="decimal" />
-              </div>
-              <div style={{ width: 100 }}>
-                <select className="field" value={billCurrency} onChange={(e) => setBillCurrency(e.target.value)} dir="ltr">
-                  <option value="ILS">ILS ₪</option>
-                  <option value="USD">USD $</option>
-                  <option value="EUR">EUR €</option>
-                </select>
-              </div>
-              <button className="btn btn-clay btn-sm" disabled={billBusy || !billTitle.trim() || !billAmount} style={{ whiteSpace: "nowrap" }}>
-                {billBusy ? P.billing.creating : P.billing.create}
-              </button>
-            </div>
-          </form>
-          {billMsg && <div className={`notice ${billMsg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginBottom: 16 }}>{billMsg.text}</div>}
-
-          {allBills.length > 0 && (
-            <div>
-              <div className="label">{P.billing.allTitle}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-                {allBills.map((bl) => (
-                  <div key={bl.id} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
-                    <div style={{ flex: 1, minWidth: 140 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14 }}>{bl.title}</div>
-                      <div className="muted" style={{ fontSize: 12 }} dir="ltr">{bl.client_email}</div>
-                    </div>
-                    <span dir="ltr" style={{ fontWeight: 700 }}>{fmtMoney(bl.amount, bl.currency)}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{P.billing.statusLabels[bl.status as keyof typeof P.billing.statusLabels] ?? bl.status}</span>
-                    {bl.status !== "paid" && (
-                      <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : P.billing.copyLink}</button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Client billing (payment requests) now lives in the cockpit
+          (/workspace/payments), reached from the "management" card. */}
 
       {/* CUSTOMER SERVICE MESSAGE */}
       <div className="card" style={{ padding: 34, marginBottom: 28 }}>
@@ -1084,8 +427,10 @@ export function Portal() {
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6, margin: "14px 0 0" }}>{M.note}</p>
       </div>
 
-      {/* CLIENT DOCUMENTS TO SIGN */}
-      {!isAdmin && <PortalSigning />}
+      {/* DOCUMENTS TO SIGN. Shown to anyone who has requests addressed to their
+          login email (the panel self-hides when there are none), so a firm member
+          who is also a signer sees their own documents, not only plain clients. */}
+      <PortalSigning />
 
       {/* CLIENT CONVERSATION THREAD */}
       {!isAdmin && thread.length > 0 && (

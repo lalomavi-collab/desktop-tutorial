@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STATUS, PRACTICE, RESPONSE, STEPS } from "../../lib/cockpit/shared";
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
 import { originals } from "../../lib/cockpit/originals";
+import { BLOCKED, openPendingWindow, printInto } from "../../lib/cockpit/printWindow";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
@@ -16,6 +17,7 @@ import { KycPanel } from "./KycPanel";
 import { AnnexAssembly } from "./AnnexAssembly";
 import { SignatureRequests } from "./SignatureRequests";
 import { ConflictReview } from "./ConflictReview";
+import { MatterAccess } from "./MatterAccess";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -188,8 +190,11 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   }
   async function doExport(kind: "word" | "pdf", restoreNames: boolean) {
     if (!doc) return;
+    // Open the print window now, inside the click, before waiting for the server (see printWindow.ts).
+    const w = kind === "pdf" ? openPendingWindow() : null;
+    if (kind === "pdf" && !w) { setGateMsg(BLOCKED); return; }
     const r = await callPipeline("/api/v1/documents/export", { document_id: doc.id });
-    if (!r.ok || r.content == null) { setGateMsg(errorText(r)); return; }
+    if (!r.ok || r.content == null) { w?.close(); setGateMsg(errorText(r)); return; }
     const map = tokenMap(doc.id);
     const content = map && restoreNames ? restore(r.content, map) : r.content;
     const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -199,10 +204,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       a.href = URL.createObjectURL(new Blob(["﻿", html], { type: "application/msword" }));
       a.download = `${(r.file_name ?? "document").replace(/\.[^.]+$/, "") || "document"}.doc`;
       document.body.appendChild(a); a.click(); a.remove();
-    } else {
-      const w = window.open("", "_blank");
-      if (!w) { setGateMsg("הדפדפן חסם את חלון ההדפסה."); return; }
-      w.document.write(html); w.document.close(); w.focus(); window.setTimeout(() => w.print(), 300);
+    } else if (w) {
+      printInto(w, html);
     }
   }
   async function setResponse(v: string) {
@@ -283,6 +286,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
           <SignatureRequests matterId={matter.id} firmId={member.firm_id} documentId={doc?.id ?? null} canManage={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} />
           <ConflictReview matterId={matter.id} conflictStatus={matter.conflict_status} canDecide={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
+          <MatterAccess matterId={matter.id} department={(matter as { department?: string | null }).department ?? null} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
           <div className="ck-label">מפת ישויות</div>
           {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
           {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}

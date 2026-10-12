@@ -8,7 +8,7 @@ const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 t("plain fields and blanks", () => {
   assert.equal(mergeTemplate("א {{fee}} ב", { fee: "100" }), "א 100 ב");
   assert.match(mergeTemplate("א {{fee}} ב", {}), /\[שכר הטרחה: להשלמה בקובץ המיוצא\]/);
-  assert.match(mergeTemplate("{{client_address}}", { client_address: "הרצל 1" }), /להשלמה בקובץ המיוצא/, "unmasked field never merged");
+  assert.equal(mergeTemplate("{{client_address}}", { client_address: "הרצל 1, תל אביב" }), "הרצל 1, תל אביב", "address is merged: the shield masks it server side");
 });
 
 const COND = "{{#if track=פינוי בינוי}}PB{{else}}{{#if track=תמ\"א 38/2}}T2{{else}}OTHER{{/if}}{{/if}}";

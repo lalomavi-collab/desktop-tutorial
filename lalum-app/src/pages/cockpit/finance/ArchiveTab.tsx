@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { money } from "../../../lib/cockpit/shared";
-import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps } from "../../../lib/cockpit/finance";
-import type { ArchiveDoc } from "../../../lib/cockpit/finance";
+import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from "../../../lib/cockpit/finance";
+import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
 
 const monthsBetween = (from: string, to: string): Array<[string, string]> => {
@@ -17,7 +17,9 @@ const monthsBetween = (from: string, to: string): Array<[string, string]> => {
   return out;
 };
 
-export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: () => void }) {
+export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; customers: FinCustomer[]; onChange: () => void }) {
+  const byI4u = new Map(customers.filter((c) => c.i4u_customer_id).map((c) => [Number(c.i4u_customer_id), c.name]));
+  const who = (d: ArchiveDoc): string => (d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || "לקוח מזדמן";
   const [from, setFrom] = useState(`${new Date().getFullYear() - 1}-01-01`);
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10));
   const [busy, setBusy] = useState(false);
@@ -74,10 +76,10 @@ export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: (
       {(
         <>
           <div className="ck-label">התאמה לדוחות Invoice4U</div>
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שנה</th><th>סוג</th><th>כמות</th><th>לפני מע"מ</th><th>מע"מ</th><th>סה"כ</th></tr></thead><tbody>
-            {summary.length ? summary.map((r) => <tr key={`${r.year}${r.type}`}><td>{r.year}</td><td>{I4U_TYPE[r.type] ?? r.type}</td><td>{r.count}</td><td>{money(r.subtotal)}</td><td>{money(r.vat)}</td><td>{money(r.total)}</td></tr>) : <tr><td colSpan={6}>עדיין לא יובאו מסמכים</td></tr>}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שנה</th><th>סוג</th><th className="fin-num">כמות</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">סה"כ</th></tr></thead><tbody>
+            {summary.length ? summary.map((r) => <tr key={`${r.year}${r.type}`}><td>{r.year}</td><td>{I4U_TYPE[r.type] ?? r.type}</td><td className="fin-num">{r.count}</td><td className="fin-num">{r.type === 2 ? "ללא מע\"מ" : money(r.subtotal)}</td><td className="fin-num">{r.type === 2 ? "ללא מע\"מ" : money(r.vat)}</td><td className="fin-num">{money(r.total)}</td></tr>) : <tr><td colSpan={6}>עדיין לא יובאו מסמכים</td></tr>}
           </tbody></table></div>
-          <div className="ck-meta">השוו שורות אלה לדוח ההכנסות של Invoice4U לאותה שנה. פער פירושו שחסר מסמך בייבוא או שהטווח לא מלא.</div>
+          <div className="ck-meta">השוו שורות אלה לדוח ההכנסות של Invoice4U לאותה שנה. פער פירושו שחסר מסמך בייבוא או שהטווח לא מלא. קבלה אינה הכנסה בדוח, ולכן אין לה פירוט מע"מ. בכמה מסמכים הסה"כ מעוגל לשקל שלם ולכן שונה בעשרות אגורות מסכום לפני מע"מ ועוד מע"מ. זה העיגול של Invoice4U.</div>
 
           <div className="ck-label">רציפות מספור</div>
           <div className="ck-card ck-stack">
@@ -87,8 +89,8 @@ export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: (
               return (
                 <div key={t} className="ck-row" style={{ flexWrap: "wrap", gap: 8 }}>
                   <b>{I4U_TYPE[t] ?? t}</b>
-                  <span className="ck-meta">מספר {Math.min(...nums)} עד {Math.max(...nums)}, {nums.length} מסמכים</span>
-                  {gaps.length ? <span className="ck-badge yellow">חסרים: {formatRanges(gaps)}</span> : <span className="ck-badge green">רציף בטווח שיובא</span>}
+                  <span className="ck-meta">מספרים <bdi>{Math.min(...nums)}</bdi> עד <bdi>{Math.max(...nums)}</bdi>, סה"כ <bdi>{nums.length}</bdi> מסמכים</span>
+                  {gaps.length ? <span className="ck-badge yellow">חסרים: <bdi>{formatRanges(gaps)}</bdi></span> : <span className="ck-badge green">רציף בטווח שיובא</span>}
                 </div>);
             }) : <div className="ck-meta">אין נתונים</div>}
             <div className="ck-meta">חוסר יכול לנבוע מטווח ייבוא חלקי. אם הטווח מלא, מספר חסר דורש הסבר מ-Invoice4U או מרואה החשבון, כי המספור צריך להיות רציף.</div>
@@ -96,8 +98,8 @@ export function ArchiveTab({ docs, onChange }: { docs: ArchiveDoc[]; onChange: (
 
           <div className="ck-label">מסמכים אחרונים</div>
           <input className="ck-input" aria-label="חיפוש לפי מספר מסמך" placeholder="חיפוש לפי מספר מסמך" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 260 }} />
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>תאריך</th><th>סה"כ</th><th>הקצאה</th></tr></thead><tbody>
-            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td>{d.issue_date}</td><td>{money(d.total)}</td><td dir="ltr">{d.allocation_number ?? ""}</td></tr>)}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th></tr></thead><tbody>
+            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{d.allocation_number ?? ""}</td></tr>)}
           </tbody></table></div>
         </>
       )}

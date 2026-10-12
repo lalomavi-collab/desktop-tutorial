@@ -11,13 +11,28 @@ export interface Totals { subtotal: number; vat: number; total: number }
 export interface FinCustomer {
   id: string; name: string; tax_id: string | null; email: string | null; phone: string | null;
   address: string | null; city: string | null; notes: string | null; archived: boolean; i4u_customer_id: number | null;
+  /** A one-off customer with no card in Invoice4U. Only allowed on the document types in CASUAL_TYPES. */
+  is_casual: boolean;
+  /** Template for a monthly DRAFT. Never issued automatically. */
+  retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
+  /** Collections control (migration 0031). DSO is a cache of what arAging.ts computes from the ledger. */
+  historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
+  is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
 }
 export interface FinDocument {
-  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
+  // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
+  // SEALED/VOID (migration 0016) belong to the own engine's not-yet-live sealing pipeline: today a
+  // document can reach SEALING (lalum_fin_seal_document), never ALLOCATED or SEALED, since the edge
+  // function for the Tax Authority call is deliberately not built yet (finance-engine-design.md).
+  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED" | "SEALING" | "ALLOCATED" | "SEALED" | "VOID"; subject: string;
   tax_included: boolean; vat_rate: number; lines: Line[]; subtotal: number; vat_amount: number; total: number;
   issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
   related_doc_id: string | null; send_email: boolean; doc_number: number | null; i4u_doc_id: string | null; allocation_number: string | null;
   pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
+  /** Never printed or sent. */
+  internal_note: string | null; matter_ref: string | null;
+  /** The issued pro forma this invoice or invoice-receipt settles. */
+  source_proforma_id: string | null;
 }
 export interface FinPayment {
   id: string; customer_id: string | null; document_id: string | null; paid_on: string; amount: number;
@@ -47,10 +62,16 @@ export const EXPENSE_CATEGORY: Record<string, string> = {
 /** Default VAT rate for a new document. Stored on each document, so a later change never rewrites history. */
 export const DEFAULT_VAT_RATE = 18;
 
+/**
+ * Document types that may go to a casual (one-off) customer. In the practice's history every casual customer
+ * document is an invoice-receipt (42 of 145) or a credit (1); invoices, receipts and pro formas always had a card.
+ */
+export const CASUAL_TYPES: DocType[] = ["INVOICE_RECEIPT", "CREDIT"];
+
 /** Documents that carry a payment, and so need a payment method. */
 export const NEEDS_PAYMENT: DocType[] = ["RECEIPT", "INVOICE_RECEIPT"];
 
-const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
+export const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
 
 /** Same rounding as lalum_fin_totals: sum the lines first, round once. */
 export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boolean): Totals {
@@ -67,9 +88,10 @@ export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boole
 
 /** Reasons a draft cannot be saved or issued yet. Empty means ready. */
 export function draftProblems(d: {
-  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null;
+  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null; casual?: boolean;
 }): string[] {
   const out: string[] = [];
+  if (d.casual && !CASUAL_TYPES.includes(d.doc_type)) out.push("לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי");
   if (!d.customer_id) out.push("בחרו לקוח");
   if (d.lines.length === 0) out.push("הוסיפו שורה אחת לפחות");
   if (d.lines.some((l) => !l.name.trim())) out.push("לכל שורה נדרש תיאור");
@@ -83,7 +105,7 @@ export function draftProblems(d: {
 export const recoverableVat = (e: Pick<FinExpense, "vat_amount" | "vat_recoverable_pct">): number =>
   r2((e.vat_amount * e.vat_recoverable_pct) / 100);
 
-const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
+export const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
 
 /** Signed effect of an issued document on revenue. Receipts and pro formas are not revenue. */
 export function revenueEffect(d: FinDocument): { net: number; vat: number } {
@@ -109,19 +131,26 @@ export interface Summary {
   revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number;
   /** Part of revenueNet / vatOut that comes from the Invoice4U archive, shown separately so it is never hidden in the total. */
   archiveNet: number; archiveVat: number;
-  /** Open balance on archived invoices, as reported by Invoice4U. Not added to `outstanding`. */
-  archiveOutstanding: number;
 }
 
+/** Invoice4U writes the shekel as the symbol, not as the ISO code. Foreign currencies come as "US$", "€" and so on. */
+export const isShekel = (c: string | null | undefined): boolean => !c || ["₪", "ILS", "NIS"].includes(c.trim().toUpperCase());
+
 /**
- * Revenue effect of an archived Invoice4U document. Invoices and invoice-receipts add, credits subtract
- * (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive or
- * negative). Receipts and pro formas are not revenue. Only ILS documents are counted.
+ * Revenue effect of an archived Invoice4U document, in shekels. Invoices and invoice-receipts add, credits
+ * subtract (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive
+ * or negative). Receipts and pro formas are not revenue. A foreign currency document is converted with the rate
+ * Invoice4U stored on it; one without a usable rate is left out rather than guessed.
  */
 export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number } {
-  if (a.currency && a.currency !== "ILS") return { net: 0, vat: 0 };
-  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net: Math.abs(a.subtotal), vat: Math.abs(a.vat_amount) };
-  if (a.i4u_doc_type === 4) return { net: -Math.abs(a.subtotal), vat: -Math.abs(a.vat_amount) };
+  let k = 1;
+  if (!isShekel(a.currency)) {
+    k = Number(a.rate);
+    if (!(k > 0)) return { net: 0, vat: 0 };
+  }
+  const net = r2(Math.abs(a.subtotal) * k), vat = r2(Math.abs(a.vat_amount) * k);
+  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net, vat };
+  if (a.i4u_doc_type === 4) return { net: -net, vat: -vat };
   return { net: 0, vat: 0 };
 }
 
@@ -131,10 +160,9 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
   // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
   const inLedger = new Set(docs.filter((d) => d.status === "ISSUED" && d.i4u_doc_id).map((d) => d.i4u_doc_id as string));
-  let archiveNet = 0, archiveVat = 0, archiveOutstanding = 0;
+  let archiveNet = 0, archiveVat = 0;
   for (const a of archive) {
     if (inLedger.has(a.i4u_doc_id)) continue;
-    if (a.i4u_doc_type === 1 && (a.balance ?? 0) > 0) archiveOutstanding += a.balance as number;
     if (!within(a.issue_date, p)) continue;
     const e = archiveRevenueEffect(a); archiveNet += e.net; archiveVat += e.vat;
   }
@@ -145,7 +173,7 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
-    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat), archiveOutstanding: r2(archiveOutstanding),
+    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat),
   };
 }
 
@@ -162,6 +190,10 @@ export interface ArchiveDoc {
   id: string; i4u_doc_id: string; i4u_doc_type: number; doc_number: number; issue_date: string; i4u_client_id: number | null;
   subject: string | null; currency: string; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
   status_id: number | null; paid: number | null; balance: number | null;
+  /** ConversionRate Invoice4U stored on the document (units of NIS per unit of currency). Read from the raw record. */
+  rate?: number | string | null;
+  /** Name of a casual (one-off) customer, from the raw record. Empty when the document has a customer card. */
+  gname?: string | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */
 export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };
@@ -197,3 +229,52 @@ export function archiveSummary(docs: ArchiveDoc[]): ArchiveRow[] {
   }
   return [...m.values()].sort((a, b) => b.year.localeCompare(a.year) || a.type - b.type);
 }
+
+/**
+ * Some Invoice4U customer names carry the address inside the name ("Acme Ltd Address: 1 Main St"). The part after
+ * the marker is the address; the part before is the name. Names without the marker are returned unchanged.
+ */
+export function splitName(raw: string): { name: string; address: string | null } {
+  const m = /\s+(?:Address|כתובת)\s*:\s*/i.exec(raw);
+  if (!m) return { name: raw.trim(), address: null };
+  const name = raw.slice(0, m.index).trim(), address = raw.slice(m.index + m[0].length).trim();
+  return name ? { name, address: address || null } : { name: raw.trim(), address: null };
+}
+
+// ---- Customer rules ----
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+/**
+ * Reasons a customer cannot be saved. A new regular customer needs a valid e-mail (the document is sent to it and the
+ * accountant's report needs it); a casual customer needs a name only. Editing an existing customer does not demand an
+ * e-mail, so customers imported without one can still be archived or corrected.
+ */
+export function customerProblems(f: { name: string; email: string; tax_id: string; i4u: string; casual: boolean; isNew: boolean }): string[] {
+  const out: string[] = [];
+  if (!f.name.trim()) out.push("שם הלקוח חובה");
+  if (f.tax_id && !/^\d{5,9}$/.test(f.tax_id)) out.push("ת.ז. או ח.פ. הם ספרות בלבד (5 עד 9)");
+  if (f.email.trim() && !EMAIL_RE.test(f.email.trim())) out.push('כתובת הדוא"ל אינה תקינה');
+  if (!f.casual) {
+    if (f.isNew && !f.email.trim()) out.push('לקוח חדש דורש כתובת דוא"ל');
+    if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח ב-Invoice4U הוא ספרות בלבד");
+  }
+  return out;
+}
+
+/** Details a regular customer is still missing, shown as a prompt to complete the card. */
+export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casual">): string[] {
+  if (c.is_casual) return [];
+  const out: string[] = [];
+  if (!c.email) out.push('דוא"ל');
+  if (!c.tax_id) out.push("ת.ז. או ח.פ.");
+  return out;
+}
+
+/** The issued document that closed a pro forma, if any. A draft pointing at it does not close it yet. */
+export const closedBy = (p: FinDocument, docs: FinDocument[]): FinDocument | undefined =>
+  docs.find((d) => d.source_proforma_id === p.id && d.status === "ISSUED");
+
+/** An issued, real (non test) pro forma that no issued document has settled. */
+export const isOpenProforma = (p: FinDocument, docs: FinDocument[]): boolean =>
+  p.doc_type === "PROFORMA" && p.status === "ISSUED" && !p.is_test && !closedBy(p, docs);

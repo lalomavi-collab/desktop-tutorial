@@ -126,6 +126,16 @@ const SHARED = {
       { slug: "israel-ai-regulation-policy", title: `רגולציית בינה מלאכותית בישראל: מה חל היום ומה צפוי` },
       { slug: "attorney-client-privilege-ai", title: `חיסיון עורך דין ולקוח בעידן ה-AI: מה באמת מסתכן` },
       { slug: "ai-risk-frameworks-iso-42001-nist", title: `מסגרות לניהול סיכוני AI: ISO 42001 מול NIST AI RMF` },
+      // Five more AI governance pieces with zero inbound internal links: not in
+      // any other article's auto-computed related graph, not linked from any
+      // pillar, each a topical singleton with no sibling cluster to join. Same
+      // fix as the three waves above, same reason: the pillar is the
+      // highest-authority internal page for the subject.
+      { slug: "sovereignty", title: `המלכודת התאגידית: האם מודלי ה-AI שלכם מדליפים את הקניין הרוחני של הארגון?` },
+      { slug: "lawyers-ai-ethics-accountability", title: `אחריות ואתיקה בשימוש עורכי דין בבינה מלאכותית: גבולות המקצוע וחובת הפיקוח` },
+      { slug: "claude-cowork-agent", title: `עידן הסוכן האוטונומי: ניתוח השלכות מערכת "Claude Co-Work" על ניהול מידע וסיכונים` },
+      { slug: "ai-product-liability-eu", title: `אחריות מוצר ל-AI: מה משנה הוראת אחריות המוצר האירופית החדשה` },
+      { slug: "ai-international-transactions-overview", title: `בינה מלאכותית בעסקאות בינלאומיות: היכן מזרזת והיכן הסיכון המשפטי` },
     ],
   },
   mediation: {
@@ -183,6 +193,13 @@ const SHARED = {
       { slug: "pinui-binui-owner-guide", title: `פינוי-בינוי: המדריך המלא לבעלי הדירות` },
       { slug: "overseas-property-holding", title: `החזקת נדל״ן בחו״ל: מבנה נכון, מס וטעויות יקרות` },
       { slug: "lalum-clinic-realestate-advice", title: `חוות דעת שנייה לעסקת נדל״ן: קליניקת LALUM` },
+      // Five more real estate pieces with zero inbound internal links, same
+      // audit and same fix as the AI pillar's equivalent wave above.
+      { slug: "ai-elite-realestate", title: `אסטרטגיות בינה מלאכותית למאיון העליון בנדל״ן` },
+      { slug: "urban-renewal-owners-representation", title: `נציגות בעלי הדירות בהתחדשות עירונית: תפקיד, סמכויות וגבולות` },
+      { slug: "זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית", title: `זכויות בנייה במקרקעין: סוגיית הבעלות על רקע פסיקה עדכנית` },
+      { slug: "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025", title: `לא מתזמנים שוק, בונים החלטה נכונה: מסגרת פרקטית להשקעות נדל״ן` },
+      { slug: "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים", title: `מדריך מקצועי למתווכים: רפורמת התיווך במקרקעין של משרד המשפטים` },
     ],
   },
 } as const;
