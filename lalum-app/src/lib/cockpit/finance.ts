@@ -439,3 +439,17 @@ export function valueDateProblems(valueDate: string, today: string, openedOn: st
   return out;
 }
 
+// ---- Trust account identity lock (migration 0036) ----
+
+export interface TrustAccountLock { locked: boolean; movements: number; statements: number }
+/**
+ * An account that already carries ledger movements or bank statements keeps its bank, branch, account number and opening date:
+ * changing them would rewrite what the history refers to. The database enforces the same rule (0036); this lets the screen say so
+ * before the user types. `statementAccounts` lists the account ids that have at least one statement.
+ */
+export function trustAccountLock(accountId: string, rows: TrustTx[], statementAccounts: string[]): TrustAccountLock {
+  const movements = rows.filter((t) => t.trust_account_id === accountId).length;
+  const statements = statementAccounts.filter((id) => id === accountId).length;
+  return { locked: movements > 0 || statements > 0, movements, statements };
+}
+
