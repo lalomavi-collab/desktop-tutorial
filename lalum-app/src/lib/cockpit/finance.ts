@@ -15,6 +15,9 @@ export interface FinCustomer {
   is_casual: boolean;
   /** Template for a monthly DRAFT. Never issued automatically. */
   retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
+  /** Collections control (migration 0031). DSO is a cache of what arAging.ts computes from the ledger. */
+  historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
+  is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
 }
 export interface FinDocument {
   // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
@@ -68,7 +71,7 @@ export const CASUAL_TYPES: DocType[] = ["INVOICE_RECEIPT", "CREDIT"];
 /** Documents that carry a payment, and so need a payment method. */
 export const NEEDS_PAYMENT: DocType[] = ["RECEIPT", "INVOICE_RECEIPT"];
 
-const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
+export const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
 
 /** Same rounding as lalum_fin_totals: sum the lines first, round once. */
 export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boolean): Totals {
@@ -102,7 +105,7 @@ export function draftProblems(d: {
 export const recoverableVat = (e: Pick<FinExpense, "vat_amount" | "vat_recoverable_pct">): number =>
   r2((e.vat_amount * e.vat_recoverable_pct) / 100);
 
-const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
+export const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
 
 /** Signed effect of an issued document on revenue. Receipts and pro formas are not revenue. */
 export function revenueEffect(d: FinDocument): { net: number; vat: number } {
