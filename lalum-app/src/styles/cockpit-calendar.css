@@ -2,9 +2,21 @@
    navigator and a details/create panel, styled with the cockpit's own tokens
    so this screen reads like the rest of the app instead of the public site. */
 
-.ck-cal { display: flex; gap: 18px; align-items: flex-start; }
+.ck-cal { display: flex; gap: 18px; align-items: flex-start; max-width: 100%; }
 .ck-cal-side { width: 260px; flex: 0 0 260px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 0; }
-.ck-cal-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.ck-cal-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; max-width: 100%; }
+
+/* Phone and narrow-tablet widths: a fixed 260px sidebar plus a day/hour grid cannot both fit, and
+   plain 1fr grid columns refuse to shrink below their content's own minimum width (the classic CSS
+   grid overflow trap), which was pushing the whole page wider than the viewport instead of letting
+   the grid scroll within its own box. Stack the sidebar above the grid, and give the grid tracks an
+   explicit minmax(0, ...) so they can actually shrink; the time grid additionally gets a real minimum
+   per-day width and scrolls horizontally within .ck-cal-grid-wrap, which is a normal mobile calendar
+   pattern (swipe across days), rather than squeezing text illegibly thin. */
+@media (max-width: 760px) {
+  .ck-cal { flex-direction: column; }
+  .ck-cal-side { width: 100%; flex: 0 0 auto; position: static; }
+}
 
 /* Mini month navigator */
 .ck-cal-mini-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -28,7 +40,7 @@
 .ck-cal-views button.active { background: var(--clay); color: #fff; }
 
 /* Month view */
-.ck-cal-month { display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.ck-cal-month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
 .ck-cal-month-dow { font-size: 11.5px; font-weight: 700; color: var(--slate); text-align: center; padding: 8px 0; background: var(--clay-tint); }
 .ck-cal-month-cell { min-height: 92px; border-top: 1px solid var(--line); border-inline-start: 1px solid var(--line); padding: 6px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; background: var(--card); }
 .ck-cal-month-cell:nth-child(7n+1) { border-inline-start: none; }
@@ -40,10 +52,12 @@
 .ck-cal-month-chip.outlook { border-inline-start-color: var(--slate); }
 .ck-cal-month-more { font-size: 10.5px; color: var(--slate); }
 
-/* Week / day time grid */
-.ck-cal-grid-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 72vh; }
-.ck-cal-grid { display: grid; grid-template-columns: 52px repeat(var(--cal-cols, 1), 1fr); position: relative; }
-.ck-cal-grid-head { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 52px repeat(var(--cal-cols, 1), 1fr); background: var(--card); border-bottom: 1px solid var(--line); }
+/* Week / day time grid. Each day column gets a real minimum width (--cal-col-min, set inline from the
+   number of visible days) so event text stays legible; .ck-cal-grid-wrap scrolls horizontally when
+   cols * that minimum is wider than the available space, instead of the page itself overflowing. */
+.ck-cal-grid-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 72vh; max-width: 100%; }
+.ck-cal-grid { display: grid; grid-template-columns: 52px repeat(var(--cal-cols, 1), minmax(var(--cal-col-min, 64px), 1fr)); position: relative; }
+.ck-cal-grid-head { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 52px repeat(var(--cal-cols, 1), minmax(var(--cal-col-min, 64px), 1fr)); background: var(--card); border-bottom: 1px solid var(--line); }
 .ck-cal-grid-head-day { padding: 8px 4px; text-align: center; font-size: 12px; border-inline-start: 1px solid var(--line); }
 .ck-cal-grid-head-day b { display: block; font-size: 14px; }
 .ck-cal-grid-head-day.today b { color: var(--clay); }
