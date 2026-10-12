@@ -7,6 +7,13 @@ import { AGING_BUCKETS, INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows,
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
+/** The function answers with a JSON code on failure; the client library hides it inside the error context. */
+async function errorCode(error: unknown): Promise<string> {
+  const ctx = (error as { context?: Response } | null)?.context;
+  if (!ctx || typeof ctx.json !== "function") return "";
+  try { const j = (await ctx.json()) as { code?: string; status?: number }; return `${j.code ?? ""}${j.status ? ` ${j.status}` : ""}`.trim(); } catch { return ""; }
+}
+
 export function ReportsTab({ docs, archive, customers, payments, expenses }: { docs: FinDocument[]; archive: ArchiveDoc[]; customers: FinCustomer[]; payments: FinPayment[]; expenses: FinExpense[] }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -32,7 +39,8 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
     const { data, error } = await supabase.functions.invoke("lalum-fin-report-mail", {
       body: { subject: `דוח הכנסות ${title}`, html: incomeHtml(`דוח הכנסות להנהלת חשבונות, ${title}`, income), csv_name: `income-${period.from}-${period.to}.csv`, csv_text: csv },
     });
-    setMail(error || !data?.ok ? { ok: false, text: "השליחה נכשלה. בדקו שהמייל מוגדר בשרת." } : { ok: true, text: `נשלחה הודעת בדיקה אל ${data.to}. לרואה החשבון לא נשלח דבר.` });
+    const code = await errorCode(error);
+    setMail(error || !data?.ok ? { ok: false, text: `השליחה נכשלה${code ? ` (${code})` : ""}. אם הקוד הוא mail_not_configured, חסר RESEND_API_KEY בסודות הפונקציות. אם mail_failed, הכתובת השולחת לא אושרה אצל Resend.` } : { ok: true, text: `נשלחה הודעת בדיקה אל ${data.to}. לרואה החשבון לא נשלח דבר.` });
   }
   function download(name: string, csv: string) {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));

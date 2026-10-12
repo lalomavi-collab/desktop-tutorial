@@ -26,7 +26,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
   const url = Deno.env.get("SUPABASE_URL"), anon = Deno.env.get("SUPABASE_ANON_KEY");
-  const resend = Deno.env.get("RESEND_API_KEY"), from = Deno.env.get("LALUM_FROM_EMAIL") ?? "avraham@lalum.co";
+  const resend = Deno.env.get("RESEND_API_KEY"), from = Deno.env.get("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>";
+  // Only lalumapp.com is verified in Resend, so mail goes out from it and replies land in the firm inbox.
+  const replyTo = Deno.env.get("LALUM_REPLY_TO") ?? "avraham@lalum.co";
   if (!url || !anon) return json(500, { code: "not_configured" });
   if (!resend) return json(500, { code: "mail_not_configured" });
 
@@ -49,11 +51,11 @@ Deno.serve(async (req) => {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST", headers: { Authorization: `Bearer ${resend}`, "content-type": "application/json" },
     body: JSON.stringify({
-      from, to: [user.email], subject: `[בדיקה] ${subject}`,
+      from, reply_to: replyTo, to: [user.email], subject: `[בדיקה] ${subject}`,
       html: `<div dir="rtl" lang="he" style="font-family:Arial,sans-serif">${html}</div>`,
       attachments: csv ? [{ filename: name, content: b64(csv) }] : undefined,
     }),
   });
-  if (!res.ok) { console.log("FIN_REPORT_MAIL_ERR " + res.status); return json(502, { code: "mail_failed" }); }
+  if (!res.ok) { console.log("FIN_REPORT_MAIL_ERR " + res.status); return json(502, { code: "mail_failed", status: res.status }); }
   return json(200, { ok: true, to: user.email });
 });
