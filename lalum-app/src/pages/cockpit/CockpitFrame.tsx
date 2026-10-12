@@ -9,7 +9,7 @@ import { useCockpitAccess } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import { supabase } from "../../lib/supabase";
-import { BookArt, CardArt2, ChartArt, GavelArt, ImportArt, InboxArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
+import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt, ImportArt, InboxArt, ScalesArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
@@ -57,6 +57,10 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/workspace/inquiries": InboxArt, "/workspace/tasks": TasksArt, "/workspace/scorecard": ChartArt, "/workspace/import": ImportArt,
   "/workspace/kyc": SearchArt, "/admin/matters": GavelArt, "/workspace/bin": TrashArt, "/settings/billing": CardArt2,
   "/settings/security": ShieldArt, "/workspace/guide": BookArt,
+  // The screens separated out of the client portal, and the roster screen.
+  "/workspace/calls": HeadsetArt, "/workspace/inbox": InboxArt, "/workspace/client-docs": FolderArt,
+  "/workspace/payments": ScalesArt, "/workspace/discussions": CheckArt, "/workspace/scheduling": TasksArt,
+  "/settings/members": GavelArt,
 };
 
 type CkTheme = "mint" | "dark";
