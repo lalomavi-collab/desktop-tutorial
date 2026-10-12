@@ -3,7 +3,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../lib/cockpit/finance";
 import { supabase } from "../../../lib/supabase";
-import { AGING_BUCKETS, INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows, receivablesAging, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
+import { INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -25,8 +25,6 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
   const rows = incomeRows(docs, archive, customers, period);
   const income = incomeByKind(rows);
   const byCustomer = revenueByCustomer(rows);
-  const today = now.toISOString().slice(0, 10);
-  const aging = receivablesAging(docs, payments, customers, today);
   const title = month === 0 ? `${year}` : month > 100 ? `${MONTHS[(month - 100) * 2 - 2]} עד ${MONTHS[(month - 100) * 2 - 1]} ${year}` : `${MONTHS[month - 1]} ${year}`;
   const vat = summarize(docs, payments, expenses, period, archive);
 
@@ -107,14 +105,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
         </tbody></table></div> : <div className="ck-meta">אין הכנסות בתקופה.</div>}
       </div>
 
-      <div className="ck-card ck-stack">
-        <div className="ck-title">גיול חובות (חשבונות עסקה פתוחים שהופקו במערכת)</div>
-        {aging.rows.length ? <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>לקוח</th>{AGING_BUCKETS.map((b) => <th key={b} className="fin-num">{b}</th>)}<th className="fin-num">סה"כ</th></tr></thead><tbody>
-          {aging.rows.map((r) => <tr key={r.customerId}><td className="fin-text">{r.customer}</td>{r.buckets.map((v, i) => <td key={i} className="fin-ltr">{v ? money(v) : ""}</td>)}<td className="fin-ltr">{money(r.total)}</td></tr>)}
-          <tr><td><b>סה"כ</b></td>{aging.totals.map((v, i) => <td key={i} className="fin-ltr">{v ? money(v) : ""}</td>)}<td className="fin-ltr">{money(aging.total)}</td></tr>
-        </tbody></table></div> : <div className="ck-meta">אין חשבונות עסקה פתוחים שהופקו במערכת.</div>}
-        <div className="ck-meta">חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. מסמכי הארכיון של Invoice4U אינם נכללים, כי הארכיון אינו מכיל יתרות אמינות.</div>
-      </div>
+      <div className="ck-meta">גיול חובות וגבייה (חשבונות עסקה פתוחים, תזכורות, DSO) נמצאים בלשונית "גיול חובות".</div>
     </div>
   );
 }
