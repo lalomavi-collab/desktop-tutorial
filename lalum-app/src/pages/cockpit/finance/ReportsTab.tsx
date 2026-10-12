@@ -108,12 +108,12 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
       </div>
 
       <div className="ck-card ck-stack">
-        <div className="ck-title">גיול חובות (חשבוניות שהופקו במערכת)</div>
+        <div className="ck-title">גיול חובות (חשבונות עסקה פתוחים שהופקו במערכת)</div>
         {aging.rows.length ? <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>לקוח</th>{AGING_BUCKETS.map((b) => <th key={b} className="fin-num">{b}</th>)}<th className="fin-num">סה"כ</th></tr></thead><tbody>
           {aging.rows.map((r) => <tr key={r.customerId}><td className="fin-text">{r.customer}</td>{r.buckets.map((v, i) => <td key={i} className="fin-ltr">{v ? money(v) : ""}</td>)}<td className="fin-ltr">{money(r.total)}</td></tr>)}
           <tr><td><b>סה"כ</b></td>{aging.totals.map((v, i) => <td key={i} className="fin-ltr">{v ? money(v) : ""}</td>)}<td className="fin-ltr">{money(aging.total)}</td></tr>
-        </tbody></table></div> : <div className="ck-meta">אין חובות פתוחים בחשבוניות שהופקו במערכת.</div>}
-        <div className="ck-meta">חשבוניות מארכיון Invoice4U אינן נכללות, כי הארכיון אינו מכיל יתרות אמינות.</div>
+        </tbody></table></div> : <div className="ck-meta">אין חשבונות עסקה פתוחים שהופקו במערכת.</div>}
+        <div className="ck-meta">חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. מסמכי הארכיון של Invoice4U אינם נכללים, כי הארכיון אינו מכיל יתרות אמינות.</div>
       </div>
     </div>
   );
