@@ -8,7 +8,7 @@
 //                                      of the caller's TOTP factors are removed, so the
 //                                      account can enrol a fresh authenticator.
 //
-// Only salted hashes are stored (see migration 0008). Five wrong guesses lock redemption
+// Only salted hashes are stored (see migration 0034). Five wrong guesses lock redemption
 // for fifteen minutes. A successful redemption never reveals or returns a factor.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -105,8 +105,10 @@ Deno.serve(async (req) => {
     }
 
     // Consume first, so a failure after this point can never leave a reusable code behind.
-    const { error: useErr } = await admin.from("lalum_mfa_recovery_codes").update({ used_at: new Date().toISOString() }).eq("id", match.id).is("used_at", null);
+    // The guarded update also settles a race: of two parallel requests with the same code, only one gets a row back.
+    const { data: used, error: useErr } = await admin.from("lalum_mfa_recovery_codes").update({ used_at: new Date().toISOString() }).eq("id", match.id).is("used_at", null).select("id");
     if (useErr) return json(500, { code: "store_failed" });
+    if (!used || used.length === 0) return json(403, { code: "invalid_code" });
     await admin.from("lalum_mfa_recovery_state").upsert({ user_id: user.id, failed: 0, locked_until: null });
 
     const { data: factors } = await admin.auth.admin.mfa.listFactors({ userId: user.id });
