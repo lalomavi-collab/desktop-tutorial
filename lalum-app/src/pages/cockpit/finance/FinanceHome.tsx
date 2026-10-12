@@ -8,12 +8,18 @@ import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
+import { ArAgingTab } from "./ArAgingTab";
+import { CashFlowTab } from "./CashFlowTab";
+import type { SettingsRow } from "./CashFlowTab";
+import type { DunningEntry } from "../../../lib/cockpit/arAging";
+import type { ManualRow } from "../../../lib/cockpit/cashFlow";
+
 import { PermissionsTab } from "./PermissionsTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "reports" | "permissions";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["reports", "דוחות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "reports" | "permissions" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -24,6 +30,9 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [payments, setPayments] = useState<FinPayment[]>([]);
   const [expenses, setExpenses] = useState<FinExpense[]>([]);
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
+  const [dunning, setDunning] = useState<DunningEntry[]>([]);
+  const [cashSettings, setCashSettings] = useState<SettingsRow | null>(null);
+  const [cashRows, setCashRows] = useState<ManualRow[]>([]);
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
   // Finance level of the signed-in user: 0 none, 1 view, 2 drafts, 3 issue, 4 admin. The database enforces it.
@@ -36,12 +45,19 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     if (!supabase) return;
     const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
     setLevel(typeof lv.data === "number" ? lv.data : 0);
-    const [c, d, p, e] = await Promise.all([
+    const [c, d, p, e, dl, cs, ci] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
       supabase.from("lalum_fin_expenses").select("*").order("spent_on", { ascending: false }),
+      supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
+      supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
+      supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
     ]);
+    // The reminder log and cash settings arrive with migration 0031; until it is applied they read empty and the tabs still render.
+    setDunning((dl.data as DunningEntry[] | null) ?? []);
+    setCashSettings(cs.data ? { ...(cs.data as SettingsRow), opening_balance: Number((cs.data as SettingsRow).opening_balance), credit_facility: Number((cs.data as SettingsRow).credit_facility), safety_reserve: Number((cs.data as SettingsRow).safety_reserve) } : null);
+    setCashRows(((ci.data as Array<ManualRow & { projected_amount: number | string }> | null) ?? []).map((r) => ({ ...r, projected_amount: Number(r.projected_amount) })));
     // The archive can exceed the 1000 row page limit, so it is read page by page.
     const arch: ArchiveDoc[] = [];
     let archErr = false;
@@ -103,6 +119,8 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
+      {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} onChange={() => void load()} /></Gate>}
+      {tab === "cashflow" && loaded && <Gate level={level} need={4}><CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} /></Gate>}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
     </div>
   );
