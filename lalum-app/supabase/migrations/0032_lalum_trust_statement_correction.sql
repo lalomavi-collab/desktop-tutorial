@@ -1,7 +1,7 @@
 -- Finance: correcting a trust bank statement balance, without editing history.
 -- A statement row is never updated by a user and never deleted. A correction inserts a new row for the same account and
 -- date and marks the old one superseded, with who, when and why. The reconciliation then reads only the live row.
--- NOT YET APPLIED to the project: apply with the Supabase MCP / CLI after review.
+-- Applied to project meoymkcotomoluwlwues as "lalum_trust_statement_correction".
 
 alter table public.lalum_trust_bank_statements
   add column if not exists superseded_at timestamptz,
