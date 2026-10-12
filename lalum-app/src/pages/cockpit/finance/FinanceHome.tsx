@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
+import { monthPeriod, receivable, summarize } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, TrustAccount, TrustTx } from "../../../lib/cockpit/finance";
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
@@ -100,7 +100,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const s = summarize(docs, payments, expenses, per, archive);
   const allIncome = incomeRows(docs, archive, customers, { from: "2000-01-01", to: "2100-12-31" });
   const hasTest = docs.some((d) => d.is_test);
-  const overdue = docs.filter((d) => d.doc_type === "INVOICE" && d.status === "ISSUED" && !d.is_test && d.due_date && d.due_date < new Date().toISOString().slice(0, 10));
+  const overdue = docs.filter((d) => receivable(d, docs, payments) > 0 && (d.due_date ?? d.issue_date) < new Date().toISOString().slice(0, 10));
 
   return (
     <div className="ck-stack ck-fin">
@@ -130,8 +130,8 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
           </div>
           <div className="ck-grid2">
             <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.{s.archiveVat !== 0 && <> מתוך העסקאות, מהארכיון של Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</>}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">יתרות פתוחות מלקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">מחשבוניות שהופקו במערכת הזאת בלבד. יתרות של מסמכים מהארכיון של Invoice4U אינן נכללות.</div>
-              {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
+            <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מהארכיון של Invoice4U אינם נכללים.</div>
+              {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבונות עסקה עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           </div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>

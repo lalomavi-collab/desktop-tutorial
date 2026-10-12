@@ -124,6 +124,18 @@ export function openBalance(inv: FinDocument, docs: FinDocument[], pays: FinPaym
   return Math.max(0, r2(inv.total - received - viaDocs));
 }
 
+/** How the practice recognises income. On the cash basis (the Invoice4U setting, and how the practice works) a tax invoice or a tax
+ *  invoice-receipt is issued when the money arrives, so it is income and not a debt; what a customer still owes is an open pro forma.
+ *  Pending the accountant's confirmation; change this one constant to switch the receivable rules. */
+export type Basis = "CASH" | "ACCRUAL";
+export const ACCOUNTING_BASIS: Basis = "CASH";
+
+/** What the customer still owes on one document under the chosen basis. */
+export function receivable(d: FinDocument, docs: FinDocument[], pays: FinPayment[], basis: Basis = ACCOUNTING_BASIS): number {
+  if (basis === "CASH") return d.doc_type === "PROFORMA" && isOpenProforma(d, docs) ? r2(d.total) : 0;
+  return openBalance(d, docs, pays);
+}
+
 export interface Period { from: string; to: string }
 const within = (iso: string, p: Period): boolean => iso >= p.from && iso <= p.to;
 
@@ -155,7 +167,7 @@ export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number 
 }
 
 /** One period summary: revenue by issue date, expenses by spend date, VAT as output less recoverable input. */
-export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = []): Summary {
+export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = [], basis: Basis = ACCOUNTING_BASIS): Summary {
   let revenueNet = 0, vatOut = 0;
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
   // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
@@ -169,7 +181,7 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   revenueNet += archiveNet; vatOut += archiveVat;
   let expenses = 0, vatIn = 0;
   for (const e of exps) if (within(e.spent_on, p)) { expenses += e.total - e.vat_amount; vatIn += recoverableVat(e); }
-  const outstanding = docs.reduce((a, d) => a + openBalance(d, docs, pays), 0);
+  const outstanding = docs.reduce((a, d) => a + receivable(d, docs, pays, basis), 0);
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),

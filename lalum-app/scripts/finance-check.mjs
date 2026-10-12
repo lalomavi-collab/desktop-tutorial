@@ -181,12 +181,16 @@ t("test documents and drafts are not income", () => {
   const rows = incomeRows([doc({ is_test: true }), doc({ status: "DRAFT" })], [], [cust({})], { from: "2026-10-01", to: "2026-10-31" });
   assert.equal(rows.length, 0);
 });
-t("aging puts each open invoice in a bucket by days past the due date", () => {
-  const inv = (id, due) => doc({ id, doc_type: "INVOICE", total: 100, due_date: due });
-  const docs = [inv("a", "2026-10-20"), inv("b", "2026-10-01"), inv("c", "2026-08-20"), inv("d", "2026-06-01")];
-  const a = receivablesAging(docs, [], [cust({ id: "c1", i4u_customer_id: null })], "2026-10-10");
-  assert.deepEqual(a.totals, [100, 100, 100, 0, 100]);
-  assert.equal(a.total, 400);
+t("aging by days past the due date: cash basis counts open pro formas only, accrual basis counts unpaid invoices", () => {
+  const mk = (id, type, due, o = {}) => doc({ id, doc_type: type, total: 100, due_date: due, ...o });
+  const pf = [mk("a", "PROFORMA", "2026-10-20"), mk("b", "PROFORMA", "2026-10-01"), mk("c", "PROFORMA", "2026-08-20"), mk("d", "PROFORMA", "2026-06-01")];
+  const c = [cust({ id: "c1", i4u_customer_id: null })];
+  const cash = receivablesAging([...pf, mk("i", "INVOICE", "2026-09-01")], [], c, "2026-10-10", "CASH");
+  assert.deepEqual(cash.totals, [100, 100, 100, 0, 100]); assert.equal(cash.total, 400); // the invoice is not a debt on the cash basis
+  const settled = mk("s", "INVOICE", null, { source_proforma_id: "a", doc_number: 5 });
+  assert.equal(receivablesAging([...pf, settled], [], c, "2026-10-10", "CASH").total, 300); // a settled pro forma drops out
+  const accrual = receivablesAging([mk("i1", "INVOICE", "2026-10-20"), mk("i2", "INVOICE", "2026-08-20")], [], c, "2026-10-10", "ACCRUAL");
+  assert.deepEqual(accrual.totals, [100, 0, 100, 0, 0]);
 });
 t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers", () => {
   const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
