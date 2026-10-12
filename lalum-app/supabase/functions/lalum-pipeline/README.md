@@ -7,7 +7,7 @@ Supabase.
 
 ## State of this copy
 
-Version 20 as deployed, plus **two changes that are not deployed yet**:
+Deployed as **version 21** (2026-10-11, `ezbr_sha256` 4a1ae863...): version 20 plus two changes. The live smoke test (OPTIONS 204, unauthenticated POST 401) was not run from the build environment and is still owed:
 
 1. `draftRoute` calls the database function `lalum_token_floor` (migration `0030`, already applied) and
    reserves its answer in the vault, so a token number is never issued twice within a document.
@@ -31,9 +31,9 @@ Hebrew and Latin street addresses (a street marker, or a known city, next to a h
 and floor tails; a PO box; a house number before the street). It is a heuristic, like the name heuristics:
 it lowers the confidence to 0.8 so every address counts toward `needsReview`, it is **not** in
 `assertClean` (a false positive there would block a legitimate save) and addresses never reach the
-conflict engine. Until it is deployed the client keeps its workaround (`UNMASKED_FIELDS` in
+conflict engine. The client still keeps its workaround (`UNMASKED_FIELDS` in
 `src/lib/cockpit/templates.ts` holds `client_address` back from the server); remove that entry only after
-the deploy.
+the live smoke test passes.
 
 `npm run address-check` measures it on three labelled sets and on 1.08M characters of real legal articles.
 Read the honesty note at the top of that script: the first run on the independent set scored 76 percent
@@ -48,7 +48,7 @@ the floor, shows it gone with the floor, and checks that the route asks for the 
 
 ## Deploying
 
-Not done without the owner's explicit approval. The function is deployed as one bundled file (`index.js`,
+Deploys need the owner's explicit approval. The function is deployed as one bundled file (`index.js`,
 no import map). Deploy with the Supabase MCP `deploy_edge_function` or `supabase functions deploy
 lalum-pipeline`, with `verify_jwt` false as it is today. The change is safe in any order against the
 migration: if `lalum_token_floor` is missing the route falls back to the old behaviour.
