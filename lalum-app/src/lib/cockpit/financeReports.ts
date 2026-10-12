@@ -120,7 +120,8 @@ export type Grain = "week" | "month" | "year";
 export interface Bucket { key: string; label: string; from: string; to: string; net: number; vat: number; total: number; count: number; future: boolean }
 export interface Series {
   grain: Grain; buckets: Bucket[]; net: number; vat: number; total: number; count: number;
-  average: number; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
+  /** Mean of the periods that have ended, counted from the first period with income. The running period never enters it. */
+  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
 }
 
 const toDate = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
@@ -161,10 +162,13 @@ export function revenueBuckets(rows: IncomeRow[], grain: Grain, year: number, to
   // The current, still running bucket is not a fair "last" to compare with a full one, so compare the last two completed buckets.
   const done = live.filter((b) => b.to < today);
   const last = done[done.length - 1], prev = done[done.length - 2];
+  const firstData = done.findIndex((b) => b.count > 0);
+  const avgBuckets = firstData >= 0 ? done.slice(firstData) : [];
   return {
     grain, buckets, net, vat: r2(live.reduce((a, b) => a + b.vat, 0)), total: r2(live.reduce((a, b) => a + b.total, 0)),
     count: live.reduce((a, b) => a + b.count, 0),
-    average: live.length ? r2(net / live.length) : 0,
+    average: avgBuckets.length ? r2(avgBuckets.reduce((a, b) => a + b.net, 0) / avgBuckets.length) : 0,
+    averageOver: avgBuckets.length, hasRunning: live.some((b) => b.to >= today),
     best: withData.length ? withData.reduce((a, b) => (b.net > a.net ? b : a)) : null,
     lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null } : null,
   };
