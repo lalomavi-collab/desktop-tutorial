@@ -131,11 +131,6 @@ function CallsInboxInner({ canView }: { canView: boolean }) {
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-        <span className="icon-badge"><Icon name="phone" size={20} /></span>
-        <h2 className="h3" style={{ fontSize: 22 }}>{C.title}</h2>
-      </div>
-      <p className="muted" style={{ fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>{C.intro}</p>
       {calls.length === 0 ? (
         <p className="muted" style={{ fontSize: 14 }}>{C.none}</p>
       ) : (

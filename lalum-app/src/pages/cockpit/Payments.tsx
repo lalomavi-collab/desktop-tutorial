@@ -91,16 +91,13 @@ function PaymentsInner({ canView }: { canView: boolean }) {
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28, borderColor: "var(--clay)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", rowGap: 10, marginBottom: 8 }}>
-        <span className="icon-badge"><Icon name="scale" size={20} /></span>
-        <h2 className="h3" style={{ fontSize: 22, margin: 0 }}>{B.adminTitle}</h2>
-        {accountingDashboardEnabled && (
-          <a className="btn btn-ghost btn-sm" href={accountingUrl} target="_blank" rel="noopener noreferrer" style={{ marginInlineStart: "auto" }}>
+      {accountingDashboardEnabled && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+          <a className="btn btn-ghost btn-sm" href={accountingUrl} target="_blank" rel="noopener noreferrer">
             <Icon name="file" size={15} /> {B.dashboard}
           </a>
-        )}
-      </div>
-      <p className="muted" style={{ fontSize: 14, margin: "0 0 18px" }}>{B.adminIntro}</p>
+        </div>
+      )}
       <form onSubmit={createMilestone} style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
         <div className="grid grid-2" style={{ gap: 12 }}>
           <div>
