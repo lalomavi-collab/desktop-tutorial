@@ -314,3 +314,10 @@
   /* The table scrolls sideways on a phone; keep the row actions in view. */
   .ck-fin .ck-table td.fin-actions-cell { position: sticky; left: 0; background: var(--card); box-shadow: 6px 0 10px -6px rgba(0, 0, 0, .35); }
 }
+
+/* Income over time: a row of key figures and a bar chart that stays left to right, like every numeric axis. */
+.fin-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.fin-kpis .ck-meta { font-size: 13px; font-weight: 600; color: var(--ink); opacity: .8; }
+.fin-kpi { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.25; margin-top: 2px; }
+.fin-chart { width: 100%; height: auto; max-height: 260px; direction: ltr; }
+.fin-grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
