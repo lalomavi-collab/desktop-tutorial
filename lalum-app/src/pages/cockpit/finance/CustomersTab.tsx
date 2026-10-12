@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
-import { customerGaps, customerProblems, splitName } from "../../../lib/cockpit/finance";
+import { CONSENT_BASIS, customerGaps, customerProblems, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
+import { rpcError } from "../../../lib/cockpit/financeApi";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
 type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean; ret: boolean; retDesc: string; retAmt: string };
@@ -35,6 +36,24 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
       : await supabase.from("lalum_fin_customers").update(row).eq("id", editing);
     if (error) { setMsg({ ok: false, text: error.message }); return; }
     setEditing(null); onChange();
+  }
+  /** Records or withdraws the customer's consent to WhatsApp messages. The database enforces it when a reminder is sent. */
+  async function consent(c: FinCustomer, given: boolean) {
+    if (!supabase) return;
+    let basis: string | null = null, note: string | null = null;
+    if (given) {
+      const keys = Object.keys(CONSENT_BASIS);
+      const pick = window.prompt(`על מה מבוססת ההסכמה?\n${keys.map((k, i) => `${i + 1}. ${CONSENT_BASIS[k]}`).join("\n")}`, "1");
+      if (pick === null) return;
+      basis = keys[Number(pick) - 1] ?? null;
+      if (!basis) return setMsg({ ok: false, text: "בחרו מספר מהרשימה." });
+      note = window.prompt("הערה (אופציונלי), למשל איפה ההסכמה מתועדת:", "");
+      if (note === null) return;
+    } else if (!window.confirm("לבטל את ההסכמה? שליחת WhatsApp ללקוח תיחסם.")) return;
+    const { error } = await supabase.rpc("lalum_fin_set_whatsapp_consent", { p_customer: c.id, p_given: given, p_basis: basis, p_note: note });
+    if (error) return setMsg({ ok: false, text: rpcError(error.message) });
+    setMsg({ ok: true, text: given ? "ההסכמה נרשמה." : "ההסכמה בוטלה." });
+    onChange();
   }
   async function archive(c: FinCustomer) {
     if (!supabase) return;
@@ -82,6 +101,23 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
               )}
             </div>
           )}
+          {!isNew && !f.casual && (() => {
+            const c = customers.find((x) => x.id === editing);
+            if (!c) return null;
+            const on = whatsappConsentActive(c);
+            return (
+              <div className="ck-card ck-stack" data-testid="wa-consent">
+                <div className="ck-label">הסכמה להודעות WhatsApp</div>
+                <div className="ck-meta">
+                  {on ? `ניתנה, ${CONSENT_BASIS[c.whatsapp_consent_basis ?? ""] ?? "בסיס לא ידוע"}${c.whatsapp_consent_note ? `: ${c.whatsapp_consent_note}` : ""}.`
+                    : c.whatsapp_consent_revoked_at ? "בוטלה. שליחת WhatsApp חסומה." : "לא נרשמה. שליחת WhatsApp חסומה עד שתירשם הסכמה."}
+                </div>
+                <div className="ck-row">
+                  {on ? <button className="ck-btn sm" onClick={() => void consent(c, false)}>ביטול הסכמה</button>
+                    : <button className="ck-btn sm" onClick={() => void consent(c, true)}>רישום הסכמה</button>}
+                </div>
+              </div>);
+          })()}
           {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
         </div>

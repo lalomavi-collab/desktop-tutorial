@@ -6,7 +6,7 @@
 // user does not get the override button, and the server's error codes come out as Hebrew messages.
 //
 // WHAT IT DOES NOT PROVE: that the database refuses a time entry for a locked customer. The backend here is a mock of the network, so the
-// BILLING_LOCKED trigger is not exercised, and the app has no screen that creates a time entry. That rule is verified against the database
+// BILLING_LOCKED trigger and the NO_WHATSAPP_CONSENT check are not exercised, and the app has no screen that creates a time entry. That rule is verified against the database
 // itself (migration 0032, rolled back transaction). A test against a live project needs a real partner account with a TOTP factor.
 //
 // The app runs from the Vite dev server with a fake Supabase URL; every request to it is answered in this file.
@@ -46,9 +46,11 @@ function reset(level) {
   state.level = level; state.calls = [];
   state.customers = [
     { id: "c1", firm_id: FIRM, name: "חברת אלפא נדל\"ן", tax_id: "510000001", email: "alpha@example.test", phone: "0521234567", address: null, city: null, notes: null, archived: false, i4u_customer_id: null, is_casual: false,
-      retainer_active: false, retainer_description: null, retainer_amount: null, is_collections_locked: false, collections_lock_reason: null, collections_override_until: null },
+      retainer_active: false, retainer_description: null, retainer_amount: null, is_collections_locked: false, collections_lock_reason: null, collections_override_until: null,
+      whatsapp_consent_at: null, whatsapp_consent_basis: null, whatsapp_consent_note: null, whatsapp_consent_revoked_at: null },
     { id: "c2", firm_id: FIRM, name: "בטא בע\"מ", tax_id: "510000002", email: "beta@example.test", phone: "0501234567", address: null, city: null, notes: null, archived: false, i4u_customer_id: null, is_casual: false,
-      retainer_active: false, retainer_description: null, retainer_amount: null, is_collections_locked: false, collections_lock_reason: null, collections_override_until: null },
+      retainer_active: false, retainer_description: null, retainer_amount: null, is_collections_locked: false, collections_lock_reason: null, collections_override_until: null,
+      whatsapp_consent_at: null, whatsapp_consent_basis: null, whatsapp_consent_note: null, whatsapp_consent_revoked_at: null },
   ];
 }
 // Open pro formas are the receivable on the cash basis (ACCOUNTING_BASIS), so the debt is expressed as pro formas.
@@ -77,6 +79,17 @@ function rpc(name, body) {
     if (body.p_days === 0) { c.collections_override_until = null; return { ok: null }; }
     if (!String(body.p_reason ?? "").trim()) return { err: "OVERRIDE_REASON_REQUIRED" };
     c.collections_override_until = isoDay(body.p_days); return { ok: c.collections_override_until };
+  }
+  if (name === "lalum_fin_set_whatsapp_consent") {
+    if (state.level < 3) return { err: "FORBIDDEN" };
+    if (body.p_given) {
+      if (!["AGREEMENT", "WRITTEN", "VERBAL", "FORM"].includes(body.p_basis)) return { err: "BAD_BASIS" };
+      Object.assign(c, { whatsapp_consent_at: new Date().toISOString(), whatsapp_consent_basis: body.p_basis, whatsapp_consent_note: body.p_note || null, whatsapp_consent_revoked_at: null });
+    } else {
+      if (!c.whatsapp_consent_at) return { err: "NO_CONSENT" };
+      c.whatsapp_consent_revoked_at = new Date().toISOString();
+    }
+    return { ok: null };
   }
   return { ok: null };
 }
@@ -196,6 +209,37 @@ try {
       await row(page, "חברת אלפא").getByRole("button", { name: "שחרור חסימה" }).click();
       await row(page, "חברת אלפא").getByRole("button", { name: "חסימת חיוב" }).waitFor();
       assert.equal(state.customers[0].is_collections_locked, false);
+    });
+    await context.close();
+  }
+
+  {
+    const { context, page } = await open(4);
+    const wa = () => page.getByRole("button", { name: "שליחה ב-WhatsApp" });
+    await t("WhatsApp sending is blocked until the customer's consent is recorded, and blocked again when it is withdrawn", async () => {
+      await row(page, "חברת אלפא").getByRole("button", { name: "טיוטת תזכורת" }).click();
+      await wa().waitFor();
+      assert.equal(await wa().isDisabled(), true);
+      await page.getByRole("tab", { name: "לקוחות" }).click();
+      await row(page, "חברת אלפא").getByRole("button", { name: "עריכה" }).click();
+      await page.getByTestId("wa-consent").getByText("לא נרשמה. שליחת WhatsApp חסומה עד שתירשם הסכמה.").waitFor();
+      page.queue("1", "בהסכם מיום 1.1");
+      await page.getByTestId("wa-consent").getByRole("button", { name: "רישום הסכמה" }).click();
+      await page.getByTestId("wa-consent").getByText(/ניתנה, הסכם שכר טרחה: בהסכם מיום 1.1/).waitFor();
+      assert.deepEqual(state.calls.filter((c) => c.rpc === "lalum_fin_set_whatsapp_consent").pop().body, { p_customer: "c1", p_given: true, p_basis: "AGREEMENT", p_note: "בהסכם מיום 1.1" });
+      await page.getByRole("tab", { name: "גיול חובות" }).click();
+      await row(page, "חברת אלפא").getByRole("button", { name: "טיוטת תזכורת" }).click();
+      await wa().waitFor();
+      assert.equal(await wa().isDisabled(), false);
+      await page.getByRole("tab", { name: "לקוחות" }).click();
+      await row(page, "חברת אלפא").getByRole("button", { name: "עריכה" }).click();
+      page.queue("");
+      await page.getByTestId("wa-consent").getByRole("button", { name: "ביטול הסכמה" }).click();
+      await page.getByTestId("wa-consent").getByText("בוטלה. שליחת WhatsApp חסומה.").waitFor();
+      await page.getByRole("tab", { name: "גיול חובות" }).click();
+      await row(page, "חברת אלפא").getByRole("button", { name: "טיוטת תזכורת" }).click();
+      await wa().waitFor();
+      assert.equal(await wa().isDisabled(), true);
     });
     await context.close();
   }

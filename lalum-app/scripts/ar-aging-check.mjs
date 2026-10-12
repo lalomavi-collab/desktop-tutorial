@@ -1,6 +1,7 @@
 // Checks receivables aging (from the due date), historical DSO and the reminder rules.
 // Run with: npm run ar-aging-check
 import assert from "node:assert/strict";
+import { whatsappConsentActive } from "../src/lib/cockpit/finance.ts";
 import { receivablesAging } from "../src/lib/cockpit/financeReports.ts";
 import { bucketOf, agingReport, settlementDate, computeDso, tierFor, cooldownState, reminderBlock, daysBetween, addDays, LOCK_AFTER_DAYS, overrideActive } from "../src/lib/cockpit/arAging.ts";
 
@@ -153,4 +154,12 @@ t("the collections aging agrees with the Reports tab aging on the cash basis too
   const docs = [pf({ id: "a", due_date: addDays(TODAY, -5), total: 70 }), pf({ id: "b", due_date: addDays(TODAY, -45), total: 100 }), pf({ id: "c", due_date: addDays(TODAY, -100), total: 300 })];
   const mine = agingReport([cust({})], docs, [], TODAY, "CASH").totals, theirs = receivablesAging(docs, [], [cust({})], TODAY, "CASH").totals;
   assert.equal(mine.CURRENT, theirs[0] + theirs[1]); assert.equal(mine.D31_60, theirs[2]); assert.equal(mine.D61_90, theirs[3]); assert.equal(mine.D90_PLUS, theirs[4]);
+});
+
+t("WhatsApp consent is active only when given and not withdrawn", () => {
+  assert.equal(whatsappConsentActive(null), false); assert.equal(whatsappConsentActive(undefined), false);
+  assert.equal(whatsappConsentActive({}), false);
+  assert.equal(whatsappConsentActive({ whatsapp_consent_at: "2026-10-01T10:00:00Z", whatsapp_consent_revoked_at: null }), true);
+  assert.equal(whatsappConsentActive({ whatsapp_consent_at: "2026-10-01T10:00:00Z", whatsapp_consent_revoked_at: "2026-10-05T10:00:00Z" }), false);
+  assert.equal(whatsappConsentActive({ whatsapp_consent_at: null, whatsapp_consent_revoked_at: null }), false);
 });

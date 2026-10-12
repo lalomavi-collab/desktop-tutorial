@@ -20,7 +20,13 @@ export interface FinCustomer {
   is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
   /** Partner override of the lock (migration 0032): new time is allowed until this date, inclusive. */
   collections_override_until?: string | null; collections_override_reason?: string | null;
+  /** Consent to WhatsApp messages from the firm (migration 0036). Active when given and not withdrawn. */
+  whatsapp_consent_at?: string | null; whatsapp_consent_basis?: string | null; whatsapp_consent_note?: string | null; whatsapp_consent_revoked_at?: string | null;
 }
+export const whatsappConsentActive = (c: Pick<FinCustomer, "whatsapp_consent_at" | "whatsapp_consent_revoked_at"> | undefined | null): boolean =>
+  !!c && !!c.whatsapp_consent_at && !c.whatsapp_consent_revoked_at;
+export const CONSENT_BASIS: Record<string, string> = { AGREEMENT: "הסכם שכר טרחה", WRITTEN: "הודעה כתובה מהלקוח", VERBAL: "אישור בעל פה (נרשם בתיק)", FORM: "טופס הסכמה" };
+
 export interface FinDocument {
   // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
   // SEALED/VOID (migration 0016) belong to the own engine's not-yet-live sealing pipeline: today a

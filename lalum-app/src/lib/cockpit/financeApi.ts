@@ -114,6 +114,7 @@ export interface SendReminderReply { ok?: boolean; code?: string; to?: string; w
 const SEND_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה לשליחת תזכורות. נדרשת רמת הנפקה.",
   customer_not_found: "הלקוח לא נמצא.", customer_archived: "הלקוח בארכיון.", no_email: "אין ללקוח כתובת דוא\"ל.", no_own_email: "לא נמצאה כתובת דוא\"ל להתחברות שלכם.",
+  no_whatsapp_consent: "אין ללקוח הסכמה רשומה לקבלת הודעות WhatsApp. רשמו הסכמה בכרטיס הלקוח לפני השליחה.",
   no_mobile: "אין ללקוח מספר נייד תקין בכרטיס. WhatsApp נשלח לנייד ישראלי בלבד.",
   template_not_configured: "לא הוגדרה תבנית WhatsApp מאושרת לדרגה הזו. הודעה יזומה ב-WhatsApp נשלחת רק כתבנית מאושרת.",
   whatsapp_not_configured: "החיבור ל-WhatsApp לא הוגדר בשרת.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
