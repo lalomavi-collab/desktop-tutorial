@@ -1,5 +1,5 @@
 -- Finance: the send record behind the reminder channel (edge function lalum-fin-dunning-send).
--- Not yet applied to the project. Builds on 0031 (lalum_fin_dunning_log and the 7 day cooldown).
+-- Applied to project meoymkcotomoluwlwues as "lalum_finance_dunning_send". Builds on 0031 (lalum_fin_dunning_log and the 7 day cooldown).
 --
 --  * A send is RESERVED before the message goes out (status PENDING), then marked SENT or FAILED. The reservation takes the cooldown,
 --    so two clicks cannot send twice. A FAILED send does not use the cooldown, and a PENDING row older than 10 minutes (the function
