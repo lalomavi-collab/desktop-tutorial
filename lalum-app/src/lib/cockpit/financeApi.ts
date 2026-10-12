@@ -90,3 +90,21 @@ export async function importFromInvoice4u(body: { action: "customers" } | { acti
     clearTimeout(timer);
   }
 }
+
+const TRUST_ERRORS: Record<string, string> = {
+  FORBIDDEN: "אין הרשאה לפעולה. כספי נאמנות דורשים רמת מנהל.",
+  BAD_TYPE: "סוג התנועה לא תקין.", BAD_AMOUNT: "הסכום חייב להיות גדול מאפס.",
+  MATTER_HAS_NO_CUSTOMER: "לתיק לא מקושר לקוח בכרטיס הכספי. קשרו לקוח לתיק לפני רישום תנועה.",
+  REVERSAL_TARGET_MISSING: "התנועה לתיקון לא נמצאה.", REVERSAL_MISMATCH: "התיקון חייב להתאים לתנועה המקורית.",
+  TRUST_OVERDRAFT_MATTER: "התנועה נדחתה: היא תוריד את יתרת התיק מתחת לאפס.",
+  TRUST_OVERDRAFT_ACCOUNT: "התנועה נדחתה: היא תוריד את יתרת חשבון הנאמנות מתחת לאפס.",
+  INVOICE_NOT_FOR_THIS_MATTER: "החשבונית אינה שייכת ללקוח של התיק.", INVOICE_NOT_PAYABLE: "אפשר לשלם מנאמנות רק חשבונית מס שהופקה, לא מסמך בדיקה.",
+  STATEMENT_NOT_FOUND: "דף הבנק לא נמצא.", STATEMENT_ALREADY_SUPERSEDED: "הדף כבר תוקן. רעננו ותקנו את הגרסה העדכנית.",
+  NO_CHANGE: "היתרה זהה לקיימת.", REASON_REQUIRED: "נדרשת סיבת התיקון.", BAD_BALANCE: "היתרה אינה תקינה.",
+  "lalum_trust_statement_correct": "תיקון דפי בנק עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0032.",
+  VALUE_DATE_IN_FUTURE: "תאריך ערך לא יכול להיות עתידי.", VALUE_DATE_BEFORE_ACCOUNT_OPENED: "תאריך ערך מוקדם מפתיחת חשבון הנאמנות.",
+  "p_value_date": "תאריך ערך עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0033, או לרשום בלי תאריך ערך.",
+  EXCEEDS_OPEN_AMOUNT: "הסכום גבוה מהיתרה הפתוחה בחשבונית.",
+};
+export const trustError = (message: string): string => TRUST_ERRORS[Object.keys(TRUST_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
+

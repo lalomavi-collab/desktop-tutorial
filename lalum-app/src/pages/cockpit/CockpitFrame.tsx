@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
-import { Icon } from "../../components/Icon";
+import { RailDefs, RailIcon } from "../../components/cockpit/RailIcons";
 import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
@@ -115,26 +115,27 @@ export function CockpitFrame({
     <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
+        <RailDefs />
         <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
           {NAV_SECTIONS.map((sec) => (
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
               {sec.heading && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
-              {sec.items.map(([to, label, end, icon]) => (
+              {sec.items.map(([to, label, end]) => (
                 <NavLink key={to} to={to} end={end || to === "/workspace"}>
-                  <Icon name={icon} size={22} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
+                  <RailIcon id={to} size={32} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
                 </NavLink>
               ))}
             </div>
           ))}
         </nav>
         <div className="ck-sidebar-foot">
-          <button type="button" className="ck-theme" onClick={flipTheme}><Icon name="spark" size={19} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
-          <Link to="/portal"><Icon name="user" size={19} /><span>אזור אישי</span></Link>
-          <Link to="/"><Icon name="home" size={19} /><span>לאתר</span></Link>
+          <button type="button" className="ck-theme" onClick={flipTheme}><RailIcon id="theme" size={26} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
+          <Link to="/portal"><RailIcon id="user" size={26} /><span>אזור אישי</span></Link>
+          <Link to="/"><RailIcon id="site" size={26} /><span>לאתר</span></Link>
           {user && (
             <button type="button" className="ck-logout" onClick={() => void leave()}>
-              <Icon name="logout" size={19} /><span>התנתקות</span>
+              <RailIcon id="logout" size={26} /><span>התנתקות</span>
             </button>
           )}
         </div>
