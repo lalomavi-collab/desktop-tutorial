@@ -45,3 +45,14 @@ Document numbering is continuous in all five series.
 1. P1 together: casual customers, duplicate document, open pro formas with conversion, recurring monthly template.
 2. P2: chart, email and PDF view, reports export for the accountant, customer statement.
 3. Then the Shaam allocation step and the numbering engine described in `finance-engine-design.md`.
+
+## Status on 12 October 2026
+
+Done since the comparison above: open pro formas view with conversion to an invoice or invoice-receipt, the monthly retainer as a draft template on the
+customer card, income over time (weekly, monthly, yearly), the accountant income report with CSV and print, revenue by customer, receivables aging, a
+VAT support card, permission levels for future staff, an internal note that is never printed, a matter reference, and a date rule at issue.
+
+Corrected after mapping the Invoice4U settings: the practice's accounting basis is cash, so open pro formas, not unpaid invoices, are the receivable.
+Still open: receipt on account, cancellation receipt, email sending to customers, the scheduled accountant report, customer payment terms with due
+date, a line level discount, the item catalog, and everything that depends on the own issuing engine. The complete inventory of what Invoice4U offers
+is in `invoice4u-feature-inventory.md`.
