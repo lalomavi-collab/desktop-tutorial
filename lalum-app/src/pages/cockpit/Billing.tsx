@@ -106,7 +106,7 @@ function BillingTabs({ member }: { member: Membership }) {
 
 export function Billing() {
   return (
-    <CockpitFrame title="חיוב והגדרות משרד" description="הנהלת חשבונות של המשרד: מסמכי מס, לקוחות, הוצאות ודוחות, לצד מסלול המנוי, המושבים וחיבור הקליטה האוטומטית." path="/settings/billing">
+    <CockpitFrame title="חיוב והגדרות משרד" description="ניהול הכספים של המשרד: מסמכי מס, לקוחות, הוצאות ודוחות. בלשונית השנייה: מנוי המשרד, מושבי המשתמשים וחיבור הקליטה האוטומטית." path="/settings/billing">
       {({ member }) => (member ? <BillingTabs member={member} /> : null)}
     </CockpitFrame>
   );
