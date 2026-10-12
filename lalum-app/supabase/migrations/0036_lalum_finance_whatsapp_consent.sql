@@ -1,5 +1,5 @@
 -- Finance: the customer's consent to WhatsApp messages from the firm, and the block on sending without it.
--- Not yet applied to the project. Builds on 0035 (lalum_fin_dunning_reserve).
+-- Applied to project meoymkcotomoluwlwues as "lalum_finance_whatsapp_consent". Builds on 0035 (lalum_fin_dunning_reserve).
 --
 --  * Meta requires that a customer agreed to receive messages from the business on WhatsApp. The ledger had no place to record that, and
 --    the sender did not check it. This adds the record and makes the database refuse to reserve a WhatsApp send without it.
