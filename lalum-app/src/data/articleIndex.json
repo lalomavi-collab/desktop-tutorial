@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "ai-real-estate-urban-renewal-legal-exposure": {
+  "topic": "real-estate",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-international-transactions-overview",
+   "second-opinion-real-estate-urban-renewal"
+  ]
+ },
  "israel-land-authority-lease-capitalization-transfer": {
   "topic": "real-estate",
   "related": [
@@ -114,8 +122,8 @@
  "caution-note-real-estate-registration-removal": {
   "topic": "real-estate",
   "related": [
-   "overseas-property-due-diligence",
    "israel-land-authority-lease-capitalization-transfer",
+   "overseas-property-due-diligence",
    "portugal-legal-due-diligence"
   ]
  },
@@ -243,8 +251,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-hr-overview-legal-exposure",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-healthcare-liability-regulation"
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "urban-renewal-principles-vs-detailed-agreement": {
@@ -331,8 +339,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-municipal-algorithmic-enforcement-due-process",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "ai-municipal-algorithmic-enforcement-due-process"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
@@ -627,8 +635,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "combination-deals-architecture",
-   "caution-note-real-estate-registration-removal"
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "combination-deals-architecture"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -787,8 +795,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "ai-drafted-real-estate-contract-review",
-   "contract-review-before-signing"
+   "contract-review-before-signing",
+   "ai-drafted-real-estate-contract-review"
   ]
  },
  "ai-presentation-tools": {
@@ -1228,7 +1236,7 @@
   "related": [
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
-   "free-lawyer-illusion"
+   "legal-mediation-benefits"
   ]
  },
  "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025": {
@@ -1363,8 +1371,8 @@
   "topic": "mediation",
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
-   "lalum-clinic-realestate-advice",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "lalum-clinic-realestate-advice"
   ]
  },
  "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית": {
@@ -1388,7 +1396,7 @@
   "related": [
    "חוות-דעת-משפטית-אובייקטיבית-כתחליף-להליך-משפטי-ניתוח-המלצה-ופתרון-מחוץ-לכותלי-בית-המשפט",
    "contract-review-before-signing",
-   "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר"
+   "lalum-clinic-realestate-advice"
   ]
  },
  "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר": {
