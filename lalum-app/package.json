@@ -20,6 +20,8 @@
     "finance-check": "node scripts/finance-check.mjs",
     "shaam-check": "node scripts/shaam-check.mjs",
     "token-floor-check": "node scripts/token-floor-check.mjs",
+    "token-floor-check": "node scripts/token-floor-check.mjs",
+    "address-check": "node scripts/address-check.mjs",
     "popup-check": "node scripts/popup-check.mjs"
   },
   "dependencies": {
