@@ -102,6 +102,8 @@ const TRUST_ERRORS: Record<string, string> = {
   STATEMENT_NOT_FOUND: "דף הבנק לא נמצא.", STATEMENT_ALREADY_SUPERSEDED: "הדף כבר תוקן. רעננו ותקנו את הגרסה העדכנית.",
   NO_CHANGE: "היתרה זהה לקיימת.", REASON_REQUIRED: "נדרשת סיבת התיקון.", BAD_BALANCE: "היתרה אינה תקינה.",
   "lalum_trust_statement_correct": "תיקון דפי בנק עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0032.",
+  VALUE_DATE_IN_FUTURE: "תאריך ערך לא יכול להיות עתידי.", VALUE_DATE_BEFORE_ACCOUNT_OPENED: "תאריך ערך מוקדם מפתיחת חשבון הנאמנות.",
+  "p_value_date": "תאריך ערך עדיין לא הופעל בשרת. יש להחיל את מיגרציה 0033, או לרשום בלי תאריך ערך.",
   EXCEEDS_OPEN_AMOUNT: "הסכום גבוה מהיתרה הפתוחה בחשבונית.",
 };
 export const trustError = (message: string): string => TRUST_ERRORS[Object.keys(TRUST_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;

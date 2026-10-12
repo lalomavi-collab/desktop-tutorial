@@ -71,7 +71,7 @@ export function TrustRecon({ firmId, accounts, onChange }: { firmId: string; acc
           <button className="ck-btn primary" disabled={busy || !accounts.length} onClick={() => void run()}>הצגת התאמה</button>
         </div>
       </div>
-      <div className="ck-meta">הפער הוא יתרת הספר ביום הדף פחות יתרת הדף. הספר נספר לפי יום הרישום במערכת, לא לפי יום הערך בבנק, ולכן צ'קים ותנועות בדרך יוצרים פער זמני שיש להסביר. הצגת ההתאמה נרשמת ביומן הביקורת.</div>
+      <div className="ck-meta">הפער הוא יתרת הספר ביום הדף פחות יתרת הדף. הספר נספר לפי תאריך הערך של כל תנועה (בשרת שלא הופעלה בו מיגרציה 0033: לפי יום הרישום), ולכן צ'קים ותנועות בדרך עדיין יוצרים פער זמני שיש להסביר. הצגת ההתאמה נרשמת ביומן הביקורת.</div>
       {f && (
         <div className="ck-card ck-stack">
           <div className="ck-grid2">

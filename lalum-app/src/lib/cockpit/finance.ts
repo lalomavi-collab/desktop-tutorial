@@ -289,8 +289,10 @@ export interface TrustTx {
   id: number; trust_account_id: string; matter_id: string; customer_id: string; tx_type: TrustTxType; amount: number;
   receipt_no: string; reference_doc_id: string | null; reverses_entry_id: number | null; counterparty: string | null;
   notes: string | null; created_at: string;
+  /** Date the bank counts the movement (migration 0033). Absent on a database that has not applied it: use created_at. */
+  value_date?: string | null;
 }
-export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null }
+export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null; opened_on?: string | null }
 export const TRUST_TX: Record<TrustTxType, string> = {
   DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה למשרד",
   REFUND_TO_CLIENT: "החזר ללקוח", REVERSAL: "תיקון (ביטול תנועה)",
@@ -395,6 +397,25 @@ export function statementCorrectionProblems(f: { balance: string; reason: string
   if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
   else if (r2(Number(f.balance)) === r2(Number(current.balance))) out.push("היתרה זהה לקיימת");
   if (f.reason.trim().length < 3) out.push("נדרשת סיבת התיקון");
+  return out;
+}
+
+// ---- Value date (migration 0033) ----
+
+/** The date the bank counts a movement: its value date, or the recording day where none is stored. */
+export const trustValueDate = (t: Pick<TrustTx, "created_at" | "value_date">): string => t.value_date ?? t.created_at.slice(0, 10);
+
+/** Ledger balance of one account counting only movements with a value date on or before `asOf`. Mirrors the database reconciliation. */
+export function trustHeldAsOf(rows: TrustTx[], accountId: string, asOf: string): number {
+  return r2(rows.filter((t) => t.trust_account_id === accountId && trustValueDate(t) <= asOf).reduce((a, t) => a + t.amount, 0));
+}
+
+/** Reasons a value date cannot be used: not in the future, not before the account was opened. Empty date means "today". */
+export function valueDateProblems(valueDate: string, today: string, openedOn: string | null | undefined): string[] {
+  const out: string[] = [];
+  if (!valueDate) return out;
+  if (valueDate > today) out.push("תאריך ערך לא יכול להיות עתידי");
+  if (openedOn && valueDate < openedOn) out.push("תאריך ערך מוקדם מפתיחת חשבון הנאמנות");
   return out;
 }
 

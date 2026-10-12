@@ -4,13 +4,16 @@ import { money } from "../../../lib/cockpit/shared";
 import { TrustAccounts } from "./TrustAccounts";
 import { TrustRecon } from "./TrustRecon";
 import { trustError } from "../../../lib/cockpit/financeApi";
-import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, trustHeld, trustPostProblems } from "../../../lib/cockpit/finance";
+import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, trustHeld, trustPostProblems, trustValueDate, valueDateProblems } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment, TrustAccount, TrustPostType, TrustTx } from "../../../lib/cockpit/finance";
+
+/** Today in Israel as an ISO date; the database counts value dates on the Israel calendar. */
+const today = (): string => new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Jerusalem" });
 
 /** A matter with the finance customer it is billed to. Only matters with a customer can hold trust money. */
 export interface MatterRef { id: string; title: string; customer_id: string | null }
-type Draft = { matter_id: string; account_id: string; type: TrustPostType; amount: string; counterparty: string; notes: string; doc_id: string };
-const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accountId, type: "DEPOSIT", amount: "", counterparty: "", notes: "", doc_id: "" });
+type Draft = { matter_id: string; account_id: string; type: TrustPostType; amount: string; value_date: string; counterparty: string; notes: string; doc_id: string };
+const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accountId, type: "DEPOSIT", amount: "", value_date: today(), counterparty: "", notes: "", doc_id: "" });
 
 /** Read side of the trust ledger. Posting goes through the lalum_trust_post RPC, which enforces zero overdraft. */
 export function TrustTab({ firmId, customers, matters, accounts, rows, docs, payments, onChange }: {
@@ -34,13 +37,16 @@ export function TrustTab({ firmId, customers, matters, accounts, rows, docs, pay
     const amount = Number(f.amount);
     const doc = f.type === "EARNED_FEE_TRANSFER" ? invoicesFor(f.matter_id).find((x) => x.d.id === f.doc_id) : undefined;
     const problems = trustPostProblems({ matter_id: f.matter_id, account_id: f.account_id, type: f.type, amount, doc_open: doc?.open ?? null, doc_id: f.doc_id || null }, rows);
+    problems.push(...valueDateProblems(f.value_date, today(), accounts.find((a) => a.id === f.account_id)?.opened_on));
     if (problems.length) return setMsg(problems.join(". ") + ".");
     const label = `${TRUST_TX[f.type]} על סך ${money(amount)} בתיק ${matters.find((m) => m.id === f.matter_id)?.title ?? ""}`;
     if (!window.confirm(`לרשום ${label}?\nהרישום סופי: אי אפשר למחוק או לערוך אותו, רק לתקן בתנועת תיקון.`)) return;
+    // Sent only when it differs from today, so a recording made today works even before migration 0033 is applied.
+    const vd = f.value_date && f.value_date !== today() ? { p_value_date: f.value_date } : {};
     setBusy(true);
     const { error } = f.type === "EARNED_FEE_TRANSFER"
-      ? await supabase.rpc("lalum_trust_apply_to_invoice", { p_matter: f.matter_id, p_account: f.account_id, p_doc: f.doc_id, p_amount: amount })
-      : await supabase.rpc("lalum_trust_post", { p_matter: f.matter_id, p_account: f.account_id, p_type: f.type, p_amount: amount, p_counterparty: f.counterparty.trim() || null, p_notes: f.notes.trim() || null, p_reverses: null });
+      ? await supabase.rpc("lalum_trust_apply_to_invoice", { p_matter: f.matter_id, p_account: f.account_id, p_doc: f.doc_id, p_amount: amount, ...vd })
+      : await supabase.rpc("lalum_trust_post", { p_matter: f.matter_id, p_account: f.account_id, p_type: f.type, p_amount: amount, p_counterparty: f.counterparty.trim() || null, p_notes: f.notes.trim() || null, p_reverses: null, ...vd });
     setBusy(false);
     if (error) return setMsg(trustError(error.message));
     setF(null); setMsg(""); onChange();
@@ -83,6 +89,7 @@ export function TrustTab({ firmId, customers, matters, accounts, rows, docs, pay
             <label className="ck-field">חשבון נאמנות<select className="ck-select" value={f.account_id} onChange={set("account_id")}>{openAccounts.map((a) => <option key={a.id} value={a.id}>{a.bank_name} {a.branch} {maskAccount(a.account_number)}</option>)}</select></label>
             <label className="ck-field">סוג תנועה<select className="ck-select" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value as TrustPostType, doc_id: "" })}>{TRUST_POST_TYPES.map((k) => <option key={k} value={k}>{TRUST_TX[k]}</option>)}</select></label>
             <label className="ck-field">סכום<input className="ck-input" dir="ltr" inputMode="decimal" value={f.amount} onChange={set("amount")} /></label>
+            <label className="ck-field">תאריך ערך<input className="ck-input" type="date" max={today()} min={accounts.find((a) => a.id === f.account_id)?.opened_on ?? undefined} value={f.value_date} onChange={set("value_date")} /></label>
             {f.type === "EARNED_FEE_TRANSFER" ? (
               <label className="ck-field">חשבונית מס לתשלום<select className="ck-select" value={f.doc_id} onChange={set("doc_id")}><option value="">בחרו חשבונית</option>{invoicesFor(f.matter_id).map(({ d, open }) => <option key={d.id} value={d.id}>{d.doc_number} · פתוח {money(open)}</option>)}</select></label>
             ) : (
@@ -116,13 +123,13 @@ export function TrustTab({ firmId, customers, matters, accounts, rows, docs, pay
       </div>
 
       <div className="ck-title">תנועות</div>
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>קבלה</th><th>לקוח</th><th>תיק</th><th>סוג</th><th className="fin-num">סכום</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>נרשם</th><th>תאריך ערך</th><th>קבלה</th><th>לקוח</th><th>תיק</th><th>סוג</th><th className="fin-num">סכום</th><th></th></tr></thead><tbody>
         {rows.length ? rows.map((t) => (
-          <tr key={t.id}><td>{t.created_at.slice(0, 10)}</td><td className="fin-ltr">{t.receipt_no}</td><td className="fin-text">{cust(t.customer_id)}{t.notes ? <div className="ck-meta">{t.notes}</div> : null}</td>
+          <tr key={t.id}><td>{t.created_at.slice(0, 10)}</td><td>{trustValueDate(t)}</td><td className="fin-ltr">{t.receipt_no}</td><td className="fin-text">{cust(t.customer_id)}{t.notes ? <div className="ck-meta">{t.notes}</div> : null}</td>
             <td className="fin-text">{matter(t.matter_id)}</td>
             <td><span className={`ck-badge ${t.amount > 0 ? "trust" : "outflow"}`}>{TRUST_TX[t.tx_type]}</span></td>
             <td className="fin-num">{money(t.amount)}</td>
-            <td className="fin-actions-cell">{canReverse(t, rows) && <div className="fin-actions"><button className="ck-btn sm" disabled={busy} onClick={() => void reverse(t)}>תיקון</button></div>}</td></tr>)) : <tr><td colSpan={7}>אין תנועות עדיין</td></tr>}
+            <td className="fin-actions-cell">{canReverse(t, rows) && <div className="fin-actions"><button className="ck-btn sm" disabled={busy} onClick={() => void reverse(t)}>תיקון</button></div>}</td></tr>)) : <tr><td colSpan={8}>אין תנועות עדיין</td></tr>}
       </tbody></table></div>
     </div>
   );

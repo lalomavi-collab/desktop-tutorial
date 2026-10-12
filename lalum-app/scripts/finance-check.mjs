@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -266,5 +266,20 @@ t("statement correction: a different numeric figure and a reason, and only on th
   assert.ok(statementCorrectionProblems({ balance: "x", reason: "טעות הקלדה" }, cur).includes("הזינו יתרה מספרית"));
   assert.ok(statementCorrectionProblems({ balance: "1400", reason: " " }, cur).includes("נדרשת סיבת התיקון"));
   assert.ok(statementCorrectionProblems({ balance: "1400", reason: "טעות הקלדה" }, { ...cur, superseded_at: "2026-10-12" }).length === 1);
+});
+t("value date: falls back to the recording day, and the as-of balance counts by value date", () => {
+  assert.equal(trustValueDate({ created_at: "2026-10-12T08:00:00Z", value_date: null }), "2026-10-12");
+  assert.equal(trustValueDate({ created_at: "2026-10-12T08:00:00Z", value_date: "2026-10-09" }), "2026-10-09");
+  // recorded Monday 12th, value Friday 9th: counted at a Friday statement, not just a Monday one
+  const rows = [tx({ amount: 1000, created_at: "2026-10-12T08:00:00Z", value_date: "2026-10-09" }), tx({ id: 2, amount: 200, created_at: "2026-10-08T08:00:00Z" })];
+  assert.equal(trustHeldAsOf(rows, "a1", "2026-10-09"), 1200);
+  assert.equal(trustHeldAsOf(rows, "a1", "2026-10-08"), 200);
+  assert.equal(trustHeldAsOf(rows, "other", "2026-10-31"), 0);
+});
+t("value date rules: none means today, no future, nothing before the account opened", () => {
+  assert.deepEqual(valueDateProblems("", "2026-10-12", "2026-09-01"), []);
+  assert.deepEqual(valueDateProblems("2026-10-12", "2026-10-12", "2026-09-01"), []);
+  assert.deepEqual(valueDateProblems("2026-10-13", "2026-10-12", null), ["תאריך ערך לא יכול להיות עתידי"]);
+  assert.deepEqual(valueDateProblems("2026-08-31", "2026-10-12", "2026-09-01"), ["תאריך ערך מוקדם מפתיחת חשבון הנאמנות"]);
 });
 console.log("\nAll finance checks passed");
