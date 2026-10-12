@@ -63,6 +63,8 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/discussions", title: "דיונים ציבוריים | LALUM", desc: "אישור שאלות מהפאנל הציבורי לפני פרסומן באתר.", noindex: true },
   { path: "workspace/client-docs", title: "מסמכי לקוחות | LALUM", desc: "קבצים שהעלו הלקוחות, בתיקייה לכל לקוח.", noindex: true },
   { path: "workspace/calls", title: "שיחות נכנסות | LALUM", desc: "שיחות שטיפל בהן סוכן הקול, מקובצות לפי מתקשר.", noindex: true },
+  { path: "workspace/inbox", title: "תיבת הודעות | LALUM", desc: "הודעות הלקוחות, מקובצות לפי לקוח, עם מענה.", noindex: true },
+  { path: "workspace/payments", title: "גביית לקוחות | LALUM", desc: "הפקת בקשות תשלום ללקוחות ומעקב סטטוס הגבייה.", noindex: true },
   { path: "settings/security", title: "אבטחת חשבון | LALUM", desc: "הפעלה וניהול של אימות דו-שלבי לחשבון.", noindex: true },
   { path: "settings/members", title: "חברי המשרד | LALUM", desc: "צוות המשרד, התפקידים וההרשאות לפי שיוך ומחלקה.", noindex: true },
   { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },

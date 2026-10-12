@@ -1,7 +1,7 @@
 // Checks the client mirror of lalum_fin_totals and the report rules.
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
-import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml } from "../src/lib/cockpit/financeReports.ts";
+import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -175,5 +175,19 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   const rows = incomeRows([doc({ id: "z", doc_type: "INVOICE" })], [], [cust({ id: "c1", name: "<b>x</b> & co" })], { from: "2026-10-01", to: "2026-10-31" });
   const h = incomeHtml("t", incomeByKind(rows));
   assert.ok(!h.includes("<b>x</b>") && h.includes("&lt;b&gt;x&lt;/b&gt; &amp; co"));
+});t("weeks start on Sunday; monthly buckets cover the year; the running bucket is excluded from the comparison", () => {
+  assert.equal(weekStart("2026-10-12"), "2026-10-11"); // a Monday goes back to Sunday
+  assert.equal(weekStart("2026-10-11"), "2026-10-11");
+  const row = (date, net) => ({ date, kind: "INVOICE", number: 1, customer: "x", customerKey: "k", net, vat: net * 0.18, total: net * 1.18, source: "ledger" });
+  const rows = [row("2026-08-05", 10000), row("2026-09-02", 12000), row("2026-10-03", 5000), row("2026-09-20", -2000)];
+  const m = revenueBuckets(rows, "month", 2026, "2026-10-12");
+  assert.equal(m.buckets.length, 12);
+  assert.equal(m.buckets[8].net, 10000); // September: 12000 credit 2000
+  assert.equal(m.buckets[9].future, false); assert.equal(m.buckets[10].future, true);
+  assert.equal(m.net, 25000);
+  assert.equal(m.lastVsPrevious.last.label, "ספט׳"); assert.equal(m.lastVsPrevious.pct, 0);
+  const y = revenueBuckets(rows, "year", 2026, "2026-10-12");
+  assert.equal(y.buckets.length, 5); assert.equal(y.buckets[4].net, 25000);
+  assert.equal(revenueBuckets(rows, "week", 2026, "2026-10-12").buckets.length, 12);
 });
 console.log("\nAll finance checks passed");
