@@ -228,6 +228,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
             <div className="ck-row" style={{ justifyContent: "space-between" }}><span>סה"כ</span><b>{money(totals.total)}</b></div>
           </div>
           {problems.length > 0 && <div className="ck-warn">{problems.join(". ")}</div>}
+          {ed.customer_id && !casual && !customers.find((c) => c.id === ed.customer_id)?.tax_id && <div className="ck-meta">ללקוח הזה אין ת.ז. או ח.פ. בכרטיס. אם הוא עוסק מורשה, מסמך מעל הסף ידרוש אותם לצורך מספר הקצאה.</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
             <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
