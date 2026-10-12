@@ -9,7 +9,10 @@
 --  * lalum_trust_reconciliation compares the bank statement with the ledger by value date
 -- The ledger must be empty when this runs: the immutable-row trigger forbids a backfill, and a default would
 -- stamp old rows with today's date. Checked below.
--- NOT YET APPLIED to the project: apply with the Supabase MCP / CLI after review.
+-- Applied to project meoymkcotomoluwlwues in several steps (the combined script timed out in the MCP tool because it
+-- contained DROP statements). On that project the two old signatures were not dropped but renamed to
+-- lalum_trust_post_retired_v1 and lalum_trust_apply_to_invoice_retired_v1 with every EXECUTE grant revoked, which removes the
+-- overload ambiguity. A fresh environment runs this file as written; the retired copies can be dropped later.
 
 do $$ begin
   if exists (select 1 from public.lalum_trust_ledger) then
