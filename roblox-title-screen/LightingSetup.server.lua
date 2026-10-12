@@ -42,3 +42,11 @@ effect("ColorCorrectionEffect", {
 	TintColor = Color3.fromRGB(255, 247, 235),
 })
 effect("DepthOfFieldEffect", { FarIntensity = 0.1, FocusDistance = 60, InFocusRadius = 40, NearIntensity = 0 })
+
+-- Slow day and night cycle: about 24 real minutes per in-game day.
+task.spawn(function()
+	while true do
+		Lighting.ClockTime = (Lighting.ClockTime + 0.01) % 24
+		task.wait(0.4)
+	end
+end)
