@@ -39,3 +39,13 @@ Deploys need the owner's explicit approval. The function is deployed as one bund
 no import map). Deploy with the Supabase MCP `deploy_edge_function` or `supabase functions deploy
 lalum-pipeline`, with `verify_jwt` false as it is today. The change is safe in any order against the
 migration: if `lalum_token_floor` is missing the route falls back to the old behaviour.
+
+## Version 22 (deployed 2026-10-12): conflict role policy
+
+A name that repeats across matters is flagged only when at least one side is a declared party (CLIENT or
+ADVERSE). Two undeclared mentions (OTHER on both sides) are ignored. Why: in production 8 of 10 matters were
+POTENTIAL (`ROLE_UNKNOWN_MATCH`) for that reason alone, 261 shared name indexes, none involving a declared
+party, because bulk import sends no parties and the engine had never seen a declared ADVERSE. The owner chose
+this policy. Cost: two imported documents that both only mention a person no longer raise anything; the match
+appears the moment either side is declared. Existing matters keep their stored status; nothing is recomputed.
+Tests: `npm run conflict-check`.
