@@ -1,11 +1,41 @@
 -- LocalScript: place in StarterPlayer > StarterPlayerScripts.
 -- Creates the ScreenGui named "SettingsGui" that the SETTINGS button on the title screen toggles.
--- Options: visual effects on/off, shadows on/off, field of view. Changes are local to the player.
--- They reset on rejoin: saving them needs a server side DataStore, not built yet.
+-- Options: visual effects on/off, shadows on/off, field of view.
+-- They are saved through SettingsService (ServerScriptService).
 
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local getSettings = ReplicatedStorage:WaitForChild("GetSettings", 10)
+local setSettings = ReplicatedStorage:WaitForChild("SetSettings", 10)
+local current = { effects = true, shadows = Lighting.GlobalShadows, fov = workspace.CurrentCamera.FieldOfView }
+if getSettings then
+	local ok, saved = pcall(function()
+		return getSettings:InvokeServer()
+	end)
+	if ok and type(saved) == "table" then
+		current = saved
+	end
+end
+
+local function persist()
+	if setSettings then
+		setSettings:FireServer(current)
+	end
+end
+
+local function applyEffects(on)
+	for _, e in ipairs(Lighting:GetChildren()) do
+		if e:IsA("PostEffect") then
+			e.Enabled = on
+		end
+	end
+end
+applyEffects(current.effects)
+Lighting.GlobalShadows = current.shadows
+workspace.CurrentCamera.FieldOfView = current.fov
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "SettingsGui"
@@ -62,16 +92,16 @@ local function toggle(label, y, initial, onChange)
 	end)
 end
 
-toggle("Visual effects", 60, true, function(on)
-	for _, e in ipairs(Lighting:GetChildren()) do
-		if e:IsA("PostEffect") then
-			e.Enabled = on
-		end
-	end
+toggle("Visual effects", 60, current.effects, function(on)
+	current.effects = on
+	applyEffects(on)
+	persist()
 end)
 
-toggle("Shadows", 108, Lighting.GlobalShadows, function(on)
+toggle("Shadows", 108, current.shadows, function(on)
+	current.shadows = on
 	Lighting.GlobalShadows = on
+	persist()
 end)
 
 -- Field of view slider, 50 to 90
@@ -104,6 +134,7 @@ local function setFov(x)
 	local t = math.clamp((x - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
 	knob.Position = UDim2.fromScale(t, 0.5)
 	camera.FieldOfView = 50 + t * 40
+	current.fov = camera.FieldOfView
 end
 bar.InputBegan:Connect(function(i)
 	if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
@@ -118,6 +149,9 @@ UserInputService.InputChanged:Connect(function(i)
 end)
 UserInputService.InputEnded:Connect(function(i)
 	if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+		if dragging then
+			persist()
+		end
 		dragging = false
 	end
 end)

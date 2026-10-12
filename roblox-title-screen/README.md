@@ -14,6 +14,9 @@ Sample Luau scripts. They were syntax checked only, never run in Roblox Studio.
 | `WorldBuilder.server.lua` | ServerScriptService (terrain, river with banks, stable, paddock, trees) |
 | `HorseAI.server.lua` | ServerScriptService (horses wander in the paddock) |
 | `SettingsUI.client.lua` | StarterPlayer > StarterPlayerScripts (the SETTINGS button opens it) |
+| `SettingsService.server.lua` | ServerScriptService (saves player settings) |
+| `care/CareService.server.lua` | ServerScriptService (hunger, thirst, cleanliness, stations) |
+| `care/CareHUD.client.lua` | StarterPlayer > StarterPlayerScripts |
 | `LightingSetup.server.lua` | ServerScriptService (light, haze, day and night cycle) |
 | `MaterialSetup.server.lua` | ServerScriptService (PBR textures on tagged parts) |
 

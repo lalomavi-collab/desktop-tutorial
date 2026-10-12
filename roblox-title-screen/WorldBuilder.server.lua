@@ -4,7 +4,7 @@
 -- (where TestSetup puts the horse) stays at ground level y = 0.
 -- Sample code, not a finished product: art quality depends on the assets you add later.
 
-local Players = game:GetService("Players")
+local CollectionService = game:GetService("CollectionService")
 local Terrain = workspace.Terrain
 
 local CELL = 8
@@ -112,10 +112,13 @@ local function buildPaddock()
 	end
 	-- water trough
 	part("Trough", Vector3.new(8, 1.6, 2.4), Vector3.new(-30, 0.8, 30), Color3.fromRGB(120, 120, 125), Enum.Material.Metal, f)
-	part("TroughWater", Vector3.new(7.4, 0.2, 1.8), Vector3.new(-30, 1.5, 30), Color3.fromRGB(70, 130, 200), Enum.Material.Glass, f).Transparency = 0.4
+	local water = part("TroughWater", Vector3.new(7.4, 0.2, 1.8), Vector3.new(-30, 1.5, 30), Color3.fromRGB(70, 130, 200), Enum.Material.Glass, f)
+	water.Transparency = 0.4
+	CollectionService:AddTag(water, "WaterStation")
 	-- hay bales
 	for i = 1, 3 do
-		part("Hay", Vector3.new(4, 2.4, 2.4), Vector3.new(30 - i * 0.5, 1.2 + (i - 1) * 2.4 * 0, 28 - i * 3.2), Color3.fromRGB(214, 183, 92), Enum.Material.Fabric, f)
+		local bale = part("Hay", Vector3.new(4, 2.4, 2.4), Vector3.new(30 - i * 0.5, 1.2, 28 - i * 3.2), Color3.fromRGB(214, 183, 92), Enum.Material.Fabric, f)
+		CollectionService:AddTag(bale, "HayStation")
 	end
 end
 
