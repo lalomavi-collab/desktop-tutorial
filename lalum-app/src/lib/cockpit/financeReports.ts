@@ -115,3 +115,57 @@ export function incomeHtml(title: string, income: ReturnType<typeof incomeByKind
   parts.push(`<p style="color:#666">דוח לעיון. זיכויים מופחתים. לפי תאריך המסמך.</p>`);
   return parts.join("");
 }
+
+export type Grain = "week" | "month" | "year";
+export interface Bucket { key: string; label: string; from: string; to: string; net: number; vat: number; total: number; count: number; future: boolean }
+export interface Series {
+  grain: Grain; buckets: Bucket[]; net: number; vat: number; total: number; count: number;
+  average: number; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
+}
+
+const toDate = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
+const fmtIso = (d: Date): string => d.toISOString().slice(0, 10);
+const addDays = (isoDate: string, n: number): string => { const d = toDate(isoDate); d.setUTCDate(d.getUTCDate() + n); return fmtIso(d); };
+/** Israeli weeks start on Sunday. */
+export const weekStart = (isoDate: string): string => addDays(isoDate, -toDate(isoDate).getUTCDay());
+const dm = (isoDate: string): string => `${isoDate.slice(8, 10)}.${isoDate.slice(5, 7)}`;
+const MONTH_SHORT = ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יוני", "יולי", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"];
+
+/** Net income per week (the last 12 weeks up to today), per month (the 12 months of `year`) or per year (the last 5 years).
+ *  A bucket after today is marked `future` and left out of the totals and the average. */
+export function revenueBuckets(rows: IncomeRow[], grain: Grain, year: number, today: string): Series {
+  const defs: Array<{ key: string; label: string; from: string; to: string }> = [];
+  if (grain === "week") {
+    const cur = weekStart(today);
+    for (let i = 11; i >= 0; i--) { const from = addDays(cur, -7 * i); const to = addDays(from, 6); defs.push({ key: from, label: dm(from), from, to }); }
+  } else if (grain === "month") {
+    for (let m = 1; m <= 12; m++) {
+      const from = `${year}-${String(m).padStart(2, "0")}-01`;
+      const to = fmtIso(new Date(Date.UTC(year, m, 0)));
+      defs.push({ key: from.slice(0, 7), label: MONTH_SHORT[m - 1], from, to });
+    }
+  } else {
+    const ty = Number(today.slice(0, 4));
+    for (let y = ty - 4; y <= ty; y++) defs.push({ key: String(y), label: String(y), from: `${y}-01-01`, to: `${y}-12-31` });
+  }
+  const buckets: Bucket[] = defs.map((d) => {
+    const rs = rows.filter((r) => r.date >= d.from && r.date <= d.to);
+    return {
+      ...d, net: r2(rs.reduce((a, r) => a + r.net, 0)), vat: r2(rs.reduce((a, r) => a + r.vat, 0)),
+      total: r2(rs.reduce((a, r) => a + r.total, 0)), count: rs.length, future: d.from > today,
+    };
+  });
+  const live = buckets.filter((b) => !b.future);
+  const net = r2(live.reduce((a, b) => a + b.net, 0));
+  const withData = live.filter((b) => b.count > 0);
+  // The current, still running bucket is not a fair "last" to compare with a full one, so compare the last two completed buckets.
+  const done = live.filter((b) => b.to < today);
+  const last = done[done.length - 1], prev = done[done.length - 2];
+  return {
+    grain, buckets, net, vat: r2(live.reduce((a, b) => a + b.vat, 0)), total: r2(live.reduce((a, b) => a + b.total, 0)),
+    count: live.reduce((a, b) => a + b.count, 0),
+    average: live.length ? r2(net / live.length) : 0,
+    best: withData.length ? withData.reduce((a, b) => (b.net > a.net ? b : a)) : null,
+    lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null } : null,
+  };
+}
