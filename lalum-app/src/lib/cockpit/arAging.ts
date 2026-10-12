@@ -34,6 +34,9 @@ export const todayIL = (): string => new Intl.DateTimeFormat("sv-SE", { timeZone
 
 // ---- aging ----
 
+/** A partner override is in force through its last day, inclusive. Mirrors lalum_fin_collections_blocked. */
+export const overrideActive = (until: string | null | undefined, today: string): boolean => !!until && until >= today;
+
 export const dueDateOf = (d: Pick<FinDocument, "due_date" | "issue_date">): string => d.due_date ?? d.issue_date;
 
 export function bucketOf(daysPastDue: number): Bucket {
@@ -54,6 +57,8 @@ export interface CustomerAging {
   /** Open balance past LOCK_AFTER_DAYS. */
   overdueOver60: number;
   shouldLock: boolean; locked: boolean; lockReason: string | null;
+  /** Date until which a partner override lets new time through although the lock is on. Null when none, or already expired. */
+  overrideUntil: string | null;
   rows: AgingRow[];
 }
 export interface AgingReport {
@@ -81,7 +86,8 @@ export function agingReport(customers: FinCustomer[], docs: FinDocument[], pays:
       agg = {
         customerId: inv.customer_id, name: c?.name ?? "לקוח לא מזוהה", total: 0, buckets: emptyBuckets(),
         oldestDaysPastDue: -Infinity, overdueOver60: 0, shouldLock: false, locked: !!c?.is_collections_locked,
-        lockReason: c?.collections_lock_reason ?? null, rows: [],
+        lockReason: c?.collections_lock_reason ?? null,
+        overrideUntil: overrideActive(c?.collections_override_until, today) ? c!.collections_override_until! : null, rows: [],
       };
       per.set(inv.customer_id, agg);
     }

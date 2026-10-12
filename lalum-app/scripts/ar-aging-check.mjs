@@ -2,7 +2,7 @@
 // Run with: npm run ar-aging-check
 import assert from "node:assert/strict";
 import { receivablesAging } from "../src/lib/cockpit/financeReports.ts";
-import { bucketOf, agingReport, settlementDate, computeDso, tierFor, cooldownState, reminderBlock, daysBetween, addDays, LOCK_AFTER_DAYS } from "../src/lib/cockpit/arAging.ts";
+import { bucketOf, agingReport, settlementDate, computeDso, tierFor, cooldownState, reminderBlock, daysBetween, addDays, LOCK_AFTER_DAYS, overrideActive } from "../src/lib/cockpit/arAging.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const TODAY = "2026-10-14";
@@ -114,4 +114,15 @@ t("the collections aging agrees with the Reports tab aging on the same data", ()
   const theirs = receivablesAging(docs, [], custs, TODAY).totals;
   assert.equal(mine.CURRENT, theirs[0] + theirs[1]);
   assert.equal(mine.D31_60, theirs[2]); assert.equal(mine.D61_90, theirs[3]); assert.equal(mine.D90_PLUS, theirs[4]);
+});
+t("a partner override is in force through its last day, then the lock applies again", () => {
+  assert.equal(overrideActive(null, TODAY), false); assert.equal(overrideActive(undefined, TODAY), false);
+  assert.equal(overrideActive(addDays(TODAY, -1), TODAY), false);
+  assert.equal(overrideActive(TODAY, TODAY), true); assert.equal(overrideActive(addDays(TODAY, 5), TODAY), true);
+});
+t("aging reports an active override on the customer and drops an expired one", () => {
+  const live = only([inv({})], [], [cust({ is_collections_locked: true, collections_override_until: addDays(TODAY, 3) })]).customers[0];
+  assert.equal(live.overrideUntil, addDays(TODAY, 3));
+  const gone = only([inv({})], [], [cust({ is_collections_locked: true, collections_override_until: addDays(TODAY, -1) })]).customers[0];
+  assert.equal(gone.overrideUntil, null);
 });

@@ -18,6 +18,8 @@ export interface FinCustomer {
   /** Collections control (migration 0031). DSO is a cache of what arAging.ts computes from the ledger. */
   historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
   is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
+  /** Partner override of the lock (migration 0032): new time is allowed until this date, inclusive. */
+  collections_override_until?: string | null; collections_override_reason?: string | null;
 }
 export interface FinDocument {
   // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/

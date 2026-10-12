@@ -5,19 +5,20 @@ import { rpcError } from "../../../lib/cockpit/financeApi";
 import type { FinCustomer, FinDocument, FinPayment } from "../../../lib/cockpit/finance";
 import {
   BUCKETS, BUCKET_LABEL, COOLDOWN_DAYS, DSO_MIN_SAMPLE, TIER_LABEL, agingReport, cooldownState, dsoByCustomer, lastReminderOn,
-  reminderBlock, reminderText, tierFor, todayIL,
+  fmtDay, reminderBlock, reminderText, tierFor, todayIL,
 } from "../../../lib/cockpit/arAging";
 import type { DunningEntry } from "../../../lib/cockpit/arAging";
 
 const COLLECTIONS_ERRORS: Record<string, string> = {
   COOLDOWN_ACTIVE: `כבר נרשמה תזכורת ללקוח בשבעת הימים האחרונים. אפשר לרשום תזכורת נוספת רק אחרי ${COOLDOWN_DAYS} ימים.`,
   LOCK_REASON_REQUIRED: "חסימת חיוב דורשת סיבה.", BAD_TIER: "דרגת תזכורת לא תקינה.",
+  NOT_LOCKED: "הלקוח אינו חסום.", BAD_DAYS: "מספר הימים לחריג הוא בין 1 ל-30.", OVERRIDE_REASON_REQUIRED: "חריג דורש סיבה.",
 };
 const errText = (m: string): string => COLLECTIONS_ERRORS[Object.keys(COLLECTIONS_ERRORS).find((k) => m.includes(k)) ?? ""] ?? rpcError(m);
 const CHANNELS: Array<[string, string]> = [["EMAIL", 'דוא"ל'], ["WHATSAPP", "WhatsApp"], ["PHONE", "שיחת טלפון"], ["MANUAL", "אחר"]];
 
-export function ArAgingTab({ customers, docs, payments, dunning, onChange }: {
-  customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; dunning: DunningEntry[]; onChange: () => void;
+export function ArAgingTab({ customers, docs, payments, dunning, canOverride, onChange }: {
+  customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; dunning: DunningEntry[]; canOverride: boolean; onChange: () => void;
 }) {
   const today = todayIL();
   const report = useMemo(() => agingReport(customers, docs, payments, today), [customers, docs, payments, today]);
@@ -43,6 +44,18 @@ export function ArAgingTab({ customers, docs, payments, dunning, onChange }: {
       if (reason === null) return;
     } else if (!window.confirm("לשחרר את חסימת החיוב ללקוח?")) return;
     void run(() => supabase!.rpc("lalum_fin_set_collections_lock", { p_customer: id, p_locked: lock, p_reason: reason }), lock ? "החיוב ללקוח נחסם." : "החסימה שוחררה.");
+  };
+  const override = (id: string, cancel: boolean) => {
+    if (!supabase) return;
+    let days = 0, reason: string | null = null;
+    if (!cancel) {
+      const d = window.prompt("לכמה ימים לאשר חריג לרישום שעות (1 עד 30)?", "7");
+      if (d === null) return;
+      days = Number(d);
+      reason = window.prompt("סיבת החריג (תישמר ברשומה):", "");
+      if (reason === null) return;
+    } else if (!window.confirm("לבטל את החריג? רישום שעות חדשות ייחסם שוב.")) return;
+    void run(() => supabase!.rpc("lalum_fin_override_collections_lock", { p_customer: id, p_days: days, p_reason: reason }), cancel ? "החריג בוטל." : "החריג אושר.");
   };
   const logReminder = (id: string, tier: number) => {
     if (!supabase) return;
@@ -105,13 +118,15 @@ export function ArAgingTab({ customers, docs, payments, dunning, onChange }: {
               <td className="fin-num"><b>{money(c.total)}</b></td>
               <td className="fin-num">{d && d.sample >= DSO_MIN_SAMPLE ? `${d.days} ימים (${d.sample})` : d && d.sample > 0 ? `${d.days} ימים, מדגם קטן (${d.sample})` : "אין נתונים"}</td>
               <td>
-                {c.locked && <span className="ck-badge red" title={c.lockReason ?? ""}>חיוב חסום</span>}
+                {c.locked && !c.overrideUntil && <span className="ck-badge red" title={c.lockReason ?? ""}>חיוב חסום</span>}
+                {c.locked && c.overrideUntil && <span className="ck-badge yellow" title={c.lockReason ?? ""}>חריג עד {fmtDay(c.overrideUntil)}</span>}
                 {!c.locked && c.shouldLock && <span className="ck-badge yellow">מועמד לחסימה</span>}
                 {cd.active && <span className="ck-badge green">בהמתנה, עוד {cd.daysLeft} ימים</span>}
                 {tier && !cd.active && <span className="ck-badge yellow">{TIER_LABEL[tier]}</span>}
               </td>
               <td className="fin-actions-cell"><div className="fin-actions">
                 <button className="ck-btn sm" disabled={busy} onClick={() => toggleLock(c.customerId, !c.locked)}>{c.locked ? "שחרור חסימה" : "חסימת חיוב"}</button>
+                {c.locked && canOverride && <button className="ck-btn sm" disabled={busy} onClick={() => override(c.customerId, !!c.overrideUntil)}>{c.overrideUntil ? "ביטול חריג" : "אישור חריג"}</button>}
                 <button className="ck-btn sm" disabled={!tier} onClick={() => setDraftFor(open ? null : c.customerId)}>טיוטת תזכורת</button>
               </div>
               {open && tier && (
