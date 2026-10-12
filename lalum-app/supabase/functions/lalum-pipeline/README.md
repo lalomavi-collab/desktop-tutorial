@@ -7,7 +7,7 @@ Supabase.
 
 ## State of this copy
 
-Deployed as **version 21** (2026-10-11, `ezbr_sha256` 4a1ae863...): version 20 plus two changes. The live smoke test (OPTIONS 204, unauthenticated POST 401) was not run from the build environment and is still owed:
+Deployed as **version 21** (2026-10-11, `ezbr_sha256` 4a1ae863...): version 20 plus two changes. Live smoke test passed (OPTIONS 204, unauthenticated POST 401, run by the owner):
 
 1. `draftRoute` calls the database function `lalum_token_floor` (migration `0030`, already applied) and
    reserves its answer in the vault, so a token number is never issued twice within a document.
@@ -31,20 +31,7 @@ Hebrew and Latin street addresses (a street marker, or a known city, next to a h
 and floor tails; a PO box; a house number before the street). It is a heuristic, like the name heuristics:
 it lowers the confidence to 0.8 so every address counts toward `needsReview`, it is **not** in
 `assertClean` (a false positive there would block a legitimate save) and addresses never reach the
-conflict engine. The client still keeps its workaround (`UNMASKED_FIELDS` in
-`src/lib/cockpit/templates.ts` holds `client_address` back from the server); remove that entry only after
-the live smoke test passes.
-
-`npm run address-check` measures it on three labelled sets and on 1.08M characters of real legal articles.
-Read the honesty note at the top of that script: the first run on the independent set scored 76 percent
-recall and 79 percent precision, and the detector was then generalised, so the final 100 percent is on sets
-it was tuned on. The only independent negative measure is the corpus scan (0 detections). Expect misses
-on unusual forms and some false positives on a word, a number and a city in a row.
-
-## Test
-
-`npm run token-floor-check` and `npm run address-check` cut the shield out of this file and runs it: it reproduces the reuse without
-the floor, shows it gone with the floor, and checks that the route asks for the floor.
+conflict engine. The client workaround (`client_address` in `UNMASKED_FIELDS`) was removed once the live smoke test passed; the address now goes through the shield like any other field.
 
 ## Deploying
 
