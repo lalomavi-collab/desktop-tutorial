@@ -1,4 +1,4 @@
--- 0008_lalum_mfa_recovery.sql
+-- 0034_lalum_mfa_recovery.sql
 -- One-time recovery codes for the TOTP second factor, so a lost phone does not
 -- lock the only administrator out. Codes are stored as salted SHA-256 hashes
 -- and are only ever read or written by the lalum-mfa-recovery edge function
