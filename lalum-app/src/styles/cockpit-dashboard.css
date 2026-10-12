@@ -13,7 +13,8 @@
 
 .db-hero { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 16px; align-items: stretch; }
 .db-greet { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding-inline: 8px; }
-.db-logo { color: var(--ink); margin-bottom: 12px; }
+.db-brand { padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.db-logo { color: var(--clay); display: block; }
 .db-hello { margin: 0; display: flex; flex-direction: column; gap: 2px; }
 .db-hello small { font-size: 14px; font-weight: 600; color: var(--slate); }
 .db-hello strong { font-size: 21px; line-height: 1.15; font-weight: 700; color: var(--ink); }
