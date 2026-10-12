@@ -61,7 +61,7 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
 
       <div className="db-hero">
         <div className="db-greet">
-          <Wordmark height={30} className="db-logo" />
+          <div className="db-brand"><Wordmark height={30} className="db-logo" /></div>
           <p className="db-hello"><small>{greeting()}</small><strong>{name}</strong></p>
           {firmName.trim().toLowerCase() !== "lalum" && <p className="db-firm">{firmName}</p>}
         </div>
