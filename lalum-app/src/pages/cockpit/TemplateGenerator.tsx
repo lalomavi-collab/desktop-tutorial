@@ -65,7 +65,7 @@ export function TemplateGenerator({ matterId, practiceArea, onDone }: { matterId
         </select>
       </label>
       {tpl && <>
-        <div className="ck-warn">הזינו שמות ומספרי זיהוי רק בשדות הייעודיים. שדות חופשיים (כגון נושא) אינם מוסתרים אלא לפי זיהוי אוטומטי. כתובת אינה מזוהה על ידי מנגנון ההסתרה ולכן אינה נשמרת בשרת: משלימים אותה בקובץ המיוצא.</div>
+        <div className="ck-warn">הזינו שמות ומספרי זיהוי רק בשדות הייעודיים. שדות חופשיים (כגון נושא) אינם מוסתרים אלא לפי זיהוי אוטומטי. כתובות מזוהות בשיטה היוריסטית ועלולות להחמיץ צורות חריגות: בדקו שהכתובת הוסתרה לפני השמירה.</div>
         {parsed.error && <div className="ck-err">{parsed.error}</div>}
         <div className="ck-grid2">
           {fields.map((s) => UNMASKED_FIELDS.has(s.key)
