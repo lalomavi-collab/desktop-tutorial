@@ -206,9 +206,11 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   assert.equal(m.buckets[8].net, 10000); // September: 12000 credit 2000
   assert.equal(m.buckets[9].future, false); assert.equal(m.buckets[10].future, true);
   assert.equal(m.net, 25000);
+  assert.equal(m.average, 10000); assert.equal(m.averageOver, 2); assert.equal(m.hasRunning, true); // Aug and Sep only: not January to July, not the running October
   assert.equal(m.lastVsPrevious.last.label, "ספט׳"); assert.equal(m.lastVsPrevious.pct, 0);
   const y = revenueBuckets(rows, "year", 2026, "2026-10-12");
   assert.equal(y.buckets.length, 5); assert.equal(y.buckets[4].net, 25000);
+  assert.equal(y.averageOver, 0); assert.equal(y.average, 0); // 2026 is still running and earlier years have no income
   assert.equal(revenueBuckets(rows, "week", 2026, "2026-10-12").buckets.length, 12);
 });
 t("trust posting: withdrawals are capped by matter and account balance, a fee transfer needs an invoice within its open amount", () => {

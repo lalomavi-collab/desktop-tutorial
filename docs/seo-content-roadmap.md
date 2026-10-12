@@ -170,7 +170,7 @@
 - V הערת אזהרה: רישום, משמעות ומחיקה (caution-note-real-estate-registration-removal)
 - V קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים (purchase-group-agreement-tax-risks)
 - V רכישת דירה מקבלן: חוק המכר, ערבות חוק מכר וליווי בנקאי (buying-apartment-from-contractor-guarantee-bank-financing)
-- חכירה מרשות מקרקעי ישראל: היוון, דמי היתר והעברת זכויות
+- V חכירה מרשות מקרקעי ישראל: היוון, דמי היתר והעברת זכויות (israel-land-authority-lease-capitalization-transfer)
 - ליווי משפטי בעסקת נדל"ן מניב ומסחרי
 
 ## עדיפות 2ג: נדל"ן בחו"ל (תחום מוביל, האשכול הדק ביותר)

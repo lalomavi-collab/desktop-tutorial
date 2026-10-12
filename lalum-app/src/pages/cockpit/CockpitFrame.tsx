@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
-import { Icon } from "../../components/Icon";
+import { RailDefs, RailIcon } from "../../components/cockpit/RailIcons";
 import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
@@ -14,30 +14,43 @@ import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 
-const NAV: Array<[string, string, boolean, string]> = [
-  ["/workspace/dashboard", "לוח בקרה", false, "home"],
-  ["/workspace", "תיקים", false, "folder"],
-  ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
-  ["/workspace/calls", "שיחות נכנסות", false, "headset"],
-  ["/workspace/inbox", "תיבת הודעות", false, "gavel"],
-  ["/workspace/payments", "גביית לקוחות", false, "scale"],
-  ["/workspace/tasks", "משימות", false, "check"],
-  ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
-  ["/workspace/scorecard", "מדדי שירות", false, "scale"],
-  ["/workspace/import", "ייבוא תיקים", false, "plus"],
-  ["/workspace/kyc", "הכר את הלקוח", false, "search"],
-  ["/workspace/client-docs", "מסמכי לקוחות", false, "file"],
-  ["/admin/matters", "ניהול", false, "gavel"],
-  ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
-  ["/workspace/bin", "סל מיחזור", true, "trash"],
-  ["/settings/members", "חברי המשרד", false, "user"],
-  ["/settings/billing", "חיוב והגדרות", false, "card"],
-  ["/settings/security", "אבטחה", false, "shield"],
-  ["/workspace/guide", "מדריך", true, "book"],
+// The sidebar is grouped into labelled sections so the growing list of screens
+// stays scannable. A null heading is the top group, shown without a label. In
+// the narrow row layout the headings are hidden and every item flows inline.
+type NavItem = [string, string, boolean, string];
+const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
+  { heading: null, items: [
+    ["/workspace/dashboard", "לוח בקרה", false, "home"],
+    ["/workspace", "תיקים", false, "folder"],
+  ] },
+  { heading: "לקוחות ופניות", items: [
+    ["/workspace/inquiries", "פניות לקוחות", false, "phone"],
+    ["/workspace/calls", "שיחות נכנסות", false, "headset"],
+    ["/workspace/inbox", "תיבת הודעות", false, "gavel"],
+    ["/workspace/client-docs", "מסמכי לקוחות", false, "file"],
+    ["/workspace/kyc", "הכר את הלקוח", false, "search"],
+  ] },
+  { heading: "עבודת המשרד", items: [
+    ["/workspace/tasks", "משימות", false, "check"],
+    ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
+    ["/workspace/scorecard", "מדדי שירות", false, "scale"],
+    ["/workspace/import", "ייבוא תיקים", false, "plus"],
+    ["/admin/matters", "ניהול תיקים", false, "gavel"],
+  ] },
+  { heading: "גבייה ותוכן", items: [
+    ["/workspace/payments", "גביית לקוחות", false, "scale"],
+    ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
+  ] },
+  { heading: "הגדרות", items: [
+    ["/settings/members", "חברי המשרד", false, "user"],
+    ["/settings/billing", "חיוב והגדרות", false, "card"],
+    ["/settings/security", "אבטחה", false, "shield"],
+  ] },
+  { heading: "כללי", items: [
+    ["/workspace/bin", "סל מיחזור", true, "trash"],
+    ["/workspace/guide", "מדריך", true, "book"],
+  ] },
 ];
-
-// The rail is drawn in three groups with a hairline between them: daily work, working tools, and the firm's settings.
-const GROUP_START = new Set(["/workspace/scorecard", "/settings/members"]);
 
 // Every framed screen opens with a band: an illustration beside its own description. The dashboard and the matter list carry their own hero.
 const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
@@ -102,21 +115,27 @@ export function CockpitFrame({
     <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
+        <RailDefs />
         <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
-          {NAV.map(([to, label, end, icon]) => (
-            <NavLink key={to} to={to} end={end || to === "/workspace"} data-group-start={GROUP_START.has(to) ? "" : undefined}>
-              <Icon name={icon} size={22} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
-            </NavLink>
+          {NAV_SECTIONS.map((sec) => (
+            <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
+              {sec.heading && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
+              {sec.items.map(([to, label, end]) => (
+                <NavLink key={to} to={to} end={end || to === "/workspace"}>
+                  <RailIcon id={to} size={32} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="ck-sidebar-foot">
-          <button type="button" className="ck-theme" onClick={flipTheme}><Icon name="spark" size={19} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
-          <Link to="/portal"><Icon name="user" size={19} /><span>אזור אישי</span></Link>
-          <Link to="/"><Icon name="home" size={19} /><span>לאתר</span></Link>
+          <button type="button" className="ck-theme" onClick={flipTheme}><RailIcon id="theme" size={26} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
+          <Link to="/portal"><RailIcon id="user" size={26} /><span>אזור אישי</span></Link>
+          <Link to="/"><RailIcon id="site" size={26} /><span>לאתר</span></Link>
           {user && (
             <button type="button" className="ck-logout" onClick={() => void leave()}>
-              <Icon name="logout" size={19} /><span>התנתקות</span>
+              <RailIcon id="logout" size={26} /><span>התנתקות</span>
             </button>
           )}
         </div>

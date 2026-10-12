@@ -4,7 +4,7 @@ import type { Grain, IncomeRow } from "../../../lib/cockpit/financeReports";
 import { revenueBuckets } from "../../../lib/cockpit/financeReports";
 
 const GRAINS: Array<[Grain, string]> = [["week", "שבועי"], ["month", "חודשי"], ["year", "שנתי"]];
-const HINT: Record<Grain, string> = { week: "12 השבועות האחרונים. שבוע מתחיל ביום ראשון.", month: "חודשי השנה שנבחרה.", year: "חמש השנים האחרונות." };
+const HINT: Record<Grain, string> = { week: "12 השבועות האחרונים, כולל השבוע הנוכחי. שבוע מתחיל ביום ראשון.", month: "חודשי השנה שנבחרה.", year: "חמש השנים האחרונות." };
 const UNIT: Record<Grain, string> = { week: "שבוע", month: "חודש", year: "שנה" };
 
 /** Net income over time as bars and a table. Credits already count as negative income. */
@@ -32,7 +32,7 @@ export function RevenueView({ rows }: { rows: IncomeRow[] }) {
       </div>
       <div className="fin-kpis">
         <div><div className="ck-meta">סה"כ בטווח</div><div className="fin-kpi">{money(s.net)}</div></div>
-        <div><div className="ck-meta">ממוצע ל{UNIT[grain]}</div><div className="fin-kpi">{money(s.average)}</div></div>
+        <div><div className="ck-meta">ממוצע ל{UNIT[grain]}</div><div className="fin-kpi">{money(s.average)}</div><div className="fin-note">{s.averageOver ? <>על פני <bdi>{s.averageOver}</bdi> תקופות שהסתיימו, מהראשונה עם הכנסה</> : "אין עדיין תקופה שהסתיימה"}</div></div>
         <div><div className="ck-meta">{UNIT[grain] === "שבוע" ? "השבוע החזק" : UNIT[grain] === "חודש" ? "החודש החזק" : "השנה החזקה"}</div><div className="fin-kpi">{s.best ? money(s.best.net) : "אין"}</div>{s.best && <div className="fin-note"><bdi>{s.best.label}</bdi></div>}</div>
         <div><div className="ck-meta">שינוי מול {UNIT[grain] === "שבוע" ? "השבוע הקודם" : UNIT[grain] === "חודש" ? "החודש הקודם" : "השנה הקודמת"}</div>
           <div className="fin-kpi">{cmp && cmp.pct !== null ? <bdi>{cmp.pct > 0 ? "+" : ""}{cmp.pct}%</bdi> : "אין נתון"}</div>
@@ -51,7 +51,7 @@ export function RevenueView({ rows }: { rows: IncomeRow[] }) {
             </g>);
         })}
       </svg>
-      <div className="fin-note">{HINT[grain]} העמודה הדהויה היא התקופה הנוכחית, שעוד לא הסתיימה. זיכויים מופחתים.</div>
+      <div className="fin-note">{HINT[grain]}{s.hasRunning && " העמודה הדהויה היא התקופה הנוכחית, שעוד לא הסתיימה: היא נכללת בסה\"כ אבל לא בממוצע ולא בהשוואה."} זיכויים מופחתים.</div>
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>{UNIT[grain]}</th><th className="fin-num">מסמכים</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">כולל מע"מ</th></tr></thead><tbody>
         {s.buckets.filter((b) => !b.future).map((b) => (
           <tr key={b.key}><td><bdi>{grain === "week" ? `${b.label} עד ${b.to.slice(8, 10)}.${b.to.slice(5, 7)}` : b.label}</bdi></td><td className="fin-ltr">{b.count}</td><td className="fin-ltr">{money(b.net)}</td><td className="fin-ltr">{money(b.vat)}</td><td className="fin-ltr">{money(b.total)}</td></tr>))}
