@@ -29,5 +29,11 @@ export async function verifyCode(factorId: string, code: string): Promise<string
   const c = await supabase.auth.mfa.challenge({ factorId });
   if (c.error || !c.data) return "לא ניתן להתחיל אימות.";
   const v = await supabase.auth.mfa.verify({ factorId, challengeId: c.data.id, code: code.trim() });
-  return v.error ? "הקוד שגוי או שפג תוקפו." : null;
+  if (!v.error) return null;
+  // Tell a wrong code apart from a failure that more typing cannot fix, so a
+  // locked-out admin is not left guessing codes against a rate limit or a dead network.
+  const status = (v.error as { status?: number }).status;
+  if (v.error.name === "AuthRetryableFetchError" || status === 0) return "אין חיבור לשרת. בדקו את הרשת ונסו שוב.";
+  if (status === 429) return "יותר מדי ניסיונות. המתינו כמה דקות ונסו שוב.";
+  return "הקוד שגוי או שפג תוקפו. בדקו שהשעה בטלפון מוגדרת אוטומטית.";
 }

@@ -123,7 +123,7 @@
    with extra breathing room before every section after the first. */
 .ck-nav-group { display: flex; flex-direction: column; gap: 6px; }
 .ck-nav-group + .ck-nav-group { margin-top: 14px; }
-.ck-nav-heading { padding: 2px 16px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--slate); }
+.ck-nav-heading { padding: 2px 16px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: color-mix(in srgb, var(--ink) 72%, transparent); }
 /* Each row is a full-width button, not a plain text link: a resting fill at low
    opacity already reads as a button, hover and the active page state go stronger
    from there, so the whole bar looks like a set of controls, per the reference. */
@@ -295,6 +295,26 @@
 .fin-stat .ck-meta:first-child { font-size: 13.5px; font-weight: 600; color: var(--ink); opacity: .8; }
 .fin-stat .fin-figure { font-size: 28px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; margin: 4px 0; }
 .fin-stat .fin-note { font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+/* Money semantics, one meaning per colour: inflow (receipts, revenue), outflow (expenses, payments out), trust
+   (client trust funds and deposits, never revenue). Each text shade holds 4.5:1 on its own tint and on white.
+   Trust has no ledger behind it yet: the class exists so the first screen that shows trust money cannot reuse
+   the inflow colour by accident. */
+.ck-fin {
+  --fin-inflow: #04694a; --fin-inflow-bg: #ecf7f1; --fin-inflow-line: #a7d8c0;
+  --fin-outflow: #a3302a; --fin-outflow-bg: #fcefed; --fin-outflow-line: #e8b9b4;
+  --fin-trust: #7a5210; --fin-trust-bg: #fbf4e3; --fin-trust-line: #e3cd96;
+}
+.fin-stat.fin-inflow { background: var(--fin-inflow-bg); border-color: var(--fin-inflow-line); }
+.fin-stat.fin-outflow { background: var(--fin-outflow-bg); border-color: var(--fin-outflow-line); }
+.fin-stat.fin-trust { background: var(--fin-trust-bg); border-color: var(--fin-trust-line); }
+.fin-inflow .fin-figure { color: var(--fin-inflow); }
+.fin-outflow .fin-figure { color: var(--fin-outflow); }
+.fin-trust .fin-figure { color: var(--fin-trust); }
+.ck-badge.inflow { background: var(--fin-inflow-bg); color: var(--fin-inflow); }
+.ck-badge.outflow { background: var(--fin-outflow-bg); color: var(--fin-outflow); }
+.ck-badge.trust { background: var(--fin-trust-bg); color: var(--fin-trust); }
+.fin-figure, .fin-stat .fin-figure { font-variant-numeric: tabular-nums; }
 
 @media (max-width: 720px) {
   .ck-fin { font-size: 15px; }

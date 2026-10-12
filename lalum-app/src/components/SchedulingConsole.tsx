@@ -316,7 +316,7 @@ export function SchedulingConsole() {
               const allDay = gridDays.map((d) => eventsOnDay(events, d).filter((e) => isAllDayish(e) && e.kind !== "travel"));
               const hasAllDay = allDay.some((l) => l.length > 0);
               return hasAllDay ? (
-                <div className="ck-cal-month" style={{ gridTemplateColumns: `repeat(${gridDays.length}, 1fr)` }}>
+                <div className="ck-cal-month" style={{ gridTemplateColumns: `repeat(${gridDays.length}, minmax(0, 1fr))` }}>
                   {gridDays.map((d, i) => (
                     <div key={d.toISOString()} className="ck-cal-month-cell" style={{ minHeight: "unset" }} onClick={() => setPanel({ mode: "view", event: allDay[i][0] })}>
                       {allDay[i].map((e) => <div key={e.id} className={`ck-cal-month-chip${e.source ? " outlook" : ""}`}>{e.title}</div>)}
@@ -326,7 +326,7 @@ export function SchedulingConsole() {
               ) : null;
             })()}
             <div className="ck-cal-grid-wrap">
-              <div className="ck-cal-grid-head" style={{ ["--cal-cols" as string]: gridDays.length }}>
+              <div className="ck-cal-grid-head" style={{ ["--cal-cols" as string]: gridDays.length, ["--cal-col-min" as string]: view === "day" ? "0" : "76px" }}>
                 <div />
                 {gridDays.map((d) => (
                   <div key={d.toISOString()} className={`ck-cal-grid-head-day${sameDay(d, now) ? " today" : ""}`}>
@@ -334,7 +334,7 @@ export function SchedulingConsole() {
                   </div>
                 ))}
               </div>
-              <div className="ck-cal-grid" style={{ ["--cal-cols" as string]: gridDays.length, ["--cal-hour-px" as string]: `${HOUR_PX}px` }}>
+              <div className="ck-cal-grid" style={{ ["--cal-cols" as string]: gridDays.length, ["--cal-hour-px" as string]: `${HOUR_PX}px`, ["--cal-col-min" as string]: view === "day" ? "0" : "76px" }}>
                 <div className="ck-cal-hours">
                   {hours.map((h) => <div key={h} className="ck-cal-hour">{String(h).padStart(2, "0")}:00</div>)}
                 </div>

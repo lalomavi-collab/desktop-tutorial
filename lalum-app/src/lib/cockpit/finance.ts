@@ -126,6 +126,18 @@ export function openBalance(inv: FinDocument, docs: FinDocument[], pays: FinPaym
   return Math.max(0, r2(inv.total - received - viaDocs));
 }
 
+/** How the practice recognises income. On the cash basis (the Invoice4U setting, and how the practice works) a tax invoice or a tax
+ *  invoice-receipt is issued when the money arrives, so it is income and not a debt; what a customer still owes is an open pro forma.
+ *  Pending the accountant's confirmation; change this one constant to switch the receivable rules. */
+export type Basis = "CASH" | "ACCRUAL";
+export const ACCOUNTING_BASIS: Basis = "CASH";
+
+/** What the customer still owes on one document under the chosen basis. */
+export function receivable(d: FinDocument, docs: FinDocument[], pays: FinPayment[], basis: Basis = ACCOUNTING_BASIS): number {
+  if (basis === "CASH") return d.doc_type === "PROFORMA" && isOpenProforma(d, docs) ? r2(d.total) : 0;
+  return openBalance(d, docs, pays);
+}
+
 export interface Period { from: string; to: string }
 const within = (iso: string, p: Period): boolean => iso >= p.from && iso <= p.to;
 
@@ -157,7 +169,7 @@ export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number 
 }
 
 /** One period summary: revenue by issue date, expenses by spend date, VAT as output less recoverable input. */
-export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = []): Summary {
+export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = [], basis: Basis = ACCOUNTING_BASIS): Summary {
   let revenueNet = 0, vatOut = 0;
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
   // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
@@ -171,7 +183,7 @@ export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpe
   revenueNet += archiveNet; vatOut += archiveVat;
   let expenses = 0, vatIn = 0;
   for (const e of exps) if (within(e.spent_on, p)) { expenses += e.total - e.vat_amount; vatIn += recoverableVat(e); }
-  const outstanding = docs.reduce((a, d) => a + openBalance(d, docs, pays), 0);
+  const outstanding = docs.reduce((a, d) => a + receivable(d, docs, pays, basis), 0);
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
@@ -280,3 +292,144 @@ export const closedBy = (p: FinDocument, docs: FinDocument[]): FinDocument | und
 /** An issued, real (non test) pro forma that no issued document has settled. */
 export const isOpenProforma = (p: FinDocument, docs: FinDocument[]): boolean =>
   p.doc_type === "PROFORMA" && p.status === "ISSUED" && !p.is_test && !closedBy(p, docs);
+
+// ---- Client trust funds: read side of lalum_trust_ledger (migration 0020) ----
+// The ledger is append only and signed (deposits positive, withdrawals negative). Writes go through the
+// lalum_trust_post / lalum_trust_apply_to_invoice RPCs, which enforce zero overdraft and the receipt series.
+// Trust money is never revenue: summarize() does not read it, and finance-check pins that.
+
+export type TrustTxType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "EARNED_FEE_TRANSFER" | "REFUND_TO_CLIENT" | "REVERSAL";
+export interface TrustTx {
+  id: number; trust_account_id: string; matter_id: string; customer_id: string; tx_type: TrustTxType; amount: number;
+  receipt_no: string; reference_doc_id: string | null; reverses_entry_id: number | null; counterparty: string | null;
+  notes: string | null; created_at: string;
+  /** Date the bank counts the movement (migration 0033). Absent on a database that has not applied it: use created_at. */
+  value_date?: string | null;
+}
+export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null; opened_on?: string | null }
+export const TRUST_TX: Record<TrustTxType, string> = {
+  DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה למשרד",
+  REFUND_TO_CLIENT: "החזר ללקוח", REVERSAL: "תיקון (ביטול תנועה)",
+};
+
+/** Held balance for the whole ledger, or narrowed to one customer, matter or trust account. */
+export function trustHeld(rows: TrustTx[], by: { customer?: string; matter?: string; account?: string } = {}): number {
+  return r2(rows
+    .filter((t) => (!by.customer || t.customer_id === by.customer) && (!by.matter || t.matter_id === by.matter) && (!by.account || t.trust_account_id === by.account))
+    .reduce((a, t) => a + t.amount, 0));
+}
+
+/** Balances per key (customer or matter), largest first, zero balances left out. */
+export function trustBreakdown(rows: TrustTx[], key: "customer_id" | "matter_id"): Array<{ id: string; balance: number }> {
+  const m = new Map<string, number>();
+  for (const t of rows) m.set(t[key], (m.get(t[key]) ?? 0) + t.amount);
+  return [...m.entries()].map(([id, b]) => ({ id, balance: r2(b) })).filter((x) => x.balance !== 0).sort((a, b) => b.balance - a.balance);
+}
+
+/** Account number shown as its last four digits only. */
+export const maskAccount = (n: string): string => (n.length > 4 ? `***${n.slice(-4)}` : n);
+
+/** Movements the posting screen can create. Earned-fee transfers go through lalum_trust_apply_to_invoice, the rest through lalum_trust_post. */
+export type TrustPostType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "REFUND_TO_CLIENT" | "EARNED_FEE_TRANSFER";
+export const TRUST_POST_TYPES: TrustPostType[] = ["DEPOSIT", "DISBURSEMENT_TO_THIRD_PARTY", "REFUND_TO_CLIENT", "EARNED_FEE_TRANSFER"];
+
+/**
+ * Pre-check before calling the database. The database is the authority (zero overdraft per matter and per account under
+ * locks, invoice must belong to the matter); this only saves a round trip and words the reason.
+ */
+export function trustPostProblems(
+  f: { matter_id: string; account_id: string; type: TrustPostType; amount: number; doc_open: number | null; doc_id: string | null },
+  rows: TrustTx[],
+): string[] {
+  const out: string[] = [];
+  if (!f.matter_id) out.push("בחרו תיק");
+  if (!f.account_id) out.push("בחרו חשבון נאמנות");
+  if (!(f.amount > 0)) out.push("הסכום חייב להיות גדול מאפס");
+  if (f.type !== "DEPOSIT" && f.matter_id && f.amount > trustHeld(rows, { matter: f.matter_id })) out.push("הסכום גבוה מהיתרה המוחזקת בתיק");
+  if (f.type !== "DEPOSIT" && f.account_id && f.amount > trustHeld(rows, { account: f.account_id })) out.push("הסכום גבוה מיתרת חשבון הנאמנות");
+  if (f.type === "EARNED_FEE_TRANSFER") {
+    if (!f.doc_id) out.push("בחרו חשבונית מס שהופקה");
+    else if (f.doc_open != null && f.amount > f.doc_open) out.push("הסכום גבוה מהיתרה הפתוחה בחשבונית");
+  }
+  return out;
+}
+
+/** True when a ledger row may still be corrected: not itself a reversal and not already reversed. */
+export const canReverse = (t: TrustTx, rows: TrustTx[]): boolean =>
+  t.tx_type !== "REVERSAL" && !rows.some((x) => x.reverses_entry_id === t.id);
+
+// ---- Trust account setup (lalum_trust_accounts) ----
+
+/** Reasons a trust account cannot be saved. Bank, branch and account are digits or text the bank prints; the pair (bank, branch, account) is unique per firm. */
+export function trustAccountProblems(f: { bank_name: string; branch: string; account_number: string }, existing: TrustAccount[], exceptId?: string): string[] {
+  const out: string[] = [];
+  const bank = f.bank_name.trim(), branch = f.branch.trim(), acct = f.account_number.trim();
+  if (!bank) out.push("שם הבנק חובה");
+  if (!/^\d{1,4}$/.test(branch)) out.push("מספר הסניף הוא ספרות בלבד (עד 4)");
+  if (!/^\d{4,12}$/.test(acct)) out.push("מספר החשבון הוא ספרות בלבד (4 עד 12)");
+  if (bank && existing.some((a) => a.id !== exceptId && a.bank_name === bank && a.branch === branch && a.account_number === acct)) out.push("החשבון כבר קיים");
+  return out;
+}
+
+/** A trust account may be closed only when nothing is held in it. */
+export function trustCloseProblem(accountId: string, rows: TrustTx[]): string | null {
+  const bal = trustHeld(rows, { account: accountId });
+  return bal === 0 ? null : "אי אפשר לסגור חשבון שיש בו יתרה. העבירו או החזירו את הכספים קודם.";
+}
+
+// ---- Trust reconciliation: ledger against the bank statement (lalum_trust_reconciliation, lalum_trust_bank_statements) ----
+
+export interface TrustRecon {
+  trust_account_id: string; bank_name: string; branch: string; account_number: string; ledger_balance: number;
+  statement_as_of: string | null; statement_balance: number | null; difference_at_statement_date: number | null;
+}
+export type ReconState = "NO_STATEMENT" | "MATCHED" | "DIFFERENT";
+/** Ledger as of the statement date minus the statement balance. Zero is matched; anything else is a finding to explain. */
+export const reconState = (r: Pick<TrustRecon, "difference_at_statement_date">): ReconState =>
+  r.difference_at_statement_date == null ? "NO_STATEMENT" : r2(r.difference_at_statement_date) === 0 ? "MATCHED" : "DIFFERENT";
+
+/** Reasons a bank statement balance cannot be saved. A statement is append only and unique per account and date. */
+export function statementProblems(f: { account_id: string; as_of: string; balance: string }, today: string, existing: Array<{ trust_account_id: string; statement_as_of: string | null }>): string[] {
+  const out: string[] = [];
+  if (!f.account_id) out.push("בחרו חשבון");
+  if (!f.as_of) out.push("חסר תאריך הדף");
+  else if (f.as_of > today) out.push("תאריך הדף לא יכול להיות עתידי");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  if (f.account_id && f.as_of && existing.some((e) => e.trust_account_id === f.account_id && e.statement_as_of === f.as_of)) out.push("כבר הוזן דף לחשבון הזה בתאריך הזה");
+  return out;
+}
+
+/** A stored bank statement. A correction supersedes the row instead of editing it (migration 0032). */
+export interface TrustStatement {
+  id: string; trust_account_id: string; as_of: string; balance: number; created_at: string;
+  superseded_at?: string | null; correction_reason?: string | null; corrects_id?: string | null;
+}
+/** Reasons a statement correction cannot be saved: a new figure that really differs, and a stated reason. */
+export function statementCorrectionProblems(f: { balance: string; reason: string }, current: Pick<TrustStatement, "balance" | "superseded_at">): string[] {
+  const out: string[] = [];
+  if (current.superseded_at) out.push("הדף כבר תוקן. תקנו את הגרסה העדכנית");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  else if (r2(Number(f.balance)) === r2(Number(current.balance))) out.push("היתרה זהה לקיימת");
+  if (f.reason.trim().length < 3) out.push("נדרשת סיבת התיקון");
+  return out;
+}
+
+// ---- Value date (migration 0033) ----
+
+/** The date the bank counts a movement: its value date, or the recording day where none is stored. */
+export const trustValueDate = (t: Pick<TrustTx, "created_at" | "value_date">): string => t.value_date ?? t.created_at.slice(0, 10);
+
+/** Ledger balance of one account counting only movements with a value date on or before `asOf`. Mirrors the database reconciliation. */
+export function trustHeldAsOf(rows: TrustTx[], accountId: string, asOf: string): number {
+  return r2(rows.filter((t) => t.trust_account_id === accountId && trustValueDate(t) <= asOf).reduce((a, t) => a + t.amount, 0));
+}
+
+/** Reasons a value date cannot be used: not in the future, not before the account was opened. Empty date means "today". */
+export function valueDateProblems(valueDate: string, today: string, openedOn: string | null | undefined): string[] {
+  const out: string[] = [];
+  if (!valueDate) return out;
+  if (valueDate > today) out.push("תאריך ערך לא יכול להיות עתידי");
+  if (openedOn && valueDate < openedOn) out.push("תאריך ערך מוקדם מפתיחת חשבון הנאמנות");
+  return out;
+}
+

@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
-import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../lib/cockpit/finance";
+import { monthPeriod, receivable, summarize } from "../../../lib/cockpit/finance";
+import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, TrustAccount, TrustTx } from "../../../lib/cockpit/finance";
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
+import { TrustTab } from "./TrustTab";
+import type { MatterRef } from "./TrustTab";
 import { ArAgingTab } from "./ArAgingTab";
 import { CashFlowTab } from "./CashFlowTab";
 import type { SettingsRow } from "./CashFlowTab";
@@ -20,8 +22,8 @@ import { ReportsTab } from "./ReportsTab";
 import { RevenueView } from "./RevenueView";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "archive" | "shaam" | "reports" | "permissions" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -31,6 +33,9 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [docs, setDocs] = useState<FinDocument[]>([]);
   const [payments, setPayments] = useState<FinPayment[]>([]);
   const [expenses, setExpenses] = useState<FinExpense[]>([]);
+  const [trust, setTrust] = useState<TrustTx[]>([]);
+  const [trustAccounts, setTrustAccounts] = useState<TrustAccount[]>([]);
+  const [matters, setMatters] = useState<MatterRef[]>([]);
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
   const [dunning, setDunning] = useState<DunningEntry[]>([]);
   const [cashSettings, setCashSettings] = useState<SettingsRow | null>(null);
@@ -47,11 +52,15 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     if (!supabase) return;
     const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
     setLevel(typeof lv.data === "number" ? lv.data : 0);
-    const [c, d, p, e, dl, cs, ci] = await Promise.all([
+    const [c, d, p, e, tr, ta, mt, mf, dl, cs, ci] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
       supabase.from("lalum_fin_expenses").select("*").order("spent_on", { ascending: false }),
+      supabase.from("lalum_trust_ledger").select("*").order("id", { ascending: false }),
+      supabase.from("lalum_trust_accounts").select("id, bank_name, branch, account_number, closed_on, opened_on").order("bank_name"),
+      supabase.from("lalum_cockpit_matters").select("id, title"),
+      supabase.from("lalum_matter_fees").select("matter_id, fin_customer_id"),
       supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
       supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
       supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
@@ -76,6 +85,11 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     setDocs((d.data as FinDocument[] | null) ?? []);
     setPayments((p.data as FinPayment[] | null) ?? []);
     setExpenses((e.data as FinExpense[] | null) ?? []);
+    setTrust((tr.data as TrustTx[] | null) ?? []);
+    setTrustAccounts((ta.data as TrustAccount[] | null) ?? []);
+    // Trust data needs finance level 4. A lower level gets an empty tab (behind the Gate), not a failed screen.
+    const cust = new Map(((mf.data as Array<{ matter_id: string; fin_customer_id: string | null }> | null) ?? []).map((x) => [x.matter_id, x.fin_customer_id]));
+    setMatters((((mt.data as Array<{ id: string; title: string }> | null) ?? [])).map((m) => ({ ...m, customer_id: cust.get(m.id) ?? null })));
     setLoaded(true);
   }, [firmId]);
   // Initial fetch from the database; setState happens after the awaited queries resolve.
@@ -86,7 +100,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const s = summarize(docs, payments, expenses, per, archive);
   const allIncome = incomeRows(docs, archive, customers, { from: "2000-01-01", to: "2100-12-31" });
   const hasTest = docs.some((d) => d.is_test);
-  const overdue = docs.filter((d) => d.doc_type === "INVOICE" && d.status === "ISSUED" && !d.is_test && d.due_date && d.due_date < new Date().toISOString().slice(0, 10));
+  const overdue = docs.filter((d) => receivable(d, docs, payments) > 0 && (d.due_date ?? d.issue_date) < new Date().toISOString().slice(0, 10));
 
   return (
     <div className="ck-stack ck-fin">
@@ -110,20 +124,21 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
             </div>
           </div>
           <div className="fin-grid3">
-            <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מהארכיון של Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div>{s.expenses === 0 && <div className="fin-note">לא הוזנו הוצאות בתקופה הזאת.</div>}</div>
+            <div className="ck-card fin-stat fin-inflow"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מהארכיון של Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
+            <div className="ck-card fin-stat fin-outflow"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div>{s.expenses === 0 && <div className="fin-note">לא הוזנו הוצאות בתקופה הזאת.</div>}</div>
             <div className="ck-card fin-stat"><div className="ck-meta">הכנסות פחות הוצאות</div><div className="fin-figure">{money(s.profit)}</div><div className="fin-note">{s.expenses === 0 ? "כל עוד לא הוזנו הוצאות, הסכום הזה שווה להכנסות." : "לפני מס הכנסה ולפני הוצאות שלא הוזנו."}</div></div>
           </div>
           <div className="ck-grid2">
             <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.{s.archiveVat !== 0 && <> מתוך העסקאות, מהארכיון של Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</>}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">יתרות פתוחות מלקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">מחשבוניות שהופקו במערכת הזאת בלבד. יתרות של מסמכים מהארכיון של Invoice4U אינן נכללות.</div>
-              {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבוניות עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
+            <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מהארכיון של Invoice4U אינם נכללים.</div>
+              {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבונות עסקה עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           </div>
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
+      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}

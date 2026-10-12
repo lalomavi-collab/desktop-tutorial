@@ -1,7 +1,7 @@
 // Reports built from the ledger and the Invoice4U archive: the income report for the accountant, revenue by customer and
 // receivables aging. Pure functions, checked by `npm run finance-check`. Amounts are in shekels, signed (credits negative).
-import { archiveRevenueEffect, openBalance, splitName } from "./finance.ts";
-import type { ArchiveDoc, FinCustomer, FinDocument, FinPayment, Period } from "./finance.ts";
+import { ACCOUNTING_BASIS, archiveRevenueEffect, receivable, splitName } from "./finance.ts";
+import type { ArchiveDoc, Basis, FinCustomer, FinDocument, FinPayment, Period } from "./finance.ts";
 
 export type IncomeKind = "INVOICE" | "INVOICE_RECEIPT" | "CREDIT";
 export const INCOME_KIND_LABEL: Record<IncomeKind, string> = { INVOICE: "חשבוניות מס", INVOICE_RECEIPT: "חשבוניות מס קבלה", CREDIT: "חשבוניות זיכוי" };
@@ -72,13 +72,13 @@ export const AGING_BUCKETS = ["טרם הגיע המועד", "1 עד 30 ימים"
 export interface AgingRow { customerId: string; customer: string; buckets: number[]; total: number }
 const daysBetween = (fromIso: string, toIso: string): number => Math.round((Date.parse(`${toIso}T00:00:00Z`) - Date.parse(`${fromIso}T00:00:00Z`)) / 86400000);
 
-/** Open balances of issued invoices from the ledger, by days past the due date (the issue date when there is none). The archive
+/** What customers still owe, from the ledger: open pro formas on the cash basis, unpaid invoices on the accrual basis. By days past the due date (the issue date when there is none). The archive
  *  carries no trustworthy balances, so it is not part of this report. */
-export function receivablesAging(docs: FinDocument[], pays: FinPayment[], customers: FinCustomer[], today: string): { rows: AgingRow[]; totals: number[]; total: number } {
+export function receivablesAging(docs: FinDocument[], pays: FinPayment[], customers: FinCustomer[], today: string, basis: Basis = ACCOUNTING_BASIS): { rows: AgingRow[]; totals: number[]; total: number } {
   const byId = new Map(customers.map((c) => [c.id, c]));
   const m = new Map<string, AgingRow>();
   for (const d of docs) {
-    const bal = openBalance(d, docs, pays);
+    const bal = receivable(d, docs, pays, basis);
     if (bal <= 0) continue;
     const late = daysBetween(d.due_date ?? d.issue_date, today);
     const i = late <= 0 ? 0 : late <= 30 ? 1 : late <= 60 ? 2 : late <= 90 ? 3 : 4;
@@ -120,7 +120,8 @@ export type Grain = "week" | "month" | "year";
 export interface Bucket { key: string; label: string; from: string; to: string; net: number; vat: number; total: number; count: number; future: boolean }
 export interface Series {
   grain: Grain; buckets: Bucket[]; net: number; vat: number; total: number; count: number;
-  average: number; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
+  /** Mean of the periods that have ended, counted from the first period with income. The running period never enters it. */
+  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
 }
 
 const toDate = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
@@ -161,10 +162,13 @@ export function revenueBuckets(rows: IncomeRow[], grain: Grain, year: number, to
   // The current, still running bucket is not a fair "last" to compare with a full one, so compare the last two completed buckets.
   const done = live.filter((b) => b.to < today);
   const last = done[done.length - 1], prev = done[done.length - 2];
+  const firstData = done.findIndex((b) => b.count > 0);
+  const avgBuckets = firstData >= 0 ? done.slice(firstData) : [];
   return {
     grain, buckets, net, vat: r2(live.reduce((a, b) => a + b.vat, 0)), total: r2(live.reduce((a, b) => a + b.total, 0)),
     count: live.reduce((a, b) => a + b.count, 0),
-    average: live.length ? r2(net / live.length) : 0,
+    average: avgBuckets.length ? r2(avgBuckets.reduce((a, b) => a + b.net, 0) / avgBuckets.length) : 0,
+    averageOver: avgBuckets.length, hasRunning: live.some((b) => b.to >= today),
     best: withData.length ? withData.reduce((a, b) => (b.net > a.net ? b : a)) : null,
     lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null } : null,
   };

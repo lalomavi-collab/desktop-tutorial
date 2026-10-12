@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -145,6 +145,27 @@ t("incomplete regular customers are flagged, casual ones are not", () => {
   assert.equal(isOpenProforma(doc({ id: "p3", doc_type: "PROFORMA", status: "DRAFT" }), []), false);
   assert.equal(isOpenProforma(doc({ id: "x", doc_type: "INVOICE" }), []), false);
 });
+const tx = (o) => ({ id: 1, trust_account_id: "a1", matter_id: "m1", customer_id: "c1", tx_type: "DEPOSIT", amount: 1000, receipt_no: "TR-000001", reference_doc_id: null, reverses_entry_id: null, counterparty: null, notes: null, created_at: "2026-10-05", ...o });
+t("trust held: the ledger is signed, so the balance is the plain sum, narrowed by customer, matter or account", () => {
+  const rows = [tx({}), tx({ id: 2, tx_type: "EARNED_FEE_TRANSFER", amount: -300 }), tx({ id: 3, customer_id: "c2", matter_id: "m2", trust_account_id: "a2", amount: 50 })];
+  assert.equal(trustHeld(rows), 750);
+  assert.equal(trustHeld(rows, { customer: "c1" }), 700);
+  assert.equal(trustHeld(rows, { matter: "m2" }), 50);
+  assert.equal(trustHeld(rows, { account: "a1" }), 700);
+});
+t("trust breakdown drops zero balances and sorts largest first", () => {
+  const rows = [tx({}), tx({ id: 2, tx_type: "REVERSAL", amount: -1000 }), tx({ id: 3, customer_id: "c2", amount: 50 }), tx({ id: 4, customer_id: "c3", amount: 90 })];
+  assert.deepEqual(trustBreakdown(rows, "customer_id"), [{ id: "c3", balance: 90 }, { id: "c2", balance: 50 }]);
+});
+t("bank account numbers are shown masked", () => {
+  assert.equal(maskAccount("123456789"), "***6789");
+  assert.equal(maskAccount("123"), "123");
+});
+t("trust money is never revenue: the summary has no trust figure", () => {
+  const sm = summarize([doc({})], [], [], { from: "2026-10-01", to: "2026-10-31" });
+  assert.equal(sm.revenueNet, 1000);
+  assert.ok(!Object.keys(sm).some((k) => /trust/i.test(k)));
+});
 const cust = (o) => ({ id: "c1", name: "לקוח א", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: 77, is_casual: false, ...o });
 const archDoc = (o) => ({ id: "a1", i4u_doc_id: "A1", i4u_doc_type: 1, doc_number: 10001, issue_date: "2026-10-02", i4u_client_id: 77, subject: null, currency: "₪", subtotal: 10000, vat_amount: 1800, total: 11800, allocation_number: null, status_id: null, paid: null, balance: null, ...o });
 t("income report: invoices and invoice-receipts add, credits subtract, a document in both places counts once", () => {
@@ -160,12 +181,16 @@ t("test documents and drafts are not income", () => {
   const rows = incomeRows([doc({ is_test: true }), doc({ status: "DRAFT" })], [], [cust({})], { from: "2026-10-01", to: "2026-10-31" });
   assert.equal(rows.length, 0);
 });
-t("aging puts each open invoice in a bucket by days past the due date", () => {
-  const inv = (id, due) => doc({ id, doc_type: "INVOICE", total: 100, due_date: due });
-  const docs = [inv("a", "2026-10-20"), inv("b", "2026-10-01"), inv("c", "2026-08-20"), inv("d", "2026-06-01")];
-  const a = receivablesAging(docs, [], [cust({ id: "c1", i4u_customer_id: null })], "2026-10-10");
-  assert.deepEqual(a.totals, [100, 100, 100, 0, 100]);
-  assert.equal(a.total, 400);
+t("aging by days past the due date: cash basis counts open pro formas only, accrual basis counts unpaid invoices", () => {
+  const mk = (id, type, due, o = {}) => doc({ id, doc_type: type, total: 100, due_date: due, ...o });
+  const pf = [mk("a", "PROFORMA", "2026-10-20"), mk("b", "PROFORMA", "2026-10-01"), mk("c", "PROFORMA", "2026-08-20"), mk("d", "PROFORMA", "2026-06-01")];
+  const c = [cust({ id: "c1", i4u_customer_id: null })];
+  const cash = receivablesAging([...pf, mk("i", "INVOICE", "2026-09-01")], [], c, "2026-10-10", "CASH");
+  assert.deepEqual(cash.totals, [100, 100, 100, 0, 100]); assert.equal(cash.total, 400); // the invoice is not a debt on the cash basis
+  const settled = mk("s", "INVOICE", null, { source_proforma_id: "a", doc_number: 5 });
+  assert.equal(receivablesAging([...pf, settled], [], c, "2026-10-10", "CASH").total, 300); // a settled pro forma drops out
+  const accrual = receivablesAging([mk("i1", "INVOICE", "2026-10-20"), mk("i2", "INVOICE", "2026-08-20")], [], c, "2026-10-10", "ACCRUAL");
+  assert.deepEqual(accrual.totals, [100, 0, 100, 0, 0]);
 });
 t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers", () => {
   const c = toCsv(["a", "b"], [["x\"y", 1234.5]]);
@@ -185,9 +210,82 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   assert.equal(m.buckets[8].net, 10000); // September: 12000 credit 2000
   assert.equal(m.buckets[9].future, false); assert.equal(m.buckets[10].future, true);
   assert.equal(m.net, 25000);
+  assert.equal(m.average, 10000); assert.equal(m.averageOver, 2); assert.equal(m.hasRunning, true); // Aug and Sep only: not January to July, not the running October
   assert.equal(m.lastVsPrevious.last.label, "ספט׳"); assert.equal(m.lastVsPrevious.pct, 0);
   const y = revenueBuckets(rows, "year", 2026, "2026-10-12");
   assert.equal(y.buckets.length, 5); assert.equal(y.buckets[4].net, 25000);
+  assert.equal(y.averageOver, 0); assert.equal(y.average, 0); // 2026 is still running and earlier years have no income
   assert.equal(revenueBuckets(rows, "week", 2026, "2026-10-12").buckets.length, 12);
+});
+t("trust posting: withdrawals are capped by matter and account balance, a fee transfer needs an invoice within its open amount", () => {
+  const rows = [tx({ amount: 500 }), tx({ id: 2, matter_id: "m2", trust_account_id: "a1", amount: 200 })];
+  const ok = { matter_id: "m1", account_id: "a1", type: "REFUND_TO_CLIENT", amount: 500, doc_open: null, doc_id: null };
+  assert.deepEqual(trustPostProblems(ok, rows), []);
+  assert.ok(trustPostProblems({ ...ok, amount: 501 }, rows).includes("הסכום גבוה מהיתרה המוחזקת בתיק"));
+  assert.deepEqual(trustPostProblems({ ...ok, type: "DEPOSIT", amount: 99999 }, rows), []);
+  const fee = { ...ok, type: "EARNED_FEE_TRANSFER", amount: 100 };
+  assert.ok(trustPostProblems(fee, rows).includes("בחרו חשבונית מס שהופקה"));
+  assert.ok(trustPostProblems({ ...fee, doc_id: "d1", doc_open: 50 }, rows).includes("הסכום גבוה מהיתרה הפתוחה בחשבונית"));
+  assert.deepEqual(trustPostProblems({ ...fee, doc_id: "d1", doc_open: 100 }, rows), []);
+});
+t("a trust row can be reversed once, and a reversal cannot be reversed", () => {
+  const a = tx({ id: 1 }), r = tx({ id: 2, tx_type: "REVERSAL", amount: -1000, reverses_entry_id: 1 });
+  assert.equal(canReverse(a, [a]), true);
+  assert.equal(canReverse(a, [a, r]), false);
+  assert.equal(canReverse(r, [a, r]), false);
+});
+t("trust account setup: digits only, no duplicate, and no closing while money is held", () => {
+  const ex = [{ id: "a1", bank_name: "לאומי", branch: "800", account_number: "12345678", closed_on: null }];
+  const ok = { bank_name: "פועלים", branch: "600", account_number: "998877" };
+  assert.deepEqual(trustAccountProblems(ok, ex), []);
+  assert.ok(trustAccountProblems({ ...ok, bank_name: " " }, ex).includes("שם הבנק חובה"));
+  assert.ok(trustAccountProblems({ ...ok, branch: "ab" }, ex).length === 1);
+  assert.ok(trustAccountProblems({ ...ok, account_number: "12" }, ex).length === 1);
+  assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex), ["החשבון כבר קיים"]);
+  // editing an account must not collide with itself, only with another account
+  assert.deepEqual(trustAccountProblems({ bank_name: "לאומי", branch: "800", account_number: "12345678" }, ex, "a1"), []);
+  const two = [...ex, { id: "a2", bank_name: "פועלים", branch: "600", account_number: "998877", closed_on: null }];
+  assert.deepEqual(trustAccountProblems({ bank_name: "פועלים", branch: "600", account_number: "998877" }, two, "a1"), ["החשבון כבר קיים"]);
+  assert.equal(trustCloseProblem("a1", [tx({ amount: 5 })]) !== null, true);
+  assert.equal(trustCloseProblem("a1", [tx({ amount: 5 }), tx({ id: 2, tx_type: "REFUND_TO_CLIENT", amount: -5 })]), null);
+});
+t("reconciliation: zero difference is matched, none is a missing statement, anything else is different", () => {
+  assert.equal(reconState({ difference_at_statement_date: null }), "NO_STATEMENT");
+  assert.equal(reconState({ difference_at_statement_date: 0 }), "MATCHED");
+  assert.equal(reconState({ difference_at_statement_date: 0.004 }), "MATCHED");
+  assert.equal(reconState({ difference_at_statement_date: -12.5 }), "DIFFERENT");
+});
+t("bank statement entry: account, a past date, a numeric balance, and no repeat of the same account and date", () => {
+  const ex = [{ trust_account_id: "a1", statement_as_of: "2026-09-30" }];
+  const ok = { account_id: "a1", as_of: "2026-10-05", balance: "1500.50" };
+  assert.deepEqual(statementProblems(ok, "2026-10-11", ex), []);
+  assert.ok(statementProblems({ ...ok, as_of: "2026-12-01" }, "2026-10-11", ex).includes("תאריך הדף לא יכול להיות עתידי"));
+  assert.ok(statementProblems({ ...ok, balance: "abc" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
+  assert.ok(statementProblems({ ...ok, balance: "" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
+  assert.ok(statementProblems({ ...ok, as_of: "2026-09-30" }, "2026-10-11", ex).includes("כבר הוזן דף לחשבון הזה בתאריך הזה"));
+  assert.deepEqual(statementProblems({ ...ok, balance: "-20" }, "2026-10-11", ex), []);
+});
+t("statement correction: a different numeric figure and a reason, and only on the live version", () => {
+  const cur = { balance: 1500, superseded_at: null };
+  assert.deepEqual(statementCorrectionProblems({ balance: "1400", reason: "טעות הקלדה" }, cur), []);
+  assert.ok(statementCorrectionProblems({ balance: "1500", reason: "טעות הקלדה" }, cur).includes("היתרה זהה לקיימת"));
+  assert.ok(statementCorrectionProblems({ balance: "x", reason: "טעות הקלדה" }, cur).includes("הזינו יתרה מספרית"));
+  assert.ok(statementCorrectionProblems({ balance: "1400", reason: " " }, cur).includes("נדרשת סיבת התיקון"));
+  assert.ok(statementCorrectionProblems({ balance: "1400", reason: "טעות הקלדה" }, { ...cur, superseded_at: "2026-10-12" }).length === 1);
+});
+t("value date: falls back to the recording day, and the as-of balance counts by value date", () => {
+  assert.equal(trustValueDate({ created_at: "2026-10-12T08:00:00Z", value_date: null }), "2026-10-12");
+  assert.equal(trustValueDate({ created_at: "2026-10-12T08:00:00Z", value_date: "2026-10-09" }), "2026-10-09");
+  // recorded Monday 12th, value Friday 9th: counted at a Friday statement, not just a Monday one
+  const rows = [tx({ amount: 1000, created_at: "2026-10-12T08:00:00Z", value_date: "2026-10-09" }), tx({ id: 2, amount: 200, created_at: "2026-10-08T08:00:00Z" })];
+  assert.equal(trustHeldAsOf(rows, "a1", "2026-10-09"), 1200);
+  assert.equal(trustHeldAsOf(rows, "a1", "2026-10-08"), 200);
+  assert.equal(trustHeldAsOf(rows, "other", "2026-10-31"), 0);
+});
+t("value date rules: none means today, no future, nothing before the account opened", () => {
+  assert.deepEqual(valueDateProblems("", "2026-10-12", "2026-09-01"), []);
+  assert.deepEqual(valueDateProblems("2026-10-12", "2026-10-12", "2026-09-01"), []);
+  assert.deepEqual(valueDateProblems("2026-10-13", "2026-10-12", null), ["תאריך ערך לא יכול להיות עתידי"]);
+  assert.deepEqual(valueDateProblems("2026-08-31", "2026-10-12", "2026-09-01"), ["תאריך ערך מוקדם מפתיחת חשבון הנאמנות"]);
 });
 console.log("\nAll finance checks passed");

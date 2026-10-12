@@ -11,6 +11,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
   const [f, setF] = useState<Draft>(blank);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [q, setQ] = useState("");
+  const [withArchived, setWithArchived] = useState(false);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
   const isNew = editing === "new";
 
@@ -40,12 +41,14 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
     await supabase.from("lalum_fin_customers").update({ archived: !c.archived }).eq("id", c.id);
     onChange();
   }
-  const shown = customers.filter((c) => !q.trim() || c.name.includes(q.trim()) || (c.tax_id ?? "").includes(q.trim()));
+  const archivedCount = customers.filter((c) => c.archived).length;
+  const shown = customers.filter((c) => (withArchived || !c.archived) && (!q.trim() || c.name.includes(q.trim()) || (c.tax_id ?? "").includes(q.trim())));
 
   return (
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <input className="ck-input" aria-label="חיפוש לקוח" placeholder="חיפוש לפי שם או ת.ז." value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
+        {archivedCount > 0 && <label className="ck-meta" style={{ display: "flex", alignItems: "center", gap: 6 }}><input type="checkbox" checked={withArchived} onChange={(e) => setWithArchived(e.target.checked)} />הצגת לקוחות בארכיון (<bdi>{archivedCount}</bdi>)</label>}
         <button className="ck-btn primary" onClick={() => open()}>לקוח חדש</button>
       </div>
       {editing && (
