@@ -17,6 +17,11 @@ export type CalEvent = {
   parent_event_id: string | null;
   reminders: number[];
   notes: string | null;
+  /** Set only on an event written by the Outlook sync (migration 0027); null for one created here.
+   *  Editing or deleting a synced event in this app does not reach Outlook, so the UI should treat
+   *  it as read-only and point the user back to Outlook instead. */
+  source: string | null;
+  external_id: string | null;
 };
 
 export type NewEvent = {
