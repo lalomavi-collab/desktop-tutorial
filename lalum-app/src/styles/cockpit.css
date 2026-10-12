@@ -123,7 +123,7 @@
    with extra breathing room before every section after the first. */
 .ck-nav-group { display: flex; flex-direction: column; gap: 6px; }
 .ck-nav-group + .ck-nav-group { margin-top: 14px; }
-.ck-nav-heading { padding: 2px 16px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--slate); }
+.ck-nav-heading { padding: 2px 16px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: color-mix(in srgb, var(--ink) 72%, transparent); }
 /* Each row is a full-width button, not a plain text link: a resting fill at low
    opacity already reads as a button, hover and the active page state go stronger
    from there, so the whole bar looks like a set of controls, per the reference. */
