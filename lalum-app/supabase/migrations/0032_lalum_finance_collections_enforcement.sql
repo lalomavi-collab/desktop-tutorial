@@ -1,5 +1,5 @@
 -- Finance: enforce the collections billing lock on time entries and timers.
--- Not yet applied to the project. Builds on 0031 (the lock flag and its decision record).
+-- Applied to project meoymkcotomoluwlwues as "lalum_finance_collections_enforcement". Builds on 0031 (the lock flag and its decision record).
 --
 --  * A customer whose lock is on (is_collections_locked) cannot get NEW time entries or a NEW running timer on any matter whose
 --    fee record (lalum_matter_fees.fin_customer_id) points at that customer. Existing entries are untouched: they can still be
@@ -42,13 +42,19 @@ begin
 end $$;
 revoke execute on function public.lalum_collections_lock_guard() from public, anon, authenticated;
 
-drop trigger if exists lalum_collections_lock_t on public.lalum_time_entries;
-create trigger lalum_collections_lock_t before insert on public.lalum_time_entries
-  for each row execute function public.lalum_collections_lock_guard();
--- A timer is blocked when it starts, so nobody works an hour and then fails to save it.
-drop trigger if exists lalum_collections_lock_t on public.lalum_time_timers;
-create trigger lalum_collections_lock_t before insert on public.lalum_time_timers
-  for each row execute function public.lalum_collections_lock_guard();
+-- Created only when absent, so the migration can be re-run without a notice from DROP ... IF EXISTS.
+do $do$
+begin
+  if not exists (select 1 from pg_trigger where tgname = 'lalum_collections_lock_t' and tgrelid = 'public.lalum_time_entries'::regclass) then
+    create trigger lalum_collections_lock_t before insert on public.lalum_time_entries
+      for each row execute function public.lalum_collections_lock_guard();
+  end if;
+  -- A timer is blocked when it starts, so nobody works an hour and then fails to save it.
+  if not exists (select 1 from pg_trigger where tgname = 'lalum_collections_lock_t' and tgrelid = 'public.lalum_time_timers'::regclass) then
+    create trigger lalum_collections_lock_t before insert on public.lalum_time_timers
+      for each row execute function public.lalum_collections_lock_guard();
+  end if;
+end $do$;
 
 -- Lock or unlock (0031), now also clearing any override: a new decision starts clean.
 create or replace function public.lalum_fin_set_collections_lock(p_customer uuid, p_locked boolean, p_reason text default null)
