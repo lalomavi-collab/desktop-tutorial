@@ -73,7 +73,13 @@ export function Home() {
               (public/founder.webp), so the front door now carries the same
               face the site closes on, not a second, different image. */}
           <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="lazy" />
+            {/* The largest, highest-contrast image in the initial viewport on
+                both desktop and mobile (hero-grid stacks it, never hides it):
+                the page's likely LCP element. loading="lazy" here delays the
+                very fetch LCP is timed on; eager + high priority is the same
+                treatment AmbientBackground's "photo" variant already uses for
+                a hero-critical image. */}
+            <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="eager" fetchPriority="high" />
             <span className="founder-hero-cap">
               <span className="founder-hero-name">{h.founderName}</span>
               <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
