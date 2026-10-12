@@ -383,3 +383,18 @@ export function statementProblems(f: { account_id: string; as_of: string; balanc
   return out;
 }
 
+/** A stored bank statement. A correction supersedes the row instead of editing it (migration 0032). */
+export interface TrustStatement {
+  id: string; trust_account_id: string; as_of: string; balance: number; created_at: string;
+  superseded_at?: string | null; correction_reason?: string | null; corrects_id?: string | null;
+}
+/** Reasons a statement correction cannot be saved: a new figure that really differs, and a stated reason. */
+export function statementCorrectionProblems(f: { balance: string; reason: string }, current: Pick<TrustStatement, "balance" | "superseded_at">): string[] {
+  const out: string[] = [];
+  if (current.superseded_at) out.push("הדף כבר תוקן. תקנו את הגרסה העדכנית");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  else if (r2(Number(f.balance)) === r2(Number(current.balance))) out.push("היתרה זהה לקיימת");
+  if (f.reason.trim().length < 3) out.push("נדרשת סיבת התיקון");
+  return out;
+}
+

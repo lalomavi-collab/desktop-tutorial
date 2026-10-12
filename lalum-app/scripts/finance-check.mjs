@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems } from "../src/lib/cockpit/finance.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -244,5 +244,13 @@ t("bank statement entry: account, a past date, a numeric balance, and no repeat 
   assert.ok(statementProblems({ ...ok, balance: "" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
   assert.ok(statementProblems({ ...ok, as_of: "2026-09-30" }, "2026-10-11", ex).includes("כבר הוזן דף לחשבון הזה בתאריך הזה"));
   assert.deepEqual(statementProblems({ ...ok, balance: "-20" }, "2026-10-11", ex), []);
+});
+t("statement correction: a different numeric figure and a reason, and only on the live version", () => {
+  const cur = { balance: 1500, superseded_at: null };
+  assert.deepEqual(statementCorrectionProblems({ balance: "1400", reason: "טעות הקלדה" }, cur), []);
+  assert.ok(statementCorrectionProblems({ balance: "1500", reason: "טעות הקלדה" }, cur).includes("היתרה זהה לקיימת"));
+  assert.ok(statementCorrectionProblems({ balance: "x", reason: "טעות הקלדה" }, cur).includes("הזינו יתרה מספרית"));
+  assert.ok(statementCorrectionProblems({ balance: "1400", reason: " " }, cur).includes("נדרשת סיבת התיקון"));
+  assert.ok(statementCorrectionProblems({ balance: "1400", reason: "טעות הקלדה" }, { ...cur, superseded_at: "2026-10-12" }).length === 1);
 });
 console.log("\nAll finance checks passed");
