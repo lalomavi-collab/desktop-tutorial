@@ -22,7 +22,8 @@
     "ar-aging-check": "node scripts/ar-aging-check.mjs",
     "cashflow-check": "node scripts/cashflow-check.mjs",
     "token-floor-check": "node scripts/token-floor-check.mjs",
-    "address-check": "node scripts/address-check.mjs"
+    "address-check": "node scripts/address-check.mjs",
+    "popup-check": "node scripts/popup-check.mjs"
   },
   "dependencies": {
     "@accounter/shaam-uniform-format-generator": "0.2.6",

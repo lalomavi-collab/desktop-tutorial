@@ -411,8 +411,12 @@ export function Portal() {
 
   async function downloadFile(path: string) {
     if (!supabase) return;
+    // Open the tab now, inside the click: a window opened after the await below is the one browsers block.
+    const w = window.open("", "_blank");
     const { data } = await supabase.storage.from("client-files").createSignedUrl(path, 60);
-    if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
+    if (!data?.signedUrl) { w?.close(); return; }
+    if (w) { w.opener = null; w.location.href = data.signedUrl; }
+    else window.open(data.signedUrl, "_blank", "noopener");
   }
 
   async function removeFile(path: string) {
