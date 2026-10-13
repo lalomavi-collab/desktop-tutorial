@@ -88,7 +88,7 @@
 - V פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל (effective-human-oversight-ai-systems)
 - V מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי (ai-content-labeling-transparency-policy)
 - V Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה (gpai-code-of-practice-foundation-models)
-- רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית
+- V רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית (ai-regulation-us-vs-eu-israeli-companies)
 
 ## עדיפות 1ב: בינה מלאכותית לפי סקטור (מיתוג דגל, בניית אשכול ורטיקלי)
 
