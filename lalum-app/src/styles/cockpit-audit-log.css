@@ -1,0 +1,17 @@
+/* The audit log table has five columns, two of them free text (entity, JSON payload), which cannot
+   fit a phone width even with wrapping: at phone width a horizontal-scrolling table still forces the
+   visitor to drag the row sideways to read the rest of it. Below 640px the table becomes a column of
+   cards instead: each row is a block with its cells stacked, labelled by the column header (the
+   header row itself is visually hidden but kept for assistive tech via the usual clip technique), so
+   the whole page fits the viewport with nothing to scroll sideways. Scoped to this one table (not the
+   shared .ck-table rule in cockpit.css) because other cockpit tables are mostly numeric/short-text and
+   read fine with the existing horizontal scroll. */
+@media (max-width: 640px) {
+  .audit-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .audit-table, .audit-table tbody, .audit-table tr { display: block; width: 100%; }
+  .audit-table tr { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .audit-table td { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; text-align: end; border-bottom: 1px solid var(--line); }
+  .audit-table tr td:last-child { border-bottom: none; }
+  .audit-table td::before { content: attr(data-label); flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: var(--slate); text-align: start; }
+  .audit-table td.fin-text { max-width: none; min-width: 0; }
+}
