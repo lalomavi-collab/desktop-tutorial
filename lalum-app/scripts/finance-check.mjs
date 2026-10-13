@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems } from "../src/lib/cockpit/finance.ts";
 
+import { allocationThreshold, allocationGaps } from "../src/lib/cockpit/financeAllocation.ts";
+
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
   id: "d1", customer_id: "c1", doc_type: "INVOICE", status: "ISSUED", subject: "", tax_included: false, vat_rate: 18,
@@ -287,5 +289,32 @@ t("value date rules: none means today, no future, nothing before the account ope
   assert.deepEqual(valueDateProblems("2026-10-12", "2026-10-12", "2026-09-01"), []);
   assert.deepEqual(valueDateProblems("2026-10-13", "2026-10-12", null), ["תאריך ערך לא יכול להיות עתידי"]);
   assert.deepEqual(valueDateProblems("2026-08-31", "2026-10-12", "2026-09-01"), ["תאריך ערך מוקדם מפתיחת חשבון הנאמנות"]);
+});
+t("allocation ceiling steps down by date and is on the amount before VAT", () => {
+  assert.equal(allocationThreshold("2023-12-31"), null);
+  assert.equal(allocationThreshold("2024-06-01"), 25000);
+  assert.equal(allocationThreshold("2025-12-31"), 20000);
+  assert.equal(allocationThreshold("2026-05-31"), 10000);
+  assert.equal(allocationThreshold("2026-06-01"), 5000);
+});
+t("allocation gaps: only issued tax invoices above the ceiling, with VAT, without a number", () => {
+  const cust = [{ id: "c1", tax_id: "031471261", is_casual: false }, { id: "c2", tax_id: null, is_casual: false }];
+  const docs = [
+    doc({ id: "a", issue_date: "2026-09-30", subtotal: 22087.5, vat_amount: 3975.75 }),
+    doc({ id: "b", issue_date: "2026-09-30", subtotal: 22087.5, vat_amount: 3975.75, allocation_number: "245073463" }),
+    doc({ id: "c", issue_date: "2026-09-02", subtotal: 4999.99, vat_amount: 900 }),
+    doc({ id: "d", issue_date: "2026-05-02", subtotal: 7800, vat_amount: 1404 }),
+    doc({ id: "e", issue_date: "2026-09-02", subtotal: 9000, vat_amount: 0 }),
+    doc({ id: "f", issue_date: "2026-09-02", subtotal: 9000, vat_amount: 1620, doc_type: "CREDIT" }),
+    doc({ id: "g", issue_date: "2026-09-02", subtotal: 9000, vat_amount: 1620, doc_type: "PROFORMA" }),
+    doc({ id: "h", issue_date: "2026-09-02", subtotal: 9000, vat_amount: 1620, is_test: true }),
+    doc({ id: "i", issue_date: "2026-09-02", subtotal: 9000, vat_amount: 1620, status: "DRAFT" }),
+    doc({ id: "j", issue_date: "2026-09-03", subtotal: 7800, vat_amount: 1404, doc_type: "INVOICE_RECEIPT", customer_id: "c2" }),
+  ];
+  const g = allocationGaps(docs, cust);
+  assert.deepEqual(g.map((x) => x.doc.id), ["a", "j"]);
+  assert.equal(g[0].customerHasTaxId, true);
+  assert.equal(g[1].customerHasTaxId, false);
+  assert.equal(g[0].threshold, 5000);
 });
 console.log("\nAll finance checks passed");
