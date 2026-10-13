@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage } from "../src/lib/cockpit/finance.ts";
 
+import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -342,6 +343,24 @@ t("allocation authorization: warns three weeks before expiry and after it", () =
   assert.deepEqual(allocationAuthStatus("2026-12-10", "2027-01-01"), { daysLeft: 22, warn: false });
   assert.deepEqual(allocationAuthStatus("2027-01-03", "2027-01-01"), { daysLeft: -2, warn: true });
   assert.equal(allocationAuthStatus("2027-01-03", null).warn, false);
+});
+t("Israeli id check: valid numbers pass, wrong length or check digit fail", () => {
+  assert.equal(ilIdOk("031471261"), true);
+  assert.equal(ilIdOk("516908704"), true);
+  assert.equal(ilIdOk("031471262"), false);
+  assert.equal(ilIdOk("0314717261"), false);
+  assert.equal(ilIdOk("abcdefghi"), false);
+});
+t("business address by date and kind: the latest one that has started", () => {
+  const list = [
+    { kind: "FINANCE", validFrom: "2000-01-01", street: "A", houseNum: "1", city: "x", zip: "" },
+    { kind: "PUBLIC", validFrom: "2000-01-01", street: "B", houseNum: "2", city: "y", zip: "" },
+    { kind: "PUBLIC", validFrom: "2027-01-01", street: "C", houseNum: "3", city: "z", zip: "" },
+  ];
+  assert.equal(addressOn(list, "FINANCE", "2030-01-01").street, "A");
+  assert.equal(addressOn(list, "PUBLIC", "2026-12-31").street, "B");
+  assert.equal(addressOn(list, "PUBLIC", "2027-01-01").street, "C");
+  assert.equal(addressOn(list, "PUBLIC", "1999-01-01"), null);
 });
 const hacc = (o) => ({ id: "a1", bank_name: "לאומי", branch: "800", account_number: "12345678", closed_on: null, opened_on: "2026-09-01", ...o });
 const hm = [{ id: "m1", customer_id: "c1" }];

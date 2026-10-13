@@ -171,7 +171,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "audit" && level >= 4 && <AuditLogTab />}
       {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} canOverride={level >= 4} onChange={() => void load()} /></Gate>}
       {tab === "cashflow" && loaded && <Gate level={level} need={4}><CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} /></Gate>}
-      {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
+      {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} firmId={firmId} />}
     </div>
   );
 }

@@ -72,6 +72,10 @@ export interface ShaamBusiness {
    *  owner's decision (finance-engine-design.md) its own business id is used there too. */
   taxId: string;
   name: string;
+  /** Overrides the built-in finance address (from the firm's business profile). */
+  address?: { street: string; houseNum: string; city: string; zip: string };
+  /** The software registration certificate number. Absent means there is none, and the business number is written. */
+  softwareRegNumber?: string | null;
   taxYear: string; // YYYY
   periodStart: string; // YYYY-MM-DD
   periodEnd: string; // YYYY-MM-DD
@@ -212,7 +216,7 @@ export function buildShaamReport(
     encodeA000({
       totalRecords: String(z900RecordNumber),
       vatId: business.taxId,
-      softwareRegNumber: business.taxId,
+      softwareRegNumber: business.softwareRegNumber || business.taxId,
       softwareName: "LALUM Finance Ledger",
       softwareVersion: "1.0.0",
       vendorVatId: business.taxId,
@@ -224,8 +228,8 @@ export function buildShaamReport(
       companyRegId: "",
       withholdingFileNum: "",
       businessName: business.name,
-      businessStreet: LALUM_BUSINESS_ADDRESS.street, businessHouseNum: LALUM_BUSINESS_ADDRESS.houseNum,
-      businessCity: LALUM_BUSINESS_ADDRESS.city, businessZip: LALUM_BUSINESS_ADDRESS.zip,
+      businessStreet: (business.address ?? LALUM_BUSINESS_ADDRESS).street, businessHouseNum: (business.address ?? LALUM_BUSINESS_ADDRESS).houseNum,
+      businessCity: (business.address ?? LALUM_BUSINESS_ADDRESS).city, businessZip: (business.address ?? LALUM_BUSINESS_ADDRESS).zip,
       taxYear: business.taxYear,
       startDate: ymd(business.periodStart),
       endDate: ymd(business.periodEnd),
