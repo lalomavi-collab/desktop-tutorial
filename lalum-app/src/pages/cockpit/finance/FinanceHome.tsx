@@ -35,6 +35,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const [payments, setPayments] = useState<FinPayment[]>([]);
   const [expenses, setExpenses] = useState<FinExpense[]>([]);
   const [trust, setTrust] = useState<TrustTx[]>([]);
+  const [statementAccounts, setStatementAccounts] = useState<string[]>([]);
   const [trustAccounts, setTrustAccounts] = useState<TrustAccount[]>([]);
   const [matters, setMatters] = useState<MatterRef[]>([]);
   const [archive, setArchive] = useState<ArchiveDoc[]>([]);
@@ -53,7 +54,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     if (!supabase) return;
     const lv = await supabase.rpc("lalum_fin_level", { p_firm: firmId });
     setLevel(typeof lv.data === "number" ? lv.data : 0);
-    const [c, d, p, e, tr, ta, mt, mf, dl, cs, ci] = await Promise.all([
+    const [c, d, p, e, tr, ta, mt, mf, ts, dl, cs, ci] = await Promise.all([
       supabase.from("lalum_fin_customers").select("*").order("name"),
       supabase.from("lalum_fin_documents").select("*").order("issue_date", { ascending: false }).order("created_at", { ascending: false }),
       supabase.from("lalum_fin_payments").select("*").order("paid_on", { ascending: false }),
@@ -62,6 +63,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_trust_accounts").select("id, bank_name, branch, account_number, closed_on, opened_on").order("bank_name"),
       supabase.from("lalum_cockpit_matters").select("id, title"),
       supabase.from("lalum_matter_fees").select("matter_id, fin_customer_id"),
+      supabase.from("lalum_trust_bank_statements").select("trust_account_id"),
       supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
       supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
       supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
@@ -86,6 +88,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     setDocs((d.data as FinDocument[] | null) ?? []);
     setPayments((p.data as FinPayment[] | null) ?? []);
     setExpenses((e.data as FinExpense[] | null) ?? []);
+    setStatementAccounts(((ts.data as Array<{ trust_account_id: string }> | null) ?? []).map((x) => x.trust_account_id));
     setTrust((tr.data as TrustTx[] | null) ?? []);
     setTrustAccounts((ta.data as TrustAccount[] | null) ?? []);
     // Trust data needs finance level 4. A lower level gets an empty tab (behind the Gate), not a failed screen.
@@ -149,7 +152,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       )}
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
-      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
+      {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}

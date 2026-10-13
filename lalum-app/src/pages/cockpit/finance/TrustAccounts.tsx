@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { maskAccount, trustAccountProblems, trustCloseProblem, trustHeld } from "../../../lib/cockpit/finance";
+import { maskAccount, trustAccountLock, trustAccountProblems, trustCloseProblem, trustHeld } from "../../../lib/cockpit/finance";
 import type { TrustAccount, TrustTx } from "../../../lib/cockpit/finance";
 
 type Draft = { bank_name: string; branch: string; account_number: string };
 const blank = (): Draft => ({ bank_name: "", branch: "", account_number: "" });
 
 /** Setup of the firm's client trust bank accounts. Accounts are never deleted: a closed account stays so its history keeps a home. */
-export function TrustAccounts({ firmId, accounts, rows, onChange }: { firmId: string; accounts: TrustAccount[]; rows: TrustTx[]; onChange: () => void }) {
+export function TrustAccounts({ firmId, accounts, rows, statementAccounts, onChange }: { firmId: string; accounts: TrustAccount[]; rows: TrustTx[]; statementAccounts: string[]; onChange: () => void }) {
   const [f, setF] = useState<Draft | null>(null);
   // Id of the account being edited; null while adding a new one.
   const [editId, setEditId] = useState<string | null>(null);
@@ -16,7 +16,10 @@ export function TrustAccounts({ firmId, accounts, rows, onChange }: { firmId: st
   const [busy, setBusy] = useState(false);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
 
-  function startEdit(a: TrustAccount) { setEditId(a.id); setF({ bank_name: a.bank_name, branch: a.branch, account_number: a.account_number }); setMsg(""); }
+  const lockOf = (id: string) => trustAccountLock(id, rows, statementAccounts);
+  function startEdit(a: TrustAccount) {
+    if (trustAccountLock(a.id, rows, statementAccounts).locked) return;
+    setEditId(a.id); setF({ bank_name: a.bank_name, branch: a.branch, account_number: a.account_number }); setMsg(""); }
   function cancel() { setF(null); setEditId(null); }
 
   async function save() {
@@ -27,8 +30,7 @@ export function TrustAccounts({ firmId, accounts, rows, onChange }: { firmId: st
     if (editId) {
       const cur = accounts.find((a) => a.id === editId);
       if (cur && cur.bank_name === row.bank_name && cur.branch === row.branch && cur.account_number === row.account_number) return setMsg("לא בוצע שינוי.");
-      const used = rows.some((t) => t.trust_account_id === editId);
-      if (!window.confirm(`לעדכן את פרטי חשבון הנאמנות?${used ? "\nבחשבון כבר יש תנועות. תקנו רק טעות הקלדה: חשבון בנק אחר דורש חשבון חדש, כדי שההיסטוריה תישאר מדויקת." : ""}\nהשינוי נרשם ביומן הביקורת.`)) return;
+      if (!window.confirm(`לעדכן את פרטי חשבון הנאמנות?\nהשינוי נרשם ביומן הביקורת.`)) return;
     }
     setBusy(true);
     const { error } = editId
@@ -73,8 +75,13 @@ export function TrustAccounts({ firmId, accounts, rows, onChange }: { firmId: st
         {accounts.length ? accounts.map((a) => (
           <tr key={a.id}><td>{a.bank_name}</td><td className="fin-ltr">{a.branch}</td><td className="fin-ltr">{maskAccount(a.account_number)}</td>
             <td>{a.closed_on ? `נסגר ${a.closed_on}` : "פעיל"}</td><td className="fin-num">{money(trustHeld(rows, { account: a.id }))}</td>
-            <td className="fin-actions-cell">{!a.closed_on && <div className="fin-actions"><button className="ck-btn sm" disabled={busy} onClick={() => startEdit(a)}>עריכה</button><button className="ck-btn sm danger" disabled={busy} onClick={() => void close(a)}>סגירה</button></div>}</td></tr>)) : <tr><td colSpan={6}>לא הוגדר חשבון נאמנות</td></tr>}
+            <td className="fin-actions-cell">{!a.closed_on && <div className="fin-actions">{lockOf(a.id).locked
+              ? <span className="ck-badge" title="בחשבון יש תנועות או דפי בנק, ולכן פרטיו נעולים">נעול</span>
+              : <button className="ck-btn sm" disabled={busy} onClick={() => startEdit(a)}>עריכה</button>}<button className="ck-btn sm danger" disabled={busy} onClick={() => void close(a)}>סגירה</button></div>}</td></tr>)) : <tr><td colSpan={6}>לא הוגדר חשבון נאמנות</td></tr>}
       </tbody></table></div>
+      {accounts.some((a) => lockOf(a.id).locked) && (
+        <div className="ck-meta">פרטי חשבון עם תנועות או דפי בנק נעולים, כדי שההיסטוריה תמשיך להצביע על אותו חשבון. אפשר לסגור חשבון (ביתרה אפס) ולפתוח חשבון חדש. מספר החשבון מוצג בהסתרה ונשמר מלא.</div>
+      )}
     </div>
   );
 }

@@ -16,8 +16,8 @@ type Draft = { matter_id: string; account_id: string; type: TrustPostType; amoun
 const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accountId, type: "DEPOSIT", amount: "", value_date: today(), counterparty: "", notes: "", doc_id: "" });
 
 /** Read side of the trust ledger. Posting goes through the lalum_trust_post RPC, which enforces zero overdraft. */
-export function TrustTab({ firmId, customers, matters, accounts, rows, docs, payments, onChange }: {
-  firmId: string; customers: FinCustomer[]; matters: MatterRef[]; accounts: TrustAccount[]; rows: TrustTx[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
+export function TrustTab({ firmId, customers, statementAccounts, matters, accounts, rows, docs, payments, onChange }: {
+  firmId: string; customers: FinCustomer[]; matters: MatterRef[]; accounts: TrustAccount[]; rows: TrustTx[]; statementAccounts: string[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
 }) {
   const openAccounts = accounts.filter((a) => !a.closed_on);
   const [f, setF] = useState<Draft | null>(null);
@@ -104,7 +104,7 @@ export function TrustTab({ firmId, customers, matters, accounts, rows, docs, pay
       )}
       {!f && msg && <div className="ck-err" aria-live="polite">{msg}</div>}
 
-      <TrustAccounts firmId={firmId} accounts={accounts} rows={rows} onChange={onChange} />
+      <TrustAccounts firmId={firmId} accounts={accounts} rows={rows} statementAccounts={statementAccounts} onChange={onChange} />
       <TrustRecon firmId={firmId} accounts={accounts} onChange={onChange} />
 
       <div className="ck-grid2">

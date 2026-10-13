@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock } from "../src/lib/cockpit/finance.ts";
 
 import { allocationThreshold, allocationGaps } from "../src/lib/cockpit/financeAllocation.ts";
 
@@ -316,5 +316,11 @@ t("allocation gaps: only issued tax invoices above the ceiling, with VAT, withou
   assert.equal(g[0].customerHasTaxId, true);
   assert.equal(g[1].customerHasTaxId, false);
   assert.equal(g[0].threshold, 5000);
+});
+t("trust account lock: any movement or any statement freezes the account details", () => {
+  assert.deepEqual(trustAccountLock("a1", [], []), { locked: false, movements: 0, statements: 0 });
+  assert.deepEqual(trustAccountLock("a1", [tx({}), tx({ id: 2 }), tx({ id: 3, trust_account_id: "a2" })], []), { locked: true, movements: 2, statements: 0 });
+  assert.deepEqual(trustAccountLock("a1", [], ["a1", "a2"]), { locked: true, movements: 0, statements: 1 });
+  assert.equal(trustAccountLock("a3", [tx({})], ["a1"]).locked, false);
 });
 console.log("\nAll finance checks passed");
