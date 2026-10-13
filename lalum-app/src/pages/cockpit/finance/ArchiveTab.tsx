@@ -1,3 +1,4 @@
+import { allocationShort } from "../../../lib/cockpit/financeAllocation";
 import { useRef, useState } from "react";
 import { money } from "../../../lib/cockpit/shared";
 import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from "../../../lib/cockpit/finance";
@@ -99,7 +100,7 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
           <div className="ck-label">מסמכים אחרונים</div>
           <input className="ck-input" aria-label="חיפוש לפי מספר מסמך" placeholder="חיפוש לפי מספר מסמך" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 260 }} />
           <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th></tr></thead><tbody>
-            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{d.allocation_number ?? ""}</td></tr>)}
+            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{allocationShort(d.allocation_number) ?? ""}</td></tr>)}
           </tbody></table></div>
         </>
       )}

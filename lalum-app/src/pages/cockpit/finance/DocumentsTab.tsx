@@ -1,3 +1,4 @@
+import { allocationShort } from "../../../lib/cockpit/financeAllocation";
 import { useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
@@ -126,7 +127,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     setBusy(null); onChange();
     if (r.ok) {
       setEd(null);
-      setNote({ ok: true, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${r.allocation_number}` : ""}.${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות." : ""}${r.total_mismatch ? " שימו לב: הסכום ב-Invoice4U שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
+      setNote({ ok: true, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${allocationShort(r.allocation_number)}` : ""}.${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות." : ""}${r.total_mismatch ? " שימו לב: הסכום ב-Invoice4U שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
     } else {
       setEd(null);
       setNote({ ok: false, text: r.code === "invoice4u_rejected" ? `${issueError(r)} ${(r.errors ?? []).map((x) => x.error).filter(Boolean).join(", ")}` : issueError(r) });
@@ -264,7 +265,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
               <td>
                 {d.status === "DRAFT" ? <span className={`ck-badge ${uncertain(d) ? "red" : "yellow"}`}>{uncertain(d) ? "תוצאה לא ודאית" : "טיוטה"}</span>
                   : d.is_test ? <span className="ck-badge yellow">בדיקה</span> : <span className="ck-badge green">הופק</span>}
-                {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {d.allocation_number}</div>}
+                {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {allocationShort(d.allocation_number)}</div>}
                 {d.doc_type === "PROFORMA" && d.status === "ISSUED" && !d.is_test && (closedBy(d, docs) ? <div className="ck-meta">נסגר ע"י מסמך <bdi>{closedBy(d, docs)?.doc_number}</bdi></div> : <span className="ck-badge yellow">פתוח</span>)}
                 {d.source_proforma_id && <div className="ck-meta">נוצר מחשבון עסקה</div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}

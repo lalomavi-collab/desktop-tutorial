@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock } from "../src/lib/cockpit/finance.ts";
 
-import { allocationThreshold, allocationGaps } from "../src/lib/cockpit/financeAllocation.ts";
+import { allocationThreshold, allocationGaps, allocationShort } from "../src/lib/cockpit/financeAllocation.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -173,7 +173,7 @@ const archDoc = (o) => ({ id: "a1", i4u_doc_id: "A1", i4u_doc_type: 1, doc_numbe
 t("income report: invoices and invoice-receipts add, credits subtract, a document in both places counts once", () => {
   const period = { from: "2026-10-01", to: "2026-10-31" };
   const ledgerInv = doc({ id: "l1", doc_type: "INVOICE", i4u_doc_id: "A1", doc_number: 10001, subtotal: 10000, vat_amount: 1800, total: 11800 });
-  const rows = incomeRows([ledgerInv], [archDoc({}), archDoc({ id: "a2", i4u_doc_id: "A2", i4u_doc_type: 4, doc_number: 50001, subtotal: 1000, vat_amount: 180 }), archDoc({ id: "a3", i4u_doc_id: "A3", i4u_doc_type: 2, doc_number: 30001 }), archDoc({ id: "a4", i4u_doc_id: "A4", issue_date: "2026-09-30" })], [cust({})], period);
+  const rows = incomeRows([ledgerInv], [archDoc({}), archDoc({ id: "a2", i4u_doc_id: "A2", i4u_doc_type: 4, doc_number: 50001, subtotal: 1000, vat_amount: 180, total: 1180 }), archDoc({ id: "a3", i4u_doc_id: "A3", i4u_doc_type: 2, doc_number: 30001 }), archDoc({ id: "a4", i4u_doc_id: "A4", issue_date: "2026-09-30" })], [cust({})], period);
   assert.equal(rows.length, 2);
   const g = incomeByKind(rows);
   assert.equal(g.net, 9000); assert.equal(g.vat, 1620); assert.equal(g.total, 10620);
@@ -322,5 +322,18 @@ t("trust account lock: any movement or any statement freezes the account details
   assert.deepEqual(trustAccountLock("a1", [tx({}), tx({ id: 2 }), tx({ id: 3, trust_account_id: "a2" })], []), { locked: true, movements: 2, statements: 0 });
   assert.deepEqual(trustAccountLock("a1", [], ["a1", "a2"]), { locked: true, movements: 0, statements: 1 });
   assert.equal(trustAccountLock("a3", [tx({})], ["a1"]).locked, false);
+});
+t("allocation number is shown as the nine digits printed on the invoice", () => {
+  assert.equal(allocationShort("20261001122751850274098390"), "274098390");
+  assert.equal(allocationShort("20260901210815880244089603"), "244089603");
+  assert.equal(allocationShort("245073463"), "245073463");
+  assert.equal(allocationShort(null), "");
+});
+t("income report total follows the stored document total, so a rounding line is not lost", () => {
+  const a = arch({ i4u_doc_type: 3, subtotal: 22087.5, vat_amount: 3975.75, total: 26063, issue_date: "2026-09-30" });
+  const c = arch({ id: "y", i4u_doc_id: "y", i4u_doc_type: 4, doc_number: 2, subtotal: 22087.29, vat_amount: 3975.71, total: 26063, issue_date: "2026-09-30" });
+  const rows = incomeRows([], [a, c], [], { from: "2026-09-01", to: "2026-09-30" });
+  assert.deepEqual(rows.map((r) => r.total), [26063, -26063]);
+  assert.deepEqual(rows.map((r) => r.net), [22087.5, -22087.29]);
 });
 console.log("\nAll finance checks passed");
