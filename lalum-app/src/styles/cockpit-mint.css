@@ -188,7 +188,7 @@
 
 /* Headline figures read like instrument values. */
 .ck-root[data-ck-theme="dark"] .fin-stat .fin-figure,
-.ck-root[data-ck-theme="dark"] .db-kpi b { font-family: var(--ck-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; font-weight: 700; }
+.ck-root[data-ck-theme="dark"] .db-kval b { font-family: var(--ck-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; font-weight: 700; }
 
 /* A faint corner glow on a stat card, in the colour of what it measures. */
 .ck-root[data-ck-theme="dark"] .fin-stat { position: relative; overflow: hidden; }
