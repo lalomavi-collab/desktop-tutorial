@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { buildShaamReport, LALUM_TAX_ID } from "../../../lib/cockpit/shaamExport";
 import type { FinCustomer, FinDocument } from "../../../lib/cockpit/finance";
+import { addressOn, loadBusiness } from "../../../lib/cockpit/businessProfile";
+import type { BusinessAddress, BusinessProfile } from "../../../lib/cockpit/businessProfile";
 
 // The uniform-structure file is filed quarterly (the owner's own cadence, matching how Invoice4U's
 // equivalent screen already works: a period and an e-mail, then "produce"). Default to the quarter
@@ -24,8 +26,11 @@ function download(filename: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-export function ShaamExportTab({ docs, customers, firmName }: { docs: FinDocument[]; customers: FinCustomer[]; firmName: string }) {
+export function ShaamExportTab({ docs, customers, firmName, firmId }: { docs: FinDocument[]; customers: FinCustomer[]; firmName: string; firmId: string }) {
   const q = lastQuarter();
+  const [profile, setProfile] = useState<BusinessProfile | null>(null);
+  const [addresses, setAddresses] = useState<BusinessAddress[]>([]);
+  useEffect(() => { void loadBusiness(firmId).then((b) => { setProfile(b.profile); setAddresses(b.addresses); }); }, [firmId]);
   const [from, setFrom] = useState(q.from);
   const [to, setTo] = useState(q.to);
   const [error, setError] = useState("");
@@ -44,7 +49,11 @@ export function ShaamExportTab({ docs, customers, firmName }: { docs: FinDocumen
     for (const c of customers) customersById[c.id] = c;
     try {
       const { iniText, dataText, counts } = buildShaamReport(
-        { taxId: LALUM_TAX_ID, name: firmName, taxYear: from.slice(0, 4), periodStart: from, periodEnd: to },
+        {
+          taxId: profile?.taxId ?? LALUM_TAX_ID, name: profile?.legalName ?? firmName, softwareRegNumber: profile?.softwareRegNumber,
+          address: ((a) => (a ? { street: a.street, houseNum: a.houseNum, city: a.city, zip: a.zip } : undefined))(addressOn(addresses, "FINANCE", to)),
+          taxYear: from.slice(0, 4), periodStart: from, periodEnd: to,
+        },
         sealed,
         customersById,
       );
