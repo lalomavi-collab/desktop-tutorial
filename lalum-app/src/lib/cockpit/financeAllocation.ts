@@ -45,3 +45,11 @@ export function allocationGaps(docs: FinDocument[], customers: FinCustomer[]): A
   }
   return out.sort((a, b) => (a.doc.issue_date < b.doc.issue_date ? 1 : -1));
 }
+
+/**
+ * Invoice4U hands the allocation number back wrapped in a timestamp (for example 20261001122751850274098390).
+ * The number printed on the invoice, and the one the Tax Authority knows, is the last nine digits; checked
+ * against four issued documents. Anything shorter or not all digits is shown as it came.
+ */
+export const allocationShort = (n: string | null | undefined): string =>
+  n && /^\d{10,}$/.test(n) ? n.slice(-9) : n ?? "";

@@ -1,6 +1,6 @@
 // Reports built from the ledger and the Invoice4U archive: the income report for the accountant, revenue by customer and
 // receivables aging. Pure functions, checked by `npm run finance-check`. Amounts are in shekels, signed (credits negative).
-import { ACCOUNTING_BASIS, archiveRevenueEffect, receivable, splitName } from "./finance.ts";
+import { ACCOUNTING_BASIS, archiveRevenueEffect, isShekel, receivable, splitName } from "./finance.ts";
 import type { ArchiveDoc, Basis, FinCustomer, FinDocument, FinPayment, Period } from "./finance.ts";
 
 export type IncomeKind = "INVOICE" | "INVOICE_RECEIPT" | "CREDIT";
@@ -31,7 +31,7 @@ export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers
     const c = byId.get(d.customer_id);
     rows.push({
       date: d.issue_date, kind: d.doc_type, number: d.doc_number, customer: c ? splitName(c.name).name : "לקוח לא ידוע",
-      customerKey: c?.id ?? "unknown", net: r2(sign * d.subtotal), vat: r2(sign * d.vat_amount), total: r2(sign * (d.subtotal + d.vat_amount)), source: "ledger",
+      customerKey: c?.id ?? "unknown", net: r2(sign * d.subtotal), vat: r2(sign * d.vat_amount), total: r2(sign * d.total), source: "ledger",
     });
   }
   for (const a of archive) {
@@ -42,7 +42,7 @@ export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers
     const name = c ? splitName(c.name).name : a.gname?.trim() || "לקוח לא ידוע";
     rows.push({
       date: a.issue_date, kind, number: a.doc_number, customer: name, customerKey: c?.id ?? `casual:${name}`,
-      net: e.net, vat: e.vat, total: r2(e.net + e.vat), source: "archive",
+      net: e.net, vat: e.vat, total: isShekel(a.currency) && Number.isFinite(a.total) ? r2((kind === "CREDIT" ? -1 : 1) * Math.abs(a.total)) : r2(e.net + e.vat), source: "archive",
     });
   }
   return rows.sort((x, y) => x.date.localeCompare(y.date) || (x.number ?? 0) - (y.number ?? 0));
