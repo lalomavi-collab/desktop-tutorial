@@ -1,6 +1,6 @@
 // Checks the partner/matter/portal rules. Run with: npm run crm-check
 import assert from "node:assert/strict";
-import { arAging, forecast13, fridayOnOrAfter, trustBalance, wip, clientMessages, clientMilestones, parseDay } from "../src/lib/cockpit/crm.ts";
+import { summarizeTrust, arAging, forecast13, fridayOnOrAfter, trustBalance, wip, clientMessages, clientMilestones, parseDay } from "../src/lib/cockpit/crm.ts";
 import { calculateDeadline, VERIFIED_RULES } from "../src/lib/cockpit/deadlines.ts";
 import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
 
@@ -50,4 +50,11 @@ t("deadline mechanics: plain count, freeze and roll forward (no legal values enc
   assert.equal(calculateDeadline({ ...base, frozen: [{ from: "2026-01-03", to: "2026-01-04", label: "x" }] }).due, "2026-01-08");
   assert.equal(calculateDeadline({ ...base, days: 2, rollForward: true, closedWeekdays: [6] }).due, "2026-01-04");
   assert.equal(VERIFIED_RULES.length, 0, "no rule may be added without two source verification");
+});
+
+t("trust summary: no account means no card, otherwise the signed ledger sum", () => {
+  assert.deepEqual(summarizeTrust(0, []), { state: "none" });
+  assert.deepEqual(summarizeTrust(0, [500]), { state: "none" });
+  assert.deepEqual(summarizeTrust(2, []), { state: "ready", held: 0 });
+  assert.deepEqual(summarizeTrust(1, [1000.1, 200.2, -300.3]), { state: "ready", held: 900 });
 });

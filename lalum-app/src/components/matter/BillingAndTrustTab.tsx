@@ -7,8 +7,8 @@ const ACTIONS = ["ניסוח", "מחקר משפטי", "שיחה עם לקוח", 
 const clock = (s: number) => [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map((n) => String(n).padStart(2, "0")).join(":");
 
 /** Timer, WIP and trust ledger for one matter. The rate is locked when the timer starts. Invoicing hands off to the Invoice4U flow. */
-export function BillingAndTrustTab({ matterId, rate, time, trust, onTime, onTrust }: {
-  matterId: string; rate: number; time: TimeEntry[]; trust: TrustEntry[]; onTime: (t: TimeEntry[]) => void; onTrust: (t: TrustEntry[]) => void;
+export function BillingAndTrustTab({ matterId, rate, time, trust, showTrust, onTime, onTrust }: {
+  matterId: string; /** false when the firm holds no client money: the trust card is not shown. */ showTrust: boolean; rate: number; time: TimeEntry[]; trust: TrustEntry[]; onTime: (t: TimeEntry[]) => void; onTrust: (t: TrustEntry[]) => void;
 }) {
   const [running, setRunning] = useState(false);
   const [secs, setSecs] = useState(0);
@@ -38,16 +38,18 @@ export function BillingAndTrustTab({ matterId, rate, time, trust, onTime, onTrus
         <ul className="crm-list">{mine.map((t) => <li key={t.id}><span>{t.action} <span className="ck-meta" dir="ltr">{t.on}</span></span><span>{t.hours} ש׳ × {money(t.rate)} {t.billed && <span className="ck-badge green">חויב</span>}</span></li>)}</ul>
         <a className="ck-btn" href="/settings/billing">הפקת חשבונית ב-Invoice4U</a>
       </div>
-      <div className="ck-card">
-        <div className="ck-card-head"><h3 className="ck-title">פנקס נאמנות</h3><span className="ck-badge green">{money(bal)}</span></div>
-        <div className="ck-meta">כספי לקוח המוחזקים בנאמנות הם התחייבות. הם אינם הכנסה ולא ייכללו בדוחות הכנסות.</div>
-        <div className="crm-actions" style={{ margin: "8px 0" }}>
-          <input className="ck-input" type="number" min={0} value={amount || ""} onChange={(e) => setAmount(Number(e.target.value))} aria-label="סכום" style={{ maxWidth: 140 }} />
-          <button type="button" className="ck-btn primary" onClick={() => post("DEPOSIT")}>הפקדת כספי נאמנות</button>
-          <button type="button" className="ck-btn" disabled={amount > bal} onClick={() => post("APPLY")}>קיזוז מול חשבונית</button>
+      {showTrust && (
+        <div className="ck-card">
+          <div className="ck-card-head"><h3 className="ck-title">פנקס נאמנות</h3><span className="ck-badge green">{money(bal)}</span></div>
+          <div className="ck-meta">כספי לקוח המוחזקים בנאמנות הם התחייבות. הם אינם הכנסה ולא ייכללו בדוחות הכנסות.</div>
+          <div className="crm-actions" style={{ margin: "8px 0" }}>
+            <input className="ck-input" type="number" min={0} value={amount || ""} onChange={(e) => setAmount(Number(e.target.value))} aria-label="סכום" style={{ maxWidth: 140 }} />
+            <button type="button" className="ck-btn primary" onClick={() => post("DEPOSIT")}>הפקדת כספי נאמנות</button>
+            <button type="button" className="ck-btn" disabled={amount > bal} onClick={() => post("APPLY")}>קיזוז מול חשבונית</button>
+          </div>
+          <ul className="crm-list">{trust.filter((e) => e.matterId === matterId).map((e) => <li key={e.id}><span>{e.note} <span className="ck-meta" dir="ltr">{e.on}</span></span><span>{e.kind === "DEPOSIT" ? "+" : "-"}{money(e.amount)}</span></li>)}</ul>
         </div>
-        <ul className="crm-list">{trust.filter((e) => e.matterId === matterId).map((e) => <li key={e.id}><span>{e.note} <span className="ck-meta" dir="ltr">{e.on}</span></span><span>{e.kind === "DEPOSIT" ? "+" : "-"}{money(e.amount)}</span></li>)}</ul>
-      </div>
+      )}
       <div className="crm-timer" role="group" aria-label="טיימר">
         <b aria-live="off">{clock(secs)}</b>
         <select className="ck-select" value={action} onChange={(e) => setAction(e.target.value)} disabled={running} aria-label="סוג פעולה">{ACTIONS.map((a) => <option key={a}>{a}</option>)}</select>
