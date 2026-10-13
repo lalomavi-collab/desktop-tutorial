@@ -74,8 +74,8 @@ export function AuditLogTab() {
                 <td className="fin-text">{fmtWhen(r.at)}</td>
                 <td className="fin-text">{r.actor_id ? names[r.actor_id] ?? r.actor_id : "מערכת"}</td>
                 <td>{actionLabel(r.action)}</td>
-                <td className="fin-text">{r.entity}{r.entity_id ? ` · ${r.entity_id}` : ""}</td>
-                <td className="fin-text">{Object.keys(r.payload ?? {}).length ? JSON.stringify(r.payload) : ""}</td>
+                <td className="fin-text" style={{ overflowWrap: "anywhere" }}>{r.entity}{r.entity_id ? ` · ${r.entity_id}` : ""}</td>
+                <td className="fin-text" style={{ overflowWrap: "anywhere" }}>{Object.keys(r.payload ?? {}).length ? JSON.stringify(r.payload) : ""}</td>
               </tr>
             ))}
             {loaded && !filtered.length && <tr><td colSpan={5}>אין רשומות להצגה</td></tr>}
