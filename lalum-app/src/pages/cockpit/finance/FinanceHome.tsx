@@ -17,14 +17,16 @@ import type { DunningEntry } from "../../../lib/cockpit/arAging";
 import type { ManualRow } from "../../../lib/cockpit/cashFlow";
 
 import { PermissionsTab } from "./PermissionsTab";
+import { AuditLogTab } from "./AuditLogTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
 import { RevenueView } from "./RevenueView";
 import { allocationGaps, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"]];
+type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
@@ -110,7 +112,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   return (
     <div className="ck-stack ck-fin">
       <div className="fin-subtabs" role="tablist" aria-label="הנהלת חשבונות">
-        {TABS.filter(([k]) => k !== "permissions" || level >= 4).map(([k, label]) => (
+        {TABS.filter(([k]) => !ADMIN_ONLY_TABS.includes(k) || level >= 4).map(([k, label]) => (
           <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label}</button>
         ))}
       </div>
@@ -157,6 +159,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
+      {tab === "audit" && level >= 4 && <AuditLogTab />}
       {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} canOverride={level >= 4} onChange={() => void load()} /></Gate>}
       {tab === "cashflow" && loaded && <Gate level={level} need={4}><CashFlowTab firmId={firmId} customers={customers} docs={docs} payments={payments} settings={cashSettings} rows={cashRows} onChange={() => void load()} /></Gate>}
       {tab === "shaam" && loaded && <ShaamExportTab docs={docs} customers={customers} firmName={firmName} />}
