@@ -262,11 +262,15 @@ t("bank statement entry: account, a past date, a numeric balance, and no repeat 
   const ex = [{ trust_account_id: "a1", statement_as_of: "2026-09-30" }];
   const ok = { account_id: "a1", as_of: "2026-10-05", balance: "1500.50" };
   assert.deepEqual(statementProblems(ok, "2026-10-11", ex), []);
-  assert.ok(statementProblems({ ...ok, as_of: "2026-12-01" }, "2026-10-11", ex).includes("תאריך הדף לא יכול להיות עתידי"));
+  assert.ok(statementProblems({ ...ok, as_of: "2026-12-01" }, "2026-10-11", ex).includes("תאריך ערך לא יכול להיות עתידי"));
   assert.ok(statementProblems({ ...ok, balance: "abc" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
   assert.ok(statementProblems({ ...ok, balance: "" }, "2026-10-11", ex).includes("הזינו יתרה מספרית"));
-  assert.ok(statementProblems({ ...ok, as_of: "2026-09-30" }, "2026-10-11", ex).includes("כבר הוזן דף לחשבון הזה בתאריך הזה"));
+  assert.ok(statementProblems({ ...ok, as_of: "2026-09-30" }, "2026-10-11", ex).includes("כבר הוזן דף לחשבון הזה בתאריך ערך הזה"));
   assert.deepEqual(statementProblems({ ...ok, balance: "-20" }, "2026-10-11", ex), []);
+  // a statement balance is dated by its value date: not before the account existed
+  assert.ok(statementProblems({ ...ok, as_of: "2026-08-31" }, "2026-10-11", ex, "2026-09-01").includes("תאריך ערך מוקדם מפתיחת חשבון הנאמנות"));
+  assert.deepEqual(statementProblems({ ...ok, as_of: "2026-09-01" }, "2026-10-11", ex, "2026-09-01"), []);
+  assert.deepEqual(statementProblems({ ...ok, as_of: "2026-08-31" }, "2026-10-11", ex, null), []);
 });
 t("statement correction: a different numeric figure and a reason, and only on the live version", () => {
   const cur = { balance: 1500, superseded_at: null };
