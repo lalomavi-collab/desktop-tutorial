@@ -3084,8 +3084,8 @@ const es: Dict = {
 
   home: {
     heroPill: "Legal AI · Bienes Raíces y Renovación Urbana",
-    heroH1a: "Fusiones y adquisiciones, operaciones internacionales, y bienes raíces,",
-    heroH1b: "con experiencia líder en IA.",
+    heroH1a: "Gobernanza de IA, operaciones y bienes raíces,",
+    heroH1b: "diseñados para resistir.",
     heroLede: "Legal AI es el eje del despacho. A través de él asesoramos a clientes en bienes raíces y renovación urbana, en Israel y en el extranjero, y también en mediación y arbitraje.",
     heroCtaAi: "Vea si la IA y el DOM se ajustan a su asunto",
     frameworksLabel: "Nuestra trayectoria",
@@ -4256,8 +4256,8 @@ const fr: Dict = {
   },
   home: {
     heroPill: "Legal AI · Immobilier et rénovation urbaine",
-    heroH1a: "Fusions acquisitions, transactions internationales et immobilier,",
-    heroH1b: "avec une expertise IA de premier plan.",
+    heroH1a: "Gouvernance de l'IA, transactions et immobilier,",
+    heroH1b: "conçus pour tenir.",
     heroLede: "Legal AI est l'axe du cabinet. À travers lui, nous conseillons nos clients en immobilier et en rénovation urbaine, en Israël et à l'étranger, ainsi qu'en médiation et en arbitrage.",
     heroCtaAi: "Découvrez si l'IA et la DOM conviennent à votre dossier",
     frameworksLabel: "Notre bilan",
@@ -5423,8 +5423,8 @@ const ar: Dict = {
 
   home: {
     heroPill: "Legal AI · العقارات والتجديد الحضري",
-    heroH1a: "الاندماج والاستحواذ، والصفقات الدولية، والعقارات،",
-    heroH1b: "بخبرة رائدة في الذكاء الاصطناعي.",
+    heroH1a: "حوكمة الذكاء الاصطناعي، والصفقات والعقارات،",
+    heroH1b: "مبنية لتصمد.",
     heroLede: "الذكاء الاصطناعي القانوني (Legal AI) هو محور المكتب. من خلاله نرافق عملاءنا في العقارات والتجديد الحضري، في إسرائيل وخارجها، وكذلك في الوساطة والتحكيم.",
     heroCtaAi: "تحققوا مما إذا كان الذكاء الاصطناعي وDOM يناسبان قضيتكم",
     frameworksLabel: "سجلنا الحافل",
