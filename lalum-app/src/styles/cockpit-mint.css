@@ -51,7 +51,6 @@
 [data-ck-theme="mint"] .ck-btn.primary, [data-ck-theme="mint"] .ck-nav a[aria-current="page"], [data-ck-theme="mint"] .ck-doc .ck-btn.primary {
   background: linear-gradient(180deg, #6a8f6e 0%, #537056 100%); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(83, 112, 86, .35);
 }
-[data-ck-theme="mint"] .ck-btn.primary:hover { background: linear-gradient(180deg, #4c9b37 0%, #4c6850 100%); }
 [data-ck-theme="mint"] .ck-btn.danger { color: var(--danger); border-color: rgba(207, 75, 58, .35); }
 [data-ck-theme="mint"] .ck-input, [data-ck-theme="mint"] .ck-select, [data-ck-theme="mint"] .ck-textarea { background: rgba(255, 255, 255, .92); border-color: rgba(83, 112, 86, .22); border-radius: 14px; }
 [data-ck-theme="mint"] .ck-input:focus, [data-ck-theme="mint"] .ck-select:focus, [data-ck-theme="mint"] .ck-textarea:focus { box-shadow: 0 0 0 3px rgba(83, 112, 86, .22); }
@@ -220,4 +219,48 @@
   --fin-inflow: #5fd3a6; --fin-inflow-bg: #0e1c18; --fin-inflow-line: #1d4a3b;
   --fin-outflow: #ff8fa0; --fin-outflow-bg: #1f1115; --fin-outflow-line: #5a2530;
   --fin-trust: #f2c265; --fin-trust-bg: #1e180c; --fin-trust-line: #5a4518;
+}
+
+/* ------------------------------------------------------------------
+   Button system, both themes. Replaces the glossy gradient pills with a flat,
+   legible hierarchy: primary is a solid accent fill (white or dark text at AA),
+   secondary is an outlined surface, danger is an outlined red. One radius,
+   one height, a visible focus ring, no decorative shadow. Specificity matches
+   the theme blocks above so these win without !important.
+   ------------------------------------------------------------------ */
+.ck-root[data-ck-theme] .ck-btn,
+.ck-root[data-ck-theme] .ck-nav a {
+  border-radius: 10px; box-shadow: none; font-weight: 600; letter-spacing: 0;
+  background: var(--card); color: var(--ink); border: 1px solid var(--line-strong);
+  transition: background .14s ease, border-color .14s ease, color .14s ease, transform .08s ease;
+}
+.ck-root[data-ck-theme] .ck-btn:hover,
+.ck-root[data-ck-theme] .ck-nav a:hover { background: var(--clay-tint); border-color: var(--clay); color: var(--ink); }
+.ck-root[data-ck-theme] .ck-btn:active { transform: translateY(1px); }
+.ck-root[data-ck-theme] .ck-btn.primary,
+.ck-root[data-ck-theme] .ck-nav a[aria-current="page"],
+.ck-root[data-ck-theme] .ck-doc .ck-btn.primary {
+  background: var(--clay); color: var(--on-clay); border-color: var(--clay); box-shadow: 0 1px 2px rgba(0, 0, 0, .14);
+}
+.ck-root[data-ck-theme] .ck-btn.primary:hover { background: var(--clay-hover); border-color: var(--clay-hover); color: var(--on-clay); }
+.ck-root[data-ck-theme] .ck-btn.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 50%, transparent); background: var(--card); }
+.ck-root[data-ck-theme] .ck-btn.danger:hover { background: color-mix(in srgb, var(--danger) 9%, var(--card)); border-color: var(--danger); }
+.ck-root[data-ck-theme] .ck-btn:disabled { opacity: .5; box-shadow: none; }
+.ck-root[data-ck-theme] .ck-btn:focus-visible,
+.ck-root[data-ck-theme] .ck-nav a:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+
+/* Dashboard controls follow the same flat language. */
+.ck-root[data-ck-theme] .db-bubble { border-radius: 12px; background: var(--clay); color: var(--on-clay); box-shadow: none; }
+.ck-root[data-ck-theme] .db-toggle { background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--line-strong); border-radius: 10px; padding: 3px; }
+.ck-root[data-ck-theme] .db-toggle button { border-radius: 8px; color: var(--slate); font-weight: 600; }
+.ck-root[data-ck-theme] .db-toggle button[aria-pressed="true"] { background: var(--clay); color: var(--on-clay); box-shadow: none; }
+.ck-root[data-ck-theme] .db-avatar { background: var(--clay); color: var(--on-clay); box-shadow: 0 0 0 2px var(--card), 0 0 0 3px var(--line-strong); }
+.ck-root[data-ck-theme] .db-act { background: var(--card); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: none; }
+.ck-root[data-ck-theme] .db-act:hover { transform: none; border-color: var(--clay); background: var(--clay-tint); box-shadow: none; }
+
+/* Rail: no glow under the pictures, a clear tile for the current page. */
+@media (min-width: 861px) {
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-railicon { filter: none; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] { background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--clay-soft); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] .ck-railicon { filter: none; transform: none; }
 }
