@@ -63,6 +63,14 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "algorithmic-pricing-antitrust-real-estate": {
+  "topic": "real-estate",
+  "related": [
+   "ai-due-diligence-tech-acquisition",
+   "overseas-partnership-guide",
+   "understanding-mediation-process"
+  ]
+ },
  "ai-real-estate-urban-renewal-legal-exposure": {
   "topic": "real-estate",
   "related": [
@@ -860,7 +868,7 @@
   "related": [
    "ai-workspace-encyclopedia",
    "building-ai-agents-realestate",
-   "realestate-master-course"
+   "unfair-advantage-course"
   ]
  },
  "lawyer-wakeup-call": {
