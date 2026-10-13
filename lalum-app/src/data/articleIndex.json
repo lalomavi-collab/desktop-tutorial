@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-local-authority-allocation-bias-equality": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-recruitment-screening-discrimination",
+   "ai-use-policy-local-authority"
+  ]
+ },
  "ai-local-authority-decision-reasoning-transparency": {
   "topic": "ai-governance",
   "related": [
@@ -1156,7 +1164,7 @@
   "related": [
    "lalum-investment-model-launch",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "overseas-partnership-guide"
+   "israeli-realestate-abroad"
   ]
  },
  "lalum-together": {
@@ -1386,8 +1394,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
-   "ai-local-authorities-uses-legal-limits",
    "israel-land-authority-lease-capitalization-transfer",
+   "ai-local-authorities-uses-legal-limits",
    "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
@@ -1490,8 +1498,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },

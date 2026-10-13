@@ -126,6 +126,7 @@
 - V רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק (ai-procurement-tender-local-authority)
 - V הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI (ai-resident-data-privacy-local-authority)
 - V חובת ההנמקה, השקיפות וזכות העיון בהחלטה נתמכת AI ברשות המקומית (ai-local-authority-decision-reasoning-transparency)
+- V הטיה אלגוריתמית ושוויון בהחלטות הקצאה של הרשות המקומית (ai-local-authority-allocation-bias-equality)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
