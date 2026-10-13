@@ -1,37 +1,14 @@
 // Checks the partner/matter/portal rules. Run with: npm run crm-check
 import assert from "node:assert/strict";
-import { summarizeTrust, arAging, forecast13, fridayOnOrAfter, trustBalance, wip, clientMessages, clientMilestones, parseDay } from "../src/lib/cockpit/crm.ts";
+import { summarizeTrust, trustBalance, wip, clientMessages, clientMilestones } from "../src/lib/cockpit/crm.ts";
 import { calculateDeadline, VERIFIED_RULES } from "../src/lib/cockpit/deadlines.ts";
 import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
+import { partnerFinance } from "../src/lib/cockpit/crmFinanceCore.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const today = new Date(2026, 9, 10); // Saturday 10 Oct 2026
 const d = buildDemo(today);
 
-t("aging buckets sum to the total and use open balances", () => {
-  const a = arAging(d.docs, d.payments, today);
-  assert.equal(Math.round((a.current + a.d1_30 + a.d31_60 + a.d60plus) * 100), Math.round(a.total * 100));
-  assert.ok(a.d60plus > 0);
-  assert.ok(!a.invoices.some((i) => i.doc.id === "i6"), "a fully paid invoice is not open");
-});
-t("partial payment reduces the open amount", () => {
-  const a = arAging(d.docs, d.payments, today);
-  assert.equal(a.invoices.find((i) => i.doc.id === "i1").open, 18600);
-});
-t("weeks are labelled by Friday and there are 13", () => {
-  assert.equal(fridayOnOrAfter(today).getDay(), 5);
-  const f = forecast13({ docs: d.docs, pays: d.payments, obligations: d.obligations, openingCash: d.bankBalance, minThreshold: d.minThreshold, fallbackDso: 45 }, today);
-  assert.equal(f.weeks.length, 13);
-  assert.ok(f.weeks.every((w) => parseDay(w.friday).getDay() === 5));
-});
-t("forecast closing balance is opening plus cumulative net", () => {
-  const f = forecast13({ docs: d.docs, pays: d.payments, obligations: d.obligations, openingCash: 1000, minThreshold: 0, fallbackDso: 45 }, today);
-  let b = 1000; f.weeks.forEach((w) => { b = Math.round((b + w.inflow - w.outflow) * 100) / 100; assert.equal(w.closing, b); });
-});
-t("a breach is reported when the threshold is above the opening balance", () => {
-  const f = forecast13({ docs: [], pays: [], obligations: [], openingCash: 100, minThreshold: 500, fallbackDso: 45 }, today);
-  assert.equal(f.firstBreach, 0);
-});
 t("trust is a signed balance and WIP counts only unbilled time", () => {
   assert.equal(trustBalance(d.trust, "m1"), 12000);
   assert.equal(wip(d.time).hours, 10.75);
@@ -57,4 +34,39 @@ t("trust summary: no account means no card, otherwise the signed ledger sum", ()
   assert.deepEqual(summarizeTrust(0, [500]), { state: "none" });
   assert.deepEqual(summarizeTrust(2, []), { state: "ready", held: 0 });
   assert.deepEqual(summarizeTrust(1, [1000.1, 200.2, -300.3]), { state: "ready", held: 900 });
+});
+
+const rc = { id: "c1", name: "לקוח א", is_collections_locked: false, collections_lock_reason: null };
+const rinv = (o) => ({ id: "i1", customer_id: "c1", doc_type: "PROFORMA", status: "ISSUED", source_proforma_id: null, subject: "", subtotal: 1000, vat_amount: 180, total: 1000, issue_date: "2026-08-01", due_date: "2026-09-01", related_doc_id: null, doc_number: 7, is_test: false, ...o });
+
+t("partner figures come from the real engines: aging, overdue queue, collections", () => {
+  const docs = [rinv({}), rinv({ id: "i2", doc_number: 8, issue_date: "2026-10-01", due_date: "2026-10-30" })];
+  const pays = [{ id: "p1", document_id: "i1", customer_id: "c1", paid_on: "2026-10-05", amount: 400 }];
+  // The practice works on the cash basis: what a customer owes is an open pro forma (a tax invoice is issued when money arrives).
+  const r = partnerFinance([rc], docs, pays, { opening_balance: 80000, balance_as_of: "2026-10-01", credit_facility: 0, safety_reserve: 50000 }, [], "2026-10-14");
+  assert.equal(r.aging.total, 2000); // an open pro forma counts whole on the cash basis, a part payment does not shrink it
+  assert.equal(r.aging.notYetDue, 1000);
+  assert.equal(r.overdue.length, 1);
+  assert.equal(r.overdue[0].overdueDays, 43);
+  assert.equal(r.overdue[0].open, 1000);
+  assert.equal(r.collected30, 400);
+  assert.equal(r.bankBalance, 80000);
+  assert.equal(r.forecast.weeks.length, 13);
+  assert.equal(r.forecast.opening, 80000);
+});
+
+t("partner figures: no settings row means no bank balance, and an empty ledger is all zeros", () => {
+  const r = partnerFinance([], [], [], null, [], "2026-10-14");
+  assert.equal(r.bankBalance, null);
+  assert.equal(r.aging.total, 0);
+  assert.equal(r.overdue.length, 0);
+  assert.equal(r.forecast.dso, null);
+  assert.equal(r.monthlyBurn, 0);
+});
+
+t("partner forecast marks the first week below the safety reserve", () => {
+  const r = partnerFinance([rc], [], [], { opening_balance: 60000, balance_as_of: null, credit_facility: 0, safety_reserve: 50000 }, [{ week_ending: "2026-10-16", category: "OUTFLOW_PAYROLL", projected_amount: 20000 }], "2026-10-14");
+  assert.equal(r.forecast.firstBreach, 0);
+  assert.equal(r.forecast.lowest, 40000);
+  assert.ok(r.monthlyBurn > 0);
 });

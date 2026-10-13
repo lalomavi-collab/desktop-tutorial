@@ -8,7 +8,7 @@ export function RollingCashFlow13Weeks({ f }: { f: Forecast }) {
   const max = Math.max(1, ...f.weeks.map((w) => Math.max(w.inflow, w.outflow)));
   return (
     <section className="ck-card" aria-label="תזרים 13 שבועות">
-      <div className="ck-card-head"><h3 className="ck-title">תזרים מתגלגל, 13 שבועות</h3><span className="ck-meta">DSO היסטורי: {f.dso} ימים</span></div>
+      <div className="ck-card-head"><h3 className="ck-title">תזרים מתגלגל, 13 שבועות</h3>{f.dso != null && <span className="ck-meta">DSO היסטורי: {f.dso} ימים</span>}</div>
       {f.firstBreach != null && (
         <div className="crm-banner red" role="alert">
           היתרה צפויה לרדת מתחת לסף התפעולי ({money(f.minThreshold)}) בשבוע המסתיים ב-{lbl(f.weeks[f.firstBreach].friday)}. השפל החזוי: {money(f.lowest)}.
@@ -33,7 +33,7 @@ export function RollingCashFlow13Weeks({ f }: { f: Forecast }) {
           </tbody>
         </table>
       </div>
-      <div className="ck-meta">חשבוניות שמועדן עבר נספרות בשבוע הראשון, וזו הנחה אופטימית. יתרת פתיחה והתחייבויות (שכר, שכירות, ספקים, מס) הן קלט ידני.</div>
+      <div className="ck-meta">חשבוניות שמועד התשלום שלהן עבר נדחות בשבוע, וחשבוניות שבפיגור של מעל 90 יום אינן נכללות. יתרת הפתיחה והתחייבויות (שכר, שכירות, ספקים, מס) הן קלט ידני.</div>
     </section>
   );
 }

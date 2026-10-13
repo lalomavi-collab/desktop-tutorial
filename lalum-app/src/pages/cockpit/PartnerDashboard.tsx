@@ -1,34 +1,30 @@
-// Partner executive view: KPIs, 13 week cash flow, exceptions, activity. Demo data until the ledger source is switched on.
-import { useMemo } from "react";
-import { CockpitFrame } from "./CockpitFrame";
+// Partner executive view from the firm's real ledger: bank balance (manual input), receivables aging,
+// 13 week forecast and overdue exceptions, using the same engines as the finance tabs. Trust appears only
+// when the firm holds client money. Hours (WIP), the activity feed and the conflict queue have no real source
+// here yet, so they are not shown rather than shown as demo figures.
 import { ExecutiveKpiCards } from "../../components/partner/ExecutiveKpiCards";
 import { RollingCashFlow13Weeks } from "../../components/partner/RollingCashFlow13Weeks";
 import { ExceptionActionQueue } from "../../components/partner/ExceptionActionQueue";
-import { FirmActivityFeed } from "../../components/partner/FirmActivityFeed";
-import { addDays, arAging, collected, forecast13, wip } from "../../lib/cockpit/crm";
+import { CockpitFrame } from "./CockpitFrame";
 import { useTrustSummary } from "../../lib/cockpit/crmTrust";
-import { buildDemo, DEMO_NOTE } from "../../lib/cockpit/crmDemo";
+import { usePartnerFinance } from "../../lib/cockpit/crmFinance";
+import { fmtDay } from "../../lib/cockpit/arAging";
 import "../../styles/crm.css";
 
 export function PartnerView() {
-  const today = useMemo(() => new Date(), []);
-  const d = useMemo(() => buildDemo(today), [today]);
-  const aging = arAging(d.docs, d.payments, today);
-  const f = forecast13({ docs: d.docs, pays: d.payments, obligations: d.obligations, openingCash: d.bankBalance, minThreshold: d.minThreshold, fallbackDso: 45 }, today);
-  const w = wip(d.time);
-  const burn = d.obligations.reduce((s, o) => s + (o.every === "WEEK" ? o.amount * 4.345 : o.amount), 0);
-  // Trust is the one real figure here; the rest is still demo data. No trust account means no card.
+  const fin = usePartnerFinance();
   const trust = useTrustSummary();
-  const lowRetainers: Array<{ matterId: string; title: string; balance: number }> = [];
-  const name = (id: string) => d.customers.find((c) => c.id === id)?.name ?? "";
+  if (fin.state === "loading") return <div className="ck-meta">טוען...</div>;
+  if (fin.state === "denied") return <div className="ck-card ck-empty">אין הרשאה לנתוני הכספים, או שהנתונים אינם זמינים כעת.</div>;
+  const d = fin.data;
+  const customerName = (id: string) => d.aging.customers.find((c) => c.customerId === id)?.name ?? "";
   return (
     <>
-      <div className="crm-demo" role="note">{DEMO_NOTE}</div>
-      <ExecutiveKpiCards bankBalance={d.bankBalance} monthlyBurn={burn} collected30={collected(d.payments, addDays(today, -30), today)} wipHours={w.hours} wipAmount={w.amount} aging={aging} trust={trust.state === "ready" ? trust.held : null} />
-      <RollingCashFlow13Weeks f={f} />
-      <div className="ck-grid2" style={{ marginTop: 14 }}>
-        <ExceptionActionQueue overdue={aging.invoices} lowRetainers={lowRetainers} conflicts={[{ matterId: "m2", title: d.matters[1].title }]} customerName={name} />
-        <FirmActivityFeed items={d.activity} />
+      {d.balanceAsOf && <div className="ck-meta" style={{ marginBottom: 8 }}>יתרת הפתיחה הוזנה ידנית בתאריך {fmtDay(d.balanceAsOf)}.</div>}
+      <ExecutiveKpiCards bankBalance={d.bankBalance} monthlyBurn={d.monthlyBurn} collected30={d.collected30} wip={null} aging={{ total: d.aging.total, notYetDue: d.aging.notYetDue, buckets: d.aging.totals }} trust={trust.state === "ready" ? trust.held : null} />
+      <RollingCashFlow13Weeks f={d.forecast} />
+      <div style={{ marginTop: 14 }}>
+        <ExceptionActionQueue overdue={d.overdue} lowRetainers={[]} conflicts={[]} customerName={customerName} />
       </div>
     </>
   );

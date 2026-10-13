@@ -22,13 +22,8 @@ export function ExceptionActionQueue({ overdue, lowRetainers, conflicts, custome
       <ul className="crm-list">
         {risky.map((i) => (
           <li key={i.doc.id}>
-            <span><span className="ck-badge red">{i.overdueDays} ימי איחור</span> {customerName(i.doc.customer_id)}, חשבונית {i.doc.doc_number}: {money(i.open)}</span>
-            <span className="crm-actions">
-              {done[i.doc.id] ? <span className="ck-badge green">{done[i.doc.id]}</span> : (<>
-                <button type="button" className="ck-btn" onClick={() => mark(i.doc.id, "הבקשה נרשמה")}>בקשת הסדרה</button>
-                <button type="button" className="ck-btn" onClick={() => mark(i.doc.id, "החיוב ננעל")}>נעילת חיוב זמן</button>
-              </>)}
-            </span>
+            <span><span className="ck-badge red">{i.overdueDays} ימי איחור</span> {customerName(i.doc.customer_id)}, {i.doc.doc_type === "PROFORMA" ? "חשבון עסקה" : "חשבונית"} {i.doc.doc_number}: {money(i.open)}</span>
+            <a className="ck-btn" href="/settings/billing">לטיפול בגבייה</a>
           </li>
         ))}
         {lowRetainers.map((r) => (
