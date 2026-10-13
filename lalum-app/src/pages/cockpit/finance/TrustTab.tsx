@@ -5,7 +5,7 @@ import { TrustAccounts } from "./TrustAccounts";
 import { TrustRecon } from "./TrustRecon";
 import { TrustHealth } from "./TrustHealth";
 import { trustError } from "../../../lib/cockpit/financeApi";
-import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, trustHeld, trustPostProblems, trustValueDate, valueDateProblems } from "../../../lib/cockpit/finance";
+import { TRUST_POST_TYPES, TRUST_TX, canReverse, maskAccount, openBalance, trustBreakdown, sharePct, trustHeld, trustNetSince, trustPostProblems, trustValueDate, valueDateProblems } from "../../../lib/cockpit/finance";
 import type { FinCustomer, FinDocument, FinPayment, TrustAccount, TrustPostType, TrustTx } from "../../../lib/cockpit/finance";
 
 /** Today in Israel as an ISO date; the database counts value dates on the Israel calendar. */
@@ -63,16 +63,24 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
     setMsg(""); onChange();
   }
 
+  const [since] = useState(() => new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10));
   const cust = (id: string) => customers.find((c) => c.id === id)?.name ?? "";
   const matter = (id: string) => matters.find((m) => m.id === id)?.title ?? "";
   const byCustomer = trustBreakdown(rows, "customer_id");
   const byMatter = trustBreakdown(rows, "matter_id");
+  const held = trustHeld(rows);
+  const net30 = trustNetSince(rows, since);
+  const share = (b: number) => { const p = sharePct(b, held); return <span className="fin-share"><span className="fin-bar" aria-hidden="true"><i style={{ width: `${p}%` }} /></span><span className="fin-pct">{p}%</span></span>; };
 
   return (
     <div className="ck-stack">
       <div className="ck-card fin-stat fin-trust">
         <div className="ck-meta">סה"כ כספי נאמנות מוחזקים</div>
-        <div className="fin-figure">{money(trustHeld(rows))}</div>
+        <div className="fin-figure">{money(held)}</div>
+        <div className="fin-delta" data-dir={net30 > 0 ? "up" : net30 < 0 ? "down" : "flat"}>
+          <span aria-hidden="true">{net30 > 0 ? "▲" : net30 < 0 ? "▼" : "■"}</span>{" "}
+          {net30 === 0 ? "ללא שינוי ב-30 הימים האחרונים" : `${net30 > 0 ? "עלייה" : "ירידה"} של ${money(Math.abs(net30))} ב-30 הימים האחרונים`}
+        </div>
         <div className="fin-note">כספי לקוחות. אינם הכנסת המשרד ואינם נכללים בסקירה, בדוח ההכנסות ובמע"מ. הרישום רק מוסיף שורות: טעות מתוקנת בתנועת תיקון.</div>
       </div>
 
@@ -112,14 +120,14 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
       <div className="ck-grid2">
         <div className="ck-stack">
           <div className="ck-title">יתרה לפי לקוח</div>
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>לקוח</th><th className="fin-num">יתרה</th></tr></thead><tbody>
-            {byCustomer.length ? byCustomer.map((r) => <tr key={r.id}><td className="fin-text">{cust(r.id)}</td><td className="fin-num">{money(r.balance)}</td></tr>) : <tr><td colSpan={2}>אין יתרות</td></tr>}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>לקוח</th><th>חלק מהכלל</th><th className="fin-num">יתרה</th></tr></thead><tbody>
+            {byCustomer.length ? byCustomer.map((r) => <tr key={r.id}><td className="fin-text">{cust(r.id)}</td><td>{share(r.balance)}</td><td className="fin-num">{money(r.balance)}</td></tr>) : <tr><td colSpan={3}>אין יתרות</td></tr>}
           </tbody></table></div>
         </div>
         <div className="ck-stack">
           <div className="ck-title">יתרה לפי תיק</div>
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th className="fin-num">יתרה</th></tr></thead><tbody>
-            {byMatter.length ? byMatter.map((r) => <tr key={r.id}><td className="fin-text">{matter(r.id)}</td><td className="fin-num">{money(r.balance)}</td></tr>) : <tr><td colSpan={2}>אין יתרות</td></tr>}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>חלק מהכלל</th><th className="fin-num">יתרה</th></tr></thead><tbody>
+            {byMatter.length ? byMatter.map((r) => <tr key={r.id}><td className="fin-text">{matter(r.id)}</td><td>{share(r.balance)}</td><td className="fin-num">{money(r.balance)}</td></tr>) : <tr><td colSpan={3}>אין יתרות</td></tr>}
           </tbody></table></div>
         </div>
       </div>

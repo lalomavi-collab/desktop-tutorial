@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
 
 import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
@@ -414,3 +414,19 @@ t("flow coverage: each stage turns on only when live data shows it was exercised
   assert.deepEqual(c.filter((x) => !x.done).map((x) => x.id), ["fee"]);
 });
 console.log("\nAll finance checks passed");
+
+t("trust net movement since a date counts only rows recorded on or after it", () => {
+  const rows = [{ amount: 100, created_at: "2026-09-01T10:00:00Z" }, { amount: 50, created_at: "2026-09-20T10:00:00Z" }, { amount: -30, created_at: "2026-09-25T10:00:00Z" }];
+  assert.equal(trustNetSince(rows, "2026-09-15"), 20);
+  assert.equal(trustNetSince(rows, "2026-09-20"), 20);
+  assert.equal(trustNetSince(rows, "2026-10-01"), 0);
+  assert.equal(trustNetSince(rows, "2026-01-01"), 120);
+});
+
+t("share percent is whole, clamped, and zero for a non-positive total", () => {
+  assert.equal(sharePct(50, 200), 25);
+  assert.equal(sharePct(1, 3), 33);
+  assert.equal(sharePct(300, 200), 100);
+  assert.equal(sharePct(-5, 200), 0);
+  assert.equal(sharePct(10, 0), 0);
+});

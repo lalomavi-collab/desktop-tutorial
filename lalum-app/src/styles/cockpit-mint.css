@@ -17,8 +17,8 @@
   --clay-hover: #4c6850;
   --on-clay: #ffffff;
   --danger: #b3402f;
-  --warning: #b8842a;
-  --success: #3f8f5f;
+  --warning: #85590f;
+  --success: #2e6e47;
   --mint-deep: #3f5a43;
   --mint-rail: linear-gradient(180deg, #6a8f6e 0%, #4c6850 100%);
   --sun: #f5c431;
@@ -125,7 +125,7 @@
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme {
     flex-shrink: 0; position: relative; flex-direction: column; justify-content: flex-start; gap: 3px; width: 100%; min-height: 0;
     padding: 6px 3px 5px; border-radius: 10px; background: transparent; box-shadow: none; border: 0;
-    font-size: 11.5px; font-weight: 600; line-height: 1.2; text-align: center; color: var(--slate);
+    font-size: 12px; font-weight: 600; line-height: 1.2; text-align: center; color: var(--slate);
     text-wrap: balance; overflow-wrap: anywhere;
   }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a:hover,
@@ -148,9 +148,9 @@
   /* Section captions from the nav groups stay in the rail as small headings, with a hairline between the groups. */
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-nav-group { gap: 1px; }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-nav-group + .ck-nav-group { margin-top: 6px; padding-top: 4px; border-top: 1px solid var(--line); }
-  .ck-root.ck-with-sidebar[data-ck-theme] .ck-nav-heading { padding: 4px 2px 2px; font-size: 10px; font-weight: 700; letter-spacing: .02em; text-align: center; line-height: 1.2; color: var(--slate); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-nav-heading { padding: 4px 2px 2px; font-size: 12px; font-weight: 700; letter-spacing: 0; text-align: center; line-height: 1.2; color: var(--slate); }
   /* Unread count sits on the icon's corner instead of pushing the label sideways. */
-  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav .ck-navbadge { position: absolute; top: 0; inset-inline-end: 14px; margin: 0; min-width: 18px; height: 18px; font-size: 10.5px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav .ck-navbadge { position: absolute; top: 0; inset-inline-end: 14px; margin: 0; min-width: 18px; height: 18px; font-size: 12px; }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot { border-top: 1px solid var(--line); padding-top: 6px; gap: 0; flex-shrink: 0; margin-top: 4px; }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout { color: var(--danger); }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout:hover { background: color-mix(in srgb, var(--danger) 10%, transparent); }
@@ -188,7 +188,7 @@
 
 /* Headline figures read like instrument values. */
 .ck-root[data-ck-theme="dark"] .fin-stat .fin-figure,
-.ck-root[data-ck-theme="dark"] .db-kpi b { font-family: var(--ck-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; font-weight: 700; }
+.ck-root[data-ck-theme="dark"] .db-kval b { font-family: var(--ck-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; font-weight: 700; }
 
 /* A faint corner glow on a stat card, in the colour of what it measures. */
 .ck-root[data-ck-theme="dark"] .fin-stat { position: relative; overflow: hidden; }

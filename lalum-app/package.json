@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/cockpit-text-check.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "seo-check": "node scripts/seo-check.mjs",
     "faq-check": "node scripts/faq-schema-check.mjs",
@@ -18,6 +18,7 @@
     "template-check": "node scripts/template-check.mjs",
     "kyc-check": "node scripts/kyc-check.mjs",
     "finance-check": "node scripts/finance-check.mjs",
+    "cockpit-text-check": "node scripts/cockpit-text-check.mjs",
     "shaam-check": "node scripts/shaam-check.mjs",
     "ar-aging-check": "node scripts/ar-aging-check.mjs",
     "cashflow-check": "node scripts/cashflow-check.mjs",
