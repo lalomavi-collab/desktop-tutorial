@@ -3,7 +3,7 @@
    never changed) and a table that maps a matter to its folder at an external provider.
    Nothing here talks to any provider. Sync stays off for every matter until a partner switches it on for it
    (sync_enabled defaults to false), so the pilot is opt in per matter.
-   NOT yet applied to any project. */
+   Applied to project meoymkcotomoluwlwues in steps (see the migration list there). */
 
 alter table public.lalum_cockpit_matters
   add column if not exists matter_code  text,
@@ -17,6 +17,8 @@ create table if not exists public.lalum_matter_code_counters (
   primary key (firm_id, year)
 );
 alter table public.lalum_matter_code_counters enable row level security;
+/* Internal bookkeeping: no direct access for anyone signed in or anonymous, only the security definer functions. */
+revoke all on public.lalum_matter_code_counters from anon, authenticated;
 
 create or replace function public.lalum_next_matter_code(p_firm uuid, p_year int) returns text
 language plpgsql security definer set search_path to 'public' as $$
@@ -73,6 +75,9 @@ create table if not exists public.lalum_matter_folders (
   primary key (matter_id, provider)
 );
 alter table public.lalum_matter_folders enable row level security;
+/* Explicit privileges: Supabase default grants would otherwise hand every write privilege to signed in users. Writes come only from the service role. */
+revoke all on public.lalum_matter_folders from anon, authenticated;
+grant select on public.lalum_matter_folders to authenticated;
 
 /* Read: whoever may view the matter. Write: no policy, so only the service role (the sync function) can write. */
 drop policy if exists lalum_matter_folders_read on public.lalum_matter_folders;
