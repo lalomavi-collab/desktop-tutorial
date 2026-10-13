@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { Icon } from "../../components/Icon";
-import { AreaChart, Donut, PillBars, StatusBar } from "../../components/cockpit/CockpitCharts";
+import { Wordmark } from "../../components/Wordmark";
+import { AreaChart, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
 import { FolderArt, ImportArt, InboxArt, ShieldArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
 import { delta, loadDashboard, series } from "../../lib/cockpit/dashboard";
@@ -14,9 +15,44 @@ import "../../styles/cockpit-dashboard.css";
 const greeting = () => { const h = new Date().getHours(); return h < 5 ? "לילה טוב" : h < 12 ? "בוקר טוב" : h < 18 ? "צהריים טובים" : "ערב טוב"; };
 const initials = (name: string) => (name.trim()[0] ?? "?").toUpperCase();
 
+/** Direction is an arrow plus words, never colour alone. */
 function Trend({ d }: { d: number | null }) {
-  if (d == null) return <i className="flat">חדש</i>;
-  return <i className={d > 0 ? "up" : d < 0 ? "down" : "flat"}>{d > 0 ? "+" : ""}{d}%</i>;
+  if (d == null) return <span className="db-delta flat"><span aria-hidden="true">■</span> חדש</span>;
+  const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
+  return <span className={`db-delta ${cls}`}><span aria-hidden="true">{d > 0 ? "▲" : d < 0 ? "▼" : "■"}</span> <bdi dir="ltr">{d > 0 ? "+" : ""}{d}%</bdi><span className="db-sr"> לעומת התקופה הקודמת</span></span>;
+}
+
+/** Tiny trend line from a real series; no axis, the card's number and arrow carry the reading. */
+function Spark({ values, label }: { values: number[]; label: string }) {
+  const max = Math.max(1, ...values), W = 104, H = 36;
+  const pts = values.map((v, i) => `${(i / Math.max(1, values.length - 1)) * W},${H - 4 - (v / max) * (H - 8)}`).join(" ");
+  return <svg className="db-spark" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${label}: ${values.join(", ")}`}><polyline points={pts} fill="none" stroke="var(--clay)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
+function Kpi({ icon, label, value, unit, d, values, note }: { icon: string; label: string; value: number; unit?: string; d?: number | null; values?: number[]; note?: string }) {
+  return (
+    <div className="ck-card db-kcard">
+      <div className="db-khead"><span className="db-kicon"><Icon name={icon} size={18} /></span><span className="db-klabel">{label}</span></div>
+      <div className="db-kbody">
+        <div>
+          <div className="db-kval"><b>{value.toLocaleString("he-IL")}</b>{unit && <small>{unit}</small>}</div>
+          {d !== undefined ? <Trend d={d} /> : note ? <span className="db-delta flat">{note}</span> : null}
+        </div>
+        {values && <Spark values={values} label={label} />}
+      </div>
+    </div>
+  );
+}
+
+/** One row of a ranked list: label, count and share, then a bar. */
+function RankRow({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  const p = total > 0 ? Math.round((value / total) * 100) : 0;
+  return (
+    <li className="db-rank">
+      <div><span>{label}</span><span><b>{value}</b> <small>({p}%)</small></span></div>
+      <span className="db-rbar" aria-hidden="true"><i style={{ width: `${p}%`, background: color }} /></span>
+    </li>
+  );
 }
 
 /** preload skips the fetch (previews and tests feed it synthetic data). */
@@ -59,7 +95,11 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
       </div>
 
       <div className="db-hero">
-        <div className="db-greet"><small>{greeting()}</small><h2>{name}</h2><p>{firmName}</p></div>
+        <div className="db-greet">
+          <div className="db-brand"><Wordmark height={30} className="db-logo" /></div>
+          <p className="db-hello"><small>{greeting()}</small><strong>{name}</strong></p>
+          {firmName.trim().toLowerCase() !== "lalum" && <p className="db-firm">{firmName}</p>}
+        </div>
         <div className="db-actions">
           <Link className="db-act" to="/workspace"><FolderArt size={84} /><span>תיק חדש<small>העלאת מסמך או הדבקת טקסט</small></span></Link>
           <Link className="db-act" to="/workspace/import"><ImportArt size={84} /><span>ייבוא תיקים<small>תיקייה שלמה בבת אחת</small></span></Link>
@@ -70,45 +110,47 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
 
       {!data || !view ? <div className="ck-meta">טוען...</div> : (
         <>
+          <div className="db-kgrid">
+            <Kpi icon="folder" label="תיקים במערכת" value={data.matters.length} d={delta(view.matters.values)} values={view.matters.values} />
+            <Kpi icon="phone" label="פניות לקוחות (200 ימים)" value={data.inquiries.length} d={delta(view.inq.values)} values={view.inq.values} />
+            <Kpi icon="check" label="משימות שהושלמו" value={view.closed} d={delta(view.done.values)} values={view.done.values} />
+            <Kpi icon="file" label="מסמכים בכספת" value={data.docs} note={`${view.open} משימות פתוחות, ${view.overdue} באיחור`} />
+          </div>
+
           <div className="db-grid">
             <div className="ck-card db-card">
-              <div className="db-head"><h3>סקירה כללית</h3>
+              <div className="db-head"><h3>תיקים חדשים</h3>
                 <div className="db-toggle" role="group" aria-label="טווח זמן">
                   <button type="button" aria-pressed={mode === "monthly"} onClick={() => setMode("monthly")}>חודשי</button>
                   <button type="button" aria-pressed={mode === "weekly"} onClick={() => setMode("weekly")}>שבועי</button>
                 </div>
               </div>
-              <div className="db-overview">
-                <div className="db-kpis">
-                  <div className="db-kpi"><Trend d={delta(view.matters.values)} /><b>{data.matters.length}</b><small>תיקים במערכת</small></div>
-                  <div className="db-kpi"><Trend d={delta(view.inq.values)} /><b>{data.inquiries.length}</b><small>פניות (200 ימים)</small></div>
-                  <div className="db-kpi"><Trend d={delta(view.done.values)} /><b>{data.docs}</b><small>מסמכים בכספת</small></div>
-                </div>
-                <div>
-                  <AreaChart id="db-matters" values={view.matters.values} labels={view.matters.labels} unit="תיקים חדשים" />
-                  <div className="db-note">תיקים חדשים לפי {mode === "weekly" ? "שבוע" : "חודש"}</div>
-                </div>
-              </div>
+              <AreaChart id="db-matters" values={view.matters.values} labels={view.matters.labels} unit="תיקים חדשים" />
+              <div className="db-note">תיקים חדשים לפי {mode === "weekly" ? "שבוע" : "חודש"}</div>
             </div>
-            <div className="ck-card db-card">
-              <div className="db-head"><h3>פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
-              <PillBars items={[{ label: "חדשות", value: byStatus("NEW"), color: "#f5c431" }, { label: "נראו", value: byStatus("SEEN"), color: "#8ed46a" }, { label: "טופלו", value: byStatus("HANDLED"), color: "#4ea53a" }]} />
+            <div className="ck-card db-card db-center">
+              <div className="db-head"><h3>פילוח פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
+              <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "#f5c431" }, { label: "נראו", value: byStatus("SEEN"), color: "#9bbb9f" }, { label: "טופלו", value: byStatus("HANDLED"), color: "#537056" }]} />
             </div>
           </div>
 
           <div className="db-grid b">
             <div className="ck-card db-card">
-              <div className="db-head"><h3>שירות לקוחות</h3>{median != null && <span className="ck-badge green">זמן מענה חציוני {dur(median)}</span>}</div>
+              <div className="db-head"><h3>משימות לפי מצב</h3><Link className="ck-link" to="/workspace/tasks">לכל המשימות</Link></div>
+              <ul className="db-ranks">
+                <RankRow label="פתוחות" value={Math.max(0, view.open - view.overdue)} total={data.tasks.length} color="#9bbb9f" />
+                <RankRow label="באיחור" value={view.overdue} total={data.tasks.length} color="#b3402f" />
+                <RankRow label="הושלמו" value={view.closed} total={data.tasks.length} color="#537056" />
+              </ul>
+              <div className="db-head" style={{ marginTop: 6 }}><h3>שירות לקוחות</h3>{median != null && <span className="ck-badge green">זמן מענה חציוני {dur(median)}</span>}</div>
               {recentInq.length === 0 ? <div className="db-empty">אין פניות עדיין. פניות שיגיעו לכתובת הקליטה יופיעו כאן.</div> : (
                 <ul className="db-list">{recentInq.map((i, k) => (
-                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "#f5c431" : i.status === "SEEN" ? "#8ed46a" : "#3d8d2e" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
+                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "#f5c431" : i.status === "SEEN" ? "#9bbb9f" : "#537056" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
                 ))}</ul>
               )}
-              <div className="db-head" style={{ marginTop: 6 }}><h3>משימות</h3><Link className="ck-link" to="/workspace/tasks">לכל המשימות</Link></div>
-              <Donut centre={view.open} sub="פתוחות" segments={[{ label: "פתוחות", value: Math.max(0, view.open - view.overdue), color: "#8ed46a" }, { label: "באיחור", value: view.overdue, color: "#cf4b3a" }, { label: "הושלמו", value: view.closed, color: "#3d8d2e" }]} />
             </div>
             <div className="ck-card db-card">
-              <div className="db-head"><h3>סטטוס תיקים</h3><Link className="ck-link" to="/workspace">לכל התיקים</Link></div>
+              <div className="db-head"><h3>סטטוס תיקים <span className="db-count">{data.matters.length}</span></h3><Link className="ck-link" to="/workspace">לכל התיקים</Link></div>
               {rows.length === 0 ? <div className="db-empty"><ShieldArt size={84} /><div>{q ? "לא נמצא תיק תואם." : "אין תיקים עדיין. פתחו תיק חדש כדי להתחיל."}</div></div> : (
                 <div style={{ overflowX: "auto" }}><table className="db-tbl"><thead><tr><th>תיק</th><th>תחום</th><th>ניגוד עניינים</th><th>רמת סיכון</th><th>נקלט</th></tr></thead><tbody>
                   {rows.map((m) => { const [tone, label] = CONFLICT[m.conflict_status] ?? ["yellow", m.conflict_status]; const rt = m.risk_level === "HIGH_RISK" ? "red" : m.risk_level === "CAUTION" ? "yellow" : "green"; return (

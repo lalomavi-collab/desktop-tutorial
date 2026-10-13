@@ -2,11 +2,16 @@ import { useLang } from "../context/LangContext";
 import { Wordmark } from "./Wordmark";
 
 // Founder introduction video, surfaced prominently on the home page so the firm
-// is branded around its founder. It reuses the already-uploaded clip
-// (public/media/lalum-intro.mp4, poster lalum-intro.jpg, Hebrew captions) — the
-// same asset the corner VideoBubble was built around — and all its copy comes
-// from the existing shared strings (the LALUM wordmark plus the canonical name
-// in videoBubble.teaser), so no new per-language copy is introduced.
+// is branded around its founder. It plays the uploaded clip
+// (public/media/lalum-intro.mp4, poster lalum-intro.jpg, Hebrew captions), and
+// all its copy comes from the existing shared strings (the LALUM wordmark plus
+// the canonical name in videoBubble.teaser), so no new per-language copy is
+// introduced.
+//
+// This is the only player for the clip. A second one lived in a corner panel
+// with controls of its own, it was the one the quick-access menu opened, and it
+// was the one that did not play. The menu points here now (see
+// components/QuickAccessDot.tsx), which is why this section carries an id.
 //
 // Click-to-play through the native controls: accessible and keyboard-operable
 // out of the box, and reduced-motion safe because nothing autoplays. Only the
@@ -20,6 +25,7 @@ export function FounderIntroVideo() {
   const V = t.ui.videoBubble;
   return (
     <figure
+      id="founder-film"
       className="founder-film"
       aria-label={V.open}
       style={{

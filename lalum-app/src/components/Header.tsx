@@ -7,6 +7,8 @@ import { DownloadIcon, useInstall } from "./AppInstall";
 import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
+import { OPEN_CHAT_EVENT } from "./chatEvents";
+import { QuickAccessDot } from "./QuickAccessDot";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
@@ -308,6 +310,26 @@ export function Header() {
         </nav>
 
         <div className="header-tools">
+          {/* The two controls that used to float in the page's bottom corner,
+              one above the other: the quick-access dot and the chat launcher.
+              Parked there they covered content on every screen and on every
+              page, which is a high price for two entry points nobody asked to
+              see. Here they are reachable without being in the way.
+              The chat opens through its event rather than by importing
+              ChatWidget, which would pull that heavy component out of its lazy
+              chunk and into the header's. UserGuide already does the same. */}
+          <QuickAccessDot />
+          <button
+            type="button"
+            className="tb-btn"
+            onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+            aria-label={t.ui.chat.open}
+            title={t.ui.chat.open}
+          >
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+              <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6A8.5 8.5 0 0 1 4 11.5 8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z" />
+            </svg>
+          </button>
           {/* The urgent-contact button: always visible on desktop, first in
               the row, so it is never lost among the other tools. Opens a
               small sheet with every fast channel (call, WhatsApp, Telegram)

@@ -18,16 +18,44 @@ Status of each fact is marked. Nothing here is legal advice.
   A registration certificate does not certify that the software meets the bookkeeping instructions.
 - Software houses may reach the API through a third-party intermediary service.
 
-## NOT verified. Ask the accountant, then the Tax Authority API support (APISupport@taxes.gov.il)
+## Answered by the practice owner (2026-10-10)
 
-1. Bookkeeping instructions for self-built software used only by the practice: required sequence integrity,
-   original and copy handling, signing, backup, retention period.
-2. Whether the uniform-structure file module is required for own-use software.
-3. Which value goes in the software registration field when no certificate exists: the Tax Authority documents give
-   both `99999999` and "the producer's company or identity number". Ask which applies.
-4. Onboarding to Shaam: which permissions the practice owner must grant, sandbox access.
-5. Whether numbering may continue from the last Invoice4U number per document type, or must restart.
-6. Treatment of a number consumed by a document that fails before issue (see below).
+- Business identity (confirmed by the owner 2026-10-13): the practice is an individual עוסק מורשה, number `031471261`
+  (the owner's own Teudat Zehut, 9 digits, check digit valid: digit sum 30, divisible by 10). It is not a company. The
+  old Invoice4U business names are out of scope and nothing is carried over from them automatically.
+  Addresses are two different things: the finance system (A000 record, internal use) uses the real office, HaIrisim 8,
+  Netanya; the official address shown to clients on the public site and on issued documents is Herzliya Pituach
+  (HaMedina HaYehudim, number and postal code to be confirmed) until the owner decides otherwise. Documents are not
+  issued by this system yet, so the client facing address is not configured here.
+  Software registration number (accounting_software_number): the Tax Authority's own API description says that where
+  the software has no registration certificate, the number of the producer of the document is written instead, so this
+  system writes the business number.
+- Numbering: must continue from the last Invoice4U number per document type, not restart. `lalum_fin_series` has to be
+  seeded from the archive's highest `doc_number` per type before the own engine seals its first document of that type.
+  Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) does this seeding;
+  it is a callable function, not run automatically, so it must actually be called once per firm before the first real
+  `lalum_fin_seal_document` call, or that call will start the type's series at 1.
+- Shaam onboarding (permissions, sandbox access): deferred on purpose. The practice owner and a future session do this
+  together, directly on the Tax Authority site, only at the final stage before the 2027-01-01 switch, not before.
+- Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
+  8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
+  owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
+  still carries the Herzliya Pituach office address. No postal code: not given, not guessed.
+
+## Decided by the practice owner (2026-10-10), not independently verified
+
+These three were never confirmed against a primary Tax Authority or accountant source (the accountant email
+drafted for them was not sent). The owner chose to proceed on the strict reading rather than wait, so the design
+takes the safer side of each question. If a verified answer later turns out looser, nothing here needs to get
+stricter; if it turns out stricter still, revisit.
+
+1. Sequence integrity: numbering must be strictly continuous, no gaps. Already the design's own rule regardless
+   (see Numbering and sealing below): a number is never reused or deleted, and a failed document is marked VOID in
+   place rather than skipped, so there is no gap, only an explained VOID entry.
+2. Uniform-structure file module: build it, on the assumption that the stricter, common-practice reading applies
+   even though own-use software may be exempt. Not yet built (see Phases).
+3. A number consumed by a document that fails before issue: confirmed no requirement beyond what is already built,
+   the `VOID` status with its reason. No code change needed here.
 
 ## Numbering and sealing
 
@@ -43,15 +71,46 @@ Rules the design enforces regardless of the answers above:
   in the same series, so any later change breaks the chain and is detectable by a verification query.
 - PDF: original once, copies marked as copies, allocation number printed per the rule above. Produced after SEALED so the
   PDF is a pure function of stored data.
-- Continuity with Invoice4U: the first number per type is set from the archive's highest number plus one, if question 5
-  allows it. The archive tab already reports numbering gaps.
+- Continuity with Invoice4U: confirmed. The first number per type is set from the archive's highest number plus one.
+  The archive tab already reports numbering gaps; `lalum_fin_seed_series_from_archive(firm)` does the one-time seed
+  from it, built, but must be called per firm before the first real seal (see Phases below).
 
 ## Phases
 
 1. Done: read-only archive of Invoice4U history, reconciliation by type and year, gap detection.
 2. Next: run the ledger in parallel on the Invoice4U QA environment; fix what the rehearsal exposes.
-3. Build: series and sealing in the database (`lalum_fin_series`, sealing RPC, hash chain), PDF, Shaam client against the
-   Tax Authority sandbox. Production Shaam only after questions 1 to 6 are answered.
+3. Build, split in three:
+   - Done, and live: `lalum_fin_series` (per firm and type, numbers never reused or deleted), the DRAFT ->
+     SEALING state machine, and the hash chain (`lalum_fin_seal_document`, `lalum_fin_void_document`).
+     Database only, no Tax Authority call. Migration `0016_lalum_finance_series.sql`. Note: this migration
+     and `0017` below sat merged on `main` for weeks without being applied to the real project
+     (`meoymkcotomoluwlwues`); `lalum_fin_series` did not exist there until 11 October 2026, after two
+     further migrations (`0018`, `0022`) had already landed on top of the gap. Checked both for conflicts
+     before applying late: neither touches the guard trigger or status constraint this migration owns, so
+     applying out of order was safe. Flagging this so the same gap is checked for on the next migration.
+   - Done, and seeded: `lalum_fin_seed_series_from_archive(firm)` (migration
+     `0017_lalum_finance_series_seed.sql`) seeds `lalum_fin_series.last_number` per type from
+     `lalum_fin_archive`'s highest `doc_number`. Run for the practice's firm on 11 October 2026: INVOICE
+     10014, RECEIPT 30019, INVOICE_RECEIPT 70145, CREDIT 50004, PROFORMA 90091 (273 archive rows total,
+     matching the archive's own row count exactly). The first number sealed by the own engine for each
+     type will be one above these.
+   - Still to build, blocked: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the
+     live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
+     practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
+     site, not before.
+   - Done: the uniform-structure file export module (the owner's decision above, taking the stricter reading
+     rather than wait for a verified answer), `src/lib/cockpit/shaamExport.ts`. Builds INI.TXT and BKMVDATA.TXT
+     from the finance ledger via `@accounter/shaam-uniform-format-generator` (pinned exactly at `0.2.6`: its
+     `latest`, `0.2.7`, ships a broken `dist/`). Round trips through that package's own parser and
+     cross-validator (`npm run shaam-check`). Scope: documents only (C100/D110/D120), no B100/B110/M100, since
+     the practice issues sales documents and keeps no general ledger. Not yet run through the Tax Authority's
+     own official file-checker at misim.gov.il: that is a required step before this output is ever used for a
+     real filing, not something this module's own tests can substitute for.
+   - Done: a "קובץ מבנה אחיד" screen in the finance cockpit (`ShaamExportTab.tsx`). Owner picks a period
+     (defaults to the quarter just ended), the screen filters to `SEALED` documents in range and downloads
+     the two files. Pure client-side; nothing to export yet since the own engine cannot reach SEALED
+     without the Shaam edge function below, and Invoice4U already files its own uniform-structure file for
+     the current period. Becomes useful the moment that edge function ships.
 4. Parallel run: each real document produced twice (here as shadow, Invoice4U as the issuing source) for several VAT
    periods; totals and numbering compared.
 5. Switch: issuing moves here. Invoice4U stays read-only for the archive and as an emergency fallback.

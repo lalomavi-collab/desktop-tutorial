@@ -20,15 +20,15 @@ export const STAGES = ["קליטה", "כתבי טענות", "גילוי מסמכ
 
 export function buildDemo(today: Date) {
   const customers: FinCustomer[] = [
-    { id: "c1", name: "לקוח לדוגמה א", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null },
-    { id: "c2", name: "לקוח לדוגמה ב", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null },
-    { id: "c3", name: "לקוח לדוגמה ג", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null },
+    { id: "c1", name: "לקוח לדוגמה א", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null, is_casual: false, retainer_active: false, retainer_description: null, retainer_amount: null },
+    { id: "c2", name: "לקוח לדוגמה ב", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null, is_casual: false, retainer_active: false, retainer_description: null, retainer_amount: null },
+    { id: "c3", name: "לקוח לדוגמה ג", tax_id: null, email: null, phone: null, address: null, city: null, notes: null, archived: false, i4u_customer_id: null, is_casual: false, retainer_active: false, retainer_description: null, retainer_amount: null },
   ];
   const inv = (id: string, cust: string, total: number, issuedAgo: number, dueAgo: number | null, n: number): FinDocument => ({
     id, customer_id: cust, doc_type: "INVOICE", status: "ISSUED", subject: "שכר טרחה", tax_included: false, vat_rate: 18, lines: [],
     subtotal: Math.round((total / 1.18) * 100) / 100, vat_amount: Math.round((total - total / 1.18) * 100) / 100, total,
     issue_date: ago(today, issuedAgo), due_date: dueAgo == null ? null : ago(today, dueAgo), payment_method: null, payment_ref: null,
-    related_doc_id: null, send_email: false, doc_number: n, i4u_doc_id: null, allocation_number: null, pdf_url: null, is_test: false, last_error: null, issued_at: null,
+    related_doc_id: null, send_email: false, doc_number: n, i4u_doc_id: null, allocation_number: null, pdf_url: null, is_test: false, last_error: null, issued_at: null, internal_note: null, matter_ref: null, source_proforma_id: null,
   });
   const docs: FinDocument[] = [
     inv("i1", "c1", 23600, 130, 100, 1001), inv("i2", "c2", 11800, 95, 65, 1002), inv("i3", "c3", 17700, 58, 28, 1003),

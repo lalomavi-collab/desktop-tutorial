@@ -66,6 +66,15 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /insights/medicine-meets-law  /insights/lalum-clinic-realestate-advice/  301
 /insights/medicine-meets-law/  /insights/lalum-clinic-realestate-advice/  301
 
+# --- Real estate arbitration duplicate ---
+# real-estate-arbitration and real-estate-dispute-arbitration were near
+# paraphrases of the same "why choose arbitration for real estate disputes"
+# pitch, written two months apart with no distinguishing angle. Kept
+# real-estate-arbitration: newer, and already the one most other articles
+# in the mediation cluster pointed to.
+/insights/real-estate-dispute-arbitration  /insights/real-estate-arbitration/  301
+/insights/real-estate-dispute-arbitration/  /insights/real-estate-arbitration/  301
+
 # --- Legacy Wix blog index -> new articles hub ---
 /post   /insights/   301
 
@@ -203,7 +212,7 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת  /insights/פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת/  301
 /post/פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות  /insights/פגרת-הקיץ-עיתוי-אסטרטגי-לגישור-מחלוקות/  301
 /post/פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי  /insights/פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי/  301
-/post/פתרון-סכסוכים-בנדל-ן-החשיבות-של-בוררות-בתחום-הנדל-ן  /insights/real-estate-dispute-arbitration/  301
+/post/פתרון-סכסוכים-בנדל-ן-החשיבות-של-בוררות-בתחום-הנדל-ן  /insights/real-estate-arbitration/  301
 /post/קליניקת-lalum-ייעוץ-משפטי-וחוות-דעת-שנייה-לעסקאות-נדל-ן-בארץ-ובעולם  /insights/lalum-clinic-realestate-advice/  301
 /post/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה  /insights/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה/  301
 /post/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה-1  /insights/שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה/  301

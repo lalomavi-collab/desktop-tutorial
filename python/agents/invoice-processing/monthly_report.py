@@ -191,7 +191,14 @@ def main():
             print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}. --force לשליחה חוזרת.")
             return EXIT_SENT
         if issues:
-            print("\n🛑 שליחה בוטלה — יש פריטים לא מאומתים. תקן, או הרץ בלי --send ליצירת טיוטה.")
+            # שליחה אוטומטית נחסמה: במקום לעצור בידיים ריקות, נוצרת
+            # טיוטה ב-Outlook כך שלאברהם יש מה לבדוק ולשלוח ידנית.
+            print("\n🛑 שליחה אוטומטית נחסמה — יש פריטים לא מאומתים. נוצרת טיוטה לבדיקה ידנית.")
+            res = draft_via_outlook(mail, from_account=from_account)
+            if res.get("drafted"):
+                print(f"✉️  הטיוטה בתיקיית 'טיוטות' ב-Outlook, {len(res['attachments_sent'])} צרופות.")
+            else:
+                print(f"❌ גם יצירת הטיוטה נכשלה: {res.get('error')}")
             return EXIT_BLOCKED
         print(f"\n🚀 שולח ל-{to} דרך Outlook...")
         res = send_via_outlook(mail, from_account=from_account)

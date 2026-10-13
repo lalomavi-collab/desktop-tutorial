@@ -1,19 +1,40 @@
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { useInstall } from "./AppInstall";
-import { emitOpenVideo } from "./quickAccessEvents";
 import { QUIET_ROUTES } from "../lib/quietRoutes";
 import { useScrollLock } from "../lib/useScrollLock";
 import lalumMark from "../assets/lalum-mark.svg";
 
-// One quiet control in the corner, replacing two auto-popping invitations
-// (the video teaser pill and the home-page compliance prompt) that visitors
-// found intrusive — and that, at a phone width, sat close enough to visually
-// collide with each other. Nothing appears on its own here: a visitor opens
-// this by choice, sees what is on offer, and picks one.
+// One quiet control, replacing two auto-popping invitations (the video teaser
+// pill and the home-page compliance prompt) that visitors found intrusive, and
+// that, at a phone width, sat close enough to visually collide with each other.
+// Nothing appears on its own here: a visitor opens this by choice, sees what is
+// on offer, and picks one.
+//
+// It lives in the header (components/Header.tsx) rather than floating over the
+// page. Two round controls parked in the bottom corner cover content on every
+// screen of every page; in the toolbar they are reachable without being in the
+// way.
 const videoBubbleSrc = import.meta.env.VITE_VIDEO_BUBBLE_SRC ?? "";
+
+// The intro film plays in its own section on the home page
+// (components/FounderIntroVideo.tsx), with the browser's own controls. This
+// menu takes the visitor there rather than opening a second player for the
+// same clip. There used to be two implementations of one thing, and the one
+// this menu pointed at was the one that did not play.
+const FILM_SELECTOR = ".founder-film";
+
+function playFilm(): boolean {
+  const film = document.querySelector(FILM_SELECTOR);
+  if (!film) return false;
+  film.scrollIntoView({ behavior: "smooth", block: "center" });
+  // A refusal is fine: the controls are right there and the visitor is now
+  // looking at them. What must not happen is an unhandled rejection.
+  void film.querySelector("video")?.play().catch(() => { /* the visitor presses play */ });
+  return true;
+}
 
 function VideoIcon() {
   return (
@@ -43,9 +64,9 @@ export function QuickAccessDot() {
   const { t } = useLang();
   const Q = t.ui.quickAccess;
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { installed, canPrompt, promptInstall } = useInstall();
   const [open, setOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -65,9 +86,23 @@ export function QuickAccessDot() {
 
   if (QUIET_ROUTES.test(pathname)) return null;
 
-  function openVideo() {
+  function openFilm() {
     setOpen(false);
-    emitOpenVideo(buttonRef.current);
+    if (playFilm()) return;
+    // Not on the home page. Navigate there, then wait for the section to
+    // exist: the route is code split, so it is not on the page the moment
+    // navigate() returns. Bounded, because a frame loop with no end is how a
+    // tab starts burning battery over a section that never arrives.
+    // The hash matters: MarketingLayout resets the scroll to the top on every
+    // route change *unless* the route carries one, so without it the jump to
+    // the film would be undone a frame after it happened.
+    navigate({ pathname: "/", hash: "#founder-film" });
+    let frames = 0;
+    const tick = () => {
+      if (playFilm() || (frames += 1) > 120) return;
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   async function installApp() {
@@ -88,7 +123,7 @@ export function QuickAccessDot() {
           <div className="qad-menu" role="menu" aria-label={Q.open}>
             <span className="sheet-handle" aria-hidden="true" />
             {videoBubbleSrc && (
-              <button type="button" role="menuitem" className="qad-item" onClick={openVideo}>
+              <button type="button" role="menuitem" className="qad-item" onClick={openFilm}>
                 <span className="qad-item-icon"><VideoIcon /></span>
                 <span className="qad-item-txt">
                   <span className="qad-item-label">{t.ui.videoBubble.open}</span>
@@ -116,7 +151,6 @@ export function QuickAccessDot() {
         </>
       )}
       <button
-        ref={buttonRef}
         type="button"
         className="qad-button"
         onClick={() => setOpen((v) => !v)}

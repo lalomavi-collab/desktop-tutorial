@@ -98,12 +98,10 @@ export function Advisory() {
           </div>
           <div className="grid grid-3">
             {t.data.domModules.map((m) => (
-              <div key={m.title} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.13)", borderRadius: 16, padding: 32 }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-bright)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon name={m.icon} size={24} />
-                </span>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: "var(--paper)", margin: "20px 0 10px" }}>{m.title}</h3>
-                <p style={{ fontSize: 15, lineHeight: 1.66, color: "#C6C0B4", margin: 0 }}>{m.body}</p>
+              <div key={m.title} className="dark-panel">
+                <span className="dark-panel-badge"><Icon name={m.icon} size={24} /></span>
+                <h3 className="dark-panel-title" style={{ margin: "20px 0 10px" }}>{m.title}</h3>
+                <p className="dark-panel-body">{m.body}</p>
               </div>
             ))}
           </div>

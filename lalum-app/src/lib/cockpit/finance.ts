@@ -11,13 +11,36 @@ export interface Totals { subtotal: number; vat: number; total: number }
 export interface FinCustomer {
   id: string; name: string; tax_id: string | null; email: string | null; phone: string | null;
   address: string | null; city: string | null; notes: string | null; archived: boolean; i4u_customer_id: number | null;
+  /** A one-off customer with no card in Invoice4U. Only allowed on the document types in CASUAL_TYPES. */
+  is_casual: boolean;
+  /** Template for a monthly DRAFT. Never issued automatically. */
+  retainer_active: boolean; retainer_description: string | null; retainer_amount: number | null;
+  /** Collections control (migration 0031). DSO is a cache of what arAging.ts computes from the ledger. */
+  historical_dso_days?: number | null; dso_sample_size?: number; dso_computed_at?: string | null;
+  is_collections_locked?: boolean; collections_locked_at?: string | null; collections_lock_reason?: string | null;
+  /** Partner override of the lock (migration 0032): new time is allowed until this date, inclusive. */
+  collections_override_until?: string | null; collections_override_reason?: string | null;
+  /** Consent to WhatsApp messages from the firm (migration 0036). Active when given and not withdrawn. */
+  whatsapp_consent_at?: string | null; whatsapp_consent_basis?: string | null; whatsapp_consent_note?: string | null; whatsapp_consent_revoked_at?: string | null;
 }
+export const whatsappConsentActive = (c: Pick<FinCustomer, "whatsapp_consent_at" | "whatsapp_consent_revoked_at"> | undefined | null): boolean =>
+  !!c && !!c.whatsapp_consent_at && !c.whatsapp_consent_revoked_at;
+export const CONSENT_BASIS: Record<string, string> = { AGREEMENT: "הסכם שכר טרחה", WRITTEN: "הודעה כתובה מהלקוח", VERBAL: "אישור בעל פה (נרשם בתיק)", FORM: "טופס הסכמה" };
+
 export interface FinDocument {
-  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED"; subject: string;
+  // DRAFT/ISSUED is the current live issuing path (still through Invoice4U). SEALING/ALLOCATED/
+  // SEALED/VOID (migration 0016) belong to the own engine's not-yet-live sealing pipeline: today a
+  // document can reach SEALING (lalum_fin_seal_document), never ALLOCATED or SEALED, since the edge
+  // function for the Tax Authority call is deliberately not built yet (finance-engine-design.md).
+  id: string; customer_id: string; doc_type: DocType; status: "DRAFT" | "ISSUED" | "SEALING" | "ALLOCATED" | "SEALED" | "VOID"; subject: string;
   tax_included: boolean; vat_rate: number; lines: Line[]; subtotal: number; vat_amount: number; total: number;
   issue_date: string; due_date: string | null; payment_method: PayMethod | null; payment_ref: string | null;
   related_doc_id: string | null; send_email: boolean; doc_number: number | null; i4u_doc_id: string | null; allocation_number: string | null;
   pdf_url: string | null; is_test: boolean; last_error: string | null; issued_at: string | null;
+  /** Never printed or sent. */
+  internal_note: string | null; matter_ref: string | null;
+  /** The issued pro forma this invoice or invoice-receipt settles. */
+  source_proforma_id: string | null;
 }
 export interface FinPayment {
   id: string; customer_id: string | null; document_id: string | null; paid_on: string; amount: number;
@@ -47,10 +70,16 @@ export const EXPENSE_CATEGORY: Record<string, string> = {
 /** Default VAT rate for a new document. Stored on each document, so a later change never rewrites history. */
 export const DEFAULT_VAT_RATE = 18;
 
+/**
+ * Document types that may go to a casual (one-off) customer. In the practice's history every casual customer
+ * document is an invoice-receipt (42 of 145) or a credit (1); invoices, receipts and pro formas always had a card.
+ */
+export const CASUAL_TYPES: DocType[] = ["INVOICE_RECEIPT", "CREDIT"];
+
 /** Documents that carry a payment, and so need a payment method. */
 export const NEEDS_PAYMENT: DocType[] = ["RECEIPT", "INVOICE_RECEIPT"];
 
-const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
+export const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) / 100;
 
 /** Same rounding as lalum_fin_totals: sum the lines first, round once. */
 export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boolean): Totals {
@@ -67,9 +96,10 @@ export function computeTotals(lines: Line[], vatRate: number, taxIncluded: boole
 
 /** Reasons a draft cannot be saved or issued yet. Empty means ready. */
 export function draftProblems(d: {
-  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null;
+  customer_id: string; doc_type: DocType; lines: Line[]; payment_method: PayMethod | null; related_doc_id: string | null; casual?: boolean;
 }): string[] {
   const out: string[] = [];
+  if (d.casual && !CASUAL_TYPES.includes(d.doc_type)) out.push("לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי");
   if (!d.customer_id) out.push("בחרו לקוח");
   if (d.lines.length === 0) out.push("הוסיפו שורה אחת לפחות");
   if (d.lines.some((l) => !l.name.trim())) out.push("לכל שורה נדרש תיאור");
@@ -83,7 +113,7 @@ export function draftProblems(d: {
 export const recoverableVat = (e: Pick<FinExpense, "vat_amount" | "vat_recoverable_pct">): number =>
   r2((e.vat_amount * e.vat_recoverable_pct) / 100);
 
-const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
+export const isLive = (d: FinDocument): boolean => d.status === "ISSUED" && !d.is_test;
 
 /** Signed effect of an issued document on revenue. Receipts and pro formas are not revenue. */
 export function revenueEffect(d: FinDocument): { net: number; vat: number } {
@@ -102,6 +132,18 @@ export function openBalance(inv: FinDocument, docs: FinDocument[], pays: FinPaym
   return Math.max(0, r2(inv.total - received - viaDocs));
 }
 
+/** How the practice recognises income. On the cash basis (the Invoice4U setting, and how the practice works) a tax invoice or a tax
+ *  invoice-receipt is issued when the money arrives, so it is income and not a debt; what a customer still owes is an open pro forma.
+ *  Pending the accountant's confirmation; change this one constant to switch the receivable rules. */
+export type Basis = "CASH" | "ACCRUAL";
+export const ACCOUNTING_BASIS: Basis = "CASH";
+
+/** What the customer still owes on one document under the chosen basis. */
+export function receivable(d: FinDocument, docs: FinDocument[], pays: FinPayment[], basis: Basis = ACCOUNTING_BASIS): number {
+  if (basis === "CASH") return d.doc_type === "PROFORMA" && isOpenProforma(d, docs) ? r2(d.total) : 0;
+  return openBalance(d, docs, pays);
+}
+
 export interface Period { from: string; to: string }
 const within = (iso: string, p: Period): boolean => iso >= p.from && iso <= p.to;
 
@@ -109,43 +151,49 @@ export interface Summary {
   revenueNet: number; vatOut: number; expenses: number; vatIn: number; vatPayable: number; profit: number; outstanding: number;
   /** Part of revenueNet / vatOut that comes from the Invoice4U archive, shown separately so it is never hidden in the total. */
   archiveNet: number; archiveVat: number;
-  /** Open balance on archived invoices, as reported by Invoice4U. Not added to `outstanding`. */
-  archiveOutstanding: number;
 }
 
+/** Invoice4U writes the shekel as the symbol, not as the ISO code. Foreign currencies come as "US$", "€" and so on. */
+export const isShekel = (c: string | null | undefined): boolean => !c || ["₪", "ILS", "NIS"].includes(c.trim().toUpperCase());
+
 /**
- * Revenue effect of an archived Invoice4U document. Invoices and invoice-receipts add, credits subtract
- * (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive or
- * negative). Receipts and pro formas are not revenue. Only ILS documents are counted.
+ * Revenue effect of an archived Invoice4U document, in shekels. Invoices and invoice-receipts add, credits
+ * subtract (the sign is taken from the type, so it does not matter whether Invoice4U stores a credit as positive
+ * or negative). Receipts and pro formas are not revenue. A foreign currency document is converted with the rate
+ * Invoice4U stored on it; one without a usable rate is left out rather than guessed.
  */
 export function archiveRevenueEffect(a: ArchiveDoc): { net: number; vat: number } {
-  if (a.currency && a.currency !== "ILS") return { net: 0, vat: 0 };
-  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net: Math.abs(a.subtotal), vat: Math.abs(a.vat_amount) };
-  if (a.i4u_doc_type === 4) return { net: -Math.abs(a.subtotal), vat: -Math.abs(a.vat_amount) };
+  let k = 1;
+  if (!isShekel(a.currency)) {
+    k = Number(a.rate);
+    if (!(k > 0)) return { net: 0, vat: 0 };
+  }
+  const net = r2(Math.abs(a.subtotal) * k), vat = r2(Math.abs(a.vat_amount) * k);
+  if (a.i4u_doc_type === 1 || a.i4u_doc_type === 3) return { net, vat };
+  if (a.i4u_doc_type === 4) return { net: -net, vat: -vat };
   return { net: 0, vat: 0 };
 }
 
 /** One period summary: revenue by issue date, expenses by spend date, VAT as output less recoverable input. */
-export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = []): Summary {
+export function summarize(docs: FinDocument[], pays: FinPayment[], exps: FinExpense[], p: Period, archive: ArchiveDoc[] = [], basis: Basis = ACCOUNTING_BASIS): Summary {
   let revenueNet = 0, vatOut = 0;
   for (const d of docs) if (within(d.issue_date, p)) { const e = revenueEffect(d); revenueNet += e.net; vatOut += e.vat; }
   // A document issued here through Invoice4U later shows up in the archive too. Count it once, from the ledger.
   const inLedger = new Set(docs.filter((d) => d.status === "ISSUED" && d.i4u_doc_id).map((d) => d.i4u_doc_id as string));
-  let archiveNet = 0, archiveVat = 0, archiveOutstanding = 0;
+  let archiveNet = 0, archiveVat = 0;
   for (const a of archive) {
     if (inLedger.has(a.i4u_doc_id)) continue;
-    if (a.i4u_doc_type === 1 && (a.balance ?? 0) > 0) archiveOutstanding += a.balance as number;
     if (!within(a.issue_date, p)) continue;
     const e = archiveRevenueEffect(a); archiveNet += e.net; archiveVat += e.vat;
   }
   revenueNet += archiveNet; vatOut += archiveVat;
   let expenses = 0, vatIn = 0;
   for (const e of exps) if (within(e.spent_on, p)) { expenses += e.total - e.vat_amount; vatIn += recoverableVat(e); }
-  const outstanding = docs.reduce((a, d) => a + openBalance(d, docs, pays), 0);
+  const outstanding = docs.reduce((a, d) => a + receivable(d, docs, pays, basis), 0);
   return {
     revenueNet: r2(revenueNet), vatOut: r2(vatOut), expenses: r2(expenses), vatIn: r2(vatIn),
     vatPayable: r2(vatOut - vatIn), profit: r2(revenueNet - expenses), outstanding: r2(outstanding),
-    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat), archiveOutstanding: r2(archiveOutstanding),
+    archiveNet: r2(archiveNet), archiveVat: r2(archiveVat),
   };
 }
 
@@ -162,6 +210,10 @@ export interface ArchiveDoc {
   id: string; i4u_doc_id: string; i4u_doc_type: number; doc_number: number; issue_date: string; i4u_client_id: number | null;
   subject: string | null; currency: string; subtotal: number; vat_amount: number; total: number; allocation_number: string | null;
   status_id: number | null; paid: number | null; balance: number | null;
+  /** ConversionRate Invoice4U stored on the document (units of NIS per unit of currency). Read from the raw record. */
+  rate?: number | string | null;
+  /** Name of a casual (one-off) customer, from the raw record. Empty when the document has a customer card. */
+  gname?: string | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */
 export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };
@@ -197,3 +249,309 @@ export function archiveSummary(docs: ArchiveDoc[]): ArchiveRow[] {
   }
   return [...m.values()].sort((a, b) => b.year.localeCompare(a.year) || a.type - b.type);
 }
+
+/**
+ * Some Invoice4U customer names carry the address inside the name ("Acme Ltd Address: 1 Main St"). The part after
+ * the marker is the address; the part before is the name. Names without the marker are returned unchanged.
+ */
+export function splitName(raw: string): { name: string; address: string | null } {
+  const m = /\s+(?:Address|כתובת)\s*:\s*/i.exec(raw);
+  if (!m) return { name: raw.trim(), address: null };
+  const name = raw.slice(0, m.index).trim(), address = raw.slice(m.index + m[0].length).trim();
+  return name ? { name, address: address || null } : { name: raw.trim(), address: null };
+}
+
+// ---- Customer rules ----
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+/**
+ * Reasons a customer cannot be saved. A new regular customer needs a valid e-mail (the document is sent to it and the
+ * accountant's report needs it); a casual customer needs a name only. Editing an existing customer does not demand an
+ * e-mail, so customers imported without one can still be archived or corrected.
+ */
+export function customerProblems(f: { name: string; email: string; tax_id: string; i4u: string; casual: boolean; isNew: boolean }): string[] {
+  const out: string[] = [];
+  if (!f.name.trim()) out.push("שם הלקוח חובה");
+  if (f.tax_id && !/^\d{5,9}$/.test(f.tax_id)) out.push("ת.ז. או ח.פ. הם ספרות בלבד (5 עד 9)");
+  if (f.email.trim() && !EMAIL_RE.test(f.email.trim())) out.push('כתובת הדוא"ל אינה תקינה');
+  if (!f.casual) {
+    if (f.isNew && !f.email.trim()) out.push('לקוח חדש דורש כתובת דוא"ל');
+    if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח ב-Invoice4U הוא ספרות בלבד");
+  }
+  return out;
+}
+
+/** Details a regular customer is still missing, shown as a prompt to complete the card. */
+export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casual">): string[] {
+  if (c.is_casual) return [];
+  const out: string[] = [];
+  if (!c.email) out.push('דוא"ל');
+  if (!c.tax_id) out.push("ת.ז. או ח.פ.");
+  return out;
+}
+
+/** The issued document that closed a pro forma, if any. A draft pointing at it does not close it yet. */
+export const closedBy = (p: FinDocument, docs: FinDocument[]): FinDocument | undefined =>
+  docs.find((d) => d.source_proforma_id === p.id && d.status === "ISSUED");
+
+/** An issued, real (non test) pro forma that no issued document has settled. */
+export const isOpenProforma = (p: FinDocument, docs: FinDocument[]): boolean =>
+  p.doc_type === "PROFORMA" && p.status === "ISSUED" && !p.is_test && !closedBy(p, docs);
+
+// ---- Client trust funds: read side of lalum_trust_ledger (migration 0020) ----
+// The ledger is append only and signed (deposits positive, withdrawals negative). Writes go through the
+// lalum_trust_post / lalum_trust_apply_to_invoice RPCs, which enforce zero overdraft and the receipt series.
+// Trust money is never revenue: summarize() does not read it, and finance-check pins that.
+
+export type TrustTxType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "EARNED_FEE_TRANSFER" | "REFUND_TO_CLIENT" | "REVERSAL";
+export interface TrustTx {
+  id: number; trust_account_id: string; matter_id: string; customer_id: string; tx_type: TrustTxType; amount: number;
+  receipt_no: string; reference_doc_id: string | null; reverses_entry_id: number | null; counterparty: string | null;
+  notes: string | null; created_at: string;
+  /** Date the bank counts the movement (migration 0033). Absent on a database that has not applied it: use created_at. */
+  value_date?: string | null;
+}
+export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null; opened_on?: string | null }
+export const TRUST_TX: Record<TrustTxType, string> = {
+  DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה למשרד",
+  REFUND_TO_CLIENT: "החזר ללקוח", REVERSAL: "תיקון (ביטול תנועה)",
+};
+
+/** Held balance for the whole ledger, or narrowed to one customer, matter or trust account. */
+export function trustHeld(rows: TrustTx[], by: { customer?: string; matter?: string; account?: string } = {}): number {
+  return r2(rows
+    .filter((t) => (!by.customer || t.customer_id === by.customer) && (!by.matter || t.matter_id === by.matter) && (!by.account || t.trust_account_id === by.account))
+    .reduce((a, t) => a + t.amount, 0));
+}
+
+/** Balances per key (customer or matter), largest first, zero balances left out. */
+export function trustBreakdown(rows: TrustTx[], key: "customer_id" | "matter_id"): Array<{ id: string; balance: number }> {
+  const m = new Map<string, number>();
+  for (const t of rows) m.set(t[key], (m.get(t[key]) ?? 0) + t.amount);
+  return [...m.entries()].map(([id, b]) => ({ id, balance: r2(b) })).filter((x) => x.balance !== 0).sort((a, b) => b.balance - a.balance);
+}
+
+/** Net movement of trust money recorded on or after `since` (YYYY-MM-DD, by the day it was recorded). */
+export function trustNetSince(rows: TrustTx[], since: string): number {
+  return r2(rows.filter((t) => t.created_at.slice(0, 10) >= since).reduce((a, t) => a + t.amount, 0));
+}
+
+/** Whole-percent share of `part` in `total`, clamped to 0..100; 0 when the total is not positive. */
+export function sharePct(part: number, total: number): number {
+  return total > 0 ? Math.max(0, Math.min(100, Math.round((part / total) * 100))) : 0;
+}
+
+/** Account number shown as its last four digits only. */
+export const maskAccount = (n: string): string => (n.length > 4 ? `***${n.slice(-4)}` : n);
+
+/** Movements the posting screen can create. Earned-fee transfers go through lalum_trust_apply_to_invoice, the rest through lalum_trust_post. */
+export type TrustPostType = "DEPOSIT" | "DISBURSEMENT_TO_THIRD_PARTY" | "REFUND_TO_CLIENT" | "EARNED_FEE_TRANSFER";
+export const TRUST_POST_TYPES: TrustPostType[] = ["DEPOSIT", "DISBURSEMENT_TO_THIRD_PARTY", "REFUND_TO_CLIENT", "EARNED_FEE_TRANSFER"];
+
+/**
+ * Pre-check before calling the database. The database is the authority (zero overdraft per matter and per account under
+ * locks, invoice must belong to the matter); this only saves a round trip and words the reason.
+ */
+export function trustPostProblems(
+  f: { matter_id: string; account_id: string; type: TrustPostType; amount: number; doc_open: number | null; doc_id: string | null },
+  rows: TrustTx[],
+): string[] {
+  const out: string[] = [];
+  if (!f.matter_id) out.push("בחרו תיק");
+  if (!f.account_id) out.push("בחרו חשבון נאמנות");
+  if (!(f.amount > 0)) out.push("הסכום חייב להיות גדול מאפס");
+  if (f.type !== "DEPOSIT" && f.matter_id && f.amount > trustHeld(rows, { matter: f.matter_id })) out.push("הסכום גבוה מהיתרה המוחזקת בתיק");
+  if (f.type !== "DEPOSIT" && f.account_id && f.amount > trustHeld(rows, { account: f.account_id })) out.push("הסכום גבוה מיתרת חשבון הנאמנות");
+  if (f.type === "EARNED_FEE_TRANSFER") {
+    if (!f.doc_id) out.push("בחרו חשבונית מס שהופקה");
+    else if (f.doc_open != null && f.amount > f.doc_open) out.push("הסכום גבוה מהיתרה הפתוחה בחשבונית");
+  }
+  return out;
+}
+
+/** True when a ledger row may still be corrected: not itself a reversal and not already reversed. */
+export const canReverse = (t: TrustTx, rows: TrustTx[]): boolean =>
+  t.tx_type !== "REVERSAL" && !rows.some((x) => x.reverses_entry_id === t.id);
+
+// ---- Trust account setup (lalum_trust_accounts) ----
+
+/** Reasons a trust account cannot be saved. Bank, branch and account are digits or text the bank prints; the pair (bank, branch, account) is unique per firm. */
+export function trustAccountProblems(f: { bank_name: string; branch: string; account_number: string }, existing: TrustAccount[], exceptId?: string): string[] {
+  const out: string[] = [];
+  const bank = f.bank_name.trim(), branch = f.branch.trim(), acct = f.account_number.trim();
+  if (!bank) out.push("שם הבנק חובה");
+  if (!/^\d{1,4}$/.test(branch)) out.push("מספר הסניף הוא ספרות בלבד (עד 4)");
+  if (!/^\d{4,12}$/.test(acct)) out.push("מספר החשבון הוא ספרות בלבד (4 עד 12)");
+  if (bank && existing.some((a) => a.id !== exceptId && a.bank_name === bank && a.branch === branch && a.account_number === acct)) out.push("החשבון כבר קיים");
+  return out;
+}
+
+/** A trust account may be closed only when nothing is held in it. */
+export function trustCloseProblem(accountId: string, rows: TrustTx[]): string | null {
+  const bal = trustHeld(rows, { account: accountId });
+  return bal === 0 ? null : "אי אפשר לסגור חשבון שיש בו יתרה. העבירו או החזירו את הכספים קודם.";
+}
+
+// ---- Trust reconciliation: ledger against the bank statement (lalum_trust_reconciliation, lalum_trust_bank_statements) ----
+
+export interface TrustRecon {
+  trust_account_id: string; bank_name: string; branch: string; account_number: string; ledger_balance: number;
+  statement_as_of: string | null; statement_balance: number | null; difference_at_statement_date: number | null;
+}
+export type ReconState = "NO_STATEMENT" | "MATCHED" | "DIFFERENT";
+/** Ledger as of the statement date minus the statement balance. Zero is matched; anything else is a finding to explain. */
+export const reconState = (r: Pick<TrustRecon, "difference_at_statement_date">): ReconState =>
+  r.difference_at_statement_date == null ? "NO_STATEMENT" : r2(r.difference_at_statement_date) === 0 ? "MATCHED" : "DIFFERENT";
+
+/** Reasons a bank statement balance cannot be saved. A statement is append only and unique per account and date. */
+export function statementProblems(
+  f: { account_id: string; as_of: string; balance: string }, today: string,
+  existing: Array<{ trust_account_id: string; statement_as_of: string | null }>, openedOn?: string | null,
+): string[] {
+  const out: string[] = [];
+  if (!f.account_id) out.push("בחרו חשבון");
+  if (!f.as_of) out.push("חסר תאריך ערך של היתרה");
+  else if (f.as_of > today) out.push("תאריך ערך לא יכול להיות עתידי");
+  else if (openedOn && f.as_of < openedOn) out.push("תאריך ערך מוקדם מפתיחת חשבון הנאמנות");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  if (f.account_id && f.as_of && existing.some((e) => e.trust_account_id === f.account_id && e.statement_as_of === f.as_of)) out.push("כבר הוזן דף לחשבון הזה בתאריך ערך הזה");
+  return out;
+}
+
+/** A stored bank statement. A correction supersedes the row instead of editing it (migration 0032). */
+export interface TrustStatement {
+  id: string; trust_account_id: string; as_of: string; balance: number; created_at: string;
+  superseded_at?: string | null; correction_reason?: string | null; corrects_id?: string | null;
+}
+/** Reasons a statement correction cannot be saved: a new figure that really differs, and a stated reason. */
+export function statementCorrectionProblems(f: { balance: string; reason: string }, current: Pick<TrustStatement, "balance" | "superseded_at">): string[] {
+  const out: string[] = [];
+  if (current.superseded_at) out.push("הדף כבר תוקן. תקנו את הגרסה העדכנית");
+  if (f.balance.trim() === "" || !Number.isFinite(Number(f.balance))) out.push("הזינו יתרה מספרית");
+  else if (r2(Number(f.balance)) === r2(Number(current.balance))) out.push("היתרה זהה לקיימת");
+  if (f.reason.trim().length < 3) out.push("נדרשת סיבת התיקון");
+  return out;
+}
+
+// ---- Value date (migration 0033) ----
+
+/** The date the bank counts a movement: its value date, or the recording day where none is stored. */
+export const trustValueDate = (t: Pick<TrustTx, "created_at" | "value_date">): string => t.value_date ?? t.created_at.slice(0, 10);
+
+/** Ledger balance of one account counting only movements with a value date on or before `asOf`. Mirrors the database reconciliation. */
+export function trustHeldAsOf(rows: TrustTx[], accountId: string, asOf: string): number {
+  return r2(rows.filter((t) => t.trust_account_id === accountId && trustValueDate(t) <= asOf).reduce((a, t) => a + t.amount, 0));
+}
+
+/** Reasons a value date cannot be used: not in the future, not before the account was opened. Empty date means "today". */
+export function valueDateProblems(valueDate: string, today: string, openedOn: string | null | undefined): string[] {
+  const out: string[] = [];
+  if (!valueDate) return out;
+  if (valueDate > today) out.push("תאריך ערך לא יכול להיות עתידי");
+  if (openedOn && valueDate < openedOn) out.push("תאריך ערך מוקדם מפתיחת חשבון הנאמנות");
+  return out;
+}
+
+// ---- Trust account identity lock (migration 0036) ----
+
+export interface TrustAccountLock { locked: boolean; movements: number; statements: number }
+/**
+ * An account that already carries ledger movements or bank statements keeps its bank, branch, account number and opening date:
+ * changing them would rewrite what the history refers to. The database enforces the same rule (0036); this lets the screen say so
+ * before the user types. `statementAccounts` lists the account ids that have at least one statement.
+ */
+export function trustAccountLock(accountId: string, rows: TrustTx[], statementAccounts: string[]): TrustAccountLock {
+  const movements = rows.filter((t) => t.trust_account_id === accountId).length;
+  const statements = statementAccounts.filter((id) => id === accountId).length;
+  return { locked: movements > 0 || statements > 0, movements, statements };
+}
+
+// ---- Trust flow health check (read only) ----
+// The ledger is append only and legally sensitive, so the check never posts test movements. It re-derives, from the rows
+// already on screen, the rules the database enforces on the way in, and flags any row or balance that breaks one.
+
+export type HealthStatus = "ok" | "fail" | "warn" | "info";
+export interface HealthCheck { id: string; label: string; status: HealthStatus; detail: string }
+
+export function trustHealth(
+  rows: TrustTx[], accounts: TrustAccount[], matters: Array<{ id: string; customer_id: string | null }>, today: string,
+): HealthCheck[] {
+  const out: HealthCheck[] = [];
+  const add = (id: string, label: string, status: HealthStatus, detail: string) => out.push({ id, label, status, detail });
+  const open = accounts.filter((a) => !a.closed_on);
+
+  // Readiness: nothing can be posted without an open account and a matter that is billed to a customer.
+  add("setup-account", "יש חשבון נאמנות פעיל", open.length ? "ok" : "fail", open.length ? `${open.length} חשבונות פעילים` : "לא הוגדר חשבון נאמנות פעיל");
+  const billable = matters.filter((m) => m.customer_id).length;
+  add("setup-matter", "יש תיק שמקושר ללקוח", billable ? "ok" : "fail", billable ? `${billable} תיקים` : "אין תיק שמקושר ללקוח בכרטיס הכספי");
+
+  if (!rows.length) { add("no-rows", "תנועות בספר", "info", "עדיין לא נרשמו תנועות, לכן שאר הבדיקות ריקות"); return out; }
+
+  const byId = new Map(rows.map((t) => [t.id, t]));
+
+  const matterIds = [...new Set(rows.map((t) => t.matter_id))];
+  const negMatterReal = matterIds.filter((m) => trustHeld(rows, { matter: m }) < 0).length;
+  add("overdraft-matter", "אין יתרה שלילית באף תיק", negMatterReal ? "fail" : "ok", negMatterReal ? `${negMatterReal} תיקים ביתרה שלילית` : "כל התיקים ביתרה אפס או חיובית");
+  const negAcc = [...new Set(rows.map((t) => t.trust_account_id))].filter((a) => trustHeld(rows, { account: a }) < 0).length;
+  add("overdraft-account", "אין יתרה שלילית באף חשבון נאמנות", negAcc ? "fail" : "ok", negAcc ? `${negAcc} חשבונות ביתרה שלילית` : "כל החשבונות ביתרה אפס או חיובית");
+
+  const badRev = rows.filter((t) => {
+    if (t.tx_type !== "REVERSAL") return false;
+    const o = t.reverses_entry_id == null ? undefined : byId.get(t.reverses_entry_id);
+    return !o || o.matter_id !== t.matter_id || o.trust_account_id !== t.trust_account_id || r2(o.amount + t.amount) !== 0;
+  }).length;
+  const twice = rows.filter((t) => t.reverses_entry_id != null && rows.filter((x) => x.reverses_entry_id === t.reverses_entry_id).length > 1).length;
+  add("reversals", "כל תיקון מבטל תנועה אחת בדיוק", badRev || twice ? "fail" : "ok", badRev || twice ? `${badRev} תיקונים לא תואמים, ${twice} תנועות שתוקנו יותר מפעם אחת` : "כל התיקונים תואמים את התנועה המקורית");
+
+  const noDoc = rows.filter((t) => t.tx_type === "EARNED_FEE_TRANSFER" && !t.reference_doc_id).length;
+  add("fee-invoice", "כל העברת שכר טרחה מפנה לחשבונית", noDoc ? "fail" : "ok", noDoc ? `${noDoc} העברות בלי חשבונית` : "כל ההעברות מפנות לחשבונית");
+
+  const nums = rows.map((t) => /^TR-(\d{1,9})$/.exec(t.receipt_no)).map((m) => (m ? Number(m[1]) : NaN));
+  const malformed = nums.filter((n) => Number.isNaN(n)).length;
+  const valid = nums.filter((n) => !Number.isNaN(n));
+  const dup = valid.length - new Set(valid).size;
+  const gaps = numberingGaps(valid);
+  add("receipts", "מספרי הקבלות רציפים וללא כפילות", malformed || dup || gaps.length ? "fail" : "ok",
+    malformed || dup || gaps.length ? `${malformed} בפורמט לא תקין, ${dup} כפולים${gaps.length ? `, חסרים: ${formatRanges(gaps)}` : ""}` : `${valid.length} קבלות, ללא פערים`);
+
+  const acc = new Map(accounts.map((a) => [a.id, a]));
+  const future = rows.filter((t) => trustValueDate(t) > today).length;
+  const early = rows.filter((t) => { const o = acc.get(t.trust_account_id)?.opened_on; return !!o && trustValueDate(t) < o; }).length;
+  add("value-dates", "תאריכי הערך תקינים", future || early ? "fail" : "ok", future || early ? `${future} עתידיים, ${early} לפני פתיחת החשבון` : "אין תאריך ערך עתידי או לפני פתיחת חשבון");
+
+  const afterClose = rows.filter((t) => { const c = acc.get(t.trust_account_id)?.closed_on; return !!c && trustValueDate(t) > c; }).length;
+  const closedHeld = accounts.filter((a) => a.closed_on && trustHeld(rows, { account: a.id }) !== 0).length;
+  add("closed-accounts", "חשבון שנסגר ריק ולא קיבל תנועות אחרי הסגירה", afterClose || closedHeld ? "fail" : "ok", afterClose || closedHeld ? `${afterClose} תנועות אחרי סגירה, ${closedHeld} חשבונות סגורים עם יתרה` : "החשבונות הסגורים ריקים ונקיים");
+
+  const orphan = matterIds.filter((m) => !matters.some((x) => x.id === m)).length;
+  add("matters-known", "כל התנועות שייכות לתיק שקיים", orphan ? "warn" : "ok", orphan ? `${orphan} תיקים בספר לא נמצאו ברשימת התיקים` : "כל התיקים נמצאו");
+  return out;
+}
+
+/** Folds the bank reconciliation (from lalum_trust_reconciliation) into the same checklist. */
+export function reconHealth(recon: TrustRecon[]): HealthCheck[] {
+  if (!recon.length) return [{ id: "recon", label: "התאמת בנק", status: "info", detail: "אין חשבונות להתאמה" }];
+  const states = recon.map(reconState);
+  const missing = states.filter((x) => x === "NO_STATEMENT").length, diff = states.filter((x) => x === "DIFFERENT").length;
+  const status: HealthStatus = diff ? "fail" : missing ? "warn" : "ok";
+  return [{ id: "recon", label: "התאמת בנק לכל חשבון", status, detail: diff ? `${diff} חשבונות עם פער לבירור` : missing ? `${missing} חשבונות בלי דף בנק` : "כל החשבונות מותאמים" }];
+}
+
+/** One summary status for a list of checks: any failure wins, then any warning. */
+export const healthSummary = (c: HealthCheck[]): HealthStatus => (c.some((x) => x.status === "fail") ? "fail" : c.some((x) => x.status === "warn") ? "warn" : "ok");
+
+export interface FlowStep { id: string; label: string; done: boolean }
+/** Which stages of the trust flow have actually been exercised on live data, in the order a first full run goes through them. */
+export function trustFlowCoverage(rows: TrustTx[], accounts: TrustAccount[], statementAccounts: string[]): FlowStep[] {
+  const has = (f: (t: TrustTx) => boolean) => rows.some(f);
+  return [
+    { id: "account", label: "הוגדר חשבון נאמנות", done: accounts.length > 0 },
+    { id: "deposit", label: "נרשמה הפקדה", done: has((t) => t.tx_type === "DEPOSIT") },
+    { id: "withdrawal", label: "נרשמה משיכה (תשלום לצד שלישי או החזר ללקוח)", done: has((t) => t.tx_type === "DISBURSEMENT_TO_THIRD_PARTY" || t.tx_type === "REFUND_TO_CLIENT") },
+    { id: "fee", label: "הועבר שכר טרחה למשרד כנגד חשבונית", done: has((t) => t.tx_type === "EARNED_FEE_TRANSFER") },
+    { id: "reversal", label: "בוצע תיקון בתנועת ביטול", done: has((t) => t.tx_type === "REVERSAL") },
+    { id: "statement", label: "הוזן דף בנק", done: statementAccounts.length > 0 },
+  ];
+}
+

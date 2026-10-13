@@ -86,9 +86,9 @@
 - V חובות לפי תפקיד ב-EU AI Act: ספק, מטמיע, מפיץ ומייבא (eu-ai-act-roles-obligations)
 - V הכנת תיק תאימות (Conformity File) למערכת AI, שלב אחר שלב (eu-ai-act-conformity-file-preparation)
 - V פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל (effective-human-oversight-ai-systems)
-- מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי
-- Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה
-- רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית
+- V מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי (ai-content-labeling-transparency-policy)
+- V Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה (gpai-code-of-practice-foundation-models)
+- V רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית (ai-regulation-us-vs-eu-israeli-companies)
 
 ## עדיפות 1ב: בינה מלאכותית לפי סקטור (מיתוג דגל, בניית אשכול ורטיקלי)
 
@@ -101,7 +101,7 @@
   - V הסכמה מדעת ושקיפות כשמעורבת בינה מלאכותית בטיפול (ai-healthcare-informed-consent)
   - V הטמעת מערכת AI קלינית במוסד רפואי: מה לבדוק מול הספק (ai-clinical-system-deployment) [אשכול הבריאות הושלם, 5/5]
 - V בינה מלאכותית בביטוח: חיתום, תמחור ורגולציה (ai-insurance-underwriting-pricing-regulation)
-- בינה מלאכותית בנדל"ן ובהתחדשות עירונית: הזדמנויות וסיכונים משפטיים
+- V בינה מלאכותית בנדל"ן ובהתחדשות עירונית: החשיפה המשפטית וגבול ההסתמכות (ai-real-estate-urban-renewal-legal-exposure) [מוקד עוגן משפטי לסקטור, מבדיל מהמאמרים השיווקיים הקיימים]
 - V בינה מלאכותית בעריכת דין ובשירותים מקצועיים: אחריות ואתיקה (lawyers-ai-ethics-accountability)
 - V בינה מלאכותית במשאבי אנוש: גיוס, ניטור והערכת עובדים (ai-hr-overview-legal-exposure)
   - אשכול דגל משאבי אנוש (עוגן + 4), ממקד בחשיפה של מעסיקים ומחלקות HR:
@@ -125,6 +125,8 @@
 - V מדיניות שימוש ב-AI ברשות מקומית: מה חייב להיות בנוהל (ai-use-policy-local-authority)
 - V רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק (ai-procurement-tender-local-authority)
 - V הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI (ai-resident-data-privacy-local-authority)
+- V חובת ההנמקה, השקיפות וזכות העיון בהחלטה נתמכת AI ברשות המקומית (ai-local-authority-decision-reasoning-transparency)
+- V הטיה אלגוריתמית ושוויון בהחלטות הקצאה של הרשות המקומית (ai-local-authority-allocation-bias-equality)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
@@ -168,9 +170,9 @@
 - מס שבח במכירת דירה: פטורים וחישוב לינארי
 - V זיכרון דברים בעסקת נדל"ן: מתי הוא מחייב וכיצד מבטלים (real-estate-memorandum-of-understanding-binding)
 - V הערת אזהרה: רישום, משמעות ומחיקה (caution-note-real-estate-registration-removal)
-- קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים
-- רכישת דירה מקבלן: חוק המכר, ערבות חוק מכר וליווי בנקאי
-- חכירה מרשות מקרקעי ישראל: היוון, דמי היתר והעברת זכויות
+- V קבוצת רכישה: הסכם שיתוף, מיסוי וסיכונים (purchase-group-agreement-tax-risks)
+- V רכישת דירה מקבלן: חוק המכר, ערבות חוק מכר וליווי בנקאי (buying-apartment-from-contractor-guarantee-bank-financing)
+- V חכירה מרשות מקרקעי ישראל: היוון, דמי היתר והעברת זכויות (israel-land-authority-lease-capitalization-transfer)
 - ליווי משפטי בעסקת נדל"ן מניב ומסחרי
 
 ## עדיפות 2ג: נדל"ן בחו"ל (תחום מוביל, האשכול הדק ביותר)
@@ -187,6 +189,8 @@
 - V רכישת נכס בחו"ל: מבנה ההחזקה, מיסוי כפול ודיווח בישראל (overseas-property-holding-structure)
 - V בדיקת נאותות לנכס בחו"ל: מה בודקים כשהמרשם אינו טאבו (overseas-property-due-diligence)
 - מימון רכישת נכס בחו"ל: משכנתה מקומית מול מימון מישראל
+- V איחור במסירה ברכישת נכס בחו"ל: מה בודקים, מה אפשר לדרוש ואיך לא מפסידים זכויות (delay-delivery-overseas-property-buyer-rights)
+- V תביעה נגד חברה זרה: איפה תובעים, איך מוסרים כתב תביעה ואיך אוכפים (suing-foreign-company-jurisdiction-service-enforcement)
 - הסכם רכישה מול יזם בחו"ל: הבטוחות שאין להן מקבילה ישראלית
 - מכירת נכס בחו"ל: מס במדינת הנכס, זיכוי בישראל ותזמון
 
@@ -219,7 +223,7 @@
 
 ## עדיפות 6: AI, קניין רוחני, מידע ותעסוקה (היום מכוסה ב-FAQ בלבד, בלי מאמרים)
 
-- מי הבעלים של תוכן שנוצר בבינה מלאכותית
+- V מי הבעלים של תוכן שנוצר בבינה מלאכותית (ai-generated-content-ownership-protection-contracts)
 - זיוף עמוק (Deepfake): ההיבטים המשפטיים בישראל
 - הזנת מסמכים לכלי AI: הפרת זכויות יוצרים וסוד מסחרי
 - V הסכם רכש והטמעה של ספק AI: DPA, אחריות ושיפוי (ai-vendor-agreement-dpa-liability-indemnity)

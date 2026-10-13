@@ -5,6 +5,7 @@ import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../li
 import { CockpitFrame } from "./CockpitFrame";
 import { trashMatter } from "../../lib/cockpit/bin";
 import { CardArt, EmptyArt, HeroArt } from "../../components/cockpit/CockpitArt";
+import { MatterInsights } from "../../components/cockpit/CockpitInsights";
 import { IntakeForm } from "./Intake";
 import { MatterCockpit } from "./MatterCockpit";
 
@@ -48,6 +49,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
       {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: x.title }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
+      {rows && <MatterInsights rows={rows} />}
       <div className="ck-label">תיקים</div>
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>

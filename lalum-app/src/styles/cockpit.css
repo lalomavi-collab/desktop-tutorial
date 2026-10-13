@@ -63,7 +63,7 @@
 .ck-badge.yellow { background: rgba(184, 132, 42, .16); color: #6f4f12; }
 .ck-badge.green { background: rgba(63, 143, 95, .14); color: #24593a; }
 .ck-pii { background: rgba(63, 143, 95, .14); color: #24593a; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 9999px; display: inline-flex; gap: 6px; align-items: center; }
-.ck-chip { font-size: 11.5px; background: var(--line); color: var(--slate); border-radius: 9999px; padding: 3px 10px; }
+.ck-chip { font-size: 12px; background: var(--line); color: var(--slate); border-radius: 9999px; padding: 3px 10px; }
 .ck-link { background: none; border: 0; padding: 0; color: var(--clay); text-decoration: underline; font: inherit; font-size: 12.5px; cursor: pointer; text-align: start; }
 .ck-bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .ck-bar > div { height: 100%; background: var(--clay); }
@@ -88,7 +88,7 @@
 .ck-drawer { position: fixed; inset-block: 0; inset-inline-start: 0; width: min(420px, 100vw); background: var(--card); box-shadow: 8px 0 28px rgba(26, 24, 21, .2); z-index: 70; padding: 18px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
 .ck-tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; border-inline-start: 2px solid var(--line-strong); padding-inline-start: 12px; }
 .ck-tl li { font-size: 12.5px; color: var(--slate); }
-.ck-tl time { display: block; font-size: 11px; opacity: .8; }
+.ck-tl time { display: block; font-size: 12px; opacity: .9; }
 .ck-doc { max-width: 780px; margin: 0 auto; padding: 8px 0 64px; }
 .ck-doc h2 { font-size: 18px; margin: 28px 0 8px; scroll-margin-top: 16px; }
 .ck-doc p, .ck-doc li { font-size: 15px; line-height: 1.8; color: var(--slate); }
@@ -116,27 +116,40 @@
    sidebar (one is pre-auth, the other is a public document). Colours are
    all theme tokens, so this follows the dark management theme above. */
 .ck-with-sidebar { display: flex; align-items: stretch; min-height: 100dvh; }
-.ck-sidebar { width: 232px; flex-shrink: 0; background: var(--card); border-inline-end: 1px solid var(--line); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; }
-.ck-sidebar-brand { padding: 4px 10px 16px; }
-.ck-sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
-.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 14px; color: var(--ink); text-decoration: none; width: 100%; }
+.ck-sidebar { width: 252px; flex-shrink: 0; background: var(--card); border-inline-end: 1px solid var(--line); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; }
+.ck-sidebar-brand { padding: 4px 10px 18px; }
+.ck-sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
+/* Each labelled section is its own column; a small muted heading sits above it,
+   with extra breathing room before every section after the first. */
+.ck-nav-group { display: flex; flex-direction: column; gap: 6px; }
+.ck-nav-group + .ck-nav-group { margin-top: 14px; }
+.ck-nav-heading { padding: 2px 16px 4px; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: color-mix(in srgb, var(--ink) 72%, transparent); }
+/* Each row is a full-width button, not a plain text link: a resting fill at low
+   opacity already reads as a button, hover and the active page state go stronger
+   from there, so the whole bar looks like a set of controls, per the reference. */
+.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 14px; font-size: 15.5px; font-weight: 600; color: var(--ink); text-decoration: none; width: 100%; background: color-mix(in srgb, var(--ink) 4%, transparent); transition: background .12s ease; }
 .ck-sidebar-nav a:hover, .ck-sidebar-foot a:hover { background: var(--clay-tint); }
 .ck-sidebar-nav a[aria-current="page"] { background: var(--clay); color: var(--on-clay); }
 .ck-sidebar-nav svg, .ck-sidebar-foot svg { color: var(--clay); flex-shrink: 0; }
 .ck-sidebar-nav a[aria-current="page"] svg { color: var(--on-clay); }
-.ck-sidebar-foot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
-.ck-sidebar-foot a { font-size: 13px; color: var(--slate); }
-.ck-sidebar-foot button.ck-logout { background: none; border: 0; min-height: 0; margin: 0; font-size: 13px; color: var(--danger); justify-content: flex-start; }
+.ck-sidebar-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.ck-sidebar-foot a { font-size: 14px; font-weight: 500; color: var(--slate); }
+.ck-sidebar-foot button.ck-logout { background: none; border: 0; min-height: 0; margin: 0; font-size: 14px; font-weight: 500; color: var(--danger); justify-content: flex-start; }
 .ck-sidebar-foot button.ck-logout:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
 .ck-sidebar-foot button.ck-logout svg { color: var(--danger); }
 .ck-with-sidebar .ck-shell { flex: 1; min-width: 0; }
 @media (max-width: 860px) {
   .ck-with-sidebar { display: block; min-height: 0; }
-  .ck-sidebar { position: static; height: auto; width: auto; flex-direction: row; align-items: center; gap: 2px; overflow-x: auto; border-inline-end: none; border-bottom: 1px solid var(--line); padding: 8px 12px; }
+  .ck-sidebar { position: static; height: auto; width: auto; flex-direction: row; align-items: center; gap: 4px; overflow-x: auto; border-inline-end: none; border-bottom: 1px solid var(--line); padding: 10px 12px; }
   .ck-sidebar-brand { display: none; }
-  .ck-sidebar-nav { flex-direction: row; }
+  .ck-sidebar-nav { flex-direction: row; gap: 4px; }
+  /* Row layout: the group boxes dissolve so every item flows inline, and the
+     section headings are dropped (the icons alone carry the nav here). */
+  .ck-nav-group { display: contents; }
+  .ck-nav-group + .ck-nav-group { margin-top: 0; }
+  .ck-nav-heading { display: none; }
   .ck-sidebar-nav a span, .ck-sidebar-foot a span, .ck-sidebar-foot button.ck-logout span { display: none; }
-  .ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { padding: 10px; flex-shrink: 0; width: auto; }
+  .ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-logout { padding: 12px; flex-shrink: 0; width: auto; }
   .ck-sidebar-foot { flex-direction: row; margin: 0 0 0 auto; padding: 0; border-top: none; }
 }
 
@@ -244,3 +257,86 @@
 .ck-card { box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
 .ck-grid2 > .ck-card:hover { box-shadow: 0 8px 22px rgba(0, 0, 0, .4); }
 .ck-drawer { box-shadow: 8px 0 32px rgba(0, 0, 0, .5); }
+
+/* Finance screens (חיוב והגדרות > הנהלת חשבונות). Scoped under .ck-fin so no other cockpit page changes.
+   Goals: a readable base size for Hebrew, a clear hierarchy, money that lines up, and rows whose actions
+   never run off the edge of the table. */
+.ck-fin { font-size: 15px; line-height: 1.55; letter-spacing: 0; }
+.ck-fin .ck-label { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 6px; }
+.ck-fin .ck-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.ck-fin .ck-meta { font-size: 13.5px; line-height: 1.6; color: var(--slate); }
+.ck-fin .ck-ok, .ck-fin .ck-warn, .ck-fin .ck-err { font-size: 14.5px; line-height: 1.6; padding: 12px 14px; }
+.ck-fin .ck-field { font-size: 13.5px; font-weight: 600; }
+.ck-fin .ck-input, .ck-fin .ck-select { font-size: 15px; }
+
+/* Tabs: a solid pill row for the two top sections, an underline row for the sections inside. */
+.fin-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.fin-tabs .ck-btn { font-size: 15px; font-weight: 600; min-height: 42px; padding: 8px 20px; }
+.fin-subtabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line-strong); }
+.fin-subtab { font: inherit; font-size: 15px; font-weight: 600; color: var(--slate); background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 16px; margin-bottom: -1px; cursor: pointer; }
+.fin-subtab:hover { color: var(--ink); }
+.fin-subtab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--clay); }
+.fin-subtab:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 6px; }
+
+/* Tables: roomier rows, bold headers, text columns wrap or truncate, numbers and dates never break. */
+.ck-fin .ck-table { font-size: 14.5px; }
+.ck-fin .ck-table th { font-size: 13px; font-weight: 700; color: var(--ink); padding: 12px 14px; opacity: .85; }
+.ck-fin .ck-table td { padding: 13px 14px; vertical-align: middle; line-height: 1.5; }
+.ck-fin .ck-table td.fin-text { white-space: normal; min-width: 180px; max-width: 360px; }
+.ck-fin .fin-name { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+.ck-fin .fin-sub { display: block; font-size: 12.5px; color: var(--slate); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+.ck-fin .ck-table th.fin-num, .ck-fin .ck-table td.fin-num { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ck-fin .ck-table td.fin-ltr { direction: ltr; text-align: left; unicode-bidi: isolate; white-space: nowrap; }
+.ck-fin .ck-table td.fin-actions-cell { width: 1%; }
+.fin-actions { display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-end; }
+.ck-fin .ck-btn.sm { min-height: 34px; padding: 5px 14px; font-size: 13.5px; white-space: nowrap; }
+
+/* Numbers that matter: a clear label above a large figure. */
+.fin-stat .ck-meta:first-child { font-size: 13.5px; font-weight: 600; color: var(--ink); opacity: .8; }
+.fin-stat .fin-figure { font-size: 28px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; margin: 4px 0; }
+.fin-stat .fin-note { font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+/* Money semantics, one meaning per colour: inflow (receipts, revenue), outflow (expenses, payments out), trust
+   (client trust funds and deposits, never revenue). Each text shade holds 4.5:1 on its own tint and on white.
+   Trust has no ledger behind it yet: the class exists so the first screen that shows trust money cannot reuse
+   the inflow colour by accident. */
+.ck-fin {
+  --fin-inflow: #04694a; --fin-inflow-bg: #ecf7f1; --fin-inflow-line: #a7d8c0;
+  --fin-outflow: #a3302a; --fin-outflow-bg: #fcefed; --fin-outflow-line: #e8b9b4;
+  --fin-trust: #7a5210; --fin-trust-bg: #fbf4e3; --fin-trust-line: #e3cd96;
+}
+.fin-stat.fin-inflow { background: var(--fin-inflow-bg); border-color: var(--fin-inflow-line); }
+.fin-stat.fin-outflow { background: var(--fin-outflow-bg); border-color: var(--fin-outflow-line); }
+.fin-stat.fin-trust { background: var(--fin-trust-bg); border-color: var(--fin-trust-line); }
+.fin-inflow .fin-figure { color: var(--fin-inflow); }
+.fin-outflow .fin-figure { color: var(--fin-outflow); }
+.fin-trust .fin-figure { color: var(--fin-trust); }
+.ck-badge.inflow { background: var(--fin-inflow-bg); color: var(--fin-inflow); }
+.ck-badge.outflow { background: var(--fin-outflow-bg); color: var(--fin-outflow); }
+.ck-badge.trust { background: var(--fin-trust-bg); color: var(--fin-trust); }
+.fin-figure, .fin-stat .fin-figure { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 720px) {
+  .ck-fin { font-size: 15px; }
+  .fin-subtab { padding: 9px 12px; }
+  .ck-fin .ck-table td.fin-text { min-width: 150px; }
+  .fin-actions { flex-wrap: wrap; }
+  /* The table scrolls sideways on a phone; keep the row actions in view. */
+  .ck-fin .ck-table td.fin-actions-cell { position: sticky; left: 0; background: var(--card); box-shadow: 6px 0 10px -6px rgba(0, 0, 0, .35); }
+}
+
+/* Income over time: a row of key figures and a bar chart that stays left to right, like every numeric axis. */
+.fin-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.fin-kpis .ck-meta { font-size: 13px; font-weight: 600; color: var(--ink); opacity: .8; }
+.fin-kpi { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.25; margin-top: 2px; }
+.fin-chart { width: 100%; height: auto; max-height: 260px; direction: ltr; }
+.fin-grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+
+/* Trust figures: direction and share. Direction is carried by an arrow and words, never by colour alone. */
+.fin-delta { font-size: 13px; font-weight: 600; color: var(--slate); margin: 2px 0 6px; }
+.fin-delta[data-dir="up"] { color: var(--success); }
+.fin-delta[data-dir="down"] { color: var(--danger); }
+.fin-share { display: inline-flex; align-items: center; gap: 8px; min-width: 120px; }
+.fin-bar { flex: 1; height: 6px; border-radius: 999px; background: var(--line-strong); overflow: hidden; display: block; }
+.fin-bar > i { display: block; height: 100%; border-radius: 999px; background: var(--clay); }
+.fin-pct { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--slate); min-width: 34px; text-align: end; }

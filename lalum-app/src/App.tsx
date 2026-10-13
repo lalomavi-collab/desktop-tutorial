@@ -43,6 +43,13 @@ const AdminMatters = lazy(() => import("./pages/cockpit/AdminMatters").then((m) 
 const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ default: m.Billing })));
 const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ default: m.Security })));
 const Kyc = lazy(() => import("./pages/cockpit/Kyc").then((m) => ({ default: m.Kyc })));
+const Scheduling = lazy(() => import("./pages/cockpit/Scheduling").then((m) => ({ default: m.Scheduling })));
+const Discussions = lazy(() => import("./pages/cockpit/Discussions").then((m) => ({ default: m.Discussions })));
+const ClientDocuments = lazy(() => import("./pages/cockpit/ClientDocuments").then((m) => ({ default: m.ClientDocuments })));
+const CallsInbox = lazy(() => import("./pages/cockpit/CallsInbox").then((m) => ({ default: m.CallsInbox })));
+const MessageInbox = lazy(() => import("./pages/cockpit/MessageInbox").then((m) => ({ default: m.MessageInbox })));
+const Payments = lazy(() => import("./pages/cockpit/Payments").then((m) => ({ default: m.Payments })));
+const Members = lazy(() => import("./pages/cockpit/Members").then((m) => ({ default: m.Members })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const ImportFolderPage = lazy(() => import("./pages/cockpit/ImportFolder").then((m) => ({ default: m.ImportFolderPage })));
 const PartnerDashboardPage = lazy(() => import("./pages/cockpit/PartnerDashboard").then((m) => ({ default: m.PartnerDashboardPage })));
@@ -111,9 +118,16 @@ export default function App() {
           <Route path="workspace/bin" element={<Suspense fallback={null}><BinPage /></Suspense>} />
           <Route path="workspace/guide" element={<Suspense fallback={null}><CockpitGuide /></Suspense>} />
           <Route path="workspace/kyc" element={<Suspense fallback={null}><Kyc /></Suspense>} />
+          <Route path="workspace/scheduling" element={<Suspense fallback={null}><Scheduling /></Suspense>} />
+          <Route path="workspace/discussions" element={<Suspense fallback={null}><Discussions /></Suspense>} />
+          <Route path="workspace/client-docs" element={<Suspense fallback={null}><ClientDocuments /></Suspense>} />
+          <Route path="workspace/calls" element={<Suspense fallback={null}><CallsInbox /></Suspense>} />
+          <Route path="workspace/inbox" element={<Suspense fallback={null}><MessageInbox /></Suspense>} />
+          <Route path="workspace/payments" element={<Suspense fallback={null}><Payments /></Suspense>} />
           <Route path="workspace/:matterId" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="admin/matters" element={<Suspense fallback={null}><AdminMatters /></Suspense>} />
           <Route path="settings/security" element={<Suspense fallback={null}><Security /></Suspense>} />
+          <Route path="settings/members" element={<Suspense fallback={null}><Members /></Suspense>} />
           <Route path="settings/billing" element={<Suspense fallback={null}><Billing /></Suspense>} />
           <Route path="legal/saas-terms" element={<Suspense fallback={null}><SaasTerms /></Suspense>} />
           <Route path="legal/client-disclosure" element={<Suspense fallback={null}><ClientDisclosure /></Suspense>} />

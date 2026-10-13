@@ -1,7 +1,7 @@
 // Small dependency-free SVG charts for the cockpit dashboard. Each carries a text alternative (role="img" + aria-label) with its numbers.
 import type { ReactNode } from "react";
 
-const GREEN = "#3d8d2e", GREEN_L = "#8ed46a", SUN = "#f5c431", SUN_D = "#e0a312", RED = "#cf4b3a";
+const GREEN = "#537056", GREEN_L = "#9bbb9f", SUN = "#f5c431", SUN_D = "#e0a312", RED = "#cf4b3a";
 
 /** Smooth path through points (Catmull-Rom to cubic Bezier). */
 function smooth(pts: Array<[number, number]>): string {
@@ -33,10 +33,10 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
       <defs>
         <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={SUN} stopOpacity=".75" /><stop offset="1" stopColor={SUN} stopOpacity=".04" /></linearGradient>
       </defs>
-      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke="rgba(47,111,38,.14)" strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="11" fill="var(--slate)">{t.v}</text></g>))}
+      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke="rgba(47,111,38,.14)" strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="12" fill="var(--slate)">{t.v}</text></g>))}
       {area && <path d={area} fill={`url(#${id}-f)`} />}
       {line && <path d={line} fill="none" stroke={SUN_D} strokeWidth="3" strokeLinecap="round" />}
-      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--slate)">{labels[i]}</text> : null)}
+      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="12" fill="var(--slate)">{labels[i]}</text> : null)}
       {last && <g><circle cx={last[0]} cy={last[1]} r="9" fill={GREEN} opacity=".18" /><circle cx={last[0]} cy={last[1]} r="5" fill="#fff" stroke={GREEN} strokeWidth="3" /></g>}
     </svg>
   );
@@ -50,7 +50,7 @@ export function PillBars({ items }: { items: Array<{ label: string; value: numbe
       {items.map((i) => (
         <div key={i.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, maxWidth: 70 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--slate)" }}>{i.value}</span>
-          <div style={{ width: 34, height: Math.max(26, 140 * (i.value / max)), borderRadius: 18, background: `linear-gradient(180deg, ${i.color}, color-mix(in srgb, ${i.color} 70%, #1f4d1a))`, boxShadow: "inset 0 2px 0 rgba(255,255,255,.4), 0 6px 12px rgba(54,110,40,.2)" }} />
+          <div style={{ width: 34, height: Math.max(26, 140 * (i.value / max)), borderRadius: 18, background: `linear-gradient(180deg, ${i.color}, color-mix(in srgb, ${i.color} 70%, #2a3f2d))`, boxShadow: "inset 0 2px 0 rgba(255,255,255,.4), 0 6px 12px rgba(54,110,40,.2)" }} />
           <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--clay)" }}>{i.label}</span>
         </div>
       ))}
@@ -74,7 +74,7 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
           return el;
         })}
         <text x="70" y="68" textAnchor="middle" fontSize="26" fontWeight="800" fill="var(--ink)">{centre}</text>
-        <text x="70" y="88" textAnchor="middle" fontSize="11" fill="var(--slate)">{sub}</text>
+        <text x="70" y="88" textAnchor="middle" fontSize="12" fill="var(--slate)">{sub}</text>
       </svg>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
         {segments.map((s) => <li key={s.label} style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 12, height: 12, borderRadius: 4, background: s.color }} /><span>{s.label}</span><b style={{ marginInlineStart: "auto" }}>{s.value}</b></li>)}
@@ -87,4 +87,55 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
 export function StatusBar({ pct, tone }: { pct: number; tone: "green" | "yellow" | "red" }) {
   const c = tone === "green" ? [GREEN_L, GREEN] : tone === "yellow" ? ["#ffe58a", SUN_D] : ["#f0a79c", RED];
   return <div style={{ height: 10, borderRadius: 6, background: "rgba(47,111,38,.12)", overflow: "hidden", minWidth: 90 }}><div style={{ width: `${pct}%`, height: "100%", borderRadius: 6, background: `linear-gradient(90deg, ${c[0]}, ${c[1]})` }} /></div>;
+}
+
+/** Half-circle gauge for one percentage, with the number in the middle. */
+export function Gauge({ pct, label, sub }: { pct: number; label: string; sub: string }) {
+  const p = Math.max(0, Math.min(100, pct));
+  const R = 60, C = Math.PI * R;
+  const color = p >= 80 ? GREEN : p >= 60 ? SUN_D : RED;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+      <svg viewBox="0 0 150 90" width="190" role="img" aria-label={`${label}: ${p}%`}>
+        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke="rgba(47,111,38,.14)" strokeWidth="16" strokeLinecap="round" />
+        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke={color} strokeWidth="16" strokeLinecap="round" strokeDasharray={`${(p / 100) * C} ${C}`} />
+        <text x="75" y="70" textAnchor="middle" fontSize="26" fontWeight="800" fill="var(--ink)">{p}%</text>
+      </svg>
+      <b style={{ fontSize: 13.5 }}>{label}</b>
+      <span style={{ fontSize: 12, color: "var(--slate)" }}>{sub}</span>
+    </div>
+  );
+}
+
+/** Horizontal labelled bars with the value at the end. */
+export function BarsH({ items, max }: { items: Array<{ label: string; value: number; color?: string; suffix?: string }>; max?: number }) {
+  const m = max ?? Math.max(1, ...items.map((i) => i.value));
+  return (
+    <div role="img" aria-label={items.map((i) => `${i.label}: ${i.value}${i.suffix ?? ""}`).join(", ")} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {items.map((i) => (
+        <div key={i.label} style={{ display: "grid", gridTemplateColumns: "minmax(80px, 150px) 1fr 44px", alignItems: "center", gap: 10, fontSize: 13 }}>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.label}</span>
+          <div style={{ height: 12, borderRadius: 7, background: "rgba(47,111,38,.12)", overflow: "hidden" }}>
+            <div style={{ width: `${Math.max(3, (i.value / m) * 100)}%`, height: "100%", borderRadius: 7, background: `linear-gradient(90deg, ${GREEN_L}, ${i.color ?? GREEN})` }} />
+          </div>
+          <b style={{ textAlign: "end" }}>{i.value}{i.suffix ?? ""}</b>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Tiny column chart (one bar per bucket), for a strip under a heading. */
+export function MiniBars({ values, labels, color = GREEN }: { values: number[]; labels: string[]; color?: string }) {
+  const m = Math.max(1, ...values);
+  return (
+    <div role="img" aria-label={values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 96 }}>
+      {values.map((v, i) => (
+        <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 0 }}>
+          <div style={{ width: "100%", maxWidth: 26, height: Math.max(6, 66 * (v / m)), borderRadius: 8, background: `linear-gradient(180deg, ${GREEN_L}, ${color})` }} />
+          <span style={{ fontSize: 10.5, color: "var(--slate)" }}>{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  );
 }

@@ -966,13 +966,7 @@ a.card:focus-visible {
   border-end-start-radius: 14px;
   border-end-end-radius: 14px;
 }
-/* Warm brand tones in rotation, so the stack reads as one family rather than
-   six unrelated colours. */
-.pillar-band:nth-child(6n + 2) { border-inline-start-color: #916c26; }
-.pillar-band:nth-child(6n + 3) { border-inline-start-color: #8a3f45; }
-.pillar-band:nth-child(6n + 4) { border-inline-start-color: var(--success); }
-.pillar-band:nth-child(6n + 5) { border-inline-start-color: var(--clay-bright); }
-.pillar-band:nth-child(6n) { border-inline-start-color: #916c26; }
+/* One edge colour for the whole stack: the bands differ by content, not by hue. */
 
 @media (prefers-reduced-motion: no-preference) {
   .pillar-band {
@@ -1080,19 +1074,11 @@ a.card:hover .card-go {
   gap: 10px;
   opacity: 1;
 }
-/* Feature grids gain a gentle warm accent on the top edge, cycled so a row of
-   cards reads as one family with just enough colour to feel alive. */
+/* Feature grids carry one sage accent on the top edge. The three-colour cycle
+   (rust, gold, burgundy) read as unrelated; the cards differ by content. */
 .grid-3 > .card {
   border-top-width: 3px;
-}
-.grid-3 > .card:nth-child(3n + 1) {
-  border-top-color: #a8482a;
-}
-.grid-3 > .card:nth-child(3n + 2) {
-  border-top-color: #916c26;
-}
-.grid-3 > .card:nth-child(3n) {
-  border-top-color: #8a3f45;
+  border-top-color: var(--clay);
 }
 
 /* Home band promoting LALUM Academy: dark premium, with a 2x2 course preview. */
@@ -1152,8 +1138,18 @@ a.card:hover .card-go {
 }
 .ha-thumb:hover {
   transform: translateY(-3px);
-  border-color: rgba(212, 175, 55, 0.5);
+  border-color: var(--clay-bright);
   opacity: 1;
+}
+/* The four course banners come in four different hues; a sage tint in colour
+   blend mode makes them one family without touching the image files. */
+.ha-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(95, 133, 100, 0.55);
+  mix-blend-mode: color;
+  pointer-events: none;
 }
 .ha-thumb img {
   width: 100%;
@@ -3631,7 +3627,6 @@ html.a11y-reduce-motion *::after {
 }
 /* Drawn variants have to stay visible through the scrim, so they keep the veil
    light. The warm blobs need the heavier one; lines do not. */
-.ambient-lattice .ambient-scrim,
 .ambient-clauses .ambient-scrim {
   background: linear-gradient(
     180deg,
@@ -3639,6 +3634,11 @@ html.a11y-reduce-motion *::after {
     rgba(245, 241, 232, 0.26) 58%,
     rgba(245, 241, 232, 0.72) 100%
   );
+}
+/* The lattice sits on the dark Engine chapter, so it settles into that chapter's own
+   ink instead of fading to ivory (which left a grey wash above the next dark band). */
+.ambient-lattice .ambient-scrim {
+  background: linear-gradient(180deg, rgba(26, 24, 21, 0.1) 0%, rgba(26, 24, 21, 0.3) 60%, var(--ink) 100%);
 }
 /* The one photographic variant. Contrast for the heading and lede comes from
    the frosted .hero-text-panel they sit in (below), not from washing out the
@@ -3979,8 +3979,9 @@ html.a11y-reduce-motion *::after {
     gap: 3px;
     padding: 6px 2px;
     border-radius: 12px;
+    position: relative;
     color: var(--slate);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.01em;
     transition: color 0.15s ease, background 0.15s ease, transform 0.12s ease;
@@ -3991,6 +3992,18 @@ html.a11y-reduce-motion *::after {
   .tabbar-item.active {
     color: var(--clay);
     background: var(--clay-tint);
+    box-shadow: inset 0 0 0 1px var(--clay-soft);
+    font-weight: 700;
+  }
+  /* The active tab also carries a bar on its top edge, so the state is not colour alone. */
+  .tabbar-item.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    inset-inline: 28%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--clay);
   }
   /* SOS is a <button>, not a link, so it needs its own reset on top of the
      shared .tabbar-item layout. */
@@ -4683,255 +4696,6 @@ html.a11y-reduce-motion *::after {
 .riskcalc-copied { font-size: 13.5px; line-height: 1.65; color: var(--slate); margin: 16px 0 0; max-inline-size: 62ch; }
 .riskcalc-disclaimer { font-size: 12.5px; line-height: 1.6; color: var(--slate); margin: 22px 0 0; }
 
-/* ============================================================
-   Floating video bubble (components/VideoBubble.tsx)
-   ------------------------------------------------------------
-   Deep navy and royal gold, the Tech-Legal premium pairing, kept
-   deliberately apart from the clay/ivory page palette so the
-   bubble reads as an invitation laid over the site rather than a
-   piece of it. The four values below are the whole palette: swap
-   them here and the bubble follows.
-   Positioning is logical (inset-inline-*), so the dock lands on
-   the correct side in Hebrew and Arabic (RTL) as well as in the
-   Latin languages, and it sits stacked above the chat button in
-   the same column rather than in a corner of its own.
-   ============================================================ */
-.vbub-dock {
-  /* Warm near-black rather than navy: the player stays dark, which is right
-     for video, but in the site's own family instead of a second brand. */
-  --vbub-navy: #17140f;
-  --vbub-navy-soft: #221d16;
-  --vbub-gold: var(--clay-bright);
-  --vbub-gold-soft: var(--clay-soft);
-
-  position: fixed;
-  /* Clear of the chat button (60px) that sits at bottom: 24px. */
-  bottom: 98px;
-  inset-inline-end: 24px;
-  z-index: 82;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
-/* Expanded, the player takes the whole corner: it covers the chat button, so
-   there is no reason to keep the gap above it. */
-.vbub-dock.is-open {
-  bottom: 24px;
-}
-
-/* ---------- expanded player ---------- */
-.vbub-panel {
-  position: relative;
-  width: 330px;
-  max-width: calc(100vw - 32px);
-  height: 560px;
-  max-height: calc(100vh - 130px);
-  background: var(--vbub-navy);
-  border: 1px solid rgba(212, 175, 55, 0.32);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 34px 70px -28px rgba(10, 25, 47, 0.8);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-panel { animation: vbub-rise 0.28s ease; }
-}
-@keyframes vbub-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.vbub-panel-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: var(--vbub-navy);
-  cursor: pointer;
-}
-
-/* The message, over the clip. The speaker is silent, so this is the voice:
-   large enough to read on a phone at arm's length, and lifted off the picture
-   by a gradient rather than a box, so it does not cover the face. */
-/* Read by assistive technology, never painted: the visible lines move too
-   fast to follow, so the message is also present once, whole. */
-.vbub-script-full {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-.vbub-script {
-  position: absolute;
-  inset-inline: 0;
-  /* Under the tool row and well clear of the footer, which already covers the
-     bottom third of the player with the name and the two buttons. */
-  inset-block-start: 0;
-  padding: 54px 22px 34px;
-  background: linear-gradient(to bottom, rgba(23, 20, 15, 0.9) 42%, rgba(23, 20, 15, 0.6) 72%, rgba(23, 20, 15, 0));
-  pointer-events: none;
-  text-align: center;
-}
-.vbub-script-line {
-  margin: 0;
-  color: #fff;
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1.35;
-  text-wrap: balance;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vbub-script { animation: vbub-caption 0.32s ease both; }
-}
-@keyframes vbub-caption {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: none; }
-}
-
-.vbub-panel-tools {
-  position: absolute;
-  top: 12px;
-  inset-inline-start: 12px;
-  z-index: 2;
-  display: flex;
-  gap: 8px;
-}
-.vbub-tool {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(10, 25, 47, 0.75);
-  color: #ffffff;
-  font-size: 17px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-.vbub-tool:hover {
-  color: var(--vbub-gold);
-  border-color: var(--vbub-gold);
-}
-
-/* The metadata and calls to action, over a navy fade so the text stays readable
-   whatever frame is behind it. */
-.vbub-panel-foot {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 74px 18px 18px;
-  background: linear-gradient(to top, var(--vbub-navy) 42%, rgba(10, 25, 47, 0.72) 72%, rgba(10, 25, 47, 0));
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.vbub-seek {
-  width: 100%;
-  height: 4px;
-  margin: 0;
-  accent-color: var(--vbub-gold);
-  cursor: pointer;
-}
-.vbub-seek:disabled { opacity: 0.4; cursor: default; }
-
-.vbub-meta { text-align: start; }
-.vbub-badge {
-  display: inline-block;
-  background: var(--vbub-gold);
-  color: var(--vbub-navy);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 9px;
-  border-radius: 999px;
-}
-.vbub-name {
-  margin: 7px 0 0;
-  color: #ffffff;
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-.vbub-tagline {
-  margin: 5px 0 0;
-  color: #cfd6e2;
-  font-size: 12.5px;
-  line-height: 1.6;
-}
-
-.vbub-ctas {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.vbub-cta-gold,
-.vbub-cta-ghost {
-  display: block;
-  text-align: center;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-}
-.vbub-cta-gold {
-  background: var(--vbub-gold);
-  color: var(--vbub-navy);
-  font-size: 14px;
-  font-weight: 800;
-  padding: 11px 14px;
-  box-shadow: 0 10px 24px -12px rgba(212, 175, 55, 0.9);
-}
-.vbub-cta-gold:hover {
-  background: var(--vbub-gold-soft);
-  transform: translateY(-1px);
-}
-.vbub-cta-ghost {
-  background: rgba(17, 34, 64, 0.85);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 9px 14px;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-}
-.vbub-cta-ghost:hover {
-  background: var(--vbub-navy-soft);
-  border-color: var(--vbub-gold);
-}
-
-/* Keyboard focus has to stay obvious against a dark, moving background. */
-.vbub-tool:focus-visible,
-.vbub-seek:focus-visible,
-.vbub-cta-gold:focus-visible,
-.vbub-cta-ghost:focus-visible {
-  outline: 3px solid var(--vbub-gold);
-  outline-offset: 3px;
-}
-
-@media (max-width: 900px) {
-  .vbub-dock {
-    /* The chat button is itself lifted above the bottom tab bar on phones. */
-    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
-    inset-inline-end: 16px;
-  }
-  .vbub-dock.is-open {
-    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-  }
-  .vbub-panel {
-    height: min(560px, calc(100vh - 190px));
-  }
-}
-
 /* The spacer that holds the page's height while a code-split route chunk
    loads. It was 70vh, which on a phone left the footer sitting at the bottom of
    the first screen: the chunk then arrived, the page grew from 1967px to
@@ -4984,8 +4748,7 @@ html.a11y-reduce-motion *::after {
   .contact-rail,
   .chat-dock,
   .a11y-dock,
-  .tabbar,
-  [class^="vbub-"] { display: none !important; }
+  .tabbar { display: none !important; }
 
   body { background: #fff; }
 
@@ -5014,29 +4777,26 @@ html.a11y-reduce-motion *::after {
    it is the visitor's own choice, once, on request.
    ============================================================ */
 .qad-dock {
-  position: fixed;
-  bottom: 98px;
-  inset-inline-end: 24px;
-  z-index: 82;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
+/* Sized off the same --ctrl-h the rest of the toolbar uses, so the three
+   round controls in the header line up instead of one of them standing a head
+   taller. It was 56px when it floated in a corner of its own. */
 .qad-button {
-  width: 56px;
-  height: 56px;
+  width: var(--ctrl-h, 40px);
+  height: var(--ctrl-h, 40px);
+  flex: none;
   border-radius: 50%;
   padding: 0;
-  border: 2px solid var(--clay-soft);
-  box-shadow: 0 16px 34px -18px rgba(26, 24, 21, 0.55);
+  border: 1px solid var(--clay-soft);
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 .qad-button:hover {
   border-color: var(--clay);
-  box-shadow: 0 20px 40px -18px rgba(26, 24, 21, 0.6);
 }
 .qad-button:focus-visible {
   outline: 3px solid var(--clay);
@@ -5054,8 +4814,9 @@ html.a11y-reduce-motion *::after {
 
 .qad-menu {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 12px);
   inset-inline-end: 0;
+  z-index: 82;
   width: min(272px, calc(100vw - 48px));
   background: var(--paper);
   border: 1px solid var(--line);
@@ -5070,7 +4831,7 @@ html.a11y-reduce-motion *::after {
   .qad-menu { animation: qad-menu-in 0.16s ease both; }
 }
 @keyframes qad-menu-in {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: none; }
 }
 .qad-item {
@@ -5124,13 +4885,6 @@ html.a11y-reduce-motion *::after {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-@media (max-width: 900px) {
-  .qad-dock {
-    bottom: calc(164px + env(safe-area-inset-bottom, 0px));
-    inset-inline-end: 16px;
-  }
 }
 
 /* ---------- bottom sheets (phones) ---------- */
@@ -5321,3 +5075,60 @@ html.a11y-reduce-motion *::after {
     font-size: 12px;
   }
 }
+
+/* Credibility strip under the home hero: the firm's own figures as small instrument tiles, the same language as the
+   cockpit's stat cards (hairline border, monospaced tabular figure), in the site's ivory and sage. */
+.cred-block { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.cred-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); }
+.cred-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cred-strip li { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 96px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.6); }
+.cred-fig { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 24px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--clay); }
+.cred-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+@media (max-width: 520px) { .cred-strip li { flex: 1 1 calc(50% - 8px); } }
+
+/* Dark instrument panel, shared by the home Engine cards and the Advisory
+   dispute-resolution modules. Three depths (section, panel, badge) instead of
+   one translucent box; sage accent, never the retired terracotta. */
+.dark-panel {
+  position: relative;
+  padding: 32px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(36,34,30,.9), rgba(24,22,19,.94));
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 40px -24px rgba(0,0,0,.6);
+}
+.dark-panel-badge {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(154,187,159,.16); color: var(--clay-bright);
+  box-shadow: inset 0 0 0 1px rgba(154,187,159,.28);
+}
+.dark-panel-idx {
+  position: absolute; top: 30px; inset-inline-end: 32px;
+  font: 600 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: .12em; color: rgba(255,255,255,.5); unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.dark-panel-code {
+  font: 600 20px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: .08em; color: var(--clay-bright); margin: 22px 0 6px;
+}
+.dark-panel-title { font-size: 17px; font-weight: 600; color: var(--paper); margin: 0 0 10px; }
+.dark-panel-body { font-size: 15px; line-height: 1.66; color: #D6D0C4; margin: 0; }
+
+/* Capability tags as chips (replaces the dotted run-on line on the focus cards). */
+.chip-row {
+  list-style: none; margin: 14px 0 0; padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.chip-row li {
+  font-size: 12.5px; font-weight: 600; color: var(--mint-deep, #3f5a43);
+  background: var(--clay-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 11px;
+}
+
+/* Site search: the same sage focus ring as the cockpit controls. */
+.site-search-box { transition: border-color .15s ease, box-shadow .15s ease; }
+.site-search-box:focus-within { border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }

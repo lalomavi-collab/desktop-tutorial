@@ -8,6 +8,8 @@ import {
   CHANNEL, VIA, closeTask, createTask, dur, firmPeople, fmtExact, myInquiryAddress, handleInquiry, listInquiries, listTasks, logReply, matterOptions, openRaw, scorecard,
 } from "../../lib/cockpit/work";
 import type { Inquiry, Person, Reply, Scorecard, Task } from "../../lib/cockpit/work";
+import { CheckArt, InboxArt } from "../../components/cockpit/CockpitIllustrations";
+import { InquiryInsights, ScoreInsights, TaskInsights } from "../../components/cockpit/CockpitInsights";
 
 const mins = (a: string, b: string) => (new Date(b).getTime() - new Date(a).getTime()) / 60000;
 
@@ -19,6 +21,8 @@ function InquiriesView() {
   const [raw, setRaw] = useState<{ id: string; text: string } | null>(null);
   const [via, setVia] = useState("PHONE");
   const [addr, setAddr] = useState<string | null>(null);
+  const [target, setTarget] = useState(240);
+  useEffect(() => { void scorecard(30).then((x) => { if (x) setTarget(x.target_minutes); }); }, []);
   useEffect(() => { void myInquiryAddress().then(setAddr); }, []);
   const load = useCallback(async () => { setData(await listInquiries()); setPeople(await firmPeople()); }, []);
   useEffect(() => { void load(); }, [load]);
@@ -37,13 +41,14 @@ function InquiriesView() {
     <div className="ck-stack">
       <div className="ck-warn">כאן נרשם שהלקוח קיבל מענה ומתי. תוכן המענה אינו נשמר במערכת. זמן המענה הראשון נמדד משעת קבלת הפנייה עד לרישום הראשון, והוא מזין את מדד התגובה. הפתיחה של הטקסט המקורי נרשמת ביומן הביקורת.</div>
       {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של המשרד</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <b dir="ltr">{addr}</b>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
+      <InquiryInsights inquiries={data.inquiries} replies={data.replies} targetMinutes={target} />
       <div className="ck-row">
         <select className="ck-select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value as "open" | "all")}><option value="open">פניות פתוחות</option><option value="all">כל הפניות</option></select>
         <label className="ck-row ck-meta">ערוץ המענה שיירשם:
           <select className="ck-select" style={{ width: "auto" }} value={via} onChange={(e) => setVia(e.target.value)}>{Object.entries(VIA).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
       </div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} role="status">{msg.text}</div>}
-      {rows.length === 0 ? <div className="ck-card ck-empty"><div className="ck-meta">אין פניות להצגה. פניות של לקוחות יופיעו כאן כשיתחברו ערוצי הקליטה.</div></div> : (
+      {rows.length === 0 ? <div className="ck-card ck-empty"><InboxArt size={104} /><div className="ck-meta">אין פניות להצגה. פניות של לקוחות יופיעו כאן כשיתחברו ערוצי הקליטה.</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>התקבלה</th><th>ערוץ</th><th>תיק</th><th>תקציר (מוסתר)</th><th>מענה ראשון</th><th>פעולות</th></tr></thead><tbody>
           {rows.map((i) => {
             const f = first.get(i.id);
@@ -100,8 +105,9 @@ function TasksView() {
         <div className="ck-row"><button className="ck-btn primary" disabled={!f.matter || f.title.trim().length < 3} onClick={() => void add()}>יצירת משימה</button></div>
       </div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} role="status">{msg.text}</div>}
+      <TaskInsights tasks={d.tasks} />
       <div className="ck-row"><select className="ck-select" style={{ width: "auto" }} value={show} onChange={(e) => setShow(e.target.value as "OPEN" | "DONE")}><option value="OPEN">משימות פתוחות</option><option value="DONE">סגורות</option></select></div>
-      {rows.length === 0 ? <div className="ck-card ck-empty"><div className="ck-meta">{show === "OPEN" ? "אין משימות פתוחות." : "אין משימות סגורות."}</div></div> : (
+      {rows.length === 0 ? <div className="ck-card ck-empty"><CheckArt size={104} /><div className="ck-meta">{show === "OPEN" ? "אין משימות פתוחות." : "אין משימות סגורות."}</div></div> : (
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>משימה</th><th>תיק</th><th>אחראי</th><th>מועד יעד</th><th>מצב</th><th>פעולות</th></tr></thead><tbody>
           {rows.map((t) => {
             const late = t.status === "OPEN" && t.due_at && new Date(t.due_at).getTime() < now;
@@ -130,6 +136,7 @@ function ScoreView() {
   return (
     <div className="ck-stack">
       <div className="ck-warn">מדד פנימי לניהול ולשיפור השירות, אינו חוות דעת על איכות העבודה המשפטית. עורך דין רואה את המספרים שלו בלבד; שותף רואה את כל הצוות. הנוסחה גלויה כאן, והיא נשענת רק על רישומים שבוצעו במערכת: אם מענה לא נרשם, הוא לא נספר.</div>
+      <ScoreInsights sc={sc} nameOf={name} />
       <div className="ck-row"><label className="ck-row ck-meta">תקופה:
         <select className="ck-select" style={{ width: "auto" }} value={days} onChange={(e) => setDays(Number(e.target.value))}><option value={7}>7 ימים</option><option value={30}>30 ימים</option><option value={90}>90 ימים</option></select></label></div>
       <div className="ck-grid2">
