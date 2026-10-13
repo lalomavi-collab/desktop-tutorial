@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import "../../../styles/cockpit-audit-log.css";
 
 // Hebrew labels for the actions this app actually writes (lalum_audit_write callers across the
 // migrations). An action not in this map still renders, just with its raw code as the label.
@@ -66,16 +67,16 @@ export function AuditLogTab() {
         onChange={(e) => setQ(e.target.value)}
       />
       <div className="ck-table-wrap">
-        <table className="ck-table">
+        <table className="ck-table audit-table">
           <thead><tr><th>מתי</th><th>מי</th><th>פעולה</th><th>ישות</th><th>פרטים</th></tr></thead>
           <tbody>
             {filtered.map((r) => (
               <tr key={r.id}>
-                <td className="fin-text">{fmtWhen(r.at)}</td>
-                <td className="fin-text">{r.actor_id ? names[r.actor_id] ?? r.actor_id : "מערכת"}</td>
-                <td>{actionLabel(r.action)}</td>
-                <td className="fin-text" style={{ overflowWrap: "anywhere" }}>{r.entity}{r.entity_id ? ` · ${r.entity_id}` : ""}</td>
-                <td className="fin-text" style={{ overflowWrap: "anywhere" }}>{Object.keys(r.payload ?? {}).length ? JSON.stringify(r.payload) : ""}</td>
+                <td className="fin-text" data-label="מתי">{fmtWhen(r.at)}</td>
+                <td className="fin-text" data-label="מי">{r.actor_id ? names[r.actor_id] ?? r.actor_id : "מערכת"}</td>
+                <td data-label="פעולה">{actionLabel(r.action)}</td>
+                <td className="fin-text" data-label="ישות" style={{ overflowWrap: "anywhere" }}>{r.entity}{r.entity_id ? ` · ${r.entity_id}` : ""}</td>
+                <td className="fin-text" data-label="פרטים" style={{ overflowWrap: "anywhere" }}>{Object.keys(r.payload ?? {}).length ? JSON.stringify(r.payload) : ""}</td>
               </tr>
             ))}
             {loaded && !filtered.length && <tr><td colSpan={5}>אין רשומות להצגה</td></tr>}
