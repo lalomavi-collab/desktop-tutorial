@@ -33,10 +33,10 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
       <defs>
         <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={SUN} stopOpacity=".75" /><stop offset="1" stopColor={SUN} stopOpacity=".04" /></linearGradient>
       </defs>
-      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke="rgba(47,111,38,.14)" strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="11" fill="var(--slate)">{t.v}</text></g>))}
+      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke="rgba(47,111,38,.14)" strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="12" fill="var(--slate)">{t.v}</text></g>))}
       {area && <path d={area} fill={`url(#${id}-f)`} />}
       {line && <path d={line} fill="none" stroke={SUN_D} strokeWidth="3" strokeLinecap="round" />}
-      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--slate)">{labels[i]}</text> : null)}
+      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="12" fill="var(--slate)">{labels[i]}</text> : null)}
       {last && <g><circle cx={last[0]} cy={last[1]} r="9" fill={GREEN} opacity=".18" /><circle cx={last[0]} cy={last[1]} r="5" fill="#fff" stroke={GREEN} strokeWidth="3" /></g>}
     </svg>
   );
@@ -74,7 +74,7 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
           return el;
         })}
         <text x="70" y="68" textAnchor="middle" fontSize="26" fontWeight="800" fill="var(--ink)">{centre}</text>
-        <text x="70" y="88" textAnchor="middle" fontSize="11" fill="var(--slate)">{sub}</text>
+        <text x="70" y="88" textAnchor="middle" fontSize="12" fill="var(--slate)">{sub}</text>
       </svg>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
         {segments.map((s) => <li key={s.label} style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 12, height: 12, borderRadius: 4, background: s.color }} /><span>{s.label}</span><b style={{ marginInlineStart: "auto" }}>{s.value}</b></li>)}

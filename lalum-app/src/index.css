@@ -966,13 +966,7 @@ a.card:focus-visible {
   border-end-start-radius: 14px;
   border-end-end-radius: 14px;
 }
-/* Warm brand tones in rotation, so the stack reads as one family rather than
-   six unrelated colours. */
-.pillar-band:nth-child(6n + 2) { border-inline-start-color: #916c26; }
-.pillar-band:nth-child(6n + 3) { border-inline-start-color: #8a3f45; }
-.pillar-band:nth-child(6n + 4) { border-inline-start-color: var(--success); }
-.pillar-band:nth-child(6n + 5) { border-inline-start-color: var(--clay-bright); }
-.pillar-band:nth-child(6n) { border-inline-start-color: #916c26; }
+/* One edge colour for the whole stack: the bands differ by content, not by hue. */
 
 @media (prefers-reduced-motion: no-preference) {
   .pillar-band {
@@ -1080,19 +1074,11 @@ a.card:hover .card-go {
   gap: 10px;
   opacity: 1;
 }
-/* Feature grids gain a gentle warm accent on the top edge, cycled so a row of
-   cards reads as one family with just enough colour to feel alive. */
+/* Feature grids carry one sage accent on the top edge. The three-colour cycle
+   (rust, gold, burgundy) read as unrelated; the cards differ by content. */
 .grid-3 > .card {
   border-top-width: 3px;
-}
-.grid-3 > .card:nth-child(3n + 1) {
-  border-top-color: #a8482a;
-}
-.grid-3 > .card:nth-child(3n + 2) {
-  border-top-color: #916c26;
-}
-.grid-3 > .card:nth-child(3n) {
-  border-top-color: #8a3f45;
+  border-top-color: var(--clay);
 }
 
 /* Home band promoting LALUM Academy: dark premium, with a 2x2 course preview. */
@@ -1152,8 +1138,18 @@ a.card:hover .card-go {
 }
 .ha-thumb:hover {
   transform: translateY(-3px);
-  border-color: rgba(212, 175, 55, 0.5);
+  border-color: var(--clay-bright);
   opacity: 1;
+}
+/* The four course banners come in four different hues; a sage tint in colour
+   blend mode makes them one family without touching the image files. */
+.ha-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(95, 133, 100, 0.55);
+  mix-blend-mode: color;
+  pointer-events: none;
 }
 .ha-thumb img {
   width: 100%;
@@ -3631,7 +3627,6 @@ html.a11y-reduce-motion *::after {
 }
 /* Drawn variants have to stay visible through the scrim, so they keep the veil
    light. The warm blobs need the heavier one; lines do not. */
-.ambient-lattice .ambient-scrim,
 .ambient-clauses .ambient-scrim {
   background: linear-gradient(
     180deg,
@@ -3639,6 +3634,11 @@ html.a11y-reduce-motion *::after {
     rgba(245, 241, 232, 0.26) 58%,
     rgba(245, 241, 232, 0.72) 100%
   );
+}
+/* The lattice sits on the dark Engine chapter, so it settles into that chapter's own
+   ink instead of fading to ivory (which left a grey wash above the next dark band). */
+.ambient-lattice .ambient-scrim {
+  background: linear-gradient(180deg, rgba(26, 24, 21, 0.1) 0%, rgba(26, 24, 21, 0.3) 60%, var(--ink) 100%);
 }
 /* The one photographic variant. Contrast for the heading and lede comes from
    the frosted .hero-text-panel they sit in (below), not from washing out the
@@ -3979,8 +3979,9 @@ html.a11y-reduce-motion *::after {
     gap: 3px;
     padding: 6px 2px;
     border-radius: 12px;
+    position: relative;
     color: var(--slate);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.01em;
     transition: color 0.15s ease, background 0.15s ease, transform 0.12s ease;
@@ -3991,6 +3992,18 @@ html.a11y-reduce-motion *::after {
   .tabbar-item.active {
     color: var(--clay);
     background: var(--clay-tint);
+    box-shadow: inset 0 0 0 1px var(--clay-soft);
+    font-weight: 700;
+  }
+  /* The active tab also carries a bar on its top edge, so the state is not colour alone. */
+  .tabbar-item.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    inset-inline: 28%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--clay);
   }
   /* SOS is a <button>, not a link, so it needs its own reset on top of the
      shared .tabbar-item layout. */
@@ -5115,3 +5128,7 @@ html.a11y-reduce-motion *::after {
   background: var(--clay-tint); border: 1px solid var(--line);
   border-radius: 999px; padding: 4px 11px;
 }
+
+/* Site search: the same sage focus ring as the cockpit controls. */
+.site-search-box { transition: border-color .15s ease, box-shadow .15s ease; }
+.site-search-box:focus-within { border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }

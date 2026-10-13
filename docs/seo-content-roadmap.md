@@ -88,7 +88,7 @@
 - V פיקוח אנושי אפקטיבי על מערכות AI: איך מיישמים בפועל (effective-human-oversight-ai-systems)
 - V מדיניות שקיפות ותיוג תוכן שנוצר ב-AI: יישום מעשי (ai-content-labeling-transparency-policy)
 - V Code of Practice למודלי יסוד (GPAI): מה נדרש מהחברה (gpai-code-of-practice-foundation-models)
-- רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית
+- V רגולציית AI בארה"ב מול אירופה: מה חשוב לחברה ישראלית (ai-regulation-us-vs-eu-israeli-companies)
 
 ## עדיפות 1ב: בינה מלאכותית לפי סקטור (מיתוג דגל, בניית אשכול ורטיקלי)
 
@@ -125,6 +125,10 @@
 - V מדיניות שימוש ב-AI ברשות מקומית: מה חייב להיות בנוהל (ai-use-policy-local-authority)
 - V רכש ומכרז AI ברשות מקומית: מה לדרוש מהספק (ai-procurement-tender-local-authority)
 - V הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI (ai-resident-data-privacy-local-authority)
+- V חובת ההנמקה, השקיפות וזכות העיון בהחלטה נתמכת AI ברשות המקומית (ai-local-authority-decision-reasoning-transparency)
+- V הטיה אלגוריתמית ושוויון בהחלטות הקצאה של הרשות המקומית (ai-local-authority-allocation-bias-equality)
+- V מצלמות וזיהוי פנים ברשות המקומית: הגבול החוקי של מעקב מבוסס AI (ai-municipal-facial-recognition-surveillance)
+- V אחריות הרשות המקומית לנזק מהחלטת AI שגויה: מהתקיפה המנהלית לפיצוי (ai-local-authority-tort-liability-damage)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 

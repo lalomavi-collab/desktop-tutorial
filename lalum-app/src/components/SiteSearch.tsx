@@ -112,7 +112,7 @@ export function SiteSearch() {
 
   return (
     <div style={{ position: "relative", maxWidth: 520, marginTop: 26 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid var(--line-strong)", background: "var(--card)", borderRadius: 9999, padding: "12px 18px" }}>
+      <div className="site-search-box" style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid var(--line-strong)", background: "var(--card)", borderRadius: 9999, padding: "12px 18px" }}>
         <Icon name="search" size={18} />
         <input
           value={q}

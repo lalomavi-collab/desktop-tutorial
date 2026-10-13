@@ -22,10 +22,10 @@
 .ck-cal-mini-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .ck-cal-mini-head b { font-size: 13.5px; }
 .ck-cal-mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-.ck-cal-mini-dow { font-size: 10.5px; color: var(--slate); text-align: center; padding-bottom: 4px; }
+.ck-cal-mini-dow { font-size: 12px; color: var(--slate); text-align: center; padding-bottom: 4px; }
 .ck-cal-mini-day { aspect-ratio: 1; border: none; background: transparent; color: var(--ink); font-size: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
 .ck-cal-mini-day:hover { background: var(--clay-tint); }
-.ck-cal-mini-day.other-month { color: var(--slate); opacity: .45; }
+.ck-cal-mini-day.other-month { color: var(--slate); opacity: .7; }
 .ck-cal-mini-day.today { font-weight: 700; box-shadow: inset 0 0 0 1.5px var(--clay); }
 .ck-cal-mini-day.selected { background: var(--clay); color: #fff; }
 .ck-cal-mini-day.has-events::after { content: ""; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--clay); }
@@ -41,16 +41,16 @@
 
 /* Month view */
 .ck-cal-month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.ck-cal-month-dow { font-size: 11.5px; font-weight: 700; color: var(--slate); text-align: center; padding: 8px 0; background: var(--clay-tint); }
+.ck-cal-month-dow { font-size: 12px; font-weight: 700; color: var(--slate); text-align: center; padding: 8px 0; background: var(--clay-tint); }
 .ck-cal-month-cell { min-height: 92px; border-top: 1px solid var(--line); border-inline-start: 1px solid var(--line); padding: 6px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; background: var(--card); }
 .ck-cal-month-cell:nth-child(7n+1) { border-inline-start: none; }
 .ck-cal-month-cell:hover { background: var(--clay-tint); }
-.ck-cal-month-cell.other-month { opacity: .4; }
+.ck-cal-month-cell.other-month { opacity: .7; }
 .ck-cal-month-daynum { font-size: 12.5px; font-weight: 600; }
 .ck-cal-month-daynum.today { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--clay); color: #fff; }
-.ck-cal-month-chip { font-size: 10.5px; padding: 1px 6px; border-radius: 6px; background: var(--clay-tint); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-inline-start: 2px solid var(--clay); }
+.ck-cal-month-chip { font-size: 12px; padding: 1px 6px; border-radius: 6px; background: var(--clay-tint); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-inline-start: 2px solid var(--clay); }
 .ck-cal-month-chip.outlook { border-inline-start-color: var(--slate); }
-.ck-cal-month-more { font-size: 10.5px; color: var(--slate); }
+.ck-cal-month-more { font-size: 12px; color: var(--slate); }
 
 /* Week / day time grid. Each day column gets a real minimum width (--cal-col-min, set inline from the
    number of visible days) so event text stays legible; .ck-cal-grid-wrap scrolls horizontally when
@@ -62,12 +62,12 @@
 .ck-cal-grid-head-day b { display: block; font-size: 14px; }
 .ck-cal-grid-head-day.today b { color: var(--clay); }
 .ck-cal-hours { display: flex; flex-direction: column; }
-.ck-cal-hour { height: var(--cal-hour-px, 48px); font-size: 10.5px; color: var(--slate); text-align: center; border-top: 1px solid var(--line); padding-top: 2px; }
+.ck-cal-hour { height: var(--cal-hour-px, 48px); font-size: 12px; color: var(--slate); text-align: center; border-top: 1px solid var(--line); padding-top: 2px; }
 .ck-cal-day-col { position: relative; border-inline-start: 1px solid var(--line); background-image: repeating-linear-gradient(to bottom, transparent, transparent calc(var(--cal-hour-px, 48px) - 1px), var(--line) calc(var(--cal-hour-px, 48px) - 1px), var(--line) var(--cal-hour-px, 48px)); }
 .ck-cal-now-line { position: absolute; inset-inline: 0; height: 2px; background: var(--danger); z-index: 1; }
-.ck-cal-event { position: absolute; inset-inline: 2px; border-radius: 8px; background: var(--clay-tint); border-inline-start: 3px solid var(--clay); padding: 3px 6px; font-size: 11px; overflow: hidden; cursor: pointer; }
+.ck-cal-event { position: absolute; inset-inline: 2px; border-radius: 8px; background: var(--clay-tint); border-inline-start: 3px solid var(--clay); padding: 3px 6px; font-size: 12px; overflow: hidden; cursor: pointer; }
 .ck-cal-event:hover { filter: brightness(1.08); }
-.ck-cal-event b { display: block; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ck-cal-event b { display: block; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ck-cal-event.kind-travel { border-inline-start-color: var(--slate); background: transparent; border: 1px dashed var(--line-strong); }
 .ck-cal-event.conflict { border-inline-start-color: var(--danger); }
 .ck-cal-event.outlook { border-inline-start-color: var(--slate); }
