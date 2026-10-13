@@ -332,6 +332,16 @@ export function trustBreakdown(rows: TrustTx[], key: "customer_id" | "matter_id"
   return [...m.entries()].map(([id, b]) => ({ id, balance: r2(b) })).filter((x) => x.balance !== 0).sort((a, b) => b.balance - a.balance);
 }
 
+/** Net movement of trust money recorded on or after `since` (YYYY-MM-DD, by the day it was recorded). */
+export function trustNetSince(rows: TrustTx[], since: string): number {
+  return r2(rows.filter((t) => t.created_at.slice(0, 10) >= since).reduce((a, t) => a + t.amount, 0));
+}
+
+/** Whole-percent share of `part` in `total`, clamped to 0..100; 0 when the total is not positive. */
+export function sharePct(part: number, total: number): number {
+  return total > 0 ? Math.max(0, Math.min(100, Math.round((part / total) * 100))) : 0;
+}
+
 /** Account number shown as its last four digits only. */
 export const maskAccount = (n: string): string => (n.length > 4 ? `***${n.slice(-4)}` : n);
 

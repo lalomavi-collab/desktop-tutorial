@@ -5,7 +5,7 @@
 .db-search input { width: 100%; min-height: 46px; border-radius: 9999px; padding-inline: 44px 16px; border: 1px solid rgba(83, 112, 86, .35); background: rgba(255, 255, 255, .9); font: inherit; font-size: 14.5px; color: var(--ink); box-shadow: inset 0 1px 3px rgba(70, 95, 73, .08); }
 .db-search svg { position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%); color: var(--clay); }
 .db-bubble { position: relative; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg, #6a8f6e, #537056); color: #fff; box-shadow: 0 6px 14px rgba(83, 112, 86, .35); text-decoration: none; }
-.db-bubble b { position: absolute; top: -4px; inset-inline-end: -4px; min-width: 20px; height: 20px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 11.5px; display: grid; place-items: center; padding: 0 5px; }
+.db-bubble b { position: absolute; top: -4px; inset-inline-end: -4px; min-width: 20px; height: 20px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 12px; display: grid; place-items: center; padding: 0 5px; }
 .db-user { display: flex; align-items: center; gap: 10px; margin-inline-start: auto; }
 .db-avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #8ed46a, #537056); color: #fff; font-weight: 800; font-size: 17px; box-shadow: 0 0 0 3px #fff, 0 6px 14px rgba(70, 95, 73, .3); }
 .db-user small { display: block; color: var(--slate); font-size: 12px; }
@@ -73,4 +73,4 @@
 .ck-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 @media (max-width: 700px) { .ck-insights > .ck-card[style*="span 2"] { grid-column: auto !important; } .ck-band { padding: 8px 12px; } .ck-band-art svg { width: 64px; height: 64px; } }
 
-.ck-navbadge { margin-inline-start: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 11.5px; font-weight: 800; display: inline-grid; place-items: center; }
+.ck-navbadge { margin-inline-start: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 12px; font-weight: 800; display: inline-grid; place-items: center; }
