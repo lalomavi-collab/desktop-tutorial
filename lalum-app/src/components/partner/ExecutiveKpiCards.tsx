@@ -36,7 +36,7 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wipHo
           <span>שוטף<b style={{ fontSize: 13 }}>{money(aging.current)}</b></span>
           <span>1 עד 30<b style={{ fontSize: 13 }}>{money(aging.d1_30)}</b></span>
           <span>31 עד 60<b style={{ fontSize: 13 }}>{money(aging.d31_60)}</b></span>
-          <span>60 ומעלה<b style={{ fontSize: 13, color: aging.d60plus > 0 ? "#8a2f21" : undefined }}>{money(aging.d60plus)}</b></span>
+          <span>60 ומעלה<b style={{ fontSize: 13, color: aging.d60plus > 0 ? "var(--danger)" : undefined }}>{money(aging.d60plus)}</b></span>
         </div>
         <small>מקור: חשבוניות פתוחות בספר Invoice4U</small>
       </article>
