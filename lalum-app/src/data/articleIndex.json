@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-municipal-facial-recognition-surveillance": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-employee-monitoring-privacy",
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-use-policy-local-authority"
+  ]
+ },
  "ai-local-authority-allocation-bias-equality": {
   "topic": "ai-governance",
   "related": [
@@ -235,8 +243,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-hr-overview-legal-exposure",
-   "ai-resident-data-privacy-local-authority",
-   "ai-hr-use-policy"
+   "ai-municipal-facial-recognition-surveillance",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-recruitment-screening-discrimination": {
@@ -403,8 +411,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-local-authority-decision-reasoning-transparency",
-   "ai-real-estate-urban-renewal-legal-exposure"
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "ai-local-authority-decision-reasoning-transparency"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
@@ -834,8 +842,8 @@
  "legal-algorist": {
   "topic": "ai-governance",
   "related": [
-   "legal-logic",
    "lawyer-wakeup-call",
+   "legal-logic",
    "why-realestate-needs-ai"
   ]
  },
@@ -924,7 +932,7 @@
   "related": [
    "ai-workspace-encyclopedia",
    "building-ai-agents-realestate",
-   "realestate-master-course"
+   "unfair-advantage-course"
   ]
  },
  "lawyer-wakeup-call": {
@@ -1562,8 +1570,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
+   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },

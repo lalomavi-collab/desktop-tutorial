@@ -127,6 +127,7 @@
 - V הגנת פרטיות ומידע תושבים כשרשות מקומית מפעילה AI (ai-resident-data-privacy-local-authority)
 - V חובת ההנמקה, השקיפות וזכות העיון בהחלטה נתמכת AI ברשות המקומית (ai-local-authority-decision-reasoning-transparency)
 - V הטיה אלגוריתמית ושוויון בהחלטות הקצאה של הרשות המקומית (ai-local-authority-allocation-bias-equality)
+- V מצלמות וזיהוי פנים ברשות המקומית: הגבול החוקי של מעקב מבוסס AI (ai-municipal-facial-recognition-surveillance)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
