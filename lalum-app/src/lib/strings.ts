@@ -662,10 +662,10 @@ const en = {
   },
 
   home: {
-    heroPill: "AI Governance · Tech-Legal · M&A & Deals · Real Estate",
+    heroPill: "Legal AI · Real Estate & Urban Renewal",
     heroH1a: "AI governance, deals, and real estate,",
     heroH1b: "built to hold up.",
-    heroLede: "A Tech-Legal practice uniting law, technology, and economics. We turn AI exposure and regulation (the EU AI Act) into a managed, defensible system, and back M&A, international transactions, and real estate and urban renewal. Over 20 years of transactional practice.",
+    heroLede: "Legal AI is the axis of the firm. Through it we advise clients on real estate and urban renewal, in Israel and abroad, and also on mediation and arbitration.",
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     heroCreds: "20+ years · 150+ deals · TAMA 38 author · Notary & mediator",
@@ -1874,10 +1874,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "ממשל AI · Tech-Legal · מיזוגים ועסקאות · נדל״ן",
+    heroPill: "Legal AI · נדל״ן והתחדשות עירונית",
     heroH1a: "ממשל AI, עסקאות ונדל״ן,",
     heroH1b: "בנויים להחזיק מעמד.",
-    heroLede: "משרד Tech-Legal שמחבר משפט, טכנולוגיה וכלכלה. אנחנו הופכים חשיפת AI ורגולציה (EU AI Act) למערכת מנוהלת ובת-הגנה, ומלווים מיזוגים, עסקאות בינלאומיות, ונדל״ן והתחדשות עירונית. מעל 20 שנות ניסיון טרנזקציוני.",
+    heroLede: "Legal AI הוא ציר המשרד. דרכו אנחנו מלווים לקוחות בנדל״ן ובהתחדשות עירונית, בארץ ובחו״ל, וגם בגישור ובבוררות.",
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     heroCreds: "20+ שנים · 150+ עסקאות · מחבר מדריך תמ״א 38 · נוטריון ומגשר",
@@ -3083,10 +3083,10 @@ const es: Dict = {
   },
 
   home: {
-    heroPill: "IA · Fusiones y Adquisiciones y Operaciones Internacionales · Bienes Raíces",
+    heroPill: "Legal AI · Bienes Raíces y Renovación Urbana",
     heroH1a: "Fusiones y adquisiciones, operaciones internacionales, y bienes raíces,",
     heroH1b: "con experiencia líder en IA.",
-    heroLede: "Una práctica Tecnológico-Legal que combina una profunda experiencia jurídica con IA. Gestionamos fusiones y adquisiciones, transacciones internacionales y comerciales, y bienes raíces y renovación urbana, junto con la gestión de riesgo algorítmico. Más de 20 años de práctica transaccional.",
+    heroLede: "Legal AI es el eje del despacho. A través de él asesoramos a clientes en bienes raíces y renovación urbana, en Israel y en el extranjero, y también en mediación y arbitraje.",
     heroCtaAi: "Vea si la IA y el DOM se ajustan a su asunto",
     frameworksLabel: "Nuestra trayectoria",
     heroCreds: "Más de 20 años · Más de 150 operaciones · Autor de Tama 38 · Notario y mediador",
@@ -4255,10 +4255,10 @@ const fr: Dict = {
     },
   },
   home: {
-    heroPill: "IA · Fusions acquisitions et transactions internationales · Immobilier",
+    heroPill: "Legal AI · Immobilier et rénovation urbaine",
     heroH1a: "Fusions acquisitions, transactions internationales et immobilier,",
     heroH1b: "avec une expertise IA de premier plan.",
-    heroLede: "Un cabinet Tech-Legal alliant une expertise juridique approfondie à l'intelligence artificielle. Nous traitons les fusions acquisitions, les transactions commerciales et internationales, ainsi que l'immobilier et la rénovation urbaine, aux côtés de la gestion du risque algorithmique. Plus de 20 ans de pratique transactionnelle.",
+    heroLede: "Legal AI est l'axe du cabinet. À travers lui, nous conseillons nos clients en immobilier et en rénovation urbaine, en Israël et à l'étranger, ainsi qu'en médiation et en arbitrage.",
     heroCtaAi: "Découvrez si l'IA et la DOM conviennent à votre dossier",
     frameworksLabel: "Notre bilan",
     heroCreds: "20+ ans · 150+ transactions · Auteur du Tama 38 · Notaire et médiateur",
@@ -5422,10 +5422,10 @@ const ar: Dict = {
   },
 
   home: {
-    heroPill: "الذكاء الاصطناعي · الاندماج والاستحواذ والصفقات الدولية · العقارات",
+    heroPill: "Legal AI · العقارات والتجديد الحضري",
     heroH1a: "الاندماج والاستحواذ، والصفقات الدولية، والعقارات،",
     heroH1b: "بخبرة رائدة في الذكاء الاصطناعي.",
-    heroLede: "ممارسة تقنية قانونية تجمع بين خبرة قانونية عميقة والذكاء الاصطناعي. نتعامل مع الاندماج والاستحواذ، والمعاملات الدولية والتجارية، والعقارات والتجديد الحضري، إلى جانب إدارة المخاطر الخوارزمية. أكثر من 20 عاماً من الممارسة في المعاملات.",
+    heroLede: "الذكاء الاصطناعي القانوني (Legal AI) هو محور المكتب. من خلاله نرافق عملاءنا في العقارات والتجديد الحضري، في إسرائيل وخارجها، وكذلك في الوساطة والتحكيم.",
     heroCtaAi: "تحققوا مما إذا كان الذكاء الاصطناعي وDOM يناسبان قضيتكم",
     frameworksLabel: "سجلنا الحافل",
     heroCreds: "أكثر من 20 عاماً · أكثر من 150 صفقة · مؤلف Tama 38 · موثّق ووسيط",
