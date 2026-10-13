@@ -61,9 +61,9 @@ export const LALUM_TAX_ID = "031471261";
 
 /** The practice's address for the finance system: the A000 record of the compliance file and any internal finance use.
  *  It is the real office, HaIrisim 8, Netanya, on purpose different from the official address shown to clients on the
- *  public site and on issued documents, which is a separate thing (owner's instruction, 2026-10-13). No postal code:
- *  not given, and not guessed. */
-export const LALUM_BUSINESS_ADDRESS = { street: "האיריסים", houseNum: "8", city: "נתניה", zip: "" };
+ *  public site and on issued documents, which is a separate thing (owner's instruction, 2026-10-13). The postal code
+ *  is the one the owner's government personal area shows for the same address. */
+export const LALUM_BUSINESS_ADDRESS = { street: "האיריסים", houseNum: "8", city: "נתניה", zip: "4265408" };
 
 export interface ShaamBusiness {
   /** The practice's own business id (עוסק מורשה), 9 digits, Israeli ID check digit valid for a

@@ -84,7 +84,7 @@ t("round trip: the package's own parser and cross-validator accept the generated
 });
 
 t("finance address is the real office, HaIrisim 8 Netanya, whatever the period", () => {
-  assert.deepEqual([LALUM_BUSINESS_ADDRESS.street, LALUM_BUSINESS_ADDRESS.houseNum, LALUM_BUSINESS_ADDRESS.city], ["האיריסים", "8", "נתניה"]);
+  assert.deepEqual([LALUM_BUSINESS_ADDRESS.street, LALUM_BUSINESS_ADDRESS.houseNum, LALUM_BUSINESS_ADDRESS.city, LALUM_BUSINESS_ADDRESS.zip], ["האיריסים", "8", "נתניה", "4265408"]);
 });
 console.log("shaam-check: all pass. This proves the file round trips through the library's own\n" +
   "validator, it does not prove the Tax Authority's own file-checker will accept it. Run a real\n" +
