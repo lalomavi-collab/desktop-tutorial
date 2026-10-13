@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "procurement"
+   "ai-governance-board-framework"
   ]
  },
  "procurement": {
@@ -61,6 +61,22 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "gpai-code-of-practice-foundation-models": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "saas-eu-compliance-israeli-companies",
+   "ai-due-diligence-tech-acquisition"
+  ]
+ },
+ "ai-content-labeling-transparency-policy": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-transparency-generative",
+   "ai-marketing-advertising-privacy-deception-deepfake",
+   "effective-human-oversight-ai-systems"
   ]
  },
  "ai-real-estate-valuation-reliance": {
@@ -260,7 +276,7 @@
   "related": [
    "greece-realestate-israeli-buyer-guide",
    "israel-land-authority-lease-capitalization-transfer",
-   "portugal-purchase-contract"
+   "urban-renewal-taxation-owner"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -331,8 +347,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-health-data-privacy",
-   "ai-use-policy-local-authority",
-   "ai-employee-monitoring-privacy"
+   "ai-employee-monitoring-privacy",
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -500,7 +516,7 @@
   "related": [
    "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
-   "saas-eu-compliance-israeli-companies"
+   "decision-oriented-ai-law"
   ]
  },
  "ip-value-collapse-ai-acquisition": {
@@ -634,9 +650,9 @@
  "eu-ai-act-transparency-generative": {
   "topic": "ai-governance",
   "related": [
+   "ai-content-labeling-transparency-policy",
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "eu-ai-act-2026"
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -740,7 +756,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "real-estate-arbitration",
-   "lalum-mediation-arbitration"
+   "decision-oriented-mediation-benefits"
   ]
  },
  "ai-turning-point-2026": {
@@ -819,8 +835,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "contract-review-before-signing",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "contract-review-before-signing"
   ]
  },
  "ai-presentation-tools": {
@@ -1395,8 +1411,8 @@
   "topic": "mediation",
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
-   "lalum-clinic-realestate-advice"
+   "lalum-clinic-realestate-advice",
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית": {
@@ -1540,7 +1556,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "business-arbitration"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {

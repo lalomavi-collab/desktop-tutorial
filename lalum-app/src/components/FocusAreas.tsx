@@ -42,7 +42,7 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
               body paragraph to imply: governance, regulation, risk and legal
               intelligence are each their own line of work inside AI & Law,
               not one blurred offering. */}
-          <p className="pillar-tagline">{h.advisoryAiTags}</p>
+          <ul className="chip-row">{h.advisoryAiTags.split(" · ").map((x) => <li key={x}>{x}</li>)}</ul>
           <span className="card-go">{h.advisoryMore} &rarr;</span>
         </Link>
         <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
@@ -50,7 +50,7 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
           <p className="eyebrow" style={{ margin: "18px 0 0" }}>{nav.realEstate}</p>
           <h3 className="h3" style={{ fontSize: 22, margin: "6px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
-          <p className="pillar-tagline">{h.advisoryReTags}</p>
+          <ul className="chip-row">{h.advisoryReTags.split(" · ").map((x) => <li key={x}>{x}</li>)}</ul>
           <span className="card-go">{h.advisoryMore} &rarr;</span>
         </Link>
       </div>

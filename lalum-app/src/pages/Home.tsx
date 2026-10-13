@@ -28,6 +28,13 @@ import { PillarArt } from "../components/PillarArt";
 // with the name, the professional title, and the CV link stacked in the
 // caption, each with room of its own instead of sitting flush together.
 
+/** One item of the credibility strip. The first number in the text is drawn as an instrument figure; the words around it stay exactly as written. */
+function CredItem({ text }: { text: string }) {
+  const m = /^(.*?)(\d[\d.,]*\+?)(.*)$/.exec(text);
+  if (!m) return <span className="cred-text">{text}</span>;
+  return <><b className="cred-fig">{m[2]}</b><span className="cred-text">{`${m[1]}${m[3]}`.trim()}</span></>;
+}
+
 export function Home() {
   const { t, lang } = useLang();
   const h = t.home;
@@ -61,9 +68,11 @@ export function Home() {
             {/* Framework trust strip: an at-a-glance credibility signal, and the
                 multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
                 that the leading AI-governance advisories lead with. */}
-            <div style={{ marginTop: 22, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)" }}>{h.frameworksLabel}</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{h.heroCreds}</span>
+            <div className="cred-block">
+              <span className="cred-label">{h.frameworksLabel}</span>
+              <ul className="cred-strip">
+                {h.heroCreds.split(" · ").map((item) => <li key={item}><CredItem text={item} /></li>)}
+              </ul>
             </div>
             <SiteSearch />
           </div>
@@ -184,14 +193,13 @@ export function Home() {
             <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
           <div className="grid grid-3">
-            {t.data.frameworks.map((f) => (
-              <div key={f.code} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.13)", borderRadius: 16, padding: 32 }}>
-                <span style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(193,95,60,.22)", color: "var(--clay-bright)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon name={f.icon} size={24} />
-                </span>
-                <div style={{ fontFamily: "var(--serif)", fontSize: 22, color: "var(--clay-bright)", margin: "20px 0 4px" }} dir="ltr">{f.code}</div>
-                <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--paper)", margin: "0 0 10px" }}>{f.title}</h3>
-                <p style={{ fontSize: 15, lineHeight: 1.66, color: "#C6C0B4", margin: 0 }}>{f.body}</p>
+            {t.data.frameworks.map((f, i) => (
+              <div key={f.code} className="dark-panel">
+                <span className="dark-panel-idx" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                <span className="dark-panel-badge"><Icon name={f.icon} size={24} /></span>
+                <div className="dark-panel-code" dir="ltr">{f.code}</div>
+                <h3 className="dark-panel-title">{f.title}</h3>
+                <p className="dark-panel-body">{f.body}</p>
               </div>
             ))}
           </div>

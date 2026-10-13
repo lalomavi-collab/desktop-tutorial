@@ -3,15 +3,15 @@
 // tokens) so they read the same on the light and the dark theme. Decorative only: the label under each icon names it.
 import type { ReactNode } from "react";
 
-const B = "url(#rl-g)", D = "url(#rl-d)", S = "url(#rl-s)", W = "#fff", L = "#2f7a27";
+const B = "url(#rl-g)", D = "url(#rl-d)", S = "url(#rl-s)", W = "#fff", L = "#3f5a43";
 
 /** Gradients shared by every rail icon. Rendered once, in the sidebar. A 0x0 svg, not display:none, so the references keep working. */
 export function RailDefs() {
   return (
     <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
       <defs>
-        <linearGradient id="rl-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#9be07a" /><stop offset="1" stopColor="#4ea53a" /></linearGradient>
-        <linearGradient id="rl-d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#4ea53a" /><stop offset="1" stopColor="#2f7a27" /></linearGradient>
+        <linearGradient id="rl-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#9bbb9f" /><stop offset="1" stopColor="#5f8564" /></linearGradient>
+        <linearGradient id="rl-d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#5f8564" /><stop offset="1" stopColor="#3f5a43" /></linearGradient>
         <linearGradient id="rl-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffe58a" /><stop offset="1" stopColor="#f2b705" /></linearGradient>
       </defs>
     </svg>
@@ -44,7 +44,7 @@ const ICONS: Record<string, ReactNode> = {
   // import: a document arrow dropping into a tray
   "/workspace/import": <><path d="M4 19h24v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" fill={B} /><path d="M4 19h7a2 2 0 0 1 2 2 3 3 0 0 0 6 0 2 2 0 0 1 2-2h7" fill="none" stroke={W} strokeOpacity=".5" strokeWidth="1.6" /><path d="M12 3h8v8h4.5L16 19.5 7.5 11H12z" fill={S} /></>,
   // matter management: a briefcase
-  "/admin/matters": <><path d="M11 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" {...stroke("#2f7a27", 3)} /><rect x="3" y="10" width="26" height="18" rx="4" fill={B} /><rect x="3" y="17" width="26" height="3.4" fill={D} /><rect x="14" y="15.2" width="4" height="7" rx="1.2" fill={S} /></>,
+  "/admin/matters": <><path d="M11 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" {...stroke("#3f5a43", 3)} /><rect x="3" y="10" width="26" height="18" rx="4" fill={B} /><rect x="3" y="17" width="26" height="3.4" fill={D} /><rect x="14" y="15.2" width="4" height="7" rx="1.2" fill={S} /></>,
   // client collection: gold coins with a shekel sign
   "/workspace/payments": <><circle cx="12" cy="20" r="10" fill={D} /><circle cx="19" cy="13" r="11.5" fill={S} /><circle cx="19" cy="13" r="8.6" fill="none" stroke={L} strokeOpacity=".35" strokeWidth="1.2" /><text x="19" y="18.2" textAnchor="middle" fontSize="13" fontWeight="800" fill={L} fontFamily="Arial, sans-serif">₪</text></>,
   // public discussions: two overlapping bubbles
@@ -56,7 +56,7 @@ const ICONS: Record<string, ReactNode> = {
   // security: a shield with a tick
   "/settings/security": <><path d="M16 2.5l11 4v8.5c0 7-4.8 12-11 14.5C9.8 27 5 22 5 15V6.5z" fill={B} /><path d="M16 2.5l11 4v8.5c0 7-4.8 12-11 14.5z" fill={D} opacity=".35" /><path d="M10.8 15.5l3.8 3.8 6.8-7.6" {...stroke(W, 3)} /></>,
   // recycle bin
-  "/workspace/bin": <><path d="M12 7V5.5A1.5 1.5 0 0 1 13.5 4h5A1.5 1.5 0 0 1 20 5.5V7" {...stroke("#2f7a27", 2.6)} /><rect x="4.5" y="7" width="23" height="4" rx="2" fill={D} /><path d="M7 12h18l-1.5 14a3 3 0 0 1-3 2.7h-9a3 3 0 0 1-3-2.7z" fill={B} /><path d="M12.5 15.5v9M16 15.5v9M19.5 15.5v9" {...stroke(W, 1.8)} /></>,
+  "/workspace/bin": <><path d="M12 7V5.5A1.5 1.5 0 0 1 13.5 4h5A1.5 1.5 0 0 1 20 5.5V7" {...stroke("#3f5a43", 2.6)} /><rect x="4.5" y="7" width="23" height="4" rx="2" fill={D} /><path d="M7 12h18l-1.5 14a3 3 0 0 1-3 2.7h-9a3 3 0 0 1-3-2.7z" fill={B} /><path d="M12.5 15.5v9M16 15.5v9M19.5 15.5v9" {...stroke(W, 1.8)} /></>,
   // guide: an open book with a gold ribbon
   "/workspace/guide": <><path d="M2.5 7c5-1.8 9.5-1.2 13.5 2v19c-4-3-8.5-3.6-13.5-1.8z" fill={B} /><path d="M29.5 7c-5-1.8-9.5-1.2-13.5 2v19c4-3 8.5-3.6 13.5-1.8z" fill={D} /><path d="M6 12.5c2.5-.6 5-.4 7 .8M6 17c2.5-.6 5-.4 7 .8" {...stroke(W, 1.6)} /><path d="M21 3h4.5v10l-2.25-1.9L21 13z" fill={S} /></>,
   // footer actions

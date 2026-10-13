@@ -1,7 +1,7 @@
 // Small dependency-free SVG charts for the cockpit dashboard. Each carries a text alternative (role="img" + aria-label) with its numbers.
 import type { ReactNode } from "react";
 
-const GREEN = "#3d8d2e", GREEN_L = "#8ed46a", SUN = "#f5c431", SUN_D = "#e0a312", RED = "#cf4b3a";
+const GREEN = "#537056", GREEN_L = "#9bbb9f", SUN = "#f5c431", SUN_D = "#e0a312", RED = "#cf4b3a";
 
 /** Smooth path through points (Catmull-Rom to cubic Bezier). */
 function smooth(pts: Array<[number, number]>): string {
@@ -50,7 +50,7 @@ export function PillBars({ items }: { items: Array<{ label: string; value: numbe
       {items.map((i) => (
         <div key={i.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1, maxWidth: 70 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--slate)" }}>{i.value}</span>
-          <div style={{ width: 34, height: Math.max(26, 140 * (i.value / max)), borderRadius: 18, background: `linear-gradient(180deg, ${i.color}, color-mix(in srgb, ${i.color} 70%, #1f4d1a))`, boxShadow: "inset 0 2px 0 rgba(255,255,255,.4), 0 6px 12px rgba(54,110,40,.2)" }} />
+          <div style={{ width: 34, height: Math.max(26, 140 * (i.value / max)), borderRadius: 18, background: `linear-gradient(180deg, ${i.color}, color-mix(in srgb, ${i.color} 70%, #2a3f2d))`, boxShadow: "inset 0 2px 0 rgba(255,255,255,.4), 0 6px 12px rgba(54,110,40,.2)" }} />
           <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--clay)" }}>{i.label}</span>
         </div>
       ))}
