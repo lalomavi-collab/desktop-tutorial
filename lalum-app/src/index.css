@@ -5062,3 +5062,13 @@ html.a11y-reduce-motion *::after {
     font-size: 12px;
   }
 }
+
+/* Credibility strip under the home hero: the firm's own figures as small instrument tiles, the same language as the
+   cockpit's stat cards (hairline border, monospaced tabular figure), in the site's ivory and sage. */
+.cred-block { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.cred-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); }
+.cred-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cred-strip li { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 96px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.6); }
+.cred-fig { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 24px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--clay); }
+.cred-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+@media (max-width: 520px) { .cred-strip li { flex: 1 1 calc(50% - 8px); } }

@@ -22,7 +22,7 @@ export function InquiryInsights({ inquiries, replies, targetMinutes }: { inquiri
     <Strip>
       <Card title="פניות לפי שבוע" wide><AreaChart id="in-w" values={weekly.values} labels={weekly.labels} unit="פניות" /></Card>
       <Card title="עמידה ביעד המענה"><Gauge pct={answered.length ? Math.round((100 * inTarget) / answered.length) : 0} label="נענו בתוך היעד" sub={`${answered.length} מתוך ${inquiries.length} נענו`} /></Card>
-      <Card title="לפי סטטוס"><PillBars items={[{ label: "חדשות", value: by("NEW"), color: "#f5c431" }, { label: "נראו", value: by("SEEN"), color: "#8ed46a" }, { label: "טופלו", value: by("HANDLED"), color: "#4ea53a" }]} /></Card>
+      <Card title="לפי סטטוס"><PillBars items={[{ label: "חדשות", value: by("NEW"), color: "#f5c431" }, { label: "נראו", value: by("SEEN"), color: "#9bbb9f" }, { label: "טופלו", value: by("HANDLED"), color: "#6a8f6e" }]} /></Card>
     </Strip>
   );
 }
@@ -41,7 +41,7 @@ export function TaskInsights({ tasks }: { tasks: Task[] }) {
   });
   return (
     <Strip>
-      <Card title="מצב המשימות"><Donut centre={open.length} sub="פתוחות" segments={[{ label: "פתוחות", value: Math.max(0, open.length - overdue), color: "#8ed46a" }, { label: "באיחור", value: overdue, color: "#cf4b3a" }, { label: "הושלמו", value: done, color: "#3d8d2e" }]} /></Card>
+      <Card title="מצב המשימות"><Donut centre={open.length} sub="פתוחות" segments={[{ label: "פתוחות", value: Math.max(0, open.length - overdue), color: "#9bbb9f" }, { label: "באיחור", value: overdue, color: "#cf4b3a" }, { label: "הושלמו", value: done, color: "#537056" }]} /></Card>
       <Card title="מועדי יעד בשבוע הקרוב" wide><MiniBars values={next.map((n) => n.v)} labels={next.map((n) => n.label)} /></Card>
     </Strip>
   );
@@ -55,21 +55,21 @@ export function ScoreInsights({ sc, nameOf }: { sc: Scorecard; nameOf: (id: stri
     <Strip>
       <Card title="עמידה ביעד המענה"><Gauge pct={replies ? Math.round((100 * inT) / replies) : 0} label="מענים בתוך היעד" sub={`${replies} מענים נרשמו`} /></Card>
       <Card title="משימות בזמן"><Gauge pct={judged ? Math.round((100 * onT) / judged) : 0} label="הושלמו עד המועד" sub={`${judged} משימות נבדקו`} /></Card>
-      {scored.length > 0 && <Card title="ציון לפי איש צוות"><BarsH max={100} items={scored.map((p) => ({ label: nameOf(p.user_id), value: p.score ?? 0, color: (p.score ?? 0) >= 80 ? "#3d8d2e" : (p.score ?? 0) >= 60 ? "#e0a312" : "#cf4b3a" }))} /></Card>}
+      {scored.length > 0 && <Card title="ציון לפי איש צוות"><BarsH max={100} items={scored.map((p) => ({ label: nameOf(p.user_id), value: p.score ?? 0, color: (p.score ?? 0) >= 80 ? "#537056" : (p.score ?? 0) >= 60 ? "#e0a312" : "#cf4b3a" }))} /></Card>}
     </Strip>
   );
 }
 
 export function MatterInsights({ rows }: { rows: Array<{ practice_area: string; risk_level: string | null; dispatched_at: string }> }) {
   if (rows.length === 0) return null;
-  const palette = ["#3d8d2e", "#8ed46a", "#f5c431", "#e0a312", "#7bb36a"];
+  const palette = ["#537056", "#9bbb9f", "#f5c431", "#e0a312", "#8fb394"];
   const areas = Object.entries(rows.reduce<Record<string, number>>((a, r) => { a[r.practice_area] = (a[r.practice_area] ?? 0) + 1; return a; }, {}));
   const risk = (k: string) => rows.filter((r) => (k === "HIGH_RISK" ? r.risk_level === "HIGH_RISK" : k === "CAUTION" ? r.risk_level === "CAUTION" : r.risk_level !== "HIGH_RISK" && r.risk_level !== "CAUTION")).length;
   const weekly = series(rows.map((r) => r.dispatched_at), "weekly", 10);
   return (
     <Strip>
       <Card title="תיקים לפי תחום"><Donut centre={rows.length} sub="תיקים" segments={areas.map(([k, v], i) => ({ label: PRACTICE[k] ?? k, value: v, color: palette[i % palette.length] }))} /></Card>
-      <Card title="רמת סיכון"><BarsH items={[{ label: "תקין", value: risk("OK"), color: "#3d8d2e" }, { label: "זהירות", value: risk("CAUTION"), color: "#e0a312" }, { label: "סיכון גבוה", value: risk("HIGH_RISK"), color: "#cf4b3a" }]} /></Card>
+      <Card title="רמת סיכון"><BarsH items={[{ label: "תקין", value: risk("OK"), color: "#537056" }, { label: "זהירות", value: risk("CAUTION"), color: "#e0a312" }, { label: "סיכון גבוה", value: risk("HIGH_RISK"), color: "#cf4b3a" }]} /></Card>
       <Card title="תיקים חדשים לפי שבוע"><MiniBars values={weekly.values} labels={weekly.labels.map((l) => l.split("/")[0])} /></Card>
     </Strip>
   );
