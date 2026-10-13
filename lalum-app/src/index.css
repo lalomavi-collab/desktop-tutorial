@@ -3979,8 +3979,9 @@ html.a11y-reduce-motion *::after {
     gap: 3px;
     padding: 6px 2px;
     border-radius: 12px;
+    position: relative;
     color: var(--slate);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.01em;
     transition: color 0.15s ease, background 0.15s ease, transform 0.12s ease;
@@ -3991,6 +3992,18 @@ html.a11y-reduce-motion *::after {
   .tabbar-item.active {
     color: var(--clay);
     background: var(--clay-tint);
+    box-shadow: inset 0 0 0 1px var(--clay-soft);
+    font-weight: 700;
+  }
+  /* The active tab also carries a bar on its top edge, so the state is not colour alone. */
+  .tabbar-item.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    inset-inline: 28%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--clay);
   }
   /* SOS is a <button>, not a link, so it needs its own reset on top of the
      shared .tabbar-item layout. */
@@ -5115,3 +5128,7 @@ html.a11y-reduce-motion *::after {
   background: var(--clay-tint); border: 1px solid var(--line);
   border-radius: 999px; padding: 4px 11px;
 }
+
+/* Site search: the same sage focus ring as the cockpit controls. */
+.site-search-box { transition: border-color .15s ease, box-shadow .15s ease; }
+.site-search-box:focus-within { border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }
