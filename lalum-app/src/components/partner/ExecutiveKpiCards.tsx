@@ -8,7 +8,8 @@ interface Props {
   wipHours: number;
   wipAmount: number;
   aging: Aging;
-  trust: number;
+  /** null: the firm holds no client money, so the card is not shown. */
+  trust: number | null;
 }
 
 /** Top tier of the partner view. Source of each figure is printed on its card: Invoice4U ledger, manual input, or hours. */
@@ -40,11 +41,13 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wipHo
         </div>
         <small>מקור: חשבוניות פתוחות בספר Invoice4U</small>
       </article>
-      <article className="ck-card crm-kpi trust">
-        <small>כספי לקוחות בנאמנות</small>
-        <b>{money(trust)}</b>
-        <small>פנקס נאמנות ידני, אינו נספר בהכנסות ואינו מופיע בתזרים המשרד</small>
-      </article>
+      {trust != null && (
+        <article className="ck-card crm-kpi trust">
+          <small>כספי לקוחות בנאמנות</small>
+          <b>{money(trust)}</b>
+          <small>מקור: פנקס הנאמנות של המערכת. אינו נספר בהכנסות ואינו מופיע בתזרים המשרד</small>
+        </article>
+      )}
     </section>
   );
 }

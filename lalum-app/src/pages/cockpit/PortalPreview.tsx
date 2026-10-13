@@ -8,9 +8,11 @@ import { SecureCommsFeed } from "../../components/portal/SecureCommsFeed";
 import { InvoicePaymentDrawer } from "../../components/portal/InvoicePaymentDrawer";
 import { trustBalance } from "../../lib/cockpit/crm";
 import { buildDemo, DEMO_NOTE } from "../../lib/cockpit/crmDemo";
+import { useTrustSummary } from "../../lib/cockpit/crmTrust";
 import "../../styles/crm.css";
 
 function Preview() {
+  const trustSummary = useTrustSummary();
   const d = useMemo(() => buildDemo(new Date()), []);
   const [sel, setSel] = useState("m1");
   const [docs, setDocs] = useState(d.staged);
@@ -25,7 +27,7 @@ function Preview() {
         <ClientMilestonesView milestones={d.milestones} />
         <StagedDocumentUploader docs={docs} onChange={setDocs} />
         <SecureCommsFeed messages={msgs} onSend={(text) => setMsgs([...msgs, { id: `n${msgs.length}`, from: "CLIENT", at: new Date().toISOString(), text, internal: false }])} />
-        <InvoicePaymentDrawer docs={d.docs} pays={d.payments} customerId={customerId} trust={trustBalance(d.trust, m.id)} />
+        <InvoicePaymentDrawer docs={d.docs} pays={d.payments} customerId={customerId} trust={trustSummary.state === "ready" ? trustBalance(d.trust, m.id) : null} />
       </div>
     </div>
   );

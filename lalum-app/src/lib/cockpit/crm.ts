@@ -121,3 +121,12 @@ export function clientMilestones<T extends { clientVisible: boolean; kind: strin
 export function clientMessages<T extends { internal: boolean }>(msgs: T[]): Array<Omit<T, "internal">> {
   return msgs.filter((m) => !m.internal).map((m) => { const { internal: _drop, ...rest } = m; void _drop; return rest; });
 }
+
+export type TrustSummary = { state: "loading" } | { state: "none" } | { state: "ready"; held: number };
+
+/** Pure: no account means no trust activity; otherwise the signed sum of the append-only ledger. */
+export function summarizeTrust(accountCount: number, amounts: number[]): TrustSummary {
+  if (accountCount <= 0) return { state: "none" };
+  const held = Math.round(amounts.reduce((a, n) => a + n, 0) * 100) / 100;
+  return { state: "ready", held };
+}

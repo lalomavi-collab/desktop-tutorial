@@ -1,6 +1,6 @@
 /* Partner, matter and portal preview components. Builds on cockpit.css tokens; adds only what those lack. */
 .crm-demo { background: rgba(184, 132, 42, .14); color: var(--warning); border: 1px solid rgba(184, 132, 42, .35); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
-.crm-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+.crm-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 14px; }
 .crm-kpi { display: flex; flex-direction: column; gap: 6px; }
 .crm-kpi small { color: var(--slate); font-size: 12px; }
 .crm-kpi b { font-size: 26px; font-variant-numeric: tabular-nums; }

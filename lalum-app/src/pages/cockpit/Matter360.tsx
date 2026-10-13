@@ -8,12 +8,14 @@ import { ProceduralDeadlinesTab } from "../../components/matter/ProceduralDeadli
 import { StagedSubmissionsQueue } from "../../components/matter/StagedSubmissionsQueue";
 import { BillingAndTrustTab } from "../../components/matter/BillingAndTrustTab";
 import { buildDemo, DEMO_NOTE } from "../../lib/cockpit/crmDemo";
+import { useTrustSummary } from "../../lib/cockpit/crmTrust";
 import "../../styles/crm.css";
 
 type Tab = "parties" | "deadlines" | "docs" | "billing";
 const TABS: Array<[Tab, string]> = [["parties", "צדדים"], ["deadlines", "מועדים"], ["docs", "מסמכי לקוח"], ["billing", "חיוב ונאמנות"]];
 
 function MatterView({ id }: { id: string }) {
+  const trustSummary = useTrustSummary();
   const d = useMemo(() => buildDemo(new Date()), []);
   const m = d.matters.find((x) => x.id === id);
   const [tab, setTab] = useState<Tab>("parties");
@@ -26,12 +28,12 @@ function MatterView({ id }: { id: string }) {
       <div className="crm-demo" role="note">{DEMO_NOTE}</div>
       <MatterHeader360 m={m} />
       <div className="crm-tabs" role="group" aria-label="לשוניות תיק">
-        {TABS.map(([k, label]) => <button key={k} type="button" className="ck-btn" aria-pressed={tab === k} onClick={() => setTab(k)}>{label}</button>)}
+        {TABS.map(([k, label]) => <button key={k} type="button" className="ck-btn" aria-pressed={tab === k} onClick={() => setTab(k)}>{k === "billing" && trustSummary.state !== "ready" ? "חיוב" : label}</button>)}
       </div>
       {tab === "parties" && <PartiesDirectory parties={d.parties} />}
       {tab === "deadlines" && <ProceduralDeadlinesTab milestones={d.milestones} />}
       {tab === "docs" && <StagedSubmissionsQueue docs={staged} onChange={setStaged} />}
-      {tab === "billing" && <BillingAndTrustTab matterId={m.id} rate={900} time={time} trust={trust} onTime={setTime} onTrust={setTrust} />}
+      {tab === "billing" && <BillingAndTrustTab matterId={m.id} rate={900} time={time} trust={trust} showTrust={trustSummary.state === "ready"} onTime={setTime} onTrust={setTrust} />}
     </>
   );
 }
