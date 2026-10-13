@@ -55,9 +55,9 @@ const ymd = (isoDate: string) => isoDate.replaceAll("-", "");
 // what tells the Tax Authority it is a credit, not the sign of the amount.
 const abs2 = (n: number) => Math.abs(n).toFixed(2);
 
-/** The practice's business id: the company's registration number (ח.פ.), 516908704, which for a company is also its
- *  VAT file number (to be confirmed with the accountant). Not the owner's personal Teudat Zehut. */
-export const LALUM_TAX_ID = "516908704";
+/** The practice's business id: the owner's own עוסק מורשה number, which is his Teudat Zehut (9 digits, check digit
+ *  valid), confirmed by the owner on 2026-10-13: an individual dealer, not a company. See finance-engine-design.md. */
+export const LALUM_TAX_ID = "031471261";
 
 /** The registered address by date, for the A000 record only: internal to the compliance file, never shown on the public
  *  site. Until the end of 2026 the office address is the Herzliya Pituach one; from 2027-01-01, when work moves to this
