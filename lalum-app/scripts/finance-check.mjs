@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage } from "../src/lib/cockpit/finance.ts";
 
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
 
@@ -342,5 +342,52 @@ t("allocation authorization: warns three weeks before expiry and after it", () =
   assert.deepEqual(allocationAuthStatus("2026-12-10", "2027-01-01"), { daysLeft: 22, warn: false });
   assert.deepEqual(allocationAuthStatus("2027-01-03", "2027-01-01"), { daysLeft: -2, warn: true });
   assert.equal(allocationAuthStatus("2027-01-03", null).warn, false);
+});
+const hacc = (o) => ({ id: "a1", bank_name: "לאומי", branch: "800", account_number: "12345678", closed_on: null, opened_on: "2026-09-01", ...o });
+const hm = [{ id: "m1", customer_id: "c1" }];
+const st = (checks, id) => checks.find((c) => c.id === id)?.status;
+t("health check: an empty ledger reports readiness only", () => {
+  const c = trustHealth([], [hacc({})], hm, "2026-10-13");
+  assert.equal(st(c, "setup-account"), "ok");
+  assert.equal(st(c, "setup-matter"), "ok");
+  assert.equal(st(c, "no-rows"), "info");
+  assert.equal(st(trustHealth([], [], [], "2026-10-13"), "setup-account"), "fail");
+});
+t("health check: a clean ledger passes every check", () => {
+  const rows = [tx({ id: 1, receipt_no: "TR-000001", amount: 1000, value_date: "2026-10-01" }),
+    tx({ id: 2, receipt_no: "TR-000002", tx_type: "EARNED_FEE_TRANSFER", amount: -300, reference_doc_id: "d1", value_date: "2026-10-05" }),
+    tx({ id: 3, receipt_no: "TR-000003", tx_type: "REFUND_TO_CLIENT", amount: -100, value_date: "2026-10-06" }),
+    tx({ id: 4, receipt_no: "TR-000004", tx_type: "REVERSAL", amount: 100, reverses_entry_id: 3, value_date: "2026-10-06" })];
+  const c = trustHealth(rows, [hacc({})], hm, "2026-10-13");
+  assert.deepEqual(c.filter((x) => x.status === "fail"), []);
+  assert.equal(healthSummary(c), "ok");
+});
+t("health check: it catches overdraft, a bad reversal, a missing invoice, receipt gaps and bad dates", () => {
+  const rows = [tx({ id: 1, receipt_no: "TR-000001", amount: 100 }),
+    tx({ id: 2, receipt_no: "TR-000004", tx_type: "DISBURSEMENT_TO_THIRD_PARTY", amount: -500, value_date: "2026-12-31" }),
+    tx({ id: 3, receipt_no: "TR-000005", tx_type: "EARNED_FEE_TRANSFER", amount: -1, reference_doc_id: null }),
+    tx({ id: 4, receipt_no: "TR-000006", tx_type: "REVERSAL", amount: 7, reverses_entry_id: 1, value_date: "2026-08-01" })];
+  const c = trustHealth(rows, [hacc({})], hm, "2026-10-13");
+  for (const id of ["overdraft-matter", "overdraft-account", "reversals", "fee-invoice", "receipts", "value-dates"]) assert.equal(st(c, id), "fail", id);
+  assert.equal(healthSummary(c), "fail");
+});
+t("health check: a closed account must be empty and quiet", () => {
+  const rows = [tx({ id: 1, receipt_no: "TR-000001", amount: 50, value_date: "2026-10-12" })];
+  const c = trustHealth(rows, [hacc({ closed_on: "2026-10-10" })], hm, "2026-10-13");
+  assert.equal(st(c, "closed-accounts"), "fail");
+});
+t("health check: reconciliation folds into the summary", () => {
+  const r = (d) => ({ trust_account_id: "a1", bank_name: "x", branch: "1", account_number: "1234", ledger_balance: 0, statement_as_of: d == null ? null : "2026-10-01", statement_balance: d == null ? null : 0, difference_at_statement_date: d });
+  assert.equal(reconHealth([r(0)])[0].status, "ok");
+  assert.equal(reconHealth([r(null)])[0].status, "warn");
+  assert.equal(reconHealth([r(5), r(null)])[0].status, "fail");
+});
+t("flow coverage: each stage turns on only when live data shows it was exercised", () => {
+  const none = trustFlowCoverage([], [], []);
+  assert.equal(none.length, 6);
+  assert.ok(none.every((x) => !x.done));
+  const rows = [tx({ id: 1 }), tx({ id: 2, tx_type: "REFUND_TO_CLIENT", amount: -5 }), tx({ id: 3, tx_type: "REVERSAL", amount: 5, reverses_entry_id: 2 })];
+  const c = trustFlowCoverage(rows, [hacc({})], ["a1"]);
+  assert.deepEqual(c.filter((x) => !x.done).map((x) => x.id), ["fee"]);
 });
 console.log("\nAll finance checks passed");
