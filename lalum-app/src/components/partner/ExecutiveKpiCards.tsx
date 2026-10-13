@@ -1,19 +1,20 @@
 import { money } from "../../lib/cockpit/shared";
-import type { Aging } from "../../lib/cockpit/crm";
+import { BUCKETS, BUCKET_LABEL } from "../../lib/cockpit/arAging";
+import type { Bucket } from "../../lib/cockpit/arAging";
 
 interface Props {
   bankBalance: number | null;
   monthlyBurn: number;
   collected30: number;
-  wipHours: number;
-  wipAmount: number;
-  aging: Aging;
+  /** null: there is no real hours source yet, so the card is not shown. */
+  wip: { hours: number; amount: number } | null;
+  aging: { total: number; notYetDue: number; buckets: Record<Bucket, number> };
   /** null: the firm holds no client money, so the card is not shown. */
   trust: number | null;
 }
 
 /** Top tier of the partner view. Source of each figure is printed on its card: Invoice4U ledger, manual input, or hours. */
-export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wipHours, wipAmount, aging, trust }: Props) {
+export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wip, aging, trust }: Props) {
   const weeks = bankBalance != null && monthlyBurn > 0 ? Math.floor(bankBalance / (monthlyBurn / 4.345)) : null;
   const runwayTone = weeks == null ? "yellow" : weeks < 8 ? "red" : weeks < 13 ? "yellow" : "green";
   return (
@@ -24,22 +25,21 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wipHo
         {weeks != null && <span className={`ck-badge ${runwayTone}`}>{weeks} שבועות נזילות</span>}
         <small>יתרה: הזנה ידנית (Invoice4U אינו מחזיק יתרת בנק). תקבולים ב-30 ימים: {money(collected30)} (Invoice4U)</small>
       </article>
-      <article className="ck-card crm-kpi">
-        <small>שעות בצבר (טרם חויבו)</small>
-        <b>{money(wipAmount)}</b>
-        <span className="ck-badge yellow">{wipHours} שעות</span>
-        <small>מקור: רישום זמנים בתיקים</small>
-      </article>
+      {wip != null && (
+        <article className="ck-card crm-kpi">
+          <small>שעות בצבר (טרם חויבו)</small>
+          <b>{money(wip.amount)}</b>
+          <span className="ck-badge yellow">{wip.hours} שעות</span>
+          <small>מקור: רישום זמנים בתיקים</small>
+        </article>
+      )}
       <article className="ck-card crm-kpi">
         <small>גיול חובות</small>
         <b>{money(aging.total)}</b>
         <div className="crm-split">
-          <span>שוטף<b style={{ fontSize: 13 }}>{money(aging.current)}</b></span>
-          <span>1 עד 30<b style={{ fontSize: 13 }}>{money(aging.d1_30)}</b></span>
-          <span>31 עד 60<b style={{ fontSize: 13 }}>{money(aging.d31_60)}</b></span>
-          <span>60 ומעלה<b style={{ fontSize: 13, color: aging.d60plus > 0 ? "var(--danger)" : undefined }}>{money(aging.d60plus)}</b></span>
+          {BUCKETS.map((k) => <span key={k}>{BUCKET_LABEL[k]}<b style={{ fontSize: 13, color: k === "D90_PLUS" && aging.buckets[k] > 0 ? "var(--danger)" : undefined }}>{money(aging.buckets[k])}</b></span>)}
         </div>
-        <small>מקור: חשבוניות פתוחות בספר Invoice4U</small>
+        <small>מקור: חשבונות עסקה פתוחים בספר Invoice4U (בסיס מזומן). מתוכן טרם הגיע מועד התשלום: {money(aging.notYetDue)}</small>
       </article>
       {trust != null && (
         <article className="ck-card crm-kpi trust">
