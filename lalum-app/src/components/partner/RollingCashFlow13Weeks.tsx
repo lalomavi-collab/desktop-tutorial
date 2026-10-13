@@ -22,13 +22,14 @@ export function RollingCashFlow13Weeks({ f }: { f: Forecast }) {
           </div>
         ))}
       </div>
+      <div className="crm-legend" aria-hidden="true"><span><i style={{ background: "var(--success)" }} />נכנס</span><span><i style={{ background: "var(--danger)", opacity: 0.85 }} />יוצא</span></div>
       <div className="ck-table-wrap">
         <table className="ck-table">
           <thead><tr><th>שבוע (שישי)</th>{f.weeks.map((w) => <th key={w.friday}>{lbl(w.friday)}</th>)}</tr></thead>
           <tbody>
             <tr><th>נכנס</th>{f.weeks.map((w) => <td key={w.friday}>{w.inflow ? Math.round(w.inflow).toLocaleString("he-IL") : ""}</td>)}</tr>
             <tr><th>יוצא</th>{f.weeks.map((w) => <td key={w.friday}>{w.outflow ? Math.round(w.outflow).toLocaleString("he-IL") : ""}</td>)}</tr>
-            <tr><th>יתרה</th>{f.weeks.map((w) => <td key={w.friday} style={{ color: w.closing < f.minThreshold ? "#8a2f21" : undefined, fontWeight: 700 }}>{Math.round(w.closing).toLocaleString("he-IL")}</td>)}</tr>
+            <tr><th>יתרה</th>{f.weeks.map((w) => <td key={w.friday} style={{ color: w.closing < f.minThreshold ? "var(--danger)" : undefined, fontWeight: 700 }}>{Math.round(w.closing).toLocaleString("he-IL")}</td>)}</tr>
           </tbody>
         </table>
       </div>
