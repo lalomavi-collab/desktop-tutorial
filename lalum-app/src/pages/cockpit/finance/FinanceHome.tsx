@@ -21,7 +21,7 @@ import { AuditLogTab } from "./AuditLogTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
 import { RevenueView } from "./RevenueView";
-import { allocationGaps, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
+import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 
 type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
@@ -107,6 +107,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const allIncome = incomeRows(docs, archive, customers, { from: "2000-01-01", to: "2100-12-31" });
   const hasTest = docs.some((d) => d.is_test);
   const allocGaps = allocationGaps(docs, customers);
+  const allocAuth = allocationAuthStatus(new Date().toISOString().slice(0, 10));
   const overdue = docs.filter((d) => receivable(d, docs, payments) > 0 && (d.due_date ?? d.issue_date) < new Date().toISOString().slice(0, 10));
 
   return (
@@ -140,6 +141,14 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
             <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מהארכיון של Invoice4U אינם נכללים.</div>
               {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבונות עסקה עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           </div>
+          {allocAuth.warn && (
+            <div className="ck-warn" role="alert">
+              {allocAuth.daysLeft >= 0
+                ? <><b>ההרשאה למספרי הקצאה ב-Invoice4U פוקעת בעוד {allocAuth.daysLeft} ימים ({ALLOCATION_AUTH_EXPIRES}).</b> חדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>
+                : <><b>ההרשאה למספרי הקצאה ב-Invoice4U פגה ({ALLOCATION_AUTH_EXPIRES}).</b> חשבוניות מעל הסף יוצאות בלי מספר עד שתחדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>}
+              <div className="fin-note">אחרי החידוש עדכנו את ALLOCATION_AUTH_EXPIRES ב-financeAllocation.ts.</div>
+            </div>
+          )}
           {allocGaps.length > 0 && (
             <div className="ck-warn" role="alert">
               <b>{allocGaps.length} חשבוניות מעל הסף ללא מספר הקצאה.</b> בדוק אם החיבור של Invoice4U לרשות המסים פעיל (נדרש חידוש בערך אחת לרבעון).
