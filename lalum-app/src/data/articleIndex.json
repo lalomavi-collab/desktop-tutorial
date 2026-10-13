@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-governance-municipal-corporations": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-education-public-institutions-use-policy",
+   "ai-use-policy-local-authority",
+   "algorithmic-fiduciary-duty-ai"
+  ]
+ },
  "ai-education-public-institutions-use-policy": {
   "topic": "ai-governance",
   "related": [
@@ -92,7 +100,7 @@
   "related": [
    "ai-local-authority-decision-reasoning-transparency",
    "ai-recruitment-screening-discrimination",
-   "ai-local-authority-tort-liability-damage"
+   "ai-governance-municipal-corporations"
   ]
  },
  "ai-local-authority-decision-reasoning-transparency": {
@@ -139,8 +147,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-real-estate-valuation-reliance",
-   "ai-local-authority-tort-liability-damage",
-   "ai-education-public-institutions-use-policy"
+   "ai-governance-municipal-corporations",
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -858,8 +866,8 @@
  "legal-algorist": {
   "topic": "ai-governance",
   "related": [
-   "lawyer-wakeup-call",
    "legal-logic",
+   "lawyer-wakeup-call",
    "why-realestate-needs-ai"
   ]
  },
@@ -1188,7 +1196,7 @@
   "related": [
    "lalum-investment-model-launch",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "israeli-realestate-abroad"
+   "overseas-partnership-guide"
   ]
  },
  "lalum-together": {
@@ -1419,8 +1427,8 @@
   "topic": "real-estate",
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-governance-municipal-corporations",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1586,8 +1594,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
