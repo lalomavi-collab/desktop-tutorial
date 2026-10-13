@@ -55,13 +55,24 @@ const ymd = (isoDate: string) => isoDate.replaceAll("-", "");
 // what tells the Tax Authority it is a credit, not the sign of the amount.
 const abs2 = (n: number) => Math.abs(n).toFixed(2);
 
-/** The practice's own business id (owner's Teudat Zehut, used as the עוסק מורשה number), checksum
- *  verified. See finance-engine-design.md, "Answered by the practice owner". */
-export const LALUM_TAX_ID = "031471261";
+/** The practice's business id: the company's registration number (ח.פ.), 516908704, which for a company is also its
+ *  VAT file number (to be confirmed with the accountant). Not the owner's personal Teudat Zehut. */
+export const LALUM_TAX_ID = "516908704";
 
-/** The practice's business address, for the A000 record only: internal to the compliance file, never
- *  shown on the public site. No postal code: not given, and not guessed. */
-export const LALUM_BUSINESS_ADDRESS = { street: "האיריסים", houseNum: "8", city: "נתניה", zip: "" };
+/** The registered address by date, for the A000 record only: internal to the compliance file, never shown on the public
+ *  site. Until the end of 2026 the office address is the Herzliya Pituach one; from 2027-01-01, when work moves to this
+ *  system, it is HaIrisim 8, Netanya. No postal code: not given, and not guessed. The Herzliya street number is read
+ *  from the practice's last printed documents and still to be confirmed. */
+export const LALUM_BUSINESS_ADDRESSES: { from: string; street: string; houseNum: string; city: string; zip: string }[] = [
+  { from: "2000-01-01", street: "מדינת היהודים", houseNum: "85", city: "הרצליה פיתוח", zip: "" },
+  { from: "2027-01-01", street: "האיריסים", houseNum: "8", city: "נתניה", zip: "" },
+];
+/** The address in force on an ISO date. */
+export function businessAddressOn(isoDate: string) {
+  let cur = LALUM_BUSINESS_ADDRESSES[0];
+  for (const a of LALUM_BUSINESS_ADDRESSES) if (isoDate >= a.from) cur = a;
+  return cur;
+}
 
 export interface ShaamBusiness {
   /** The practice's own business id (עוסק מורשה), 9 digits, Israeli ID check digit valid for a
@@ -222,8 +233,8 @@ export function buildShaamReport(
       companyRegId: "",
       withholdingFileNum: "",
       businessName: business.name,
-      businessStreet: LALUM_BUSINESS_ADDRESS.street, businessHouseNum: LALUM_BUSINESS_ADDRESS.houseNum,
-      businessCity: LALUM_BUSINESS_ADDRESS.city, businessZip: LALUM_BUSINESS_ADDRESS.zip,
+      businessStreet: businessAddressOn(business.periodEnd).street, businessHouseNum: businessAddressOn(business.periodEnd).houseNum,
+      businessCity: businessAddressOn(business.periodEnd).city, businessZip: businessAddressOn(business.periodEnd).zip,
       taxYear: business.taxYear,
       startDate: ymd(business.periodStart),
       endDate: ymd(business.periodEnd),
