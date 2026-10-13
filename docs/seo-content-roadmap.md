@@ -128,6 +128,7 @@
 - V חובת ההנמקה, השקיפות וזכות העיון בהחלטה נתמכת AI ברשות המקומית (ai-local-authority-decision-reasoning-transparency)
 - V הטיה אלגוריתמית ושוויון בהחלטות הקצאה של הרשות המקומית (ai-local-authority-allocation-bias-equality)
 - V מצלמות וזיהוי פנים ברשות המקומית: הגבול החוקי של מעקב מבוסס AI (ai-municipal-facial-recognition-surveillance)
+- V אחריות הרשות המקומית לנזק מהחלטת AI שגויה: מהתקיפה המנהלית לפיצוי (ai-local-authority-tort-liability-damage)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
