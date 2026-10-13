@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-local-authority-tort-liability-damage": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-use-policy-local-authority",
+   "ai-local-authorities-uses-legal-limits"
+  ]
+ },
  "ai-municipal-facial-recognition-surveillance": {
   "topic": "ai-governance",
   "related": [
    "ai-employee-monitoring-privacy",
    "ai-local-authority-decision-reasoning-transparency",
-   "ai-use-policy-local-authority"
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -76,7 +84,7 @@
   "related": [
    "ai-local-authority-decision-reasoning-transparency",
    "ai-recruitment-screening-discrimination",
-   "ai-use-policy-local-authority"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "ai-local-authority-decision-reasoning-transparency": {
@@ -84,7 +92,7 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-planning-permits-local-authority-discretion",
-   "ai-resident-data-privacy-local-authority"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "ai-regulation-us-vs-eu-israeli-companies": {
@@ -123,8 +131,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-real-estate-valuation-reliance",
-   "ai-healthcare-liability-regulation",
-   "ai-healthcare-informed-consent"
+   "ai-local-authority-tort-liability-damage",
+   "ai-healthcare-liability-regulation"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -180,7 +188,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "overseas-property-holding-structure"
+   "overseas-property-due-diligence"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -660,7 +668,7 @@
   "related": [
    "ai-governance-board-framework",
    "ai-use-policy-organization",
-   "ai-risk-frameworks-iso-42001-nist"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "ai-use-policy-organization": {
@@ -1506,8 +1514,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
