@@ -1,9 +1,10 @@
 -- Finance: a bank statement balance is dated by its value date.
 -- lalum_trust_bank_statements.as_of is the date the balance is struck on, which is what the reconciliation compares the
 -- ledger's value dates against (0033). It follows the same two rules as a ledger movement: not in the future (Israel date),
--- Applied to project meoymkcotomoluwlwues (function and trigger as two migrations) and checked in a rolled-back transaction.
+-- and not before the trust account was opened. The screen applies them first; this trigger is the rule itself. A correction
 -- (0032) inserts a row for the same date, so it passes through the same check.
--- Applied to project meoymkcotomoluwlwues as "lalum_trust_statement_value_date_guard_fn" and "..._trigger".
+-- Applied to project meoymkcotomoluwlwues as two migrations (the function, then the trigger), and checked in a rolled-back
+-- transaction: today and the opening day pass; a future date and a date before the opening day are refused.
 
 create or replace function public.lalum_trust_statement_date_guard() returns trigger
 language plpgsql set search_path to 'public' as $$
