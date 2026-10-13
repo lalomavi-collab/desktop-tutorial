@@ -5072,3 +5072,46 @@ html.a11y-reduce-motion *::after {
 .cred-fig { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 24px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--clay); }
 .cred-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
 @media (max-width: 520px) { .cred-strip li { flex: 1 1 calc(50% - 8px); } }
+
+/* Dark instrument panel, shared by the home Engine cards and the Advisory
+   dispute-resolution modules. Three depths (section, panel, badge) instead of
+   one translucent box; sage accent, never the retired terracotta. */
+.dark-panel {
+  position: relative;
+  padding: 32px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(36,34,30,.9), rgba(24,22,19,.94));
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 18px 40px -24px rgba(0,0,0,.6);
+}
+.dark-panel-badge {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(154,187,159,.16); color: var(--clay-bright);
+  box-shadow: inset 0 0 0 1px rgba(154,187,159,.28);
+}
+.dark-panel-idx {
+  position: absolute; top: 30px; inset-inline-end: 32px;
+  font: 600 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: .12em; color: rgba(255,255,255,.5); unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.dark-panel-code {
+  font: 600 20px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: .08em; color: var(--clay-bright); margin: 22px 0 6px;
+}
+.dark-panel-title { font-size: 17px; font-weight: 600; color: var(--paper); margin: 0 0 10px; }
+.dark-panel-body { font-size: 15px; line-height: 1.66; color: #D6D0C4; margin: 0; }
+
+/* Capability tags as chips (replaces the dotted run-on line on the focus cards). */
+.chip-row {
+  list-style: none; margin: 14px 0 0; padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.chip-row li {
+  font-size: 12.5px; font-weight: 600; color: var(--mint-deep, #3f5a43);
+  background: var(--clay-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 11px;
+}
