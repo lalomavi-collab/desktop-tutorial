@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-content-labeling-transparency-policy": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-transparency-generative",
+   "ai-marketing-advertising-privacy-deception-deepfake",
+   "effective-human-oversight-ai-systems"
+  ]
+ },
  "ai-real-estate-valuation-reliance": {
   "topic": "ai-governance",
   "related": [
@@ -260,7 +268,7 @@
   "related": [
    "greece-realestate-israeli-buyer-guide",
    "israel-land-authority-lease-capitalization-transfer",
-   "portugal-purchase-contract"
+   "urban-renewal-taxation-owner"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -634,9 +642,9 @@
  "eu-ai-act-transparency-generative": {
   "topic": "ai-governance",
   "related": [
+   "ai-content-labeling-transparency-policy",
    "eu-ai-act-israeli-companies",
-   "eu-ai-act-high-risk-classification",
-   "eu-ai-act-2026"
+   "eu-ai-act-high-risk-classification"
   ]
  },
  "eu-ai-act-high-risk-classification": {
@@ -1540,7 +1548,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "business-arbitration"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
