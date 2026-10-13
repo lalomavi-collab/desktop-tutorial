@@ -453,3 +453,91 @@ export function trustAccountLock(accountId: string, rows: TrustTx[], statementAc
   return { locked: movements > 0 || statements > 0, movements, statements };
 }
 
+// ---- Trust flow health check (read only) ----
+// The ledger is append only and legally sensitive, so the check never posts test movements. It re-derives, from the rows
+// already on screen, the rules the database enforces on the way in, and flags any row or balance that breaks one.
+
+export type HealthStatus = "ok" | "fail" | "warn" | "info";
+export interface HealthCheck { id: string; label: string; status: HealthStatus; detail: string }
+
+export function trustHealth(
+  rows: TrustTx[], accounts: TrustAccount[], matters: Array<{ id: string; customer_id: string | null }>, today: string,
+): HealthCheck[] {
+  const out: HealthCheck[] = [];
+  const add = (id: string, label: string, status: HealthStatus, detail: string) => out.push({ id, label, status, detail });
+  const open = accounts.filter((a) => !a.closed_on);
+
+  // Readiness: nothing can be posted without an open account and a matter that is billed to a customer.
+  add("setup-account", "יש חשבון נאמנות פעיל", open.length ? "ok" : "fail", open.length ? `${open.length} חשבונות פעילים` : "לא הוגדר חשבון נאמנות פעיל");
+  const billable = matters.filter((m) => m.customer_id).length;
+  add("setup-matter", "יש תיק שמקושר ללקוח", billable ? "ok" : "fail", billable ? `${billable} תיקים` : "אין תיק שמקושר ללקוח בכרטיס הכספי");
+
+  if (!rows.length) { add("no-rows", "תנועות בספר", "info", "עדיין לא נרשמו תנועות, לכן שאר הבדיקות ריקות"); return out; }
+
+  const byId = new Map(rows.map((t) => [t.id, t]));
+
+  const matterIds = [...new Set(rows.map((t) => t.matter_id))];
+  const negMatterReal = matterIds.filter((m) => trustHeld(rows, { matter: m }) < 0).length;
+  add("overdraft-matter", "אין יתרה שלילית באף תיק", negMatterReal ? "fail" : "ok", negMatterReal ? `${negMatterReal} תיקים ביתרה שלילית` : "כל התיקים ביתרה אפס או חיובית");
+  const negAcc = [...new Set(rows.map((t) => t.trust_account_id))].filter((a) => trustHeld(rows, { account: a }) < 0).length;
+  add("overdraft-account", "אין יתרה שלילית באף חשבון נאמנות", negAcc ? "fail" : "ok", negAcc ? `${negAcc} חשבונות ביתרה שלילית` : "כל החשבונות ביתרה אפס או חיובית");
+
+  const badRev = rows.filter((t) => {
+    if (t.tx_type !== "REVERSAL") return false;
+    const o = t.reverses_entry_id == null ? undefined : byId.get(t.reverses_entry_id);
+    return !o || o.matter_id !== t.matter_id || o.trust_account_id !== t.trust_account_id || r2(o.amount + t.amount) !== 0;
+  }).length;
+  const twice = rows.filter((t) => t.reverses_entry_id != null && rows.filter((x) => x.reverses_entry_id === t.reverses_entry_id).length > 1).length;
+  add("reversals", "כל תיקון מבטל תנועה אחת בדיוק", badRev || twice ? "fail" : "ok", badRev || twice ? `${badRev} תיקונים לא תואמים, ${twice} תנועות שתוקנו יותר מפעם אחת` : "כל התיקונים תואמים את התנועה המקורית");
+
+  const noDoc = rows.filter((t) => t.tx_type === "EARNED_FEE_TRANSFER" && !t.reference_doc_id).length;
+  add("fee-invoice", "כל העברת שכר טרחה מפנה לחשבונית", noDoc ? "fail" : "ok", noDoc ? `${noDoc} העברות בלי חשבונית` : "כל ההעברות מפנות לחשבונית");
+
+  const nums = rows.map((t) => /^TR-(\d{1,9})$/.exec(t.receipt_no)).map((m) => (m ? Number(m[1]) : NaN));
+  const malformed = nums.filter((n) => Number.isNaN(n)).length;
+  const valid = nums.filter((n) => !Number.isNaN(n));
+  const dup = valid.length - new Set(valid).size;
+  const gaps = numberingGaps(valid);
+  add("receipts", "מספרי הקבלות רציפים וללא כפילות", malformed || dup || gaps.length ? "fail" : "ok",
+    malformed || dup || gaps.length ? `${malformed} בפורמט לא תקין, ${dup} כפולים${gaps.length ? `, חסרים: ${formatRanges(gaps)}` : ""}` : `${valid.length} קבלות, ללא פערים`);
+
+  const acc = new Map(accounts.map((a) => [a.id, a]));
+  const future = rows.filter((t) => trustValueDate(t) > today).length;
+  const early = rows.filter((t) => { const o = acc.get(t.trust_account_id)?.opened_on; return !!o && trustValueDate(t) < o; }).length;
+  add("value-dates", "תאריכי הערך תקינים", future || early ? "fail" : "ok", future || early ? `${future} עתידיים, ${early} לפני פתיחת החשבון` : "אין תאריך ערך עתידי או לפני פתיחת חשבון");
+
+  const afterClose = rows.filter((t) => { const c = acc.get(t.trust_account_id)?.closed_on; return !!c && trustValueDate(t) > c; }).length;
+  const closedHeld = accounts.filter((a) => a.closed_on && trustHeld(rows, { account: a.id }) !== 0).length;
+  add("closed-accounts", "חשבון שנסגר ריק ולא קיבל תנועות אחרי הסגירה", afterClose || closedHeld ? "fail" : "ok", afterClose || closedHeld ? `${afterClose} תנועות אחרי סגירה, ${closedHeld} חשבונות סגורים עם יתרה` : "החשבונות הסגורים ריקים ונקיים");
+
+  const orphan = matterIds.filter((m) => !matters.some((x) => x.id === m)).length;
+  add("matters-known", "כל התנועות שייכות לתיק שקיים", orphan ? "warn" : "ok", orphan ? `${orphan} תיקים בספר לא נמצאו ברשימת התיקים` : "כל התיקים נמצאו");
+  return out;
+}
+
+/** Folds the bank reconciliation (from lalum_trust_reconciliation) into the same checklist. */
+export function reconHealth(recon: TrustRecon[]): HealthCheck[] {
+  if (!recon.length) return [{ id: "recon", label: "התאמת בנק", status: "info", detail: "אין חשבונות להתאמה" }];
+  const states = recon.map(reconState);
+  const missing = states.filter((x) => x === "NO_STATEMENT").length, diff = states.filter((x) => x === "DIFFERENT").length;
+  const status: HealthStatus = diff ? "fail" : missing ? "warn" : "ok";
+  return [{ id: "recon", label: "התאמת בנק לכל חשבון", status, detail: diff ? `${diff} חשבונות עם פער לבירור` : missing ? `${missing} חשבונות בלי דף בנק` : "כל החשבונות מותאמים" }];
+}
+
+/** One summary status for a list of checks: any failure wins, then any warning. */
+export const healthSummary = (c: HealthCheck[]): HealthStatus => (c.some((x) => x.status === "fail") ? "fail" : c.some((x) => x.status === "warn") ? "warn" : "ok");
+
+export interface FlowStep { id: string; label: string; done: boolean }
+/** Which stages of the trust flow have actually been exercised on live data, in the order a first full run goes through them. */
+export function trustFlowCoverage(rows: TrustTx[], accounts: TrustAccount[], statementAccounts: string[]): FlowStep[] {
+  const has = (f: (t: TrustTx) => boolean) => rows.some(f);
+  return [
+    { id: "account", label: "הוגדר חשבון נאמנות", done: accounts.length > 0 },
+    { id: "deposit", label: "נרשמה הפקדה", done: has((t) => t.tx_type === "DEPOSIT") },
+    { id: "withdrawal", label: "נרשמה משיכה (תשלום לצד שלישי או החזר ללקוח)", done: has((t) => t.tx_type === "DISBURSEMENT_TO_THIRD_PARTY" || t.tx_type === "REFUND_TO_CLIENT") },
+    { id: "fee", label: "הועבר שכר טרחה למשרד כנגד חשבונית", done: has((t) => t.tx_type === "EARNED_FEE_TRANSFER") },
+    { id: "reversal", label: "בוצע תיקון בתנועת ביטול", done: has((t) => t.tx_type === "REVERSAL") },
+    { id: "statement", label: "הוזן דף בנק", done: statementAccounts.length > 0 },
+  ];
+}
+
