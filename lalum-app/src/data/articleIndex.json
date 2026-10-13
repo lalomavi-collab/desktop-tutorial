@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-recruitment-screening-discrimination"
+   "algorithmic-fiduciary-duty-ai"
   ]
  },
  "sovereignty": {
@@ -63,12 +63,20 @@
    "ai-risk-frameworks-iso-42001-nist"
   ]
  },
+ "algorithmic-fiduciary-duty-ai": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-healthcare-liability-regulation",
+   "ai-healthcare-informed-consent",
+   "ai-recruitment-screening-discrimination"
+  ]
+ },
  "algorithmic-pricing-antitrust-real-estate": {
   "topic": "real-estate",
   "related": [
+   "algorithmic-fiduciary-duty-ai",
    "ai-due-diligence-tech-acquisition",
-   "overseas-partnership-guide",
-   "understanding-mediation-process"
+   "overseas-partnership-guide"
   ]
  },
  "ai-real-estate-urban-renewal-legal-exposure": {
@@ -804,7 +812,7 @@
   "related": [
    "ai-legal-practice",
    "contract-review-before-signing",
-   "ai-drafted-real-estate-contract-review"
+   "overseas-partnership-guide"
   ]
  },
  "ai-presentation-tools": {
@@ -1524,7 +1532,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "business-arbitration"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
@@ -1595,15 +1603,15 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "understanding-mediation-process",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "understanding-mediation-process"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
   "topic": "mediation",
   "related": [
-   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
+   "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
