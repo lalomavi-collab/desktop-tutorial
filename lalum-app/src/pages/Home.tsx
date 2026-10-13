@@ -251,8 +251,8 @@ export function Home() {
 
       {/* FOUNDER */}
       <section className="section-line">
-        <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "center" }}>
-          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center" }}>
+        <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
+          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
             <Wordmark height={34} label={h.logoAlt} style={{ display: "block", height: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
