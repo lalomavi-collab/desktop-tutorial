@@ -22,9 +22,14 @@ Status of each fact is marked. Nothing here is legal advice.
 
 - Business identity (confirmed by the owner 2026-10-13): the practice is an individual עוסק מורשה, number `031471261`
   (the owner's own Teudat Zehut, 9 digits, check digit valid: digit sum 30, divisible by 10). It is not a company. The
-  old Invoice4U business names are out of scope and nothing is carried over from them automatically. Registered
-  address: Herzliya Pituach until 2026-12-31, HaIrisim 8, Netanya from 2027-01-01, when work moves to this system.
-  Still open: whether the A000 software registration field should carry this number.
+  old Invoice4U business names are out of scope and nothing is carried over from them automatically.
+  Addresses are two different things: the finance system (A000 record, internal use) uses the real office, HaIrisim 8,
+  Netanya; the official address shown to clients on the public site and on issued documents is Herzliya Pituach
+  (HaMedina HaYehudim, number and postal code to be confirmed) until the owner decides otherwise. Documents are not
+  issued by this system yet, so the client facing address is not configured here.
+  Software registration number (accounting_software_number): the Tax Authority's own API description says that where
+  the software has no registration certificate, the number of the producer of the document is written instead, so this
+  system writes the business number.
 - Numbering: must continue from the last Invoice4U number per document type, not restart. `lalum_fin_series` has to be
   seeded from the archive's highest `doc_number` per type before the own engine seals its first document of that type.
   Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) does this seeding;

@@ -5,7 +5,7 @@
 // Run with: npm run shaam-check
 import assert from "node:assert/strict";
 import { parseUniformFormatFiles } from "@accounter/shaam-uniform-format-generator";
-import { buildShaamReport, businessAddressOn } from "../src/lib/cockpit/shaamExport.ts";
+import { buildShaamReport, LALUM_BUSINESS_ADDRESS } from "../src/lib/cockpit/shaamExport.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 
@@ -83,9 +83,8 @@ t("round trip: the package's own parser and cross-validator accept the generated
   assert.ok(parsed.summary.errors.every((e) => e.severity === "warning"), "only a warning, no errors");
 });
 
-t("registered address follows the date: Herzliya Pituach until 2026, HaIrisim 8 from 2027-01-01", () => {
-  assert.equal(businessAddressOn("2026-12-31").city, "הרצליה פיתוח");
-  assert.deepEqual([businessAddressOn("2027-01-01").street, businessAddressOn("2027-01-01").houseNum, businessAddressOn("2027-01-01").city], ["האיריסים", "8", "נתניה"]);
+t("finance address is the real office, HaIrisim 8 Netanya, whatever the period", () => {
+  assert.deepEqual([LALUM_BUSINESS_ADDRESS.street, LALUM_BUSINESS_ADDRESS.houseNum, LALUM_BUSINESS_ADDRESS.city], ["האיריסים", "8", "נתניה"]);
 });
 console.log("shaam-check: all pass. This proves the file round trips through the library's own\n" +
   "validator, it does not prove the Tax Authority's own file-checker will accept it. Run a real\n" +
