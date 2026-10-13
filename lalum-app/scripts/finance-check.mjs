@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock } from "../src/lib/cockpit/finance.ts";
 
-import { allocationThreshold, allocationGaps, allocationShort } from "../src/lib/cockpit/financeAllocation.ts";
+import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const doc = (o) => ({
@@ -335,5 +335,11 @@ t("income report total follows the stored document total, so a rounding line is 
   const rows = incomeRows([], [a, c], [], { from: "2026-09-01", to: "2026-09-30" });
   assert.deepEqual(rows.map((r) => r.total), [26063, -26063]);
   assert.deepEqual(rows.map((r) => r.net), [22087.5, -22087.29]);
+});
+t("allocation authorization: warns three weeks before expiry and after it", () => {
+  assert.deepEqual(allocationAuthStatus("2026-10-13", "2027-01-01"), { daysLeft: 80, warn: false });
+  assert.deepEqual(allocationAuthStatus("2026-12-11", "2027-01-01"), { daysLeft: 21, warn: true });
+  assert.deepEqual(allocationAuthStatus("2026-12-10", "2027-01-01"), { daysLeft: 22, warn: false });
+  assert.deepEqual(allocationAuthStatus("2027-01-03", "2027-01-01"), { daysLeft: -2, warn: true });
 });
 console.log("\nAll finance checks passed");
