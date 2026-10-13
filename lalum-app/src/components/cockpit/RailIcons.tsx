@@ -67,6 +67,11 @@ const ICONS: Record<string, ReactNode> = {
 };
 
 /** One rail icon. `id` is a screen path (or one of theme, user, site, logout); an unknown id draws nothing. */
+// The demo screens reuse the picture of the area they preview.
+ICONS["/workspace/partner"] = ICONS["/workspace/dashboard"];
+ICONS["/workspace/matters/m1"] = ICONS["/workspace"];
+ICONS["/workspace/portal-preview"] = ICONS["user"];
+
 export function RailIcon({ id, size = 30 }: { id: string; size?: number }) {
   return (
     <svg className="ck-railicon" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false">

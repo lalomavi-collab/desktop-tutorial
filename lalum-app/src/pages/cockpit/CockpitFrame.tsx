@@ -41,6 +41,11 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/workspace/payments", "גביית לקוחות", false, "scale"],
     ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
   ] },
+  { heading: "תצוגות הדגמה", items: [
+    ["/workspace/partner", "תמונת מצב לשותף", false, "scale"],
+    ["/workspace/matters/m1", "תיק 360 (הדגמה)", false, "folder"],
+    ["/workspace/portal-preview", "תצוגת פורטל", false, "user"],
+  ] },
   { heading: "הגדרות", items: [
     ["/settings/members", "חברי המשרד", false, "user"],
     ["/settings/billing", "חיוב והגדרות", false, "card"],

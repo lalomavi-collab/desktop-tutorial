@@ -1,0 +1,36 @@
+/* Partner, matter and portal preview components. Builds on cockpit.css tokens; adds only what those lack. */
+.crm-demo { background: rgba(184, 132, 42, .14); color: #6f4f12; border: 1px solid rgba(184, 132, 42, .35); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
+.crm-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+.crm-kpi { display: flex; flex-direction: column; gap: 6px; }
+.crm-kpi small { color: var(--slate); font-size: 12px; }
+.crm-kpi b { font-size: 26px; font-variant-numeric: tabular-nums; }
+.crm-kpi.trust { border: 2px dashed rgba(36, 89, 58, .5); }
+.crm-kpi.trust::before { content: "התחייבות ללקוחות, לא הכנסה"; font-size: 11px; font-weight: 700; color: #24593a; }
+.crm-split { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 12px; }
+.crm-split span { display: flex; flex-direction: column; background: rgba(0, 0, 0, .04); border-radius: 8px; padding: 4px 6px; font-variant-numeric: tabular-nums; }
+.crm-banner { border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; font-weight: 600; }
+.crm-banner.red { background: rgba(179, 64, 47, .13); color: #8a2f21; }
+.crm-banner.yellow { background: rgba(184, 132, 42, .16); color: #6f4f12; }
+.crm-banner.green { background: rgba(63, 143, 95, .14); color: #24593a; }
+.crm-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.crm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.crm-list li { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-bottom: 1px solid rgba(0, 0, 0, .06); padding-bottom: 8px; }
+.crm-bubble { max-width: 80%; padding: 8px 12px; border-radius: 14px; background: rgba(0, 0, 0, .05); }
+.crm-bubble.me { align-self: flex-start; background: rgba(63, 143, 95, .16); }
+.crm-chat { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow: auto; }
+.crm-pipe { display: flex; gap: 4px; flex-wrap: wrap; }
+.crm-pipe span { padding: 4px 10px; border-radius: 9999px; font-size: 12px; background: rgba(0, 0, 0, .06); }
+.crm-pipe span.on { background: #3d8d2e; color: #fff; font-weight: 700; }
+.crm-drop { border: 2px dashed rgba(0, 0, 0, .25); border-radius: 14px; padding: 22px; text-align: center; }
+.crm-drop.over { border-color: #3d8d2e; background: rgba(63, 143, 95, .08); }
+.crm-timer { position: sticky; bottom: 12px; z-index: 5; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--card); border-radius: 14px; padding: 10px 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, .18); }
+.crm-timer b { font-size: 22px; font-variant-numeric: tabular-nums; direction: ltr; }
+.crm-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.crm-tabs button[aria-pressed="true"] { background: #3d8d2e; color: #fff; }
+.crm-bars { display: flex; align-items: flex-end; gap: 4px; height: 150px; direction: ltr; }
+.crm-bars div { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 1px; height: 100%; }
+.crm-bars i { display: block; border-radius: 3px 3px 0 0; }
+.crm-bars .in { background: #8ed46a; }
+.crm-bars .out { background: #cf4b3a; }
+@media (max-width: 900px) { .crm-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .crm-kpis { grid-template-columns: 1fr; } .crm-bubble { max-width: 94%; } }
