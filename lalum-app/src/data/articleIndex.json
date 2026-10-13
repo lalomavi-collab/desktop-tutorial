@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-local-authority-decision-reasoning-transparency": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "ai-planning-permits-local-authority-discretion",
+   "ai-resident-data-privacy-local-authority"
+  ]
+ },
  "ai-regulation-us-vs-eu-israeli-companies": {
   "topic": "ai-governance",
   "related": [
@@ -84,7 +92,7 @@
   "related": [
    "eu-ai-act-transparency-generative",
    "ai-marketing-advertising-privacy-deception-deepfake",
-   "effective-human-oversight-ai-systems"
+   "ai-local-authority-decision-reasoning-transparency"
   ]
  },
  "ai-real-estate-valuation-reliance": {
@@ -284,7 +292,7 @@
   "related": [
    "greece-realestate-israeli-buyer-guide",
    "israel-land-authority-lease-capitalization-transfer",
-   "portugal-purchase-contract"
+   "urban-renewal-taxation-owner"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -363,8 +371,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-clinical-system-deployment",
-   "ai-use-policy-local-authority",
-   "procurement"
+   "procurement",
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -387,8 +395,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-municipal-algorithmic-enforcement-due-process"
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
@@ -563,8 +571,8 @@
   "topic": "contracts",
   "related": [
    "ai-due-diligence-tech-acquisition",
-   "shadow-it-law-firms",
-   "memory"
+   "memory",
+   "shadow-it-law-firms"
   ]
  },
  "gdpr-israeli-companies-ai": {
@@ -963,8 +971,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
