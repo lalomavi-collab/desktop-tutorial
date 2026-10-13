@@ -10,7 +10,7 @@ import { buildShaamReport, businessAddressOn } from "../src/lib/cockpit/shaamExp
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 
 const business = {
-  taxId: "516908704", name: "LALUM משרד עורכי דין",
+  taxId: "031471261", name: "LALUM משרד עורכי דין",
   taxYear: "2026", periodStart: "2026-01-01", periodEnd: "2026-12-31",
 };
 

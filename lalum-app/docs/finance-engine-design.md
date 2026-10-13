@@ -20,12 +20,11 @@ Status of each fact is marked. Nothing here is legal advice.
 
 ## Answered by the practice owner (2026-10-10)
 
-- Business identity (corrected 2026-10-13): the issuing business is the company, ח.פ. `516908704` (9 digits, check digit
-  valid), registered address Herzliya Pituach until 2026-12-31 and HaIrisim 8, Netanya from 2027-01-01, when work moves
-  to this system. The owner's personal Teudat Zehut, entered earlier as the business id, is no longer a business number
-  and must not appear in any file. The old business is out of scope and nothing is carried over from it automatically.
-  Still open: whether the software registration field and the company registration field (A000) should carry the company
-  number, and whether the company's VAT file number equals its ח.פ. (accountant).
+- Business identity (confirmed by the owner 2026-10-13): the practice is an individual עוסק מורשה, number `031471261`
+  (the owner's own Teudat Zehut, 9 digits, check digit valid: digit sum 30, divisible by 10). It is not a company. The
+  old Invoice4U business names are out of scope and nothing is carried over from them automatically. Registered
+  address: Herzliya Pituach until 2026-12-31, HaIrisim 8, Netanya from 2027-01-01, when work moves to this system.
+  Still open: whether the A000 software registration field should carry this number.
 - Numbering: must continue from the last Invoice4U number per document type, not restart. `lalum_fin_series` has to be
   seeded from the archive's highest `doc_number` per type before the own engine seals its first document of that type.
   Done: `lalum_fin_seed_series_from_archive(firm)` (migration `0017_lalum_finance_series_seed.sql`) does this seeding;
