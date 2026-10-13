@@ -20,7 +20,7 @@ type Node = { bx: number; by: number; phase: number; x: number; y: number };
 type Edge = { a: number; b: number };
 type Signal = { legs: [number, number][]; t: number };
 
-const CLAY = "168,72,42";
+const CLAY = "154,187,159";
 
 export function DecisionLattice() {
   const ref = useRef<HTMLCanvasElement | null>(null);
