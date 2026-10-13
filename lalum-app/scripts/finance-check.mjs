@@ -298,7 +298,7 @@ t("allocation ceiling steps down by date and is on the amount before VAT", () =>
   assert.equal(allocationThreshold("2026-06-01"), 5000);
 });
 t("allocation gaps: only issued tax invoices above the ceiling, with VAT, without a number", () => {
-  const cust = [{ id: "c1", tax_id: "031471261", is_casual: false }, { id: "c2", tax_id: null, is_casual: false }];
+  const cust = [{ id: "c1", tax_id: "516908704", is_casual: false }, { id: "c2", tax_id: null, is_casual: false }];
   const docs = [
     doc({ id: "a", issue_date: "2026-09-30", subtotal: 22087.5, vat_amount: 3975.75 }),
     doc({ id: "b", issue_date: "2026-09-30", subtotal: 22087.5, vat_amount: 3975.75, allocation_number: "245073463" }),
