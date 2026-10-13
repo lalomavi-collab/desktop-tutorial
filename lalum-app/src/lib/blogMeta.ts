@@ -12,6 +12,13 @@ export type BlogMeta = {
 
 export const blogMeta: BlogMeta[] = [
   {
+    "slug": "gpai-code-of-practice-foundation-models",
+    "title": "כללי ההתנהגות למודלי יסוד (GPAI Code of Practice): מה נדרש מהחברה",
+    "excerpt": "כללי ההתנהגות למודלי יסוד (GPAI Code of Practice) הם הכלי הוולונטרי הראשון להוכחת עמידה בחובות ה-EU AI Act על מודלים למטרות כלליות. מה שלושת הפרקים (שקיפות, זכויות יוצרים, בטיחות), למי הם חלים, ומה נדרש מחברה ישראלית שבונה על מודל או מספקת אותו.",
+    "date": "אוקטובר 2026",
+    "cover": "/images/covers/ai-ethics-legal-risks.webp"
+  },
+  {
     "slug": "ai-content-labeling-transparency-policy",
     "title": "מדיניות סימון ושקיפות לתוכן שנוצר ב-AI: המדריך המעשי ליישום",
     "excerpt": "חובת הסימון והשקיפות לתוכן שנוצר בבינה מלאכותית הופכת לסטנדרט, ב-EU AI Act ומעבר לו. אך איך מיישמים אותה בפועל בארגון: מה חייבים לסמן, מתי, ואיך לנסח מדיניות שעומדת ברגולציה ובציפיית הלקוח. מדריך מעשי מהחובה המשפטית אל הנוהל.",
