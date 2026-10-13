@@ -17,6 +17,7 @@ function errText(message: string): string {
   if (message.includes("last administrator")) return "לא ניתן להסיר את המנהל האחרון של המשרד.";
   if (message.includes("not allowed")) return "אין לך הרשאה לפעולה זו.";
   if (message.includes("invalid role")) return "תפקיד לא חוקי.";
+  if (message.includes("no e-mail")) return "לחשבון הזה אין כתובת דוא\"ל.";
   if (message.includes("not a firm member")) return "המשתמש אינו חבר במשרד.";
   return "הפעולה נכשלה. נסו שוב.";
 }
@@ -52,6 +53,19 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
     setRev((n) => n + 1);
   }
 
+  // The administrator never sees or sets a password: this asks Supabase Auth to
+  // e-mail the member its own reset link and code, and the request is audited.
+  async function sendReset(p: Person) {
+    if (!supabase || !window.confirm(`לשלוח ל${p.name} מייל לאיפוס סיסמה? הסיסמה הנוכחית תישאר בתוקף עד שייקבע קוד חדש.`)) return;
+    setMsg(null);
+    const { data: email, error } = await supabase.rpc("lalum_member_reset_target", { p_user: p.user_id });
+    if (error || typeof email !== "string") { setMsg({ ok: false, text: errText(error?.message ?? "") }); return; }
+    const { error: sendErr } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+    if (sendErr) { setMsg({ ok: false, text: "שליחת המייל נכשלה. המתינו דקה ונסו שוב." }); return; }
+    const [name, domain] = email.split("@");
+    setMsg({ ok: true, text: `נשלח מייל איפוס אל ${name.slice(0, 1)}***@${domain}.` });
+  }
+
   if (people === null) return <div className="ck-meta">טוען...</div>;
 
   return (
@@ -85,6 +99,9 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
                 placeholder='נדל"ן / מסחרי / ליטיגציה...' style={{ maxWidth: 220 }} />
             ) : <span className="ck-meta">{p.department || "—"}</span>}
           </label>
+          {canAdmin && (
+            <div><button type="button" className="ck-btn" onClick={() => void sendReset(p)}>שליחת מייל לאיפוס סיסמה</button></div>
+          )}
           {p.role === "FIRM_PARTNER" && <div className="ck-meta">מחלקת השותף קובעת אילו תיקים הוא רואה אוטומטית.</div>}
         </div>
       ))}
