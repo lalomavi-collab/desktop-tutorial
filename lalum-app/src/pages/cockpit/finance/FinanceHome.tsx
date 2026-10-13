@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
-import { monthPeriod, receivable, summarize } from "../../../lib/cockpit/finance";
+import { DOC_TYPE, monthPeriod, receivable, summarize } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, TrustAccount, TrustTx } from "../../../lib/cockpit/finance";
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
@@ -20,6 +20,7 @@ import { PermissionsTab } from "./PermissionsTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
 import { RevenueView } from "./RevenueView";
+import { allocationGaps, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 
 type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "aging" | "cashflow";
@@ -100,6 +101,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
   const s = summarize(docs, payments, expenses, per, archive);
   const allIncome = incomeRows(docs, archive, customers, { from: "2000-01-01", to: "2100-12-31" });
   const hasTest = docs.some((d) => d.is_test);
+  const allocGaps = allocationGaps(docs, customers);
   const overdue = docs.filter((d) => receivable(d, docs, payments) > 0 && (d.due_date ?? d.issue_date) < new Date().toISOString().slice(0, 10));
 
   return (
@@ -133,6 +135,15 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
             <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מהארכיון של Invoice4U אינם נכללים.</div>
               {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבונות עסקה עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           </div>
+          {allocGaps.length > 0 && (
+            <div className="ck-warn" role="alert">
+              <b>{allocGaps.length} חשבוניות מעל הסף ללא מספר הקצאה.</b> בדוק אם החיבור של Invoice4U לרשות המסים פעיל (נדרש חידוש בערך אחת לרבעון).
+              <ul style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
+                {allocGaps.slice(0, 5).map((g) => <li key={g.doc.id}>{DOC_TYPE[g.doc.doc_type]} {g.doc.doc_number ?? ""}, {g.doc.issue_date}, <bdi>{money(g.doc.subtotal)}</bdi> לפני מע"מ{g.customerHasTaxId ? "" : " (ללקוח אין ת.ז. או ח.פ. בכרטיס)"}</li>)}
+              </ul>
+              <div className="fin-note">הסף נבדק מול רשות המסים ב-{ALLOCATION_VERIFIED_ON}. המספר נדרש כשהלקוח עוסק מורשה ודורש אותו.</div>
+            </div>
+          )}
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
