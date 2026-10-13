@@ -341,5 +341,6 @@ t("allocation authorization: warns three weeks before expiry and after it", () =
   assert.deepEqual(allocationAuthStatus("2026-12-11", "2027-01-01"), { daysLeft: 21, warn: true });
   assert.deepEqual(allocationAuthStatus("2026-12-10", "2027-01-01"), { daysLeft: 22, warn: false });
   assert.deepEqual(allocationAuthStatus("2027-01-03", "2027-01-01"), { daysLeft: -2, warn: true });
+  assert.equal(allocationAuthStatus("2027-01-03", null).warn, false);
 });
 console.log("\nAll finance checks passed");

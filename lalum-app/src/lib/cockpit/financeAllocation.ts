@@ -57,14 +57,16 @@ export const allocationShort = (n: string | null | undefined): string =>
 /**
  * The connection to the Tax Authority's allocation system is an authorization that Invoice4U asks to renew about
  * once a quarter (Settings, Israel Invoices). If it lapses, invoices above the ceiling go out with no number and no
- * error. Move this date whenever the authorization is renewed; the overview warns from three weeks before it.
- * Last renewal 2026-10-01 09:26, expires 2027-01-01 09:26 (read from the Invoice4U settings screen on 2026-10-13).
+ * error. Set this to the expiry date shown on the Invoice4U screen of the issuing business once that business is
+ * connected, and move it after every renewal; the overview warns from three weeks before it. `null` means no
+ * connection is known yet, so there is nothing to warn about.
  */
-export const ALLOCATION_AUTH_EXPIRES = "2027-01-01";
+export const ALLOCATION_AUTH_EXPIRES: string | null = null;
 export const ALLOCATION_AUTH_WARN_DAYS = 21;
 
 /** Whole days from `today` to the expiry (negative once past), and whether the overview should warn. */
-export function allocationAuthStatus(today: string, expires: string = ALLOCATION_AUTH_EXPIRES): { daysLeft: number; warn: boolean } {
+export function allocationAuthStatus(today: string, expires: string | null = ALLOCATION_AUTH_EXPIRES): { daysLeft: number; warn: boolean } {
+  if (!expires) return { daysLeft: Infinity, warn: false };
   const daysLeft = Math.round((Date.parse(expires + "T00:00:00Z") - Date.parse(today + "T00:00:00Z")) / 86400000);
   return { daysLeft, warn: daysLeft <= ALLOCATION_AUTH_WARN_DAYS };
 }
