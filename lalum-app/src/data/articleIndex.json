@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-real-estate-valuation-reliance"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "sovereignty": {
@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-education-public-institutions-use-policy": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "ai-municipal-facial-recognition-surveillance",
+   "ai-local-authority-decision-reasoning-transparency"
+  ]
+ },
  "ai-local-authority-tort-liability-damage": {
   "topic": "ai-governance",
   "related": [
@@ -74,9 +82,9 @@
  "ai-municipal-facial-recognition-surveillance": {
   "topic": "ai-governance",
   "related": [
+   "ai-education-public-institutions-use-policy",
    "ai-employee-monitoring-privacy",
-   "ai-local-authority-decision-reasoning-transparency",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-local-authority-decision-reasoning-transparency"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -91,8 +99,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-local-authority-tort-liability-damage"
+   "ai-education-public-institutions-use-policy",
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "ai-regulation-us-vs-eu-israeli-companies": {
@@ -116,7 +124,7 @@
   "related": [
    "eu-ai-act-transparency-generative",
    "ai-marketing-advertising-privacy-deception-deepfake",
-   "ai-local-authority-decision-reasoning-transparency"
+   "ai-education-public-institutions-use-policy"
   ]
  },
  "ai-real-estate-valuation-reliance": {
@@ -132,7 +140,7 @@
   "related": [
    "ai-real-estate-valuation-reliance",
    "ai-local-authority-tort-liability-damage",
-   "ai-healthcare-liability-regulation"
+   "ai-education-public-institutions-use-policy"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -404,7 +412,7 @@
   "related": [
    "ai-hr-use-policy",
    "ai-local-authorities-uses-legal-limits",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-education-public-institutions-use-policy"
   ]
  },
  "ai-municipal-algorithmic-enforcement-due-process": {
@@ -482,9 +490,9 @@
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
+   "ai-education-public-institutions-use-policy",
    "ai-use-policy-local-authority",
-   "ai-local-authorities-uses-legal-limits",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -820,7 +828,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
-   "eu-ai-act-conformity-file-preparation"
+   "פגישת-ייעוץ-משפטי-וחוות-דעת-חיצונית-מתי-נכון-לפנות-לעורך-דין-מומחה-ומהם-הדגשים-שחשוב-לדעת"
   ]
  },
  "ai-ethics-legal-risks": {
@@ -1355,8 +1363,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-realestate-risk-management",
-   "ai-ethics-legal-risks",
-   "lalum-investment-model-launch"
+   "lalum-investment-model-launch",
+   "ai-ethics-legal-risks"
   ]
  },
  "שני-שכנים-נציגות-אחת-וחזית-שבורה-איך-גישור-פתח-דרך-להסכמה-מקרה-אמיתי-של-סכסוך-שכנים-בעקבות-נזקי": {
@@ -1411,8 +1419,8 @@
   "topic": "real-estate",
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
-   "ai-local-authorities-uses-legal-limits",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "developer-agreement-urban-renewal-critical-clauses",
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1596,7 +1604,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "business-arbitration"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
