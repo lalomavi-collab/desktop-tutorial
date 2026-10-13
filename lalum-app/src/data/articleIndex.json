@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-regulation-us-vs-eu-israeli-companies": {
+  "topic": "ai-governance",
+  "related": [
+   "eu-ai-act-israeli-companies",
+   "eu-ai-act-2026",
+   "gpai-code-of-practice-foundation-models"
+  ]
+ },
  "gpai-code-of-practice-foundation-models": {
   "topic": "ai-governance",
   "related": [
@@ -100,7 +108,7 @@
   "related": [
    "algorithmic-fiduciary-duty-ai",
    "ai-due-diligence-tech-acquisition",
-   "overseas-partnership-guide"
+   "ai-regulation-us-vs-eu-israeli-companies"
   ]
  },
  "ai-real-estate-urban-renewal-legal-exposure": {
@@ -276,7 +284,7 @@
   "related": [
    "greece-realestate-israeli-buyer-guide",
    "israel-land-authority-lease-capitalization-transfer",
-   "urban-renewal-taxation-owner"
+   "portugal-purchase-contract"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -604,7 +612,7 @@
   "related": [
    "tama-38-1-vs-38-2-comparison",
    "tenant-urban-renewal-guide",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
@@ -900,7 +908,7 @@
   "related": [
    "ai-workspace-encyclopedia",
    "building-ai-agents-realestate",
-   "unfair-advantage-course"
+   "realestate-master-course"
   ]
  },
  "lawyer-wakeup-call": {
@@ -955,8 +963,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "unfair-advantage-course",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "unfair-advantage-course"
   ]
  },
  "unfair-advantage-course": {
@@ -1411,8 +1419,8 @@
   "topic": "mediation",
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
-   "lalum-clinic-realestate-advice",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים",
+   "lalum-clinic-realestate-advice"
   ]
  },
  "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית": {
@@ -1627,8 +1635,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "real-estate-arbitration",
-   "understanding-mediation-process"
+   "understanding-mediation-process",
+   "real-estate-arbitration"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
