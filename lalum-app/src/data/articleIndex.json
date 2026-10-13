@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "algorithmic-fiduciary-duty-ai"
+   "ai-real-estate-valuation-reliance"
   ]
  },
  "sovereignty": {
@@ -59,16 +59,24 @@
   "topic": "ai-governance",
   "related": [
    "legal-logic",
-   "explainability",
-   "ai-risk-frameworks-iso-42001-nist"
+   "ai-real-estate-valuation-reliance",
+   "explainability"
+  ]
+ },
+ "ai-real-estate-valuation-reliance": {
+  "topic": "ai-governance",
+  "related": [
+   "algorithmic-fiduciary-duty-ai",
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "algorithmic-fiduciary-duty-ai": {
   "topic": "ai-governance",
   "related": [
+   "ai-real-estate-valuation-reliance",
    "ai-healthcare-liability-regulation",
-   "ai-healthcare-informed-consent",
-   "ai-recruitment-screening-discrimination"
+   "ai-healthcare-informed-consent"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -82,9 +90,9 @@
  "ai-real-estate-urban-renewal-legal-exposure": {
   "topic": "real-estate",
   "related": [
+   "ai-real-estate-valuation-reliance",
    "ai-planning-permits-local-authority-discretion",
-   "ai-international-transactions-overview",
-   "second-opinion-real-estate-urban-renewal"
+   "ai-international-transactions-overview"
   ]
  },
  "israel-land-authority-lease-capitalization-transfer": {
