@@ -9,6 +9,20 @@ import type { FinCustomer, FinDocument, FinPayment } from "./finance";
 
 export type PartnerFinanceState = { state: "loading" } | { state: "denied" } | { state: "ready"; data: PartnerFinance };
 
+export interface LedgerRaw { customers: FinCustomer[]; docs: FinDocument[]; pays: FinPayment[] }
+
+/** Customers, documents and payments, or null when RLS refuses. Shared by the partner view and the portal preview. */
+export async function loadLedgerRaw(): Promise<LedgerRaw | null> {
+  if (!supabase) return null;
+  const [c, d, p] = await Promise.all([
+    supabase.from("lalum_fin_customers").select("*").order("name"),
+    supabase.from("lalum_fin_documents").select("*"),
+    supabase.from("lalum_fin_payments").select("*"),
+  ]);
+  if (c.error || d.error || p.error) return null;
+  return { customers: (c.data as FinCustomer[]) ?? [], docs: (d.data as FinDocument[]) ?? [], pays: (p.data as FinPayment[]) ?? [] };
+}
+
 /** Finance data is gated by RLS (level 2 and up for documents). A refusal or an empty client reads as "denied", never as zeros. */
 export async function loadPartnerFinance(): Promise<PartnerFinanceState> {
   if (!supabase) return { state: "denied" };

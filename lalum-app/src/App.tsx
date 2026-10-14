@@ -109,7 +109,7 @@ export default function App() {
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="workspace/import" element={<Suspense fallback={null}><ImportFolderPage /></Suspense>} />
           <Route path="workspace/partner" element={<Suspense fallback={null}><PartnerDashboardPage /></Suspense>} />
-          <Route path="workspace/matters/:id" element={<Suspense fallback={null}><Matter360Page /></Suspense>} />
+          <Route path="workspace/matter-360" element={<Suspense fallback={null}><Matter360Page /></Suspense>} />
           <Route path="workspace/portal-preview" element={<Suspense fallback={null}><PortalPreviewPage /></Suspense>} />
           <Route path="workspace/dashboard" element={<Suspense fallback={null}><DashboardPage /></Suspense>} />
           <Route path="workspace/inquiries" element={<Suspense fallback={null}><InquiriesPage /></Suspense>} />

@@ -4,6 +4,7 @@ import { summarizeTrust, trustBalance, wip, clientMessages, clientMilestones } f
 import { calculateDeadline, VERIFIED_RULES } from "../src/lib/cockpit/deadlines.ts";
 import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
 import { partnerFinance } from "../src/lib/cockpit/crmFinanceCore.ts";
+import { isUuid, timeSummary, hours, stageIndex } from "../src/lib/cockpit/matter360Core.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const today = new Date(2026, 9, 10); // Saturday 10 Oct 2026
@@ -69,4 +70,25 @@ t("partner forecast marks the first week below the safety reserve", () => {
   assert.equal(r.forecast.firstBreach, 0);
   assert.equal(r.forecast.lowest, 40000);
   assert.ok(r.monthlyBurn > 0);
+});
+
+t("matter 360: uuid check, hours by status, stage order", () => {
+  assert.ok(isUuid("0b9f4d3e-1a2b-4c5d-8e9f-0123456789ab"));
+  assert.ok(!isUuid("m1") && !isUuid(null) && !isUuid("../../etc"));
+  const rows = [
+    { id: "1", work_date: "2026-10-01", billable_minutes: 60, narrative: "", status: "draft" },
+    { id: "2", work_date: "2026-10-02", billable_minutes: 90, narrative: "", status: "approved" },
+    { id: "3", work_date: "2026-10-03", billable_minutes: 30, narrative: "", status: "billed" },
+    { id: "4", work_date: "2026-10-04", billable_minutes: 12, narrative: "", status: "submitted" },
+    { id: "5", work_date: "2026-10-05", billable_minutes: 600, narrative: "", status: "written_off" },
+  ];
+  const s = timeSummary(rows);
+  assert.equal(s.approvedUnbilled, 90);
+  assert.equal(s.totalBillable, 60 + 90 + 30 + 12, "written-off time is not billable");
+  assert.equal(s.writtenOff, 600);
+  assert.equal(hours(90), 1.5);
+  assert.equal(hours(100), 1.67);
+  assert.equal(stageIndex("INTAKE_PENDING"), 0);
+  assert.equal(stageIndex("ARCHIVED"), 3);
+  assert.equal(stageIndex("nope"), -1);
 });
