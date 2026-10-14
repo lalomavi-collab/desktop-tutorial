@@ -38,6 +38,19 @@ function ScaleIcon() {
     </svg>
   );
 }
+// A small chevron badge on the button itself: the mark alone reads as a
+// static logo, with nothing to suggest it opens a menu. The badge is the
+// same "tap for more" cue a profile photo with a caret uses elsewhere, so a
+// visitor does not have to click to find out.
+function ChevronBadge({ open }: { open: boolean }) {
+  return (
+    <span className="qad-chevron" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? "rotate(180deg)" : undefined }}>
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </span>
+  );
+}
 
 export function QuickAccessDot() {
   const { t } = useLang();
@@ -110,6 +123,7 @@ export function QuickAccessDot() {
         title={open ? Q.close : Q.open}
       >
         <img src={lalumMark} alt="" aria-hidden="true" />
+        <ChevronBadge open={open} />
       </button>
     </div>
   );
