@@ -19,7 +19,7 @@ import { SignatureRequests } from "./SignatureRequests";
 import { ConflictReview } from "./ConflictReview";
 import { MatterAccess } from "./MatterAccess";
 
-interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null }
+interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null; matter_code?: string; sync_enabled?: boolean }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
 interface SignoffStatus { complete: boolean; steps: Record<string, { valid: boolean }> }
 const TOKEN_RE = /\[[A-Z_]+_\d+\]/g;
@@ -126,6 +126,13 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
     })();
     return () => { live = false; };
   }, [doc, docs, matter, routing, signoff]);
+
+  async function setSync(on: boolean) {
+    if (!supabase || !matter) return;
+    const { error } = await supabase.rpc("lalum_set_matter_sync", { p_matter: matter.id, p_enabled: on });
+    if (error) { setSaveMsg("לא ניתן לשנות את הסנכרון: אין הרשאה או שנדרש אימות דו שלבי"); return; }
+    setRev((n) => n + 1);
+  }
 
   async function trashDocument(d: MatterDoc) {
     if (!window.confirm(`להעביר את "${d.file_name}" לסל המיחזור? ניתן לשחזר אותו משם.`)) return;
@@ -252,7 +259,17 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
           <div>
             <div className="ck-title">{matter.title}</div>
-            <div className="ck-row" style={{ marginTop: 6 }}>{PRACTICE[matter.practice_area]} <ConflictBadge c={matter.conflict_status} /> <span className="ck-meta">{MATTER_STATUS[matter.status]}</span></div>
+            <div className="ck-row" style={{ marginTop: 6 }}><span className="ck-chip">{PRACTICE[matter.practice_area]}</span> <ConflictBadge c={matter.conflict_status} /> <span className="ck-chip">{MATTER_STATUS[matter.status]}</span></div>
+            {matter.matter_code && (
+              <div className="ck-row ck-meta" style={{ marginTop: 6 }}>
+                <span dir="ltr" title="קוד התיק: מפתח יחיד לדואר ולתיקיות חיצוניות">{matter.matter_code}</span>
+                {(role === "FIRM_PARTNER" || role === "ADMIN") && (
+                  <label className="ck-row" title="כשהסימון כבוי, שום דבר מהתיק לא מועתק לתיקייה חיצונית">
+                    <input type="checkbox" checked={matter.sync_enabled === true} onChange={(e) => void setSync(e.target.checked)} /> סנכרון לתיקייה חיצונית
+                  </label>
+                )}
+              </div>
+            )}
           </div>
           <div className="ck-row"><PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to={`/workspace/matter-360?matter=${matter.id}`}>תיק 360</Link><Link className="ck-btn" to="/workspace">לרשימה</Link></div>
         </div>
@@ -332,7 +349,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-row"><button className="ck-btn" onClick={() => void reanalyze(area)}>ניתוח מחדש על הטקסט הנוכחי</button><span className="ck-meta" aria-live="polite">{anMsg}</span></div>
           {risk ? <div className="ck-stack">
             <div className="ck-row"><Badge sev="RED" /> <b>{risk.red}</b> <Badge sev="YELLOW" /> <b>{risk.yellow}</b> <Badge sev="GREEN" /> <b>{risk.green}</b></div>
-            <div className="ck-meta">ציון בטיחות: {risk.score}/100</div><div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
+            <div><span className="ck-chip">ציון בטיחות: {risk.score}/100</span></div><div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
           </div> : <span className="ck-meta">אין ניתוח</span>}
           <div className="ck-stack">
             {groups[0].length ? groups[0].map((f) => <FindingCard key={f.ruleId} f={f} />) : <span className="ck-meta">לא נמצאו ממצאים בסיכון.</span>}

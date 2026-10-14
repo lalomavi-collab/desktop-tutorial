@@ -9,6 +9,7 @@ import { readFile } from "./Intake";
 import { callPipeline, errorText, PRACTICE } from "../../lib/cockpit/shared";
 import { storeOriginal } from "../../lib/cockpit/storeOriginal";
 import { DOC_ORIGIN, DOC_TYPE } from "../../lib/cockpit/docMeta";
+import { subjectOf, suggestDocType } from "../../lib/cockpit/docSuggest";
 import { findExisting, sha256File } from "../../lib/cockpit/dedupe";
 import { supabase } from "../../lib/supabase";
 
@@ -16,9 +17,10 @@ const EXT = [".docx", ".pdf", ".txt", ".md", ".html", ".htm"];
 const MAX_BYTES = 15 * 1024 * 1024;
 const MAX_FILES_PER_MATTER = 200;
 
-interface Entry { name: string; file: File; hash: string }
+// sug: the document type suggested from the file name and its sub folders (null when no keyword matched).
+interface Entry { name: string; file: File; hash: string; sug: string | null }
 // files = new, unique files to import. existing = already in the vault (matched by SHA-256). dupes = repeats inside the folder.
-interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[] }
+interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[]; skippedExt: Record<string, number>; subjects: Array<[string, number]>; types: Array<[string, number]> }
 // Folders that are usually a sorting place, not a matter: left unchecked until the partner decides.
 const SORTING = /(דואר|נכנס|יוצא|inbox|outbox|סריק|scan|הורד|download|\btmp\b|\btemp\b|טיוטות|ארכיון|archive|שונות|misc|new folder|תיקייה חדשה)/i;
 type Row = { folder: string; state: "wait" | "run" | "done" | "warn" | "err"; text: string };
@@ -41,6 +43,13 @@ async function collect(dir: DirHandle, out: Array<{ name: string; file: File }>,
   }
 }
 
+// Counts equal labels, biggest first.
+function tally(items: string[]): Array<[string, number]> {
+  const m = new Map<string, number>();
+  for (const i of items) m.set(i, (m.get(i) ?? 0) + 1);
+  return [...m.entries()].sort((a, b) => b[1] - a[1]);
+}
+
 function Importer({ firmId }: { firmId: string }) {
   const [plans, setPlans] = useState<Plan[] | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
@@ -48,6 +57,7 @@ function Importer({ firmId }: { firmId: string }) {
   const [note, setNote] = useState("");
   const [docType, setDocType] = useState("");
   const [docOrigin, setDocOrigin] = useState("");
+  const [autoType, setAutoType] = useState(true);
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
   const [level, setLevel] = useState<0 | 1 | 2>(1);
@@ -71,14 +81,24 @@ function Importer({ firmId }: { firmId: string }) {
   async function scan(rootDir: DirHandle, lvl: 0 | 1 | 2) {
     setNote(""); setRows([]); setPlans(null); unreadable.n = 0;
     try {
-      const raw: Array<{ folder: string; files: Array<{ name: string; file: File }>; skipped: number }> = [];
+      const raw: Array<{ folder: string; files: Array<{ name: string; file: File }>; skipped: number; skippedExt: Record<string, number> }> = [];
       let loose = 0; let looseUnsupported = 0;
       const rootLoose: Array<{ name: string; file: File }> = [];
       const addMatter = async (dir: DirHandle, label: string) => {
         const all: Array<{ name: string; file: File }> = [];
         await collect(dir, all, "", 0);
-        const ok = all.filter((e) => EXT.some((x) => e.name.toLowerCase().endsWith(x)) && e.file.size > 0 && e.file.size <= MAX_BYTES).slice(0, MAX_FILES_PER_MATTER);
-        if (ok.length) raw.push({ folder: label, files: ok, skipped: all.length - ok.length });
+        // Every file that will not be imported is counted by reason, so nothing is dropped without being shown.
+        const skippedExt: Record<string, number> = {};
+        const why = (e: { name: string; file: File }): string | null => {
+          if (!EXT.some((x) => e.name.toLowerCase().endsWith(x))) { const m = /\.([^./]+)$/.exec(e.name); return m ? `.${m[1].toLowerCase()}` : "ללא סיומת"; }
+          if (e.file.size === 0) return "קובץ ריק";
+          if (e.file.size > MAX_BYTES) return "גדול מדי (מעל 15MB)";
+          return null;
+        };
+        const okAll = all.filter((e) => { const w = why(e); if (w) skippedExt[w] = (skippedExt[w] ?? 0) + 1; return !w; });
+        const ok = okAll.slice(0, MAX_FILES_PER_MATTER);
+        if (okAll.length > ok.length) skippedExt[`מעבר ל-${MAX_FILES_PER_MATTER} קבצים לתיק`] = okAll.length - ok.length;
+        if (ok.length) raw.push({ folder: label, files: ok, skipped: all.length - ok.length, skippedExt });
       };
       if (lvl === 0) await addMatter(rootDir, rootDir.name);
       else for await (const h of rootDir.values()) {
@@ -94,14 +114,14 @@ function Importer({ firmId }: { firmId: string }) {
         }
       }
       // Loose files at the top of the chosen folder belong to no matter: offered as one group, off until the partner names it.
-      if (rootLoose.length) raw.push({ folder: "קבצים בשורש התיקייה (ללא תיק)", files: rootLoose.slice(0, MAX_FILES_PER_MATTER), skipped: 0 });
+      if (rootLoose.length) raw.push({ folder: "קבצים בשורש התיקייה (ללא תיק)", files: rootLoose.slice(0, MAX_FILES_PER_MATTER), skipped: 0, skippedExt: {} });
       // Fingerprint every file, then ask the vault which of them it already holds.
-      const hashed: Array<{ folder: string; skipped: number; files: Entry[] }> = [];
+      const hashed: Array<{ folder: string; skipped: number; skippedExt: Record<string, number>; files: Entry[] }> = [];
       let n = 0; const total = raw.reduce((a, r) => a + r.files.length, 0);
       for (const r of raw) {
         const files: Entry[] = [];
-        for (const e of r.files) { setProgress(`בודק כפילויות: ${++n} מתוך ${total}`); files.push({ name: e.name, file: e.file, hash: await sha256File(e.file) }); }
-        hashed.push({ folder: r.folder, skipped: r.skipped, files });
+        for (const e of r.files) { setProgress(`בודק כפילויות: ${++n} מתוך ${total}`); files.push({ name: e.name, file: e.file, hash: await sha256File(e.file), sug: suggestDocType(e.name) }); }
+        hashed.push({ folder: r.folder, skipped: r.skipped, skippedExt: r.skippedExt, files });
       }
       setProgress("");
       const known = await findExisting(hashed.flatMap((h) => h.files.map((f) => f.hash)));
@@ -117,7 +137,7 @@ function Importer({ firmId }: { firmId: string }) {
         const target = best && best[1] * 2 >= unique.length ? best[0] : null;
         const fresh = unique.filter((f) => !target || !(known.get(f.hash) ?? []).includes(target));
         const flag = h.folder.startsWith("קבצים בשורש התיקייה") ? "קבצים ללא תיק: תנו כותרת ורק אז סמנו לייבוא" : SORTING.test(h.folder) ? "נראית כתיקיית מיון ולא כתיק" : null;
-        return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 && !flag, flag, practice: "", sample: fresh.slice(0, 3).map((f) => f.name) };
+        return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 && !flag, flag, practice: "", sample: fresh.slice(0, 3).map((f) => f.name), skippedExt: h.skippedExt, subjects: tally(fresh.map((f) => subjectOf(f.name) ?? "שורש התיקייה")), types: tally(fresh.map((f) => f.sug ?? "")) };
       });
       const ids = [...new Set(found.map((p) => p.targetMatter).filter((x): x is string => !!x))];
       if (ids.length && supabase) {
@@ -183,7 +203,7 @@ function Importer({ firmId }: { firmId: string }) {
         failed++; failedNames.push(e.name); continue;
       }
       matterId = r.matter_id; okFiles++;
-      if (r.document_id && supabase) await supabase.rpc("lalum_set_document_meta", { p_doc: r.document_id, p_type: docType, p_origin: docOrigin, p_date: null });
+      if (r.document_id && supabase) await supabase.rpc("lalum_set_document_meta", { p_doc: r.document_id, p_type: (autoType ? e.sug : null) ?? docType, p_origin: docOrigin, p_date: null });
       if (r.document_id && !(await storeOriginal(firmId, r.matter_id, r.document_id, e.file, e.hash))) { noOriginal++; failedNames.push(`${e.name} (המקור לא נשמר)`); }
     }
     failedRef.current[p.folder] = failedNames;
@@ -207,8 +227,11 @@ function Importer({ firmId }: { firmId: string }) {
 
   function downloadReport() {
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
-    const lines = [["תיקייה", "מצב", "קבצים שלא נקלטו"].map(esc).join(",")];
-    for (const r of rows) lines.push([r.folder, r.text, (failedRef.current[r.folder] ?? []).join(" | ")].map(esc).join(","));
+    const lines = [["תיקייה", "מצב", "קבצים שלא נקלטו", "קבצים שדולגו לפי סיבה"].map(esc).join(",")];
+    for (const r of rows) {
+      const sk = Object.entries(plans?.find((p) => p.folder === r.folder)?.skippedExt ?? {}).map(([k, n]) => `${k} ${n}`).join(" | ");
+      lines.push([r.folder, r.text, (failedRef.current[r.folder] ?? []).join(" | "), sk].map(esc).join(","));
+    }
     const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `import-report-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
   }
@@ -244,9 +267,17 @@ function Importer({ firmId }: { firmId: string }) {
                     <option value="">זיהוי אוטומטי</option>
                     {Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>)}</td>
-                <td style={{ whiteSpace: "normal", maxWidth: 260 }}>{p.folder}{p.flag && <div><span className="ck-badge yellow">{p.flag}</span></div>}<div className="ck-meta" dir="auto">{p.sample.join(" , ")}</div></td><td>{p.files.length}</td><td>{p.existing || ""}</td><td>{p.dupes || ""}</td><td>{p.skipped || ""}</td>
+                <td style={{ whiteSpace: "normal", maxWidth: 260 }}>{p.folder}{p.flag && <div><span className="ck-badge yellow">{p.flag}</span></div>}<div className="ck-meta" dir="auto">{p.sample.join(" , ")}</div>
+                  {p.subjects.length > 0 && <div className="ck-meta">נושאים (תתי תיקיות): {p.subjects.slice(0, 8).map(([k, n]) => `${k} ${n}`).join(", ")}{p.subjects.length > 8 ? ` ועוד ${p.subjects.length - 8}` : ""}</div>}
+                  {autoType && p.types.length > 0 && <div className="ck-meta">סיווג מוצע: {p.types.map(([k, n]) => `${DOC_TYPE[k] ?? "ללא זיהוי (לפי בחירתכם למטה)"} ${n}`).join(", ")}</div>}</td><td>{p.files.length}</td><td>{p.existing || ""}</td><td>{p.dupes || ""}</td><td>{p.skipped || ""}</td>
               </tr>))}
           </tbody></table></div>
+          {(() => {
+            const total: Record<string, number> = {};
+            for (const p of plans) if (p.include) for (const [k, n] of Object.entries(p.skippedExt)) total[k] = (total[k] ?? 0) + n;
+            const list = Object.entries(total).sort((a, b) => b[1] - a[1]);
+            return list.length > 0 ? <div className="ck-warn" role="status">קבצים שלא ייקלטו בתיקים שסומנו (הם נשארים בתיקייה, לא נמחקים): {list.map(([k, n]) => `${k} ${n}`).join(", ")}. מסמכי Word, PDF, טקסט ו-HTML בלבד נקלטים. את השאר יש להוסיף לתיק ידנית או להמיר. הרשימה המלאה בדוח.</div> : null;
+          })()}
           <div className="ck-label">שתי שאלות לפני הייבוא, כדי שכל מסמך יסווג ולא יישאר לא מסודר</div>
           <div className="ck-grid2">
             <label className="ck-field">מה סוג רוב המסמכים בתיקיות שנבחרו?
@@ -254,6 +285,7 @@ function Importer({ firmId }: { firmId: string }) {
             <label className="ck-field">ממי הגיעו בדרך כלל?
               <select className="ck-select" value={docOrigin} onChange={(e) => setDocOrigin(e.target.value)}><option value="">בחרו מקור</option>{Object.entries(DOC_ORIGIN).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
           </div>
+          <label className="ck-row ck-meta"><input type="checkbox" checked={autoType} onChange={(e) => setAutoType(e.target.checked)} /> סיווג אוטומטי לפי שם הקובץ ותתי התיקיות (חוזה, התכתבות, כתב בית דין, חוות דעת וכדומה). קובץ בלי מילת מפתח מסווג לפי הבחירה למעלה. הסיווג המוצע מוצג בטבלה לפני הייבוא.</label>
           <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד במשרד, וכל קובץ נשמר בתוכו.</div>
           <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים ({plans.filter((p) => p.include).reduce((a, p) => a + p.files.length, 0)} קבצים)</button>
             <label className="ck-row ck-meta">מהירות:

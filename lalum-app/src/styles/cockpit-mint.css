@@ -264,3 +264,23 @@
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] { background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--clay-soft); }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] .ck-railicon { filter: none; transform: none; }
 }
+
+/* ------------------------------------------------------------------
+   Readability and containment, both themes. Loose grey text, small chips and timeline lines were hard to read on the
+   ivory surface, and a long file name ran out of its button. Rules: secondary text uses the ink colour at a readable
+   weight and size; chips and badges read as labelled tags (surface, border, ink text) instead of grey on beige; every
+   button, chip and tag may wrap and never exceeds its column. Colours come from the theme tokens only.
+   ------------------------------------------------------------------ */
+.ck-root[data-ck-theme] .ck-meta { font-size: 14px; line-height: 1.65; color: color-mix(in srgb, var(--ink) 84%, var(--paper)); }
+.ck-root[data-ck-theme] .ck-label { color: var(--ink); font-weight: 700; }
+.ck-root[data-ck-theme] .ck-btn { max-width: 100%; min-width: 0; height: auto; white-space: normal; overflow-wrap: anywhere; text-align: start; line-height: 1.35; padding-block: 8px; }
+.ck-root[data-ck-theme] .ck-chip {
+  max-width: 100%; min-width: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.4;
+  font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 10px;
+  background: var(--card); color: var(--ink); border: 1px solid var(--line-strong);
+}
+.ck-root[data-ck-theme] code.ck-chip { font-weight: 500; }
+.ck-root[data-ck-theme] .ck-badge { max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.4; border: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
+.ck-root[data-ck-theme] .ck-tl li { color: var(--ink); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.ck-root[data-ck-theme] .ck-tl time { display: block; color: color-mix(in srgb, var(--ink) 72%, var(--paper)); font-size: 13px; font-weight: 600; }
+.ck-root[data-ck-theme] .ck-row { min-width: 0; }
