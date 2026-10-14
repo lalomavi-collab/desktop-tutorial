@@ -157,7 +157,7 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
                     <tr key={m.matter_id}>
                       <td><Link to={`/workspace?matter=${m.matter_id}`}>{m.title}</Link></td><td>{PRACTICE[m.practice_area]}</td>
                       <td><span className={`ck-badge ${tone}`}>{label}</span></td>
-                      <td><StatusBar pct={rt === "red" ? 28 : rt === "yellow" ? 62 : 100} tone={rt} /></td><td dir="ltr" style={{ textAlign: "end" }}>{fmt(m.dispatched_at)}</td>
+                      <td>{m.risk_level === "NOT_ASSESSED" ? <span className="ck-meta">לא נבדק</span> : <StatusBar pct={rt === "red" ? 28 : rt === "yellow" ? 62 : 100} tone={rt} />}</td><td dir="ltr" style={{ textAlign: "end" }}>{fmt(m.dispatched_at)}</td>
                     </tr>); })}
                 </tbody></table></div>
               )}

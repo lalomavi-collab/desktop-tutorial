@@ -64,7 +64,7 @@ export function MatterInsights({ rows }: { rows: Array<{ practice_area: string; 
   if (rows.length === 0) return null;
   const palette = ["#537056", "#9bbb9f", "#f5c431", "#e0a312", "#8fb394"];
   const areas = Object.entries(rows.reduce<Record<string, number>>((a, r) => { a[r.practice_area] = (a[r.practice_area] ?? 0) + 1; return a; }, {}));
-  const risk = (k: string) => rows.filter((r) => (k === "HIGH_RISK" ? r.risk_level === "HIGH_RISK" : k === "CAUTION" ? r.risk_level === "CAUTION" : r.risk_level !== "HIGH_RISK" && r.risk_level !== "CAUTION")).length;
+  const risk = (k: string) => rows.filter((r) => (k === "HIGH_RISK" ? r.risk_level === "HIGH_RISK" : k === "CAUTION" ? r.risk_level === "CAUTION" : r.risk_level !== "HIGH_RISK" && r.risk_level !== "CAUTION" && r.risk_level !== "NOT_ASSESSED")).length;
   const weekly = series(rows.map((r) => r.dispatched_at), "weekly", 10);
   return (
     <Strip>
