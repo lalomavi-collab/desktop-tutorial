@@ -9,6 +9,9 @@ export function displayName(revealed: boolean, m: Named | null | undefined): str
   return code || "תיק";
 }
 
+/** Text that identifies a client (a billing customer name, a free typed client): the text while revealed, a neutral word while hidden. */
+export const maskedText = (revealed: boolean, text: string | null | undefined, placeholder = "מוסתר"): string => (revealed ? (text ?? "") : text ? placeholder : "");
+
 /** Search may only match what the user can see: the code while hidden, the title (and code) once revealed. */
 export function matchesQuery(revealed: boolean, m: Named, query: string): boolean {
   const q = query.trim().toLowerCase();

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/cockpit-text-check.mjs && tsc -b && vite build",
+    "build": "node scripts/cockpit-text-check.mjs && node scripts/client-names-check.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "seo-check": "node scripts/seo-check.mjs",
     "faq-check": "node scripts/faq-schema-check.mjs",

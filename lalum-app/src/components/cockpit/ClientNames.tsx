@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { supabase } from "../../lib/supabase";
-import { displayName, idleExpired, matchesQuery, type Named } from "../../lib/cockpit/clientNames";
+import { displayName, idleExpired, maskedText, matchesQuery, type Named } from "../../lib/cockpit/clientNames";
 
-interface Ctx { canReveal: boolean; revealed: boolean; reveal: () => Promise<string | null>; hide: () => void; name: (m: Named | null | undefined) => string; match: (m: Named, q: string) => boolean }
+interface Ctx { canReveal: boolean; revealed: boolean; reveal: () => Promise<string | null>; hide: () => void; name: (m: Named | null | undefined) => string; match: (m: Named, q: string) => boolean; text: (t: string | null | undefined) => string }
 
 /** Without a provider the safe state applies: hidden, and no way to reveal. */
-const NONE: Ctx = { canReveal: false, revealed: false, reveal: async () => "לא זמין", hide: () => {}, name: (m) => displayName(false, m), match: (m, q) => matchesQuery(false, m, q) };
+const NONE: Ctx = { canReveal: false, revealed: false, reveal: async () => "לא זמין", hide: () => {}, name: (m) => displayName(false, m), match: (m, q) => matchesQuery(false, m, q), text: (t) => maskedText(false, t) };
 const C = createContext<Ctx>(NONE);
 export const useClientNames = (): Ctx => useContext(C);
 
@@ -40,7 +40,7 @@ export function ClientNamesProvider({ children }: { children: ReactNode }) {
     document.addEventListener("visibilitychange", away);
     return () => { window.clearInterval(tick); evs.forEach((e) => window.removeEventListener(e, touch)); document.removeEventListener("visibilitychange", away); };
   }, [revealed]);
-  const value = useMemo<Ctx>(() => ({ canReveal, revealed, reveal, hide, name: (m) => displayName(revealed, m), match: (m, q) => matchesQuery(revealed, m, q) }), [canReveal, revealed, reveal, hide]);
+  const value = useMemo<Ctx>(() => ({ canReveal, revealed, reveal, hide, name: (m) => displayName(revealed, m), match: (m, q) => matchesQuery(revealed, m, q), text: (t) => maskedText(revealed, t) }), [canReveal, revealed, reveal, hide]);
   return <C.Provider value={value}>{children}</C.Provider>;
 }
 

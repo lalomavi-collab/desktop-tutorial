@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 import type { MatterDoc } from "../../lib/cockpit/shared";
 
 interface Props {
-  matter: { id: string; title: string; practice_area: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; created_at: string };
+  matter: { id: string; title: string; matter_code?: string | null; practice_area: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; created_at: string };
   docs: MatterDoc[];
   canRestore: (docId: string) => boolean;
   restore: (docId: string, text: string) => string;
@@ -45,7 +45,7 @@ export function ArchiveExport({ matter, docs, canRestore, restore }: Props) {
       zip.file("README.txt", "﻿" + [
         "חומר ארכיוני: העתק לבקשת הלקוח",
         "",
-        `תיק: ${matter.title}`,
+        `תיק: ${matter.title}`, // archive-content: the exported copy is for the client file and does name the matter
         `יוצא ב: ${new Date().toLocaleDateString("he-IL")}`,
         "",
         "מה כלול: כל מסמך שנשמר בפלטפורמה, בשני נוסחים (עדכני וכפי שנקלט), וקובץ manifest.json עם חתימות SHA-256 לאימות שלמות.",
@@ -57,7 +57,7 @@ export function ArchiveExport({ matter, docs, canRestore, restore }: Props) {
       const blob = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `חומר-תיק-${safe(matter.title)}.zip`;
+      a.download = `חומר-תיק-${safe(matter.matter_code ?? matter.id.slice(0, 8))}.zip`; // the code, not the client name: the file name sits in downloads lists and screens
       document.body.appendChild(a); a.click(); a.remove();
       const { error } = await supabase.rpc("lalum_log_archive_export", { p_matter: matter.id, p_docs: docs.length });
       setMsg(error ? "הקובץ ירד, אך רישום הייצוא ביומן הביקורת נכשל. הפעולה זמינה לשותף בלבד." : unrestored > 0 ? `הקובץ ירד. ב-${unrestored} מסמכים נשארו אסימונים במקום שמות, ויש להשלים אותם מתיק המשרד.` : "הקובץ ירד, והייצוא נרשם ביומן הביקורת.");

@@ -63,7 +63,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_fin_expenses").select("*").order("spent_on", { ascending: false }),
       supabase.from("lalum_trust_ledger").select("*").order("id", { ascending: false }),
       supabase.from("lalum_trust_accounts").select("id, bank_name, branch, account_number, closed_on, opened_on").order("bank_name"),
-      supabase.from("lalum_cockpit_matters").select("id, title"),
+      supabase.from("lalum_cockpit_matters").select("id, title, matter_code"),
       supabase.from("lalum_matter_fees").select("matter_id, fin_customer_id"),
       supabase.from("lalum_trust_bank_statements").select("trust_account_id"),
       supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
@@ -95,7 +95,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     setTrustAccounts((ta.data as TrustAccount[] | null) ?? []);
     // Trust data needs finance level 4. A lower level gets an empty tab (behind the Gate), not a failed screen.
     const cust = new Map(((mf.data as Array<{ matter_id: string; fin_customer_id: string | null }> | null) ?? []).map((x) => [x.matter_id, x.fin_customer_id]));
-    setMatters((((mt.data as Array<{ id: string; title: string }> | null) ?? [])).map((m) => ({ ...m, customer_id: cust.get(m.id) ?? null })));
+    setMatters((((mt.data as Array<{ id: string; title: string; matter_code: string | null }> | null) ?? [])).map((m) => ({ ...m, customer_id: cust.get(m.id) ?? null })));
     setLoaded(true);
   }, [firmId]);
   // Initial fetch from the database; setState happens after the awaited queries resolve.

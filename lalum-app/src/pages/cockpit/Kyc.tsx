@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { PRACTICE } from "../../lib/cockpit/shared";
@@ -12,7 +13,7 @@ import { CockpitFrame } from "./CockpitFrame";
 // per party checklist, live inside each matter (the KYC panel in the matter vault), so every row
 // here links back into the matter it belongs to.
 
-interface Matter { id: string; title: string; practice_area: string }
+interface Matter { id: string; title: string; matter_code: string | null; practice_area: string }
 interface Kyc {
   matter_id: string; party_no: number; party_role: string; subject_kind: string; service_track: string;
   pep: string | null; sanctions_screened: boolean | null; risk: string | null; status: string;
@@ -25,6 +26,7 @@ const RISK: Record<string, [string, string]> = { LOW: ["green", "נמוכה"], M
 const PEP: Record<string, string> = { NO: "לא", YES: "כן", REVIEW: "דורש בירור" };
 
 function Panel({ member }: { member: Membership }) {
+  const cn = useClientNames();
   const [matters, setMatters] = useState<Matter[]>([]);
   const [records, setRecords] = useState<Kyc[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -34,7 +36,7 @@ function Panel({ member }: { member: Membership }) {
     (async () => {
       if (!supabase) return;
       const [m, k] = await Promise.all([
-        supabase.from("lalum_cockpit_matters").select("id, title, practice_area").eq("firm_id", member.firm_id).order("created_at", { ascending: false }),
+        supabase.from("lalum_cockpit_matters").select("id, title, matter_code, practice_area").eq("firm_id", member.firm_id).order("created_at", { ascending: false }),
         supabase.from("lalum_kyc_records").select("matter_id, party_no, party_role, subject_kind, service_track, pep, sanctions_screened, risk, status, next_review_on").eq("firm_id", member.firm_id),
       ]);
       if (!live) return;
@@ -80,7 +82,7 @@ function Panel({ member }: { member: Membership }) {
         return (
           <div key={mt.id} className="ck-card ck-stack">
             <div className="ck-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-              <Link className="ck-title" to={`/workspace/${mt.id}`}>{mt.title}</Link>
+              <Link className="ck-title" to={`/workspace/${mt.id}`}>{cn.name(mt)}</Link>
               <span className="ck-meta">{PRACTICE[mt.practice_area] ?? mt.practice_area}</span>
             </div>
             {rs.length === 0 ? (

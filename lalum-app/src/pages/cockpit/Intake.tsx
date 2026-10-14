@@ -22,7 +22,7 @@ export async function readFile(file: File): Promise<string> {
   return text;
 }
 
-export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: { matterId?: string; matters?: Array<{ id: string; title: string }>; firmId?: string; onDone: (matterId: string, documentId: string) => void }) {
+export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: { matterId?: string; matters?: Array<{ id: string; label: string }>; firmId?: string; onDone: (matterId: string, documentId: string) => void }) {
   // Every document lands in exactly one matter: either the matter it is uploaded from, or one chosen here, or a new matter.
   const [pick, setPick] = useState("");
   const matterId = fixedMatter ?? (pick || undefined);
@@ -81,7 +81,7 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
         <label className="ck-field">שיוך לתיק
           <select className="ck-select" value={pick} onChange={(e) => setPick(e.target.value)}>
             <option value="">תיק חדש (המסמך הראשון בו)</option>
-            {matters.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
+            {matters.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
           </select>
         </label>
       )}

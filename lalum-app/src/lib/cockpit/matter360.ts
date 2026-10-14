@@ -15,7 +15,7 @@ const num = (v: unknown): number | null => (v == null ? null : Number(v));
 
 export async function loadMatter360(id: string): Promise<Matter360State> {
   if (!supabase || !isUuid(id)) return { state: "missing" };
-  const m = await supabase.from("lalum_cockpit_matters").select("id, title, practice_area, status, conflict_status, created_at").eq("id", id).maybeSingle();
+  const m = await supabase.from("lalum_cockpit_matters").select("id, title, matter_code, practice_area, status, conflict_status, created_at").eq("id", id).maybeSingle();
   if (m.error || !m.data) return { state: "missing" };
   const [f, t, d, tr] = await Promise.all([
     supabase.from("lalum_matter_fees").select("fee_model, fixed_fee, fee_cap, retainer_monthly, billing_active, fin_customer_id").eq("matter_id", id).maybeSingle(),
