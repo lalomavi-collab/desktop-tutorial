@@ -340,3 +340,26 @@
 .fin-bar { flex: 1; height: 6px; border-radius: 999px; background: var(--line-strong); overflow: hidden; display: block; }
 .fin-bar > i { display: block; height: 100%; border-radius: 999px; background: var(--clay); }
 .fin-pct { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--slate); min-width: 34px; text-align: end; }
+
+/* Table cells: a status badge is one unit. The themed badge rule lets a badge wrap and break anywhere
+   (right for a long sentence in a toolbar), and inside a squeezed table cell that broke a three-letter
+   word like "נקי" into one letter per line. A badge in a table never wraps; the cell decides the layout. */
+.ck-table .ck-badge,
+.ck-root[data-ck-theme] .ck-table .ck-badge { white-space: nowrap; overflow-wrap: normal; word-break: keep-all; max-width: none; flex-shrink: 0; }
+
+/* .ck-cards-table: below 640px a wide table becomes one card per row, each cell a labelled line
+   (the label comes from the cell's data-label, the header row is visually hidden but kept for
+   assistive tech). Nothing is squeezed into a narrow column and nothing scrolls sideways. Label
+   and value share a line and the value wraps at spaces only, so a word is never split. */
+@media (max-width: 640px) {
+  .ck-cards-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ck-cards-table, .ck-cards-table tbody, .ck-cards-table tr { display: block; width: 100%; }
+  .ck-cards-table tr { border: 1px solid var(--line); border-radius: 12px; margin: 0 0 10px; padding: 4px 0; background: var(--card); }
+  .ck-cards-table tr.breach { background: rgba(179, 64, 47, .1); border-color: rgba(179, 64, 47, .45); }
+  .ck-cards-table tr.breach td { background: transparent; }
+  .ck-cards-table td { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 14px; border-bottom: 1px solid var(--line); white-space: normal; overflow-wrap: break-word; word-break: normal; text-align: start; font-size: 14.5px; line-height: 1.5; }
+  .ck-cards-table tr td:last-child { border-bottom: none; }
+  .ck-cards-table td[data-label]::before { content: attr(data-label); flex: 0 0 auto; font-size: 12.5px; font-weight: 700; color: var(--slate); white-space: nowrap; }
+  .ck-cards-table td > span:not(.ck-badge) { min-width: 0; }
+  .ck-table-wrap:has(.ck-cards-table) { background: transparent; border: none; border-radius: 0; overflow: visible; }
+}
