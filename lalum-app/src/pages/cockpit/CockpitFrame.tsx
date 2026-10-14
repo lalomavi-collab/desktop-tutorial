@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { ClientNamesProvider, ClientNamesToggle } from "../../components/cockpit/ClientNames";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
@@ -120,6 +121,7 @@ export function CockpitFrame({
   }
 
   return (
+    <ClientNamesProvider>
     <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
@@ -151,10 +153,12 @@ export function CockpitFrame({
       <div className="ck-shell">
         <header className="ck-top">
           <h1 className="serif">{title}</h1>
+          {hasMember && <ClientNamesToggle />}
         </header>
         {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
         <main>{body}</main>
       </div>
     </div>
+    </ClientNamesProvider>
   );
 }

@@ -3,7 +3,7 @@ import { supabase } from "../supabase";
 import { scorecard } from "./work";
 import type { Scorecard } from "./work";
 
-export interface DashMatter { matter_id: string; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; dispatched_at: string; sla_breached: boolean }
+export interface DashMatter { matter_id: string; matter_code: string | null; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; dispatched_at: string; sla_breached: boolean }
 export interface DashData {
   matters: DashMatter[];
   inquiries: Array<{ received_at: string; status: string }>;
@@ -17,7 +17,7 @@ export async function loadDashboard(): Promise<DashData> {
   if (!supabase) return empty;
   const since = new Date(Date.now() - 200 * 86400000).toISOString();
   const [m, i, t, d, score] = await Promise.all([
-    supabase.from("lalum_v_admin_matters").select("matter_id, title, practice_area, matter_status, conflict_status, risk_level, dispatched_at, sla_breached").order("dispatched_at", { ascending: false }).limit(500),
+    supabase.from("lalum_v_admin_matters").select("matter_id, matter_code, title, practice_area, matter_status, conflict_status, risk_level, dispatched_at, sla_breached").order("dispatched_at", { ascending: false }).limit(500),
     supabase.from("lalum_matter_inquiries").select("received_at, status").gte("received_at", since).limit(1000),
     supabase.from("lalum_matter_tasks").select("status, due_at, created_at, closed_at").limit(1000),
     supabase.from("lalum_matter_documents").select("id", { count: "exact", head: true }),

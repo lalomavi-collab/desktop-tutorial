@@ -10,6 +10,7 @@ import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
 import { delta, loadDashboard, series } from "../../lib/cockpit/dashboard";
 import type { DashData } from "../../lib/cockpit/dashboard";
 import { dur } from "../../lib/cockpit/work";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import "../../styles/cockpit-dashboard.css";
 
 const greeting = () => { const h = new Date().getHours(); return h < 5 ? "לילה טוב" : h < 12 ? "בוקר טוב" : h < 18 ? "צהריים טובים" : "ערב טוב"; };
@@ -81,7 +82,8 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
     return ms.length ? ms.sort((a, b) => a - b)[Math.floor(ms.length / 2)] : null;
   }, [data]);
 
-  const rows = useMemo(() => (data?.matters ?? []).filter((m) => !q.trim() || m.title.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 6), [data, q]);
+  const cn = useClientNames();
+  const rows = useMemo(() => (data?.matters ?? []).filter((m) => cn.match(m, q)).slice(0, 6), [data, q, cn]);
   const recentInq = (data?.inquiries ?? []).slice().sort((a, b) => b.received_at.localeCompare(a.received_at)).slice(0, 4);
   const byStatus = (s: string) => (data?.inquiries ?? []).filter((i) => i.status === s).length;
 
@@ -155,7 +157,7 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
                 <div style={{ overflowX: "auto" }}><table className="db-tbl"><thead><tr><th>תיק</th><th>תחום</th><th>ניגוד עניינים</th><th>רמת סיכון</th><th>נקלט</th></tr></thead><tbody>
                   {rows.map((m) => { const [tone, label] = CONFLICT[m.conflict_status] ?? ["yellow", m.conflict_status]; const rt = m.risk_level === "HIGH_RISK" ? "red" : m.risk_level === "CAUTION" ? "yellow" : "green"; return (
                     <tr key={m.matter_id}>
-                      <td><Link to={`/workspace?matter=${m.matter_id}`}>{m.title}</Link></td><td>{PRACTICE[m.practice_area]}</td>
+                      <td><Link to={`/workspace?matter=${m.matter_id}`}>{cn.name(m)}</Link></td><td>{PRACTICE[m.practice_area]}</td>
                       <td><span className={`ck-badge ${tone}`}>{label}</span></td>
                       <td>{m.risk_level === "NOT_ASSESSED" ? <span className="ck-meta">לא נבדק</span> : <StatusBar pct={rt === "red" ? 28 : rt === "yellow" ? 62 : 100} tone={rt} />}</td><td dir="ltr" style={{ textAlign: "end" }}>{fmt(m.dispatched_at)}</td>
                     </tr>); })}

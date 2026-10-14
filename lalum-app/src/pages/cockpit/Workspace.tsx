@@ -5,12 +5,13 @@ import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../li
 import { CockpitFrame } from "./CockpitFrame";
 import { trashMatter } from "../../lib/cockpit/bin";
 import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { CardArt, EmptyArt, HeroArt } from "../../components/cockpit/CockpitArt";
 import { MatterInsights } from "../../components/cockpit/CockpitInsights";
 import { IntakeForm } from "./Intake";
 import { MatterCockpit } from "./MatterCockpit";
 
-interface Row { matter_id: string; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; partner_response: string; dispatched_at: string; sla_breached: boolean }
+interface Row { matter_id: string; matter_code: string | null; title: string; practice_area: string; matter_status: string; conflict_status: string; risk_level: string | null; partner_response: string; dispatched_at: string; sla_breached: boolean }
 
 function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmId: string; firmName: string; userName: string; role: string; platformAdmin: boolean }) {
   const nav = useNavigate();
@@ -19,6 +20,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
   const [trashing, setTrashing] = useState<Row | null>(null);
   const [reason, setReason] = useState("");
   const [trashMsg, setTrashMsg] = useState("");
+  const { name } = useClientNames();
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [bulkOpen, setBulkOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -39,7 +41,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
     setRows((rs) => rs?.filter((x) => !gone.has(x.matter_id)) ?? rs);
     setSel(new Set(res.failed.map((f) => f.id)));
     if (res.failed.length === 0) { setBulkOpen(false); setReason(""); return; }
-    const names = new Map(rows?.map((x) => [x.matter_id, x.title]));
+    const names = new Map(rows?.map((x) => [x.matter_id, name(x)]));
     setTrashMsg(`הועברו ${res.done.length}. לא הועברו ${res.failed.length}: ` + res.failed.map((f) => `${names.get(f.id) ?? f.id} (${f.error})`).join("; "));
   }
   useEffect(() => {
@@ -64,7 +66,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
         <div className="ck-card"><div className="ck-card-head"><CardArt name="security" /><div className="ck-title">אבטחת חשבון</div></div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
-      {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: x.title }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
+      {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: name(x) }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       {rows && <MatterInsights rows={rows} />}
       <div className="ck-label">תיקים</div>
       {isPartner && sel.size > 0 && (
@@ -77,17 +79,17 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr>{isPartner && <th><input type="checkbox" aria-label="סימון כל התיקים" checked={sel.size > 0 && sel.size === rows.length} onChange={(e) => setSel(setAll(rows.map((x) => x.matter_id), e.target.checked))} /></th>}<th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
           {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
             <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
-              {isPartner && <td><input type="checkbox" aria-label={`סימון ${x.title}`} checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} /></td>}
-              <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{x.title}</Link></td>
+              {isPartner && <td><input type="checkbox" aria-label={`סימון ${name(x)}`} checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} /></td>}
+              <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{name(x)}</Link></td>
               <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
-              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${x.title} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
+              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
             </tr>); })}
         </tbody></table></div>
       )}
       {bulkOpen && (
         <aside className="ck-drawer" aria-label="העברת תיקים מסומנים לסל המיחזור">
           <div className="ck-title">העברת {sel.size} תיקים לסל המיחזור</div>
-          <div className="ck-card" style={{ whiteSpace: "normal" }}>{rows?.filter((x) => sel.has(x.matter_id)).map((x) => x.title).join(" · ")}</div>
+          <div className="ck-card" style={{ whiteSpace: "normal" }}>{rows?.filter((x) => sel.has(x.matter_id)).map((x) => name(x)).join(" · ")}</div>
           <div className="ck-meta">התיקים יוסתרו מכל המסכים וניתן יהיה לשחזר כל אחד מסל המיחזור. כל תיק נרשם ביומן בנפרד עם אותה סיבה. מחיקה סופית נעשית משם בלבד.</div>
           <label className="ck-field">סיבה (נרשמת בכל תיק)
             <input className="ck-input" value={reason} onChange={(e) => setReason(e.target.value)} autoComplete="off" />
@@ -100,7 +102,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
       {trashing && (
         <aside className="ck-drawer" aria-label="העברה לסל המיחזור">
           <div className="ck-title">העברת התיק לסל המיחזור</div>
-          <div className="ck-card" style={{ whiteSpace: "normal" }}>{trashing.title}</div>
+          <div className="ck-card" style={{ whiteSpace: "normal" }}>{name(trashing)}</div>
           <div className="ck-meta">התיק יוסתר מכל המסכים וניתן יהיה לשחזר אותו מסל המיחזור. מחיקה סופית נעשית משם בלבד.</div>
           <label className="ck-field">סיבה (נרשמת בתיק)
             <input className="ck-input" value={reason} onChange={(e) => setReason(e.target.value)} autoComplete="off" />

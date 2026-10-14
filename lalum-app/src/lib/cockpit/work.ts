@@ -12,7 +12,7 @@ export interface Person { user_id: string; display_name: string; role: string }
 export interface PersonScore { user_id: string; replies: number; replies_in_target: number; median_minutes: number | null; tasks_open: number; tasks_overdue: number; tasks_judged: number; tasks_on_time: number; score: number | null }
 export interface Scorecard { days: number; target_minutes: number; partner_view: boolean; firm: { inquiries: number; unanswered: number; unanswered_over_target: number; tasks_open: number; tasks_overdue: number }; people: PersonScore[] }
 
-export async function listInquiries(): Promise<{ inquiries: Inquiry[]; replies: Reply[]; titles: Map<string, string> }> {
+export async function listInquiries(): Promise<{ inquiries: Inquiry[]; replies: Reply[]; titles: Map<string, MatterLabel> }> {
   if (!supabase) return { inquiries: [], replies: [], titles: new Map() };
   const [i, r] = await Promise.all([
     supabase.from("lalum_matter_inquiries").select("id, matter_id, channel, received_at, body_masked, attachment_count, status, handled_at").order("received_at", { ascending: false }).limit(200),
@@ -24,10 +24,11 @@ export async function listInquiries(): Promise<{ inquiries: Inquiry[]; replies: 
   return { inquiries, replies: (r.data as Reply[] | null) ?? [], titles };
 }
 
-export async function matterTitles(ids: string[]): Promise<Map<string, string>> {
+export interface MatterLabel { matter_code: string | null; title: string }
+export async function matterTitles(ids: string[]): Promise<Map<string, MatterLabel>> {
   if (!supabase || !ids.length) return new Map();
-  const { data } = await supabase.from("lalum_cockpit_matters").select("id, title").in("id", ids);
-  return new Map(((data as Array<{ id: string; title: string }> | null) ?? []).map((m) => [m.id, m.title]));
+  const { data } = await supabase.from("lalum_cockpit_matters").select("id, title, matter_code").in("id", ids);
+  return new Map(((data as Array<{ id: string; title: string; matter_code: string | null }> | null) ?? []).map((m) => [m.id, { matter_code: m.matter_code, title: m.title }]));
 }
 
 export async function logReply(inquiry: string, via: string): Promise<string | null> {
@@ -48,7 +49,7 @@ export async function openRaw(inquiry: string): Promise<string | null> {
   return row?.body_raw ?? null;
 }
 
-export async function listTasks(): Promise<{ tasks: Task[]; titles: Map<string, string>; people: Person[] }> {
+export async function listTasks(): Promise<{ tasks: Task[]; titles: Map<string, MatterLabel>; people: Person[] }> {
   if (!supabase) return { tasks: [], titles: new Map(), people: [] };
   const [t, p] = await Promise.all([
     supabase.from("lalum_matter_tasks").select("id, matter_id, title, due_at, assignee, status, created_at, closed_at").order("due_at", { ascending: true, nullsFirst: false }).limit(500),

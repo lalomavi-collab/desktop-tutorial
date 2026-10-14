@@ -11,6 +11,7 @@ import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
 import { trashDoc } from "../../lib/cockpit/bin";
 import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { DocMeta } from "./DocControls";
@@ -40,6 +41,7 @@ function tokenMap(docId: string): Map<string, string> | null {
 const restore = (text: string, map: Map<string, string>): string => text.replace(TOKEN_RE, (t) => map.get(t) ?? t);
 
 export function MatterCockpit({ matterId, member, platformAdmin = false }: { matterId: string; member: Membership; platformAdmin?: boolean }) {
+  const cn = useClientNames();
   const [matter, setMatter] = useState<Matter | null>(null);
   const [routing, setRouting] = useState<Routing | null>(null);
   const [docs, setDocs] = useState<MatterDoc[]>([]);
@@ -271,7 +273,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
           <div>
-            <div className="ck-title">{matter.title}</div>
+            <div className="ck-title">{cn.name(matter)}</div>
             <div className="ck-row" style={{ marginTop: 6 }}><span className="ck-chip">{PRACTICE[matter.practice_area]}</span> <ConflictBadge c={matter.conflict_status} /> <span className="ck-chip">{MATTER_STATUS[matter.status]}</span></div>
             {matter.matter_code && (
               <div className="ck-row ck-meta" style={{ marginTop: 6 }}>

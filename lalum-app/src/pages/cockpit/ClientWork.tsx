@@ -7,14 +7,16 @@ import { fmt } from "../../lib/cockpit/shared";
 import {
   CHANNEL, VIA, closeTask, createTask, dur, firmPeople, fmtExact, myInquiryAddress, handleInquiry, listInquiries, listTasks, logReply, matterOptions, openRaw, scorecard,
 } from "../../lib/cockpit/work";
-import type { Inquiry, Person, Reply, Scorecard, Task } from "../../lib/cockpit/work";
+import type { Inquiry, MatterLabel, Person, Reply, Scorecard, Task } from "../../lib/cockpit/work";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { CheckArt, InboxArt } from "../../components/cockpit/CockpitIllustrations";
 import { InquiryInsights, ScoreInsights, TaskInsights } from "../../components/cockpit/CockpitInsights";
 
 const mins = (a: string, b: string) => (new Date(b).getTime() - new Date(a).getTime()) / 60000;
 
 function InquiriesView() {
-  const [data, setData] = useState<{ inquiries: Inquiry[]; replies: Reply[]; titles: Map<string, string> } | null>(null);
+  const cn = useClientNames();
+  const [data, setData] = useState<{ inquiries: Inquiry[]; replies: Reply[]; titles: Map<string, MatterLabel> } | null>(null);
   const [people, setPeople] = useState<Person[]>([]);
   const [filter, setFilter] = useState<"open" | "all">("open");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -55,7 +57,7 @@ function InquiriesView() {
             return (
               <tr key={i.id}>
                 <td>{fmtExact(i.received_at)}</td><td>{CHANNEL[i.channel] ?? i.channel}</td>
-                <td>{i.matter_id ? <Link to={`/workspace/${i.matter_id}`}>{data.titles.get(i.matter_id) ?? "תיק"}</Link> : <span className="ck-badge yellow">לא שויכה</span>}</td>
+                <td>{i.matter_id ? <Link to={`/workspace/${i.matter_id}`}>{cn.name(data.titles.get(i.matter_id))}</Link> : <span className="ck-badge yellow">לא שויכה</span>}</td>
                 <td style={{ whiteSpace: "normal", maxWidth: 320 }} dir="auto">{i.body_masked.slice(0, 160)}{i.attachment_count ? ` (${i.attachment_count} קבצים)` : ""}</td>
                 <td>{f ? <span className="ck-badge green">{dur(mins(i.received_at, f.replied_at))} על ידי {name(f.replied_by)}<br />{fmtExact(f.replied_at)}</span> : <span className="ck-badge red">ממתין למענה</span>}</td>
                 <td><div className="ck-row">
@@ -72,7 +74,8 @@ function InquiriesView() {
 }
 
 function TasksView() {
-  const [d, setD] = useState<{ tasks: Task[]; titles: Map<string, string>; people: Person[] } | null>(null);
+  const cn = useClientNames();
+  const [d, setD] = useState<{ tasks: Task[]; titles: Map<string, MatterLabel>; people: Person[] } | null>(null);
   const [matters, setMatters] = useState<Array<{ id: string; title: string }>>([]);
   const [f, setF] = useState({ matter: "", title: "", due: "", who: "" });
   const [show, setShow] = useState<"OPEN" | "DONE">("OPEN");
@@ -114,7 +117,7 @@ function TasksView() {
             return (
               <tr key={t.id}>
                 <td style={{ whiteSpace: "normal", maxWidth: 300 }}>{t.title}</td>
-                <td><Link to={`/workspace/${t.matter_id}`}>{d.titles.get(t.matter_id) ?? "תיק"}</Link></td>
+                <td><Link to={`/workspace/${t.matter_id}`}>{cn.name(d.titles.get(t.matter_id))}</Link></td>
                 <td>{name(t.assignee)}</td><td>{t.due_at ? fmt(t.due_at) : "ללא מועד"}</td>
                 <td>{t.status === "DONE" ? <span className="ck-badge green">הושלמה {fmt(t.closed_at)}</span> : t.status === "CANCELLED" ? <span className="ck-badge yellow">בוטלה</span> : late ? <span className="ck-badge red">באיחור</span> : <span className="ck-badge yellow">פתוחה</span>}</td>
                 <td>{t.status === "OPEN" && <div className="ck-row"><button className="ck-btn" onClick={() => void close(t, "DONE")}>הושלמה</button><button className="ck-btn" onClick={() => void close(t, "CANCELLED")}>ביטול</button></div>}</td>
