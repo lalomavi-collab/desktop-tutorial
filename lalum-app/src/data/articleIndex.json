@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "overseas-property-financing-israeli-investor": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-financing",
+   "overseas-partnership-guide",
+   "portugal-real-estate-taxation"
   ]
  },
  "overseas-developer-contract-guarantees": {
@@ -203,8 +211,8 @@
   "topic": "contracts",
   "related": [
    "overseas-partnership-guide",
-   "israel-land-authority-lease-capitalization-transfer",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "overseas-property-financing-israeli-investor",
+   "israel-land-authority-lease-capitalization-transfer"
   ]
  },
  "suing-foreign-company-jurisdiction-service-enforcement": {
@@ -220,7 +228,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "overseas-property-holding-structure"
+   "portugal-purchase-contract"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -348,7 +356,7 @@
   "related": [
    "greece-realestate-israeli-buyer-guide",
    "israel-land-authority-lease-capitalization-transfer",
-   "urban-renewal-taxation-owner"
+   "overseas-property-financing-israeli-investor"
   ]
  },
  "greece-realestate-israeli-buyer-guide": {
@@ -532,7 +540,7 @@
   "related": [
    "portugal-real-estate-financing",
    "urban-renewal-taxation-owner",
-   "overseas-property-holding-structure"
+   "overseas-property-financing-israeli-investor"
   ]
  },
  "portugal-purchase-contract": {
@@ -546,9 +554,9 @@
  "portugal-real-estate-financing": {
   "topic": "real-estate",
   "related": [
+   "overseas-property-financing-israeli-investor",
    "portugal-porto-vs-lisbon",
-   "portugal-real-estate-taxation",
-   "tama-38-1-vs-38-2-comparison"
+   "portugal-real-estate-taxation"
   ]
  },
  "portugal-legal-due-diligence": {
@@ -659,8 +667,8 @@
   "topic": "real-estate",
   "related": [
    "overseas-property-due-diligence",
-   "overseas-partnership-guide",
-   "delay-delivery-overseas-property-buyer-rights"
+   "overseas-property-financing-israeli-investor",
+   "overseas-partnership-guide"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -771,8 +779,8 @@
   "topic": "real-estate",
   "related": [
    "intl-realestate-transactions",
-   "portugal-porto-vs-lisbon",
-   "israeli-realestate-abroad"
+   "israeli-realestate-abroad",
+   "portugal-porto-vs-lisbon"
   ]
  },
  "ai-legal-practice": {
@@ -1099,8 +1107,8 @@
   "topic": "real-estate",
   "related": [
    "purchase-group-agreement-tax-risks",
-   "intl-realestate-transactions",
-   "השקעות-נדל-ן-בחו-ל-בין-חלום-למציאות-האם-אפשר-באמת-לחשב-את-הסיכון"
+   "overseas-property-financing-israeli-investor",
+   "intl-realestate-transactions"
   ]
  },
  "second-opinion-revolution": {
@@ -1443,8 +1451,8 @@
   "topic": "real-estate",
   "related": [
    "ai-governance-municipal-corporations",
-   "israel-land-authority-lease-capitalization-transfer",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "developer-agreement-urban-renewal-critical-clauses",
+   "israel-land-authority-lease-capitalization-transfer"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
