@@ -20,6 +20,7 @@ const MAX_FILES_PER_MATTER = 200;
 // sug: the document type suggested from the file name and its sub folders (null when no keyword matched).
 interface Entry { name: string; file: File; hash: string; sug: string | null }
 // files = new, unique files to import. existing = already in the vault (matched by SHA-256). dupes = repeats inside the folder.
+const BASE_PRACTICE = "AI_GOVERNANCE"; // the practice every new matter starts in unless it is changed
 interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[]; skippedExt: Record<string, number>; subjects: Array<[string, number]>; types: Array<[string, number]> }
 // Folders that are usually a sorting place, not a matter: left unchecked until the partner decides.
 // A folder named by a date (2026-09-30, 14.10.2026) is a day of correspondence, not a matter.
@@ -62,6 +63,8 @@ function Importer({ firmId }: { firmId: string }) {
   const [autoType, setAutoType] = useState(true);
   const [filter, setFilter] = useState("");
   const [ackSig, setAckSig] = useState("");
+  // The practice area is never left to guessing: a matter without its own choice takes the base area below, and there is no empty option.
+  const [basePractice, setBasePractice] = useState(BASE_PRACTICE);
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
   const [level, setLevel] = useState<0 | 1 | 2>(1);
@@ -200,11 +203,11 @@ function Importer({ firmId }: { firmId: string }) {
       let text = "";
       try { text = (await readFile(e.file)).trim(); } catch { text = ""; }
       if (!text) { failed++; failedNames.push(e.name); setStats((s) => s && { ...s, done: s.done + 1 }); continue; }
-      let r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
+      let r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || basePractice, parties: [] });
       // Only an explicit rate limit is retried: after a network failure the server may already have stored the file, and a blind retry could create a second matter.
       for (let t = 0; t < 3 && !r.ok && retryable(r.code); t++) {
         await new Promise((res) => setTimeout(res, 2000 * (t + 1)));
-        r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || undefined, parties: [] });
+        r = await callPipeline("/api/v1/documents/upload", { text, file_name: e.name, title: matterId ? undefined : p.title.trim() || undefined, matter_id: matterId, practice_area: matterId ? undefined : p.practice || basePractice, parties: [] });
       }
       setStats((s) => s && { ...s, done: s.done + 1 });
       if (!r.ok || !r.matter_id) {
@@ -274,6 +277,14 @@ function Importer({ firmId }: { firmId: string }) {
       {plans && plans.length > 0 && rows.length === 0 && (
         <>
           <div className="ck-label">נמצאו {plans.length} תיקיות. קבצים שכבר קיימים בכספת (לפי חתימת תוכן) ולא ייקלטו שוב, וקבצים כפולים בתוך התיקייה ידולגו. תיקייה שלפחות חצי מקבציה כבר בתיק קיים תתווסף לאותו תיק. תקנו כותרות שמכילות פרטים מזהים.</div>
+          <div className="ck-row">
+            <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>תחום בסיס לתיקים חדשים
+              <select className="ck-select" style={{ width: "auto" }} value={basePractice} disabled={busy} onChange={(e) => setBasePractice(e.target.value)}>
+                {Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </label>
+            <span className="ck-meta">כל מסמך נבדק מול כללי התחום של התיק שלו. תיקי נדל"ן או פינוי-בינוי: בחרו נדל"ן, אחרת ייבדקו מול כללי תחום אחר. ניתן לשנות לכל תיק בעמודה "תחום".</span>
+          </div>
           {(() => {
             const marked = plans.filter((p) => p.include);
             const files = marked.reduce((a, p) => a + p.files.length, 0);
@@ -296,8 +307,7 @@ function Importer({ firmId }: { firmId: string }) {
                     : <input className="ck-input" value={p.title} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, title: e.target.value } : x)) ?? ps)} />}
                 </td>
                 <td>{p.targetMatter ? "" : (
-                  <select className="ck-select" aria-label={`תחום ${p.folder}`} value={p.practice} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, practice: e.target.value } : x)) ?? ps)}>
-                    <option value="">זיהוי אוטומטי</option>
+                  <select className="ck-select" aria-label={`תחום ${p.folder}`} value={p.practice || basePractice} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, practice: e.target.value } : x)) ?? ps)}>
                     {Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>)}</td>
                 <td style={{ whiteSpace: "normal", maxWidth: 260 }}>{p.folder}{p.flag && <div><span className="ck-badge yellow">{p.flag}</span></div>}<div className="ck-meta" dir="auto">{p.sample.join(" , ")}</div>
