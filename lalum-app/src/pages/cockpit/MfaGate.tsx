@@ -13,6 +13,7 @@ export function MfaGate({ required, children }: { required: boolean; children: R
   const [busy, setBusy] = useState(false);
   const [lost, setLost] = useState(false);
   const [recovery, setRecovery] = useState("");
+  const [factorId, setFactorId] = useState<string | null>(null);
   async function useRecovery(e: FormEvent) {
     e.preventDefault();
     setBusy(true); setErr(null);
@@ -41,16 +42,34 @@ export function MfaGate({ required, children }: { required: boolean; children: R
       </div>
     </form>
   );
-  if (mfa.state === "challenge") return (
-    <form className="ck-card" style={{ maxWidth: 420, margin: "40px auto" }} onSubmit={(e) => void submit(e, mfa.factorId)}>
-      <div className="ck-title">אימות דו-שלבי</div>
-      <div className="ck-meta">הזינו את הקוד בן 6 הספרות מאפליקציית האימות.</div>
-      <input className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
-      {err && <div className="ck-err" aria-live="polite">{err}</div>}
-      <button className="ck-btn primary" disabled={busy || code.length !== 6}>{busy ? "מאמת..." : "אימות"}</button>
-      <button type="button" className="ck-btn" onClick={() => { setLost(true); setErr(null); }}>אין לי גישה לאפליקציה</button>
-    </form>
-  );
+  if (mfa.state === "challenge") {
+    const active = factorId ?? mfa.factorId;
+    return (
+      <form className="ck-card" style={{ maxWidth: 420, margin: "40px auto" }} onSubmit={(e) => void submit(e, active)}>
+        <div className="ck-title">אימות דו-שלבי</div>
+        <div className="ck-meta">הזינו את הקוד בן 6 הספרות מאפליקציית האימות.</div>
+        {mfa.factors.length > 1 && (
+          <>
+            <div className="ck-meta">מחוברים לחשבון כמה גורמי אימות. אם הקוד לא תואם, נסו לבחור את הגורם הנכון:</div>
+            <div className="ck-row" style={{ flexWrap: "wrap" }}>
+              {mfa.factors.map((f) => (
+                <button type="button" key={f.id} className={"ck-btn" + (f.id === active ? " primary" : "")} onClick={() => { setFactorId(f.id); setErr(null); }}>
+                  {f.name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <input className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+        {err && <div className="ck-err" aria-live="polite">{err}</div>}
+        <button className="ck-btn primary" disabled={busy || code.length !== 6}>{busy ? "מאמת..." : "אימות"}</button>
+        {mfa.factors.length > 1 && (
+          <div className="ck-meta">גורם ישן שכבר לא בשימוש? אפשר להסיר אותו מ<Link to="/settings/security">אבטחת חשבון</Link> אחרי הכניסה, כדי שלא יבחר שוב בטעות.</div>
+        )}
+        <button type="button" className="ck-btn" onClick={() => { setLost(true); setErr(null); }}>אין לי גישה לאפליקציה</button>
+      </form>
+    );
+  }
   if (mfa.state === "enroll" && required) return <TotpEnroll onDone={() => void refresh()} />;
   return (
     <>

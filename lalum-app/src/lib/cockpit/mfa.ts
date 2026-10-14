@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../supabase";
 
-export type MfaState = { state: "loading" } | { state: "ok" } | { state: "challenge"; factorId: string } | { state: "enroll" } | { state: "unavailable" };
+export type MfaFactor = { id: string; name: string };
+export type MfaState = { state: "loading" } | { state: "ok" } | { state: "challenge"; factorId: string; factors: MfaFactor[] } | { state: "enroll" } | { state: "unavailable" };
 
 /** Where the session stands against the TOTP second factor (Supabase assurance levels). */
 export function useMfaState(): { mfa: MfaState; refresh: () => Promise<void> } {
@@ -13,8 +14,18 @@ export function useMfaState(): { mfa: MfaState; refresh: () => Promise<void> } {
     if (data.currentLevel === "aal2") { setMfa({ state: "ok" }); return; }
     if (data.nextLevel === "aal2") {
       const f = await supabase.auth.mfa.listFactors();
-      const factor = f.data?.totp?.[0];
-      setMfa(factor ? { state: "challenge", factorId: factor.id } : { state: "enroll" });
+      const verified = (f.data?.totp ?? []).filter((x) => x.status === "verified");
+      if (verified.length === 0) { setMfa({ state: "enroll" }); return; }
+      // The challenge used to take whatever factor listFactors() returned
+      // first, which is not necessarily the one live in the visitor's current
+      // authenticator app: re-enrolling (a new phone, a reinstalled app)
+      // leaves the old factor "verified" too, and its code never matches the
+      // new one. The most recently created factor is the one most likely to
+      // still be live, so it goes first; if more than one factor exists the
+      // visitor can also pick explicitly, rather than guess which is current.
+      const sorted = [...verified].sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+      const factors: MfaFactor[] = sorted.map((x) => ({ id: x.id, name: x.friendly_name ?? "TOTP" }));
+      setMfa({ state: "challenge", factorId: factors[0].id, factors });
       return;
     }
     setMfa({ state: "enroll" });
