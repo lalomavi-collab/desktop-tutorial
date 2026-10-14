@@ -1,6 +1,7 @@
 // lalum-mail-intake: Supabase Edge Function (Deno). Receives Microsoft Graph change notifications for ONE mailbox, decides which
 // matter a new message belongs to (route.ts) and records the decision in lalum_mail_intake (migration 0041). It reads the mailbox
-// and never sends. It is NOT deployed and filing into the vault is NOT wired yet: a routed message stays QUEUED.
+// and never sends. It is NOT deployed. A routed message is filed by file.ts through the existing secure path (the pipeline's server to
+// server intake route, then the private vault); see that file for the order and the retry rules.
 //
 // Secrets (supabase secrets set ...), none of them in the repo:
 //   MS_TENANT_ID, MS_CLIENT_ID, MS_CLIENT_SECRET   app registration with the APPLICATION permission Mail.Read only, limited to the
@@ -8,10 +9,15 @@
 //   MS_MAILBOX                                     the mailbox address
 //   MS_NOTIFY_CLIENT_STATE                         random secret the subscription was created with
 //   LALUM_FIRM_ID, LALUM_MAIL_DOMAINS              the firm id and the domains of the matter aliases (comma separated)
+//   LALUM_INTAKE_TOKEN                             the firm's intake token for lalum-pipeline (lit_ and 48 hex digits). No firm has one yet:
+//                                                  it is created by the owner in lalum_private.firm_secrets and never shown in chat
+//   MAIL_DRAIN_SECRET                              shared secret for the retry sweep (POST ?drain=1 with header x-drain-secret)
+//   MAIL_MAX_BYTES                                 optional, default 26214400 (25 MB) for the raw message source
 // Deploys need the owner's explicit approval; verify_jwt is false because Graph cannot send a Supabase JWT, so the clientState
 // check in handler.ts is the gate.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { handleRequest, type IntakeRow, type MessageMeta, type Ports } from "./handler.ts";
+import { fileOne, type FileDeps, type Pending } from "./file.ts";
 import type { MatterInfo } from "./route.ts";
 
 const env = (k: string) => { const v = Deno.env.get(k); if (!v) throw new Error(`missing secret ${k}`); return v; };
@@ -26,6 +32,43 @@ async function graphToken(): Promise<string> {
   if (!res.ok) throw new Error(`token ${res.status}`);
   return (await res.json()).access_token as string;
 }
+
+const mailbox = () => encodeURIComponent(env("MS_MAILBOX"));
+const graphGet = async (id: string, suffix = "", extra: Record<string, string> = {}) =>
+  fetch(`https://graph.microsoft.com/v1.0/users/${mailbox()}/messages/${encodeURIComponent(id)}${suffix}`, { headers: { Authorization: `Bearer ${await graphToken()}`, ...extra } });
+
+const fileDeps = (sb: ReturnType<typeof db>, firmId: string): FileDeps => ({
+  firmId,
+  maxBytes: Number(Deno.env.get("MAIL_MAX_BYTES") ?? 26214400),
+  async getText(id) {
+    const res = await graphGet(id, "?$select=subject,body", { Prefer: 'outlook.body-content-type="text"' });
+    if (!res.ok) return null;
+    const m = await res.json();
+    return { subject: m.subject ?? "", text: m.body?.content ?? "" };
+  },
+  async getMime(id) {
+    const res = await graphGet(id, "/$value");
+    if (!res.ok) return null;
+    return new Uint8Array(await res.arrayBuffer());
+  },
+  async callPipeline({ text, fileName, matterId }) {
+    const res = await fetch(`${env("SUPABASE_URL")}/functions/v1/lalum-pipeline/api/v1/intake/webhook`, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${env("LALUM_INTAKE_TOKEN")}`, "x-lalum-firm": firmId },
+      body: JSON.stringify({ text, file_name: fileName, matter_id: matterId }),
+    });
+    return { status: res.status, body: await res.json().catch(() => null) };
+  },
+  async upload(path, bytes) {
+    const { error } = await sb.storage.from("matter-originals").upload(path, bytes, { contentType: "text/plain", upsert: false });
+    if (!error) return "ok";
+    return /exists|duplicate/i.test(error.message) ? "exists" : "error";
+  },
+  async setDocument(key, doc) { return !(await sb.rpc("lalum_mail_set_document", { p_firm: firmId, p_key: key, p_doc: doc })).error; },
+  async attachOriginal(key, path, sha, size) { return !(await sb.rpc("lalum_mail_attach_original", { p_firm: firmId, p_key: key, p_path: path, p_sha256: sha, p_size: size })).error; },
+  async setState(key, state, reason) { await sb.rpc("lalum_mail_set_state", { p_firm: firmId, p_key: key, p_state: state, p_reason: reason }); },
+  log: (event, data) => console.log(`lalum-mail-intake: ${event} ${JSON.stringify(data)}`),
+});
 
 const toMatter = (r: { id: string; sync_enabled: boolean; status: string; conflict_status: string } | null): MatterInfo | undefined =>
   r ? { id: r.id, syncEnabled: r.sync_enabled, status: r.status, conflictStatus: r.conflict_status } : undefined;
@@ -58,7 +101,7 @@ const ports = (): Ports => {
     },
     async recordIntake(r: IntakeRow) {
       const { error } = await sb.from("lalum_mail_intake").insert({
-        firm_id: r.firmId, message_key: r.messageKey, conversation_key: r.conversationKey, received_at: r.receivedAt,
+        firm_id: r.firmId, message_key: r.messageKey, conversation_key: r.conversationKey, received_at: r.receivedAt, graph_message_id: r.graphId,
         route: r.decision.route, matter_id: r.decision.matterId, state: r.decision.state, reason: r.decision.reason,
       });
       if (!error) return "inserted";
@@ -66,7 +109,13 @@ const ports = (): Ports => {
       throw new Error(`record ${error.code}`);
     },
     log: (event, data) => console.log(`lalum-mail-intake: ${event} ${JSON.stringify(data)}`),
-    // fileMessage and markFiled are deliberately absent until the vault path is decided (see docs section 5).
+    file: (p: Pending) => fileOne(fileDeps(sb, firmId), p),
+    drainSecret: env("MAIL_DRAIN_SECRET"),
+    async pending(limit) {
+      const { data } = await sb.from("lalum_mail_intake").select("message_key, graph_message_id, matter_id, received_at, document_id")
+        .eq("firm_id", firmId).in("state", ["QUEUED", "ASSIGNED"]).not("matter_id", "is", null).not("graph_message_id", "is", null).order("created_at").limit(limit);
+      return (data ?? []).map((r) => ({ messageKey: r.message_key, graphId: r.graph_message_id, matterId: r.matter_id, receivedAt: r.received_at, documentId: r.document_id }));
+    },
   };
 };
 

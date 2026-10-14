@@ -3,7 +3,7 @@
 --   psql -v ON_ERROR_STOP=1 -f mail_intake_rls.sql
 -- Every assertion raises on failure, so a clean run is the pass signal. Fixtures roll back at the end.
 create schema if not exists t;
-grant usage on schema t to authenticated;
+grant usage on schema t to authenticated, service_role;
 create or replace function t.as_user(p_uid uuid) returns void language plpgsql as $$
 begin execute 'reset role'; perform set_config('request.jwt.claim.sub', coalesce(p_uid::text, ''), true); execute 'set local role authenticated'; end $$;
 create or replace function t.n(p_sql text) returns bigint language plpgsql as $$
@@ -14,7 +14,8 @@ begin
     if sqlerrm like p_like then return; end if; raise exception 'wrong error for [%]: %', p_sql, sqlerrm; end;
   raise exception 'expected failure [%] did not happen', p_sql;
 end $$;
-grant execute on function t.as_user(uuid), t.n(text), t.fails(text, text) to authenticated;
+create or replace function t.as_service() returns void language plpgsql as $$ begin execute 'reset role'; execute 'set local role service_role'; end $$;
+grant execute on function t.as_user(uuid), t.n(text), t.fails(text, text), t.as_service() to authenticated, service_role;
 
 begin;
 insert into auth.users (id, email) values
@@ -98,6 +99,50 @@ do $$ begin
   assert (select state from public.lalum_mail_intake where id='00000000-0000-0000-0000-0000000000e4') = 'REJECTED', 'rejection not recorded';
   assert (select count(*) from public.lalum_audit_stub where action='MAIL_TRIAGE_REJECTED') = 1, 'rejection not audited';
   assert not exists (select 1 from public.lalum_audit_stub where detail::text ~* '@'), 'no address in the audit detail';
+end $$;
+
+-- 6. The secure filing path: service role only, fixed path, once, and the row becomes FILED.
+reset role;
+insert into public.lalum_matter_documents (id, matter_id, firm_id, file_name) values
+  ('00000000-0000-0000-0000-0000000000f1','00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-00000000000a','mail-1.eml'),
+  ('00000000-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-0000000000c2','00000000-0000-0000-0000-00000000000a','mail-2.eml'),
+  ('00000000-0000-0000-0000-0000000000f3','00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-00000000000a','mail-3.eml');
+insert into public.lalum_mail_intake (id, firm_id, message_key, received_at, state, matter_id, route, graph_message_id) values
+  ('00000000-0000-0000-0000-0000000000e6','00000000-0000-0000-0000-00000000000a',repeat('1',64),now(),'QUEUED','00000000-0000-0000-0000-0000000000c1','ALIAS','AAMk-opaque-1'),
+  ('00000000-0000-0000-0000-0000000000e7','00000000-0000-0000-0000-00000000000a',repeat('2',64),now(),'QUEUED','00000000-0000-0000-0000-0000000000c1','ALIAS','AAMk-opaque-2');
+select t.as_user('00000000-0000-0000-0000-0000000000a1');    -- a signed in partner cannot call them, and cannot read the Graph id
+select t.fails($$select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-0000000000f1')$$, '%permission denied%');
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'x',repeat('a',64),10)$$, '%permission denied%');
+select t.fails($$select public.lalum_mail_set_state('00000000-0000-0000-0000-00000000000a',repeat('1',64),'FAILED',null)$$, '%permission denied%');
+select t.fails($$select graph_message_id from public.lalum_mail_intake$$, '%permission denied%');
+do $$ begin assert t.n('select id, state, document_id from public.lalum_mail_intake') > 0, 'the other columns stay readable'; end $$;
+select t.as_service();
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'p',repeat('a',64),10)$$, '%not pending%');   -- no document linked yet
+select t.fails($$select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-0000000000f2')$$, '%mismatch%');   -- document of another matter
+select t.fails($$select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000b',repeat('1',64),'00000000-0000-0000-0000-0000000000f1')$$, '%mismatch%');   -- wrong firm
+select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-0000000000f1');
+select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-0000000000f1');   -- the same link again is harmless
+select t.fails($$select public.lalum_mail_set_document('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-0000000000f3')$$, '%already linked%');
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.txt',repeat('a',64),10)$$, '%object missing%');
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'elsewhere/original.txt',repeat('a',64),10)$$, '%bad path%');
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.eml',repeat('a',64),10)$$, '%bad path%');   -- only original.txt
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.txt','NOTAHASH',10)$$, '%bad hash%');
+reset role;
+insert into storage.objects (bucket_id, name) values ('matter-originals','00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.txt');
+select t.as_service();
+select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.txt',repeat('a',64),1234);
+select t.fails($$select public.lalum_mail_attach_original('00000000-0000-0000-0000-00000000000a',repeat('1',64),'00000000-0000-0000-0000-00000000000a/00000000-0000-0000-0000-0000000000c1/00000000-0000-0000-0000-0000000000f1/original.txt',repeat('a',64),1234)$$, '%not pending%');   -- once only
+select t.fails($$select public.lalum_mail_set_state('00000000-0000-0000-0000-00000000000a',repeat('2',64),'FILED',null)$$, '%bad state%');
+select public.lalum_mail_set_state('00000000-0000-0000-0000-00000000000a',repeat('2',64),'CONFLICT_HOLD',null);
+select public.lalum_mail_set_state('00000000-0000-0000-0000-00000000000a',repeat('1',64),'FAILED','TOO_LARGE');   -- already FILED: nothing happens
+reset role;
+do $$ begin
+  assert (select state from public.lalum_mail_intake where id='00000000-0000-0000-0000-0000000000e6') = 'FILED', 'filed row not marked FILED';
+  assert (select original_path||'/'||original_mime||'/'||original_size||'/'||doc_type from public.lalum_matter_documents where id='00000000-0000-0000-0000-0000000000f1') like '%/original.txt/text/plain/1234/CORRESPONDENCE', 'original not attached';
+  assert (select state from public.lalum_mail_intake where id='00000000-0000-0000-0000-0000000000e7') = 'CONFLICT_HOLD', 'hold not recorded';
+  assert (select count(*) from public.lalum_audit_stub where action='MAIL_FILED' and actor is null) = 1, 'filing is audited, with no signed in actor';
+  assert (select count(*) from public.lalum_audit_stub where action='MAIL_FILING_STOPPED') = 1, 'only the pending row was stopped';
+  assert not exists (select 1 from public.lalum_audit_stub where detail::text ~* '@'), 'no address in any audit detail';
 end $$;
 rollback;
 select 'mail_intake tests passed' as result;

@@ -1,10 +1,11 @@
 // Request handling for the Microsoft Graph change notification webhook. No Deno APIs: the real ports are wired in index.ts and
 // the test wires fakes. The handler is read only toward the mailbox, never sends, and never writes message content anywhere.
 import { messageKey, routeMessage, sha256Hex, type Decision, type MatterInfo, type Message } from "./route.ts";
+import type { FileOutcome, Pending } from "./file.ts";
 
 export interface MessageMeta extends Message { internetMessageId: string; conversationId: string | null; receivedAt: string }
 export interface IntakeRow {
-  firmId: string; messageKey: string; conversationKey: string | null; receivedAt: string; decision: Decision;
+  firmId: string; messageKey: string; conversationKey: string | null; receivedAt: string; graphId: string; decision: Decision;
 }
 export interface Ports {
   clientState: string;
@@ -14,12 +15,14 @@ export interface Ports {
   lookupMatterByCode(code: string): Promise<MatterInfo | undefined>;
   lookupThread(firmId: string, conversationKey: string): Promise<MatterInfo | null>;
   recordIntake(row: IntakeRow): Promise<"inserted" | "duplicate">;
-  /** Copies the message into the vault and the matter. Not wired yet: the row then stays QUEUED, visible and retryable. */
-  fileMessage?(row: IntakeRow, graphMessageId: string): Promise<boolean>;
-  markFiled?(firmId: string, messageKey: string): Promise<void>;
+  /** Files a routed message into its matter (file.ts). Absent: the row stays QUEUED, visible and retryable. */
+  file?(p: Pending): Promise<FileOutcome>;
+  /** Routed rows still waiting: QUEUED, or ASSIGNED by a person. Used by the drain call. */
+  pending?(limit: number): Promise<Pending[]>;
+  drainSecret?: string;
   log(event: string, data: Record<string, string | number>): void;
 }
-export interface Summary { received: number; rejected: number; duplicates: number; queued: number; triage: number; hold: number; filed: number; unreadable: number }
+export interface Summary { received: number; rejected: number; duplicates: number; queued: number; triage: number; hold: number; filed: number; retry: number; failed: number; unreadable: number }
 
 // Constant time, so the shared secret is not leaked through timing.
 function same(a: string, b: string): boolean {
@@ -37,10 +40,11 @@ export async function handleRequest(req: Request, ports: Ports): Promise<Respons
   const token = url.searchParams.get("validationToken");
   if (token) return new Response(token, { status: 200, headers: { "content-type": "text/plain" } });
   if (req.method !== "POST") return new Response(null, { status: 405 });
+  if (url.searchParams.get("drain") === "1") return drain(req, ports);
   let body: { value?: Notification[] };
   try { body = await req.json(); } catch { return new Response(null, { status: 400 }); }
   const items = Array.isArray(body.value) ? body.value : [];
-  const summary: Summary = { received: items.length, rejected: 0, duplicates: 0, queued: 0, triage: 0, hold: 0, filed: 0, unreadable: 0 };
+  const summary: Summary = { received: items.length, rejected: 0, duplicates: 0, queued: 0, triage: 0, hold: 0, filed: 0, retry: 0, failed: 0, unreadable: 0 };
   for (const n of items) {
     if (typeof n.clientState !== "string" || !same(n.clientState, ports.clientState)) { summary.rejected++; continue; }
     const id = n.resourceData?.id;
@@ -56,17 +60,32 @@ export async function handleRequest(req: Request, ports: Ports): Promise<Respons
     }
     const thread = conv ? await ports.lookupThread(ports.firmId, conv) : null;
     const decision = routeMessage(meta, { aliasDomains: ports.aliasDomains, matterByCode: (c) => codes.get(c.toUpperCase()), threadMatter: thread });
-    const row: IntakeRow = { firmId: ports.firmId, messageKey: key, conversationKey: conv, receivedAt: meta.receivedAt, decision };
+    const row: IntakeRow = { firmId: ports.firmId, messageKey: key, conversationKey: conv, receivedAt: meta.receivedAt, graphId: id, decision };
     if ((await ports.recordIntake(row)) === "duplicate") { summary.duplicates++; continue; }
     if (decision.state === "TRIAGE") summary.triage++;
     else if (decision.state === "CONFLICT_HOLD") summary.hold++;
     else {
       summary.queued++;
-      if (ports.fileMessage && (await ports.fileMessage(row, id))) { await ports.markFiled?.(ports.firmId, key); summary.filed++; }
+      if (ports.file) tally(summary, await ports.file({ messageKey: key, graphId: id, matterId: decision.matterId as string, receivedAt: meta.receivedAt, documentId: null }));
     }
   }
   // Counts only: never a subject, an address or an id of the message.
   ports.log("intake", { ...summary });
   if (items.length > 0 && summary.rejected === items.length) return new Response(null, { status: 401 });
   return new Response(JSON.stringify(summary), { status: 202, headers: { "content-type": "application/json" } });
+}
+
+function tally(s: Summary, o: FileOutcome) {
+  if (o === "FILED") s.filed++; else if (o === "RETRY") s.retry++; else if (o === "CONFLICT_HOLD") s.hold++; else s.failed++;
+}
+
+// Retry sweep for rows that are routed but not filed: a message a person assigned from triage, or one the first attempt could not
+// finish. Called on a schedule with a shared secret; never needs a message body from the caller.
+async function drain(req: Request, ports: Ports): Promise<Response> {
+  const given = req.headers.get("x-drain-secret") ?? "";
+  if (!ports.drainSecret || !ports.pending || !ports.file || !same(given, ports.drainSecret)) return new Response(null, { status: 401 });
+  const summary: Summary = { received: 0, rejected: 0, duplicates: 0, queued: 0, triage: 0, hold: 0, filed: 0, retry: 0, failed: 0, unreadable: 0 };
+  for (const p of await ports.pending(20)) { summary.received++; tally(summary, await ports.file(p)); }
+  ports.log("drain", { ...summary });
+  return new Response(JSON.stringify(summary), { status: 200, headers: { "content-type": "application/json" } });
 }
