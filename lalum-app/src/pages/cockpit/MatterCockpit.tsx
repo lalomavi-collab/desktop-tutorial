@@ -16,6 +16,7 @@ import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { DocMeta } from "./DocControls";
 import { KycPanel } from "./KycPanel";
+import { ReanalyzePanel } from "./ReanalyzePanel";
 import { AnnexAssembly } from "./AnnexAssembly";
 import { SignatureRequests } from "./SignatureRequests";
 import { ConflictReview } from "./ConflictReview";
@@ -318,6 +319,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
+          {platformAdmin && role === "FIRM_PARTNER" && docs.length > 0 && <ReanalyzePanel matterId={matter.id} practiceArea={matter.practice_area} docs={docs} onDone={() => setRev((n) => n + 1)} />}
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
             <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
           {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
