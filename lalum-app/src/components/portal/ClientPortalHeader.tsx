@@ -1,7 +1,5 @@
-import type { DemoMatter } from "../../lib/cockpit/crmDemo";
-
-/** Case selector plus a plain-language status. No internal fields (bench, attorney notes) are shown to the client. */
-export function ClientPortalHeader({ matters, selected, onSelect }: { matters: DemoMatter[]; selected: string; onSelect: (id: string) => void }) {
+/** Case selector plus a plain-language status. No internal fields (attorney notes, conflict state) are shown to the client. */
+export function ClientPortalHeader({ matters, selected, onSelect }: { matters: Array<{ id: string; title: string; stage: string }>; selected: string; onSelect: (id: string) => void }) {
   const m = matters.find((x) => x.id === selected) ?? matters[0];
   return (
     <header className="ck-card" style={{ marginBottom: 14 }}>

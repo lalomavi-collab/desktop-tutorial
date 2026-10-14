@@ -254,7 +254,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             <div className="ck-title">{matter.title}</div>
             <div className="ck-row" style={{ marginTop: 6 }}>{PRACTICE[matter.practice_area]} <ConflictBadge c={matter.conflict_status} /> <span className="ck-meta">{MATTER_STATUS[matter.status]}</span></div>
           </div>
-          <div className="ck-row"><PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to="/workspace">לרשימה</Link></div>
+          <div className="ck-row"><PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to={`/workspace/matter-360?matter=${matter.id}`}>תיק 360</Link><Link className="ck-btn" to="/workspace">לרשימה</Link></div>
         </div>
         {role === "FIRM_PARTNER" && routing && (
           <div className="ck-row"><label className="ck-meta" htmlFor="resp">תגובה לתיק:</label>
