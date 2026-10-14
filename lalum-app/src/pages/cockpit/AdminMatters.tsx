@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { supabase } from "../../lib/supabase";
 import { CONFLICT, fmt, PRACTICE, RESPONSE } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
 
-interface Row { matter_id: string; firm_id: string; firm_name: string; title: string; practice_area: string; conflict_status: string; partner_response: string; dispatched_at: string; first_viewed_at: string | null }
+interface Row { matter_id: string; matter_code: string | null; firm_id: string; firm_name: string; title: string; practice_area: string; conflict_status: string; partner_response: string; dispatched_at: string; first_viewed_at: string | null }
 interface Check { id: string; created_at: string; firm_id: string; status: string; reason_codes: string[]; match_count: number; entity_count: number; source: string }
 interface Firm { id: string; firm_name: string }
 const SLA_MIN = 120;
@@ -15,6 +16,7 @@ const waiting = (r: Row, now: number): number | null =>
   r.first_viewed_at || r.partner_response !== "PENDING_REVIEW" ? null : Math.floor((now - new Date(r.dispatched_at).getTime()) / 60000);
 
 function Panel() {
+  const cn = useClientNames();
   const [rows, setRows] = useState<Row[]>([]);
   const [checks, setChecks] = useState<Check[]>([]);
   const [firms, setFirms] = useState<Firm[]>([]);
@@ -66,7 +68,7 @@ function Panel() {
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>משרד</th><th>תיק</th><th>תחום</th><th>ניגוד</th><th>תגובת שותף</th><th>נקלט</th><th>ממתין</th></tr></thead><tbody>
         {shown.length ? shown.map((r) => { const m = waiting(r, now); const [t, l] = CONFLICT[r.conflict_status] ?? ["yellow", r.conflict_status]; const h = m == null ? 0 : Math.floor(m / 60); return (
           <tr key={r.matter_id} className={(m ?? 0) > SLA_MIN ? "breach" : ""}>
-            <td>{r.firm_name}</td><td>{r.title}</td><td>{PRACTICE[r.practice_area]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{RESPONSE[r.partner_response]}</td><td>{fmt(r.dispatched_at)}</td>
+            <td>{r.firm_name}</td><td>{cn.name(r)}</td><td>{PRACTICE[r.practice_area]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{RESPONSE[r.partner_response]}</td><td>{fmt(r.dispatched_at)}</td>
             <td>{m == null ? <span className="ck-badge green">טופל</span> : <span className={`ck-badge ${m > SLA_MIN ? "red" : "yellow"}`}>{m > SLA_MIN ? "⚠ " : ""}{h ? `${h} שע' ${m % 60} דק'` : `${m} דק'`}</span>}</td>
           </tr>); }) : <tr><td colSpan={7}>אין תיקים להצגה</td></tr>}
       </tbody></table></div>

@@ -280,6 +280,7 @@
   background: var(--card); color: var(--ink); border: 1px solid var(--line-strong);
 }
 .ck-root[data-ck-theme] code.ck-chip { font-weight: 500; }
+.ck-root[data-ck-theme] .ck-chip.warn { font-weight: 800; border-style: dashed; }
 .ck-root[data-ck-theme] .ck-badge { max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.4; border: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
 .ck-root[data-ck-theme] .ck-tl li { color: var(--ink); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
 .ck-root[data-ck-theme] .ck-tl time { display: block; color: color-mix(in srgb, var(--ink) 72%, var(--paper)); font-size: 13px; font-weight: 600; }
