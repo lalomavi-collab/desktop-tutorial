@@ -32,6 +32,7 @@
     "playbook-check": "node scripts/playbook-check.mjs",
     "client-names-check": "node scripts/client-names-check.mjs",
     "reanalyze-check": "node scripts/reanalyze-check.mjs",
+    "open-original-check": "node scripts/open-original-check.mjs",
     "mail-route-check": "node scripts/mail-route-check.mjs",
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",
