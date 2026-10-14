@@ -11,7 +11,7 @@ for (const n of ["bulk", "reanalyze"]) {
   const src = readFileSync(new URL(`../src/lib/cockpit/${n}.ts`, import.meta.url), "utf8").replace('from "./bulk"', 'from "./bulk.mjs"');
   writeFileSync(join(dir, `${n}.mjs`), ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
 }
-const { eligibleDocs, isAssessed, reanalyzeDocs, ASSESSED_TYPES } = await import(pathToFileURL(join(dir, "reanalyze.mjs")).href);
+const { eligibleDocs, isAssessed, reanalyzeDocs, reanalyzePlan, buildPlan, countByType, UNTYPED, ASSESSED_TYPES } = await import(pathToFileURL(join(dir, "reanalyze.mjs")).href);
 
 assert.deepEqual(ASSESSED_TYPES, ["CONTRACT", "COURT_FILING"], "same types as the matter rollup in migration 0042");
 assert.equal(isAssessed(null), true); assert.equal(isAssessed(undefined), true); assert.equal(isAssessed(""), true);
@@ -47,4 +47,26 @@ const r4 = await reanalyzeDocs([{ id: "z", editor_content: "x" }], "REAL_ESTATE"
 assert.equal(r4.failed.length, 1);
 // nothing to do
 assert.deepEqual(await reanalyzeDocs([], "REAL_ESTATE", analyze, store), { done: [], failed: [] });
+
+// --- plan by type and by document ---
+const pd = [
+  { id: "p1", doc_type: "CONTRACT", editor_content: "x" }, { id: "p2", doc_type: "CONTRACT", editor_content: "x" },
+  { id: "p3", doc_type: "OPINION", editor_content: "x" }, { id: "p4", doc_type: null, editor_content: "x" },
+  { id: "p5", doc_type: "CONTRACT", editor_content: "  " }, { id: "p6", doc_type: "EVIDENCE", editor_content: "x" },
+];
+assert.deepEqual(countByType(pd), [["CONTRACT", 3], ["OPINION", 1], [UNTYPED, 1], ["EVIDENCE", 1]], "counts by type, untyped under the empty key");
+assert.deepEqual(buildPlan(pd, {}, {}), [], "no choice, nothing runs");
+assert.deepEqual(buildPlan(pd, { CONTRACT: "REAL_ESTATE" }, {}).map((p) => [p.doc.id, p.area]), [["p1", "REAL_ESTATE"], ["p2", "REAL_ESTATE"]], "a type choice covers that type only; empty text is skipped");
+assert.deepEqual(buildPlan(pd, { CONTRACT: "REAL_ESTATE" }, { p2: "AI_GOVERNANCE" }).map((p) => [p.doc.id, p.area]), [["p1", "REAL_ESTATE"], ["p2", "AI_GOVERNANCE"]], "a document choice beats its type");
+assert.deepEqual(buildPlan(pd, {}, { p3: "AI_GOVERNANCE", p4: "LITIGATION" }).map((p) => [p.doc.id, p.area]), [["p3", "AI_GOVERNANCE"], ["p4", "LITIGATION"]], "documents can be chosen alone, any type");
+assert.deepEqual(buildPlan(pd, { [UNTYPED]: "LABOR_LAW" }, {}).map((p) => [p.doc.id, p.area]), [["p4", "LABOR_LAW"]], "untyped documents have their own row");
+assert.deepEqual(buildPlan(pd, { CONTRACT: "REAL_ESTATE" }, { p1: "" }).map((p) => p.doc.id), ["p1", "p2"], "clearing a document choice falls back to its type");
+// the plan runs each document under its own area and stores that area with the result
+const seen = [], put = [];
+const rp = await reanalyzePlan(buildPlan(pd, { CONTRACT: "REAL_ESTATE" }, { p2: "AI_GOVERNANCE" }),
+  async (t, a) => { seen.push(a); return { ok: true, analysis: A }; }, async (id, an, a) => { put.push([id, a]); return { ok: true }; });
+assert.deepEqual(rp.done, ["p1", "p2"]); assert.deepEqual(seen, ["REAL_ESTATE", "AI_GOVERNANCE"]); assert.deepEqual(put, [["p1", "REAL_ESTATE"], ["p2", "AI_GOVERNANCE"]]);
+const rp2 = await reanalyzePlan(buildPlan(pd, { CONTRACT: "REAL_ESTATE" }, {}), analyze, async (id) => (id === "p1" ? { ok: false, error: "no" } : { ok: true }));
+assert.deepEqual(rp2.failed, [{ id: "p1", error: "no" }]); assert.deepEqual(rp2.done, ["p2"]);
+assert.deepEqual(await reanalyzePlan([], analyze, store), { done: [], failed: [] });
 console.log("reanalyze-check: ok");

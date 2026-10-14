@@ -71,7 +71,7 @@ export interface MatterDoc {
   baseline_content: string;
   editor_content: string;
   entity_counts: Record<string, number>;
-  analysis: { findings?: Finding[]; risk?: Risk };
+  analysis: { practice_area?: string; findings?: Finding[]; risk?: Risk };
   created_at: string;
   doc_type?: string | null;
   doc_origin?: string | null;
