@@ -4,7 +4,6 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
-import { FounderIntroVideo } from "../components/FounderIntroVideo";
 import { SiteSearch } from "../components/SiteSearch";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { FocusAreas } from "../components/FocusAreas";
@@ -284,10 +283,13 @@ export function Home() {
             </a>
           </div>
           <div>
-            {/* The founder's own introduction, so the firm is seen through the
-                person who leads it. Reuses the already-uploaded clip and its
-                existing shared strings; nothing autoplays. */}
-            <FounderIntroVideo />
+            {/* Same decorative-art treatment as the ABOUT section above, in
+                place of the founder's own clip: neither this section nor the
+                hero carries a personal photo or video now, so the page
+                reads as the practice throughout, not as one person. */}
+            <aside className="pillar-hero-art" style={{ margin: "0 0 28px" }}>
+              <PillarArt theme="knowledge" />
+            </aside>
             <p className="eyebrow">{h.storyEyebrow}</p>
             <h2 className="serif" style={{ fontSize: 36, lineHeight: 1.22, letterSpacing: "-0.015em", margin: "0 0 20px" }}>{h.storyH2}</h2>
             {/* Same two paragraphs as before, in the same panel treatment as

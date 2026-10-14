@@ -2272,39 +2272,6 @@ a.caps-item:focus-visible .caps-go {
   max-width: 58%;
 }
 
-/* ---------- founder intro video: play affordance ----------
-   The poster alone reads as a plain photo; this button makes the clip
-   unmistakably a video to click, not an image sitting in the page. It
-   disappears the moment the clip is actually playing. */
-.founder-film-frame {
-  position: relative;
-}
-.founder-film-playbtn {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--clay);
-  color: #fff;
-  border: 3px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 16px 34px -14px rgba(15, 15, 16, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.18s ease, background 0.18s ease;
-}
-.founder-film-playbtn:hover {
-  background: var(--clay-hover);
-  transform: scale(1.06);
-}
-.founder-film-playbtn:focus-visible {
-  outline: 3px solid var(--clay);
-  outline-offset: 3px;
-}
-
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
 .a11y-dock {
   position: fixed;

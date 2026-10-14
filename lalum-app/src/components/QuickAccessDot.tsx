@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { useInstall } from "./AppInstall";
@@ -17,33 +17,12 @@ import lalumMark from "../assets/lalum-mark.svg";
 // page. Two round controls parked in the bottom corner cover content on every
 // screen of every page; in the toolbar they are reachable without being in the
 // way.
-const videoBubbleSrc = import.meta.env.VITE_VIDEO_BUBBLE_SRC ?? "";
+//
+// The "watch video" item this menu used to offer pointed at the founder's
+// intro clip on the home page (components/FounderIntroVideo.tsx), which has
+// since been removed from the page entirely. There is no clip left to point
+// at, so the item is gone too rather than left to open nothing.
 
-// The intro film plays in its own section on the home page
-// (components/FounderIntroVideo.tsx), with the browser's own controls. This
-// menu takes the visitor there rather than opening a second player for the
-// same clip. There used to be two implementations of one thing, and the one
-// this menu pointed at was the one that did not play.
-const FILM_SELECTOR = ".founder-film";
-
-function playFilm(): boolean {
-  const film = document.querySelector(FILM_SELECTOR);
-  if (!film) return false;
-  film.scrollIntoView({ behavior: "smooth", block: "center" });
-  // A refusal is fine: the controls are right there and the visitor is now
-  // looking at them. What must not happen is an unhandled rejection.
-  void film.querySelector("video")?.play().catch(() => { /* the visitor presses play */ });
-  return true;
-}
-
-function VideoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="2.5" y="5.5" width="13" height="13" rx="2.5" />
-      <path d="M15.5 10.5 21 7v10l-5.5-3.5" />
-    </svg>
-  );
-}
 function DownloadMenuIcon() {
   return (
     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -64,7 +43,6 @@ export function QuickAccessDot() {
   const { t } = useLang();
   const Q = t.ui.quickAccess;
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const { installed, canPrompt, promptInstall } = useInstall();
   const [open, setOpen] = useState(false);
 
@@ -86,25 +64,6 @@ export function QuickAccessDot() {
 
   if (QUIET_ROUTES.test(pathname)) return null;
 
-  function openFilm() {
-    setOpen(false);
-    if (playFilm()) return;
-    // Not on the home page. Navigate there, then wait for the section to
-    // exist: the route is code split, so it is not on the page the moment
-    // navigate() returns. Bounded, because a frame loop with no end is how a
-    // tab starts burning battery over a section that never arrives.
-    // The hash matters: MarketingLayout resets the scroll to the top on every
-    // route change *unless* the route carries one, so without it the jump to
-    // the film would be undone a frame after it happened.
-    navigate({ pathname: "/", hash: "#founder-film" });
-    let frames = 0;
-    const tick = () => {
-      if (playFilm() || (frames += 1) > 120) return;
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
   async function installApp() {
     setOpen(false);
     if (canPrompt) await promptInstall();
@@ -122,15 +81,6 @@ export function QuickAccessDot() {
           <div onClick={() => setOpen(false)} className="qad-backdrop" />
           <div className="qad-menu" role="menu" aria-label={Q.open}>
             <span className="sheet-handle" aria-hidden="true" />
-            {videoBubbleSrc && (
-              <button type="button" role="menuitem" className="qad-item" onClick={openFilm}>
-                <span className="qad-item-icon"><VideoIcon /></span>
-                <span className="qad-item-txt">
-                  <span className="qad-item-label">{t.ui.videoBubble.open}</span>
-                  <span className="qad-item-desc">{t.ui.videoBubble.teaser}</span>
-                </span>
-              </button>
-            )}
             {!installed && (
               <button type="button" role="menuitem" className="qad-item" onClick={() => void installApp()}>
                 <span className="qad-item-icon"><DownloadMenuIcon /></span>
