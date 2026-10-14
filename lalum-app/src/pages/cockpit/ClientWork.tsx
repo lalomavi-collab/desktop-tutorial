@@ -76,7 +76,7 @@ function InquiriesView() {
 function TasksView() {
   const cn = useClientNames();
   const [d, setD] = useState<{ tasks: Task[]; titles: Map<string, MatterLabel>; people: Person[] } | null>(null);
-  const [matters, setMatters] = useState<Array<{ id: string; title: string }>>([]);
+  const [matters, setMatters] = useState<Array<{ id: string; title: string; matter_code: string | null }>>([]);
   const [f, setF] = useState({ matter: "", title: "", due: "", who: "" });
   const [show, setShow] = useState<"OPEN" | "DONE">("OPEN");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -100,7 +100,7 @@ function TasksView() {
       <div className="ck-card ck-stack">
         <div className="ck-title">משימה חדשה</div>
         <div className="ck-grid2">
-          <label className="ck-field">תיק<select className="ck-select" value={f.matter} onChange={(e) => setF({ ...f, matter: e.target.value })}><option value="">בחרו תיק</option>{matters.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}</select></label>
+          <label className="ck-field">תיק<select className="ck-select" value={f.matter} onChange={(e) => setF({ ...f, matter: e.target.value })}><option value="">בחרו תיק</option>{matters.map((m) => <option key={m.id} value={m.id}>{cn.name(m)}</option>)}</select></label>
           <label className="ck-field">אחראי<select className="ck-select" value={f.who} onChange={(e) => setF({ ...f, who: e.target.value })}><option value="">אני</option>{d.people.map((p) => <option key={p.user_id} value={p.user_id}>{p.display_name}</option>)}</select></label>
           <label className="ck-field">מה צריך לעשות<input className="ck-input" value={f.title} maxLength={200} onChange={(e) => setF({ ...f, title: e.target.value })} /></label>
           <label className="ck-field">מועד יעד<input className="ck-input" type="datetime-local" value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} /></label>

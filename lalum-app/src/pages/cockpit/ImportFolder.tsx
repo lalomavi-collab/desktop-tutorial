@@ -2,6 +2,7 @@
 // (read-only, the source is never changed or deleted) and sends each file through the normal intake pipeline, so PII is
 // masked, conflicts are checked and everything is audited exactly as for a manual upload. One matter per request chain:
 // no file from one matter ever travels with another.
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
@@ -21,7 +22,7 @@ const MAX_FILES_PER_MATTER = 200;
 interface Entry { name: string; file: File; hash: string; sug: string | null }
 // files = new, unique files to import. existing = already in the vault (matched by SHA-256). dupes = repeats inside the folder.
 const BASE_PRACTICE = "AI_GOVERNANCE"; // the practice every new matter starts in unless it is changed
-interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[]; skippedExt: Record<string, number>; subjects: Array<[string, number]>; types: Array<[string, number]> }
+interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: { title: string; matter_code: string | null } | null; include: boolean; flag: string | null; practice: string; sample: string[]; skippedExt: Record<string, number>; subjects: Array<[string, number]>; types: Array<[string, number]> }
 // Folders that are usually a sorting place, not a matter: left unchecked until the partner decides.
 // A folder named by a date (2026-09-30, 14.10.2026) is a day of correspondence, not a matter.
 const DATE_FOLDER = /(^|\/ )(\d{4}-\d{2}-\d{2}|\d{1,2}[./-]\d{1,2}[./-]\d{2,4})$/;
@@ -62,6 +63,7 @@ function Importer({ firmId }: { firmId: string }) {
   const [docOrigin, setDocOrigin] = useState("");
   const [autoType, setAutoType] = useState(true);
   const [filter, setFilter] = useState("");
+  const cn = useClientNames();
   const [ackSig, setAckSig] = useState("");
   // The practice area is never left to guessing: a matter without its own choice takes the base area below, and there is no empty option.
   const [basePractice, setBasePractice] = useState(BASE_PRACTICE);
@@ -153,9 +155,9 @@ function Importer({ firmId }: { firmId: string }) {
       });
       const ids = [...new Set(found.map((p) => p.targetMatter).filter((x): x is string => !!x))];
       if (ids.length && supabase) {
-        const { data } = await supabase.from("lalum_cockpit_matters").select("id, title").in("id", ids);
-        const t = new Map(((data as Array<{ id: string; title: string }> | null) ?? []).map((m) => [m.id, m.title]));
-        for (const p of found) if (p.targetMatter) p.targetTitle = t.get(p.targetMatter) ?? "תיק קיים";
+        const { data } = await supabase.from("lalum_cockpit_matters").select("id, title, matter_code").in("id", ids);
+        const t = new Map(((data as Array<{ id: string; title: string; matter_code: string | null }> | null) ?? []).map((m) => [m.id, { title: m.title, matter_code: m.matter_code }]));
+        for (const p of found) if (p.targetMatter) p.targetTitle = t.get(p.targetMatter) ?? null;
       }
       found.sort((a, b) => a.folder.localeCompare(b.folder, "he"));
       setPlans(found);
@@ -303,7 +305,7 @@ function Importer({ firmId }: { firmId: string }) {
                 <td><input type="checkbox" aria-label={`ייבוא ${p.folder}`} checked={p.include} disabled={p.files.length === 0} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, include: e.target.checked } : x)) ?? ps)} /></td>
                 <td style={{ minWidth: 240 }}>
                   {p.targetMatter
-                    ? <span className="ck-badge yellow">{p.files.length ? `יתווסף לתיק קיים: ${p.targetTitle}` : `כבר קיים בתיק: ${p.targetTitle}`}</span>
+                    ? <span className="ck-badge yellow">{p.files.length ? `יתווסף לתיק קיים: ${cn.name(p.targetTitle)}` : `כבר קיים בתיק: ${cn.name(p.targetTitle)}`}</span>
                     : <input className="ck-input" value={p.title} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, title: e.target.value } : x)) ?? ps)} />}
                 </td>
                 <td>{p.targetMatter ? "" : (

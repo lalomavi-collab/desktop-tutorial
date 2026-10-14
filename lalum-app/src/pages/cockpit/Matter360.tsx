@@ -1,6 +1,7 @@
 // Matter 360: one matter on one screen, from the real tables (matter, fee terms, client, hours, documents).
 // Addressed as /workspace/matter-360?matter=<uuid>: the site has no SPA catch-all, so only prerendered
 // paths resolve on a direct hit or refresh. Read only; documents and review stay in the matter cockpit.
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
@@ -15,12 +16,13 @@ import "../../styles/crm.css";
 type Tab = "docs" | "billing" | "deadlines";
 
 function Header({ d }: { d: Matter360Data }) {
+  const cn = useClientNames();
   const m = d.matter, [tone, conflict] = CONFLICT[m.conflict_status] ?? ["yellow", m.conflict_status], at = stageIndex(m.status);
   return (
     <header className="ck-card" style={{ marginBottom: 14 }}>
-      <div className="ck-card-head"><h2 className="ck-title">{m.title}</h2><span className="ck-badge green">{MATTER_STATUS[m.status] ?? m.status}</span></div>
+      <div className="ck-card-head"><h2 className="ck-title">{cn.name(m)}</h2><span className="ck-badge green">{MATTER_STATUS[m.status] ?? m.status}</span></div>
       <div className="ck-grid2">
-        <div><div className="ck-meta">לקוח</div><b>{d.clientName ?? "לא שויך לקוח"}</b></div>
+        <div><div className="ck-meta">לקוח</div><b>{d.clientName == null ? "לא שויך לקוח" : cn.text(d.clientName)}</b></div>
         <div><div className="ck-meta">תחום</div><b>{PRACTICE[m.practice_area] ?? m.practice_area}</b></div>
         <div><div className="ck-meta">ניגוד עניינים</div><span className={`ck-badge ${tone}`}>{conflict}</span></div>
         <div><div className="ck-meta">נקלט</div><b>{fmt(m.created_at)}</b></div>

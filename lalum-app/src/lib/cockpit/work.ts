@@ -68,10 +68,10 @@ export async function closeTask(id: string, status: "DONE" | "CANCELLED"): Promi
   const { error } = await supabase.rpc("lalum_task_close", { p_task: id, p_status: status });
   return error ? "הפעולה נכשלה." : null;
 }
-export async function matterOptions(): Promise<Array<{ id: string; title: string }>> {
+export async function matterOptions(): Promise<Array<{ id: string; title: string; matter_code: string | null }>> {
   if (!supabase) return [];
-  const { data } = await supabase.from("lalum_cockpit_matters").select("id, title").order("created_at", { ascending: false }).limit(500);
-  return (data as Array<{ id: string; title: string }> | null) ?? [];
+  const { data } = await supabase.from("lalum_cockpit_matters").select("id, title, matter_code").order("created_at", { ascending: false }).limit(500);
+  return (data as Array<{ id: string; title: string; matter_code: string | null }> | null) ?? [];
 }
 
 export async function scorecard(days: number): Promise<Scorecard | null> {

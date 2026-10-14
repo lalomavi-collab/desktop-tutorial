@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { TrustAccounts } from "./TrustAccounts";
@@ -12,7 +13,7 @@ import type { FinCustomer, FinDocument, FinPayment, TrustAccount, TrustPostType,
 const today = (): string => new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Jerusalem" });
 
 /** A matter with the finance customer it is billed to. Only matters with a customer can hold trust money. */
-export interface MatterRef { id: string; title: string; customer_id: string | null }
+export interface MatterRef { id: string; title: string; matter_code?: string | null; customer_id: string | null }
 type Draft = { matter_id: string; account_id: string; type: TrustPostType; amount: string; value_date: string; counterparty: string; notes: string; doc_id: string };
 const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accountId, type: "DEPOSIT", amount: "", value_date: today(), counterparty: "", notes: "", doc_id: "" });
 
@@ -20,6 +21,7 @@ const blank = (accountId: string): Draft => ({ matter_id: "", account_id: accoun
 export function TrustTab({ firmId, customers, statementAccounts, matters, accounts, rows, docs, payments, onChange }: {
   firmId: string; customers: FinCustomer[]; matters: MatterRef[]; accounts: TrustAccount[]; rows: TrustTx[]; statementAccounts: string[]; docs: FinDocument[]; payments: FinPayment[]; onChange: () => void;
 }) {
+  const cn = useClientNames();
   const openAccounts = accounts.filter((a) => !a.closed_on);
   const [f, setF] = useState<Draft | null>(null);
   const [msg, setMsg] = useState("");
@@ -40,7 +42,7 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
     const problems = trustPostProblems({ matter_id: f.matter_id, account_id: f.account_id, type: f.type, amount, doc_open: doc?.open ?? null, doc_id: f.doc_id || null }, rows);
     problems.push(...valueDateProblems(f.value_date, today(), accounts.find((a) => a.id === f.account_id)?.opened_on));
     if (problems.length) return setMsg(problems.join(". ") + ".");
-    const label = `${TRUST_TX[f.type]} על סך ${money(amount)} בתיק ${matters.find((m) => m.id === f.matter_id)?.title ?? ""}`;
+    const label = `${TRUST_TX[f.type]} על סך ${money(amount)} בתיק ${cn.name(matters.find((m) => m.id === f.matter_id))}`;
     if (!window.confirm(`לרשום ${label}?\nהרישום סופי: אי אפשר למחוק או לערוך אותו, רק לתקן בתנועת תיקון.`)) return;
     // Sent only when it differs from today, so a recording made today works even before migration 0033 is applied.
     const vd = f.value_date && f.value_date !== today() ? { p_value_date: f.value_date } : {};
@@ -64,8 +66,8 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
   }
 
   const [since] = useState(() => new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10));
-  const cust = (id: string) => customers.find((c) => c.id === id)?.name ?? "";
-  const matter = (id: string) => matters.find((m) => m.id === id)?.title ?? "";
+  const cust = (id: string) => cn.text(customers.find((c) => c.id === id)?.name);
+  const matter = (id: string) => cn.name(matters.find((m) => m.id === id));
   const byCustomer = trustBreakdown(rows, "customer_id");
   const byMatter = trustBreakdown(rows, "matter_id");
   const held = trustHeld(rows);
@@ -94,7 +96,7 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
         <div className="ck-card ck-stack">
           <div className="ck-title">תנועת נאמנות חדשה</div>
           <div className="ck-grid2">
-            <label className="ck-field">תיק<select className="ck-select" value={f.matter_id} onChange={(e) => setF({ ...f, matter_id: e.target.value, doc_id: "" })}><option value="">בחרו תיק</option>{billable.map((m) => <option key={m.id} value={m.id}>{m.title} · {cust(m.customer_id as string)}</option>)}</select></label>
+            <label className="ck-field">תיק<select className="ck-select" value={f.matter_id} onChange={(e) => setF({ ...f, matter_id: e.target.value, doc_id: "" })}><option value="">בחרו תיק</option>{billable.map((m) => <option key={m.id} value={m.id}>{cn.name(m)} · {cust(m.customer_id as string)}</option>)}</select></label>
             <label className="ck-field">חשבון נאמנות<select className="ck-select" value={f.account_id} onChange={set("account_id")}>{openAccounts.map((a) => <option key={a.id} value={a.id}>{a.bank_name} {a.branch} {maskAccount(a.account_number)}</option>)}</select></label>
             <label className="ck-field">סוג תנועה<select className="ck-select" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value as TrustPostType, doc_id: "" })}>{TRUST_POST_TYPES.map((k) => <option key={k} value={k}>{TRUST_TX[k]}</option>)}</select></label>
             <label className="ck-field">סכום<input className="ck-input" dir="ltr" inputMode="decimal" value={f.amount} onChange={set("amount")} /></label>

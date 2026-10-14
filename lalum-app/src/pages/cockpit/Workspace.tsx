@@ -66,7 +66,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
         <div className="ck-card"><div className="ck-card-head"><CardArt name="security" /><div className="ck-title">אבטחת חשבון</div></div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
       </div>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
-      {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, title: name(x) }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
+      {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, label: name(x) }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       {rows && <MatterInsights rows={rows} />}
       <div className="ck-label">תיקים</div>
       {isPartner && sel.size > 0 && (
