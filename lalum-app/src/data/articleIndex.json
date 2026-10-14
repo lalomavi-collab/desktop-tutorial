@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "procurement"
+   "ai-governance-board-framework"
   ]
  },
  "procurement": {
@@ -63,20 +63,28 @@
    "explainability"
   ]
  },
+ "selling-overseas-property-tax-credit-timing": {
+  "topic": "real-estate",
+  "related": [
+   "portugal-real-estate-taxation",
+   "overseas-developer-contract-guarantees",
+   "overseas-property-holding-structure"
+  ]
+ },
  "overseas-property-financing-israeli-investor": {
   "topic": "real-estate",
   "related": [
    "portugal-real-estate-financing",
    "overseas-partnership-guide",
-   "portugal-real-estate-taxation"
+   "selling-overseas-property-tax-credit-timing"
   ]
  },
  "overseas-developer-contract-guarantees": {
   "topic": "real-estate",
   "related": [
    "buying-apartment-from-contractor-guarantee-bank-financing",
-   "overseas-property-due-diligence",
-   "urban-renewal-guarantees-sale-law-registration"
+   "selling-overseas-property-tax-credit-timing",
+   "overseas-property-due-diligence"
   ]
  },
  "urban-renewal-small-building-private-home": {
@@ -538,9 +546,9 @@
  "portugal-real-estate-taxation": {
   "topic": "real-estate",
   "related": [
+   "selling-overseas-property-tax-credit-timing",
    "portugal-real-estate-financing",
-   "urban-renewal-taxation-owner",
-   "overseas-property-financing-israeli-investor"
+   "urban-renewal-taxation-owner"
   ]
  },
  "portugal-purchase-contract": {
@@ -667,8 +675,8 @@
   "topic": "real-estate",
   "related": [
    "overseas-property-due-diligence",
-   "overseas-property-financing-israeli-investor",
-   "overseas-partnership-guide"
+   "selling-overseas-property-tax-credit-timing",
+   "overseas-property-financing-israeli-investor"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -1451,8 +1459,8 @@
   "topic": "real-estate",
   "related": [
    "ai-governance-municipal-corporations",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "israel-land-authority-lease-capitalization-transfer"
+   "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1460,7 +1468,7 @@
   "related": [
    "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "free-lawyer-illusion"
+   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
   ]
  },
  "one-board-המודל-שמשנה-איך-שהנהלות-מקבלות-החלטות": {
