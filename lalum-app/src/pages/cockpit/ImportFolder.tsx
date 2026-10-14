@@ -22,6 +22,8 @@ interface Entry { name: string; file: File; hash: string; sug: string | null }
 // files = new, unique files to import. existing = already in the vault (matched by SHA-256). dupes = repeats inside the folder.
 interface Plan { folder: string; title: string; files: Entry[]; skipped: number; existing: number; dupes: number; targetMatter: string | null; targetTitle: string | null; include: boolean; flag: string | null; practice: string; sample: string[]; skippedExt: Record<string, number>; subjects: Array<[string, number]>; types: Array<[string, number]> }
 // Folders that are usually a sorting place, not a matter: left unchecked until the partner decides.
+// A folder named by a date (2026-09-30, 14.10.2026) is a day of correspondence, not a matter.
+const DATE_FOLDER = /(^|\/ )(\d{4}-\d{2}-\d{2}|\d{1,2}[./-]\d{1,2}[./-]\d{2,4})$/;
 const SORTING = /(דואר|נכנס|יוצא|inbox|outbox|סריק|scan|הורד|download|\btmp\b|\btemp\b|טיוטות|ארכיון|archive|שונות|misc|new folder|תיקייה חדשה)/i;
 type Row = { folder: string; state: "wait" | "run" | "done" | "warn" | "err"; text: string };
 
@@ -59,9 +61,15 @@ function Importer({ firmId }: { firmId: string }) {
   const [docOrigin, setDocOrigin] = useState("");
   const [autoType, setAutoType] = useState(true);
   const [filter, setFilter] = useState("");
+  const [ackSig, setAckSig] = useState("");
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
   const [level, setLevel] = useState<0 | 1 | 2>(1);
+
+  // Several new matters in one run is the usual mistake (a client folder read as many matters): ask once, naming them.
+  const newOnes = plans?.filter((p) => p.include && !p.targetMatter) ?? [];
+  const sig = newOnes.map((p) => `${p.folder}|${p.title}`).join("\n");
+  const needAck = newOnes.length > 1;
 
   async function pick() {
     setNote(""); setRows([]);
@@ -137,7 +145,7 @@ function Importer({ firmId }: { firmId: string }) {
         const best = [...overlap.entries()].sort((x, y) => y[1] - x[1])[0];
         const target = best && best[1] * 2 >= unique.length ? best[0] : null;
         const fresh = unique.filter((f) => !target || !(known.get(f.hash) ?? []).includes(target));
-        const flag = h.folder.startsWith("קבצים בשורש התיקייה") ? "קבצים ללא תיק: תנו כותרת ורק אז סמנו לייבוא" : SORTING.test(h.folder) ? "נראית כתיקיית מיון ולא כתיק" : null;
+        const flag = h.folder.startsWith("קבצים בשורש התיקייה") ? "קבצים ללא תיק: תנו כותרת ורק אז סמנו לייבוא" : (SORTING.test(h.folder) || DATE_FOLDER.test(h.folder.trim())) ? "נראית כתיקיית מיון ולא כתיק" : null;
         return { folder: h.folder, title: h.folder, files: fresh, skipped: h.skipped, existing: unique.length - fresh.length, dupes, targetMatter: target, targetTitle: null, include: fresh.length > 0 && !flag, flag, practice: "", sample: fresh.slice(0, 3).map((f) => f.name), skippedExt: h.skippedExt, subjects: tally(fresh.map((f) => subjectOf(f.name) ?? "שורש התיקייה")), types: tally(fresh.map((f) => f.sug ?? "")) };
       });
       const ids = [...new Set(found.map((p) => p.targetMatter).filter((x): x is string => !!x))];
@@ -245,8 +253,8 @@ function Importer({ firmId }: { firmId: string }) {
         <ol className="ck-meta" style={{ margin: "8px 0 0", paddingInlineStart: 22, display: "grid", gap: 6 }}>
           <li><b>הכנה ב-OneDrive:</b> לחצו ימני על התיקייה ובחרו "שמור תמיד במכשיר זה", אחרת קבצים שנמצאים רק בענן לא ייקראו.</li>
           <li><b>בחירה:</b> לחצו "בחירת תיקייה" ובחרו ישירות את התיקייה שמכילה את התיקים (למשל <bdi>LALUM</bdi>). אל תבחרו את "שולחן העבודה" עצמו: Chrome חוסם תיקיות מערכת. אפשר לבחור תיקייה שנמצאת בתוכו.</li>
-          <li><b>מה נחשב תיק:</b> אם בכל תיקייה בשורש יושב לקוח אחד עם כל החומר שלו, בחרו "כל תיקייה ישירה היא תיק". תתי התיקיות שלו יישמרו כנושאים. אם בתוך תיקיית לקוח יש כמה תיקים נפרדים, בחרו "תיקיית לקוח ובתוכה תיקייה לכל תיק".</li>
-          <li><b>סימון:</b> הרשימה מציגה כל תיקייה עם מספר הקבצים. סמנו רק תיקי לקוח. תיקיות כמו לוגו, תוכנות, חומר אקדמי או אישי צריכות להישאר בלי סימון. אפשר לחפש בשם התיקייה ולסמן או לנקות את כל המוצגות.</li>
+          <li><b>מה נחשב תיק:</b> אם בחרתם <u>תיקיית לקוח אחת</u> (למשל תיקייה של לקוח עם דואר, מסמכים ותאריכים), בחרו "התיקייה שבחרתי היא תיק אחד": כל תתי התיקיות יהיו נושאים בתוך תיק אחד. אם בחרתם <u>תיקייה שמכילה הרבה לקוחות</u> (כמו <bdi>LALUM</bdi>), בחרו "כל תיקייה ישירה היא תיק". "תיקיית לקוח ובתוכה תיקייה לכל תיק" מתאים רק כשבתוך כל לקוח יש כמה עניינים נפרדים.</li>
+          <li><b>סימון:</b> הרשימה מציגה כל תיקייה עם מספר הקבצים. סמנו רק תיקי לקוח. תיקייה עם אזהרה (דואר, תאריך, קבצים בלי תיק) לא מסומנת מראש וגם לא על ידי "סימון כל המוצגות". תיקיות כמו לוגו, תוכנות, חומר אקדמי או אישי צריכות להישאר בלי סימון. אפשר לחפש בשם התיקייה ולסמן או לנקות את כל המוצגות.</li>
           <li><b>כותרת:</b> תקנו כל כותרת תיק שמכילה שם מלא או פרט מזהה. הכותרת היא מה שיופיע ברשימת התיקים.</li>
           <li><b>הרצה:</b> התחילו בשניים או שלושה תיקים, בדקו אותם בתוך המערכת, ורק אז הריצו את השאר. אפשר לעצור ולהמשיך: קבצים שכבר נקלטו לא ייקלטו שוב.</li>
           <li><b>אחרי הייבוא:</b> הורידו את הדוח. הוא מפרט כל קובץ שלא נקלט ולמה. Word, PDF, טקסט ו-HTML בלבד נקלטים, וקבצים אחרים צריכים להיות מועברים בנפרד.</li>
@@ -269,11 +277,11 @@ function Importer({ firmId }: { firmId: string }) {
           {(() => {
             const marked = plans.filter((p) => p.include);
             const files = marked.reduce((a, p) => a + p.files.length, 0);
-            const setShown = (on: boolean) => setPlans((ps) => ps?.map((x) => (!filter.trim() || x.folder.includes(filter.trim()) ? { ...x, include: on && x.files.length > 0 } : x)) ?? ps);
+            const setShown = (on: boolean) => setPlans((ps) => ps?.map((x) => (!filter.trim() || x.folder.includes(filter.trim()) ? { ...x, include: on && x.files.length > 0 && !x.flag } : x)) ?? ps);
             return (
               <div className="ck-row" role="group" aria-label="סימון תיקיות">
                 <input className="ck-input" style={{ maxWidth: 240 }} placeholder="חיפוש לפי שם תיקייה" aria-label="חיפוש לפי שם תיקייה" value={filter} onChange={(e) => setFilter(e.target.value)} />
-                <button className="ck-btn" onClick={() => setShown(true)}>סימון כל המוצגות</button>
+                <button className="ck-btn" title="תיקיות שמסומנות באזהרה (דואר, תאריך, קבצים בלי תיק) לא מסומנות כאן. סמנו אותן אחת אחת אם הן באמת תיקים נפרדים." onClick={() => setShown(true)}>סימון כל המוצגות</button>
                 <button className="ck-btn" onClick={() => setShown(false)}>ניקוי סימון המוצגות</button>
                 <span className="ck-chip" aria-live="polite">סומנו {marked.length} מתוך {plans.length} תיקיות, {files} קבצים</span>
               </div>);
@@ -312,7 +320,14 @@ function Importer({ firmId }: { firmId: string }) {
           </div>
           <label className="ck-row ck-meta"><input type="checkbox" checked={autoType} onChange={(e) => setAutoType(e.target.checked)} /> סיווג אוטומטי לפי שם הקובץ ותתי התיקיות (חוזה, התכתבות, כתב בית דין, חוות דעת וכדומה). קובץ בלי מילת מפתח מסווג לפי הבחירה למעלה. הסיווג המוצע מוצג בטבלה לפני הייבוא.</label>
           <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד במשרד, וכל קובץ נשמר בתוכו.</div>
-          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים ({plans.filter((p) => p.include).reduce((a, p) => a + p.files.length, 0)} קבצים)</button>
+          {needAck && (
+            <div className="ck-warn" role="alert">
+              <b>ייווצרו {newOnes.length} תיקים חדשים:</b> {newOnes.slice(0, 8).map((p) => p.title || p.folder).join(" | ")}{newOnes.length > 8 ? ` ועוד ${newOnes.length - 8}` : ""}.
+              אם כל הקבצים שייכים ללקוח אחד, זו טעות: בחרו למעלה "התיקייה שבחרתי היא תיק אחד", ותתי התיקיות יישמרו כנושאים בתוך תיק אחד.
+              <label className="ck-row" style={{ marginTop: 6 }}><input type="checkbox" checked={ackSig === sig} onChange={(e) => setAckSig(e.target.checked ? sig : "")} /> אני מאשר שאלה {newOnes.length} תיקים נפרדים של לקוחות או עניינים שונים</label>
+            </div>
+          )}
+          <div className="ck-row"><button className="ck-btn primary" disabled={busy || !docType || !docOrigin || !plans.some((p) => p.include) || (needAck && ackSig !== sig)} onClick={() => void run()}>ייבוא {plans.filter((p) => p.include).length} תיקים ({plans.filter((p) => p.include).reduce((a, p) => a + p.files.length, 0)} קבצים)</button>
             <label className="ck-row ck-meta">מהירות:
               <select className="ck-select" style={{ width: "auto" }} value={conc} onChange={(e) => setConc(Number(e.target.value))}>
                 <option value={1}>רגילה (תיק אחד בכל פעם)</option><option value={3}>מהירה (שלושה תיקים במקביל)</option><option value={5}>מהירה מאוד (חמישה)</option>
