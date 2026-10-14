@@ -17,6 +17,7 @@ import { VersionHistory } from "./VersionHistory";
 import { DocMeta } from "./DocControls";
 import { KycPanel } from "./KycPanel";
 import { ReanalyzePanel } from "./ReanalyzePanel";
+import { openOriginal, openOriginalEnabled } from "../../lib/cockpit/openOriginal";
 import { AnnexAssembly } from "./AnnexAssembly";
 import { SignatureRequests } from "./SignatureRequests";
 import { ConflictReview } from "./ConflictReview";
@@ -149,6 +150,13 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
     setPicked(new Set(res.failed.map((f) => f.id)));
     if (docId && gone.has(docId)) { if (rest[0] && matter) selectDoc(rest[0], matter); else { setDocId(null); setText(""); } }
     if (res.failed.length) window.alert(`הועברו ${res.done.length}. לא הועברו ${res.failed.length}: ${res.failed[0].error}`);
+  }
+  async function openDocOriginal(d: MatterDoc) {
+    const w = window.open("about:blank", "_blank"); // opened inside the click so the browser allows it, filled when the link arrives
+    const r = await openOriginal(d.id);
+    if (r.ok && w) { w.location.href = r.url; return; }
+    w?.close();
+    window.alert(r.ok ? "החלון נחסם בדפדפן. אפשרו חלונות קופצים לאתר." : r.message);
   }
   async function trashDocument(d: MatterDoc) {
     if (!window.confirm(`להעביר את "${d.file_name}" לסל המיחזור? ניתן לשחזר אותו משם.`)) return;
@@ -313,7 +321,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             </div>)}
           <div className="ck-stack">{docs.map((d) => (
             <div key={d.id} className="ck-stack">
-              <div className="ck-row" style={{ flexWrap: "nowrap" }}>{platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}<button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div>
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}>{platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}<button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{cn.canReveal && openOriginalEnabled() && <button className="ck-btn" aria-label={`פתיחת המקור של ${cn.name(matter)}`} title="פתיחת קובץ המקור כפי שהועלה (נרשם ביומן)" onClick={() => void openDocOriginal(d)}>פתיחת המקור</button>}{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
