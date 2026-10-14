@@ -58,6 +58,7 @@ function Importer({ firmId }: { firmId: string }) {
   const [docType, setDocType] = useState("");
   const [docOrigin, setDocOrigin] = useState("");
   const [autoType, setAutoType] = useState(true);
+  const [filter, setFilter] = useState("");
   const [progress, setProgress] = useState("");
   const [root, setRoot] = useState<DirHandle | null>(null);
   const [level, setLevel] = useState<0 | 1 | 2>(1);
@@ -239,6 +240,18 @@ function Importer({ firmId }: { firmId: string }) {
   return (
     <div className="ck-stack">
       <div className="ck-warn">הקריאה היא לקריאה בלבד: הקבצים בתיקייה לא משתנים ולא נמחקים. כל קובץ עובר הסתרת מידע מזהה ובדיקת ניגוד עניינים, והטקסט המוסתר הוא זה שמשמש לעבודה ולבינה מלאכותית. הקובץ המקורי נשמר בכספת התיק, פרטית ובלתי ניתנת לדריסה, עם חתימת SHA-256 ביומן. אל תמחקו את התיקייה המקורית לפני שוידאתם שהכול נקלט. תיקים סגורים חייבים להישמר לפי חוק לשכת עורכי הדין.</div>
+      <details className="ck-card" open={!plans}>
+        <summary className="ck-label" style={{ cursor: "pointer" }}>איך מעלים תיקייה, צעד אחר צעד</summary>
+        <ol className="ck-meta" style={{ margin: "8px 0 0", paddingInlineStart: 22, display: "grid", gap: 6 }}>
+          <li><b>הכנה ב-OneDrive:</b> לחצו ימני על התיקייה ובחרו "שמור תמיד במכשיר זה", אחרת קבצים שנמצאים רק בענן לא ייקראו.</li>
+          <li><b>בחירה:</b> לחצו "בחירת תיקייה" ובחרו ישירות את התיקייה שמכילה את התיקים (למשל <bdi>LALUM</bdi>). אל תבחרו את "שולחן העבודה" עצמו: Chrome חוסם תיקיות מערכת. אפשר לבחור תיקייה שנמצאת בתוכו.</li>
+          <li><b>מה נחשב תיק:</b> אם בכל תיקייה בשורש יושב לקוח אחד עם כל החומר שלו, בחרו "כל תיקייה ישירה היא תיק". תתי התיקיות שלו יישמרו כנושאים. אם בתוך תיקיית לקוח יש כמה תיקים נפרדים, בחרו "תיקיית לקוח ובתוכה תיקייה לכל תיק".</li>
+          <li><b>סימון:</b> הרשימה מציגה כל תיקייה עם מספר הקבצים. סמנו רק תיקי לקוח. תיקיות כמו לוגו, תוכנות, חומר אקדמי או אישי צריכות להישאר בלי סימון. אפשר לחפש בשם התיקייה ולסמן או לנקות את כל המוצגות.</li>
+          <li><b>כותרת:</b> תקנו כל כותרת תיק שמכילה שם מלא או פרט מזהה. הכותרת היא מה שיופיע ברשימת התיקים.</li>
+          <li><b>הרצה:</b> התחילו בשניים או שלושה תיקים, בדקו אותם בתוך המערכת, ורק אז הריצו את השאר. אפשר לעצור ולהמשיך: קבצים שכבר נקלטו לא ייקלטו שוב.</li>
+          <li><b>אחרי הייבוא:</b> הורידו את הדוח. הוא מפרט כל קובץ שלא נקלט ולמה. Word, PDF, טקסט ו-HTML בלבד נקלטים, וקבצים אחרים צריכים להיות מועברים בנפרד.</li>
+        </ol>
+      </details>
       {!hasPicker && <div className="ck-err">הדפדפן אינו תומך בבחירת תיקייה. השתמשו ב-Chrome או Edge במחשב.</div>}
       <div className="ck-row"><button className="ck-btn primary" disabled={!hasPicker || busy} onClick={() => void pick()}>בחירת תיקייה</button>
         <label className="ck-row ck-meta">מה נחשב תיק:
@@ -253,8 +266,20 @@ function Importer({ firmId }: { firmId: string }) {
       {plans && plans.length > 0 && rows.length === 0 && (
         <>
           <div className="ck-label">נמצאו {plans.length} תיקיות. קבצים שכבר קיימים בכספת (לפי חתימת תוכן) ולא ייקלטו שוב, וקבצים כפולים בתוך התיקייה ידולגו. תיקייה שלפחות חצי מקבציה כבר בתיק קיים תתווסף לאותו תיק. תקנו כותרות שמכילות פרטים מזהים.</div>
+          {(() => {
+            const marked = plans.filter((p) => p.include);
+            const files = marked.reduce((a, p) => a + p.files.length, 0);
+            const setShown = (on: boolean) => setPlans((ps) => ps?.map((x) => (!filter.trim() || x.folder.includes(filter.trim()) ? { ...x, include: on && x.files.length > 0 } : x)) ?? ps);
+            return (
+              <div className="ck-row" role="group" aria-label="סימון תיקיות">
+                <input className="ck-input" style={{ maxWidth: 240 }} placeholder="חיפוש לפי שם תיקייה" aria-label="חיפוש לפי שם תיקייה" value={filter} onChange={(e) => setFilter(e.target.value)} />
+                <button className="ck-btn" onClick={() => setShown(true)}>סימון כל המוצגות</button>
+                <button className="ck-btn" onClick={() => setShown(false)}>ניקוי סימון המוצגות</button>
+                <span className="ck-chip" aria-live="polite">סומנו {marked.length} מתוך {plans.length} תיקיות, {files} קבצים</span>
+              </div>);
+          })()}
           <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>ייבוא</th><th>כותרת התיק</th><th>תחום</th><th>תיקייה</th><th>קבצים חדשים</th><th>כבר קיימים</th><th>כפולים בתיקייה</th><th>דולגו (סוג לא נתמך)</th></tr></thead><tbody>
-            {plans.map((p) => (
+            {plans.filter((p) => !filter.trim() || p.folder.includes(filter.trim())).map((p) => (
               <tr key={p.folder}>
                 <td><input type="checkbox" aria-label={`ייבוא ${p.folder}`} checked={p.include} disabled={p.files.length === 0} onChange={(e) => setPlans((ps) => ps?.map((x) => (x.folder === p.folder ? { ...x, include: e.target.checked } : x)) ?? ps)} /></td>
                 <td style={{ minWidth: 240 }}>
