@@ -191,7 +191,7 @@
 
 - V רכישת נכס בחו"ל: מבנה ההחזקה, מיסוי כפול ודיווח בישראל (overseas-property-holding-structure)
 - V בדיקת נאותות לנכס בחו"ל: מה בודקים כשהמרשם אינו טאבו (overseas-property-due-diligence)
-- מימון רכישת נכס בחו"ל: משכנתה מקומית מול מימון מישראל
+- V מימון רכישת נכס בחו"ל: משכנתה מקומית מול מימון מישראל (overseas-property-financing-israeli-investor)
 - V איחור במסירה ברכישת נכס בחו"ל: מה בודקים, מה אפשר לדרוש ואיך לא מפסידים זכויות (delay-delivery-overseas-property-buyer-rights)
 - V תביעה נגד חברה זרה: איפה תובעים, איך מוסרים כתב תביעה ואיך אוכפים (suing-foreign-company-jurisdiction-service-enforcement)
 - V הסכם רכישה מול יזם בחו"ל: הבטוחות שאין להן מקבילה ישראלית (overseas-developer-contract-guarantees)
