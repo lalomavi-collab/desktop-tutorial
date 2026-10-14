@@ -363,3 +363,15 @@
   .ck-cards-table td > span:not(.ck-badge) { min-width: 0; }
   .ck-table-wrap:has(.ck-cards-table) { background: transparent; border: none; border-radius: 0; overflow: visible; }
 }
+
+/* Document rows in the vault panel: the name gets the full line, actions sit in an aligned row below it. */
+.ck-docrow { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ck-docname { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.ck-docname .ck-btn { flex: 1; min-width: 0; text-align: start; }
+.ck-docacts { display: flex; flex-wrap: wrap; gap: 8px; padding-inline-start: 4px; }
+.ck-docacts:empty { display: none; }
+
+/* Editor and text views: plain, readable, correctly ordered Hebrew with embedded Latin tokens (emails, URLs, numbers). */
+.ck-editor { font-size: 16px; line-height: 2; padding: 18px 20px; text-align: start; unicode-bidi: plaintext; overflow-wrap: anywhere; word-break: normal; letter-spacing: 0; box-sizing: border-box; }
+textarea.ck-editor { resize: vertical; min-height: 420px; }
+[data-ck-theme="mint"] .ck-editor { color: #1b1b1b; border-color: color-mix(in srgb, var(--ink) 30%, transparent); }
