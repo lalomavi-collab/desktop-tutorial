@@ -259,7 +259,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
           <div>
             <div className="ck-title">{matter.title}</div>
-            <div className="ck-row" style={{ marginTop: 6 }}>{PRACTICE[matter.practice_area]} <ConflictBadge c={matter.conflict_status} /> <span className="ck-meta">{MATTER_STATUS[matter.status]}</span></div>
+            <div className="ck-row" style={{ marginTop: 6 }}><span className="ck-chip">{PRACTICE[matter.practice_area]}</span> <ConflictBadge c={matter.conflict_status} /> <span className="ck-chip">{MATTER_STATUS[matter.status]}</span></div>
             {matter.matter_code && (
               <div className="ck-row ck-meta" style={{ marginTop: 6 }}>
                 <span dir="ltr" title="קוד התיק: מפתח יחיד לדואר ולתיקיות חיצוניות">{matter.matter_code}</span>
@@ -349,7 +349,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-row"><button className="ck-btn" onClick={() => void reanalyze(area)}>ניתוח מחדש על הטקסט הנוכחי</button><span className="ck-meta" aria-live="polite">{anMsg}</span></div>
           {risk ? <div className="ck-stack">
             <div className="ck-row"><Badge sev="RED" /> <b>{risk.red}</b> <Badge sev="YELLOW" /> <b>{risk.yellow}</b> <Badge sev="GREEN" /> <b>{risk.green}</b></div>
-            <div className="ck-meta">ציון בטיחות: {risk.score}/100</div><div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
+            <div><span className="ck-chip">ציון בטיחות: {risk.score}/100</span></div><div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
           </div> : <span className="ck-meta">אין ניתוח</span>}
           <div className="ck-stack">
             {groups[0].length ? groups[0].map((f) => <FindingCard key={f.ruleId} f={f} />) : <span className="ck-meta">לא נמצאו ממצאים בסיכון.</span>}
