@@ -29,6 +29,7 @@
     "address-check": "node scripts/address-check.mjs",
     "doc-suggest-check": "node scripts/doc-suggest-check.mjs",
     "bulk-check": "node scripts/bulk-check.mjs",
+    "playbook-check": "node scripts/playbook-check.mjs",
     "mail-route-check": "node scripts/mail-route-check.mjs",
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",
