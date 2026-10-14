@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { Wordmark } from "./Wordmark";
 
@@ -15,7 +16,11 @@ import { Wordmark } from "./Wordmark";
 //
 // Click-to-play through the native controls: accessible and keyboard-operable
 // out of the box, and reduced-motion safe because nothing autoplays. Only the
-// poster loads until the visitor asks for the clip (preload="none").
+// poster loads until the visitor asks for the clip (preload="none"). The poster
+// alone reads as a plain photo, not as something to click, so a custom play
+// button sits over it until playback starts; it only calls the same .play()
+// the native control already offers, nothing the video element cannot do
+// itself, and it steps aside the moment the clip is actually playing.
 const SRC = "/media/lalum-intro.mp4";
 const POSTER = "/media/lalum-intro.jpg";
 const HE_CAPTIONS = "/media/lalum-intro.he.vtt";
@@ -23,6 +28,13 @@ const HE_CAPTIONS = "/media/lalum-intro.he.vtt";
 export function FounderIntroVideo() {
   const { t, lang } = useLang();
   const V = t.ui.videoBubble;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  function play() {
+    void videoRef.current?.play().catch(() => { /* the visitor presses play */ });
+  }
+
   return (
     <figure
       id="founder-film"
@@ -44,19 +56,30 @@ export function FounderIntroVideo() {
         />
         <figcaption style={{ fontSize: 14, color: "var(--slate)", lineHeight: 1.4 }}>{V.teaser}</figcaption>
       </div>
-      <video
-        className="founder-film-video"
-        src={SRC}
-        poster={POSTER}
-        controls
-        preload="none"
-        playsInline
-        style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, background: "#000" }}
-      >
-        {lang === "he" && (
-          <track kind="captions" src={HE_CAPTIONS} srcLang="he" label={t.ui.langName} default />
+      <div className="founder-film-frame">
+        <video
+          ref={videoRef}
+          className="founder-film-video"
+          src={SRC}
+          poster={POSTER}
+          controls
+          preload="none"
+          playsInline
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => setPlaying(false)}
+          style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, background: "#000" }}
+        >
+          {lang === "he" && (
+            <track kind="captions" src={HE_CAPTIONS} srcLang="he" label={t.ui.langName} default />
+          )}
+        </video>
+        {!playing && (
+          <button type="button" className="founder-film-playbtn" onClick={play} aria-label={V.play}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+          </button>
         )}
-      </video>
+      </div>
     </figure>
   );
 }

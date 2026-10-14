@@ -2236,47 +2236,73 @@ a.caps-item:focus-visible .caps-go {
   font-size: 12.5px;
 }
 
-/* ---------- founder portrait in the hero ---------- */
+/* ---------- hero brand panel ----------
+   Replaces the founder's own portrait: the opening carries the firm's mark,
+   not a headshot, so the front door reads as the practice rather than as one
+   person. Decorative only (see the aria-hidden wrapper in Home.tsx). */
 .founder-hero {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 22px;
   overflow: hidden;
   aspect-ratio: 4 / 5;
   border: 1px solid var(--line);
   box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
+  background: linear-gradient(160deg, var(--clay-tint), var(--paper) 72%);
 }
-.founder-hero-photo {
+.founder-hero-brand-art {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  opacity: 0.9;
+}
+.founder-hero-brand-art svg {
   display: block;
-  object-fit: cover;
-  transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
 }
-.founder-hero:hover .founder-hero-photo {
-  transform: scale(1.03);
+.founder-hero-brand-mark {
+  position: relative;
+  z-index: 1;
+  height: auto;
+  width: auto;
+  max-width: 58%;
 }
-.founder-hero-cap {
+
+/* ---------- founder intro video: play affordance ----------
+   The poster alone reads as a plain photo; this button makes the clip
+   unmistakably a video to click, not an image sitting in the page. It
+   disappears the moment the clip is actually playing. */
+.founder-film-frame {
+  position: relative;
+}
+.founder-film-playbtn {
   position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 46px 24px 22px;
-  background: linear-gradient(to top, rgba(10, 10, 12, 0.86), rgba(10, 10, 12, 0.15) 70%, transparent);
+  inset: 0;
+  margin: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: #fff;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 34px -14px rgba(15, 15, 16, 0.6);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease;
 }
-.founder-hero-name {
-  color: #ffffff;
-  font-family: var(--serif);
-  font-size: 21px;
-  font-weight: 500;
+.founder-film-playbtn:hover {
+  background: var(--clay-hover);
+  transform: scale(1.06);
 }
-.founder-hero-cv {
-  color: #f0c9b8;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.founder-film-playbtn:focus-visible {
+  outline: 3px solid var(--clay);
+  outline-offset: 3px;
 }
 
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
