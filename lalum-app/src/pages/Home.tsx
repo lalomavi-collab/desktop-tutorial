@@ -4,7 +4,6 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
-import { FounderIntroVideo } from "../components/FounderIntroVideo";
 import { SiteSearch } from "../components/SiteSearch";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { FocusAreas } from "../components/FocusAreas";
@@ -21,12 +20,10 @@ import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
 import { PillarArt } from "../components/PillarArt";
-// The hero card used to carry the firm mark instead of a photo, so the front
-// door read as the practice's brand rather than a headshot. Reversed on
-// request: the founder's own portrait (public/founder.webp, the same file
-// the footer's founder band already shows on every page) now fills the card,
-// with the name, the professional title, and the CV link stacked in the
-// caption, each with room of its own instead of sitting flush together.
+// The hero card carries the firm's own mark, not a personal portrait: a
+// visitor's first view of the site should read as the practice, not as one
+// person. The founder's own photo and story still appear, further down the
+// page, in ABOUT and again in FOUNDER, which is where "about him" belongs.
 
 /** One item of the credibility strip. The first number in the text is drawn as an instrument figure; the words around it stay exactly as written. */
 function CredItem({ text }: { text: string }) {
@@ -77,23 +74,15 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* The founder's own portrait, clickable, opens the full CV. Same
-              photo the footer's founder band already uses on every page
-              (public/founder.webp), so the front door now carries the same
-              face the site closes on, not a second, different image. */}
-          <a href={cvPath(lang)} target="_blank" rel="noopener noreferrer" className="founder-hero" aria-label={h.founderCv}>
-            {/* The largest, highest-contrast image in the initial viewport on
-                both desktop and mobile (hero-grid stacks it, never hides it):
-                the page's likely LCP element. loading="lazy" here delays the
-                very fetch LCP is timed on; eager + high priority is the same
-                treatment AmbientBackground's "photo" variant already uses for
-                a hero-critical image. */}
-            <img src="/founder.webp" alt={h.founderName} className="founder-hero-photo" loading="eager" fetchPriority="high" />
-            <span className="founder-hero-cap">
-              <span className="founder-hero-name">{h.founderName}</span>
-              <span className="founder-hero-cv">{h.founderCv} &rarr;</span>
-            </span>
-          </a>
+          {/* Decorative brand panel, not a photo: purely illustrative, so it
+              carries no link and is hidden from assistive tech. Lighter than
+              the portrait it replaces (inline SVG, nothing to fetch), so it
+              costs the page's LCP nothing instead of needing eager-loading
+              treatment. */}
+          <div className="founder-hero founder-hero-brand" aria-hidden="true">
+            <div className="founder-hero-brand-art"><PillarArt theme="ai" /></div>
+            <Wordmark height={44} label={h.logoAlt} className="founder-hero-brand-mark" />
+          </div>
         </div>
       </section>
 
@@ -294,10 +283,13 @@ export function Home() {
             </a>
           </div>
           <div>
-            {/* The founder's own introduction, so the firm is seen through the
-                person who leads it. Reuses the already-uploaded clip and its
-                existing shared strings; nothing autoplays. */}
-            <FounderIntroVideo />
+            {/* Same decorative-art treatment as the ABOUT section above, in
+                place of the founder's own clip: neither this section nor the
+                hero carries a personal photo or video now, so the page
+                reads as the practice throughout, not as one person. */}
+            <aside className="pillar-hero-art" style={{ margin: "0 0 28px" }}>
+              <PillarArt theme="knowledge" />
+            </aside>
             <p className="eyebrow">{h.storyEyebrow}</p>
             <h2 className="serif" style={{ fontSize: 36, lineHeight: 1.22, letterSpacing: "-0.015em", margin: "0 0 20px" }}>{h.storyH2}</h2>
             {/* Same two paragraphs as before, in the same panel treatment as
