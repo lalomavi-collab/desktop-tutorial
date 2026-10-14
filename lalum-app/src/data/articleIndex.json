@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "urban-renewal-small-building-private-home": {
+  "topic": "real-estate",
+  "related": [
+   "pinui-binui-owner-guide",
+   "tama-38-1-vs-38-2-comparison",
+   "urban-renewal-required-majority-holdout"
+  ]
+ },
  "ai-governance-municipal-corporations": {
   "topic": "ai-governance",
   "related": [
@@ -195,8 +203,8 @@
   "topic": "contracts",
   "related": [
    "delay-delivery-overseas-property-buyer-rights",
-   "portugal-purchase-contract",
-   "overseas-property-due-diligence"
+   "urban-renewal-small-building-private-home",
+   "portugal-purchase-contract"
   ]
  },
  "delay-delivery-overseas-property-buyer-rights": {
@@ -204,7 +212,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "overseas-property-due-diligence"
+   "overseas-property-holding-structure"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -386,9 +394,9 @@
  "urban-renewal-required-majority-holdout": {
   "topic": "real-estate",
   "related": [
+   "urban-renewal-small-building-private-home",
    "pinui-binui-owner-guide",
-   "urban-renewal-taxation-owner",
-   "tama-38-1-vs-38-2-comparison"
+   "urban-renewal-taxation-owner"
   ]
  },
  "ai-municipal-chatbot-resident-liability": {
@@ -659,16 +667,16 @@
   "topic": "real-estate",
   "related": [
    "tama-38-1-vs-38-2-comparison",
-   "tenant-urban-renewal-guide",
-   "הדייר-שסירב-לחתום-מה-עושים-כשמתחייבים-לפרויקט-ומאבדים-שליטה"
+   "urban-renewal-small-building-private-home",
+   "tenant-urban-renewal-guide"
   ]
  },
  "tama-38-1-vs-38-2-comparison": {
   "topic": "real-estate",
   "related": [
    "pinui-binui-owner-guide",
-   "pinui-binui-consideration-valuation",
-   "portugal-real-estate-financing"
+   "urban-renewal-small-building-private-home",
+   "pinui-binui-consideration-valuation"
   ]
  },
  "ai-governance-board-framework": {
@@ -1530,8 +1538,8 @@
  "בין-החלטה-לרגע-של-אמת-תובנות-אישיות-ממגשר-בגישור-עסקי-מכוון-הכרעה": {
   "topic": "mediation",
   "related": [
-   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "מעבר-לים-מאחורי-הדלתות-הסגורות-גישור-בסכסוכי-גבולות-ועמלות-שיווק-בעולם-הביטחוני",
    "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור"
   ]
  },
