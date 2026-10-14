@@ -10,6 +10,7 @@ import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
 import { ArchiveExport } from "./ArchiveExport";
 import { trashDoc } from "../../lib/cockpit/bin";
+import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
 import { DocMeta } from "./DocControls";
@@ -134,6 +135,18 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
     setRev((n) => n + 1);
   }
 
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  async function trashPicked() {
+    const ids = [...picked];
+    if (!ids.length || !window.confirm(`להעביר ${ids.length} קבצים לסל המיחזור? ניתן לשחזר כל אחד משם.`)) return;
+    const res = await runBulk(ids, (id) => trashDoc(id));
+    const gone = new Set(res.done);
+    const rest = docs.filter((x) => !gone.has(x.id));
+    setDocs(rest);
+    setPicked(new Set(res.failed.map((f) => f.id)));
+    if (docId && gone.has(docId)) { if (rest[0] && matter) selectDoc(rest[0], matter); else { setDocId(null); setText(""); } }
+    if (res.failed.length) window.alert(`הועברו ${res.done.length}. לא הועברו ${res.failed.length}: ${res.failed[0].error}`);
+  }
   async function trashDocument(d: MatterDoc) {
     if (!window.confirm(`להעביר את "${d.file_name}" לסל המיחזור? ניתן לשחזר אותו משם.`)) return;
     const r = await trashDoc(d.id);
@@ -290,9 +303,14 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <h2>כספת תיק ומרכז ראיות</h2>
           <div className="ck-row"><PiiBadge /></div>
           <div className="ck-label">מסמכים</div>
+          {platformAdmin && role === "FIRM_PARTNER" && docs.length > 1 && (
+            <div className="ck-row">
+              <label className="ck-meta"><input type="checkbox" checked={picked.size > 0 && picked.size === docs.length} onChange={(e) => setPicked(setAll(docs.map((d) => d.id), e.target.checked))} /> סימון הכל</label>
+              {picked.size > 0 && <button className="ck-btn danger" onClick={() => void trashPicked()}>העברת {picked.size} מסומנים לסל</button>}
+            </div>)}
           <div className="ck-stack">{docs.map((d) => (
             <div key={d.id} className="ck-stack">
-              <div className="ck-row" style={{ flexWrap: "nowrap" }}><button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div>
+              <div className="ck-row" style={{ flexWrap: "nowrap" }}>{platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}<button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}>{d.file_name}</button>{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
