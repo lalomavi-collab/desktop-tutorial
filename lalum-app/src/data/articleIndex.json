@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-autonomous-vehicles-transport-liability": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-product-liability-eu",
+   "ai-healthcare-liability-regulation",
+   "algorithmic-fiduciary-duty-ai"
+  ]
+ },
  "selling-overseas-property-tax-credit-timing": {
   "topic": "real-estate",
   "related": [
@@ -596,7 +604,7 @@
   "related": [
    "saas-eu-compliance-israeli-companies",
    "eu-ai-act-israeli-companies",
-   "israel-ai-regulation-policy"
+   "ai-autonomous-vehicles-transport-liability"
   ]
  },
  "israel-ai-regulation-policy": {
@@ -1196,7 +1204,7 @@
   "related": [
    "second-opinion-revolution",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "the-decision-room-החדר-שבו-נולדה-ההכרעה"
+   "homeowners-iron-dome"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1459,8 +1467,8 @@
   "topic": "real-estate",
   "related": [
    "ai-governance-municipal-corporations",
-   "israel-land-authority-lease-capitalization-transfer",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "developer-agreement-urban-renewal-critical-clauses",
+   "israel-land-authority-lease-capitalization-transfer"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {

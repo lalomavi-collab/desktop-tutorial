@@ -96,7 +96,7 @@
 - V בינה מלאכותית בתחום הבריאות: אחריות ורגולציה (ai-healthcare-liability-regulation)
   - אשכול דגל בריאות (עוגן + 4), ממקד בחשיפה של רופאים ומוסדות רפואיים:
   - V (עוגן) אחריות ורגולציה (ai-healthcare-liability-regulation)
-  - פרטיות מידע בריאותי ו-AI: מה מותר להזין, שימוש משני, והעברה לספק (ai-health-data-privacy)
+  - V פרטיות מידע בריאותי ו-AI: מה מותר להזין, שימוש משני, והעברה לספק (ai-health-data-privacy)
   - V בינה מלאכותית באבחון ובפענוח הדמיה: תיקוף, בקרה ואחריות (ai-diagnosis-imaging-clinical)
   - V הסכמה מדעת ושקיפות כשמעורבת בינה מלאכותית בטיפול (ai-healthcare-informed-consent)
   - V הטמעת מערכת AI קלינית במוסד רפואי: מה לבדוק מול הספק (ai-clinical-system-deployment) [אשכול הבריאות הושלם, 5/5]
@@ -111,7 +111,7 @@
   - V הערכת ביצועים והחלטות על עובדים ב-AI: בקרה אנושית וזכות שימוע (ai-employee-evaluation-decisions)
   - V נוהל AI במשאבי אנוש: מה להגדיר לפני שמשתמשים בכלי על עובדים (ai-hr-use-policy) [אשכול משאבי אנוש הושלם, 5/5]
 - V בינה מלאכותית בשיווק ובפרסום: פרטיות, הטעיה וזיוף עמוק (ai-marketing-advertising-privacy-deception-deepfake)
-- בינה מלאכותית ברכב אוטונומי ובתחבורה: אחריות ורגולציה
+- V בינה מלאכותית ברכב אוטונומי ובתחבורה: אחריות ורגולציה (ai-autonomous-vehicles-transport-liability)
 - V מדיניות שימוש ב-AI במוסדות חינוך ובארגונים ציבוריים (ai-education-public-institutions-use-policy)
 
 ## עדיפות 1ג: רשויות מקומיות והמגזר הציבורי (וורטיקל AI, צורך ייעוץ אמיתי)
