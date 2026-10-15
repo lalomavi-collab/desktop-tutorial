@@ -14,7 +14,7 @@ import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import { TemplateGenerator } from "./TemplateGenerator";
 import { VersionHistory } from "./VersionHistory";
-import { DocMeta } from "./DocControls";
+import { DocMeta, RiskScope } from "./DocControls";
 import { KycPanel } from "./KycPanel";
 import { ReanalyzePanel } from "./ReanalyzePanel";
 import { openOriginal, openOriginalEnabled } from "../../lib/cockpit/openOriginal";
@@ -96,7 +96,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       const [mr, rr, dr] = await Promise.all([
         supabase.from("lalum_cockpit_matters").select("*").eq("id", matterId).maybeSingle(),
         supabase.from("lalum_intake_routings").select("*").eq("matter_id", matterId).maybeSingle(),
-        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date").eq("matter_id", matterId).order("created_at"),
+        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date, risk_excluded, risk_excluded_reason").eq("matter_id", matterId).order("created_at"),
       ]);
       if (!live) return;
       const m = mr.data as Matter | null;
@@ -323,6 +323,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             <div key={d.id} className="ck-stack">
               <div className="ck-docrow"><div className="ck-docname">{platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}<button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}><bdi>{d.file_name}</bdi></button></div><div className="ck-docacts">{cn.canReveal && openOriginalEnabled() && <button className="ck-btn" aria-label={`פתיחת המקור של ${cn.name(matter)}`} title="פתיחת קובץ המקור כפי שהועלה (נרשם ביומן)" onClick={() => void openDocOriginal(d)}>פתיחת המקור</button>}{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div></div>
               <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
+              <RiskScope doc={d} canScope={role === "FIRM_PARTNER" || role === "ADMIN"} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
             </div>))}</div>
           <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
             <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>

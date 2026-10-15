@@ -76,6 +76,8 @@ export interface MatterDoc {
   doc_type?: string | null;
   doc_origin?: string | null;
   doc_date?: string | null;
+  risk_excluded?: boolean;
+  risk_excluded_reason?: string | null;
 }
 export interface Membership {
   firm_id: string;
