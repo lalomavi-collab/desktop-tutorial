@@ -127,10 +127,14 @@ export function Header() {
                 </div>
                 {/* Entry into the standalone assistant app, so the site and the
                     app reach each other. The label is the product name, one form
-                    in every language, so it needs no translation string. */}
-                <Link to="/os" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
+                    in every language, so it needs no translation string. A plain
+                    anchor, not <Link>: /os has no translated build (it is one
+                    Hebrew surface for every visitor), and <Link> would carry the
+                    current language's basename onto it ("/en/os"), a path with
+                    no prerendered file, 404ing on a direct hit or a refresh. */}
+                <a href="/os/" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
                   <Icon name="spark" size={18} /> LALUM LEX
-                </Link>
+                </a>
                 {/* Quick payment folded into the menu instead of standing on
                     its own in the phone header (header-tools' one visible
                     child there, before this): a single-purpose ₪ icon
@@ -218,9 +222,12 @@ export function Header() {
                 >
                   <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
                 </Link>
-                <Link to="/partners" role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
+                {/* Plain anchor, same reason as the LALUM LEX link above: /partners
+                    is Hebrew-only and has no file at "/en/partners" for <Link>'s
+                    basename-prefixed href to resolve to. */}
+                <a href="/partners/" role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
                   <Icon name="scale" size={18} /> {t.ui.partnerLogin}
-                </Link>
+                </a>
                 <div className="header-more-divider" role="separator" />
                 <div className="header-more-langs">
                   {LANGS.map((l) => (
@@ -256,10 +263,11 @@ export function Header() {
             page of it. Hidden on phones (hide-mobile): the "More" menu
             already puts it first there, so a second copy would just be
             clutter on an already tight row. */}
-        <Link to="/os" className="btn btn-clay btn-sm header-lex-cta hide-mobile" aria-label="LALUM LEX">
+        {/* Plain anchor: see the "More" menu's LALUM LEX link above for why. */}
+        <a href="/os/" className="btn btn-clay btn-sm header-lex-cta hide-mobile" aria-label="LALUM LEX">
           <span className="header-lex-cta-icon"><Icon name="spark" size={14} /></span>
           <span className="header-lex-cta-label">LALUM LEX</span>
-        </Link>
+        </a>
 
         <nav className="nav-pills">
           {nav.map((n) =>
