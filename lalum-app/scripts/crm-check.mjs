@@ -4,6 +4,7 @@ import { summarizeTrust, trustBalance, wip, clientMessages, clientMilestones } f
 import { calculateDeadline, VERIFIED_RULES } from "../src/lib/cockpit/deadlines.ts";
 import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
 import { partnerFinance } from "../src/lib/cockpit/crmFinanceCore.ts";
+import { parseOverview, parseMatterWip, rpcFailure } from "../src/lib/cockpit/billingWipCore.ts";
 import { isUuid, timeSummary, hours, stageIndex } from "../src/lib/cockpit/matter360Core.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
@@ -91,4 +92,33 @@ t("matter 360: uuid check, hours by status, stage order", () => {
   assert.equal(stageIndex("INTAKE_PENDING"), 0);
   assert.equal(stageIndex("ARCHIVED"), 3);
   assert.equal(stageIndex("nope"), -1);
+});
+
+t("billing RPC results parse to numbers, keep a missing rate as null, and reject non-objects", () => {
+  const o = parseOverview({ wip_value: "12500.50", wip_hours: 10, entries_without_rate: 2, entries_awaiting_approval: "3", unbilled_hours_non_hourly_matters: 4.5,
+    trust_below_threshold: [{ matter_id: "m", title: "תיק", balance: "800", threshold: 4000 }] });
+  assert.equal(o.wipValue, 12500.5);
+  assert.equal(o.awaitingApproval, 3);
+  assert.equal(o.entriesWithoutRate, 2);
+  assert.deepEqual(o.lowRetainers, [{ matterId: "m", title: "תיק", balance: 800, threshold: 4000 }]);
+  assert.equal(parseOverview(null), null);
+  assert.equal(parseOverview([]), null);
+  assert.deepEqual(parseOverview({}).lowRetainers, []);
+  const w = parseMatterWip({ time_entries: [
+    { id: "a", work_date: "2026-10-01", timekeeper: "דנה", billable_minutes: 90, rate: 800, amount: 1200, narrative: "x", status: "approved", reserved: false },
+    { id: "b", work_date: "2026-10-02", timekeeper: null, billable_minutes: 60, rate: null, amount: null, narrative: "y", status: "submitted", reserved: true },
+  ], billable_time_value: 1200, disbursements_total: "150", entries_without_rate: 1, awaiting_approval: 1 });
+  assert.equal(w.entries[0].amount, 1200);
+  assert.equal(w.entries[1].rate, null);
+  assert.equal(w.entries[1].amount, null);
+  assert.equal(w.entries[1].reserved, true);
+  assert.equal(w.disbursementsTotal, 150);
+  assert.equal(parseMatterWip("x"), null);
+});
+
+t("an RPC missing from the database reads as unavailable, a refusal as denied", () => {
+  assert.equal(rpcFailure({ code: "PGRST202", message: "Could not find the function public.x in the schema cache" }), "unavailable");
+  assert.equal(rpcFailure({ code: "42883", message: "function does not exist" }), "unavailable");
+  assert.equal(rpcFailure({ code: "P0001", message: "FORBIDDEN" }), "denied");
+  assert.equal(rpcFailure(null), "denied");
 });
