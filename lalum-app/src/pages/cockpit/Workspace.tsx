@@ -58,13 +58,17 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
     <div className="ck-stack">
       <div className="ck-card ck-hero"><div className="ck-hero-art"><HeroArt /></div><div className="ck-row" style={{ justifyContent: "space-between", flex: 1 }}><div><div className="ck-hero-title">{firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii">🔒 PII Masked &amp; Secured</span></div></div>
       <div className="ck-label">מה עושים עכשיו?</div>
-      <div className="ck-grid2">
-        <div className="ck-card"><div className="ck-card-head"><CardArt name="intake" /><div className="ck-title">פתיחת תיק חדש</div></div><div className="ck-meta">מעלים מסמך או מדביקים טקסט. המערכת מסתירה פרטים מזהים, בודקת ניגוד עניינים ומסמנת סיכונים.</div><div className="ck-row"><button className="ck-btn primary" aria-expanded={adding} onClick={() => setAdding((a) => !a)}>תיק חדש</button><Link className="ck-btn" to="/workspace/import">ייבוא מתיקייה</Link></div></div>
-        <div className="ck-card"><div className="ck-card-head"><CardArt name="guide" /><div className="ck-title">מדריך קצר</div></div><div className="ck-meta">מה קורה לכל מסמך, איך עובד אישור השותף, ומה נמחק ומתי.</div><Link className="ck-btn" to="/workspace/guide">לפתיחת המדריך</Link></div>
-        <div className="ck-card"><div className="ck-card-head"><CardArt name="admin" /><div className="ck-title">מסך הניהול</div></div><div className="ck-meta">כל התיקים, חריגות SLA ויומן ניגוד עניינים.</div><Link className="ck-btn" to="/admin/matters">לניהול</Link></div>
-        <div className="ck-card"><div className="ck-card-head"><CardArt name="billing" /><div className="ck-title">חיוב והגדרות</div></div><div className="ck-meta">מסלול, מושבים, חשבוניות וטלפון להתראות.</div><Link className="ck-btn" to="/settings/billing">להגדרות</Link></div>
-        <div className="ck-card"><div className="ck-card-head"><CardArt name="security" /><div className="ck-title">אבטחת חשבון</div></div><div className="ck-meta">הפעלת אימות דו-שלבי: קוד מהטלפון בנוסף לסיסמה.</div><Link className="ck-btn" to="/settings/security">להפעלה</Link></div>
+      <div className="ck-card ck-start">
+        <CardArt name="intake" />
+        <div className="ck-start-body"><div className="ck-title">פתיחת תיק חדש</div><div className="ck-meta">מעלים מסמך או מדביקים טקסט. המערכת מסתירה פרטים מזהים, בודקת ניגוד עניינים ומסמנת סיכונים.</div></div>
+        <div className="ck-row"><button className="ck-btn primary" aria-expanded={adding} onClick={() => setAdding((a) => !a)}>תיק חדש</button><Link className="ck-btn" to="/workspace/import">ייבוא מתיקייה</Link></div>
       </div>
+      <nav className="ck-tiles" aria-label="קיצורי דרך">
+        <Link className="ck-tile" to="/workspace/guide"><CardArt name="guide" /><span><b>מדריך קצר</b><small>מה קורה לכל מסמך ומה נמחק ומתי</small></span></Link>
+        <Link className="ck-tile" to="/admin/matters"><CardArt name="admin" /><span><b>מסך הניהול</b><small>כל התיקים, חריגות SLA וניגוד עניינים</small></span></Link>
+        <Link className="ck-tile" to="/settings/billing"><CardArt name="billing" /><span><b>חיוב והגדרות</b><small>מסלול, מושבים וחשבוניות</small></span></Link>
+        <Link className="ck-tile" to="/settings/security"><CardArt name="security" /><span><b>אבטחת חשבון</b><small>אימות דו-שלבי</small></span></Link>
+      </nav>
       <div className="ck-meta">חומרי התיק נשמרים לפי חוק לשכת עורכי הדין (7 שנים מסיום הטיפול, 25 למסמכי מקרקעין). מחיקה אחרי 30 יום אפשרית רק בתיק שבו הלקוח הסכים בכתב.</div>
       {adding && <div className="ck-card"><IntakeForm firmId={firmId} matters={rows?.map((x) => ({ id: x.matter_id, label: name(x) }))} onDone={(m) => nav(`/workspace?matter=${m}`)} /></div>}
       {rows && <MatterInsights rows={rows} />}

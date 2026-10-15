@@ -11,6 +11,7 @@ import { FEE_MODEL_LABEL, MATTER_STAGES, TIME_STATUS_LABEL, hours, isUuid, stage
 import { useMatter360 } from "../../lib/cockpit/matter360";
 import type { Matter360Data } from "../../lib/cockpit/matter360";
 import { useTrustSummary } from "../../lib/cockpit/crmTrust";
+import { useMatterWip } from "../../lib/cockpit/billingWip";
 import "../../styles/crm.css";
 
 type Tab = "docs" | "billing" | "deadlines";
@@ -47,6 +48,7 @@ function Docs({ d }: { d: Matter360Data }) {
 
 function Billing({ d, showTrust }: { d: Matter360Data; showTrust: boolean }) {
   const s = timeSummary(d.time), fee = d.fee;
+  const wip = useMatterWip(d.matter.id, true);
   return (
     <section aria-label="חיוב" className="ck-stack">
       <div className="ck-card">
@@ -58,6 +60,23 @@ function Billing({ d, showTrust }: { d: Matter360Data; showTrust: boolean }) {
             {fee.fee_cap != null && <div><div className="ck-meta">תקרה</div><b>{money(fee.fee_cap)}</b></div>}
             {fee.retainer_monthly != null && <div><div className="ck-meta">ריטיינר חודשי</div><b>{money(fee.retainer_monthly)}</b></div>}
           </div>
+        )}
+      </div>
+      <div className="ck-card">
+        <div className="ck-card-head"><h3 className="ck-title">שווי שעות לחיוב</h3>{wip.state === "ready" && <span className="ck-badge green">{money(wip.data.billableValue)}</span>}</div>
+        {wip.state === "loading" && <div className="ck-meta">טוען...</div>}
+        {wip.state === "denied" && <div className="ck-meta">הסכומים מוצגים רק לבעלי הרשאת כספים.</div>}
+        {wip.state === "unavailable" && <div className="ck-meta">תמחור השעות אינו זמין עדיין: פונקציית החיוב (מיגרציה 0021) טרם הופעלה במסד הנתונים. השעות עצמן מוצגות למטה.</div>}
+        {wip.state === "ready" && (
+          <>
+            <div className="ck-meta">שעות שאושרו ועדיין לא חויבו, לפי כרטיסי התעריפים של המשרד (קודם כרטיס התיק, אחר כך כרטיס המשרד, לפי תפקיד).</div>
+            {wip.data.entriesWithoutRate > 0 && <div className="crm-banner red" role="alert">{wip.data.entriesWithoutRate} רישומים ללא תעריף אינם נכללים בסכום. הגדירו כרטיס תעריפים לתפקיד.</div>}
+            {wip.data.awaitingApproval > 0 && <div className="crm-banner yellow" role="note">{wip.data.awaitingApproval} רישומים ממתינים לאישור ואינם נכללים בסכום.</div>}
+            {wip.data.entries.length > 0 && (
+              <ul className="crm-list">{wip.data.entries.map((e) => <li key={e.id}><span>{e.narrative || "ללא תיאור"} <span className="ck-meta" dir="ltr">{e.workDate}</span>{e.timekeeper ? <span className="ck-meta"> · {e.timekeeper}</span> : null}</span><span>{hours(e.minutes)} ש׳ {e.rate != null ? `× ${money(e.rate)}` : <span className="ck-badge red">ללא תעריף</span>} {e.amount != null && <b>{money(e.amount)}</b>} <span className="ck-badge yellow">{TIME_STATUS_LABEL[e.status] ?? e.status}{e.reserved ? ", שמור לחשבון" : ""}</span></span></li>)}</ul>
+            )}
+            {wip.data.disbursementsTotal > 0 && <div className="ck-meta">הוצאות להשבה שטרם חויבו: <b>{money(wip.data.disbursementsTotal)}</b></div>}
+          </>
         )}
       </div>
       <div className="ck-card">

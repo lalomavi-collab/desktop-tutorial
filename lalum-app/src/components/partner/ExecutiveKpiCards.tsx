@@ -6,8 +6,8 @@ interface Props {
   bankBalance: number | null;
   monthlyBurn: number;
   collected30: number;
-  /** null: there is no real hours source yet, so the card is not shown. */
-  wip: { hours: number; amount: number } | null;
+  /** Priced by the database with the firm's rate cards. null while loading or when the member may not see financials: no card. */
+  wip: { hours: number; amount: number; withoutRate: number; awaiting: number; nonHourlyHours: number } | null;
   aging: { total: number; notYetDue: number; buckets: Record<Bucket, number> };
   /** null: the firm holds no client money, so the card is not shown. */
   trust: number | null;
@@ -30,7 +30,10 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wip, 
           <small>שעות בצבר (טרם חויבו)</small>
           <b>{money(wip.amount)}</b>
           <span className="ck-badge yellow">{wip.hours} שעות</span>
-          <small>מקור: רישום זמנים בתיקים</small>
+          {wip.awaiting > 0 && <small>{wip.awaiting} רישומים ממתינים לאישור שותף</small>}
+          {wip.withoutRate > 0 && <small style={{ color: "var(--danger)" }}>{wip.withoutRate} רישומים ללא תעריף אינם נכללים בסכום</small>}
+          {wip.nonHourlyHours > 0 && <small>בנוסף {wip.nonHourlyHours} שעות בתיקים שאינם לפי שעה (מחיר קבוע, ריטיינר, הצלחה)</small>}
+          <small>מקור: רישום זמנים בתיקים, מתומחר בכרטיסי התעריפים של המשרד</small>
         </article>
       )}
       <article className="ck-card crm-kpi">
