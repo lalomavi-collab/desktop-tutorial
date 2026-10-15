@@ -93,6 +93,50 @@
   [data-ck-theme="mint"] .ck-sidebar { height: auto; width: auto; margin: 0 0 10px; border-radius: 22px; top: 0; }
 }
 
+/* Phone top bar: the same soft surface as the desktop rail and the site (card
+   colour, hairline border, sage tint for the current page) instead of the
+   saturated green block, so the green belongs to the content, not the chrome. */
+@media (max-width: 860px) {
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar { background: var(--card); border: 1px solid var(--line); box-shadow: none; border-radius: 18px; padding: 8px 10px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout { background: transparent; color: var(--ink); border-radius: 12px; box-shadow: none; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a:hover,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a:hover,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-theme:hover { background: color-mix(in srgb, var(--clay) 9%, transparent); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a[aria-current="page"] { background: var(--clay-tint); color: var(--ink); box-shadow: inset 0 0 0 1px var(--clay-soft); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav svg,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot svg { color: var(--ink); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot { border-top: 0; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout svg { color: var(--danger); }
+}
+
+/* Matters list on a phone: one collapsible row per matter (name, conflict and
+   status visible; tap to open the rest) instead of a table that scrolls
+   sideways. Desktop keeps the table. */
+.ck-mlist { display: none; }
+@media (max-width: 860px) {
+  .ck-table-wrap.ck-has-mlist { display: none; }
+  .ck-mlist { display: flex; flex-direction: column; gap: 8px; }
+  .ck-mrow { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .ck-mrow.breach { border-color: var(--danger); }
+  .ck-mrow > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; min-height: 48px; }
+  .ck-mrow > summary::-webkit-details-marker { display: none; }
+  .ck-mrow > summary::after { content: ""; flex: 0 0 auto; width: 8px; height: 8px; border-inline-end: 2px solid var(--slate); border-bottom: 2px solid var(--slate); transform: rotate(45deg); margin-inline-start: 2px; transition: transform .15s ease; }
+  .ck-mrow[open] > summary::after { transform: rotate(-135deg); }
+  .ck-mrow > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .ck-mrow-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .ck-mrow-title { font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+  .ck-mrow-sub { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .ck-mrow-body { border-top: 1px solid var(--line); padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ck-mrow-body dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; margin: 0; align-items: center; }
+  .ck-mrow-body dt { color: var(--slate); font-size: 13px; }
+  .ck-mrow-body dd { margin: 0; color: var(--ink); }
+  .ck-mrow-pick { display: flex; align-items: center; padding-inline-start: 2px; }
+}
+
 /* Theme switch button in the rail */
 .ck-sidebar-foot button.ck-theme { display: flex; align-items: center; gap: 12px; padding: 13px 16px; font: inherit; font-size: 14px; font-weight: 500; background: color-mix(in srgb, var(--ink) 4%, transparent); border: 0; color: var(--slate); cursor: pointer; width: 100%; border-radius: 14px; }
 .ck-sidebar-foot button.ck-theme:hover { background: var(--clay-tint); }

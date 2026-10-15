@@ -80,7 +80,18 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
           <button className="ck-btn" onClick={() => setSel(new Set())}>ניקוי סימון</button>
         </div>)}
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
-        <div className="ck-table-wrap"><table className="ck-table"><thead><tr>{isPartner && <th><input type="checkbox" aria-label="סימון כל התיקים" checked={sel.size > 0 && sel.size === rows.length} onChange={(e) => setSel(setAll(rows.map((x) => x.matter_id), e.target.checked))} /></th>}<th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
+        <>
+        <div className="ck-mlist" role="list" aria-label="רשימת התיקים">
+          {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
+            <details key={x.matter_id} role="listitem" className={`ck-mrow${x.sla_breached ? " breach" : ""}`}>
+              <summary><span className="ck-mrow-main"><span className="ck-mrow-title">{name(x)}</span><span className="ck-mrow-sub"><span className={`ck-badge ${t}`}>{l}</span><span className="ck-meta">{MATTER_STATUS[x.matter_status]}</span></span></span></summary>
+              <div className="ck-mrow-body">
+                <dl><dt>תחום</dt><dd>{PRACTICE[x.practice_area]}</dd><dt>סיכון</dt><dd>{risk(x.risk_level)}</dd><dt>תגובת שותף</dt><dd>{RESPONSE[x.partner_response]}</dd><dt>נקלט</dt><dd>{fmt(x.dispatched_at)}</dd></dl>
+                <div className="ck-row"><Link className="ck-btn primary" to={`/workspace?matter=${x.matter_id}`}>פתיחת התיק</Link>{isPartner && <button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button>}</div>
+              </div>
+            </details>); })}
+        </div>
+        <div className="ck-table-wrap ck-has-mlist"><table className="ck-table"><thead><tr>{isPartner && <th><input type="checkbox" aria-label="סימון כל התיקים" checked={sel.size > 0 && sel.size === rows.length} onChange={(e) => setSel(setAll(rows.map((x) => x.matter_id), e.target.checked))} /></th>}<th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
           {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
             <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
               {isPartner && <td><input type="checkbox" aria-label={`סימון ${name(x)}`} checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} /></td>}
@@ -89,6 +100,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
               {isPartner && <td><button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
             </tr>); })}
         </tbody></table></div>
+        </>
       )}
       {bulkOpen && (
         <aside className="ck-drawer" aria-label="העברת תיקים מסומנים לסל המיחזור">
