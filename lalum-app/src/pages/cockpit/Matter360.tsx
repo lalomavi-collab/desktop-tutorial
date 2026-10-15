@@ -39,7 +39,7 @@ function Docs({ d }: { d: Matter360Data }) {
     <section className="ck-card" aria-label="מסמכי התיק">
       <div className="ck-card-head"><h3 className="ck-title">מסמכי התיק</h3><Link className="ck-btn" to={`/workspace?matter=${d.matter.id}`}>פתיחה בקוקפיט התיק</Link></div>
       {d.docs.length === 0 ? <div className="ck-empty">אין מסמכים בתיק.</div> : (
-        <ul className="crm-list">{d.docs.map((x) => <li key={x.id}><span>{x.file_name}</span><span className="ck-meta">{x.doc_type ? `${x.doc_type} · ` : ""}{fmt(x.doc_date ?? x.created_at)}</span></li>)}</ul>
+        <ul className="crm-list">{d.docs.map((x) => <li key={x.id}><span><bdi>{x.file_name}</bdi></span><span className="ck-meta">{x.doc_type ? `${x.doc_type} · ` : ""}{fmt(x.doc_date ?? x.created_at)}</span></li>)}</ul>
       )}
     </section>
   );

@@ -77,7 +77,7 @@
 .ck-editor { min-height: 360px; border: 1px solid var(--line-strong); border-radius: 12px; padding: 14px; font-size: 15px; line-height: 1.9; white-space: pre-wrap; background: #fff; width: 100%; font-family: inherit; }
 .ck-editor ins { background: rgba(63, 143, 95, .18); color: #24593a; text-decoration: none; border-radius: 3px; }
 .ck-editor del { background: rgba(179, 64, 47, .15); color: #8a2f21; border-radius: 3px; }
-.ck-finding { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.ck-finding { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--paper); }
 .ck-finding.red { border-inline-start: 4px solid var(--danger); }
 .ck-finding.yellow { border-inline-start: 4px solid var(--warning); }
 .ck-finding.green { border-inline-start: 4px solid var(--success); }
