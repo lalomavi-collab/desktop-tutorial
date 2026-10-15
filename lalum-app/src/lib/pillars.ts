@@ -200,6 +200,11 @@ const SHARED = {
       { slug: "זכויות-בנייה-במקרקעין-סוגיית-הבעלות-על-רקע-פסיקה-עדכנית", title: `זכויות בנייה במקרקעין: סוגיית הבעלות על רקע פסיקה עדכנית` },
       { slug: "לא-מתזמנים-שוק-בונים-החלטה-נכונה-מסגרת-פרקטית-להשקעות-נדל-ן-2025", title: `לא מתזמנים שוק, בונים החלטה נכונה: מסגרת פרקטית להשקעות נדל״ן` },
       { slug: "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים", title: `מדריך מקצועי למתווכים: רפורמת התיווך במקרקעין של משרד המשפטים` },
+      // Added after the EU AI Act / local-authority AI content wave (PRs #828
+      // through #898): the only article from that wave with zero inbound
+      // links anywhere (not in any other article's auto-computed related
+      // graph, not linked in-body, not on a pillar). Same fix as the waves above.
+      { slug: "algorithmic-pricing-antitrust-real-estate", title: `תיאום מחירים אלגוריתמי בנדל״ן: כשמערכת תמחור משותפת חושפת את הדירקטוריון להגבלים עסקיים` },
     ],
   },
 } as const;
