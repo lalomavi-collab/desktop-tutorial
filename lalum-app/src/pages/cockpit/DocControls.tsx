@@ -9,7 +9,7 @@ export function DocMeta({ doc, canEdit, onSaved }: { doc: MatterDoc; canEdit: bo
   const [origin, setOrigin] = useState("");
   const [msg, setMsg] = useState("");
   if (doc.doc_type && doc.doc_origin) {
-    return <div className="ck-row"><span className="ck-chip">{DOC_TYPE[doc.doc_type]}</span><span className="ck-chip">מקור: {DOC_ORIGIN[doc.doc_origin]}</span>{doc.doc_date && <span className="ck-chip">{new Date(doc.doc_date).toLocaleDateString("he-IL")}</span>}</div>;
+    return <div className="ck-row"><span className="ck-chip">{DOC_TYPE[doc.doc_type]}</span><span className="ck-chip">מקור: {DOC_ORIGIN[doc.doc_origin]}</span>{doc.doc_date && <span className="ck-chip" dir="ltr">{new Date(doc.doc_date).toLocaleDateString("he-IL")}</span>}</div>;
   }
   if (!canEdit) return <span className="ck-badge yellow">לא סווג</span>;
   async function save() {
