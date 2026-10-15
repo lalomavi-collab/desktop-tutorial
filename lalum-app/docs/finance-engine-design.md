@@ -37,6 +37,19 @@ Status of each fact is marked. Nothing here is legal advice.
   `lalum_fin_seal_document` call, or that call will start the type's series at 1.
 - Shaam onboarding (permissions, sandbox access): deferred on purpose. The practice owner and a future session do this
   together, directly on the Tax Authority site, only at the final stage before the 2027-01-01 switch, not before.
+- 15 October 2026: the owner asked to start this earlier after all, on the strength that the practice is one
+  self-employed business (`עוסק מורשה`) building the software for its own use, not for sale or rent to others; the
+  Tax Authority's own guidance already exempts self-use software from the heavier software-house registration. On the
+  Tax Authority's own registration screen the owner found a "number of users" field with no visible guidance for a
+  one-person, self-use case. A clarification email was drafted (not sent: no verified Tax Authority software-house
+  contact address was found, and the connected Outlook account has read-only Graph permissions here, no send/draft
+  scope) asking how to fill that field for a sole self-use developer, and whether the lighter self-use registration
+  path applies. Also blocked on the client side: this working environment cannot reach gov.il at all (outbound network
+  policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
+  `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
+  actual client code is not started. Next: the owner sends the clarification email once a verified recipient is
+  found, and either opens gov.il to this environment's allowed domains or shares the two PDFs directly, so a session
+  can read the real spec instead of building against secondhand summaries.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
