@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
@@ -205,7 +205,11 @@ export function Login() {
           )}
         </p>
         <p className="muted" style={{ textAlign: "center", fontSize: 13, margin: "12px 0 0" }}>
-          <Link to="/partners" style={{ color: "var(--clay)" }}>כניסה ייעודית למשרדים שותפים</Link>
+          {/* Plain anchor, not <Link>: /partners is Hebrew-only and has no
+              file under a language prefix for <Link>'s basename-prefixed
+              href to resolve to (same fix as the header's partner-login
+              link). */}
+          <a href="/partners/" style={{ color: "var(--clay)" }}>כניסה ייעודית למשרדים שותפים</a>
         </p>
       </div>
     </section>

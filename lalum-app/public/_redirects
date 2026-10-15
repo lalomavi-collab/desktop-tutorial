@@ -358,6 +358,29 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /ar/login  /login/  301
 /ar/login/  /login/  301
 
+# LALUM LEX (/os) and the partner login (/partners) are standalone,
+# Hebrew-only surfaces outside the marketing site's own language tree: no
+# translated page exists for either, same category as /login above. Without
+# these rules, the header's own links to them (which the SPA router prefixes
+# with the current language's basename) 404ed for every visitor browsing the
+# site in anything but Hebrew.
+/en/os  /os/  301
+/en/os/  /os/  301
+/es/os  /os/  301
+/es/os/  /os/  301
+/fr/os  /os/  301
+/fr/os/  /os/  301
+/ar/os  /os/  301
+/ar/os/  /os/  301
+/en/partners  /partners/  301
+/en/partners/  /partners/  301
+/es/partners  /partners/  301
+/es/partners/  /partners/  301
+/fr/partners  /partners/  301
+/fr/partners/  /partners/  301
+/ar/partners  /partners/  301
+/ar/partners/  /partners/  301
+
 # About and contact have no standalone page (the Hebrew /about/ and /contact/
 # are themselves 404). About resolves to the language home, which does exist;
 # contact resolves to the booking page.
