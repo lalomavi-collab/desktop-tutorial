@@ -365,7 +365,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             )}
             {mode === "edit"
               ? <textarea ref={taRef} className="ck-editor" dir="rtl" aria-label="עורך המסמך" spellCheck={false} value={text} onChange={(e) => onEdit(e.target.value)} />
-              : <div className="ck-editor" tabIndex={0} aria-label="תצוגת שינויים">{diffWords(doc.baseline_content, text).map(([o, t], i) => (o === "=" ? <span key={i}>{t}</span> : o === "+" ? <ins key={i}>{t}</ins> : <del key={i}>{t}</del>))}</div>}
+              : <div className="ck-editor" dir="rtl" tabIndex={0} aria-label="תצוגת שינויים">{diffWords(doc.baseline_content, text).map(([o, t], i) => (o === "=" ? <span key={i}>{t}</span> : o === "+" ? <ins key={i}>{t}</ins> : <del key={i}>{t}</del>))}</div>}
             <div className="ck-meta">הטקסט המוצג מוסתר מפרטים מזהים. כל שמירה עוברת שוב הסתרה אוטומטית. שינוי בטקסט מבטל אישורים קודמים.</div>
           </>}
         </section>
@@ -398,7 +398,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
             {tokens.length ? tokens.map((t) => <tr key={t}><td dir="ltr">{t}</td><td>{KIND_HE[(/^\[([A-Z_]+)_\d+\]$/.exec(t) ?? [])[1] ?? ""] ?? ""}</td><td>{showOrig && map?.has(t) ? map.get(t) : "••••••"}</td></tr>) : <tr><td colSpan={3}>אין אסימונים</td></tr>}
           </tbody></table></div>
           <div className="ck-label">המסמך</div>
-          <div className="ck-editor" style={{ minHeight: 120, maxHeight: "40vh", overflow: "auto" }}>{showOrig && map ? restore(text, map) : text}</div>
+          <div className="ck-editor" dir="rtl" style={{ minHeight: 120, maxHeight: "40vh", overflow: "auto" }}>{showOrig && map ? restore(text, map) : text}</div>
         </aside>
       )}
     </div>

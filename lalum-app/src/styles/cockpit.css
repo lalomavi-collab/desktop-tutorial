@@ -372,6 +372,8 @@
 .ck-docacts:empty { display: none; }
 
 /* Editor and text views: plain, readable, correctly ordered Hebrew with embedded Latin tokens (emails, URLs, numbers). */
-.ck-editor { font-size: 16px; line-height: 2; padding: 18px 20px; text-align: start; unicode-bidi: plaintext; overflow-wrap: anywhere; word-break: normal; letter-spacing: 0; box-sizing: border-box; }
+/* One base direction for the whole text, so every line starts at the same edge. Mixed Hebrew and Latin runs are still
+   ordered by the browser inside each line; plaintext direction per line made lines that open with Latin jump left. */
+.ck-editor { direction: rtl; font-size: 16px; line-height: 2; padding: 18px 20px; text-align: right; unicode-bidi: normal; overflow-wrap: anywhere; word-break: normal; letter-spacing: 0; box-sizing: border-box; }
 textarea.ck-editor { resize: vertical; min-height: 420px; }
 [data-ck-theme="mint"] .ck-editor { color: #1b1b1b; border-color: color-mix(in srgb, var(--ink) 30%, transparent); }
