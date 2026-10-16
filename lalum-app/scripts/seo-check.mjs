@@ -91,7 +91,13 @@ if (!robots) {
 }
 
 // ---------- sitemap.xml ----------
-const sitemap = read("public/sitemap.xml");
+// Prefer the built sitemap in dist/, which is what crawlers actually fetch: the
+// build copies public/sitemap.xml and then auto-adds every article from
+// blogMeta, every sector rubric and the language variants (see vite.config.ts).
+// The static public/sitemap.xml is only a seed for hand-set lastmod values, so
+// checking coverage against it reports articles "missing" that are in fact
+// served. Fall back to the seed only when dist has not been built yet.
+const sitemap = read("dist/sitemap.xml") ?? read("public/sitemap.xml");
 if (!sitemap) {
   fail("sitemap.xml", "missing");
 } else {
@@ -121,6 +127,9 @@ if (!sitemap) {
       .map((u) => u.replace(DOMAIN, "").replace(/\/$/, ""))
       .filter((p) => p.startsWith("/insights/"))
       .map((p) => p.slice("/insights/".length))
+      // Topic hubs live under /insights/topics/ and are not articles; excluding
+      // them keeps them from being reported as sitemap urls with no article.
+      .filter((p) => p && !p.startsWith("topics/"))
   );
   if (!blogSlugs.length && !curatedSlugs.length) {
     warn("sitemap.xml article coverage", "could not read article slugs to verify");
