@@ -143,6 +143,7 @@
 - V מדריך: תסקיר השפעה על הפרטיות (DPIA) ל-AI ברשות (ai-privacy-impact-assessment-dpia-local-authority-guide)
 - V אבטחת מידע וההגנות הנדרשות ל-AI ברשות, ישראל מול העולם (ai-data-security-protections-local-authority)
 - V זכות העיון, התיקון והמחיקה כשהרשות מריצה AI, ישראל מול העולם (ai-data-subject-rights-access-deletion-local-authority)
+- V העברת מידע תושבים לחו"ל כשספק ה-AI בענן זר (ai-cross-border-data-transfer-foreign-cloud-local-authority)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
