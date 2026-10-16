@@ -662,10 +662,10 @@ const en = {
   },
 
   home: {
-    heroPill: "Legal AI · Real Estate & Urban Renewal",
-    heroH1a: "AI governance, deals, and real estate,",
+    heroPill: "Legal AI · Governance, Compliance & Risk",
+    heroH1a: "AI governance, compliance, and risk,",
     heroH1b: "built to hold up.",
-    heroLede: "Legal AI is the axis of the firm. Through it we advise clients on real estate and urban renewal, in Israel and abroad, and also on mediation and arbitration.",
+    heroLede: "Legal AI is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence, from usage policy to audit and documentation.",
     heroCtaAi: "See if AI & DOM fit your matter",
     frameworksLabel: "Our track record",
     quickAccessEyebrow: "Quick access",
@@ -1884,10 +1884,10 @@ const he: Dict = {
   },
 
   home: {
-    heroPill: "Legal AI · נדל״ן והתחדשות עירונית",
-    heroH1a: "ממשל AI, עסקאות ונדל״ן,",
+    heroPill: "Legal AI · ממשל, ציות וסיכון",
+    heroH1a: "ממשל AI, ציות וסיכון,",
     heroH1b: "בנויים להחזיק מעמד.",
-    heroLede: "Legal AI הוא ציר המשרד. דרכו אנחנו מלווים לקוחות בנדל״ן ובהתחדשות עירונית, בארץ ובחו״ל, וגם בגישור ובבוררות.",
+    heroLede: "Legal AI הוא ציר המשרד: ייעוץ, ליווי שוטף והדרכה לארגונים שמטמיעים בינה מלאכותית, ממדיניות שימוש ועד ביקורת ותיעוד.",
     heroCtaAi: "לבחינת התאמת תיק ל-AI & DOM",
     frameworksLabel: "הניסיון שלנו",
     quickAccessEyebrow: "גישה מהירה",
@@ -3103,10 +3103,10 @@ const es: Dict = {
   },
 
   home: {
-    heroPill: "Legal AI · Bienes Raíces y Renovación Urbana",
-    heroH1a: "Gobernanza de IA, operaciones y bienes raíces,",
+    heroPill: "Legal AI · Gobernanza, Cumplimiento y Riesgo",
+    heroH1a: "Gobernanza de IA, cumplimiento y riesgo,",
     heroH1b: "diseñados para resistir.",
-    heroLede: "Legal AI es el eje del despacho. A través de él asesoramos a clientes en bienes raíces y renovación urbana, en Israel y en el extranjero, y también en mediación y arbitraje.",
+    heroLede: "Legal AI es el eje del despacho: asesoría, acompañamiento continuo y formación para organizaciones que adoptan inteligencia artificial, desde la política de uso hasta la auditoría y la documentación.",
     heroCtaAi: "Vea si la IA y el DOM se ajustan a su asunto",
     frameworksLabel: "Nuestra trayectoria",
     quickAccessEyebrow: "Acceso rápido",
@@ -4285,10 +4285,10 @@ const fr: Dict = {
     },
   },
   home: {
-    heroPill: "Legal AI · Immobilier et rénovation urbaine",
-    heroH1a: "Gouvernance de l'IA, transactions et immobilier,",
+    heroPill: "Legal AI · Gouvernance, conformité et risque",
+    heroH1a: "Gouvernance de l'IA, conformité et risque,",
     heroH1b: "conçus pour tenir.",
-    heroLede: "Legal AI est l'axe du cabinet. À travers lui, nous conseillons nos clients en immobilier et en rénovation urbaine, en Israël et à l'étranger, ainsi qu'en médiation et en arbitrage.",
+    heroLede: "Legal AI est l'axe du cabinet : conseil, accompagnement continu et formation pour les organisations qui adoptent l'intelligence artificielle, de la politique d'usage à l'audit et à la documentation.",
     heroCtaAi: "Découvrez si l'IA et la DOM conviennent à votre dossier",
     frameworksLabel: "Notre bilan",
     quickAccessEyebrow: "Accès rapide",
@@ -5462,10 +5462,10 @@ const ar: Dict = {
   },
 
   home: {
-    heroPill: "Legal AI · العقارات والتجديد الحضري",
-    heroH1a: "حوكمة الذكاء الاصطناعي، والصفقات والعقارات،",
+    heroPill: "Legal AI · الحوكمة والامتثال والمخاطر",
+    heroH1a: "حوكمة الذكاء الاصطناعي والامتثال والمخاطر،",
     heroH1b: "مبنية لتصمد.",
-    heroLede: "الذكاء الاصطناعي القانوني (Legal AI) هو محور المكتب. من خلاله نرافق عملاءنا في العقارات والتجديد الحضري، في إسرائيل وخارجها، وكذلك في الوساطة والتحكيم.",
+    heroLede: "الذكاء الاصطناعي القانوني (Legal AI) هو محور المكتب: استشارات ومرافقة مستمرة وتدريب للمؤسسات التي تعتمد الذكاء الاصطناعي، من سياسة الاستخدام حتى التدقيق والتوثيق.",
     heroCtaAi: "تحققوا مما إذا كان الذكاء الاصطناعي وDOM يناسبان قضيتكم",
     frameworksLabel: "سجلنا الحافل",
     quickAccessEyebrow: "وصول سريع",
