@@ -5094,6 +5094,8 @@ html.a11y-reduce-motion *::after {
 .cred-strip li { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 96px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.6); }
 .cred-fig { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 24px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--clay); }
 .cred-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+/* A framework name has no figure beside it, so it carries the clay accent itself: the cell reads as a badge instead of an empty stat card. */
+.cred-text:only-child { font-size: 14.5px; font-weight: 700; color: var(--clay); }
 @media (max-width: 520px) { .cred-strip li { flex: 1 1 calc(50% - 8px); } }
 
 /* Dark instrument panel, shared by the home Engine cards and the Advisory
