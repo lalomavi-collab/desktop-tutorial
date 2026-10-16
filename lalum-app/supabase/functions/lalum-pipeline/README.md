@@ -33,19 +33,6 @@ it lowers the confidence to 0.8 so every address counts toward `needsReview`, it
 `assertClean` (a false positive there would block a legitimate save) and addresses never reach the
 conflict engine. The client workaround (`client_address` in `UNMASKED_FIELDS`) was removed once the live smoke test passed; the address now goes through the shield like any other field.
 
-## Health check: GET /selftest
-
-`GET .../functions/v1/lalum-pipeline/selftest` masks one fixed synthetic string and returns it. It takes no
-input, reads no database row and needs no secret, so it can stay public. After every deploy, open it and
-compare with the expected answer; it proves the deployed bundle is the one with the current shield:
-
-```
-{"masked":"מר [CLIENT_NAME_1], ת.ז. [ID_NUMBER_1], טלפון [PHONE_1], דוא\"ל [EMAIL_1], ברחוב [ADDRESS_1], חשבון בנק [BANK_ACCOUNT_1]"}
-```
-
-Note that the street name is masked and the word "ברחוב" is kept; `lalum-inquiry-email` uses a different
-address rule and answers `ב[ADDRESS_1]`.
-
 ## Deploying
 
 Deploys need the owner's explicit approval. The function is deployed as one bundled file (`index.js`,
