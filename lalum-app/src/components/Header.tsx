@@ -18,7 +18,6 @@ export function Header() {
   const { user } = useAuth();
   const { t, lang, setLang } = useLang();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [insightsOpen, setInsightsOpen] = useState(false);
   // The full menu renders as a bottom sheet only below 900px; above it, it is a
   // small anchored dropdown. Scroll-lock the page behind the sheet, but not
   // behind the desktop dropdown (which closes on any outside click) so the page
@@ -47,15 +46,14 @@ export function Header() {
   // phone, and locking the page behind it keeps the body from scrolling out
   // from under a surface that is meant to feel anchored to the screen edge.
   useEffect(() => {
-    if (!moreOpen && !insightsOpen) return;
+    if (!moreOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setMoreOpen(false);
-      setInsightsOpen(false);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [moreOpen, insightsOpen]);
+  }, [moreOpen]);
   useScrollLock(moreOpen && isSheet);
 
   // The two areas the practice leads with, first and named as domains: AI &
@@ -66,8 +64,7 @@ export function Header() {
   // in App.tsx; Decision Room is the existing readiness quiz. None of these
   // three is a new page or a new URL, only a new name for one already live.
   // Training and Knowledge have no slot of their own in this shape: they, and
-  // Articles, live inside the Insights dropdown below instead of three more
-  // pills competing with the five domain/model links for space.
+  // Articles, follow the five links in the menu as the reading group.
   const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
     { to: "/ai-legal-advisory", label: t.ui.nav.ai, end: false },
     { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate, end: false },
@@ -249,73 +246,11 @@ export function Header() {
           )}
         </div>
 
-        {/* A distinct entry point for the app, not a sixth nav-pill: CLAUDE.md
-            caps the domain/model row at the two areas plus Clinic, Engine and
-            Decision Room, so LALUM LEX cannot join it as a same-level item.
-            It lived only inside the "More" menu before this, first in that
-            list, which meant a desktop visitor (who already sees five visible
-            pills and has no habit of opening a hamburger menu) had no real
-            way to notice it, unlike on phones where the entire nav funnels
-            through that one menu and this is the first thing in it. A filled
-            button (like the site's other primary CTAs, /book included) reads
-            as a different kind of action than the outlined pills beside it:
-            leaving the marketing site for the standalone app, not another
-            page of it. Hidden on phones (hide-mobile): the "More" menu
-            already puts it first there, so a second copy would just be
-            clutter on an already tight row. */}
-        {/* Plain anchor: see the "More" menu's LALUM LEX link above for why. */}
-        <a href="/os/" className="btn btn-clay btn-sm header-lex-cta hide-mobile" aria-label="LALUM LEX">
-          <span className="header-lex-cta-icon"><Icon name="spark" size={14} /></span>
-          <span className="header-lex-cta-label">LALUM LEX</span>
-        </a>
-
-        <nav className="nav-pills">
-          {nav.map((n) =>
-            n.hash ? (
-              <Link key={n.to} to={n.to} className="nav-pill">
-                {n.label}
-              </Link>
-            ) : (
-              <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => "nav-pill" + (isActive ? " active" : "")}>
-                {n.label}
-              </NavLink>
-            )
-          )}
-          {/* Articles, Knowledge and Courses, folded under one pill: three
-              destinations that all answer "I want to read/learn something,"
-              none of which is one of the two domains or the operating-model
-              links above, so they share a menu instead of each claiming a
-              pill of their own. */}
-          <div style={{ position: "relative" }}>
-            <button
-              type="button"
-              onClick={() => setInsightsOpen((v) => !v)}
-              className={"nav-pill" + (insightsOpen ? " active" : "")}
-              aria-haspopup="menu"
-              aria-expanded={insightsOpen}
-            >
-              {t.ui.nav.insightsMenu}
-            </button>
-            {insightsOpen && (
-              <>
-                <div onClick={() => setInsightsOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                <div role="menu" aria-label={t.ui.nav.insightsMenu} className="card" style={{ position: "absolute", insetInlineStart: 0, top: "calc(100% + 8px)", zIndex: 41, padding: 6, minWidth: 160, display: "flex", flexDirection: "column", gap: 2 }}>
-                  {insightsLinks.map((l) => (
-                    <NavLink
-                      key={l.to}
-                      to={l.to}
-                      role="menuitem"
-                      onClick={() => setInsightsOpen(false)}
-                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
-                    >
-                      {l.label}
-                    </NavLink>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </nav>
+        {/* The nav pills and the LALUM LEX button that used to sit in this bar
+            are gone on purpose: every one of them already lives in the menu
+            above, so showing both was the same destinations twice. The menu is
+            the single home for navigation, which leaves the bar with room to
+            breathe. Only the quick utilities stay here (account, chat, SOS). */}
 
         <div className="header-tools">
           {/* The two controls that used to float in the page's bottom corner,
