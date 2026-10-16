@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-algorithm-register-proactive-transparency": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-use-policy-local-authority",
+   "ai-inventory-risk-tiering-local-authority-guide"
+  ]
+ },
  "ai-inventory-risk-tiering-local-authority-guide": {
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
    "ai-municipal-property-tax-collection",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-algorithm-register-proactive-transparency"
   ]
  },
  "ai-vendor-data-processing-agreement-local-authority": {
@@ -147,8 +155,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-municipal-facial-recognition-surveillance",
-   "ai-municipal-welfare-social-services"
+   "ai-municipal-welfare-social-services",
+   "ai-municipal-facial-recognition-surveillance"
   ]
  },
  "ai-local-authority-tort-liability-damage": {
@@ -204,7 +212,7 @@
   "related": [
    "eu-ai-act-transparency-generative",
    "ai-marketing-advertising-privacy-deception-deepfake",
-   "ai-education-public-institutions-use-policy"
+   "ai-algorithm-register-proactive-transparency"
   ]
  },
  "ai-real-estate-valuation-reliance": {
@@ -250,8 +258,8 @@
  "ai-generated-content-ownership-protection-contracts": {
   "topic": "ai-governance",
   "related": [
-   "ai-marketing-advertising-privacy-deception-deepfake",
    "ai-due-diligence-tech-acquisition",
+   "ai-marketing-advertising-privacy-deception-deepfake",
    "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
@@ -276,7 +284,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "portugal-purchase-contract"
+   "overseas-property-holding-structure"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -1196,7 +1204,7 @@
   "related": [
    "combination-deals-architecture",
    "homeowners-iron-dome",
-   "intl-realestate-transactions"
+   "overseas-partnership-guide"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1498,8 +1506,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
-   "ai-governance-municipal-corporations",
    "israel-land-authority-lease-capitalization-transfer",
+   "ai-governance-municipal-corporations",
    "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
