@@ -96,27 +96,25 @@ export function Home() {
         </div>
       </section>
 
-      {/* QUICK ACCESS: the rubrics a visitor most wants reachable without
-          scrolling past the full pitch first, as two tappable icon tiles
-          directly under the hero. AI & Law is named again here even though
-          FocusAreas restates it fuller just below (a quick shortcut and a
-          full card coexisting for the same destination is normal dashboard
-          UX, not a mistake), because Articles & Insights otherwise has no
-          prominent entry point above the fold at all. */}
+      {/* QUICK ACCESS: a single shortcut to Articles & Insights, the one
+          rubric with no prominent entry point above the fold. Not paired
+          with an AI & Law tile here: FocusAreas, directly below, already
+          gives AI & Law and Real Estate the exact same treatment as each
+          other, and a second, earlier AI & Law shortcut with no Real Estate
+          counterpart would read as the site favouring one of the two equal
+          areas over the other. Reuses .pillar-band (the PRACTICE section's
+          row style below) rather than .card, since a single-item grid-2
+          would leave a bare empty cell beside it. */}
       <section className="wrap" style={{ paddingBottom: 8 }}>
         <p className="eyebrow" style={{ margin: "0 0 14px" }}>{h.quickAccessEyebrow}</p>
-        <div className="grid grid-2">
-          <Link to="/insights" className="card" style={{ padding: "22px 24px" }} aria-label={h.quickInsightsTitle}>
-            <span className="icon-badge" style={{ width: 40, height: 40 }}><Icon name="book" size={20} /></span>
-            <h3 className="h3" style={{ fontSize: 18, margin: "14px 0 6px" }}>{h.quickInsightsTitle}</h3>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--slate)", margin: 0 }}>{h.quickInsightsBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
-          </Link>
-          <Link to="/ai-legal-advisory" className="card" style={{ padding: "22px 24px" }} aria-label={h.quickAiTitle}>
-            <span className="icon-badge" style={{ width: 40, height: 40 }}><Icon name="brain" size={20} /></span>
-            <h3 className="h3" style={{ fontSize: 18, margin: "14px 0 6px" }}>{h.quickAiTitle}</h3>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--slate)", margin: 0 }}>{h.quickAiBody}</p>
-            <span className="card-go">{h.advisoryMore} &rarr;</span>
+        <div className="pillar-layers">
+          <Link to="/insights" className="pillar-band" aria-label={h.quickInsightsTitle}>
+            <span className="pillar-mark" aria-hidden="true"><Icon name="book" size={20} /></span>
+            <span className="pillar-txt">
+              <h3 className="h3 pillar-title">{h.quickInsightsTitle}</h3>
+              <p className="pillar-body">{h.quickInsightsBody}</p>
+            </span>
+            <span className="pillar-go" aria-hidden="true">&rarr;</span>
           </Link>
         </div>
       </section>
