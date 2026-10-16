@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "procurement"
+   "ai-governance-board-framework"
   ]
  },
  "procurement": {
@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "legal-ai-tool-selection-test": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-contract-review-playbook",
+   "notebooklm-focus",
+   "legal-ai-client-confidentiality-privilege"
+  ]
+ },
  "legal-ai-client-confidentiality-privilege": {
   "topic": "ai-governance",
   "related": [
@@ -74,9 +82,9 @@
  "legal-ai-contract-review-playbook": {
   "topic": "contracts",
   "related": [
+   "legal-ai-tool-selection-test",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "real-estate-memorandum-of-understanding-binding",
-   "ai-use-policy-organization"
+   "real-estate-memorandum-of-understanding-binding"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -363,8 +371,8 @@
   "topic": "real-estate",
   "related": [
    "caution-note-real-estate-registration-removal",
-   "cyprus-realestate-israeli-buyer-guide",
-   "purchase-group-agreement-tax-risks"
+   "purchase-group-agreement-tax-risks",
+   "cyprus-realestate-israeli-buyer-guide"
   ]
  },
  "ai-generated-content-ownership-protection-contracts": {
@@ -474,8 +482,8 @@
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
-   "ai-recruitment-screening-discrimination",
    "ai-hr-use-policy",
+   "ai-recruitment-screening-discrimination",
    "ai-employee-monitoring-privacy"
   ]
  },
@@ -988,7 +996,7 @@
   "related": [
    "ai-automated-decision-right-gdpr-article-22-israel-gap",
    "ai-hallucinations-citations",
-   "decision-oriented-ai-law"
+   "legal-ai-tool-selection-test"
   ]
  },
  "urban-renewal-risk": {
@@ -1180,7 +1188,7 @@
   "related": [
    "ai-legal-practice",
    "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "legal-ai-tool-selection-test"
   ]
  },
  "why-realestate-needs-ai": {
