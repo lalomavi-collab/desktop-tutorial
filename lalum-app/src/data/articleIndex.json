@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-real-estate-valuation-reliance"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "sovereignty": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "ai-vendor-data-processing-agreement-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-procurement-tender-local-authority",
+   "ai-vendor-agreement-dpa-liability-indemnity",
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -290,9 +298,9 @@
  "ai-vendor-agreement-dpa-liability-indemnity": {
   "topic": "contracts",
   "related": [
+   "ai-vendor-data-processing-agreement-local-authority",
    "ai-generated-content-ownership-protection-contracts",
-   "ai-marketing-advertising-privacy-deception-deepfake",
-   "ai-health-data-privacy"
+   "ai-marketing-advertising-privacy-deception-deepfake"
   ]
  },
  "ai-marketing-advertising-privacy-deception-deepfake": {
@@ -420,7 +428,7 @@
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
    "pinui-binui-owner-guide",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "ai-vendor-data-processing-agreement-local-authority"
   ]
  },
  "pinui-binui-consideration-valuation": {
@@ -452,7 +460,7 @@
   "related": [
    "ai-local-authorities-uses-legal-limits",
    "ai-use-policy-local-authority",
-   "ai-procurement-tender-local-authority"
+   "ai-vendor-data-processing-agreement-local-authority"
   ]
  },
  "ai-resident-data-privacy-local-authority": {
@@ -467,8 +475,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-clinical-system-deployment",
-   "procurement",
-   "ai-use-policy-local-authority"
+   "ai-vendor-data-processing-agreement-local-authority",
+   "procurement"
   ]
  },
  "ai-use-policy-local-authority": {
@@ -1076,7 +1084,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "lawyer-wakeup-call"
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-legal-departments-talent": {
