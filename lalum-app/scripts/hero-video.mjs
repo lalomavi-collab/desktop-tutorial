@@ -1,6 +1,6 @@
 // Renders the home hero video (public/media/lalum-hero.mp4 and its poster).
 //
-// The clip is a 16 second silent loop on AI and real estate, drawn in code so
+// The clip is a 16 second silent loop on Legal AI (real estate sits lower on the page), drawn in code so
 // it can be regenerated and edited as text instead of re-shot. The wordmark is
 // the supplied artwork (public/lalum-logo-inverse.svg), never a typeface.
 //
@@ -29,9 +29,8 @@ const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf
 // Hebrew copy. No dashes as punctuation (CLAUDE.md). Claims stay at the level
 // the site itself already makes; nothing here asserts a figure or an authority.
 const SCENES = [
-  { id: "s2", a: 2.6, b: 6.8, h: "AI ומשפט", p: "ממשל, ציות וניהול סיכונים בארגונים שמשתמשים בבינה מלאכותית" },
-  { id: "s3", a: 6.8, b: 11.0, h: "נדל״ן והתחדשות עירונית", p: "עסקאות והתחדשות עירונית, בישראל ובחו״ל" },
-  { id: "s4", a: 11.0, b: 14.0, h: "שני תחומים, ראייה משפטית אחת", p: "נבנה להחזיק" },
+  { id: "s2", a: 2.6, b: 8.2, h: "AI ומשפט", p: "ממשל, ציות וניהול סיכונים בארגונים שמשתמשים בבינה מלאכותית" },
+  { id: "s3", a: 8.2, b: 14.0, h: "ממשל AI שנבנה להחזיק", p: "מדיניות שימוש, סיכון ותיעוד, מהחוזה ועד הרגולטור" },
 ];
 
 const html = `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><style>
@@ -55,7 +54,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 <div id="wmTop" class="wm" style="top:70px">${logo}</div>
 <svg class="art" id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div class="txt" id="txt"></div>
-<div class="name" id="end" style="top:430px"><b>ד״ר עו״ד אברהם ללום</b><span>AI ומשפט · נדל״ן והתחדשות עירונית</span></div>
+<div class="name" id="end" style="top:430px"><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
 <script>
 const SCENES=${JSON.stringify(SCENES)};
 const ART=document.getElementById("art"), TXT=document.getElementById("txt"), END=document.getElementById("end"), WM=document.getElementById("wmTop");
@@ -98,15 +97,15 @@ window.render=function(t){
   edges.forEach(l=>{const p=ease((t-2.8-l._i*.06)/.9);l.setAttribute("stroke-dashoffset",l._len*(1-p));l.setAttribute("opacity",.85)});
   nodes.forEach(c=>{const p=ease((t-2.6-c._i*.07)/.5);c.setAttribute("opacity",p);c.setAttribute("r",(c._i%3==0?9:6)*(0.4+0.6*p)*(1+.12*Math.sin(t*3+c._i)))});
   // network moves up and shrinks when the skyline arrives, stays small above it
-  const m=ease((t-10.8)/1.2);
+  const m=0;
   const ns=1-.55*m, ny=-145*m;
   net.setAttribute("transform","translate("+(360*(1-ns))+","+(230*(1-ns)+ny)+") scale("+ns+")");
-  net.setAttribute("opacity",netIn*netOut*(t>=6.8&&t<11?1-.82*ease((t-6.8)/.7)+.82*ease((t-10.2)/.8):1));
+  net.setAttribute("opacity",netIn*netOut);
 
   // skyline rises in scene 3, stays
   bld.forEach((g,i)=>{const p=ease((t-7.0-i*.18)/.9);g._r.setAttribute("y",430-g._h*p);g._r.setAttribute("height",Math.max(.01,g._h*p));
     g._wins.forEach(w=>w.setAttribute("opacity",clamp((p-.7)/.3)))});
-  sky.setAttribute("opacity",ease((t-6.9)/.5)*(1-ease((t-14)/.5)));
+  sky.setAttribute("opacity",0);
 
   // text
   TXT.style.opacity=1;
