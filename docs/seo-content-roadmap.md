@@ -137,6 +137,7 @@
 - V מרשם אלגוריתמים ושקיפות יזומה ברשות (ai-algorithm-register-proactive-transparency)
 - V מדריך: ניהול אירוע כשל מערכת AI ברשות ותיקון יזום (ai-incident-response-local-authority-guide)
 - V נגישות ורב-לשוניות בשירותי AI של הרשות והמענה האנושי החלופי (ai-municipal-accessibility-multilingual)
+- V Shadow AI ברשות: שימוש עובדים לא-מאושר בכלים ציבוריים (ai-shadow-ai-local-authority-staff)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
