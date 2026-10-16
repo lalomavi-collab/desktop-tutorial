@@ -142,6 +142,7 @@
 - V הזכות מול החלטה אוטומטית: GDPR סעיף 22 והפער הישראלי (ai-automated-decision-right-gdpr-article-22-israel-gap)
 - V מדריך: תסקיר השפעה על הפרטיות (DPIA) ל-AI ברשות (ai-privacy-impact-assessment-dpia-local-authority-guide)
 - V אבטחת מידע וההגנות הנדרשות ל-AI ברשות, ישראל מול העולם (ai-data-security-protections-local-authority)
+- V זכות העיון, התיקון והמחיקה כשהרשות מריצה AI, ישראל מול העולם (ai-data-subject-rights-access-deletion-local-authority)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
