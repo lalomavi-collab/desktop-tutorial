@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-municipal-accessibility-multilingual": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authorities-uses-legal-limits",
+   "ai-municipal-chatbot-resident-liability",
+   "ai-use-policy-local-authority"
+  ]
+ },
  "ai-incident-response-local-authority-guide": {
   "topic": "ai-governance",
   "related": [
    "ai-local-authority-tort-liability-damage",
    "ai-algorithm-register-proactive-transparency",
-   "ai-municipal-welfare-social-services"
+   "ai-municipal-accessibility-multilingual"
   ]
  },
  "ai-algorithm-register-proactive-transparency": {
@@ -84,7 +92,7 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-municipal-property-tax-collection",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-algorithm-register-proactive-transparency"
   ]
  },
  "ai-vendor-data-processing-agreement-local-authority": {
@@ -483,8 +491,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-local-authorities-uses-legal-limits",
-   "ai-use-policy-local-authority",
-   "ai-vendor-data-processing-agreement-local-authority"
+   "ai-municipal-accessibility-multilingual",
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-resident-data-privacy-local-authority": {
@@ -1050,8 +1058,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "law-algorithm-era",
+   "transcription-tools-guide",
    "unfair-advantage-course"
   ]
  },
@@ -1778,8 +1786,8 @@
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
   "topic": "mediation",
   "related": [
-   "legal-mediation-benefits",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "legal-mediation-benefits",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
