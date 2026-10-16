@@ -14,6 +14,7 @@ import { toIsoDate } from "../lib/isoDate";
 import { toBlocks, parseInline } from "../lib/articleBlocks";
 import { articleFaqs } from "../lib/articleFaqs";
 import { faqPageNode } from "../lib/schema";
+import { coverFor } from "../lib/covers";
 
 // One module per article body, so a page loads its own and nothing else. The
 // whole corpus used to arrive as one chunk on every content page, including the
@@ -96,10 +97,10 @@ export function Article() {
   const enPost = post && lang === "en" ? enPosts[post.slug] : undefined;
 
   const view = article
-    ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: undefined as string | undefined, blocks: article.blocks }
+    ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: coverFor(article.slug) || undefined, blocks: article.blocks }
     : enPost
-      ? { category: t.insights.fromBlog, title: enPost.title, dek: enPost.excerpt, date: enPost.date, read: undefined as string | undefined, cover: post!.cover, blocks: toBlocks(enPost.body) }
-      : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: post!.cover, blocks: body ? toBlocks(body) : [] };
+      ? { category: t.insights.fromBlog, title: enPost.title, dek: enPost.excerpt, date: enPost.date, read: undefined as string | undefined, cover: coverFor(post!.slug, post!.cover), blocks: toBlocks(enPost.body) }
+      : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: coverFor(post!.slug, post!.cover), blocks: body ? toBlocks(body) : [] };
 
   // Related reading: the three pieces closest to this one in subject, scored by
   // relatedTo over the whole corpus. These internal links keep readers (and
@@ -184,7 +185,7 @@ export function Article() {
 
       {view.cover && (
         <div className="wrap" style={{ maxWidth: 760, padding: "28px 32px 0" }}>
-          <img src={view.cover} alt={view.title} decoding="async" style={{ width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--line)", display: "block" }} />
+          <img src={view.cover} alt="" width={1200} height={630} decoding="async" fetchPriority="high" style={{ width: "100%", height: "auto", aspectRatio: "1200 / 630", objectFit: "cover", borderRadius: 18, border: "1px solid var(--line)", display: "block", boxShadow: "0 18px 40px rgba(27,27,27,.10)" }} />
         </div>
       )}
 

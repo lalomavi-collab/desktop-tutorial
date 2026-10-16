@@ -19,6 +19,7 @@ import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
+import { coverFor } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { topicPath } from "../lib/topics";
 
@@ -249,10 +250,8 @@ export function Home() {
             const p = INSIGHTS_PALETTE[i % INSIGHTS_PALETTE.length];
             return (
               <Link key={a.slug} to={`/insights/${a.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}` }}>
-                <div className="article-card-head" style={{ background: `linear-gradient(140deg, ${p.tint} 0%, var(--card) 100%)` }}>
-                  <span className="article-card-icon" style={{ color: p.accent, borderColor: p.tint }}>
-                    <Icon name={a.icon} size={28} />
-                  </span>
+                <div className="article-card-head article-card-head-img">
+                  <img src={coverFor(a.slug)} alt="" width={1200} height={630} loading="lazy" decoding="async" />
                   <span className="article-card-cat" style={{ color: p.accent, borderColor: p.accent }}>{a.category}</span>
                 </div>
                 <div className="article-card-body">

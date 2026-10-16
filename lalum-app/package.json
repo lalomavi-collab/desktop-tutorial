@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/cockpit-text-check.mjs && node scripts/client-names-check.mjs && tsc -b && vite build",
+    "build": "node scripts/covers-check.mjs && node scripts/cockpit-text-check.mjs && node scripts/client-names-check.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "seo-check": "node scripts/seo-check.mjs",
     "faq-check": "node scripts/faq-schema-check.mjs",
@@ -14,6 +14,7 @@
     "postbuild": "node scripts/build-check.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "split-articles": "node scripts/split-articles.mjs",
+    "covers": "node scripts/generate-covers.mjs",
     "a11y-audit": "node scripts/a11y-audit.mjs",
     "template-check": "node scripts/template-check.mjs",
     "kyc-check": "node scripts/kyc-check.mjs",
