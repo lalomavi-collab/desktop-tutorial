@@ -21,6 +21,7 @@ import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
 import { coverFor } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
+import { HeroVideo } from "../components/HeroVideo";
 import { topicPath } from "../lib/topics";
 
 // Same accent language as the article grid on /insights (src/pages/Insights.tsx),
@@ -85,15 +86,13 @@ export function Home() {
             <SiteSearch />
           </div>
 
-          {/* Decorative brand panel, not a photo: purely illustrative, so it
-              carries no link and is hidden from assistive tech. Lighter than
-              the portrait it replaces (inline SVG, nothing to fetch), so it
-              costs the page's LCP nothing instead of needing eager-loading
-              treatment. */}
-          <div className="founder-hero founder-hero-brand" aria-hidden="true">
-            <div className="founder-hero-brand-art"><PillarArt theme="ai" /></div>
-            <Wordmark height={44} label={h.logoAlt} className="founder-hero-brand-mark" />
-          </div>
+          {/* The clip sits where the brand panel used to: a silent loop on the
+              two areas the practice leads with, AI and real estate. Decorative
+              (the same message is in the headline and the cards below), so it
+              is hidden from assistive tech and carries no controls. It is drawn
+              in code and regenerated with scripts/hero-video.mjs; the poster is
+              the AI scene, so the first paint is already on message. */}
+          <HeroVideo />
         </div>
       </section>
 
