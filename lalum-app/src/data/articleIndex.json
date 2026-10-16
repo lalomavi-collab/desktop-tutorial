@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "ai-governance-board-framework"
+   "procurement"
   ]
  },
  "procurement": {
@@ -63,20 +63,28 @@
    "explainability"
   ]
  },
+ "ai-inter-authority-government-data-sharing": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority",
+   "ai-anonymization-reidentification-myth-local-authority",
+   "ai-resident-data-privacy-local-authority"
+  ]
+ },
  "ai-anonymization-reidentification-myth-local-authority": {
   "topic": "ai-governance",
   "related": [
+   "ai-inter-authority-government-data-sharing",
    "ai-data-subject-rights-access-deletion-local-authority",
-   "ai-cross-border-data-transfer-foreign-cloud-local-authority",
-   "ai-data-security-protections-local-authority"
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority"
   ]
  },
  "ai-cross-border-data-transfer-foreign-cloud-local-authority": {
   "topic": "ai-governance",
   "related": [
+   "ai-inter-authority-government-data-sharing",
    "ai-data-security-protections-local-authority",
-   "ai-data-subject-rights-access-deletion-local-authority",
-   "ai-anonymization-reidentification-myth-local-authority"
+   "ai-data-subject-rights-access-deletion-local-authority"
   ]
  },
  "ai-data-subject-rights-access-deletion-local-authority": {
@@ -84,7 +92,7 @@
   "related": [
    "ai-data-security-protections-local-authority",
    "ai-cross-border-data-transfer-foreign-cloud-local-authority",
-   "ai-anonymization-reidentification-myth-local-authority"
+   "ai-inter-authority-government-data-sharing"
   ]
  },
  "ai-data-security-protections-local-authority": {
@@ -100,7 +108,7 @@
   "related": [
    "ai-inventory-risk-tiering-local-authority-guide",
    "ai-data-security-protections-local-authority",
-   "ai-data-subject-rights-access-deletion-local-authority"
+   "ai-inter-authority-government-data-sharing"
   ]
  },
  "ai-automated-decision-right-gdpr-article-22-israel-gap": {
@@ -146,8 +154,8 @@
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
-   "ai-local-authority-decision-reasoning-transparency",
    "ai-use-policy-local-authority",
+   "ai-local-authority-decision-reasoning-transparency",
    "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
@@ -164,7 +172,7 @@
   "related": [
    "ai-procurement-tender-local-authority",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-data-subject-rights-access-deletion-local-authority"
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -563,8 +571,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-health-data-privacy",
-   "ai-privacy-protection-local-authority-israel-gdpr",
-   "ai-employee-monitoring-privacy"
+   "ai-inter-authority-government-data-sharing",
+   "ai-privacy-protection-local-authority-israel-gdpr"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -1324,7 +1332,7 @@
   "related": [
    "second-opinion-revolution",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "the-decision-room-החדר-שבו-נולדה-ההכרעה"
+   "homeowners-iron-dome"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1676,7 +1684,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
+   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1754,8 +1762,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1772,7 +1780,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
+   "business-arbitration"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
@@ -1843,8 +1851,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "understanding-mediation-process",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "understanding-mediation-process"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
