@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-local-authority-tort-liability-damage"
+   "ai-real-estate-valuation-reliance"
   ]
  },
  "sovereignty": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "ai-inventory-risk-tiering-local-authority-guide": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-use-policy-local-authority",
+   "ai-municipal-property-tax-collection",
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-vendor-data-processing-agreement-local-authority": {
@@ -156,7 +164,7 @@
   "related": [
    "ai-employee-monitoring-privacy",
    "ai-education-public-institutions-use-policy",
-   "ai-municipal-property-tax-collection"
+   "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -930,8 +938,8 @@
  "legal-algorist": {
   "topic": "ai-governance",
   "related": [
-   "lawyer-wakeup-call",
    "legal-logic",
+   "lawyer-wakeup-call",
    "why-realestate-needs-ai"
   ]
  },
@@ -1188,7 +1196,7 @@
   "related": [
    "combination-deals-architecture",
    "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "intl-realestate-transactions"
   ]
  },
  "israeli-realestate-abroad": {
