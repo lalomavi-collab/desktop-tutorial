@@ -20,6 +20,16 @@ import { Wordmark } from "../components/Wordmark";
 import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
 import { PillarArt } from "../components/PillarArt";
+import { topicPath } from "../lib/topics";
+
+// Same accent language as the article grid on /insights (src/pages/Insights.tsx),
+// trimmed to the first four pairs: this showcase only ever needs four cards.
+const INSIGHTS_PALETTE = [
+  { accent: "#a8482a", tint: "#f6e6de" },
+  { accent: "#916c26", tint: "#f3ecd6" },
+  { accent: "#8a3f45", tint: "#f3e3e4" },
+  { accent: "#3f6f68", tint: "#e1ede9" },
+];
 // The hero card carries the firm's own mark, not a personal portrait: a
 // visitor's first view of the site should read as the practice, not as one
 // person. The founder's own photo and story still appear, further down the
@@ -190,6 +200,71 @@ export function Home() {
                 <h3 className="dark-panel-title">{f.title}</h3>
                 <p className="dark-panel-body">{f.body}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* INSIGHTS: graphic, clickable cards into the article library itself,
+          rather than another paragraph describing it. AI & Law gets the
+          whole section (the practice's primary focus area, per the firm's
+          positioning): the four pieces are the firm's own curated,
+          five-language thought-leadership set (t.data.articles), the same
+          set /insights opens with, so every language shows real content
+          here, not a Hebrew-only fallback. A short strip of real client
+          questions (t.data.faqs) follows, each one opening straight to its
+          answer in the FAQ section below instead of only naming that the
+          FAQ exists. */}
+      <section className="wrap section">
+        <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+          <p className="eyebrow">{h.insightsEyebrow}</p>
+          <h2 className="h2">{h.insightsH2}</h2>
+          <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--slate)", margin: "14px 0 0" }}>{h.insightsLede}</p>
+        </div>
+        <div className="grid grid-4">
+          {t.data.articles.slice(0, 4).map((a, i) => {
+            const p = INSIGHTS_PALETTE[i % INSIGHTS_PALETTE.length];
+            return (
+              <Link key={a.slug} to={`/insights/${a.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}` }}>
+                <div className="article-card-head" style={{ background: `linear-gradient(140deg, ${p.tint} 0%, var(--card) 100%)` }}>
+                  <span className="article-card-icon" style={{ color: p.accent, borderColor: p.tint }}>
+                    <Icon name={a.icon} size={28} />
+                  </span>
+                  <span className="article-card-cat" style={{ color: p.accent, borderColor: p.accent }}>{a.category}</span>
+                </div>
+                <div className="article-card-body">
+                  <h3 className="serif article-card-title">{a.title}</h3>
+                  <p className="article-card-dek">{a.dek}</p>
+                  <div className="article-card-meta">
+                    <span>{a.date}</span><span style={{ color: p.accent }}>·</span><span>{a.read}</span>
+                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} &rarr;</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap", margin: "36px 0 0" }}>
+          <Link to={topicPath("ai-governance")} className="btn btn-clay">{h.insightsCtaAi}</Link>
+          <Link to="/insights" className="btn btn-outline">{h.insightsCtaAll}</Link>
+        </div>
+
+        {/* Q&A teaser: real questions, each opening straight to its answer. */}
+        <div style={{ margin: "56px 0 0" }}>
+          <p className="eyebrow" style={{ textAlign: "center" }}>{h.insightsQaEyebrow}</p>
+          <div className="grid grid-3" style={{ marginTop: 18 }}>
+            {t.data.faqs.slice(0, 3).map((f, i) => (
+              <a
+                key={f.q}
+                href="#faq"
+                className="card"
+                style={{ padding: "26px 24px" }}
+                onClick={() => { setFaqShown(true); setFaqOpen(i); }}
+              >
+                <span className="icon-badge" style={{ width: 40, height: 40, marginBottom: 14 }}><Icon name="quote" size={20} /></span>
+                <h3 className="h3" style={{ fontSize: 16.5, lineHeight: 1.4, margin: "0 0 10px" }}>{f.q}</h3>
+                <span className="card-go">{h.insightsQaCta} &rarr;</span>
+              </a>
             ))}
           </div>
         </div>
