@@ -96,6 +96,31 @@ export function Home() {
         </div>
       </section>
 
+      {/* QUICK ACCESS: the rubrics a visitor most wants reachable without
+          scrolling past the full pitch first, as two tappable icon tiles
+          directly under the hero. AI & Law is named again here even though
+          FocusAreas restates it fuller just below (a quick shortcut and a
+          full card coexisting for the same destination is normal dashboard
+          UX, not a mistake), because Articles & Insights otherwise has no
+          prominent entry point above the fold at all. */}
+      <section className="wrap" style={{ paddingBottom: 8 }}>
+        <p className="eyebrow" style={{ margin: "0 0 14px" }}>{h.quickAccessEyebrow}</p>
+        <div className="grid grid-2">
+          <Link to="/insights" className="card" style={{ padding: "22px 24px" }} aria-label={h.quickInsightsTitle}>
+            <span className="icon-badge" style={{ width: 40, height: 40 }}><Icon name="book" size={20} /></span>
+            <h3 className="h3" style={{ fontSize: 18, margin: "14px 0 6px" }}>{h.quickInsightsTitle}</h3>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--slate)", margin: 0 }}>{h.quickInsightsBody}</p>
+            <span className="card-go">{h.advisoryMore} &rarr;</span>
+          </Link>
+          <Link to="/ai-legal-advisory" className="card" style={{ padding: "22px 24px" }} aria-label={h.quickAiTitle}>
+            <span className="icon-badge" style={{ width: 40, height: 40 }}><Icon name="brain" size={20} /></span>
+            <h3 className="h3" style={{ fontSize: 18, margin: "14px 0 6px" }}>{h.quickAiTitle}</h3>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--slate)", margin: 0 }}>{h.quickAiBody}</p>
+            <span className="card-go">{h.advisoryMore} &rarr;</span>
+          </Link>
+        </div>
+      </section>
+
       {/* The two areas the practice leads with, first: a visitor should see
           the whole shape of the practice, AI & Law and Real Estate, in one
           glance right under the headline, before anything more granular.
