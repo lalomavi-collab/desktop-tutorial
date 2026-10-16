@@ -2236,10 +2236,10 @@ a.caps-item:focus-visible .caps-go {
   font-size: 12.5px;
 }
 
-/* ---------- hero brand panel ----------
-   Replaces the founder's own portrait: the opening carries the firm's mark,
-   not a headshot, so the front door reads as the practice rather than as one
-   person. Decorative only (see the aria-hidden wrapper in Home.tsx). */
+/* ---------- hero panel (the home video) ----------
+   Holds the home hero video (HeroVideo.tsx), a silent loop on AI and real
+   estate. It replaced the firm mark panel, which itself replaced a portrait, so
+   the front door reads as the practice, not as one person. Decorative only. */
 .founder-hero {
   position: relative;
   display: flex;
@@ -2252,24 +2252,14 @@ a.caps-item:focus-visible .caps-go {
   box-shadow: 0 34px 70px -34px rgba(15, 15, 16, 0.6);
   background: linear-gradient(160deg, var(--clay-tint), var(--paper) 72%);
 }
-.founder-hero-brand-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.9;
+.hero-video {
+  background: #101712;
 }
-.founder-hero-brand-art svg {
+.hero-video video {
   display: block;
   width: 100%;
   height: 100%;
-}
-.founder-hero-brand-mark {
-  position: relative;
-  z-index: 1;
-  height: auto;
-  width: auto;
-  max-width: 58%;
+  object-fit: cover;
 }
 
 /* ---------- accessibility menu (bottom-inline-start) ---------- */
@@ -4042,6 +4032,9 @@ html.a11y-reduce-motion *::after {
 .header-tools {
   display: flex;
   align-items: center;
+  /* The nav pills are gone, so the tools sit at the far end of the bar by
+     themselves; brand and menu stay together at the start. */
+  margin-inline-start: auto;
   gap: 10px;
   /* Never shrink: the icon buttons are fixed-width, so if the toolbar were
      allowed to shrink they would overflow and overlap each other (and the nav).
