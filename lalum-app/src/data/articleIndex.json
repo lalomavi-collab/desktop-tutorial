@@ -12,7 +12,7 @@
   "related": [
    "board-liability",
    "ai-ethics-legal-risks",
-   "ai-local-authority-tort-liability-damage"
+   "ai-real-estate-valuation-reliance"
   ]
  },
  "sovereignty": {
@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-municipal-welfare-social-services": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-education-public-institutions-use-policy",
+   "ai-use-policy-local-authority",
+   "ai-healthcare-liability-regulation"
+  ]
+ },
  "ai-municipal-property-tax-collection": {
   "topic": "ai-governance",
   "related": [
@@ -99,8 +107,8 @@
   "topic": "real-estate",
   "related": [
    "buying-apartment-from-contractor-guarantee-bank-financing",
-   "selling-overseas-property-tax-credit-timing",
-   "overseas-property-due-diligence"
+   "overseas-property-due-diligence",
+   "selling-overseas-property-tax-credit-timing"
   ]
  },
  "urban-renewal-small-building-private-home": {
@@ -124,7 +132,7 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-municipal-facial-recognition-surveillance",
-   "ai-local-authority-decision-reasoning-transparency"
+   "ai-municipal-welfare-social-services"
   ]
  },
  "ai-local-authority-tort-liability-damage": {
@@ -132,14 +140,14 @@
   "related": [
    "ai-municipal-property-tax-collection",
    "ai-local-authority-decision-reasoning-transparency",
-   "ai-use-policy-local-authority"
+   "ai-municipal-welfare-social-services"
   ]
  },
  "ai-municipal-facial-recognition-surveillance": {
   "topic": "ai-governance",
   "related": [
-   "ai-education-public-institutions-use-policy",
    "ai-employee-monitoring-privacy",
+   "ai-education-public-institutions-use-policy",
    "ai-municipal-property-tax-collection"
   ]
  },
@@ -147,8 +155,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-local-authority-decision-reasoning-transparency",
-   "ai-recruitment-screening-discrimination",
-   "ai-governance-municipal-corporations"
+   "ai-municipal-welfare-social-services",
+   "ai-recruitment-screening-discrimination"
   ]
  },
  "ai-local-authority-decision-reasoning-transparency": {
@@ -188,7 +196,7 @@
   "related": [
    "algorithmic-fiduciary-duty-ai",
    "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-municipal-property-tax-collection"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "algorithmic-fiduciary-duty-ai": {
@@ -914,8 +922,8 @@
  "legal-algorist": {
   "topic": "ai-governance",
   "related": [
-   "legal-logic",
    "lawyer-wakeup-call",
+   "legal-logic",
    "why-realestate-needs-ai"
   ]
  },
@@ -1068,7 +1076,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "tenant-urban-renewal-guide"
+   "lawyer-wakeup-call"
   ]
  },
  "ai-legal-departments-talent": {
@@ -1724,7 +1732,7 @@
   "related": [
    "לקחים-בעניין-מימון-פרויקטים-של-נדל-ן-לאור-משבר-הקורונה",
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
-   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
+   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה"
   ]
  },
  "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה": {

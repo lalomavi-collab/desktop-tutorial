@@ -131,6 +131,7 @@
 - V אחריות הרשות המקומית לנזק מהחלטת AI שגויה: מהתקיפה המנהלית לפיצוי (ai-local-authority-tort-liability-damage)
 - V ממשל AI בתאגיד העירוני: בין המשפט הציבורי לפרטי (ai-governance-municipal-corporations)
 - V AI בארנונה ובגבייה: סיווג נכס, מדידה מרחוק והחלטת החיוב (ai-municipal-property-tax-collection)
+- V AI ברווחה ובשירותים חברתיים: דירוג סיכון, הקצאת סיוע ואוכלוסייה פגיעה (ai-municipal-welfare-social-services)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
