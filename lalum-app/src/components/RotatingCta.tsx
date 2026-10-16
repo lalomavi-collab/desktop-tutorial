@@ -25,13 +25,13 @@ const LINES: Record<string, string[]> = {
   // No line runs longer than the first: the button is sized by the longest of
   // them, and a wider button pushes the pair in the hero onto two rows.
   he: [
-    "לבחינת התאמת תיק ל-AI & DOM",
+    "לבחינת התאמת Legal AI לארגון",
     "מתאים לתיק שלכם? בדיקה קצרה",
     "איפה אתם חשופים היום?",
     "מה רלוונטי לתיק שלכם?",
   ],
   en: [
-    "See if AI & DOM fit your matter",
+    "Check how Legal AI fits you",
     "A short check for your matter",
     "Where are you exposed today?",
     "What applies to your matter?",
