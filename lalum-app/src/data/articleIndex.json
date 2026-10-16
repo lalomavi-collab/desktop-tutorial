@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-privacy-protection-local-authority-israel-gdpr": {
+  "topic": "ai-governance",
+  "related": [
+   "privacy-law-amendment-13-guide",
+   "ai-resident-data-privacy-local-authority",
+   "ai-education-public-institutions-use-policy"
+  ]
+ },
  "ai-shadow-ai-local-authority-staff": {
   "topic": "ai-governance",
   "related": [
    "ai-inventory-risk-tiering-local-authority-guide",
    "ai-education-public-institutions-use-policy",
-   "ai-vendor-data-processing-agreement-local-authority"
+   "ai-privacy-protection-local-authority-israel-gdpr"
   ]
  },
  "ai-municipal-accessibility-multilingual": {
@@ -196,7 +204,7 @@
   "related": [
    "ai-employee-monitoring-privacy",
    "ai-education-public-institutions-use-policy",
-   "ai-shadow-ai-local-authority-staff"
+   "ai-privacy-protection-local-authority-israel-gdpr"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -507,8 +515,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-health-data-privacy",
-   "ai-employee-monitoring-privacy",
-   "gdpr-israeli-companies-ai"
+   "ai-privacy-protection-local-authority-israel-gdpr",
+   "ai-employee-monitoring-privacy"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -700,7 +708,7 @@
   "related": [
    "privacy-law-amendment-13-guide",
    "amendment-13-data-security-guide",
-   "eu-ai-act-roles-obligations"
+   "ai-privacy-protection-local-authority-israel-gdpr"
   ]
  },
  "attorney-client-privilege-ai": {
@@ -828,7 +836,7 @@
   "related": [
    "amendment-13-dpo-appointment",
    "amendment-13-data-security-guide",
-   "saas-eu-compliance-israeli-companies"
+   "ai-privacy-protection-local-authority-israel-gdpr"
   ]
  },
  "second-opinion-real-estate-urban-renewal": {
@@ -1066,8 +1074,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "transcription-tools-guide",
    "law-algorithm-era",
+   "transcription-tools-guide",
    "unfair-advantage-course"
   ]
  },
@@ -1187,8 +1195,8 @@
   "topic": "real-estate",
   "related": [
    "purchase-group-agreement-tax-risks",
-   "overseas-property-financing-israeli-investor",
-   "intl-realestate-transactions"
+   "intl-realestate-transactions",
+   "overseas-property-financing-israeli-investor"
   ]
  },
  "second-opinion-revolution": {
@@ -1403,8 +1411,8 @@
   "topic": "mediation",
   "related": [
    "behind-the-mask-mediation-language",
-   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות",
-   "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות"
+   "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
+   "שפת-גוף-ועסקאות-בינלאומיות-המימד-הסמוי-במשא-ומתן-חוצה-גבולות"
   ]
  },
  "גישור-מכוון-הכרעה-פתיחה-והמסגרת-התיאורטית-הרגע-שבו-מבינים-שהמשפט-לבדו-אינו-מספיק": {
@@ -1868,7 +1876,7 @@
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
+   "caution-note-real-estate-registration-removal"
   ]
  },
  "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה": {
