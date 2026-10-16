@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-municipal-property-tax-collection": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authority-tort-liability-damage",
+   "ai-local-authority-decision-reasoning-transparency",
+   "ai-education-public-institutions-use-policy"
+  ]
+ },
  "ai-autonomous-vehicles-transport-liability": {
   "topic": "ai-governance",
   "related": [
@@ -107,8 +115,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-education-public-institutions-use-policy",
-   "ai-use-policy-local-authority",
-   "algorithmic-fiduciary-duty-ai"
+   "ai-municipal-property-tax-collection",
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-education-public-institutions-use-policy": {
@@ -122,9 +130,9 @@
  "ai-local-authority-tort-liability-damage": {
   "topic": "ai-governance",
   "related": [
+   "ai-municipal-property-tax-collection",
    "ai-local-authority-decision-reasoning-transparency",
-   "ai-use-policy-local-authority",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-municipal-facial-recognition-surveillance": {
@@ -132,7 +140,7 @@
   "related": [
    "ai-education-public-institutions-use-policy",
    "ai-employee-monitoring-privacy",
-   "ai-local-authority-decision-reasoning-transparency"
+   "ai-municipal-property-tax-collection"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -147,8 +155,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-education-public-institutions-use-policy",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-municipal-property-tax-collection",
+   "ai-education-public-institutions-use-policy"
   ]
  },
  "ai-regulation-us-vs-eu-israeli-companies": {
@@ -180,7 +188,7 @@
   "related": [
    "algorithmic-fiduciary-duty-ai",
    "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-municipal-property-tax-collection"
   ]
  },
  "algorithmic-fiduciary-duty-ai": {
@@ -444,7 +452,7 @@
   "related": [
    "ai-health-data-privacy",
    "ai-employee-monitoring-privacy",
-   "ai-use-policy-local-authority"
+   "gdpr-israeli-companies-ai"
   ]
  },
  "ai-procurement-tender-local-authority": {
@@ -931,8 +939,8 @@
   "topic": "real-estate",
   "related": [
    "ai-legal-practice",
-   "contract-review-before-signing",
-   "overseas-partnership-guide"
+   "overseas-partnership-guide",
+   "contract-review-before-signing"
   ]
  },
  "ai-presentation-tools": {
@@ -1060,7 +1068,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "lawyer-wakeup-call"
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-legal-departments-talent": {
@@ -1467,8 +1475,8 @@
   "topic": "real-estate",
   "related": [
    "ai-governance-municipal-corporations",
-   "developer-agreement-urban-renewal-critical-clauses",
-   "israel-land-authority-lease-capitalization-transfer"
+   "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {

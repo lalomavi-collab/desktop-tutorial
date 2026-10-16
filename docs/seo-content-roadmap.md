@@ -130,6 +130,7 @@
 - V מצלמות וזיהוי פנים ברשות המקומית: הגבול החוקי של מעקב מבוסס AI (ai-municipal-facial-recognition-surveillance)
 - V אחריות הרשות המקומית לנזק מהחלטת AI שגויה: מהתקיפה המנהלית לפיצוי (ai-local-authority-tort-liability-damage)
 - V ממשל AI בתאגיד העירוני: בין המשפט הציבורי לפרטי (ai-governance-municipal-corporations)
+- V AI בארנונה ובגבייה: סיווג נכס, מדידה מרחוק והחלטת החיוב (ai-municipal-property-tax-collection)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
