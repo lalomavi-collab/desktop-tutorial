@@ -136,6 +136,7 @@
 - V מדריך: מיפוי וסיווג שימושי ה-AI ברשות לפי רמת סיכון (ai-inventory-risk-tiering-local-authority-guide)
 - V מרשם אלגוריתמים ושקיפות יזומה ברשות (ai-algorithm-register-proactive-transparency)
 - V מדריך: ניהול אירוע כשל מערכת AI ברשות ותיקון יזום (ai-incident-response-local-authority-guide)
+- V נגישות ורב-לשוניות בשירותי AI של הרשות והמענה האנושי החלופי (ai-municipal-accessibility-multilingual)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
