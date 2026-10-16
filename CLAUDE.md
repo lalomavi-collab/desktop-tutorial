@@ -21,8 +21,9 @@
 
 ## Two Focus Areas (PERMANENT)
 
-**LALUM leads with two areas, and only two: real estate and urban renewal (in Israel and abroad), and AI.**
+**LALUM leads with two areas, and only two: real estate and urban renewal (in Israel and abroad), and AI. The home page opens with Legal AI alone.**
 
+- **The top of the home page is Legal AI only** (decision by the owner, October 2026): the hero video, the pill, the headline, the lede and the credibility strip speak about Legal AI and nothing else. Real estate and urban renewal appear lower on the page (the focus-areas section and below), never in the hero. Do not put real estate, deals or mediation back into the hero copy, the hero video (`scripts/hero-video.mjs`) or the strip. The two areas stay equal everywhere else: navigation, `/advisory`, article queues and promotion.
 - AI means the full offering: advisory, ongoing accompaniment, and training. Not a second opinion alone.
 - Real estate covers both sides of the border: deals and urban renewal here, and property and investment abroad.
 - **Mediation and dispute resolution is not to be invested in from now on.** Its pages stay live and keep working, and it may be mentioned as a service the practice provides. Do not write new mediation articles, do not build it new pages, and do not spend promotion on it. The mediation cluster already holds 64 articles; it needs nothing more.
