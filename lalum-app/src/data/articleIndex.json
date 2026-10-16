@@ -28,7 +28,7 @@
   "related": [
    "explainability",
    "directors-liability-ai-era",
-   "procurement"
+   "ai-governance-board-framework"
   ]
  },
  "procurement": {
@@ -44,15 +44,15 @@
   "related": [
    "defensible",
    "legal-algorist",
-   "explainability"
+   "legal-ai-contract-review-playbook"
   ]
  },
  "memory": {
   "topic": "ai-governance",
   "related": [
    "partnership-dissolution-ai-ownership",
-   "three-minute-legal-check",
-   "eu-ai-act-transparency-generative"
+   "legal-ai-contract-review-playbook",
+   "three-minute-legal-check"
   ]
  },
  "defensible": {
@@ -61,6 +61,46 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "legal-ai-pricing-client-disclosure": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-human-review-protocol",
+   "legal-ai-tool-selection-test",
+   "legal-ai-contract-review-playbook"
+  ]
+ },
+ "legal-ai-human-review-protocol": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-client-confidentiality-privilege",
+   "legal-ai-pricing-client-disclosure",
+   "legal-ai-tool-selection-test"
+  ]
+ },
+ "legal-ai-tool-selection-test": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-pricing-client-disclosure",
+   "legal-ai-human-review-protocol",
+   "legal-ai-contract-review-playbook"
+  ]
+ },
+ "legal-ai-client-confidentiality-privilege": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-human-review-protocol",
+   "attorney-client-privilege-ai",
+   "ai-use-policy-organization"
+  ]
+ },
+ "legal-ai-contract-review-playbook": {
+  "topic": "contracts",
+  "related": [
+   "legal-ai-pricing-client-disclosure",
+   "legal-ai-tool-selection-test",
+   "legal-ai-human-review-protocol"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -162,8 +202,8 @@
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
-   "ai-use-policy-local-authority",
    "ai-local-authority-decision-reasoning-transparency",
+   "ai-use-policy-local-authority",
    "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
@@ -324,7 +364,7 @@
   "related": [
    "ai-real-estate-valuation-reliance",
    "ai-governance-municipal-corporations",
-   "ai-local-authority-tort-liability-damage"
+   "ai-healthcare-liability-regulation"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -500,7 +540,7 @@
   "related": [
    "ai-diagnosis-imaging-clinical",
    "ai-clinical-system-deployment",
-   "ai-health-data-privacy"
+   "ai-healthcare-informed-consent"
   ]
  },
  "cyprus-realestate-israeli-buyer-guide": {
@@ -650,9 +690,9 @@
  "lawyers-ai-ethics-accountability": {
   "topic": "ai-governance",
   "related": [
+   "legal-ai-client-confidentiality-privilege",
    "ai-banking-finance-regulation-risk",
-   "gemini-guide-law",
-   "ai-use-policy-local-authority"
+   "gemini-guide-law"
   ]
  },
  "ai-banking-finance-regulation-risk": {
@@ -779,8 +819,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "ai-health-data-privacy",
-   "ai-shadow-ai-local-authority-staff"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-health-data-privacy"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -867,8 +907,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-governance-board-framework",
-   "ai-healthcare-informed-consent",
-   "ai-health-data-privacy"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-healthcare-informed-consent"
   ]
  },
  "ai-risk-frameworks-iso-42001-nist": {
@@ -923,8 +963,8 @@
   "topic": "contracts",
   "related": [
    "attorney-client-privilege-ai",
-   "ai-shadow-ai-local-authority-staff",
-   "ai-vendor-agreement-dpa-liability-indemnity"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-shadow-ai-local-authority-staff"
   ]
  },
  "portugal-investment-guide": {
@@ -980,7 +1020,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "free-lawyer-illusion",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
+   "combination-deals-architecture"
   ]
  },
  "business-mediation-relations": {
@@ -1027,8 +1067,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "the-code-realestate",
-   "why-realestate-needs-ai"
+   "why-realestate-needs-ai",
+   "the-code-realestate"
   ]
  },
  "decision-oriented-ai-law": {
@@ -1138,9 +1178,9 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
+   "legal-ai-pricing-client-disclosure",
    "law-algorithm-era",
-   "transcription-tools-guide",
-   "unfair-advantage-course"
+   "transcription-tools-guide"
   ]
  },
  "digital-lawyers-2026": {
@@ -1164,7 +1204,7 @@
   "related": [
    "ai-legal-practice",
    "ai-workspace-encyclopedia",
-   "shadow-it-law-firms"
+   "legal-ai-tool-selection-test"
   ]
  },
  "why-realestate-needs-ai": {
@@ -1187,8 +1227,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "unfair-advantage-course",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "unfair-advantage-course"
   ]
  },
  "unfair-advantage-course": {
@@ -1196,7 +1236,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "lawyer-wakeup-call"
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-legal-departments-talent": {
@@ -1235,8 +1275,8 @@
   "topic": "real-estate",
   "related": [
    "second-opinion-revolution",
-   "tenant-urban-renewal-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "tenant-urban-renewal-guide"
   ]
  },
  "overseas-property-holding": {
@@ -1340,7 +1380,7 @@
   "related": [
    "second-opinion-revolution",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "the-decision-room-החדר-שבו-נולדה-ההכרעה"
+   "homeowners-iron-dome"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1602,8 +1642,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
-   "developer-agreement-urban-renewal-critical-clauses",
    "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
@@ -1770,8 +1810,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1796,7 +1836,7 @@
   "related": [
    "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
    "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך": {
@@ -1866,8 +1906,8 @@
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
   "topic": "mediation",
   "related": [
-   "legal-mediation-benefits",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "legal-mediation-benefits",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
