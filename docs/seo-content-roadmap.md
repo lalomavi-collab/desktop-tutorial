@@ -139,6 +139,7 @@
 - V נגישות ורב-לשוניות בשירותי AI של הרשות והמענה האנושי החלופי (ai-municipal-accessibility-multilingual)
 - V Shadow AI ברשות: שימוש עובדים לא-מאושר בכלים ציבוריים (ai-shadow-ai-local-authority-staff)
 - V הגנת הפרטיות ב-AI ברשות, ישראל מול ה-GDPR (עוגן תת-אשכול פרטיות) (ai-privacy-protection-local-authority-israel-gdpr)
+- V הזכות מול החלטה אוטומטית: GDPR סעיף 22 והפער הישראלי (ai-automated-decision-right-gdpr-article-22-israel-gap)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
