@@ -73,6 +73,18 @@ jobs:
         working-directory: lalum-app
         run: node scripts/search-console-report.mjs
 
+      - name: Ask Google why each sitemap page is or is not indexed
+        if: steps.gate.outputs.ready == 'true'
+        # URL Inspection API: the per-URL reason behind the Pages report's
+        # "not indexed" count. Failure here must not block the performance data
+        # from being committed, so it never fails the job.
+        continue-on-error: true
+        working-directory: lalum-app
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
+        run: node scripts/gsc-inspect.mjs
+
       - name: Commit the data to its own branch
         if: steps.gate.outputs.ready == 'true'
         # Not to main. A repository rule requires every change to main to go

@@ -60,7 +60,7 @@ export function signedJwt(clientEmail, privateKey, now = Math.floor(Date.now() /
   return `${header}.${claims}.${b64url(signer.sign(privateKey))}`;
 }
 
-async function accessToken(key) {
+export async function accessToken(key) {
   const res = await fetch(TOKEN_URL, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
