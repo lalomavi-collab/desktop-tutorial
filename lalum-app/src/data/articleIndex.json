@@ -63,28 +63,36 @@
    "explainability"
   ]
  },
+ "legal-ai-human-review-protocol": {
+  "topic": "ai-governance",
+  "related": [
+   "legal-ai-client-confidentiality-privilege",
+   "legal-ai-tool-selection-test",
+   "legal-ai-contract-review-playbook"
+  ]
+ },
  "legal-ai-tool-selection-test": {
   "topic": "ai-governance",
   "related": [
+   "legal-ai-human-review-protocol",
    "legal-ai-contract-review-playbook",
-   "notebooklm-focus",
-   "legal-ai-client-confidentiality-privilege"
+   "notebooklm-focus"
   ]
  },
  "legal-ai-client-confidentiality-privilege": {
   "topic": "ai-governance",
   "related": [
+   "legal-ai-human-review-protocol",
    "attorney-client-privilege-ai",
-   "ai-use-policy-organization",
-   "ai-health-data-privacy"
+   "ai-use-policy-organization"
   ]
  },
  "legal-ai-contract-review-playbook": {
   "topic": "contracts",
   "related": [
    "legal-ai-tool-selection-test",
-   "ai-vendor-agreement-dpa-liability-indemnity",
-   "real-estate-memorandum-of-understanding-binding"
+   "legal-ai-human-review-protocol",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -348,7 +356,7 @@
   "related": [
    "ai-real-estate-valuation-reliance",
    "ai-governance-municipal-corporations",
-   "ai-local-authority-tort-liability-damage"
+   "ai-healthcare-liability-regulation"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -1211,8 +1219,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "unfair-advantage-course",
-   "digital-lawyers-2026"
+   "digital-lawyers-2026",
+   "unfair-advantage-course"
   ]
  },
  "unfair-advantage-course": {
@@ -1259,8 +1267,8 @@
   "topic": "real-estate",
   "related": [
    "second-opinion-revolution",
-   "tenant-urban-renewal-guide",
-   "homeowners-iron-dome"
+   "homeowners-iron-dome",
+   "tenant-urban-renewal-guide"
   ]
  },
  "overseas-property-holding": {
