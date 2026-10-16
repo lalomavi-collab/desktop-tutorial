@@ -146,6 +146,7 @@
 - V העברת מידע תושבים לחו"ל כשספק ה-AI בענן זר (ai-cross-border-data-transfer-foreign-cloud-local-authority)
 - V המיתוס של האנונימיזציה: זיהוי חוזר במידע תושבים ו-AI (ai-anonymization-reidentification-myth-local-authority)
 - V שיתוף מידע תושבים בין גופי ממשל ו-AI: הגבלת המטרה והפסיפס (ai-inter-authority-government-data-sharing)
+- V שלושה מסלולי ליווי משפטי ל-AI במועצה: הטמעה, ייעוץ ומבדקים, הכשרה (ai-legal-support-local-council-three-tracks)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 

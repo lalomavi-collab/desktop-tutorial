@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-legal-support-local-council-three-tracks": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-shadow-ai-local-authority-staff",
+   "ai-privacy-impact-assessment-dpia-local-authority-guide",
+   "ai-inventory-risk-tiering-local-authority-guide"
+  ]
+ },
  "ai-inter-authority-government-data-sharing": {
   "topic": "ai-governance",
   "related": [
@@ -132,7 +140,7 @@
   "related": [
    "ai-inventory-risk-tiering-local-authority-guide",
    "ai-education-public-institutions-use-policy",
-   "ai-data-subject-rights-access-deletion-local-authority"
+   "ai-legal-support-local-council-three-tracks"
   ]
  },
  "ai-municipal-accessibility-multilingual": {
@@ -172,7 +180,7 @@
   "related": [
    "ai-procurement-tender-local-authority",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-cross-border-data-transfer-foreign-cloud-local-authority"
+   "ai-resident-data-privacy-local-authority"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -972,7 +980,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "free-lawyer-illusion",
-   "combination-deals-architecture"
+   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
   ]
  },
  "business-mediation-relations": {
@@ -1260,7 +1268,7 @@
   "related": [
    "homeowners-iron-dome",
    "free-lawyer-illusion",
-   "tenant-urban-renewal-guide"
+   "combination-deals-architecture"
   ]
  },
  "law-algorithm-era": {
@@ -1762,8 +1770,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
+   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1780,7 +1788,7 @@
   "related": [
    "הדרך-לאיזון-תהליכי-גישור-מכוון-הכרעה",
    "legal-mediation-benefits",
-   "business-arbitration"
+   "עו-ד-אברהם-ללום-מגשר-בורר-ומומחה-לנדל-ן-ויישוב-סכסוכים"
   ]
  },
  "המגשר-בגישור-מכוון-הכרעה-כאורח-במסגרת-הלילך-הגישור": {
@@ -1788,7 +1796,7 @@
   "related": [
    "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
    "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
+   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
   ]
  },
  "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך": {
@@ -1851,8 +1859,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "real-estate-arbitration",
-   "understanding-mediation-process"
+   "understanding-mediation-process",
+   "real-estate-arbitration"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
