@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-automated-decision-right-gdpr-article-22-israel-gap": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-municipal-property-tax-collection",
+   "ai-privacy-protection-local-authority-israel-gdpr"
+  ]
+ },
  "ai-privacy-protection-local-authority-israel-gdpr": {
   "topic": "ai-governance",
   "related": [
@@ -587,8 +595,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-banking-finance-regulation-risk",
-   "ai-use-policy-local-authority",
-   "gemini-guide-law"
+   "gemini-guide-law",
+   "ai-use-policy-local-authority"
   ]
  },
  "ai-banking-finance-regulation-risk": {
@@ -906,9 +914,9 @@
  "ai-liability-ruling": {
   "topic": "ai-governance",
   "related": [
+   "ai-automated-decision-right-gdpr-article-22-israel-gap",
    "ai-hallucinations-citations",
-   "decision-oriented-ai-law",
-   "lalum-clinic-experience"
+   "decision-oriented-ai-law"
   ]
  },
  "urban-renewal-risk": {
@@ -963,8 +971,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "why-realestate-needs-ai",
-   "the-code-realestate"
+   "the-code-realestate",
+   "why-realestate-needs-ai"
   ]
  },
  "decision-oriented-ai-law": {
@@ -1540,7 +1548,7 @@
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
    "developer-agreement-urban-renewal-critical-clauses",
-   "ai-governance-municipal-corporations"
+   "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1628,7 +1636,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1706,8 +1714,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1876,7 +1884,7 @@
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "caution-note-real-estate-registration-removal"
+   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
   ]
  },
  "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה": {
@@ -1899,8 +1907,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "ai-planning-permits-local-authority-discretion"
   ]
  }
 }
