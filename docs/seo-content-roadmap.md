@@ -145,6 +145,7 @@
 - V זכות העיון, התיקון והמחיקה כשהרשות מריצה AI, ישראל מול העולם (ai-data-subject-rights-access-deletion-local-authority)
 - V העברת מידע תושבים לחו"ל כשספק ה-AI בענן זר (ai-cross-border-data-transfer-foreign-cloud-local-authority)
 - V המיתוס של האנונימיזציה: זיהוי חוזר במידע תושבים ו-AI (ai-anonymization-reidentification-myth-local-authority)
+- V שיתוף מידע תושבים בין גופי ממשל ו-AI: הגבלת המטרה והפסיפס (ai-inter-authority-government-data-sharing)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
