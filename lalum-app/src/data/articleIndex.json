@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "legal-ai-client-confidentiality-privilege": {
+  "topic": "ai-governance",
+  "related": [
+   "attorney-client-privilege-ai",
+   "ai-use-policy-organization",
+   "ai-health-data-privacy"
+  ]
+ },
  "legal-ai-contract-review-playbook": {
   "topic": "contracts",
   "related": [
@@ -466,8 +474,8 @@
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
-   "ai-hr-use-policy",
    "ai-recruitment-screening-discrimination",
+   "ai-hr-use-policy",
    "ai-employee-monitoring-privacy"
   ]
  },
@@ -658,9 +666,9 @@
  "lawyers-ai-ethics-accountability": {
   "topic": "ai-governance",
   "related": [
+   "legal-ai-client-confidentiality-privilege",
    "ai-banking-finance-regulation-risk",
-   "gemini-guide-law",
-   "ai-use-policy-local-authority"
+   "gemini-guide-law"
   ]
  },
  "ai-banking-finance-regulation-risk": {
@@ -787,8 +795,8 @@
   "topic": "ai-governance",
   "related": [
    "shadow-it-law-firms",
-   "ai-health-data-privacy",
-   "ai-shadow-ai-local-authority-staff"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-health-data-privacy"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -875,8 +883,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-governance-board-framework",
-   "ai-healthcare-informed-consent",
-   "ai-health-data-privacy"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-healthcare-informed-consent"
   ]
  },
  "ai-risk-frameworks-iso-42001-nist": {
@@ -931,8 +939,8 @@
   "topic": "contracts",
   "related": [
    "attorney-client-privilege-ai",
-   "ai-shadow-ai-local-authority-staff",
-   "ai-vendor-agreement-dpa-liability-indemnity"
+   "legal-ai-client-confidentiality-privilege",
+   "ai-shadow-ai-local-authority-staff"
   ]
  },
  "portugal-investment-guide": {
@@ -1204,7 +1212,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "lawyer-wakeup-call"
+   "tenant-urban-renewal-guide"
   ]
  },
  "ai-legal-departments-talent": {
@@ -1874,8 +1882,8 @@
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
   "topic": "mediation",
   "related": [
-   "legal-mediation-benefits",
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
+   "legal-mediation-benefits",
    "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
