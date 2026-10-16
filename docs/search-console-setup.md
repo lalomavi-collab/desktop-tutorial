@@ -70,6 +70,7 @@ authenticated as lalum-search-console@lalum-seo.iam.gserviceaccount.com
 | `.github/workflows/search-console.yml` | רץ יומי, קורא את הסוד, מריץ את שני הסקריפטים ומכניס את הנתונים לריפו |
 | `lalum-app/scripts/search-console.mjs` | מושך 28 יום של נתונים (שאילתות, עמודים, תאריכים, מדינות) וכותב JSON |
 | `lalum-app/scripts/search-console-report.mjs` | קורא את ה-JSON ומפיק את הדוח |
+| `lalum-app/scripts/gsc-inspect.mjs` | בודק מול URL Inspection API כל כתובת ב-sitemap ומחזיר את הסיבה שגוגל נתן לה (נסרק ולא אונדקס, התגלה ולא נסרק, קנוני אחר ועוד), ל-`inspection-latest.json` |
 | `data/search-console/` | הנתונים עצמם, מצטברים לאורך זמן |
 
 הסקריפט מבקש הרשאת קריאה בלבד (`webmasters.readonly`). הוא אינו יכול לשנות דבר ב-Search Console.
