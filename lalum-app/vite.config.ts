@@ -15,6 +15,8 @@ import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
 import { LEGAL_TOOLS, TOOLS_PAGE, type LegalTool } from "./src/lib/legalTools";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
+import type { QA } from "./src/lib/schema";
+import { articleFaqs } from "./src/lib/articleFaqs";
 import { toBlocks, blocksToText, parseInline } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
@@ -150,8 +152,9 @@ function toIsoDate(s: string): string {
 // non-JS crawler or an AI answer engine sees the author, publisher, and date up
 // front, instead of the app-shell's Organization graph. Matches the runtime
 // shape (author linked by @id to the verified founder node).
-function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string; topic?: Topic }): string {
+function articleJsonLd(a: { slug: string; headline: string; desc: string; image?: string; date: string; body?: string; topic?: Topic; faqs?: QA[] }): string {
   const iso = toIsoDate(a.date);
+  const faqNode = a.faqs && a.faqs.length ? faqPageNode(a.faqs) : null;
   const graph = {
     "@context": "https://schema.org",
     "@graph": [
@@ -182,6 +185,7 @@ function articleJsonLd(a: { slug: string; headline: string; desc: string; image?
           { "@type": "ListItem", position: a.topic ? 4 : 3, name: a.headline, item: `${SITE}/insights/${a.slug}/` },
         ],
       },
+      ...(faqNode ? [faqNode] : []),
     ],
   };
   return `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(graph)}</script>`;
@@ -282,8 +286,14 @@ ${inner}
 // left every article a dead end: a crawler that does not run JavaScript could
 // reach an article, read it, and then had nowhere to go but the site nav, so
 // the corpus had no paths through it at all.
-function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = [], topic?: Topic): string {
+function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], related: { slug: string; title: string }[] = [], topic?: Topic, faqs: QA[] = []): string {
   const out = [`        <h1>${esc(headline)}</h1>`, `        <p>${esc(dek)}</p>`, `        ${blocksToHtml(blocks)}`];
+  // The visible Q&A a non-JS crawler reads, mirroring the FAQPage JSON-LD so the
+  // schema never describes content the page does not show.
+  if (faqs.length) {
+    out.push(`        <h2>${esc("שאלות ותשובות")}</h2>`);
+    for (const f of faqs) out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
+  }
   if (topic) {
     out.push(`        <p>${esc("נושא")}: <a href="${topicPath(topic.slug)}/">${esc(topic.name)}</a></p>`);
   }
@@ -893,11 +903,12 @@ function seoPrerender(): Plugin {
         // script on hydration and updates it in place, so nothing duplicates.
         if (r.article) {
           const topic = topicOfArticle(strings.he, r.article.slug);
-          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined, topic });
+          const faqs = articleFaqs[r.article.slug] ?? [];
+          const script = articleJsonLd({ ...r.article, desc: clip(r.desc), image: r.image, body: r.blocks?.length ? blocksToText(r.blocks) : undefined, topic, faqs });
           html = sub(html, "</head>", () => `    ${script}\n  </head>`);
           // Put the article's own prose in the raw HTML, replacing the generic
           // site fallback, so a crawler that skips JS reads the piece itself.
-          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus), topic));
+          if (r.blocks?.length) html = withStaticBody(html, articleBodyHtml(r.article.headline, r.desc, r.blocks, relatedTo(r.article.slug, corpus), topic, faqs));
         } else {
           // Bake the FAQPage structured data for FAQ-bearing pages (/faq, /advisory)
           // so the Q&A is visible to crawlers and AI answer engines without running
