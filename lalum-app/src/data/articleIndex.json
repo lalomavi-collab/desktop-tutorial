@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-anonymization-reidentification-myth-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-data-subject-rights-access-deletion-local-authority",
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority",
+   "ai-data-security-protections-local-authority"
+  ]
+ },
  "ai-cross-border-data-transfer-foreign-cloud-local-authority": {
   "topic": "ai-governance",
   "related": [
    "ai-data-security-protections-local-authority",
    "ai-data-subject-rights-access-deletion-local-authority",
-   "ai-privacy-impact-assessment-dpia-local-authority-guide"
+   "ai-anonymization-reidentification-myth-local-authority"
   ]
  },
  "ai-data-subject-rights-access-deletion-local-authority": {
@@ -76,7 +84,7 @@
   "related": [
    "ai-data-security-protections-local-authority",
    "ai-cross-border-data-transfer-foreign-cloud-local-authority",
-   "ai-privacy-impact-assessment-dpia-local-authority-guide"
+   "ai-anonymization-reidentification-myth-local-authority"
   ]
  },
  "ai-data-security-protections-local-authority": {
@@ -260,14 +268,14 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-municipal-property-tax-collection",
-   "ai-education-public-institutions-use-policy"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "ai-regulation-us-vs-eu-israeli-companies": {
   "topic": "ai-governance",
   "related": [
-   "eu-ai-act-israeli-companies",
    "eu-ai-act-2026",
+   "eu-ai-act-israeli-companies",
    "gpai-code-of-practice-foundation-models"
   ]
  },
@@ -434,8 +442,8 @@
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
-   "ai-hr-use-policy",
    "ai-recruitment-screening-discrimination",
+   "ai-hr-use-policy",
    "ai-employee-monitoring-privacy"
   ]
  },
@@ -1746,8 +1754,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
+   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1835,8 +1843,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "real-estate-arbitration",
-   "understanding-mediation-process"
+   "understanding-mediation-process",
+   "real-estate-arbitration"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {
