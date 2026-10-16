@@ -41,15 +41,20 @@ Status of each fact is marked. Nothing here is legal advice.
   self-employed business (`עוסק מורשה`) building the software for its own use, not for sale or rent to others; the
   Tax Authority's own guidance already exempts self-use software from the heavier software-house registration. On the
   Tax Authority's own registration screen the owner found a "number of users" field with no visible guidance for a
-  one-person, self-use case. A clarification email was drafted (not sent: no verified Tax Authority software-house
-  contact address was found, and the connected Outlook account has read-only Graph permissions here, no send/draft
-  scope) asking how to fill that field for a sole self-use developer, and whether the lighter self-use registration
-  path applies. Also blocked on the client side: this working environment cannot reach gov.il at all (outbound network
+  one-person, self-use case. A clarification email was drafted asking how to fill that field for a sole self-use
+  developer, and whether the lighter self-use registration path applies. No session here could send it (the connected
+  Outlook account has read-only Graph permissions, no send/draft scope, and an attempted admin consent grant was
+  declined on review: the app bundle also carries `Mail.Send`, `Files.ReadWrite.All`, `Calendars.ReadWrite` and Teams
+  send, far more than drafting needs, an unjustified exposure for a mailbox that holds client correspondence). The
+  owner sent it manually instead, 16 October 2026, 09:29 Israel time, to `mokedmh@shaam.gov.il` (a general Tax
+  Authority service address found by web search, not an address this project independently verified as the correct
+  one for software-house questions specifically). Awaiting a reply.
+  Separately blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
-  actual client code is not started. Next: the owner sends the clarification email once a verified recipient is
-  found, and either opens gov.il to this environment's allowed domains or shares the two PDFs directly, so a session
-  can read the real spec instead of building against secondhand summaries.
+  actual client code is not started. Next: once a reply arrives, or gov.il is opened to this environment's allowed
+  domains, or the two PDFs are shared directly, a session can read the real spec instead of building against
+  secondhand summaries.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
