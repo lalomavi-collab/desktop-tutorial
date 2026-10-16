@@ -12,6 +12,8 @@ import { articleCorpus, relatedTo } from "../lib/related";
 import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
 import { toBlocks, parseInline } from "../lib/articleBlocks";
+import { articleFaqs } from "../lib/articleFaqs";
+import { faqPageNode } from "../lib/schema";
 
 // One module per article body, so a page loads its own and nothing else. The
 // whole corpus used to arrive as one chunk on every content page, including the
@@ -114,6 +116,12 @@ export function Article() {
   // omitted when the string cannot be parsed.
   const datePublished = toIsoDate(view.date);
 
+  // Optional per-article Q&A (AEO). Shown as a visible block below and emitted
+  // as a FAQPage node in the same page's JSON-LD, from one source, so the schema
+  // mirrors visible content. Only on the Hebrew view, since the Q&A is Hebrew.
+  const faqs = !enPost && slug ? (articleFaqs[slug] ?? []) : [];
+  const faqNode = faqPageNode(faqs);
+
   return (
     <>
       <PageMeta
@@ -156,6 +164,7 @@ export function Article() {
                 { "@type": "ListItem", position: 3, name: view.title, item: `https://lalumapp.com/insights/${slug}/` },
               ],
             },
+            ...(faqNode ? [faqNode] : []),
           ],
         }}
       />
@@ -182,6 +191,20 @@ export function Article() {
       <article className="wrap" style={{ maxWidth: 760, padding: "36px 32px 24px" }}>
         {view.blocks.map((b, i) => <Block key={i} block={b} />)}
       </article>
+
+      {faqs.length > 0 && (
+        <section className="wrap" style={{ maxWidth: 760, padding: "8px 32px 24px" }}>
+          <h2 className="serif" style={{ fontSize: 28, fontWeight: 500, lineHeight: 1.25, margin: "12px 0 18px" }}>שאלות ותשובות</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <h3 style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.4, margin: "0 0 8px", color: "var(--ink)" }}>{f.q}</h3>
+                <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--ink)", margin: 0, maxWidth: "66ch" }}>{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="wrap" style={{ maxWidth: 760, padding: "16px 32px 64px" }}>
         <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 14, padding: 30, display: "flex", gap: 22, alignItems: "center" }}>
