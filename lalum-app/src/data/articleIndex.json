@@ -20,7 +20,7 @@
   "related": [
    "shadow-it-law-firms",
    "explainability",
-   "directors-liability-ai-era"
+   "ai-shadow-ai-local-authority-staff"
   ]
  },
  "board-liability": {
@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-shadow-ai-local-authority-staff": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-inventory-risk-tiering-local-authority-guide",
+   "ai-education-public-institutions-use-policy",
+   "ai-vendor-data-processing-agreement-local-authority"
+  ]
+ },
  "ai-municipal-accessibility-multilingual": {
   "topic": "ai-governance",
   "related": [
@@ -91,8 +99,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-municipal-property-tax-collection",
-   "ai-algorithm-register-proactive-transparency"
+   "ai-shadow-ai-local-authority-staff",
+   "ai-municipal-property-tax-collection"
   ]
  },
  "ai-vendor-data-processing-agreement-local-authority": {
@@ -188,7 +196,7 @@
   "related": [
    "ai-employee-monitoring-privacy",
    "ai-education-public-institutions-use-policy",
-   "ai-inventory-risk-tiering-local-authority-guide"
+   "ai-shadow-ai-local-authority-staff"
   ]
  },
  "ai-local-authority-allocation-bias-equality": {
@@ -706,8 +714,8 @@
  "partnership-dissolution-ai-ownership": {
   "topic": "contracts",
   "related": [
-   "ai-due-diligence-tech-acquisition",
    "memory",
+   "ai-due-diligence-tech-acquisition",
    "shadow-it-law-firms"
   ]
  },
@@ -740,7 +748,7 @@
   "related": [
    "overseas-property-due-diligence",
    "selling-overseas-property-tax-credit-timing",
-   "overseas-property-financing-israeli-investor"
+   "overseas-partnership-guide"
   ]
  },
  "amendment-13-data-security-guide": {
@@ -843,8 +851,8 @@
   "topic": "contracts",
   "related": [
    "attorney-client-privilege-ai",
-   "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-health-data-privacy"
+   "ai-shadow-ai-local-authority-staff",
+   "ai-vendor-agreement-dpa-liability-indemnity"
   ]
  },
  "portugal-investment-guide": {
@@ -1058,8 +1066,8 @@
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
-   "law-algorithm-era",
    "transcription-tools-guide",
+   "law-algorithm-era",
    "unfair-advantage-course"
   ]
  },
@@ -1860,7 +1868,7 @@
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
    "כיצד-לבחור-מגשר-מוסמך-מטעם-בית-המשפט-להליכי-גישור-מכוון-הכרעה",
-   "caution-note-real-estate-registration-removal"
+   "פתרון-סכסוך-בין-יזם-לקבלן-באמצעות-גישור-מכוון-הכרעה-בפרויקט-נדל-ן-תיאור-מקרה-מעשי"
   ]
  },
  "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה": {
