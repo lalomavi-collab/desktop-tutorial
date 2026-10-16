@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-incident-response-local-authority-guide": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-local-authority-tort-liability-damage",
+   "ai-algorithm-register-proactive-transparency",
+   "ai-municipal-welfare-social-services"
+  ]
+ },
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
@@ -76,7 +84,7 @@
   "related": [
    "ai-use-policy-local-authority",
    "ai-municipal-property-tax-collection",
-   "ai-algorithm-register-proactive-transparency"
+   "ai-local-authorities-uses-legal-limits"
   ]
  },
  "ai-vendor-data-processing-agreement-local-authority": {
@@ -164,7 +172,7 @@
   "related": [
    "ai-municipal-property-tax-collection",
    "ai-local-authority-decision-reasoning-transparency",
-   "ai-municipal-welfare-social-services"
+   "ai-incident-response-local-authority-guide"
   ]
  },
  "ai-municipal-facial-recognition-surveillance": {
@@ -1100,7 +1108,7 @@
   "related": [
    "realestate-master-course",
    "digital-toolbox-part1",
-   "tenant-urban-renewal-guide"
+   "lawyer-wakeup-call"
   ]
  },
  "ai-legal-departments-talent": {
@@ -1204,7 +1212,7 @@
   "related": [
    "combination-deals-architecture",
    "homeowners-iron-dome",
-   "overseas-partnership-guide"
+   "intl-realestate-transactions"
   ]
  },
  "israeli-realestate-abroad": {
@@ -1507,8 +1515,8 @@
   "topic": "real-estate",
   "related": [
    "israel-land-authority-lease-capitalization-transfer",
-   "ai-governance-municipal-corporations",
-   "developer-agreement-urban-renewal-critical-clauses"
+   "developer-agreement-urban-renewal-critical-clauses",
+   "ai-governance-municipal-corporations"
   ]
  },
  "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות": {
@@ -1763,8 +1771,8 @@
   "topic": "mediation",
   "related": [
    "גישבור-וגישור-מכוון-הכרעה-גבולות-ההבחנה-יתרונות-השילוב-ואתגרי-היישום",
-   "understanding-mediation-process",
-   "real-estate-arbitration"
+   "real-estate-arbitration",
+   "understanding-mediation-process"
   ]
  },
  "העתיד-של-גישור-מכוון-הכרעה-בישראל-מגמות-ותחזיות": {

@@ -135,6 +135,7 @@
 - V מדריך: הסכם עיבוד ושיתוף נתונים עם ספק AI, סעיפי החובה (ai-vendor-data-processing-agreement-local-authority)
 - V מדריך: מיפוי וסיווג שימושי ה-AI ברשות לפי רמת סיכון (ai-inventory-risk-tiering-local-authority-guide)
 - V מרשם אלגוריתמים ושקיפות יזומה ברשות (ai-algorithm-register-proactive-transparency)
+- V מדריך: ניהול אירוע כשל מערכת AI ברשות ותיקון יזום (ai-incident-response-local-authority-guide)
 
 ## עדיפות 1ד: בינה מלאכותית בעסקאות בינלאומיות (צומת שני תחומי המיצוב)
 
