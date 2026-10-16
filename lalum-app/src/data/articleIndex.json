@@ -63,20 +63,28 @@
    "explainability"
   ]
  },
+ "ai-cross-border-data-transfer-foreign-cloud-local-authority": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-data-security-protections-local-authority",
+   "ai-data-subject-rights-access-deletion-local-authority",
+   "ai-privacy-impact-assessment-dpia-local-authority-guide"
+  ]
+ },
  "ai-data-subject-rights-access-deletion-local-authority": {
   "topic": "ai-governance",
   "related": [
    "ai-data-security-protections-local-authority",
-   "ai-privacy-impact-assessment-dpia-local-authority-guide",
-   "ai-privacy-protection-local-authority-israel-gdpr"
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority",
+   "ai-privacy-impact-assessment-dpia-local-authority-guide"
   ]
  },
  "ai-data-security-protections-local-authority": {
   "topic": "ai-governance",
   "related": [
    "ai-privacy-protection-local-authority-israel-gdpr",
-   "ai-data-subject-rights-access-deletion-local-authority",
-   "ai-privacy-impact-assessment-dpia-local-authority-guide"
+   "ai-cross-border-data-transfer-foreign-cloud-local-authority",
+   "ai-data-subject-rights-access-deletion-local-authority"
   ]
  },
  "ai-privacy-impact-assessment-dpia-local-authority-guide": {
@@ -148,7 +156,7 @@
   "related": [
    "ai-procurement-tender-local-authority",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-resident-data-privacy-local-authority"
+   "ai-data-subject-rights-access-deletion-local-authority"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -348,7 +356,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "overseas-property-holding-structure"
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -426,8 +434,8 @@
  "ai-hr-overview-legal-exposure": {
   "topic": "ai-governance",
   "related": [
-   "ai-recruitment-screening-discrimination",
    "ai-hr-use-policy",
+   "ai-recruitment-screening-discrimination",
    "ai-employee-monitoring-privacy"
   ]
  },
@@ -1236,7 +1244,7 @@
   "related": [
    "homeowners-iron-dome",
    "free-lawyer-illusion",
-   "combination-deals-architecture"
+   "tenant-urban-renewal-guide"
   ]
  },
  "law-algorithm-era": {
@@ -1660,7 +1668,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
