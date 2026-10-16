@@ -160,7 +160,7 @@
 
 לפני כל מאמר: בדוק חפיפה מול legal-algorist, ai-legal-practice, legal-ai-chatbots-analysis, ai-hallucinations-citations, lawyers-ai-ethics-accountability, ai-legal-departments-talent, claude-guide-realestate-law. כל מאמר חייב לענות על שאלה שאף אחד מהם לא עונה עליה.
 
-- playbook לבדיקת חוזים בעזרת AI: מטריצת אישורים, חריגים שמסומנים ומה אסור להאציל
+- V playbook לבדיקת חוזים בעזרת AI: מטריצת אישורים, חריגים שמסומנים ומה אסור להאציל (legal-ai-contract-review-playbook)
 - סודיות ופריבילגיה כשעורך דין מזין מידע לקוח למודל שפה: מה מותר, מה דורש הסכמה ומה חובת הניהול
 - בחירת כלי Legal AI: מה לדרוש מספק (RAG מול צ'אטבוט כללי, מקורות, שחזור תשובה, תיעוד)
 - בקרה אנושית בעבודה משפטית מבוססת AI: איך מודדים שיעור טעויות ומתי חותמים

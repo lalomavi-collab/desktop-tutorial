@@ -44,15 +44,15 @@
   "related": [
    "defensible",
    "legal-algorist",
-   "explainability"
+   "legal-ai-contract-review-playbook"
   ]
  },
  "memory": {
   "topic": "ai-governance",
   "related": [
    "partnership-dissolution-ai-ownership",
-   "three-minute-legal-check",
-   "eu-ai-act-transparency-generative"
+   "legal-ai-contract-review-playbook",
+   "three-minute-legal-check"
   ]
  },
  "defensible": {
@@ -61,6 +61,14 @@
    "legal-logic",
    "ai-real-estate-valuation-reliance",
    "explainability"
+  ]
+ },
+ "legal-ai-contract-review-playbook": {
+  "topic": "contracts",
+  "related": [
+   "ai-vendor-agreement-dpa-liability-indemnity",
+   "real-estate-memorandum-of-understanding-binding",
+   "ai-use-policy-organization"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -162,8 +170,8 @@
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
-   "ai-use-policy-local-authority",
    "ai-local-authority-decision-reasoning-transparency",
+   "ai-use-policy-local-authority",
    "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
@@ -347,8 +355,8 @@
   "topic": "real-estate",
   "related": [
    "caution-note-real-estate-registration-removal",
-   "purchase-group-agreement-tax-risks",
-   "cyprus-realestate-israeli-buyer-guide"
+   "cyprus-realestate-israeli-buyer-guide",
+   "purchase-group-agreement-tax-risks"
   ]
  },
  "ai-generated-content-ownership-protection-contracts": {
@@ -980,7 +988,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "free-lawyer-illusion",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
+   "combination-deals-architecture"
   ]
  },
  "business-mediation-relations": {
@@ -1027,8 +1035,8 @@
   "topic": "ai-governance",
   "related": [
    "decision-oriented-ai-law",
-   "the-code-realestate",
-   "why-realestate-needs-ai"
+   "why-realestate-needs-ai",
+   "the-code-realestate"
   ]
  },
  "decision-oriented-ai-law": {
@@ -1340,7 +1348,7 @@
   "related": [
    "second-opinion-revolution",
    "למה-חשוב-שעורך-דין-ישראלי-ילווה-אותך-בעסקת-נדל-ן-מעבר-לים-גם-אם-הוא-לא-נותן-ייעוץ-לפי-הדין-הזר",
-   "the-decision-room-החדר-שבו-נולדה-ההכרעה"
+   "homeowners-iron-dome"
   ]
  },
  "urban-renewal-mistakes-guide": {
@@ -1770,8 +1778,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -1796,7 +1804,7 @@
   "related": [
    "שינוי-פני-הגישור-והמשפט-טכניקות-ליישוב-סכסוכים-בין-סמכות-להסכמה",
    "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך",
-   "גבולות-ההתערבות-השיפוטית-בהסדרי-גישור-בין-גישור-מסורתי-לגישור-מכוון-הכרעה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך": {
