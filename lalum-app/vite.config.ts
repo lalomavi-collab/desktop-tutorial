@@ -655,6 +655,7 @@ function oversightBodyHtml(): string {
     out.push(`        <p><a href="${esc(p.url)}">${esc(OVERSIGHT_PAGE.sourceLabel)}</a></p>`);
   }
   out.push(`        <p>${esc(OVERSIGHT_SOURCES["ai-act"].scope)} ${esc(OVERSIGHT_SOURCES.nist.scope)}</p>`);
+  out.push(`        <p>${esc(OVERSIGHT_PAGE.moreLabel)}: <a href="${esc(OVERSIGHT_PAGE.moreHref)}/">${esc(OVERSIGHT_PAGE.moreTitle)}</a></p>`);
   out.push(`        <p>${esc(OVERSIGHT_PAGE.checked)}</p>`, `        <p>${esc(OVERSIGHT_PAGE.disclaimer)}</p>`);
   return out.join("\n");
 }
