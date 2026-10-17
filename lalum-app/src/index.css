@@ -5238,3 +5238,20 @@ html.a11y-reduce-motion *::after {
   .oversight-grid { grid-template-columns: 1fr; }
   .oversight-detail { position: static; padding: 22px 18px; scroll-margin-top: 84px; }
 }
+
+/* ---------- home hero: classic, quiet, one idea per element ---------- */
+.hero-home { border-bottom: 1px solid var(--line); }
+.hero-h1 .italic-clay {
+  background: linear-gradient(transparent 90%, color-mix(in srgb, var(--clay) 34%, transparent) 90%);
+  padding-bottom: 2px;
+}
+.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.hero-foot { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); max-width: 52ch; }
+.hero-years { display: inline-flex; align-items: baseline; gap: 10px; }
+.hero-years .cred-label { margin-inline-end: 4px; }
+.hero-years .cred-fig { font-size: 30px; }
+.hero-years .cred-text { font-size: 13px; font-weight: 600; color: var(--slate); }
+.hero-textlink { margin-inline-start: auto; font-size: 14.5px; font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--clay); padding-bottom: 2px; }
+.hero-textlink:hover { color: var(--clay); }
+.hero-textlink:focus-visible { outline: 3px solid var(--clay); outline-offset: 4px; }
+@media (max-width: 900px) { .hero-foot { margin-top: 24px; } }
