@@ -4,7 +4,6 @@ import { Icon } from "../components/Icon";
 import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
-import { SiteSearch } from "../components/SiteSearch";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { FocusAreas } from "../components/FocusAreas";
 import { LinkedInFeed } from "../components/LinkedInFeed";
@@ -17,7 +16,6 @@ import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
-import { RotatingCta } from "../components/RotatingCta";
 import { VoiceNote } from "../components/VoiceNote";
 import { coverFor } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
@@ -59,32 +57,32 @@ export function Home() {
         path="/"
         jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/")), howToForPath(t, "/")])}
       />
-      {/* HERO */}
-      <section style={{ position: "relative", overflow: "hidden" }}>
+      {/* HERO. One headline, two actions, one fact. The credential strip
+          (frameworks by name), the search box (the header already has one) and
+          the rotating second button used to sit here too: a first-time visitor
+          met three acronyms and four calls to action before the first
+          sentence had landed. What stays: book a consultation, check how Legal
+          AI fits you, and a quiet way into the writing. The framework names
+          live where they are explained, on the AI pages. */}
+      <section className="hero-home" style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />
-        <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "100px 32px 92px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
+        <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "96px 32px 88px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
           <div>
             <span className="pill">{h.heroPill}</span>
-            <h1 className="h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
+            <h1 className="h1 hero-h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
               {h.heroH1a}
-              {" "}
+              {" "}
               <span className="italic-clay">{h.heroH1b}</span>
             </h1>
             <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
-            <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="hero-actions">
               <Link to="/book" className="btn btn-clay">{t.practice.riskCalc.cta}</Link>
-              <RotatingCta to="/advisory" label={h.heroCtaAi} />
+              <Link to="/advisory" className="btn btn-outline">{h.heroCtaAi}</Link>
             </div>
-            {/* Framework trust strip: an at-a-glance credibility signal, and the
-                multi-framework positioning (EU AI Act, ISO/IEC 42001, NIST AI RMF)
-                that the leading AI-governance advisories lead with. */}
-            <div className="cred-block">
-              <span className="cred-label">{h.frameworksLabel}</span>
-              <ul className="cred-strip">
-                {h.heroCreds.split(" · ").map((item) => <li key={item}><CredItem text={item} /></li>)}
-              </ul>
+            <div className="hero-foot">
+              <span className="hero-years"><span className="cred-label">{h.frameworksLabel}</span><CredItem text={h.heroCreds.split(" · ")[0]} /></span>
+              <Link to="/insights" className="hero-textlink">{h.quickInsightsTitle} <span aria-hidden="true">&larr;</span></Link>
             </div>
-            <SiteSearch />
           </div>
 
           {/* The clip sits where the brand panel used to: a silent loop on the
@@ -94,29 +92,6 @@ export function Home() {
               in code and regenerated with scripts/hero-video.mjs; the poster is
               the AI scene, so the first paint is already on message. */}
           <HeroVideo />
-        </div>
-      </section>
-
-      {/* QUICK ACCESS: a single shortcut to Articles & Insights, the one
-          rubric with no prominent entry point above the fold. Not paired
-          with an AI & Law tile here: FocusAreas, directly below, already
-          gives AI & Law and Real Estate the exact same treatment as each
-          other, and a second, earlier AI & Law shortcut with no Real Estate
-          counterpart would read as the site favouring one of the two equal
-          areas over the other. Reuses .pillar-band (the PRACTICE section's
-          row style below) rather than .card, since a single-item grid-2
-          would leave a bare empty cell beside it. */}
-      <section className="wrap" style={{ paddingBottom: 8 }}>
-        <p className="eyebrow" style={{ margin: "0 0 14px" }}>{h.quickAccessEyebrow}</p>
-        <div className="pillar-layers">
-          <Link to="/insights" className="pillar-band" aria-label={h.quickInsightsTitle}>
-            <span className="pillar-mark" aria-hidden="true"><Icon name="book" size={20} /></span>
-            <span className="pillar-txt">
-              <h3 className="h3 pillar-title">{h.quickInsightsTitle}</h3>
-              <p className="pillar-body">{h.quickInsightsBody}</p>
-            </span>
-            <span className="pillar-go" aria-hidden="true">&rarr;</span>
-          </Link>
         </div>
       </section>
 
