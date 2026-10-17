@@ -99,8 +99,8 @@ export function Article() {
   const view = article
     ? { category: article.category, title: article.title, dek: article.dek, date: article.date, read: article.read as string | undefined, cover: coverFor(article.slug) || undefined, blocks: article.blocks }
     : enPost
-      ? { category: t.insights.fromBlog, title: enPost.title, dek: enPost.excerpt, date: enPost.date, read: undefined as string | undefined, cover: coverFor(post!.slug, post!.cover), blocks: toBlocks(enPost.body) }
-      : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: coverFor(post!.slug, post!.cover), blocks: body ? toBlocks(body) : [] };
+      ? { category: t.insights.fromBlog, title: enPost.title, dek: enPost.excerpt, date: enPost.date, read: undefined as string | undefined, cover: coverFor(post!.slug), blocks: toBlocks(enPost.body) }
+      : { category: t.insights.fromBlog, title: post!.title, dek: post!.excerpt, date: post!.date, read: undefined as string | undefined, cover: coverFor(post!.slug), blocks: body ? toBlocks(body) : [] };
 
   // Related reading: the three pieces closest to this one in subject, scored by
   // relatedTo over the whole corpus. These internal links keep readers (and

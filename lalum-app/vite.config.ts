@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { blogMeta } from "./src/lib/blogMeta";
+import articleCovers from "./src/data/articleCovers.json";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
 import { alternatesFor, cvPath, langUrl, LANGS, EN_ARTICLE_SLUGS, type Lang } from "./src/lib/hreflang";
@@ -27,6 +28,14 @@ import { courses, courseFramework, courseSlug } from "./src/lib/courses";
 import { academyPro } from "./src/lib/academyPro";
 
 const SITE = "https://lalumapp.com";
+
+// Each article's own cover (scripts/generate-covers.mjs), as an absolute URL for
+// og:image and the Article JSON-LD. Prerendered HTML is what crawlers and link
+// previews read, so it has to name the same picture the page shows.
+const coverUrl = (slug: string): string | undefined => {
+  const c = (articleCovers as Record<string, string>)[slug];
+  return c ? `${SITE}${c}` : undefined;
+};
 
 // Marketing routes, with the same Hebrew SEO copy PageMeta applies at runtime.
 // Kept here so the static HTML a non-JS crawler or a social scraper (WhatsApp,
@@ -895,7 +904,7 @@ function seoPrerender(): Plugin {
           path: `insights/${a.slug}`,
           title: `${a.title} · LALUM`,
           desc: a.dek,
-          image: undefined as string | undefined,
+          image: coverUrl(a.slug),
           article: { slug: a.slug, headline: a.title, date: a.date },
           blocks: a.blocks as ArticleBlock[],
         }));
@@ -905,9 +914,7 @@ function seoPrerender(): Plugin {
           path: `insights/${m.slug}`,
           title: `${m.title} · LALUM`,
           desc: m.excerpt,
-          // m.cover is already absolute for wixstatic-hosted covers; only
-          // site-relative covers (e.g. /images/foo.svg) need SITE prefixed.
-          image: m.cover ? (m.cover.startsWith("http") ? m.cover : `${SITE}${m.cover.startsWith("/") ? "" : "/"}${m.cover}`) : undefined,
+          image: coverUrl(m.slug),
           article: { slug: m.slug, headline: m.title, date: m.date },
           blocks: toBlocks(bodyBySlug.get(m.slug) ?? ""),
         })),
@@ -1134,7 +1141,7 @@ function seoPrerender(): Plugin {
         const en = enPosts[slug];
         const meta = blogMeta.find((m) => m.slug === slug);
         if (!en || !meta) continue;
-        const image = meta.cover ? (meta.cover.startsWith("http") ? meta.cover : `${SITE}${meta.cover.startsWith("/") ? "" : "/"}${meta.cover}`) : undefined;
+        const image = coverUrl(slug);
         const blocks = toBlocks(en.body);
         const topic = topicOfArticle(strings.he, slug);
         let html = applyMeta(template, {
