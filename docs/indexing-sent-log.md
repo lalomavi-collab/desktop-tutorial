@@ -56,3 +56,13 @@
 | 2026-08-31 | https://lalumapp.com/en/knowledge/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/en/book/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/en/legal/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/legal-ai-client-confidentiality-privilege/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/legal-ai-contract-review-playbook/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/legal-ai-human-review-protocol/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/legal-ai-pricing-client-disclosure/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/legal-ai-tool-selection-test/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-drafted-real-estate-contract-review/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-real-estate-urban-renewal-legal-exposure/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/israel-land-authority-lease-capitalization-transfer/ | נשלח |
