@@ -42,7 +42,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .bg{position:absolute;inset:0;background:radial-gradient(120% 60% at 50% 22%,#223a29 0%,#142019 55%,#0d120e 100%)}
 .grid{position:absolute;inset:0;opacity:.06;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:48px 48px}
 .wm{position:absolute;left:50%;top:60px;width:230px;transform:translateX(-50%);opacity:.9}
-.sc{position:absolute;left:56px;right:56px;top:190px;opacity:0}
+.sc{position:absolute;left:56px;right:56px;top:310px;opacity:0}
 .tag{font-size:26px;font-weight:700;color:#9fc4a2;letter-spacing:.3px;margin-bottom:26px}
 .big{font-size:230px;font-weight:700;line-height:1;color:#f5f1e8;letter-spacing:-6px}
 .cap{font-size:40px;line-height:1.3;font-weight:700;margin-top:20px}
