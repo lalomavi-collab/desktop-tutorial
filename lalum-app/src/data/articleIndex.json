@@ -18,9 +18,9 @@
  "sovereignty": {
   "topic": "ai-governance",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "shadow-it-law-firms",
-   "explainability",
-   "directors-liability-ai-era"
+   "explainability"
   ]
  },
  "board-liability": {
@@ -63,6 +63,30 @@
    "explainability"
   ]
  },
+ "legal-department-client-privilege-ai-data-security": {
+  "topic": "ai-governance",
+  "related": [
+   "shadow-it-law-firms",
+   "attorney-client-privilege-ai",
+   "ai-vendor-agreement-dpa-liability-indemnity"
+  ]
+ },
+ "ai-saas-enterprise-contract-legal-ops-playbook": {
+  "topic": "contracts",
+  "related": [
+   "ai-municipal-tender-review-pre-publication",
+   "legal-ai-contract-review-playbook",
+   "ai-urban-renewal-resident-agreements-comparison"
+  ]
+ },
+ "ai-adoption-methodology-prompt-library-organizations": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-shadow-ai-local-authority-staff",
+   "ai-inventory-risk-tiering-local-authority-guide",
+   "ai-legal-support-local-council-three-tracks"
+  ]
+ },
  "ai-urban-renewal-resident-agreements-comparison": {
   "topic": "real-estate",
   "related": [
@@ -90,9 +114,9 @@
  "ai-municipal-tender-review-pre-publication": {
   "topic": "mediation",
   "related": [
+   "ai-saas-enterprise-contract-legal-ops-playbook",
    "ai-urban-renewal-resident-agreements-comparison",
-   "ai-procurement-tender-local-authority",
-   "ai-real-estate-due-diligence-acceleration"
+   "ai-procurement-tender-local-authority"
   ]
  },
  "ai-building-permit-acceleration-plans-scan": {
@@ -146,9 +170,9 @@
  "legal-ai-contract-review-playbook": {
   "topic": "contracts",
   "related": [
+   "ai-saas-enterprise-contract-legal-ops-playbook",
    "legal-ai-pricing-client-disclosure",
-   "legal-ai-tool-selection-test",
-   "legal-ai-human-review-protocol"
+   "legal-ai-tool-selection-test"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -268,7 +292,7 @@
   "related": [
    "ai-procurement-tender-local-authority",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-resident-data-privacy-local-authority"
+   "legal-department-client-privilege-ai-data-security"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -292,7 +316,7 @@
   "related": [
    "ai-product-liability-eu",
    "ai-healthcare-liability-regulation",
-   "algorithmic-fiduciary-duty-ai"
+   "ai-insurance-underwriting-pricing-regulation"
   ]
  },
  "selling-overseas-property-tax-credit-timing": {
@@ -468,7 +492,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "buying-apartment-from-contractor-guarantee-bank-financing"
+   "overseas-property-holding-structure"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -499,8 +523,8 @@
   "topic": "contracts",
   "related": [
    "ai-vendor-data-processing-agreement-local-authority",
-   "ai-generated-content-ownership-protection-contracts",
-   "ai-marketing-advertising-privacy-deception-deepfake"
+   "legal-department-client-privilege-ai-data-security",
+   "ai-generated-content-ownership-protection-contracts"
   ]
  },
  "ai-marketing-advertising-privacy-deception-deepfake": {
@@ -579,8 +603,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-resident-data-privacy-local-authority",
-   "ai-healthcare-liability-regulation",
-   "attorney-client-privilege-ai"
+   "legal-department-client-privilege-ai-data-security",
+   "ai-healthcare-liability-regulation"
   ]
  },
  "ai-healthcare-liability-regulation": {
@@ -772,7 +796,7 @@
   "related": [
    "portugal-real-estate-financing",
    "greece-realestate-israeli-buyer-guide",
-   "portugal-investment-guide"
+   "israeli-realestate-abroad"
   ]
  },
  "portugal-real-estate-taxation": {
@@ -844,7 +868,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-data-subject-rights-access-deletion-local-authority"
+   "legal-department-client-privilege-ai-data-security"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -866,9 +890,9 @@
  "attorney-client-privilege-ai": {
   "topic": "ai-governance",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "shadow-it-law-firms",
-   "legal-ai-client-confidentiality-privilege",
-   "ai-health-data-privacy"
+   "legal-ai-client-confidentiality-privilege"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -1010,9 +1034,9 @@
  "shadow-it-law-firms": {
   "topic": "contracts",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "attorney-client-privilege-ai",
-   "legal-ai-client-confidentiality-privilege",
-   "ai-shadow-ai-local-authority-staff"
+   "legal-ai-client-confidentiality-privilege"
   ]
  },
  "portugal-investment-guide": {
@@ -1068,7 +1092,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "free-lawyer-illusion",
-   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
+   "combination-deals-architecture"
   ]
  },
  "business-mediation-relations": {
@@ -1219,8 +1243,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-workspace-encyclopedia",
-   "building-ai-agents-realestate",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "building-ai-agents-realestate"
   ]
  },
  "lawyer-wakeup-call": {
@@ -1604,7 +1628,7 @@
   "related": [
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "portugal-investment-guide",
-   "intl-realestate-transactions"
+   "portugal-real-estate-taxation"
   ]
  },
  "משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה": {
@@ -1690,8 +1714,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
-   "developer-agreement-urban-renewal-critical-clauses",
    "israel-land-authority-lease-capitalization-transfer",
+   "developer-agreement-urban-renewal-critical-clauses",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
@@ -1955,8 +1979,8 @@
   "topic": "mediation",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "legal-mediation-benefits",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "legal-mediation-benefits"
   ]
  },
  "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה": {
@@ -2051,8 +2075,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "ai-planning-permits-local-authority-discretion"
   ]
  }
 }
