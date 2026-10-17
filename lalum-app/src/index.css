@@ -4221,6 +4221,11 @@ html.a11y-reduce-motion *::after {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* About twenty rows: taller than a 800px laptop window, and with no scroll
+     the language switch at the bottom could not be reached at all. */
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 /* One row per action: icon then label, so a control that used to be an
    unlabelled round glyph finally carries its own name. The sheet has the

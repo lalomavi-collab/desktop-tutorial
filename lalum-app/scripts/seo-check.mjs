@@ -113,11 +113,11 @@ if (!sitemap) {
   // Coverage: every published article must be in the sitemap, and the sitemap
   // must not list an article that no longer exists. This keeps the hand-authored
   // sitemap from drifting as articles are added or removed. Slugs are read from
-  // the source of truth: blogMeta.ts (imported posts) and strings.ts (curated
+  // the source of truth: blogMeta.ts (imported posts) and src/lib/strings/ (curated
   // pieces under data.articles). Sitemap article paths are compared against that
   // union, URL-decoded so Hebrew slugs match regardless of percent-encoding.
   const blogMetaSrc = read("src/lib/blogMeta.ts") || "";
-  const stringsSrc = read("src/lib/strings.ts") || "";
+  const stringsSrc = ["en", "he", "es", "fr", "ar"].map((l) => read(`src/lib/strings/${l}.ts`) || "").join("\n"); // one file per language, see src/lib/strings/
   const blogSlugs = [...blogMetaSrc.matchAll(/"slug":\s*"([^"]+)"/g)].map((m) => m[1]);
   const curatedSlugs = [...stringsSrc.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
   const knownSlugs = new Set([...blogSlugs, ...curatedSlugs]);

@@ -177,11 +177,11 @@ function validatePage(obj) {
 
 // ---------- 3. real homepage content smoke test ----------
 {
-  const strings = read("src/lib/strings.ts") || "";
+  const strings = ["en", "he", "es", "fr", "ar"].map((l) => read(`src/lib/strings/${l}.ts`) || "").join("\n");
   const pairs = [...strings.matchAll(/\{\s*q:\s*"((?:[^"\\]|\\.)*)"\s*,\s*a:\s*"((?:[^"\\]|\\.)*)"\s*\}/g)]
     .map((m) => ({ q: m[1], a: m[2] }));
   if (pairs.length < 2) {
-    fail("homepage FAQ content", "could not extract data.faqs pairs from strings.ts");
+    fail("homepage FAQ content", "could not extract data.faqs pairs from src/lib/strings/");
   } else {
     const built = pageJsonLd([faqPageNode(pairs)]);
     const problems = built ? validatePage(built) : ["built null from real content"];

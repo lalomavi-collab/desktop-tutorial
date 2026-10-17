@@ -42,8 +42,8 @@ const pillars = readFileSync(join(root, "src", "lib", "pillars.ts"), "utf8");
 // pillar copy does. Here it was typed in by hand, and it drifted: the cards
 // carried a form the rest of the site had already stopped using. A PNG is the
 // one surface the build checks cannot read.
-const NAME = (readFileSync(join(root, "src", "lib", "strings.ts"), "utf8").match(/founderName:\s*"(ד[^"]*ללום)"/) || [])[1];
-if (!NAME) { console.error("strings.ts: no Hebrew founderName found"); process.exit(1); }
+const NAME = (readFileSync(join(root, "src", "lib", "strings", "he.ts"), "utf8").match(/founderName:\s*"(ד[^"]*ללום)"/) || [])[1];
+if (!NAME) { console.error("strings/he.ts: no Hebrew founderName found"); process.exit(1); }
 function hebrewPillar(key, until) {
   const he = pillars.slice(pillars.indexOf("const he:"), pillars.indexOf("const en:"));
   const from = he.indexOf(`  ${key}: {`);
