@@ -6,7 +6,7 @@ import { AmbientBackground } from "../components/AmbientBackground";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { blogMeta } from "../lib/blogMeta";
-import { coverFor } from "../lib/covers";
+import { coverFor, coverThumb } from "../lib/covers";
 import { TOPICS_IN_ORDER, topicBySlug, topicPath } from "../lib/topics";
 import articleIndex from "../data/articleIndex.json";
 
@@ -24,13 +24,33 @@ type Card = {
   topic: string;
 };
 
+// The reel is decoration, so it is fetched only where it can be seen and
+// afforded: a wide screen, motion allowed, no data-saver. Hiding it with CSS was
+// not enough: a hidden autoplay video still downloads (268KB on a phone).
+function useReel(): boolean {
+  const [on] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    return window.matchMedia("(min-width: 821px) and (prefers-reduced-motion: no-preference)").matches && !conn?.saveData;
+  });
+  return on;
+}
+
+// Cards are drawn 18 at a time. 250 cards in the DOM, each with its own bitmap and
+// compositor layer, took an iPhone's page process past its memory limit ("A
+// problem repeatedly occurred"). Crawlers read the static HTML and the topic-hub
+// links below, which list every article regardless of this.
+const PAGE = 18;
+
 const topicOf = (slug: string) => (articleIndex as Record<string, { topic: string | null }>)[slug]?.topic ?? "practice";
 
 export function Insights() {
   const { t } = useLang();
   const ins = t.insights;
   const [topic, setTopic] = useState<string>("all");
+  const [shown, setShown] = useState(PAGE);
   const gridTop = useRef<HTMLDivElement>(null);
+  const reel = useReel();
 
   // Imported blog first (newest on top), then the curated bilingual pieces; one
   // card per slug, so a piece that exists in both lists is not shown twice.
@@ -52,18 +72,20 @@ export function Insights() {
 
   const lead = cards[0];
   const side = cards.slice(1, 3);
-  const rest = cards.slice(3);
+  const rest = cards.slice(3).filter((c) => topic === "all" || c.topic === topic);
+  const visible = rest.slice(0, shown);
   const label = (c: Card) => topicBySlug.get(c.topic)?.name ?? c.category;
 
   const pick = (slug: string) => {
     setTopic(slug);
+    setShown(PAGE);
     gridTop.current?.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
 
   const tile = (c: Card, i: number, cls = "") => (
-    <Link key={c.slug} to={`/insights/${c.slug}`} className={`ins-card ${cls}`} hidden={topic !== "all" && c.topic !== topic} style={{ ["--d" as string]: `${Math.min(i, 8) * 55}ms` }}>
+    <Link key={c.slug} to={`/insights/${c.slug}`} className={`ins-card ${cls}${i < 9 && shown === PAGE ? " ins-in" : ""}`} style={{ ["--d" as string]: `${Math.min(i, 8) * 55}ms` }}>
       <div className="ins-cover">
-        <img src={coverFor(c.slug)} alt="" width={1200} height={630} loading={i < 6 && cls ? "eager" : "lazy"} decoding="async" />
+        <img src={cls === "ins-lead" ? coverFor(c.slug) : coverThumb(c.slug)} alt="" width={cls === "ins-lead" ? 1200 : 640} height={cls === "ins-lead" ? 630 : 336} loading={cls ? "eager" : "lazy"} decoding="async" />
         <span className="ins-tag">{label(c)}</span>
       </div>
       <div className="ins-body">
@@ -92,11 +114,13 @@ export function Insights() {
             </h1>
             <p className="lede" style={{ maxWidth: "56ch", margin: "22px 0 0" }}>{ins.heroLede}</p>
           </div>
-          <div className="ins-reel" aria-hidden="true">
-            <video muted loop playsInline autoPlay preload="none" poster="/media/lalum-intro.jpg" tabIndex={-1}>
-              <source src="/media/lalum-reel.mp4" type="video/mp4" />
-            </video>
-          </div>
+          {reel && (
+            <div className="ins-reel" aria-hidden="true">
+              <video muted loop playsInline autoPlay preload="none" poster="/media/lalum-intro.jpg" tabIndex={-1}>
+                <source src="/media/lalum-reel.mp4" type="video/mp4" />
+              </video>
+            </div>
+          )}
         </div>
       </section>
 
@@ -120,7 +144,12 @@ export function Insights() {
 
       {/* GRID: every card stays in the page, so the list keeps linking to all of them */}
       <section className="wrap" style={{ paddingBottom: 28 }}>
-        <div className="ins-grid">{rest.map((c, i) => tile(c, i))}</div>
+        <div className="ins-grid">{visible.map((c, i) => tile(c, i))}</div>
+        {rest.length > shown ? (
+          <p style={{ textAlign: "center", margin: "32px 0 0" }}>
+            <button type="button" className="btn btn-outline" onClick={() => setShown((n) => n + PAGE)}>{t.ui.article.moreArticles} ({rest.length - shown})</button>
+          </p>
+        ) : null}
         {topic !== "all" && topicBySlug.get(topic) ? (
           <p style={{ textAlign: "center", margin: "28px 0 0" }}>
             <Link to={topicPath(topic)} className="btn btn-outline">{topicBySlug.get(topic)!.name}</Link>

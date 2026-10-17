@@ -8,7 +8,6 @@ import { Icon } from "./Icon";
 import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
 import { OPEN_CHAT_EVENT } from "./chatEvents";
-import { QuickAccessDot } from "./QuickAccessDot";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
@@ -261,7 +260,6 @@ export function Header() {
               The chat opens through its event rather than by importing
               ChatWidget, which would pull that heavy component out of its lazy
               chunk and into the header's. UserGuide already does the same. */}
-          <QuickAccessDot />
           <button
             type="button"
             className="tb-btn"
@@ -306,7 +304,7 @@ export function Header() {
               closing section, so nothing was actually missing an entry
               point. Only the client login/portal button remains here, so the
               header stays uncluttered. */}
-          <Link to={user ? "/portal" : "/login"} className="btn btn-ink btn-sm header-cta hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
+          <Link to={user ? "/portal" : "/login"} className="header-login hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
         </div>

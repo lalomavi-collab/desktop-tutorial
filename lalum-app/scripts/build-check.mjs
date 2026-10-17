@@ -62,6 +62,25 @@ const bodyOf = (h) => {
 };
 const textOf = (b) => b.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 
+// 0. Article previews name the article's own cover. The page showed its own
+// picture while the prerendered og:image still pointed at a retired, shared one,
+// which is what crawlers and link previews read.
+{
+  // Hebrew originals only: a translated alternate rightly shares its cover.
+  const arts = pages.filter((p) => /^[\\/]?insights[\\/][^\\/]+[\\/]index\.html$/.test(rel(p)) && !/^[\\/]?insights[\\/]topics[\\/]/.test(rel(p)));
+  const seen = new Map(), bad = [], shared = [];
+  for (const f of arts) {
+    const img = /property="og:image" content="([^"]*)"/.exec(readFileSync(f, "utf8"))?.[1] ?? "";
+    if (!img.includes("/images/articles/")) { bad.push(rel(f)); continue; }
+    if (seen.has(img)) shared.push(`${rel(f)} and ${seen.get(img)}`); else seen.set(img, rel(f));
+  }
+  bad.length
+    ? fail("article og:image is the article's own cover", `${bad.length} page(s) without one, e.g. ${bad[0]}`)
+    : shared.length
+      ? fail("article og:image is the article's own cover", `shared: ${shared[0]}`)
+      : pass(`article og:image is the article's own cover (${arts.length})`);
+}
+
 // 1. One <p> per character.
 const charParas = pages.filter((p) => /<p>.<\/p>/.test(readFileSync(p, "utf8")));
 charParas.length

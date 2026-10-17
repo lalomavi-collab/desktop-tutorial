@@ -12,7 +12,9 @@
 //
 //   npm run covers
 //
-// Writes public/images/articles/<slug>.webp (1200x630, also the social card) and
+// Writes public/images/articles/<slug>.webp (1200x630, also the social card),
+// public/images/articles/t/<slug>.webp (640x336, for cards: a phone decodes 4x
+// less memory per card, and 250 full-size images in one list crashed iOS) and
 // src/data/articleCovers.json. Fails if two covers are visually near-identical.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from "node:fs";
@@ -32,7 +34,7 @@ const src = readFileSync(join(ROOT, "src/lib/blogMeta.ts"), "utf8");
 const from = src.indexOf("blogMeta: BlogMeta[] = [") + "blogMeta: BlogMeta[] = ".length;
 const blog = JSON.parse(src.slice(from, src.lastIndexOf("];") + 1).replace(/,\s*\]\s*$/, "]"));
 const items = blog.map((b) => ({ slug: b.slug, text: `${b.title} ${b.excerpt}` }));
-const strs = readFileSync(join(ROOT, "src/lib/strings.ts"), "utf8");
+const strs = readFileSync(join(ROOT, "src/lib/strings/he.ts"), "utf8");
 const heBlock = strs.slice(strs.indexOf("slug: \"eu-ai-act-2026\", icon: \"shield\", category: \"רגולציית AI\""));
 for (const m of heBlock.matchAll(/slug: "([a-z0-9-]+)", icon: "[a-z]+", category: "[^"]*",\s*title: "([^"]*)"/g)) {
   if (!items.some((i) => i.slug === m[1])) items.push({ slug: m[1], text: m[2] });
@@ -65,9 +67,12 @@ const P = {
   clay: ["#a8482a", "#f6e6de"], ochre: ["#916c26", "#f3ecd6"], wine: ["#8a3f45", "#f3e3e4"], teal: ["#3f6f68", "#e1ede9"],
   indigo: ["#5a4f9a", "#e8e5f3"], forest: ["#41663f", "#e5eede"], slate: ["#3a5a7a", "#e2e9f1"],
 };
+// Four classic hues only (the site's greens, slate and gold). Seven read as a
+// rainbow once 250 covers sat side by side; the compositions, not the colours,
+// are what tell two pieces apart.
 const BY_MOTIF = {
-  city: ["clay", "ochre", "forest"], abroad: ["teal", "slate", "ochre"], civic: ["slate", "teal", "forest"], court: ["wine", "slate", "ochre"],
-  mediation: ["teal", "forest", "wine"], privacy: ["indigo", "slate", "teal"], contract: ["wine", "ochre", "clay"], network: ["indigo", "teal", "slate"],
+  city: ["forest", "ochre"], abroad: ["teal", "slate"], civic: ["slate", "teal"], court: ["slate", "ochre"],
+  mediation: ["teal", "forest"], privacy: ["slate", "teal"], contract: ["ochre", "forest"], network: ["teal", "slate", "forest"],
 };
 const INK = "#1a1815";
 const W = 1200, H = 630;
@@ -218,6 +223,8 @@ hashes = {}
 for s in slugs:
     im = Image.open(os.path.join(tmp, s + ".png")).convert("RGB")
     im.save(os.path.join(out, s + ".webp"), "WEBP", quality=80, method=6)
+    os.makedirs(os.path.join(out, "t"), exist_ok=True)
+    im.resize((640, 336), Image.LANCZOS).save(os.path.join(out, "t", s + ".webp"), "WEBP", quality=78, method=6)
     g = im.convert("L").resize((24, 14))
     px = list(g.getdata()); avg = sum(px) / len(px)
     hashes[s] = [1 if p > avg else 0 for p in px]
@@ -229,6 +236,7 @@ for i in range(len(keys)):
 print(json.dumps(sorted(worst)[:20]))
 `;
 for (const f2 of readdirSync(OUT)) if (f2.endsWith(".webp") && !map[`${f2.slice(0, -5)}`]) rmSync(join(OUT, f2));
+if (existsSync(join(OUT, "t"))) for (const f2 of readdirSync(join(OUT, "t"))) if (f2.endsWith(".webp") && !map[`${f2.slice(0, -5)}`]) rmSync(join(OUT, "t", f2));
 const res = execFileSync("python3", ["-c", py, TMP, OUT, JSON.stringify(Object.keys(map))], { encoding: "utf8" });
 const near = JSON.parse(res);
 writeFileSync(join(ROOT, "src/data/articleCovers.json"), JSON.stringify(map, null, 1) + "\n");
