@@ -76,3 +76,13 @@
 | 2026-10-17 | https://lalumapp.com/insights/ai-clinical-system-deployment/ | נשלח |
 | 2026-10-17 | https://lalumapp.com/insights/ai-diagnosis-imaging-clinical/ | נשלח |
 | 2026-10-17 | https://lalumapp.com/insights/ai-employee-evaluation-decisions/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-employee-monitoring-privacy/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-health-data-privacy/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-healthcare-informed-consent/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-healthcare-liability-regulation/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-hr-overview-legal-exposure/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-insurance-underwriting-pricing-regulation/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-international-transactions-overview/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-marketing-advertising-privacy-deception-deepfake/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-recruitment-screening-discrimination/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-regulation-us-vs-eu-israeli-companies/ | נשלח |
