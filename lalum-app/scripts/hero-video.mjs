@@ -1,8 +1,16 @@
 // Renders the home hero video (public/media/lalum-hero.mp4 and its poster).
 //
-// The clip is a 16 second silent loop on Legal AI (real estate sits lower on the page), drawn in code so
-// it can be regenerated and edited as text instead of re-shot. The wordmark is
-// the supplied artwork (public/lalum-logo-inverse.svg), never a typeface.
+// Concept: "the contract, read back". A sample clause is scanned, the phrases
+// worth a lawyer's attention are flagged, they lift out of the text and become
+// the nodes of a network (compliance, insurance, documentation, regulator), and
+// the network settles into the scales of justice. The machine flags, the human
+// decides. It is the one thing only a practice that is both AI and law can
+// show, so the clip is about the join, not about either side alone.
+//
+// Silent 16 second loop, drawn in code so the text can be edited and the clip
+// regenerated instead of re-shot. The wordmark is the supplied artwork
+// (public/lalum-logo-inverse.svg), never a typeface. The clause is invented for
+// illustration and says so on screen; nothing here asserts a legal position.
 //
 //   PLAYWRIGHT_MODULE=$(npm root -g)/playwright node scripts/hero-video.mjs
 //
@@ -26,11 +34,11 @@ mkdirSync(frames, { recursive: true });
 
 const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf8").replace(/<svg /, '<svg class="wm" ');
 
-// Hebrew copy. No dashes as punctuation (CLAUDE.md). Claims stay at the level
-// the site itself already makes; nothing here asserts a figure or an authority.
+// Hebrew copy. No dashes as punctuation (CLAUDE.md).
 const SCENES = [
-  { id: "s2", a: 2.6, b: 8.2, h: "AI ומשפט", p: "ממשל, ציות וניהול סיכונים בארגונים שמשתמשים בבינה מלאכותית" },
-  { id: "s3", a: 8.2, b: 14.0, h: "ממשל AI שנבנה להחזיק", p: "מדיניות שימוש, סיכון ותיעוד, מהחוזה ועד הרגולטור" },
+  { a: 2.4, b: 6.4, h: "AI קורא את החוזה", p: "ומסמן סעיפים שכדאי לעצור עליהם" },
+  { a: 6.6, b: 10.2, h: "ומחבר בין הנקודות", p: "ציות, ביטוח, תיעוד ורגולציה, במבט אחד" },
+  { a: 10.4, b: 13.8, h: "המכונה מסמנת. האדם מכריע.", p: "ייעוץ משפטי בעידן הבינה המלאכותית" },
 ];
 
 const html = `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><style>
@@ -40,79 +48,111 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .bg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 28%,#223a29 0%,#142019 52%,#0d120e 100%)}
 .grid{position:absolute;inset:0;opacity:.07;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:48px 48px}
 .wm{position:absolute;left:50%;width:300px;transform:translateX(-50%)}
-.art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
+#doc{position:absolute;left:50px;width:620px;top:150px;padding:34px 38px 30px;border-radius:18px;background:#f5f1e8;color:#1a1815;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);overflow:hidden}
+#doc .lbl{font-size:15px;color:#6b6a63;letter-spacing:.3px;margin-bottom:16px}
+#doc .cl{font-size:31px;line-height:1.75;font-weight:700}
+#doc .fl{border-radius:6px;padding:0 4px;transition:none}
+#beam{position:absolute;left:0;right:0;height:70px;top:-70px;background:linear-gradient(180deg,rgba(118,157,121,0),rgba(118,157,121,.45));border-bottom:3px solid #769d79}
+#chips{position:absolute;left:50px;width:620px;top:470px;display:flex;gap:12px;justify-content:flex-start}
+.chip{font-size:20px;font-weight:700;padding:9px 16px;border-radius:999px;background:#2b2412;color:#e7c27a;border:1.5px solid #e7c27a}
+#note{position:absolute;left:0;right:0;top:132px;text-align:center;font-size:14px;color:#b8c7b3;opacity:.0}
+svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
 .txt{position:absolute;left:56px;right:56px;top:640px;text-align:right}
-.txt h2{font-size:54px;line-height:1.12;font-weight:700;letter-spacing:-.5px}
+.txt h2{font-size:50px;line-height:1.12;font-weight:700;letter-spacing:-.5px}
 .txt p{margin-top:18px;font-size:25px;line-height:1.4;color:#cfd9cb;max-width:26ch}
-.rule{display:block;width:64px;height:3px;background:#769d79;margin-bottom:22px;margin-inline-start:0}
-.scene{position:absolute;inset:0 auto auto 0;width:100%}
+.rule{display:block;width:64px;height:3px;background:#769d79;margin-bottom:22px}
 .name{position:absolute;left:0;right:0;text-align:center}
 .name b{display:block;font-size:40px;font-weight:700}
 .name span{display:block;margin-top:14px;font-size:24px;color:#b8c7b3}
 </style><body>
 <div class="bg"></div><div class="grid"></div>
 <div id="wmTop" class="wm" style="top:70px">${logo}</div>
-<svg class="art" id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
+<div id="note">סעיף לדוגמה, להמחשה בלבד</div>
+<div id="doc"><div class="lbl">הסכם שירות, סעיף לדוגמה</div>
+<div class="cl">הספק לא יישא באחריות <span class="fl" id="f1">לכל נזק, ישיר או עקיף,</span> מכל סיבה שהיא, <span class="fl" id="f2">ובכל סכום.</span></div><div id="beam"></div></div>
+<div id="chips"><span class="chip" id="c1">נקודה לבדיקה</span><span class="chip" id="c2">נקודה לבדיקה</span></div>
+<svg id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div class="txt" id="txt"></div>
 <div class="name" id="end" style="top:430px"><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
 <script>
 const SCENES=${JSON.stringify(SCENES)};
-const ART=document.getElementById("art"), TXT=document.getElementById("txt"), END=document.getElementById("end"), WM=document.getElementById("wmTop");
+const ART=document.getElementById("art"),TXT=document.getElementById("txt"),END=document.getElementById("end"),WM=document.getElementById("wmTop");
+const DOC=document.getElementById("doc"),BEAM=document.getElementById("beam"),NOTE=document.getElementById("note"),CH=document.getElementById("chips");
+const F1=document.getElementById("f1"),F2=document.getElementById("f2"),C1=document.getElementById("c1"),C2=document.getElementById("c2");
 const NS="http://www.w3.org/2000/svg";
 const el=(n,a,p)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||ART).appendChild(e);return e};
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const ease=x=>1-Math.pow(1-clamp(x),3);
+const lerp=(a,b,t)=>a+(b-a)*t;
 const io=(t,a,b,fi=.5,fo=.5)=>Math.min(ease((t-a)/fi),ease((b-t)/fo));
 
-// network (AI): deterministic nodes and edges
-const N=[[360,40],[470,70],[560,150],[585,260],[520,350],[400,395],[270,380],[160,320],[120,210],[170,110],[270,60],[330,190],[440,230],[250,250]];
-const E=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,0],[0,11],[1,11],[11,12],[12,2],[12,3],[12,4],[11,13],[13,7],[13,6],[13,8],[11,9],[12,5],[13,5]];
+// Network layout (stage 2) and scales-of-justice layout (stage 3), same 14 nodes.
+const A=[[250,200],[420,230],[360,60],[160,120],[560,120],[110,260],[600,270],[250,380],[470,380],[360,300],[360,170],[200,320],[530,200],[300,110]];
+const LBL={2:"ציות",3:"ביטוח",4:"תיעוד",5:"רגולטור"};
+const E1=[[0,10],[1,10],[10,2],[10,13],[13,3],[2,4],[0,11],[11,5],[11,7],[1,12],[12,6],[12,4],[1,9],[0,9],[9,7],[9,8],[8,6],[3,0],[13,2],[4,1]];
+// scale: pole 0-? we map: 0 beam-left,1 beam-right,2 pole-top,3 pan L outer,4 pan R outer,5 pan L inner... see edges
+const B=[[200,110],[520,110],[360,50],[130,250],[290,250],[430,250],[590,250],[360,400],[270,420],[450,420],[360,230],[210,300],[510,300],[360,110]];
+const E2=[[2,13],[13,10],[10,7],[7,8],[7,9],[0,13],[13,1],[0,3],[0,4],[1,5],[1,6],[3,11],[4,11],[5,12],[6,12],[3,4],[5,6]];
 const net=el("g",{});
-const edges=E.map(([a,b],i)=>{const len=Math.hypot(N[a][0]-N[b][0],N[a][1]-N[b][1]);const l=el("line",{x1:N[a][0],y1:N[a][1],x2:N[b][0],y2:N[b][1],stroke:"#769d79","stroke-width":2,"stroke-dasharray":len,"stroke-dashoffset":len},net);l._len=len;l._i=i;return l});
-const nodes=N.map(([x,y],i)=>{const c=el("circle",{cx:x,cy:y,r:i%3==0?9:6,fill:"#e7ede4"},net);c._i=i;return c});
+const e1=E1.map(()=>el("line",{stroke:"#769d79","stroke-width":2},net));
+const e2=E2.map(()=>el("line",{stroke:"#9fc4a2","stroke-width":2.5},net));
+const nodes=A.map((_,i)=>el("circle",{r:i%3==0?9:6,fill:"#e7ede4"},net));
+const labels=Object.keys(LBL).map(i=>{const t=el("text",{"font-size":22,"font-weight":700,fill:"#e7c27a","text-anchor":"middle","font-family":"Liberation Sans,Arial"},net);t.textContent=LBL[i];t._i=+i;return t});
+const P=A.map(()=>[0,0]);
 
-// skyline (real estate)
-const B=[[110,150,70],[190,200,84],[284,240,96],[390,180,80],[480,220,90],[580,140,64]]; // x, height, width
-const sky=el("g",{});
-const bld=B.map(([x,h,w],i)=>{const g=el("g",{},sky);const r=el("rect",{x:x,y:430-h,width:w,height:h,rx:3,fill:"#1d2b21",stroke:"#769d79","stroke-width":2},g);
-  const wins=[];for(let yy=430-h+18;yy<418;yy+=26)for(let xx=x+14;xx<x+w-14;xx+=22){wins.push(el("rect",{x:xx,y:yy,width:9,height:12,rx:1.5,fill:((xx*7+yy*3)%5<2)?"#e7c27a":"#3a5240"},g))}
-  g._h=h;g._r=r;g._wins=wins;return g});
-el("line",{x1:60,y1:430,x2:660,y2:430,stroke:"#769d79","stroke-width":2},sky);
+function docPoint(span){const r=span.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2-130]}
+let S0=null;
 
 function setText(i,t){TXT.innerHTML="";const s=SCENES[i];const d=document.createElement("div");
   d.innerHTML='<i class="rule"></i><h2></h2><p></p>';d.querySelector("h2").textContent=s.h;d.querySelector("p").textContent=s.p;
   TXT.appendChild(d);const k=io(t,s.a,s.b,.55,.4);d.style.opacity=k;d.style.transform="translateY("+((1-k)*22)+"px)";}
 
 window.render=function(t){
-  // wordmark: big and centered at the start, settles to the top, returns for the end card
-  const intro=ease(t/1.2), settle=ease((t-1.8)/.9), end=ease((t-14.2)/.7);
-  const topY=70, midY=360;
-  let y=topY, sc=1, op=intro;
-  if(t<2.7){y=midY+(topY-midY)*settle; sc=1.35-.35*settle}
-  if(t>=14.2){y=topY+(300-topY)*end; sc=1+.2*end}
-  WM.style.top=y+"px"; WM.style.transform="translateX(-50%) scale("+sc+")"; WM.style.opacity=op;
+  // wordmark
+  const intro=ease(t/1.0),end=ease((t-14.3)/.7);
+  let y=70,sc=1;if(t>=14.3){y=70+(300-70)*end;sc=1+.2*end}
+  WM.style.top=y+"px";WM.style.transform="translateX(-50%) scale("+sc+")";WM.style.opacity=intro;
 
-  // AI network
-  const netIn=ease((t-2.4)/.8), netOut=1-ease((t-14)/.5);
-  edges.forEach(l=>{const p=ease((t-2.8-l._i*.06)/.9);l.setAttribute("stroke-dashoffset",l._len*(1-p));l.setAttribute("opacity",.85)});
-  nodes.forEach(c=>{const p=ease((t-2.6-c._i*.07)/.5);c.setAttribute("opacity",p);c.setAttribute("r",(c._i%3==0?9:6)*(0.4+0.6*p)*(1+.12*Math.sin(t*3+c._i)))});
-  // network moves up and shrinks when the skyline arrives, stays small above it
-  const m=0;
-  const ns=1-.55*m, ny=-145*m;
-  net.setAttribute("transform","translate("+(360*(1-ns))+","+(230*(1-ns)+ny)+") scale("+ns+")");
-  net.setAttribute("opacity",netIn*netOut);
+  // contract card: in at 0.6, scanned 2.6 to 5.0, out at 6.4 to 7.6
+  const dIn=ease((t-.6)/.8),dOut=1-ease((t-6.5)/1.0);
+  DOC.style.opacity=dIn*dOut;DOC.style.transform="translateY("+((1-dIn)*30)+"px)";
+  NOTE.style.opacity=.9*dIn*dOut;
+  const bt=clamp((t-2.6)/2.4);BEAM.style.top=(-70+bt*(DOC.offsetHeight+70))+"px";BEAM.style.opacity=(t>2.5&&t<5.1)?1:0;
+  const h1=t>3.5,h2=t>4.3;
+  F1.style.background=h1?"#f2cf86":"transparent";F2.style.background=h2?"#f2cf86":"transparent";
+  CH.style.opacity=dOut;C1.style.opacity=ease((t-3.7)/.4);C2.style.opacity=ease((t-4.5)/.4);
 
-  // skyline rises in scene 3, stays
-  bld.forEach((g,i)=>{const p=ease((t-7.0-i*.18)/.9);g._r.setAttribute("y",430-g._h*p);g._r.setAttribute("height",Math.max(.01,g._h*p));
-    g._wins.forEach(w=>w.setAttribute("opacity",clamp((p-.7)/.3)))});
-  sky.setAttribute("opacity",0);
+  if(!S0){DOC.style.opacity=1;DOC.style.transform="none";S0=[docPoint(F1),docPoint(F2)];}
 
-  // text
-  TXT.style.opacity=1;
+  // nodes: 0 and 1 are born from the flagged phrases, then everything flows to the network, then to the scales
+  const lift=ease((t-6.2)/1.0);
+  A.forEach((a,i)=>{
+    const m1=ease((t-6.4-i*.05)/1.2),m2=ease((t-10.4-i*.04)/1.5);
+    const st=i<2?S0[i]:[360,150];
+    let x=lerp(st[0],a[0],m1),yv=lerp(st[1],a[1],m1);
+    x=lerp(x,B[i][0],m2);yv=lerp(yv,B[i][1],m2);
+    // the beam tips towards the heavier pan, then settles level
+    const tip=(1-ease((t-12.2)/1.2))*ease((t-10.6)/.6);
+    if(i==0||i==3||i==4||i==11){yv+=22*tip} if(i==1||i==5||i==6||i==12){yv-=22*tip}
+    P[i]=[x,yv];
+    const vis=i<2?ease((t-3.7-(i*.8))/.4):ease((t-6.5-i*.06)/.5);
+    const c=nodes[i];c.setAttribute("cx",x);c.setAttribute("cy",yv);
+    c.setAttribute("opacity",(t<3.7?0:vis)*(1-ease((t-14.3)/.5)));
+    c.setAttribute("r",(i%3==0?9:6)*(.5+.5*Math.max(vis,0))*(1+.1*Math.sin(t*3+i)));
+    if(i<2&&t<6.4)c.setAttribute("fill","#f2cf86");else c.setAttribute("fill","#e7ede4");
+  });
+  const m2g=ease((t-10.6)/1.4),fade=1-ease((t-14.3)/.5);
+  E1.forEach(([a,b],i)=>{const l=e1[i];l.setAttribute("x1",P[a][0]);l.setAttribute("y1",P[a][1]);l.setAttribute("x2",P[b][0]);l.setAttribute("y2",P[b][1]);
+    l.setAttribute("opacity",.85*ease((t-7.0-i*.05)/.6)*(1-m2g)*fade)});
+  E2.forEach(([a,b],i)=>{const l=e2[i];l.setAttribute("x1",P[a][0]);l.setAttribute("y1",P[a][1]);l.setAttribute("x2",P[b][0]);l.setAttribute("y2",P[b][1]);
+    l.setAttribute("opacity",.95*m2g*fade)});
+  labels.forEach(l=>{const p=P[l._i];l.setAttribute("x",p[0]);l.setAttribute("y",p[1]-18);
+    l.setAttribute("opacity",ease((t-8.0-l._i*.15)/.5)*(1-ease((t-10.4)/.6)))});
+
+  // captions
   let shown=-1;SCENES.forEach((s,i)=>{if(t>=s.a&&t<s.b)shown=i});
   if(shown>=0)setText(shown,t);else TXT.innerHTML="";
-  // end card + loop fade
-  END.style.opacity=ease((t-14.5)/.6);
+  END.style.opacity=ease((t-14.6)/.6);
   document.body.style.opacity=t>15.55?clamp((16-t)/.45):1;
 };
 </script></body></html>`;
@@ -121,13 +161,15 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 await page.setContent(html);
 await page.evaluate(() => document.fonts.ready);
+// The flagged phrases' positions are read once, with the card fully shown.
+await page.evaluate(() => window.render(4));
 const total = DUR * FPS;
 for (let i = 0; i < total; i++) {
   await page.evaluate((t) => window.render(t), i / FPS);
   await page.screenshot({ path: path.join(frames, `f${String(i).padStart(4, "0")}.png`) });
 }
-// Poster: the AI scene at its fullest, so the first paint is already on message.
-await page.evaluate(() => window.render(5.6));
+// Poster: the flagged clause, the frame that says "AI reads contracts" at a glance.
+await page.evaluate(() => window.render(4.9));
 await page.screenshot({ path: path.join(frames, "poster.png") });
 await browser.close();
 
