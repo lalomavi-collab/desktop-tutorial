@@ -42,7 +42,7 @@ function InquiriesView() {
   return (
     <div className="ck-stack">
       <div className="ck-warn">כאן נרשם שהלקוח קיבל מענה ומתי. תוכן המענה אינו נשמר במערכת. זמן המענה הראשון נמדד משעת קבלת הפנייה עד לרישום הראשון, והוא מזין את מדד התגובה. הפתיחה של הטקסט המקורי נרשמת ביומן הביקורת.</div>
-      {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של המשרד</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <b dir="ltr">{addr}</b>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
+      {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של המשרד</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <bdi dir="ltr" className="ck-addr">{addr}</bdi>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
       <InquiryInsights inquiries={data.inquiries} replies={data.replies} targetMinutes={target} />
       <div className="ck-row">
         <select className="ck-select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value as "open" | "all")}><option value="open">פניות פתוחות</option><option value="all">כל הפניות</option></select>
@@ -151,8 +151,8 @@ function ScoreView() {
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>מענים שנרשמו</th><th>בתוך היעד</th><th>זמן מענה חציוני</th><th>משימות פתוחות</th><th>באיחור</th><th>הושלמו בזמן</th><th>ציון</th></tr></thead><tbody>
         {sc.people.map((p) => (
           <tr key={p.user_id}>
-            <td>{name(p.user_id)}</td><td>{p.replies}</td><td>{p.replies ? `${p.replies_in_target} (${Math.round((100 * p.replies_in_target) / p.replies)}%)` : ""}</td><td>{dur(p.median_minutes)}</td>
-            <td>{p.tasks_open}</td><td>{p.tasks_overdue || ""}</td><td>{p.tasks_judged ? `${p.tasks_on_time} מתוך ${p.tasks_judged}` : ""}</td>
+            <td>{name(p.user_id)}</td><td>{p.replies}</td><td>{p.replies ? `${p.replies_in_target} (${Math.round((100 * p.replies_in_target) / p.replies)}%)` : <span className="ck-meta">אין נתונים</span>}</td><td>{dur(p.median_minutes)}</td>
+            <td>{p.tasks_open}</td><td>{p.tasks_overdue}</td><td>{p.tasks_judged ? `${p.tasks_on_time} מתוך ${p.tasks_judged}` : <span className="ck-meta">אין נתונים</span>}</td>
             <td>{p.score == null ? <span className="ck-meta">אין נתונים</span> : <span className={`ck-badge ${p.score >= 80 ? "green" : p.score >= 60 ? "yellow" : "red"}`}>{p.score}</span>}</td>
           </tr>))}
       </tbody></table></div>

@@ -18,7 +18,7 @@ const initials = (name: string) => (name.trim()[0] ?? "?").toUpperCase();
 
 /** Direction is an arrow plus words, never colour alone. */
 function Trend({ d }: { d: number | null }) {
-  if (d == null) return <span className="db-delta flat"><span aria-hidden="true">■</span> חדש</span>;
+  if (d == null) return <span className="db-delta flat"><span aria-hidden="true">■</span> אין בסיס להשוואה</span>;
   const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
   return <span className={`db-delta ${cls}`}><span aria-hidden="true">{d > 0 ? "▲" : d < 0 ? "▼" : "■"}</span> <bdi dir="ltr">{d > 0 ? "+" : ""}{d}%</bdi><span className="db-sr"> לעומת התקופה הקודמת</span></span>;
 }

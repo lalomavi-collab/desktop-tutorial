@@ -1,7 +1,9 @@
 // Small dependency-free SVG charts for the cockpit dashboard. Each carries a text alternative (role="img" + aria-label) with its numbers.
 import type { ReactNode } from "react";
 
-const GREEN = "#537056", GREEN_L = "#9bbb9f", SUN = "#f5c431", SUN_D = "#e0a312", RED = "#cf4b3a";
+// Colours come from tokens on .ck-root so the dark theme can lift them; the fallbacks are the mint-theme values.
+const GREEN = "var(--chart-ok, #537056)", GREEN_L = "var(--chart-ok-l, #9bbb9f)", SUN = "#f5c431", SUN_D = "var(--chart-warn, #e0a312)", RED = "var(--chart-bad, #cf4b3a)";
+const TRACK = "var(--chart-track, rgba(47,111,38,.12))", GRID = "var(--chart-grid, rgba(47,111,38,.14))";
 
 /** Smooth path through points (Catmull-Rom to cubic Bezier). */
 function smooth(pts: Array<[number, number]>): string {
@@ -18,7 +20,7 @@ function smooth(pts: Array<[number, number]>): string {
 
 /** Area chart. values and labels are in time order (oldest first). */
 export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[]; labels: string[]; unit: string; id?: string }) {
-  const W = 620, H = 230, L = 34, R = 14, T = 16, B = 30;
+  const W = 620, H = 230, L = 40, R = 14, T = 16, B = 32;
   const max = Math.max(4, ...values);
   const nice = Math.ceil(max / 4) * 4;
   const step = values.length > 1 ? (W - L - R) / (values.length - 1) : 0;
@@ -29,16 +31,16 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
   const ticks = [0, 1, 2, 3, 4].map((i) => ({ y: T + ((H - T - B) * i) / 4, v: Math.round(nice - (nice * i) / 4) }));
   const last = p2[p2.length - 1];
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`} style={{ direction: "ltr", display: "block" }}>
+    <div style={{ overflowX: "auto" }}><svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`} style={{ direction: "ltr", display: "block", minWidth: 440 }}>
       <defs>
         <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={SUN} stopOpacity=".75" /><stop offset="1" stopColor={SUN} stopOpacity=".04" /></linearGradient>
       </defs>
-      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke="rgba(47,111,38,.14)" strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="12" fill="var(--slate)">{t.v}</text></g>))}
+      {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke={GRID} strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="15" fill="var(--slate)">{t.v}</text></g>))}
       {area && <path d={area} fill={`url(#${id}-f)`} />}
       {line && <path d={line} fill="none" stroke={SUN_D} strokeWidth="3" strokeLinecap="round" />}
-      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="12" fill="var(--slate)">{labels[i]}</text> : null)}
+      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="15" fill="var(--slate)">{labels[i]}</text> : null)}
       {last && <g><circle cx={last[0]} cy={last[1]} r="9" fill={GREEN} opacity=".18" /><circle cx={last[0]} cy={last[1]} r="5" fill="#fff" stroke={GREEN} strokeWidth="3" /></g>}
-    </svg>
+    </svg></div>
   );
 }
 
@@ -66,7 +68,7 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
       <svg viewBox="0 0 140 140" width="140" height="140" role="img" aria-label={segments.map((s) => `${s.label}: ${s.value}`).join(", ")}>
-        <circle cx="70" cy="70" r={R} fill="none" stroke="rgba(47,111,38,.12)" strokeWidth="16" />
+        <circle cx="70" cy="70" r={R} fill="none" stroke={TRACK} strokeWidth="16" />
         {total > 0 && segments.map((s) => {
           const len = (s.value / total) * C;
           const el = <circle key={s.label} cx="70" cy="70" r={R} fill="none" stroke={s.color} strokeWidth="16" strokeDasharray={`${Math.max(0, len - 3)} ${C - Math.max(0, len - 3)}`} strokeDashoffset={-off} strokeLinecap="round" transform="rotate(-90 70 70)" />;
@@ -86,7 +88,7 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
 /** Horizontal progress bar with a status colour. */
 export function StatusBar({ pct, tone }: { pct: number; tone: "green" | "yellow" | "red" }) {
   const c = tone === "green" ? [GREEN_L, GREEN] : tone === "yellow" ? ["#ffe58a", SUN_D] : ["#f0a79c", RED];
-  return <div style={{ height: 10, borderRadius: 6, background: "rgba(47,111,38,.12)", overflow: "hidden", minWidth: 90 }}><div style={{ width: `${pct}%`, height: "100%", borderRadius: 6, background: `linear-gradient(90deg, ${c[0]}, ${c[1]})` }} /></div>;
+  return <div style={{ height: 10, borderRadius: 6, background: TRACK, overflow: "hidden", minWidth: 90 }}><div style={{ width: `${pct}%`, height: "100%", borderRadius: 6, background: `linear-gradient(90deg, ${c[0]}, ${c[1]})` }} /></div>;
 }
 
 /** Half-circle gauge for one percentage, with the number in the middle. */
@@ -97,7 +99,7 @@ export function Gauge({ pct, label, sub }: { pct: number; label: string; sub: st
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
       <svg viewBox="0 0 150 90" width="190" role="img" aria-label={`${label}: ${p}%`}>
-        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke="rgba(47,111,38,.14)" strokeWidth="16" strokeLinecap="round" />
+        <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke={GRID} strokeWidth="16" strokeLinecap="round" />
         <path d="M15 80a60 60 0 0 1 120 0" fill="none" stroke={color} strokeWidth="16" strokeLinecap="round" strokeDasharray={`${(p / 100) * C} ${C}`} />
         <text x="75" y="70" textAnchor="middle" fontSize="26" fontWeight="800" fill="var(--ink)">{p}%</text>
       </svg>
@@ -115,7 +117,7 @@ export function BarsH({ items, max }: { items: Array<{ label: string; value: num
       {items.map((i) => (
         <div key={i.label} style={{ display: "grid", gridTemplateColumns: "minmax(80px, 150px) 1fr 44px", alignItems: "center", gap: 10, fontSize: 13 }}>
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{i.label}</span>
-          <div style={{ height: 12, borderRadius: 7, background: "rgba(47,111,38,.12)", overflow: "hidden" }}>
+          <div style={{ height: 12, borderRadius: 7, background: TRACK, overflow: "hidden" }}>
             <div style={{ width: `${Math.max(3, (i.value / m) * 100)}%`, height: "100%", borderRadius: 7, background: `linear-gradient(90deg, ${GREEN_L}, ${i.color ?? GREEN})` }} />
           </div>
           <b style={{ textAlign: "end" }}>{i.value}{i.suffix ?? ""}</b>
