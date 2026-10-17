@@ -5210,7 +5210,9 @@ html.a11y-reduce-motion *::after {
 @media (prefers-reduced-motion: no-preference) {
   .ins-card:hover { transform: translateY(-5px); box-shadow: 0 18px 38px rgba(27, 27, 27, 0.13); border-color: var(--line-strong); }
   .ins-card:hover .ins-cover img { transform: scale(1.06); }
-  .ins-card { opacity: 0; animation: articleIn .55s cubic-bezier(.22, 1, .36, 1) var(--d, 0ms) forwards; }
+  /* Only the first screen's cards animate in. A fade on all 250 gave each its own
+     compositor layer, which on a phone is memory the page does not have. */
+  .ins-card.ins-in { opacity: 0; animation: articleIn .55s cubic-bezier(.22, 1, .36, 1) var(--d, 0ms) forwards; }
 }
 @media (prefers-reduced-motion: reduce) { .ins-reel { rotate: 0deg; } }
 @media (max-width: 620px) {

@@ -12,7 +12,9 @@
 //
 //   npm run covers
 //
-// Writes public/images/articles/<slug>.webp (1200x630, also the social card) and
+// Writes public/images/articles/<slug>.webp (1200x630, also the social card),
+// public/images/articles/t/<slug>.webp (640x336, for cards: a phone decodes 4x
+// less memory per card, and 250 full-size images in one list crashed iOS) and
 // src/data/articleCovers.json. Fails if two covers are visually near-identical.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from "node:fs";
@@ -221,6 +223,8 @@ hashes = {}
 for s in slugs:
     im = Image.open(os.path.join(tmp, s + ".png")).convert("RGB")
     im.save(os.path.join(out, s + ".webp"), "WEBP", quality=80, method=6)
+    os.makedirs(os.path.join(out, "t"), exist_ok=True)
+    im.resize((640, 336), Image.LANCZOS).save(os.path.join(out, "t", s + ".webp"), "WEBP", quality=78, method=6)
     g = im.convert("L").resize((24, 14))
     px = list(g.getdata()); avg = sum(px) / len(px)
     hashes[s] = [1 if p > avg else 0 for p in px]
@@ -232,6 +236,7 @@ for i in range(len(keys)):
 print(json.dumps(sorted(worst)[:20]))
 `;
 for (const f2 of readdirSync(OUT)) if (f2.endsWith(".webp") && !map[`${f2.slice(0, -5)}`]) rmSync(join(OUT, f2));
+if (existsSync(join(OUT, "t"))) for (const f2 of readdirSync(join(OUT, "t"))) if (f2.endsWith(".webp") && !map[`${f2.slice(0, -5)}`]) rmSync(join(OUT, "t", f2));
 const res = execFileSync("python3", ["-c", py, TMP, OUT, JSON.stringify(Object.keys(map))], { encoding: "utf8" });
 const near = JSON.parse(res);
 writeFileSync(join(ROOT, "src/data/articleCovers.json"), JSON.stringify(map, null, 1) + "\n");

@@ -9,3 +9,9 @@ const map = covers as Record<string, string>;
 export function coverFor(slug: string, fallback = ""): string {
   return map[slug] ?? fallback;
 }
+
+// The card-sized copy (640x336). A list of 250 cards decoded at 1200x630 is about
+// 750MB of bitmap on a phone, enough for iOS to kill the page; cards use this.
+export function coverThumb(slug: string): string {
+  return map[slug] ? `/images/articles/t/${slug}.webp` : "";
+}
