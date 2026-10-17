@@ -92,7 +92,7 @@ export function CourseCard({ c, open, onToggle, failed, onImgError }: { c: Cours
         </div>
 
         <div className="course-capstone" style={{ borderColor: c.accent }}>
-          <div className="course-capstone-k" style={{ color: c.accent === "#916c26" ? "#c79a3f" : "var(--clay-bright)" }}>פרויקט גמר</div>
+          <div className="course-capstone-k" style={{ color: "var(--clay-bright)" }}>פרויקט גמר</div>
           <div className="course-capstone-name" dir="ltr">{c.capstoneName}</div>
           <p className="course-capstone-desc">{c.capstoneDesc}</p>
         </div>

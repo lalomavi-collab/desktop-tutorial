@@ -8,7 +8,7 @@ import { HomeAcademy } from "../components/HomeAcademy";
 import { FocusAreas } from "../components/FocusAreas";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
-import { faqsForPath } from "../lib/pageFaqs";
+import { coreFaqsForPath } from "../lib/pageFaqsCore";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 import { cvPath } from "../lib/hreflang";
@@ -39,7 +39,7 @@ export function Home() {
         title={t.seo.home.title}
         description={t.seo.home.desc}
         path="/"
-        jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/")), howToForPath(t, "/")])}
+        jsonLd={pageJsonLd([faqPageNode(coreFaqsForPath(t, "/") ?? []), howToForPath(t, "/")])}
       />
       {/* HERO. One headline, two actions, one fact. The credential strip
           (frameworks by name), the search box (the header already has one) and
