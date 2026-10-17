@@ -24,6 +24,18 @@ type Card = {
   topic: string;
 };
 
+// The reel is decoration, so it is fetched only where it can be seen and
+// afforded: a wide screen, motion allowed, no data-saver. Hiding it with CSS was
+// not enough: a hidden autoplay video still downloads (268KB on a phone).
+function useReel(): boolean {
+  const [on] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    return window.matchMedia("(min-width: 821px) and (prefers-reduced-motion: no-preference)").matches && !conn?.saveData;
+  });
+  return on;
+}
+
 const topicOf = (slug: string) => (articleIndex as Record<string, { topic: string | null }>)[slug]?.topic ?? "practice";
 
 export function Insights() {
@@ -31,6 +43,7 @@ export function Insights() {
   const ins = t.insights;
   const [topic, setTopic] = useState<string>("all");
   const gridTop = useRef<HTMLDivElement>(null);
+  const reel = useReel();
 
   // Imported blog first (newest on top), then the curated bilingual pieces; one
   // card per slug, so a piece that exists in both lists is not shown twice.
@@ -92,11 +105,13 @@ export function Insights() {
             </h1>
             <p className="lede" style={{ maxWidth: "56ch", margin: "22px 0 0" }}>{ins.heroLede}</p>
           </div>
-          <div className="ins-reel" aria-hidden="true">
-            <video muted loop playsInline autoPlay preload="none" poster="/media/lalum-intro.jpg" tabIndex={-1}>
-              <source src="/media/lalum-reel.mp4" type="video/mp4" />
-            </video>
-          </div>
+          {reel && (
+            <div className="ins-reel" aria-hidden="true">
+              <video muted loop playsInline autoPlay preload="none" poster="/media/lalum-intro.jpg" tabIndex={-1}>
+                <source src="/media/lalum-reel.mp4" type="video/mp4" />
+              </video>
+            </div>
+          )}
         </div>
       </section>
 

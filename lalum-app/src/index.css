@@ -5152,9 +5152,9 @@ html.a11y-reduce-motion *::after {
 
 /* ---------- articles page (Insights) ---------- */
 .ins-hero { position: relative; overflow: hidden; }
-.ins-hero-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 56px; align-items: center; padding: 88px 32px 56px; }
+.ins-hero-in { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 56px; align-items: center; padding: 64px 32px 40px; }
 .ins-h1 { font-size: clamp(30px, 6.4vw, 54px); line-height: 1.08; letter-spacing: -0.02em; margin: 24px 0 0; max-width: 18ch; }
-.ins-reel { justify-self: center; width: min(100%, 270px); aspect-ratio: 9 / 16; max-height: 440px; border-radius: 26px; overflow: hidden; border: 1px solid var(--line-strong); box-shadow: 0 30px 60px rgba(27, 27, 27, 0.18); background: var(--clay-tint); rotate: -2deg; }
+.ins-reel { justify-self: center; width: min(100%, 270px); aspect-ratio: 9 / 16; max-height: 360px; border-radius: 26px; overflow: hidden; border: 1px solid var(--line-strong); box-shadow: 0 30px 60px rgba(27, 27, 27, 0.18); background: var(--clay-tint); rotate: -2deg; }
 .ins-reel video { width: 100%; height: 100%; object-fit: cover; display: block; }
 @media (max-width: 820px) {
   .ins-hero-in { grid-template-columns: 1fr; gap: 28px; padding: 64px 20px 32px; }
