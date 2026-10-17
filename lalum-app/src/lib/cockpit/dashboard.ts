@@ -50,8 +50,11 @@ export function series(dates: string[], mode: "weekly" | "monthly", n: number): 
   return { values, labels };
 }
 
-/** Percent change of the last bucket against the one before it; null when there is nothing to compare. */
+/** Smallest previous-period count worth comparing against: one inquiry going to zero reads as -100%, which says nothing. */
+export const MIN_DELTA_BASE = 3;
+
+/** Percent change of the last bucket against the one before it; null when the base is too small to compare. */
 export function delta(values: number[]): number | null {
   const a = values[values.length - 1] ?? 0, b = values[values.length - 2] ?? 0;
-  return b === 0 ? null : Math.round(((a - b) / b) * 100);
+  return b < MIN_DELTA_BASE ? null : Math.round(((a - b) / b) * 100);
 }

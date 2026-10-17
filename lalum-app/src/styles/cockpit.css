@@ -209,6 +209,9 @@
   background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
+/* A tall wrapped header must not pin over the content on a phone. */
+@media (max-width: 640px) { .ck-top { position: static; background: var(--paper); backdrop-filter: none; } }
+.ck-addr { display: inline-block; max-width: 100%; unicode-bidi: isolate; overflow-wrap: anywhere; font-weight: 700; }
 .ck-logout {
   font: inherit; font-size: 13.5px; padding: 8px 15px; border-radius: 9999px; min-height: 38px; cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px; color: var(--danger); background: var(--card); border: 1px solid var(--line-strong);

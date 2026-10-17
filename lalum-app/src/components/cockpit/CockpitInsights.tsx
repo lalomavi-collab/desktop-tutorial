@@ -53,7 +53,7 @@ export function ScoreInsights({ sc, nameOf }: { sc: Scorecard; nameOf: (id: stri
   const scored = sc.people.filter((p) => p.score != null);
   return (
     <Strip>
-      <Card title="עמידה ביעד המענה"><Gauge pct={replies ? Math.round((100 * inT) / replies) : 0} label="מענים בתוך היעד" sub={`${replies} מענים נרשמו`} /></Card>
+      <Card title="עמידה ביעד המענה"><Gauge pct={replies ? Math.round((100 * inT) / replies) : 0} label="מענים בתוך היעד" sub={replies === 1 ? "מענה אחד נרשם" : `${replies} מענים נרשמו`} /></Card>
       <Card title="משימות בזמן"><Gauge pct={judged ? Math.round((100 * onT) / judged) : 0} label="הושלמו עד המועד" sub={`${judged} משימות נבדקו`} /></Card>
       {scored.length > 0 && <Card title="ציון לפי איש צוות"><BarsH max={100} items={scored.map((p) => ({ label: nameOf(p.user_id), value: p.score ?? 0, color: (p.score ?? 0) >= 80 ? "#537056" : (p.score ?? 0) >= 60 ? "#e0a312" : "#cf4b3a" }))} /></Card>}
     </Strip>
