@@ -63,20 +63,44 @@
    "explainability"
   ]
  },
+ "ai-urban-renewal-resident-agreements-comparison": {
+  "topic": "real-estate",
+  "related": [
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-municipal-tender-review-pre-publication",
+   "pinui-binui-owner-guide"
+  ]
+ },
+ "ai-force-majeure-delivery-delay-apartment-contracts": {
+  "topic": "real-estate",
+  "related": [
+   "ai-real-estate-due-diligence-acceleration",
+   "administrative-accountability-ai-ramat-gan-ruling",
+   "ai-urban-renewal-resident-agreements-comparison"
+  ]
+ },
+ "ai-real-estate-due-diligence-acceleration": {
+  "topic": "contracts",
+  "related": [
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "portugal-legal-due-diligence",
+   "ai-building-permit-acceleration-plans-scan"
+  ]
+ },
  "ai-municipal-tender-review-pre-publication": {
   "topic": "mediation",
   "related": [
+   "ai-urban-renewal-resident-agreements-comparison",
    "ai-procurement-tender-local-authority",
-   "ai-education-public-institutions-use-policy",
-   "procurement"
+   "ai-real-estate-due-diligence-acceleration"
   ]
  },
  "ai-building-permit-acceleration-plans-scan": {
   "topic": "ai-governance",
   "related": [
    "ai-planning-permits-local-authority-discretion",
-   "ai-municipal-property-tax-collection",
-   "ai-real-estate-urban-renewal-legal-exposure"
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-municipal-property-tax-collection"
   ]
  },
  "administrative-accountability-ai-ramat-gan-ruling": {
@@ -84,7 +108,7 @@
   "related": [
    "effective-human-oversight-ai-systems",
    "ai-local-authorities-uses-legal-limits",
-   "ai-hallucinations-citations"
+   "ai-force-majeure-delivery-delay-apartment-contracts"
   ]
  },
  "legal-ai-pricing-client-disclosure": {
@@ -388,7 +412,7 @@
   "related": [
    "ai-real-estate-valuation-reliance",
    "ai-governance-municipal-corporations",
-   "ai-healthcare-liability-regulation"
+   "ai-local-authority-tort-liability-damage"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -402,9 +426,9 @@
  "ai-real-estate-urban-renewal-legal-exposure": {
   "topic": "real-estate",
   "related": [
+   "ai-real-estate-due-diligence-acceleration",
    "ai-real-estate-valuation-reliance",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-international-transactions-overview"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "israel-land-authority-lease-capitalization-transfer": {
@@ -603,8 +627,8 @@
   "topic": "real-estate",
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
-   "pinui-binui-owner-guide",
-   "ai-vendor-data-processing-agreement-local-authority"
+   "ai-urban-renewal-resident-agreements-comparison",
+   "pinui-binui-owner-guide"
   ]
  },
  "pinui-binui-consideration-valuation": {
@@ -627,8 +651,8 @@
   "topic": "real-estate",
   "related": [
    "urban-renewal-small-building-private-home",
-   "pinui-binui-owner-guide",
-   "urban-renewal-taxation-owner"
+   "ai-urban-renewal-resident-agreements-comparison",
+   "pinui-binui-owner-guide"
   ]
  },
  "ai-municipal-chatbot-resident-liability": {
@@ -691,8 +715,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-purchase-contract",
-   "buying-apartment-from-contractor-guarantee-bank-financing",
-   "urban-renewal-guarantees-sale-law-registration"
+   "ai-real-estate-due-diligence-acceleration",
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "ai-insurance-underwriting-pricing-regulation": {
@@ -780,7 +804,7 @@
   "related": [
    "portugal-purchase-contract",
    "overseas-property-due-diligence",
-   "second-opinion-real-estate-urban-renewal"
+   "ai-real-estate-due-diligence-acceleration"
   ]
  },
  "eu-ai-act-roles-obligations": {
@@ -971,8 +995,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "combination-deals-architecture"
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -1044,7 +1068,7 @@
   "related": [
    "השפעת-מגמות-הכלכלה-העולמית-ושוק-הנדל-ן-הישראלי-לאחר-משבר-הקורונה",
    "free-lawyer-illusion",
-   "combination-deals-architecture"
+   "יישוב-סכסוכים-בהתחדשות-עירונית-בין-חזון-עירוני-למציאות-משפטית"
   ]
  },
  "business-mediation-relations": {
@@ -1251,8 +1275,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
@@ -1299,8 +1323,8 @@
   "topic": "real-estate",
   "related": [
    "second-opinion-revolution",
-   "homeowners-iron-dome",
-   "tenant-urban-renewal-guide"
+   "tenant-urban-renewal-guide",
+   "homeowners-iron-dome"
   ]
  },
  "overseas-property-holding": {
@@ -1570,8 +1594,8 @@
  "למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור": {
   "topic": "real-estate",
   "related": [
-   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
    "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
+   "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
    "legal-mediation-benefits"
   ]
  },
@@ -1580,7 +1604,7 @@
   "related": [
    "השקעות-נדל-ן-של-ישראלים-וגופים-מוסדיים-בחו-ל-בין-תמרורי-אזהרה-במערב-אירופה-להזדמנויות-זהירות-במזרח",
    "portugal-investment-guide",
-   "portugal-real-estate-taxation"
+   "intl-realestate-transactions"
   ]
  },
  "משעת-חירום-לשגרה-משפטית-חדשה-כיצד-התקופה-הנוכחית-בישראל-משנה-את-הליטיגציה-ולמה-גישור-מכוון-הכרעה": {
@@ -2027,8 +2051,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "effective-human-oversight-ai-systems",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-planning-permits-local-authority-discretion",
+   "effective-human-oversight-ai-systems"
   ]
  }
 }
