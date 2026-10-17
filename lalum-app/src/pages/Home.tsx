@@ -14,7 +14,7 @@ import { useLang } from "../context/LangContext";
 import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "../components/Wordmark";
 import { VoiceNote } from "../components/VoiceNote";
-import { coverFor } from "../lib/covers";
+import { coverThumb } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
 import { EngineVideo } from "../components/EngineVideo";
@@ -160,7 +160,7 @@ export function Home() {
             return (
               <Link key={a.slug} to={`/insights/${a.slug}`} className="article-card" style={{ borderTop: `3px solid ${p.accent}` }}>
                 <div className="article-card-head article-card-head-img">
-                  <img src={coverFor(a.slug)} alt="" width={1200} height={630} loading="lazy" decoding="async" />
+                  <img src={coverThumb(a.slug)} alt="" width={1200} height={630} loading="lazy" decoding="async" />
                   <span className="article-card-cat" style={{ color: p.accent, borderColor: p.accent }}>{a.category}</span>
                 </div>
                 <div className="article-card-body">

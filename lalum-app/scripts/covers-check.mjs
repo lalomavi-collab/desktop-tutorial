@@ -17,6 +17,7 @@ for (const slug of slugs) {
   if (!rel) { problems.push(`${slug}: no cover`); continue; }
   const file = join(ROOT, "public", rel);
   if (!existsSync(file)) { problems.push(`${slug}: ${rel} is missing`); continue; }
+  if (!existsSync(join(ROOT, "public", "images", "articles", "t", `${slug}.webp`))) { problems.push(`${slug}: no card thumbnail`); continue; }
   if (byPath.has(rel)) problems.push(`${slug} and ${byPath.get(rel)} share ${rel}`);
   byPath.set(rel, slug);
   const h = createHash("sha1").update(readFileSync(file)).digest("hex");
