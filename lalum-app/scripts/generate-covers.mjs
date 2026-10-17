@@ -32,7 +32,7 @@ const src = readFileSync(join(ROOT, "src/lib/blogMeta.ts"), "utf8");
 const from = src.indexOf("blogMeta: BlogMeta[] = [") + "blogMeta: BlogMeta[] = ".length;
 const blog = JSON.parse(src.slice(from, src.lastIndexOf("];") + 1).replace(/,\s*\]\s*$/, "]"));
 const items = blog.map((b) => ({ slug: b.slug, text: `${b.title} ${b.excerpt}` }));
-const strs = readFileSync(join(ROOT, "src/lib/strings.ts"), "utf8");
+const strs = readFileSync(join(ROOT, "src/lib/strings/he.ts"), "utf8");
 const heBlock = strs.slice(strs.indexOf("slug: \"eu-ai-act-2026\", icon: \"shield\", category: \"רגולציית AI\""));
 for (const m of heBlock.matchAll(/slug: "([a-z0-9-]+)", icon: "[a-z]+", category: "[^"]*",\s*title: "([^"]*)"/g)) {
   if (!items.some((i) => i.slug === m[1])) items.push({ slug: m[1], text: m[2] });

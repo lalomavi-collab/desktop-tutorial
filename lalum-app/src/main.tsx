@@ -2,12 +2,18 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import { preloadLang } from "./context/LangContext";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+// The opening language's copy is fetched before the first render: it lives in
+// its own chunk now (src/lib/strings/), so the five languages are no longer one
+// 539KB download on every page.
+void preloadLang().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+});
 
 // Registers the service worker that makes the site PWA-installable (see
 // public/sw.js for why this is required, not optional, for the "Install the

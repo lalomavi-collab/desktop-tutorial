@@ -23,7 +23,7 @@ The opening language is resolved in this order:
 2. Otherwise, browser detection: a Hebrew browser (`he-*` or the legacy `iw-*`)
    opens in Hebrew (RTL); everyone else opens in English.
 
-- All copy lives in one dictionary, `src/lib/strings.ts` (`en` and `he`); `he`
+- All copy lives in one dictionary, `src/lib/strings/` (one file per language: `en.ts` is the source of truth, `he.ts` and the rest are typed against it); `he`
   is type-checked against `en`, so a missing key fails the build.
 - The active language comes from `src/context/LangContext.tsx` (`useLang()`).
 - To change the no-hint fallback, edit `FALLBACK_LANG` in that file.

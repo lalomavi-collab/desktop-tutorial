@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { strings, type Dict } from "../lib/strings";
+import type { Dict } from "../lib/strings/en";
+import { loadDict, loadedDict } from "../lib/strings/load";
 import { syncLangParam } from "../lib/langParam";
 import { LANG_PARAM, LANGS, isLang, dirFor, langFromPath, stripLangPrefix, isTranslatedRoute, type Lang } from "../lib/hreflang";
 
@@ -27,7 +28,7 @@ const DEFAULT_LANG: Lang = "he";
 // 2. a legacy ?lang= query, still honoured so old shared links keep working,
 // 3. a previously saved choice,
 // 4. the primary language.
-function initialLang(): Lang {
+export function initialLang(): Lang {
   try {
     const fromPath = langFromPath(window.location.pathname);
     if (fromPath !== "he") return fromPath;
@@ -43,6 +44,11 @@ function initialLang(): Lang {
   return DEFAULT_LANG;
 }
 
+/** Fetches the dictionary for the language the page opens in. Awaited by main.tsx before the first render. */
+export function preloadLang(): Promise<unknown> {
+  return loadDict(initialLang());
+}
+
 // The path prefix the app is mounted under, so react-router keeps every link
 // inside the current language.
 export function langBasename(): string {
@@ -51,7 +57,17 @@ export function langBasename(): string {
 }
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(initialLang);
+  // The language and its dictionary move together, so a render never pairs one
+  // language's `lang` with another's copy. main.tsx loads the opening language
+  // before the first render (see preloadLang); a later in-place switch loads the
+  // new one first and only then swaps both.
+  const [state, setState] = useState<{ lang: Lang; t: Dict }>(() => {
+    const l = initialLang();
+    const d = loadedDict(l);
+    if (!d) throw new Error(`language ${l} was not loaded before render`);
+    return { lang: l, t: d };
+  });
+  const { lang, t } = state;
 
   useEffect(() => {
     const dir = dirFor(lang);
@@ -79,7 +95,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch { /* fall through to the in-place switch */ }
-    setLangState(l);
+    void loadDict(l).then((d) => setState({ lang: l, t: d }));
   };
   // Cycles to the next language in menu order. Kept for any caller that wants
   // a single-step switch; the header itself uses setLang with a full picker
@@ -90,7 +106,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LangContext.Provider value={{ lang, dir: dirFor(lang), t: strings[lang], setLang, toggle }}>
+    <LangContext.Provider value={{ lang, dir: dirFor(lang), t, setLang, toggle }}>
       {children}
     </LangContext.Provider>
   );
