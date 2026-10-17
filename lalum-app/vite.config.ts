@@ -13,6 +13,7 @@ import { faqCategories } from "./src/lib/faq";
 import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
 import { LEGAL_TOOLS, TOOLS_PAGE, type LegalTool } from "./src/lib/legalTools";
+import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES } from "./src/lib/oversightMap";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import type { QA } from "./src/lib/schema";
@@ -90,6 +91,8 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // JavaScript still reads what each tool asks: the questions are the subject
   // matter, and they are what someone searching for this arrives on.
   { path: TOOLS_PAGE.path, title: `${TOOLS_PAGE.title} | LALUM`, desc: TOOLS_PAGE.desc },
+  // The oversight map: where two frameworks name a human, quoted from the instruments.
+  { path: OVERSIGHT_PAGE.path, title: `${OVERSIGHT_PAGE.title} | LALUM`, desc: OVERSIGHT_PAGE.desc },
   // One prerendered page per LALUM Academy program, In-House and Pro alike, so
   // each program resolves to a real file with its own title and description
   // instead of living only inside an accordion on the training page.
@@ -336,6 +339,7 @@ function pillarBodyHtml(p: PillarPage): string {
     out.push(`        <h2>${esc(p.sectorsUi.h2)}</h2>`, `        <p>${esc(p.sectorsUi.lede)}</p>`);
     out.push(`        <ul>${p.sectors.map((s) => `<li><a href="/${esc(s.path)}/">${esc(s.title)}</a>: ${esc(s.body)}</li>`).join("")}</ul>`);
     out.push(`        <p><a href="${esc(p.sectorsUi.toolsHref)}/">${esc(p.sectorsUi.toolsLabel)}</a></p>`);
+    out.push(`        <p><a href="${esc(p.sectorsUi.oversightHref)}/">${esc(p.sectorsUi.oversightLabel)}</a></p>`);
   }
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
   out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
@@ -626,6 +630,23 @@ function toolsBodyHtml(): string {
     out.push(`        <p><a href="${esc(tool.booklet.file)}">${esc(TOOLS_PAGE.downloadLabel)}: ${esc(tool.booklet.subtitle)}</a></p>`);
   }
   out.push(`        <p>${esc(TOOLS_PAGE.disclaimer)}</p>`);
+  return out.join("\n");
+}
+
+// The oversight map. The static copy carries every quotation and its source,
+// because the quotations are the content a crawler or a reader without
+// JavaScript came for.
+function oversightBodyHtml(): string {
+  const out = [`        <h1>${esc(OVERSIGHT_PAGE.h1)}</h1>`, `        <p>${esc(OVERSIGHT_PAGE.lede)}</p>`];
+  for (const p of OVERSIGHT_POINTS) {
+    const src = OVERSIGHT_SOURCES[p.source];
+    out.push(`        <h2>${esc(p.title)}</h2>`);
+    out.push(`        <p>${esc(src.label)} ${esc(p.ref)}, ${esc(src.status)}. ${esc(p.human)}</p>`);
+    out.push(`        <blockquote lang="en" dir="ltr">${esc(p.quote)}</blockquote>`);
+    out.push(`        <p><a href="${esc(p.url)}">${esc(OVERSIGHT_PAGE.sourceLabel)}</a></p>`);
+  }
+  out.push(`        <p>${esc(OVERSIGHT_SOURCES["ai-act"].scope)} ${esc(OVERSIGHT_SOURCES.nist.scope)}</p>`);
+  out.push(`        <p>${esc(OVERSIGHT_PAGE.checked)}</p>`, `        <p>${esc(OVERSIGHT_PAGE.disclaimer)}</p>`);
   return out.join("\n");
 }
 
@@ -927,6 +948,7 @@ function seoPrerender(): Plugin {
           const sector = SECTORS.find((x: Sector) => x.path === r.path);
           const staticBody =
             r.path === TOOLS_PAGE.path ? toolsBodyHtml()
+            : r.path === OVERSIGHT_PAGE.path ? oversightBodyHtml()
             : sector ? sectorBodyHtml(sector)
             : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
@@ -1165,7 +1187,7 @@ function seoPrerender(): Plugin {
         // moment it is added to sectors.ts. They update as the case law and
         // the regulator's instructions do, hence weekly, and they carry the
         // pillar's own priority because they are where the outreach points.
-        const sectorRows = [...SECTORS.map((x: Sector) => x.path), TOOLS_PAGE.path]
+        const sectorRows = [...SECTORS.map((x: Sector) => x.path), TOOLS_PAGE.path, OVERSIGHT_PAGE.path]
           .map((path) => `${SITE}/${path}/`)
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);

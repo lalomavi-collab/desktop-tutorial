@@ -149,6 +149,11 @@ export function PillarView({ P }: { P: PillarPage }) {
               {P.sectorsUi.toolsLabel} &rarr;
             </Link>
           </p>
+          <p style={{ marginTop: 10 }}>
+            <Link to={P.sectorsUi.oversightHref} style={{ color: "var(--clay)", fontWeight: 600, fontSize: 15.5 }}>
+              {P.sectorsUi.oversightLabel} &rarr;
+            </Link>
+          </p>
         </section>
       ) : null}
 

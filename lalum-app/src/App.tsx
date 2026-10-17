@@ -18,6 +18,7 @@ const Advisory = lazy(() => import("./pages/Advisory").then((m) => ({ default: m
 const AiLegalAdvisory = lazy(() => import("./pages/AiLegalAdvisory").then((m) => ({ default: m.AiLegalAdvisory })));
 const RealEstateLegalAdvisory = lazy(() => import("./pages/RealEstateLegalAdvisory").then((m) => ({ default: m.RealEstateLegalAdvisory })));
 const Sector = lazy(() => import("./pages/Sector").then((m) => ({ default: m.Sector })));
+const OversightMap = lazy(() => import("./pages/OversightMap").then((m) => ({ default: m.OversightMap })));
 const LegalTools = lazy(() => import("./pages/LegalTools").then((m) => ({ default: m.LegalTools })));
 const MediationDisputeResolution = lazy(() => import("./pages/MediationDisputeResolution").then((m) => ({ default: m.MediationDisputeResolution })));
 const Topic = lazy(() => import("./pages/Topic").then((m) => ({ default: m.Topic })));
@@ -140,6 +141,7 @@ export default function App() {
                 segment wins the match; otherwise "tools" would be looked up as
                 a sector slug and fall through to the 404. */}
             <Route path="ai-legal-advisory/tools" element={<LegalTools />} />
+            <Route path="ai-legal-advisory/human-oversight" element={<OversightMap />} />
             {/* Sector rubrics live under the AI pillar, one route for all of
                 them: a new body is an entry in sectors.ts, not a new route. */}
             <Route path="ai-legal-advisory/:sector" element={<Sector />} />

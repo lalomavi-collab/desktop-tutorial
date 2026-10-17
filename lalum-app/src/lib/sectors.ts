@@ -797,6 +797,8 @@ export const SECTORS_UI = {
   go: `לרובריקה`,
   toolsHref: `/ai-legal-advisory/tools`,
   toolsLabel: `כלי אבחון: ציות, חוזי ספקים וסכסוכים אלגוריתמיים`,
+  oversightHref: `/ai-legal-advisory/human-oversight`,
+  oversightLabel: `איפה האדם נכנס: פיקוח אנושי ב-AI Act וב-NIST`,
   download: `הורדת המדריך`,
   auditStart: `להתחלת האבחון`,
   auditYes: `כן`,
