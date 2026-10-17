@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "administrative-accountability-ai-ramat-gan-ruling": {
+  "topic": "ai-governance",
+  "related": [
+   "effective-human-oversight-ai-systems",
+   "ai-local-authorities-uses-legal-limits",
+   "ai-hallucinations-citations"
+  ]
+ },
  "legal-ai-pricing-client-disclosure": {
   "topic": "ai-governance",
   "related": [
@@ -714,9 +722,9 @@
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
+   "administrative-accountability-ai-ramat-gan-ruling",
    "ai-education-public-institutions-use-policy",
-   "ai-use-policy-local-authority",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-use-policy-local-authority"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -1012,7 +1020,7 @@
   "related": [
    "ai-automated-decision-right-gdpr-article-22-israel-gap",
    "ai-hallucinations-citations",
-   "decision-oriented-ai-law"
+   "legal-ai-tool-selection-test"
   ]
  },
  "urban-renewal-risk": {
@@ -1042,9 +1050,9 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
+   "administrative-accountability-ai-ramat-gan-ruling",
    "california-sb574-ai-adjudication-ban",
-   "effective-human-oversight-ai-systems",
-   "ai-liability-ruling"
+   "effective-human-oversight-ai-systems"
   ]
  },
  "international-trade-guide-2026": {
@@ -1732,7 +1740,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1810,8 +1818,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
+   "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -2003,8 +2011,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "effective-human-oversight-ai-systems",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-planning-permits-local-authority-discretion",
+   "effective-human-oversight-ai-systems"
   ]
  }
 }
