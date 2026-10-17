@@ -220,6 +220,12 @@
   --clay-tint: #151922;   /* surface: hover rows, table headers, active tiles */
   --line: rgba(255, 255, 255, .07);
   --line-strong: rgba(255, 255, 255, .14);
+  --chart-track: rgba(255, 255, 255, .16);
+  --chart-grid: rgba(255, 255, 255, .14);
+  --chart-ok: #8fd19b;
+  --chart-ok-l: #5f9d6d;
+  --chart-warn: #f2b84a;
+  --chart-bad: #ff8a78;
   --ck-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 .ck-root[data-ck-theme="dark"] .ck-card,
