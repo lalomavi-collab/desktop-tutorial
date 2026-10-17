@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { PageMeta } from "../components/PageMeta";
+import { Link } from "../components/AppLink";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES, type OversightSource } from "../lib/oversightMap";
 
@@ -105,6 +106,10 @@ export function OversightMap() {
       </section>
 
       <section className="wrap section" style={{ maxWidth: 760, textAlign: "center" }}>
+        <p style={{ fontSize: 15.5, margin: "0 0 18px" }}>
+          <b>{OVERSIGHT_PAGE.moreLabel}: </b>
+          <Link to={OVERSIGHT_PAGE.moreHref} style={{ color: "var(--clay)", fontWeight: 600 }}>{OVERSIGHT_PAGE.moreTitle} &rarr;</Link>
+        </p>
         <p style={{ fontSize: 14, color: "var(--slate)", margin: "0 0 10px" }}>{OVERSIGHT_PAGE.checked}</p>
         <p style={{ fontSize: 13, color: "var(--slate)", margin: 0 }}>{OVERSIGHT_PAGE.disclaimer}</p>
       </section>
