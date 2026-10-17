@@ -27,13 +27,6 @@ const INSIGHTS_PALETTE = [{ accent: "#537056", tint: "#e7ede4" }];
 // person. The founder's own photo and story still appear, further down the
 // page, in ABOUT and again in FOUNDER, which is where "about him" belongs.
 
-/** One item of the credibility strip. The first number in the text is drawn as an instrument figure; the words around it stay exactly as written. */
-function CredItem({ text }: { text: string }) {
-  const m = /^(.*?)(\d[\d.,]*\+?)(.*)$/.exec(text);
-  if (!m) return <span className="cred-text">{text}</span>;
-  return <><b className="cred-fig">{m[2]}</b><span className="cred-text">{`${m[1]}${m[3]}`.trim()}</span></>;
-}
-
 export function Home() {
   const { t, lang } = useLang();
   const h = t.home;
@@ -71,7 +64,6 @@ export function Home() {
               <Link to="/advisory" className="btn btn-outline">{h.heroCtaAi}</Link>
             </div>
             <div className="hero-foot">
-              <span className="hero-years"><span className="cred-label">{h.frameworksLabel}</span><CredItem text={h.heroCreds.split(" · ")[0]} /></span>
               <Link to="/insights" className="hero-textlink">{h.quickInsightsTitle} <span aria-hidden="true">&larr;</span></Link>
             </div>
           </div>

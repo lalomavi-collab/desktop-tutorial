@@ -5102,17 +5102,6 @@ html.a11y-reduce-motion *::after {
   }
 }
 
-/* Credibility strip under the home hero: the firm's own figures as small instrument tiles, the same language as the
-   cockpit's stat cards (hairline border, monospaced tabular figure), in the site's ivory and sage. */
-.cred-block { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
-.cred-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); }
-.cred-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.cred-strip li { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 96px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.6); }
-.cred-fig { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 24px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--clay); }
-.cred-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink); }
-/* A framework name has no figure beside it, so it carries the clay accent itself: the cell reads as a badge instead of an empty stat card. */
-.cred-text:only-child { font-size: 14.5px; font-weight: 700; color: var(--clay); }
-@media (max-width: 520px) { .cred-strip li { flex: 1 1 calc(50% - 8px); } }
 
 /* Dark instrument panel, shared by the home Engine cards and the Advisory
    dispute-resolution modules. Three depths (section, panel, badge) instead of
@@ -5247,11 +5236,7 @@ html.a11y-reduce-motion *::after {
 }
 .hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .hero-foot { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); max-width: 52ch; }
-.hero-years { display: inline-flex; align-items: baseline; gap: 10px; }
-.hero-years .cred-label { margin-inline-end: 4px; }
-.hero-years .cred-fig { font-size: 30px; }
-.hero-years .cred-text { font-size: 13px; font-weight: 600; color: var(--slate); }
-.hero-textlink { margin-inline-start: auto; font-size: 14.5px; font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--clay); padding-bottom: 2px; }
+.hero-textlink { font-size: 14.5px; font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--clay); padding-bottom: 2px; }
 .hero-textlink:hover { color: var(--clay); }
 .hero-textlink:focus-visible { outline: 3px solid var(--clay); outline-offset: 4px; }
 @media (max-width: 900px) { .hero-foot { margin-top: 24px; } }
