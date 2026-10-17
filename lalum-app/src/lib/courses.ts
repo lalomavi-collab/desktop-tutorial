@@ -58,7 +58,7 @@ export const courses: Course[] = [
     capstoneName: "Smart Real Estate Due-Diligence Engine",
     capstoneDesc: "סוכן AI פנימי הסורק טיוטות הסכמים, מזהה חשיפות מיסוי, בוחן הוגנות תמורות (יחסית מול אחידה לאור פסיקות עדכניות) ומפיק מפת סיכונים.",
     icon: "pin",
-    accent: "#a8482a",
+    accent: "#537056",
     image: "/courses/lalum-academy-real-estate.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת Legal-AI בעולמות המקרקעין והנדסת פרומפטים מתקדמת" },
@@ -78,7 +78,7 @@ export const courses: Course[] = [
     capstoneName: "Automated Contract Negotiator & Risk Assessor",
     capstoneDesc: "מערכת מותאמת אישית המאבחנת שינויים בהסכמים, מזהה סתירות פנימיות ומציעה ניסוחי נגד אסטרטגיים.",
     icon: "gavel",
-    accent: "#916c26",
+    accent: "#537056",
     image: "/courses/lalum-academy-corporate.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, System Prompts וארכיטקטורת מודלים לעבודה חוזית ותאגידית" },
@@ -98,7 +98,7 @@ export const courses: Course[] = [
     capstoneName: "Litigation & Dispute Strategy Suite",
     capstoneDesc: "כלי המנתח כתבי טענות של הצד שכנגד, מזהה פערים ראייתיים, ומכין חקירות נגדיות וסעיפי בוררות או גישור.",
     icon: "scale",
-    accent: "#8a3f45",
+    accent: "#537056",
     image: "/courses/lalum-academy-litigation.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, מחקר משפטי מתקדם והפיכת קלסרי ראיות למאגר ידע חכם" },
@@ -118,7 +118,7 @@ export const courses: Course[] = [
     capstoneName: "AI Product Governance Framework & Risk Engine",
     capstoneDesc: "סוכן AI המבצע סקירת מוצר, מזהה חשיפות IP ורגולציה (EU AI Act/FTC), ומפיק מפת ציות אוטומטית.",
     icon: "brain",
-    accent: "#3f8f5f",
+    accent: "#537056",
     image: "/courses/lalum-academy-hitech.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת LLMs, זרימת דאטה במוצר (Data Pipelines) והיבטים משפטיים" },
@@ -138,7 +138,7 @@ export const courses: Course[] = [
     capstoneName: "Municipal Compliance & FOIA Engine",
     capstoneDesc: "סוכן AI הבוחן החלטות ומסמכי רשות, מזהה חשיפות מנהליות, מכין מענה לבקשות חופש מידע ומפיק מפת סיכוני ציות.",
     icon: "home",
-    accent: "#3f6f8f",
+    accent: "#537056",
     image: "/courses/lalum-academy-public-sector.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI במגזר הציבורי והנדסת פרומפטים למסמכי רשות" },
@@ -158,7 +158,7 @@ export const courses: Course[] = [
     capstoneName: "Automotive Recall & Liability Radar",
     capstoneDesc: "סוכן AI המנטר תקלות ופניות, מזהה חשיפות אחריות מוצר וקריאות ריקול, ומפיק מפת סיכונים רגולטורית וחוזית.",
     icon: "settings",
-    accent: "#5c6470",
+    accent: "#537056",
     image: "/courses/lalum-academy-automotive.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI בעולם הרכב והנדסת פרומפטים לחוזים ולרגולציה" },
@@ -178,7 +178,7 @@ export const courses: Course[] = [
     capstoneName: "Clinical Data & Device Compliance Engine",
     capstoneDesc: "סוכן AI הבוחן מסמכי מוצר ומחקר, מזהה חשיפות בפרטיות מידע רפואי וברגולציית מכשור, ומפיק מפת ציות.",
     icon: "shield",
-    accent: "#2f8f7f",
+    accent: "#537056",
     image: "/courses/lalum-academy-healthcare.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI ברפואה והנדסת פרומפטים למסמכים קליניים ומשפטיים" },
@@ -198,7 +198,7 @@ export const courses: Course[] = [
     capstoneName: "Regulatory & AML Decision Auditor",
     capstoneDesc: "סוכן AI הבוחן החלטות אשראי וחיתום, מזהה הטיה וחשיפות ציות (איסור הלבנה, הגינות), ומפיק מפת סיכונים.",
     icon: "file",
-    accent: "#916c26",
+    accent: "#537056",
     image: "/courses/lalum-academy-finance.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI בפיננסים והנדסת פרומפטים לחוזים ולרגולציה" },
@@ -218,7 +218,7 @@ export const courses: Course[] = [
     capstoneName: "Infrastructure Permits & Safety Risk Engine",
     capstoneDesc: "סוכן AI הבוחן מכרזים, היתרים ותקני בטיחות, מזהה חשיפות רגולטוריות וחוזיות, ומפיק מפת סיכונים לפרויקט.",
     icon: "spark",
-    accent: "#b5722a",
+    accent: "#537056",
     image: "/courses/lalum-academy-energy.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI בתשתיות והנדסת פרומפטים לחוזים ולרישוי" },
@@ -238,7 +238,7 @@ export const courses: Course[] = [
     capstoneName: "Cyber Incident & Data Breach Response Engine",
     capstoneDesc: "סוכן AI המנתח אירועי אבטחה ופרטיות, מזהה חובות דיווח וחשיפות משפטיות, ומפיק תוכנית תגובה וניהול משבר.",
     icon: "shield",
-    accent: "#5a4f9a",
+    accent: "#537056",
     image: "/courses/lalum-academy-cyber.jpg",
     sessions: [
       { n: 1, title: "הכלים והטכנולוגיה, ארכיטקטורת AI לסייבר והנדסת פרומפטים לניתוח איומים ומסמכים משפטיים" },

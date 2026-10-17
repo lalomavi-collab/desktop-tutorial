@@ -13,7 +13,7 @@ import { PracticeFaq } from "../components/PracticeFaq";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { PillarArt } from "../components/PillarArt";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
-import { faqsForPath } from "../lib/pageFaqs";
+import { coreFaqsForPath } from "../lib/pageFaqsCore";
 import { howToForPath } from "../lib/pageHowTos";
 import { useLang } from "../context/LangContext";
 
@@ -23,7 +23,7 @@ export function Advisory() {
 
   return (
     <>
-      <PageMeta title={t.seo.advisory.title} description={t.seo.advisory.desc} path="/advisory" jsonLd={pageJsonLd([faqPageNode(faqsForPath(t, "/advisory")), howToForPath(t, "/advisory")])} />
+      <PageMeta title={t.seo.advisory.title} description={t.seo.advisory.desc} path="/advisory" jsonLd={pageJsonLd([faqPageNode(coreFaqsForPath(t, "/advisory") ?? []), howToForPath(t, "/advisory")])} />
       {/* HERO */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />

@@ -37,7 +37,7 @@ export const academyPro: Course[] = [
     capstoneDesc:
       "מנוע ניסוח וסקירת חוזים שעובד על תבניות המשרד עצמו ומפיק טיוטה מסומנת עם נקודות לבדיקה אנושית.",
     icon: "gavel",
-    accent: "#916c26",
+    accent: "#537056",
     image: "",
     track: "pro",
     frame: proFramework,
@@ -64,7 +64,7 @@ export const academyPro: Course[] = [
     capstoneDesc:
       "מנוע איסוף וניתוח עסקאות השוואה שמפיק טיוטת פרק נתונים עם מקור לכל שורה, לבדיקת השמאי.",
     icon: "pin",
-    accent: "#a8482a",
+    accent: "#537056",
     image: "",
     track: "pro",
     frame: proFramework,
@@ -91,7 +91,7 @@ export const academyPro: Course[] = [
     capstoneDesc:
       "מנוע סיווג והצלבת מסמכים שמסמן חריגים לבדיקה אנושית לפני סגירת דוח.",
     icon: "spark",
-    accent: "#800020",
+    accent: "#537056",
     image: "",
     track: "pro",
     frame: proFramework,
