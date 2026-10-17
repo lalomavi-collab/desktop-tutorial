@@ -63,6 +63,22 @@
    "explainability"
   ]
  },
+ "ai-municipal-tender-review-pre-publication": {
+  "topic": "mediation",
+  "related": [
+   "ai-procurement-tender-local-authority",
+   "ai-education-public-institutions-use-policy",
+   "procurement"
+  ]
+ },
+ "ai-building-permit-acceleration-plans-scan": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-municipal-property-tax-collection",
+   "ai-real-estate-urban-renewal-legal-exposure"
+  ]
+ },
  "administrative-accountability-ai-ramat-gan-ruling": {
   "topic": "ai-governance",
   "related": [
@@ -210,8 +226,8 @@
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
-   "ai-local-authority-decision-reasoning-transparency",
    "ai-use-policy-local-authority",
+   "ai-local-authority-decision-reasoning-transparency",
    "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
@@ -395,8 +411,8 @@
   "topic": "real-estate",
   "related": [
    "caution-note-real-estate-registration-removal",
-   "purchase-group-agreement-tax-risks",
-   "cyprus-realestate-israeli-buyer-guide"
+   "cyprus-realestate-israeli-buyer-guide",
+   "purchase-group-agreement-tax-risks"
   ]
  },
  "ai-generated-content-ownership-protection-contracts": {
@@ -658,9 +674,9 @@
  "ai-planning-permits-local-authority-discretion": {
   "topic": "ai-governance",
   "related": [
+   "ai-building-permit-acceleration-plans-scan",
    "ai-use-policy-local-authority",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-local-authority-decision-reasoning-transparency"
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
@@ -1020,7 +1036,7 @@
   "related": [
    "ai-automated-decision-right-gdpr-article-22-israel-gap",
    "ai-hallucinations-citations",
-   "legal-ai-tool-selection-test"
+   "decision-oriented-ai-law"
   ]
  },
  "urban-renewal-risk": {
@@ -1187,8 +1203,8 @@
   "topic": "real-estate",
   "related": [
    "legal-ai-pricing-client-disclosure",
-   "law-algorithm-era",
-   "transcription-tools-guide"
+   "transcription-tools-guide",
+   "law-algorithm-era"
   ]
  },
  "digital-lawyers-2026": {
@@ -1554,8 +1570,8 @@
  "למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור": {
   "topic": "real-estate",
   "related": [
-   "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
+   "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "legal-mediation-benefits"
   ]
  },
@@ -1650,8 +1666,8 @@
  "מדריך-מקצועי-למתווכים-רפורמת-התיווך-במקרקעין-של-משרד-המשפטים": {
   "topic": "real-estate",
   "related": [
-   "israel-land-authority-lease-capitalization-transfer",
    "developer-agreement-urban-renewal-critical-clauses",
+   "israel-land-authority-lease-capitalization-transfer",
    "סיפור-חובה-למתווכים-עורכי-דין-ורוכשי-דירות"
   ]
  },
@@ -1818,8 +1834,8 @@
  "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות": {
   "topic": "mediation",
   "related": [
-   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "מהמשבר-לשותפות-חדשה-איך-סכסוך-עסקי-הביא-להבנה-עמוקה-יותר-בזכות-גישור-מכוון-הכרעה",
+   "הסכמה-מתוך-עייפות-האם-זו-באמת-הסכמה",
    "הרגע-שבו-הכול-נקבע-רושם-ראשוני-בגישור-מכוון-הכרעה"
   ]
  },
@@ -2011,8 +2027,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "ai-planning-permits-local-authority-discretion"
   ]
  }
 }
