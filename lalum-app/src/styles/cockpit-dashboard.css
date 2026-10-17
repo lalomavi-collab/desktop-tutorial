@@ -61,8 +61,11 @@
 .ck-band-art { flex-shrink: 0; filter: drop-shadow(0 8px 10px rgba(83, 112, 86, .18)); }
 .ck-band p { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.6; }
 .ck-root[data-ck-theme="dark"] .ck-band { background: var(--card); border: 1px solid var(--line); box-shadow: none; }
-.ck-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-@media (max-width: 700px) { .ck-insights > .ck-card[style*="span 2"] { grid-column: auto !important; } .ck-band { padding: 8px 12px; } .ck-band-art svg { width: 64px; height: 64px; } }
+/* Cards wrap and the last one in a row grows to fill it, so a lone card never leaves a gap beside it. */
+.ck-insights { display: flex; flex-wrap: wrap; gap: 16px; }
+.ck-insights > .ck-card { flex: 1 1 260px; min-width: 0; }
+.ck-insights > .ck-card.ck-wide { flex: 2 1 540px; }
+@media (max-width: 700px) { .ck-band { padding: 8px 12px; } .ck-band-art svg { width: 64px; height: 64px; } }
 
 .ck-navbadge { margin-inline-start: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 12px; font-weight: 800; display: inline-grid; place-items: center; }
 
