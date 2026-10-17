@@ -66,3 +66,13 @@
 | 2026-10-17 | https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/ | נשלח |
 | 2026-10-17 | https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/ | נשלח |
 | 2026-10-17 | https://lalumapp.com/insights/israel-land-authority-lease-capitalization-transfer/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/overseas-developer-contract-guarantees/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/pinui-binui-consideration-valuation/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/purchase-group-agreement-tax-risks/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-owners-representation/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-principles-vs-detailed-agreement/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-required-majority-holdout/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-banking-finance-regulation-risk/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-clinical-system-deployment/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-diagnosis-imaging-clinical/ | נשלח |
+| 2026-10-17 | https://lalumapp.com/insights/ai-employee-evaluation-decisions/ | נשלח |
