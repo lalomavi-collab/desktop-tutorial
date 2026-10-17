@@ -6,7 +6,7 @@ import { PRACTICE } from "../../lib/cockpit/shared";
 
 const mins = (a: string, b: string) => (new Date(b).getTime() - new Date(a).getTime()) / 60000;
 const Card = ({ title, children, wide }: { title: string; children: React.ReactNode; wide?: boolean }) => (
-  <div className="ck-card db-card" style={wide ? { gridColumn: "span 2" } : undefined}><h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800 }}>{title}</h3>{children}</div>
+  <div className={`ck-card db-card${wide ? " ck-wide" : ""}`}><h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800 }}>{title}</h3>{children}</div>
 );
 const Strip = ({ children }: { children: React.ReactNode }) => <div className="ck-insights">{children}</div>;
 
