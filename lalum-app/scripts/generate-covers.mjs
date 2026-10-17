@@ -65,9 +65,12 @@ const P = {
   clay: ["#a8482a", "#f6e6de"], ochre: ["#916c26", "#f3ecd6"], wine: ["#8a3f45", "#f3e3e4"], teal: ["#3f6f68", "#e1ede9"],
   indigo: ["#5a4f9a", "#e8e5f3"], forest: ["#41663f", "#e5eede"], slate: ["#3a5a7a", "#e2e9f1"],
 };
+// Four classic hues only (the site's greens, slate and gold). Seven read as a
+// rainbow once 250 covers sat side by side; the compositions, not the colours,
+// are what tell two pieces apart.
 const BY_MOTIF = {
-  city: ["clay", "ochre", "forest"], abroad: ["teal", "slate", "ochre"], civic: ["slate", "teal", "forest"], court: ["wine", "slate", "ochre"],
-  mediation: ["teal", "forest", "wine"], privacy: ["indigo", "slate", "teal"], contract: ["wine", "ochre", "clay"], network: ["indigo", "teal", "slate"],
+  city: ["forest", "ochre"], abroad: ["teal", "slate"], civic: ["slate", "teal"], court: ["slate", "ochre"],
+  mediation: ["teal", "forest"], privacy: ["slate", "teal"], contract: ["ochre", "forest"], network: ["teal", "slate", "forest"],
 };
 const INK = "#1a1815";
 const W = 1200, H = 630;

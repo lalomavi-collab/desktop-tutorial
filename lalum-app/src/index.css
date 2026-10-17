@@ -5255,3 +5255,28 @@ html.a11y-reduce-motion *::after {
 .hero-textlink:hover { color: var(--clay); }
 .hero-textlink:focus-visible { outline: 3px solid var(--clay); outline-offset: 4px; }
 @media (max-width: 900px) { .hero-foot { margin-top: 24px; } }
+
+/* ---------- one classic control language, site wide ----------
+   Ink for utilities, the site's green for the one action that matters,
+   burgundy for the single urgent control (SOS). Before this the bar and the
+   floating buttons wore black, orange-red, white, blue and two burgundies at
+   once, which read as five products. */
+:root { --sos: #7a2432; --sos-deep: #611c28; }
+.tb-btn { background: var(--card); border-color: var(--line-strong); color: var(--ink); }
+.tb-btn:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); box-shadow: none; transform: none; }
+.tb-btn.tb-sos { width: auto; padding: 0 16px; border-radius: 9999px; background: var(--sos); border-color: var(--sos); color: #fff; font-size: 12.5px; letter-spacing: 0.06em; filter: none; }
+.tb-btn.tb-sos:hover { background: var(--sos-deep); border-color: var(--sos-deep); color: #fff; }
+.tb-btn.tb-pay, .rail-pay { background: var(--ink); border-color: var(--ink); color: var(--paper); box-shadow: 0 12px 26px -14px rgba(26, 24, 21, 0.55); }
+.tb-btn.tb-pay:hover, .rail-pay:hover { background: #000; border-color: #000; filter: none; }
+.a11y-fab { background: var(--ink); color: var(--paper); box-shadow: 0 12px 26px -12px rgba(26, 24, 21, 0.55); }
+.a11y-fab:hover { background: #000; }
+.header-login { display: inline-flex; align-items: center; gap: 8px; height: var(--ctrl-h, 40px); padding: 0 16px; border-radius: 9999px; border: 1px solid var(--line-strong); background: var(--card); color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: background .15s ease, color .15s ease, border-color .15s ease; }
+.header-login:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.header-login .header-cta-label { display: inline; }
+.header-login:focus-visible, .tb-btn:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+@media (max-width: 900px) {
+  .tabbar-sos { color: var(--sos); }
+  .tabbar-sos-badge { background: var(--sos); }
+}
+.sos-action:hover { border-color: var(--sos); background: rgba(122, 36, 50, 0.06); }
+.sos-action-icon { background: var(--sos); }
