@@ -22,6 +22,7 @@ import { VoiceNote } from "../components/VoiceNote";
 import { coverFor } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
+import { EngineVideo } from "../components/EngineVideo";
 import { topicPath } from "../lib/topics";
 
 // Same accent language as the article grid on /insights (src/pages/Insights.tsx),
@@ -214,6 +215,9 @@ export function Home() {
                 another sentence about the same thing. */}
             <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
+          {/* The Engine's claim shown as a mechanism: one document through five
+              stations, stopping only where a lawyer decides. */}
+          <EngineVideo />
           <div className="grid grid-3">
             {t.data.frameworks.map((f, i) => (
               <div key={f.code} className="dark-panel">
