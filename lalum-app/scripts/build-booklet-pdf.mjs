@@ -41,6 +41,7 @@ const NAMES = {
   "local-authorities": "lalum-rashuyot-mekomiyot-ai.pdf",
   "government-ministries": "lalum-mishradei-memshala-ai.pdf",
   "hitech-companies": "lalum-hitech-ai.pdf",
+  "real-estate-companies": "lalum-nadlan-ai.pdf",
   "regulatory-readiness": "lalum-tikun-13-mukhanut.pdf",
   "contract-shield": "lalum-hitkashrut-sapak-ai.pdf",
   "algorithmic-dispute": "lalum-sikhsukh-algoritmi.pdf",

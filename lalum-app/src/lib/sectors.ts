@@ -3,6 +3,7 @@ import type { QA } from "./schema";
 import { rulings, type Ruling } from "./rulings";
 import { governmentMinistries } from "./sectorGovernment";
 import { hitechCompanies } from "./sectorHitech";
+import { realEstateCompanies } from "./sectorRealEstate";
 
 // Sector rubrics: the AI practice cut by the kind of body it serves, rather
 // than by the legal subject. A local authority, a government ministry and a
@@ -765,7 +766,7 @@ const localAuthorities: Sector = {
   disclaimer: `האמור בעמוד זה הוא מידע מקצועי כללי ואינו ייעוץ משפטי, אינו תחליף לבחינה פרטנית של הרשות ואינו יוצר יחסי עורך דין לקוח. תמצית של פסק דין אינה תחליף לקריאתו במקור.`,
 };
 
-export const SECTORS: Sector[] = [localAuthorities, governmentMinistries, hitechCompanies];
+export const SECTORS: Sector[] = [localAuthorities, governmentMinistries, hitechCompanies, realEstateCompanies];
 
 export function sectorBySlug(slug: string): Sector | undefined {
   return SECTORS.find((s) => s.slug === slug);
@@ -801,6 +802,11 @@ export const SECTOR_TEASERS: SectorTeaser[] = [
     path: hitechCompanies.path,
     title: `חברות הייטק`,
     body: `תחולת ה-EU AI Act על חברה ישראלית ולוח הזמנים אחרי ה-Omnibus, חוות דעת משרד המשפטים על אימון מודלים, תיקון 13, פסיקה זרה על אחריות וזכויות יוצרים, ופרוטוקול וצ׳ק ליסט ל-GC.`,
+  },
+  {
+    path: realEstateCompanies.path,
+    title: `חברות נדל״ן`,
+    body: `חוק המכר (דירות) אחרי תיקון 9, גילוי דעת לשכת עורכי הדין על שימוש ב-AI, תיקון 13, פסיקת העליון על רישום הערות אזהרה, ליקויים והתחדשות עירונית, ופרוטוקול וצ׳ק ליסט ליזמים.`,
   },
 ];
 
