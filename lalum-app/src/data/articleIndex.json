@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "human-in-the-loop-lawyer-judgment-ai": {
+  "topic": "mediation",
+  "related": [
+   "ai-force-majeure-delivery-delay-apartment-contracts",
+   "algorithmic-fiduciary-duty-ai",
+   "ai-real-estate-urban-renewal-legal-exposure"
+  ]
+ },
  "legal-department-client-privilege-ai-data-security": {
   "topic": "ai-governance",
   "related": [
@@ -83,8 +91,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-shadow-ai-local-authority-staff",
-   "ai-inventory-risk-tiering-local-authority-guide",
-   "ai-legal-support-local-council-three-tracks"
+   "ai-legal-support-local-council-three-tracks",
+   "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
  "ai-urban-renewal-resident-agreements-comparison": {
@@ -98,9 +106,9 @@
  "ai-force-majeure-delivery-delay-apartment-contracts": {
   "topic": "real-estate",
   "related": [
-   "ai-real-estate-due-diligence-acceleration",
+   "human-in-the-loop-lawyer-judgment-ai",
    "administrative-accountability-ai-ramat-gan-ruling",
-   "ai-urban-renewal-resident-agreements-comparison"
+   "ai-real-estate-due-diligence-acceleration"
   ]
  },
  "ai-real-estate-due-diligence-acceleration": {
@@ -132,7 +140,7 @@
   "related": [
    "effective-human-oversight-ai-systems",
    "ai-local-authorities-uses-legal-limits",
-   "ai-force-majeure-delivery-delay-apartment-contracts"
+   "human-in-the-loop-lawyer-judgment-ai"
   ]
  },
  "legal-ai-pricing-client-disclosure": {
@@ -435,8 +443,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-real-estate-valuation-reliance",
-   "ai-governance-municipal-corporations",
-   "ai-local-authority-tort-liability-damage"
+   "human-in-the-loop-lawyer-judgment-ai",
+   "ai-governance-municipal-corporations"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -2075,8 +2083,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "effective-human-oversight-ai-systems",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-planning-permits-local-authority-discretion",
+   "effective-human-oversight-ai-systems"
   ]
  }
 }
