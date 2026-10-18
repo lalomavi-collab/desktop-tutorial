@@ -122,7 +122,7 @@ export const es: Dict = {
     chat: {
       title: "LEX · LALUM",
       subtitle: "Información legal general, no asesoramiento legal",
-      greeting: "Hola, soy LEX, su asistente personal de LALUM. Hágame una pregunta legal general, obtenga ayuda para orientarse en la aplicación, o adjunte un contrato y le compartiré observaciones. Sobre startups, propiedad intelectual, regulación de IA, contratos o mediación.",
+      greeting: "Hola, soy LEX, un asistente de inteligencia artificial de LALUM (no soy una persona ni un abogado). Hágame una pregunta legal general, obtenga ayuda para orientarse en la aplicación, o adjunte un contrato y le compartiré observaciones. Sobre startups, propiedad intelectual, regulación de IA, contratos o mediación.",
       placeholder: "Haga una pregunta legal…",
       send: "Enviar mensaje",
       open: "Chatear con el asistente de LALUM",
