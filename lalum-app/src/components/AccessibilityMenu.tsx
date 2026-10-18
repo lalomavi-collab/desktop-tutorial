@@ -3,6 +3,12 @@ import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 import { useNearTopScroll } from "../hooks/useNearTopScroll";
+import { getStyle, nextStyle, setStyle, type SiteStyle } from "../lib/siteStyle";
+
+const STYLE_NAME: Record<"he" | "en", Record<SiteStyle, string>> = {
+  he: { classic: "קלאסי", sage: "ירוק כהה", sovereign: "Sovereign" },
+  en: { classic: "Classic", sage: "Dark sage", sovereign: "Sovereign" },
+};
 
 // Self-contained accessibility menu (no third-party vendor). A fixed button at
 // the bottom-inline-start opens a panel of real controls: text size, high
@@ -39,8 +45,10 @@ function apply(s: Settings) {
 }
 
 export function AccessibilityMenu() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const a = t.ui.a11y;
+  const [look, setLook] = useState<SiteStyle>("classic");
+  const names = STYLE_NAME[lang === "he" ? "he" : "en"];
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<Settings>(DEFAULTS);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -55,6 +63,7 @@ export function AccessibilityMenu() {
     const loaded = load();
     setS(loaded);
     apply(loaded);
+    setLook(getStyle());
   }, []);
 
   function update(next: Settings) {
@@ -103,6 +112,10 @@ export function AccessibilityMenu() {
             <span>{a.motion}</span><span className="a11y-knob" />
           </button>
 
+          <button type="button" className="a11y-toggle" onClick={() => { const n = nextStyle(look); setStyle(n); setLook(n); }}>
+            <span>{lang === "he" ? "סגנון האתר" : "Site style"}</span>
+            <span aria-live="polite" style={{ fontWeight: 600 }}>{names[look]}</span>
+          </button>
           <div className="a11y-panel-foot">
             <button type="button" className="a11y-reset" onClick={reset}>{a.reset}</button>
             <Link to="/legal#accessibility" className="a11y-statement" onClick={() => setOpen(false)}>{a.statement}</Link>

@@ -24,7 +24,7 @@ import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
-const INSIGHTS_PALETTE = [{ accent: "#C5A880", tint: "rgba(197, 168, 128, 0.1)" }];
+const INSIGHTS_PALETTE = [{ accent: "var(--clay)", tint: "var(--clay-tint)" }];
 // The hero card carries the firm's own mark, not a personal portrait: a
 // visitor's first view of the site should read as the practice, not as one
 // person. The founder's own photo and story still appear, further down the
@@ -212,7 +212,7 @@ export function Home() {
       {/* FOUNDER */}
       <ArchitecturalSection index="04" code="PROFILE // FOUNDER">
         <div className="founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
-          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 2, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
+          <div className="founder-card" style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
             <Wordmark height={34} label={h.logoAlt} style={{ display: "block", height: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>

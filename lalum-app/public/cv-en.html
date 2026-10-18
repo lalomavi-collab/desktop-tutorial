@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="/style-boot.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dr. Avraham Lalum, Adv., Curriculum Vitae, LALUM</title>
 <meta name="description" content="Curriculum Vitae of Dr. Avraham (Avi) Lalum, ד״ר עו״ד אברהם ללום, Attorney, Notary and Ph.D. in Law and Economics. Founder of LALUM." />
@@ -62,32 +63,10 @@
   header.top .name-he { font-size:27px; font-weight:400; color:#cfc7b4; margin:2px 0 10px; }
   @media print { body{background:#fff;} .print,.home-pill{display:none;} header.top{background:#0f0f10 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;} }
 
-  /* Sovereign: the dark institutional dossier. Same content, new surface. A
-     12 column ledger puts the date range (mono, gold) in 3 columns beside the
-     detail in 9. Print returns to white paper so the PDF stays a document. */
-  :root { --ink:#f3f4f6; --slate:#a3a9b5; --paper:#0d0f14; --ivory:#07080b; --line:rgba(255,255,255,.07); --clay:#c5a880; --clay-tint:rgba(197,168,128,.1); }
-  body { font-family:"Heebo",-apple-system,"Segoe UI",Roboto,Arial,sans-serif; font-weight:400; }
-  .serif { font-family:"Frank Ruhl Libre","David Libre",Georgia,"Times New Roman",serif; font-weight:500; }
-  .sheet { border-inline:1px solid var(--line); }
-  header.top { background:#07080b; border-bottom:1px solid var(--line); }
-  header.top .photo { border:1px solid var(--clay); }
-  header.top .focus { color:var(--clay); font-family:"JetBrains Mono",ui-monospace,monospace; letter-spacing:.12em; text-transform:uppercase; }
-  p, .lead, li { color:#cfd3db; }
-  h2 { font-family:"JetBrains Mono",ui-monospace,monospace; font-weight:500; letter-spacing:.14em; }
-  section { border-bottom:1px solid var(--line); }
-  .role { display:grid; grid-template-columns:repeat(12,1fr); gap:6px 24px; align-items:baseline; }
-  .role h3 { grid-column:span 9; }
-  .role .when { grid-column:span 3; order:-1; font-family:"JetBrains Mono",ui-monospace,monospace; color:var(--clay); font-size:12.5px; letter-spacing:.04em; white-space:normal; text-align:start; }
-  @media (max-width:640px){ .role h3,.role .when { grid-column:span 12; } .role .when { order:0; } }
-  .print a, .home-pill { background:var(--clay); color:#07080b; border-radius:2px; }
-  .grid .block { border:1px solid var(--line); padding:18px 20px; margin:0; background:var(--paper); }
-  .grid { gap:1px; background:var(--line); border:1px solid var(--line); }
-  @media print {
-    :root { --ink:#1a1815; --slate:#55514a; --paper:#fbf9f3; --ivory:#fff; --line:#e3dccd; --clay:#8a6d3b; }
-    body { background:#fff; color:#1a1815; }
-    p, .lead, li { color:#3a372f; }
-    .grid { background:none; border:0; } .grid .block { background:none; border:0; padding:0; }
-    .sheet { border:0; }
+  /* Sovereign dossier: dark ledger, opt in via the site style. Date ranges sit in 3 of 12 columns beside the detail in 9. Print returns to white paper. */
+  html[data-style] { --ink:#f3f4f6; --slate:#a3a9b5; --paper:#0d0f14; --ivory:#07080b; --line:rgba(255,255,255,.07); --clay:#c5a880; --clay-tint:rgba(197,168,128,.1); } html[data-style] body { font-family:"Heebo",-apple-system,"Segoe UI",Roboto,Arial,sans-serif; font-weight:400; } html[data-style] .serif { font-family:"Frank Ruhl Libre","David Libre",Georgia,"Times New Roman",serif; font-weight:500; } html[data-style] .sheet { border-inline:1px solid var(--line); } html[data-style] header.top { background:#07080b; border-bottom:1px solid var(--line); } html[data-style] header.top .photo { border:1px solid var(--clay); } html[data-style] header.top .focus { color:var(--clay); font-family:"JetBrains Mono",ui-monospace,monospace; letter-spacing:.12em; text-transform:uppercase; } html[data-style] p,html[data-style] .lead,html[data-style] li { color:#cfd3db; } html[data-style] h2 { font-family:"JetBrains Mono",ui-monospace,monospace; font-weight:500; letter-spacing:.14em; } html[data-style] section { border-bottom:1px solid var(--line); } html[data-style] .role { display:grid; grid-template-columns:repeat(12,1fr); gap:6px 24px; align-items:baseline; } html[data-style] .role h3 { grid-column:span 9; } html[data-style] .role .when { grid-column:span 3; order:-1; font-family:"JetBrains Mono",ui-monospace,monospace; color:var(--clay); font-size:12.5px; letter-spacing:.04em; white-space:normal; text-align:start; }
+  @media (max-width:640px){ html[data-style] .role h3,html[data-style] .role .when { grid-column:span 12; } html[data-style] .role .when { order:0; } } html[data-style] .print a,html[data-style] .home-pill { background:var(--clay); color:#07080b; border-radius:2px; } html[data-style] .grid .block { border:1px solid var(--line); padding:18px 20px; margin:0; background:var(--paper); } html[data-style] .grid { gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media print { html[data-style] { --ink:#1a1815; --slate:#55514a; --paper:#fbf9f3; --ivory:#fff; --line:#e3dccd; --clay:#8a6d3b; } html[data-style] body { background:#fff; color:#1a1815; } html[data-style] p,html[data-style] .lead,html[data-style] li { color:#3a372f; } html[data-style] .grid { background:none; border:0; } html[data-style] .grid .block { background:none; border:0; padding:0; } html[data-style] .sheet { border:0; }
   }
 </style>
 </head>
