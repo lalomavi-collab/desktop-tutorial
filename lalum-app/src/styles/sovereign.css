@@ -1,0 +1,502 @@
+/* ============================================================
+   Sovereign: the institutional dark system for the marketing site.
+
+   Scope. Everything here is opt in: it applies only when the visitor picks the
+   "sovereign" or "sage" style (html[data-style], set from the accessibility
+   menu) and is gated on :has(.site-header), which only the
+   marketing layout renders (header, footer, every public page). The prerendered
+   HTML already contains the header, so the first paint is dark with no script.
+   The cockpit, LEX and the other standalone surfaces render no .site-header and
+   keep their own palettes untouched.
+
+   Method. The site is token driven, so the palette is a remap of the existing
+   variable names (--ivory, --paper, --ink, --clay ...) rather than a rewrite of
+   5,000 lines. "clay" is now the champagne gold; the name stays so the diff
+   stays small, exactly as it did when clay became sage.
+   ============================================================ */
+
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) {
+  color-scheme: dark;
+  --ivory: #07080b;          /* canvas */
+  --paper: #0d0f14;          /* elevated surface */
+  --card: #0d0f14;
+  --elev: #12151e;           /* interactive hover surface */
+  --ink: #f3f4f6;
+  --slate: #a3a9b5;
+  --clay: #c5a880;           /* brushed champagne gold */
+  --clay-hover: #d9c29f;
+  --clay-bright: #d9c29f;
+  --clay-soft: rgba(197, 168, 128, 0.4);
+  --clay-tint: rgba(197, 168, 128, 0.1);
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --brand-green-on-white: #c5a880;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --maxw: 1240px;
+}
+/* Arabic keeps Cairo and Markazi (the three faces below carry no Arabic). */
+html:is([data-style="sovereign"], [data-style="sage"]):not([lang="ar"]):has(.site-header) {
+  --sans: "Heebo", system-ui, "Segoe UI", sans-serif;
+  --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+}
+html[lang="he"]:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) body {
+  font-weight: 400;
+}
+/* Frank Ruhl Libre has real 400/500/700 faces, so Hebrew headings no longer
+   need Suez One's single heavy weight. Display sizes sit on 500. */
+html:is([data-style="sovereign"], [data-style="sage"]):not([lang="ar"]):has(.site-header) :is(.h1, .h2, h1.serif, h2.serif) {
+  font-weight: 500;
+}
+html:is([data-style="sovereign"], [data-style="sage"]):not([lang="ar"]):has(.site-header) .h1 {
+  letter-spacing: -0.012em;
+}
+html[lang="he"]:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.h1, .h2, .h3, h1.serif, h2.serif, h3.serif) {
+  letter-spacing: 0;
+}
+html[lang="he"]:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .h3,
+html[lang="he"]:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) h3.serif {
+  font-weight: 500;
+}
+
+/* High contrast mode keeps working on the dark system. */
+html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) {
+  --ivory: #000;
+  --paper: #000;
+  --card: #000;
+  --elev: #0a0a0a;
+  --ink: #fff;
+  --slate: #e9ebef;
+  --clay: #e8cfa4;
+  --line: rgba(255, 255, 255, 0.5);
+  --line-strong: #fff;
+}
+
+/* ---------- surfaces that were inverted bands ----------
+   These sections used --ink as a dark background and --paper as the text on
+   it. On the dark system the two swap back locally, so they stay a raised
+   obsidian band with light text and nothing inside them needs touching. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.pre-deal, .home-academy, .academy, .panel-dark, .riskcalc, #engine, #mna, #mediation) {
+  --ink: #0d0f14;
+  --paper: #f3f4f6;
+}
+
+/* ---------- chrome ---------- */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .site-header {
+  background: rgba(7, 8, 11, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+/* Gold fills carry dark text everywhere; the light-site rule put paper (now
+   light) on the accent, which would fail contrast. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.btn-clay, .btn-clay-bright) {
+  color: #07080b;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .btn-clay:hover {
+  color: #07080b;
+  background: var(--clay-hover);
+}
+
+/* ---------- sharp geometry, hairlines, no drop shadows ---------- */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(
+  .btn, .pill, .nav-pill, .card, .prose-panel, .pillar-hero, .pillar-card-icon, .pillar-mark,
+  .ha-thumb, .course-card, .course-badge, .course-capstone, .course-type-btn, .course-field,
+  .course-submit, .course-msg, .caps-item, .caps-badge, .book-frame, .icon-badge, .field,
+  .notice, .faq-item, .faq-section-hint, .faq-cat-count, .article-card, .article-card-cat,
+  .founder-hero, .engine-video, .panel-dark, .footer-founder-photo, .pay-strip,
+  .footer-qr-frame, .riskcalc, .riskcalc-opt, .riskcalc-exposure, .pfaq-item, .hub-tab,
+  .hub-card, .hub-tag, .hub-modal, .pre-deal-note, .cookie-banner, .cookie-modal,
+  .hero-text-panel, .a11y-panel, .phone-tag, .audience-key, .footer-social-link,
+  .founder-phone-row, .leumi-btn, .li-fallback, .admin-stat
+) {
+  border-radius: 2px;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.card, .article-card, .course-card, .hub-card, .caps-item, .pillar-card, .faq-item, .riskcalc, .pfaq-item) {
+  box-shadow: none;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.card, .article-card, .course-card, .hub-card, .caps-item, .faq-item, .pfaq-item, .riskcalc, .field):hover {
+  box-shadow: none;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .riskcalc-exposure {
+  background: var(--elev);
+}
+
+/* ---------- mono / telemetry ---------- */
+.mono {
+  font-family: var(--mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- architectural section (hairline frame, + crosshairs) ---------- */
+.arch {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+  background: var(--ivory);
+}
+.arch-frame {
+  position: relative;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  border-inline: 1px solid var(--line);
+}
+.arch-cross {
+  position: absolute;
+  top: -6px;
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(197, 168, 128, 0.6);
+  user-select: none;
+  pointer-events: none;
+}
+.arch-cross-s { inset-inline-start: -5px; }
+.arch-cross-e { inset-inline-end: -5px; }
+.arch-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(13, 15, 20, 0.7);
+}
+.arch-strip-l {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.arch-idx {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--clay);
+  background: rgba(197, 168, 128, 0.1);
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  padding: 2px 8px;
+  flex: none;
+}
+.arch-code,
+.arch-status {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.arch-code { color: var(--slate); }
+.arch-status { color: #6b7280; font-size: 10px; flex: none; }
+.arch-body {
+  padding: var(--sec) 32px;
+}
+@media (max-width: 720px) {
+  .arch-strip { padding: 10px 16px; }
+  .arch-body { padding: 56px 16px; }
+  .arch-status { display: none; }
+}
+/* An .arch-body that holds a .wrap/.section pair must not pad twice. */
+.arch-body > .wrap,
+.arch-body > .section { padding-inline: 0; }
+.arch-body > .section { padding-block: 0; }
+.arch-bare .arch-body { padding: 0; }
+
+/* ---------- 1px hairline bento ---------- */
+.bento {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.bento-cell {
+  position: relative;
+  background: var(--paper);
+  transition: background 0.2s ease;
+}
+.bento-cell:hover { background: var(--elev); }
+.bento-cell::before,
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197, 168, 128, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.bento-cell:hover::before,
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-card:hover::before { opacity: 1; }
+
+/* The six AI-layer bands on the home page become a hairline bento. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-grid .pillar-card {
+  position: relative;
+  background: var(--paper);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  transform: none;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-grid .pillar-card:hover { background: var(--elev); }
+@media (max-width: 980px) {
+  :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .pillar-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Decision Room preview ---------- */
+.drp {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--paper);
+  padding: 4px;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  text-align: start;
+}
+.drp-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--clay);
+  background: rgba(7, 8, 11, 0.6);
+}
+.drp-bar span:last-child { color: #6b7280; }
+.drp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  .drp-grid { grid-template-columns: 4fr 5fr 3fr; }
+  .drp-grid > * + * { border-inline-start: 1px solid var(--line); }
+}
+.drp-grid > * + * { border-top: 1px solid var(--line); }
+@media (min-width: 1024px) { .drp-grid > * + * { border-top: 0; } }
+.drp-pane { padding: 22px 22px 24px; min-width: 0; }
+.drp-label {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin: 0 0 14px;
+}
+.drp-node {
+  display: block;
+  width: 100%;
+  text-align: start;
+  background: transparent;
+  color: var(--slate);
+  border: 1px solid var(--line);
+  padding: 13px 14px;
+  margin: 0 0 8px;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.drp-node:hover { background: var(--elev); color: var(--ink); }
+.drp-node[aria-pressed="true"] {
+  background: rgba(197, 168, 128, 0.08);
+  border-color: rgba(197, 168, 128, 0.4);
+  color: var(--ink);
+}
+.drp-node-code {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--clay);
+  margin-bottom: 6px;
+}
+.drp-node-title { display: block; font-size: 14.5px; line-height: 1.45; }
+.drp-tele {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.drp-tele > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.drp-tele dt { color: var(--slate); }
+.drp-tele dd { margin: 0; color: var(--ink); text-align: end; }
+.drp-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  max-width: 330px;
+}
+.drp-cell {
+  aspect-ratio: 1.5 / 1;
+  background: var(--paper);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.drp-cell[data-tone="ok"] { background: rgba(16, 185, 129, 0.1); }
+.drp-cell[data-tone="warn"] { background: rgba(245, 158, 11, 0.12); }
+.drp-cell[data-tone="high"] { background: rgba(239, 68, 68, 0.14); }
+.drp-cell[data-on="true"]::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  transform: rotate(45deg);
+}
+.drp-axes {
+  display: flex;
+  justify-content: space-between;
+  max-width: 330px;
+  margin-top: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+.drp-exp { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; }
+.drp-exp li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--slate);
+}
+.drp-lvl { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.08em; }
+.drp-lvl i { display: inline-flex; gap: 2px; }
+.drp-lvl b { width: 10px; height: 3px; background: rgba(255, 255, 255, 0.12); }
+.drp-lvl[data-tone="ok"] { color: var(--success); }
+.drp-lvl[data-tone="warn"] { color: var(--warning); }
+.drp-lvl[data-tone="high"] { color: var(--danger); }
+.drp-lvl[data-tone="ok"] b:nth-child(-n+1),
+.drp-lvl[data-tone="warn"] b:nth-child(-n+2),
+.drp-lvl[data-tone="high"] b:nth-child(-n+3) { background: currentColor; }
+.drp-note {
+  margin: 14px 4px 4px;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+/* ---------- dossier (cv-style 12 column ledger) ---------- */
+.dossier-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.dossier-when {
+  grid-column: span 12;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: var(--clay);
+}
+.dossier-what { grid-column: span 12; }
+@media (min-width: 768px) {
+  .dossier-when { grid-column: span 3; }
+  .dossier-what { grid-column: span 9; }
+}
+
+/* The engine band keeps its own surface; the frame inside it is transparent so
+   the lattice behind shows through. */
+#engine .arch { background: transparent; border-bottom: 0; }
+#engine .arch-strip { background: rgba(7, 8, 11, 0.55); }
+
+/* The Decision Room frame sits inside the engine band, whose local token swap
+   would otherwise turn it light: it restores the dark pair for itself. */
+.drp { --ink: #f3f4f6; --paper: #0d0f14; }
+
+/* Tint bands become a quiet raised surface instead of a warm wash. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .band-tint {
+  background: linear-gradient(180deg, rgba(197, 168, 128, 0.05) 0%, transparent 86%);
+}
+
+/* Hero backdrop: the drifting light was built for ivory. On obsidian the blobs
+   become faint gold and the scrim fades to the canvas, so nothing greys it out. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-blob { opacity: 0.22; mix-blend-mode: screen; }
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-b1,
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-b2,
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-b3 {
+  background: radial-gradient(circle at 50% 50%, rgba(197, 168, 128, 0.45), transparent 68%);
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-sweep { opacity: 0.25; }
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ambient-warm .ambient-scrim {
+  background: linear-gradient(180deg, rgba(7, 8, 11, 0.35) 0%, rgba(7, 8, 11, 0.7) 60%, var(--ivory) 100%);
+}
+
+/* Form controls and the lead card share the same sharp geometry. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(input, textarea, select, .lead-card, [class^="lf-"], [class*=" lf-"]) {
+  border-radius: 2px;
+}
+
+/* Selected states are the accent, not an inverted block. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.riskcalc-opt.on, .hub-tab.on, .ins-chip[aria-pressed="true"]) {
+  background: var(--clay);
+  border-color: var(--clay);
+  color: #07080b;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .ins-chip[aria-pressed="true"] b { color: #07080b; }
+
+/* Mobile tab bar and the hero text panel were frosted ivory; they frost obsidian. */
+@media (max-width: 900px) {
+  :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .tabbar { background: rgba(7, 8, 11, 0.94); border-top: 1px solid var(--line); }
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .hero-text-panel { background: rgba(13, 15, 20, 0.82); }
+
+
+/* ---------- classic: the new structure stays out of the way ----------
+   The architectural frame and its telemetry strip belong to the dark systems.
+   On the classic light site a section is just a padded section, as before. */
+html:not([data-style]) .arch { background: transparent; border-bottom: 0; }
+html:not([data-style]) .arch-frame { border-inline: 0; }
+html:not([data-style]) .arch-strip,
+html:not([data-style]) .arch-cross { display: none; }
+html:not([data-style]) #engine .arch { background: transparent; }
+
+/* ---------- sage: same structure, the earlier charcoal and sage palette ---------- */
+:root[data-style="sage"]:has(.site-header) {
+  --ivory: #14161b;
+  --paper: #1a1d24;
+  --card: #1e222a;
+  --elev: #232831;
+  --ink: #e9ecf0;
+  --slate: #a7aeb9;
+  --line: rgba(255, 255, 255, 0.085);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --clay: #7fb785;
+  --clay-hover: #93c498;
+  --clay-bright: #8ec594;
+  --clay-soft: rgba(127, 183, 133, 0.5);
+  --clay-tint: rgba(127, 183, 133, 0.1);
+  --brand-green-on-white: #8ec594;
+}
+:root[data-style="sage"]:has(.site-header) .arch-cross { color: rgba(127, 183, 133, 0.6); }
+:root[data-style="sage"]:has(.site-header) .arch-idx { color: var(--clay); background: rgba(127, 183, 133, 0.1); border-color: rgba(127, 183, 133, 0.3); }
+:root[data-style="sage"]:has(.site-header) .drp-node-code,
+:root[data-style="sage"]:has(.site-header) .drp-bar { color: var(--clay); }
+
+/* Inline radius on the founder card needs a class to override it. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .founder-card { border-radius: 2px !important; }
