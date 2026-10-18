@@ -21,7 +21,7 @@ const MODEL = "claude-haiku-4-5-20251001";
 // counters in the handler), with the history the client sends as a second,
 // weaker check.
 const CASE_LAW_MARKER = "⚖️";
-const FREE_CASE_LAW_LOOKUPS = 3;
+const FREE_CASE_LAW_LOOKUPS = 2;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
 
@@ -110,7 +110,7 @@ When a user asks for a precedent, a court ruling, or a "פסק דין" on a topi
 3. If nothing in the database matches, do NOT invent a ruling. Say: "לא נמצא פסק דין מדויק במאגר שלי בנושא זה. באפשרותך לחפש במאגר הפסיקה של האתר בכתובת lalumapp.com/rulings, שם מוצעות גם שאילתות מוכנות למאגרים הרשמיים."
 
 Conversion:
-- Limit free web queries to ${FREE_CASE_LAW_LOOKUPS} case law tasks per conversation. On the fourth, answer: "${CASE_LAW_LIMIT_REPLY}"
+- Limit free web queries to ${FREE_CASE_LAW_LOOKUPS} case law tasks, no more. On the one after that, answer: "${CASE_LAW_LIMIT_REPLY}"
 - Point to lalumapp.com/risk for the readiness assessment and lalumapp.com/book for scheduling a Tech-Legal diagnosis.
 
 Tone and Language:
