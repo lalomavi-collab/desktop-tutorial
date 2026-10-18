@@ -1,6 +1,7 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
+import { byLang } from "../lib/byLang";
 
 // Entry by who you are, in four institutional tabs instead of one flat list of
 // keywords. Every link and every sentence comes from copy the site already has
@@ -14,6 +15,9 @@ type Tab = { code: string; title: string; lede: string; cells: Cell[]; cta?: { l
 const TITLES = {
   he: ["ארגונים וטכנולוגיה", "נדל״ן והתחדשות עירונית", "רשויות ודירקטוריונים", "יישוב סכסוכים"],
   en: ["Enterprise and tech", "Real estate and urban renewal", "Public authorities and boards", "Dispute resolution"],
+  ar: ["الشركات والتكنولوجيا", "العقارات والتجديد الحضري", "السلطات العامة ومجالس الإدارة", "تسوية النزاعات"],
+  es: ["Empresa y tecnología", "Inmobiliario y renovación urbana", "Autoridades públicas y consejos", "Resolución de conflictos"],
+  fr: ["Entreprise et technologie", "Immobilier et rénovation urbaine", "Autorités publiques et conseils", "Résolution des litiges"],
 };
 const CODES = ["ENTERPRISE", "REAL-ESTATE", "PUBLIC", "DISPUTES"];
 const RE = "/real-estate-legal-advisory";
@@ -22,7 +26,7 @@ export function RoleMatrixSwitcher() {
   const { t, lang } = useLang();
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
-  const names = TITLES[lang === "he" ? "he" : "en"];
+  const names = byLang(TITLES, lang);
   const [tech, pub, biz, priv] = t.home.audiences;
 
   const tabs: Tab[] = [

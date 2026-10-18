@@ -4,11 +4,16 @@ import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 import { useNearTopScroll } from "../hooks/useNearTopScroll";
 import { getStyle, nextStyle, setStyle, type SiteStyle } from "../lib/siteStyle";
+import { byLang } from "../lib/byLang";
 
-const STYLE_NAME: Record<"he" | "en", Record<SiteStyle, string>> = {
+const STYLE_LABEL = { he: "סגנון האתר", en: "Site style", ar: "نمط الموقع", es: "Estilo del sitio", fr: "Style du site" };
+const STYLE_NAME = {
   he: { classic: "קלאסי", sage: "ירוק כהה", sovereign: "Sovereign" },
   en: { classic: "Classic", sage: "Dark sage", sovereign: "Sovereign" },
-};
+  ar: { classic: "كلاسيكي", sage: "أخضر داكن", sovereign: "Sovereign" },
+  es: { classic: "Clásico", sage: "Verde oscuro", sovereign: "Sovereign" },
+  fr: { classic: "Classique", sage: "Vert sombre", sovereign: "Sovereign" },
+} satisfies Record<string, Record<SiteStyle, string>>;
 
 // Self-contained accessibility menu (no third-party vendor). A fixed button at
 // the bottom-inline-start opens a panel of real controls: text size, high
@@ -48,7 +53,7 @@ export function AccessibilityMenu() {
   const { t, lang } = useLang();
   const a = t.ui.a11y;
   const [look, setLook] = useState<SiteStyle>("classic");
-  const names = STYLE_NAME[lang === "he" ? "he" : "en"];
+  const names = byLang(STYLE_NAME, lang);
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<Settings>(DEFAULTS);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -113,7 +118,7 @@ export function AccessibilityMenu() {
           </button>
 
           <button type="button" className="a11y-toggle" onClick={() => { const n = nextStyle(look); setStyle(n); setLook(n); }}>
-            <span>{lang === "he" ? "סגנון האתר" : "Site style"}</span>
+            <span>{byLang(STYLE_LABEL, lang)}</span>
             <span aria-live="polite" style={{ fontWeight: 600 }}>{names[look]}</span>
           </button>
           <div className="a11y-panel-foot">
