@@ -16,6 +16,7 @@
 
 import data from "../data/rulings.json";
 import { norm, scoreAgainst } from "./hebrewSearch";
+import { blogMeta } from "./blogMeta";
 
 export type AreaId = "ai" | "profession" | "real-estate" | "urban-renewal";
 
@@ -44,9 +45,29 @@ export type Ruling = {
   sources: RulingSource[];
   /** Slug of the LALUM article this record was written from. */
   article?: string;
+  /** Slugs of other LALUM articles that cover the same subject. A link in both
+   *  directions: the record lists them, and the article lists the record. */
+  related?: string[];
 };
 
 export const rulings: Ruling[] = (data.rulings as Ruling[]).slice();
+
+export type ArticleRef = { slug: string; title: string };
+
+// The articles a ruling is tied to: the one it was written from, then the
+// related ones. A slug that no longer resolves to a published article is
+// dropped, so a renamed article costs a link and not a dead one.
+export function articlesOf(r: Ruling): ArticleRef[] {
+  const slugs = [...(r.article ? [r.article] : []), ...(r.related ?? [])];
+  return [...new Set(slugs)]
+    .map((slug) => ({ slug, title: blogMeta.find((b) => b.slug === slug)?.title ?? "" }))
+    .filter((a) => a.title);
+}
+
+// The reverse: every ruling in the corpus that points at an article.
+export function rulingsForArticle(slug: string): Ruling[] {
+  return rulings.filter((r) => r.article === slug || r.related?.includes(slug));
+}
 
 // The four subjects the search is organised by. The two the practice leads
 // with are first, even though the corpus does not cover them yet: the visitor

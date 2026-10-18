@@ -4,6 +4,7 @@ import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import { SectorAudit } from "./SectorAudit";
 import { MATERIAL_LABEL, SECTORS_UI, sectorCases, type Sector } from "../lib/sectors";
+import { articlesOf } from "../lib/rulings";
 
 // One rendering for every sector rubric. Everything shown comes from the
 // Sector it is handed, so the copy stays in sectors.ts, where the SEO
@@ -96,13 +97,16 @@ export function SectorView({ S }: { S: Sector }) {
                 </blockquote>
               ) : null}
 
-              <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: "0 0 8px" }}>{SECTORS_UI.whyLabel}</h4>
+              <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: "0 0 8px" }}>{S.whyLabel ?? SECTORS_UI.whyLabel}</h4>
               <p style={{ ...cardBody, marginBottom: 18 }}>{why}</p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", fontSize: 14.5 }}>
                 <Link to={`/rulings?q=${encodeURIComponent(ruling.citation)}`} style={{ color: "var(--clay)", fontWeight: 600 }}>
                   {SECTORS_UI.rulingsLabel} &rarr;
                 </Link>
+                {articlesOf(ruling).map((a) => (
+                  <Link key={a.slug} to={`/insights/${a.slug}`} style={{ color: "var(--clay)", fontWeight: 600 }}>{a.title}</Link>
+                ))}
                 {ruling.sources.map((s) => (
                   <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--slate)" }}>{s.label}</a>
                 ))}
@@ -189,7 +193,9 @@ export function SectorView({ S }: { S: Sector }) {
         <SectorAudit questions={S.auditQuestions} bands={S.auditBands} />
       </section>
 
-      {/* DOWNLOAD */}
+      {/* DOWNLOAD. Absent while a sector has no booklet printed yet, so the page
+          never promises a file that is not in public/downloads. */}
+      {S.downloads.length > 0 && (
       <section className="wrap section section-line" style={{ maxWidth: 900 }}>
         <div style={{ maxWidth: "58ch", margin: "0 0 28px" }}>
           <p className="eyebrow">{S.downloadsEyebrow}</p>
@@ -212,6 +218,7 @@ export function SectorView({ S }: { S: Sector }) {
           ))}
         </div>
       </section>
+      )}
 
       {/* WHAT WE DO */}
       <section className="wrap section section-line">

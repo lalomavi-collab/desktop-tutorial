@@ -530,7 +530,7 @@ function sectorBookletHtml(S: Sector, wordmark: string): string {
         <h4>מה נפסק</h4>
         ${p(ruling.holding)}
         ${ruling.quote ? `<blockquote>${esc(ruling.quote)}</blockquote>` : ""}
-        <h4>למה זה נוגע לרשות</h4>
+        <h4>${esc(S.whyLabel ?? "למה זה נוגע לרשות")}</h4>
         ${p(why)}
         <p class="src">מקורות: ${ruling.sources.map((x) => esc(x.label)).join(" · ")}</p>
       </article>`);
