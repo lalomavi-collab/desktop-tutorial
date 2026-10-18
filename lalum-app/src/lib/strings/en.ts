@@ -81,8 +81,8 @@ export const en = {
       aiNote: "LEX is an AI tool. Its answers are not legal advice and do not replace review by a licensed attorney.",
     },
     sos: {
-      open: "SOS",
-      tab: "Urgent",
+      open: "Direct Counsel",
+      tab: "Direct",
       aria: "Urgent contact",
       eyebrow: "LALUM",
       title: "Need help right now?",

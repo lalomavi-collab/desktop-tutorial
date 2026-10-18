@@ -100,8 +100,10 @@ export function AppInstall() {
   if (installed) return null;
 
   return (
+    <div className="footer-terminal">
     <div className="wrap footer-download">
       <div className="footer-download-text">
+        <span dir="ltr" className="mono footer-terminal-tag">[LALUM MOBILE TERMINAL // iOS, ANDROID &amp; WEB]</span>
         <h3 className="footer-download-title">{f.downloadTitle}</h3>
         <p className="footer-download-sub">{f.downloadSub}</p>
         {/* Install control. Shown on both phone and desktop: desktop also has
@@ -131,6 +133,7 @@ export function AppInstall() {
         </span>
         <span className="footer-qr-hint"><ScanIcon /> {f.installHint}</span>
       </a>
+    </div>
     </div>
   );
 }

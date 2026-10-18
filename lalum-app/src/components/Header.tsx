@@ -9,9 +9,14 @@ import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
 import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
-import { LANGS } from "../lib/hreflang";
+import { LANGS, cvPath } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
 import { useScrollLock } from "../lib/useScrollLock";
+
+const HG = {
+  he: { engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי" },
+  en: { engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation" },
+};
 
 export function Header() {
   const { user } = useAuth();
@@ -71,6 +76,15 @@ export function Header() {
     { to: "/#engine", label: t.ui.nav.engine, end: false, hash: true },
     { to: "/risk", label: t.ui.nav.decisionRoom, end: false },
   ];
+  const hg = HG[lang === "he" ? "he" : "en"];
+  // The four groups of the top bar. Every URL is one the site already serves;
+  // the full list, with Knowledge and the rest, stays in the menu.
+  const groups: { label: string; items: { to: string; label: string; plain?: boolean }[] }[] = [
+    { label: hg.engine, items: [{ to: "/#engine", label: t.ui.nav.engine }, { to: "/risk", label: t.ui.nav.decisionRoom }] },
+    { label: hg.practice, items: [{ to: "/ai-legal-advisory", label: t.ui.nav.ai }, { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate }] },
+    { label: hg.clinic, items: [{ to: "/advisory", label: t.ui.nav.clinic }, { to: "/training", label: t.ui.nav.training }] },
+    { label: hg.insights, items: [{ to: "/insights", label: t.ui.nav.insights }, { to: cvPath(lang), label: hg.profile, plain: true }] },
+  ];
   const insightsLinks = [
     { to: "/insights", label: t.ui.nav.insights },
     { to: "/knowledge", label: t.ui.nav.knowledge },
@@ -83,6 +97,7 @@ export function Header() {
         <Link to="/" className="brand">
           <Wordmark height={19} />
         </Link>
+        <span dir="ltr" className="mono hdr-badge" aria-hidden="true">[LAW &amp; AI LAB]</span>
 
         {/* The one menu, right beside the wordmark: a labelled control that
             opens a single panel with the full site nav, the reading menu,
@@ -251,6 +266,24 @@ export function Header() {
             the single home for navigation, which leaves the bar with room to
             breathe. Only the quick utilities stay here (account, chat, SOS). */}
 
+        {/* The four groups. Desktop only: below 900px the menu sheet carries
+            every one of these links. Each group opens on hover or keyboard
+            focus; its first link is also its own destination. */}
+        <nav className="header-groups hide-mobile" aria-label={hg.group}>
+          {groups.map((g) => (
+            <div key={g.label} className="hg">
+              <span className="hg-label" tabIndex={0}>{g.label}</span>
+              <div className="hg-menu">
+                {g.items.map((it) => it.plain ? (
+                  <a key={it.to} href={it.to}>{it.label}</a>
+                ) : (
+                  <NavLink key={it.to} to={it.to}>{it.label}</NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+
         <div className="header-tools">
           {/* The two controls that used to float in the page's bottom corner,
               one above the other: the quick-access dot and the chat launcher.
@@ -304,9 +337,17 @@ export function Header() {
               closing section, so nothing was actually missing an entry
               point. Only the client login/portal button remains here, so the
               header stays uncluttered. */}
+          <div className="hdr-langs hide-mobile" role="group" aria-label="Language">
+            {LANGS.filter((l) => l.code === "he" || l.code === "en").map((l) => (
+              <button key={l.code} type="button" className={"mono" + (l.code === lang ? " on" : "")} aria-pressed={l.code === lang} onClick={() => setLang(l.code)}>
+                {l.code.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <Link to={user ? "/portal" : "/login"} className="header-login hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
+          <Link to="/book" className="hdr-cta hide-mobile">{hg.cta}</Link>
         </div>
       </div>
     </header>
