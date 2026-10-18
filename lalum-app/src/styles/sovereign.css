@@ -21,6 +21,8 @@
   --paper: #0d0f14;          /* elevated surface */
   --card: #0d0f14;
   --elev: #12151e;           /* interactive hover surface */
+  --ink-d: #f3f4f6;          /* the dark pair, for panels inside inverted bands */
+  --paper-d: #0d0f14;
   --ink: #f3f4f6;
   --slate: #a3a9b5;
   --clay: #c5a880;           /* brushed champagne gold */
@@ -78,7 +80,7 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
    These sections used --ink as a dark background and --paper as the text on
    it. On the dark system the two swap back locally, so they stay a raised
    obsidian band with light text and nothing inside them needs touching. */
-:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.pre-deal, .home-academy, .academy, .panel-dark, .riskcalc, #engine, #mna, #mediation) {
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.pre-deal, .home-academy, .academy, .panel-dark, #engine, #mna, #mediation) {
   --ink: #0d0f14;
   --paper: #f3f4f6;
 }
@@ -427,7 +429,10 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
 
 /* The Decision Room frame sits inside the engine band, whose local token swap
    would otherwise turn it light: it restores the dark pair for itself. */
-.drp { --ink: #f3f4f6; --paper: #0d0f14; }
+.drp { --ink: var(--ink-d, #f3f4f6); --paper: var(--paper-d, #0d0f14); }
+/* The readiness calculator is an ordinary raised panel, but /advisory puts it
+   inside an inverted band; it restores the dark pair there. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .riskcalc { --ink: var(--ink-d); --paper: var(--paper-d); }
 
 /* Tint bands become a quiet raised surface instead of a warm wash. */
 :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .band-tint {
@@ -482,6 +487,8 @@ html:not([data-style]) #engine .arch { background: transparent; }
   --paper: #1a1d24;
   --card: #1e222a;
   --elev: #232831;
+  --ink-d: #e9ecf0;
+  --paper-d: #1a1d24;
   --ink: #e9ecf0;
   --slate: #a7aeb9;
   --line: rgba(255, 255, 255, 0.085);
@@ -500,3 +507,9 @@ html:not([data-style]) #engine .arch { background: transparent; }
 
 /* Inline radius on the founder card needs a class to override it. */
 :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .founder-card { border-radius: 2px !important; }
+
+/* Articles page and the oversight map join the same sharp geometry. */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.ins-card, .ins-chip, .ins-tag, .ins-reel, .oversight-quote) {
+  border-radius: 2px;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.ins-card, .ins-reel) { box-shadow: none; }
