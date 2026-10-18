@@ -656,8 +656,8 @@ export const he: Dict = {
 
   home: {
     heroPill: "Legal AI · ממשל, ציות וסיכון",
-    heroH1a: "ממשל AI, ציות וסיכון,",
-    heroH1b: "בנויים להחזיק מעמד.",
+    heroH1a: "AI שאפשר",
+    heroH1b: "להגן עליו.",
     heroLede: "Legal AI הוא ציר המשרד: ייעוץ, ליווי שוטף והדרכה לארגונים שמטמיעים בינה מלאכותית, ממדיניות שימוש ועד ביקורת ותיעוד.",
     heroCtaAi: "לבחינת התאמת Legal AI לארגון",
     quickInsightsTitle: "מאמרים ותובנות",

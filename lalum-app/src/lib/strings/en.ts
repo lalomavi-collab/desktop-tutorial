@@ -661,8 +661,8 @@ export const en = {
 
   home: {
     heroPill: "Legal AI · Governance, Compliance & Risk",
-    heroH1a: "AI governance, compliance, and risk,",
-    heroH1b: "built to hold up.",
+    heroH1a: "AI you can",
+    heroH1b: "defend.",
     heroLede: "Legal AI is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence, from usage policy to audit and documentation.",
     heroCtaAi: "Check how Legal AI fits you",
     quickInsightsTitle: "Articles & Insights",

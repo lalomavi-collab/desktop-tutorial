@@ -653,8 +653,8 @@ export const fr: Dict = {
   },
   home: {
     heroPill: "Legal AI · Gouvernance, conformité et risque",
-    heroH1a: "Gouvernance de l'IA, conformité et risque,",
-    heroH1b: "conçus pour tenir.",
+    heroH1a: "Une IA que",
+    heroH1b: "l'on peut défendre.",
     heroLede: "Legal AI est l'axe du cabinet : conseil, accompagnement continu et formation pour les organisations qui adoptent l'intelligence artificielle, de la politique d'usage à l'audit et à la documentation.",
     heroCtaAi: "Voyez comment Legal AI s'applique à vous",
     quickInsightsTitle: "Articles et actualités",

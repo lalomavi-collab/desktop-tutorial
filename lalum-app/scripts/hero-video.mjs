@@ -7,6 +7,8 @@
 // decides. It is the one thing only a practice that is both AI and law can
 // show, so the clip is about the join, not about either side alone.
 //
+// Colour carries meaning here: red for a high risk flag, amber for a point to check, green for what a lawyer has approved.
+//
 // Silent 16 second loop, drawn in code so the text can be edited and the clip
 // regenerated instead of re-shot. The wordmark is the supplied artwork
 // (public/lalum-logo-inverse.svg), never a typeface. The clause is invented for
@@ -37,7 +39,7 @@ const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf
 // Hebrew copy. No dashes as punctuation (CLAUDE.md).
 const SCENES = [
   { a: 2.4, b: 6.4, h: "AI קורא את החוזה", p: "ומסמן סעיפים שכדאי לעצור עליהם" },
-  { a: 6.6, b: 10.2, h: "ומחבר בין הנקודות", p: "ציות, ביטוח, תיעוד ורגולציה, במבט אחד" },
+  { a: 6.6, b: 10.2, h: "ומדרג כל סיכון", p: "ציות, ביטוח, תיעוד ורגולציה, במבט אחד" },
   { a: 10.4, b: 13.8, h: "המכונה מסמנת. האדם מכריע.", p: "ייעוץ משפטי בעידן הבינה המלאכותית" },
 ];
 
@@ -55,6 +57,11 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 #beam{position:absolute;left:0;right:0;height:70px;top:-70px;background:linear-gradient(180deg,rgba(118,157,121,0),rgba(118,157,121,.45));border-bottom:3px solid #769d79}
 #chips{position:absolute;left:50px;width:620px;top:470px;display:flex;gap:12px;justify-content:flex-start}
 .chip{font-size:20px;font-weight:700;padding:9px 16px;border-radius:999px;background:#2b2412;color:#e7c27a;border:1.5px solid #e7c27a}
+.chip.hi{background:#3a1713;color:#ff9a8c;border-color:#ff9a8c}
+#tiers{position:absolute;left:50px;width:620px;top:560px;display:flex;gap:12px;justify-content:center;opacity:0}
+.tier{font-size:22px;font-weight:700;padding:10px 20px;border-radius:999px;border:2px solid}
+.tier.g{background:#10301a;color:#7be09a;border-color:#7be09a}.tier.a{background:#2b2412;color:#f2cf86;border-color:#f2cf86}.tier.r{background:#3a1713;color:#ff9a8c;border-color:#ff9a8c}
+#stamp{position:absolute;left:50%;top:330px;margin-left:-190px;width:380px;text-align:center;font-size:34px;font-weight:700;color:#7be09a;border:5px solid #7be09a;border-radius:16px;padding:12px 8px;background:rgba(16,48,26,.9);opacity:0;transform:rotate(-7deg)}
 #note{position:absolute;left:0;right:0;top:132px;text-align:center;font-size:14px;color:#b8c7b3;opacity:.0}
 svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
 .txt{position:absolute;left:56px;right:56px;top:640px;text-align:right}
@@ -64,20 +71,24 @@ svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
 .name{position:absolute;left:0;right:0;text-align:center}
 .name b{display:block;font-size:40px;font-weight:700}
 .name span{display:block;margin-top:14px;font-size:24px;color:#b8c7b3}
+.name i{display:block;font-style:normal;font-size:54px;line-height:1.15;font-weight:700;margin-bottom:26px;color:#fff}
 </style><body>
 <div class="bg"></div><div class="grid"></div>
 <div id="wmTop" class="wm" style="top:70px">${logo}</div>
 <div id="note">סעיף לדוגמה, להמחשה בלבד</div>
 <div id="doc"><div class="lbl">הסכם שירות, סעיף לדוגמה</div>
 <div class="cl">הספק לא יישא באחריות <span class="fl" id="f1">לכל נזק, ישיר או עקיף,</span> מכל סיבה שהיא, <span class="fl" id="f2">ובכל סכום.</span></div><div id="beam"></div></div>
-<div id="chips"><span class="chip" id="c1">נקודה לבדיקה</span><span class="chip" id="c2">נקודה לבדיקה</span></div>
+<div id="chips"><span class="chip hi" id="c1">סיכון גבוה</span><span class="chip" id="c2">נקודה לבדיקה</span></div>
+<div id="tiers"><span class="tier g">מינימלי</span><span class="tier a">מוגבל</span><span class="tier r">גבוה</span></div>
+<div id="stamp">אושר על ידי עורך דין</div>
 <svg id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div class="txt" id="txt"></div>
-<div class="name" id="end" style="top:430px"><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
+<div class="name" id="end" style="top:400px"><i>AI שאפשר להגן עליו.</i><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
 <script>
 const SCENES=${JSON.stringify(SCENES)};
 const ART=document.getElementById("art"),TXT=document.getElementById("txt"),END=document.getElementById("end"),WM=document.getElementById("wmTop");
 const DOC=document.getElementById("doc"),BEAM=document.getElementById("beam"),NOTE=document.getElementById("note"),CH=document.getElementById("chips");
+const TI=document.getElementById("tiers"),ST=document.getElementById("stamp");
 const F1=document.getElementById("f1"),F2=document.getElementById("f2"),C1=document.getElementById("c1"),C2=document.getElementById("c2");
 const NS="http://www.w3.org/2000/svg";
 const el=(n,a,p)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||ART).appendChild(e);return e};
@@ -119,7 +130,7 @@ window.render=function(t){
   NOTE.style.opacity=.9*dIn*dOut;
   const bt=clamp((t-2.6)/2.4);BEAM.style.top=(-70+bt*(DOC.offsetHeight+70))+"px";BEAM.style.opacity=(t>2.5&&t<5.1)?1:0;
   const h1=t>3.5,h2=t>4.3;
-  F1.style.background=h1?"#f2cf86":"transparent";F2.style.background=h2?"#f2cf86":"transparent";
+  F1.style.background=h1?"#f4a79b":"transparent";F2.style.background=h2?"#f2cf86":"transparent";
   CH.style.opacity=dOut;C1.style.opacity=ease((t-3.7)/.4);C2.style.opacity=ease((t-4.5)/.4);
 
   if(!S0){DOC.style.opacity=1;DOC.style.transform="none";S0=[docPoint(F1),docPoint(F2)];}
@@ -139,7 +150,7 @@ window.render=function(t){
     const c=nodes[i];c.setAttribute("cx",x);c.setAttribute("cy",yv);
     c.setAttribute("opacity",(t<3.7?0:vis)*(1-ease((t-14.3)/.5)));
     c.setAttribute("r",(i%3==0?9:6)*(.5+.5*Math.max(vis,0))*(1+.1*Math.sin(t*3+i)));
-    if(i<2&&t<6.4)c.setAttribute("fill","#f2cf86");else c.setAttribute("fill","#e7ede4");
+    if(i<2&&t<6.4)c.setAttribute("fill",i==0?"#ff9a8c":"#f2cf86");else c.setAttribute("fill","#e7ede4");
   });
   const m2g=ease((t-10.6)/1.4),fade=1-ease((t-14.3)/.5);
   E1.forEach(([a,b],i)=>{const l=e1[i];l.setAttribute("x1",P[a][0]);l.setAttribute("y1",P[a][1]);l.setAttribute("x2",P[b][0]);l.setAttribute("y2",P[b][1]);
@@ -148,6 +159,11 @@ window.render=function(t){
     l.setAttribute("opacity",.95*m2g*fade)});
   labels.forEach(l=>{const p=P[l._i];l.setAttribute("x",p[0]);l.setAttribute("y",p[1]-18);
     l.setAttribute("opacity",ease((t-8.0-l._i*.15)/.5)*(1-ease((t-10.4)/.6)))});
+
+  // risk tiers appear while the network forms; the stamp lands when the scales settle
+  TI.style.opacity=Math.min(ease((t-8.4)/.5),1-ease((t-10.6)/.5));
+  ST.style.opacity=Math.min(ease((t-12.9)/.25),1-ease((t-14.3)/.4));
+  ST.style.transform="rotate(-7deg) scale("+(1.5-.5*ease((t-12.9)/.3))+")";
 
   // captions
   let shown=-1;SCENES.forEach((s,i)=>{if(t>=s.a&&t<s.b)shown=i});

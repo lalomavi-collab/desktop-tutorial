@@ -655,8 +655,8 @@ export const es: Dict = {
 
   home: {
     heroPill: "Legal AI · Gobernanza, Cumplimiento y Riesgo",
-    heroH1a: "Gobernanza de IA, cumplimiento y riesgo,",
-    heroH1b: "diseñados para resistir.",
+    heroH1a: "IA que se",
+    heroH1b: "puede defender.",
     heroLede: "Legal AI es el eje del despacho: asesoría, acompañamiento continuo y formación para organizaciones que adoptan inteligencia artificial, desde la política de uso hasta la auditoría y la documentación.",
     heroCtaAi: "Vea cómo encaja Legal AI en su caso",
     quickInsightsTitle: "Artículos y novedades",
