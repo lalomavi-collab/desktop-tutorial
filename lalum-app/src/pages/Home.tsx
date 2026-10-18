@@ -18,6 +18,7 @@ import { coverThumb } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
 import { EngineVideo } from "../components/EngineVideo";
+import { LeadForm } from "../components/LeadForm";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
@@ -84,11 +85,8 @@ export function Home() {
           Shared with /advisory. */}
       <FocusAreas />
 
-      {/* Positioning, then the risk pillars, then the engine. The practice
-          areas, the deal work and the scenario hub used to sit here too, which
-          made the front door twenty sections deep; they live on /advisory now,
-          which is the page that exists to hold them. */}
 
+      {/* Order: services (areas, then the AI layer), proof (clients, then the writing), then the engine. */}
       {/* PRACTICE (AI + risk-governance pillars) */}
       <section id="practice" className="wrap section">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
@@ -99,10 +97,10 @@ export function Home() {
             six identical boxes said nothing of the sort: these are bands that
             stack, each with its own edge colour, so the six read as one system
             and the eye can run down them. */}
-        <div className="pillar-layers">
+        <div className="pillar-grid">
           {t.data.pillars.map((p) => (
-            <Link key={p.title} to="/advisory" className="pillar-band" aria-label={p.title}>
-              <span className="pillar-mark" aria-hidden="true"><Icon name={p.icon} size={20} /></span>
+            <Link key={p.title} to="/advisory" className="pillar-card" aria-label={p.title}>
+              <span className="pillar-mark" aria-hidden="true"><Icon name={p.icon} size={22} /></span>
               <span className="pillar-txt">
                 <span className="pillar-line">
                   <h3 className="h3 pillar-title">{p.title}</h3>
@@ -115,26 +113,22 @@ export function Home() {
         </div>
       </section>
 
-      {/* ENGINE */}
-      {/* A decision lattice drifts behind "the engine", literally what the
-          section names, so the dark panel is no longer a flat block. It sits
-          on z-index 0 behind the content (z-index 1) and freezes under
-          prefers-reduced-motion, same as the hero backdrop. */}
-      <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)", position: "relative", overflow: "hidden" }}>
-        <AmbientBackground variant="lattice" />
-        <div className="wrap section" style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
-            <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
-            <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
-            <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
-            {/* Names what "Engine" is made of, the same way the FocusAreas
-                cards and the Clinic hero now do: a quiet capability line, not
-                another sentence about the same thing. */}
-            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
+      {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
+          at-a-glance trust signal (previously only on the Advisory page). It
+          carries the tint because below the dark engine chapter the page ran
+          six pale sections in a row, and a reader crossed from the reasons to
+          the proof to the founder with nothing marking any of the crossings. */}
+      <section className="section-line band-tint">
+        <div className="wrap section">
+          <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+            <p className="eyebrow">{t.advisory.testimonialsEyebrow}</p>
+            <h2 className="h2">{t.advisory.testimonialsH2}</h2>
           </div>
-          {/* The Engine's claim shown as a mechanism: one document through five
-              stations, stopping only where a lawyer decides. */}
-          <EngineVideo />
+          <div className="grid grid-3">
+            {t.data.testimonials.map((tm) => (
+              <ScenarioCard key={tm.sector} s={tm} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -148,7 +142,7 @@ export function Home() {
           questions (t.data.faqs) follows, each one opening straight to its
           answer in the FAQ section below instead of only naming that the
           FAQ exists. */}
-      <section className="wrap section">
+      <section className="wrap section home-insights">
         <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
           <p className="eyebrow">{h.insightsEyebrow}</p>
           <h2 className="h2">{h.insightsH2}</h2>
@@ -181,27 +175,31 @@ export function Home() {
 
       </section>
 
-      {/* LALUM ACADEMY promo band */}
-      <HomeAcademy />
-
-      {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
-          at-a-glance trust signal (previously only on the Advisory page). It
-          carries the tint because below the dark engine chapter the page ran
-          six pale sections in a row, and a reader crossed from the reasons to
-          the proof to the founder with nothing marking any of the crossings. */}
-      <section className="section-line band-tint">
-        <div className="wrap section">
-          <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
-            <p className="eyebrow">{t.advisory.testimonialsEyebrow}</p>
-            <h2 className="h2">{t.advisory.testimonialsH2}</h2>
+      {/* ENGINE */}
+      {/* A decision lattice drifts behind "the engine", literally what the
+          section names, so the dark panel is no longer a flat block. It sits
+          on z-index 0 behind the content (z-index 1) and freezes under
+          prefers-reduced-motion, same as the hero backdrop. */}
+      <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)", position: "relative", overflow: "hidden" }}>
+        <AmbientBackground variant="lattice" />
+        <div className="wrap section" style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
+            <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
+            <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
+            <p style={{ fontSize: 17, lineHeight: 1.7, color: "#CDC7BB", margin: 0 }}>{h.engineP}</p>
+            {/* Names what "Engine" is made of, the same way the FocusAreas
+                cards and the Clinic hero now do: a quiet capability line, not
+                another sentence about the same thing. */}
+            <p style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--clay-bright)", margin: "14px 0 0" }}>{h.engineTagline}</p>
           </div>
-          <div className="grid grid-3">
-            {t.data.testimonials.map((tm) => (
-              <ScenarioCard key={tm.sector} s={tm} />
-            ))}
-          </div>
+          {/* The Engine's claim shown as a mechanism: one document through five
+              stations, stopping only where a lawyer decides. */}
+          <EngineVideo />
         </div>
       </section>
+
+      {/* LALUM ACADEMY promo band */}
+      <HomeAcademy />
 
       {/* FOUNDER */}
       <section className="section-line">
@@ -229,7 +227,7 @@ export function Home() {
                 place of the founder's own clip: neither this section nor the
                 hero carries a personal photo or video now, so the page
                 reads as the practice throughout, not as one person. */}
-            <aside className="pillar-hero-art" style={{ margin: "0 0 28px" }}>
+            <aside className="pillar-hero-art home-founder-art" style={{ margin: "0 0 28px" }}>
               <PillarArt theme="knowledge" />
             </aside>
             <p className="eyebrow">{h.storyEyebrow}</p>
@@ -242,6 +240,18 @@ export function Home() {
               <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 16px" }}>{h.storyP1}</p>
               <p style={{ fontSize: 17, lineHeight: 1.72, color: "var(--slate)", margin: 0 }}>{h.storyP2}</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LEAD: the consent form that used to live only in the signed-in chat
+          panel, now open on the page, right before the questions, where a
+          visitor who has read this far is ready to leave a contact. Same
+          component, same server function, same consent record. */}
+      <section className="section-line band-tint">
+        <div className="wrap section lead-band">
+          <div className="lead-card">
+            <LeadForm startOpen source="site" />
           </div>
         </div>
       </section>
