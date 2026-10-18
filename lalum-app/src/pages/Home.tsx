@@ -19,10 +19,12 @@ import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
 import { EngineVideo } from "../components/EngineVideo";
 import { LeadForm } from "../components/LeadForm";
+import { ArchitecturalSection } from "../components/ArchitecturalSection";
+import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
-const INSIGHTS_PALETTE = [{ accent: "#537056", tint: "#e7ede4" }];
+const INSIGHTS_PALETTE = [{ accent: "#C5A880", tint: "rgba(197, 168, 128, 0.1)" }];
 // The hero card carries the firm's own mark, not a personal portrait: a
 // visitor's first view of the site should read as the practice, not as one
 // person. The founder's own photo and story still appear, further down the
@@ -88,7 +90,7 @@ export function Home() {
 
       {/* Order: services (areas, then the AI layer), proof (clients, then the writing), then the engine. */}
       {/* PRACTICE (AI + risk-governance pillars) */}
-      <section id="practice" className="wrap section">
+      <ArchitecturalSection id="practice" index="01" code="PRACTICE // AI LAYER">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
           <p className="eyebrow">{h.pillarsEyebrow}</p>
           <h2 className="h2">{h.pillarsH2}</h2>
@@ -111,7 +113,7 @@ export function Home() {
             </Link>
           ))}
         </div>
-      </section>
+      </ArchitecturalSection>
 
       {/* TESTIMONIALS: existing client proof, surfaced on the home page as an
           at-a-glance trust signal (previously only on the Advisory page). It
@@ -142,7 +144,8 @@ export function Home() {
           questions (t.data.faqs) follows, each one opening straight to its
           answer in the FAQ section below instead of only naming that the
           FAQ exists. */}
-      <section className="wrap section home-insights">
+      <ArchitecturalSection index="02" code="INSIGHTS // LIBRARY">
+      <div className="home-insights">
         <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
           <p className="eyebrow">{h.insightsEyebrow}</p>
           <h2 className="h2">{h.insightsH2}</h2>
@@ -172,8 +175,8 @@ export function Home() {
         <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap", margin: "36px 0 0" }}>
           <Link to="/insights" className="btn btn-clay">{h.insightsCtaAll}</Link>
         </div>
-
-      </section>
+      </div>
+      </ArchitecturalSection>
 
       {/* ENGINE */}
       {/* A decision lattice drifts behind "the engine", literally what the
@@ -182,7 +185,8 @@ export function Home() {
           prefers-reduced-motion, same as the hero backdrop. */}
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)", position: "relative", overflow: "hidden" }}>
         <AmbientBackground variant="lattice" />
-        <div className="wrap section" style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ position: "relative", zIndex: 1 }}>
+        <ArchitecturalSection index="03" code="ENGINE // DECISION ROOM" status="PREVIEW">
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
             <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
@@ -194,7 +198,11 @@ export function Home() {
           </div>
           {/* The Engine's claim shown as a mechanism: one document through five
               stations, stopping only where a lawyer decides. */}
+          <div style={{ margin: "0 0 56px" }}>
+            <DecisionRoomPreview />
+          </div>
           <EngineVideo />
+        </ArchitecturalSection>
         </div>
       </section>
 
@@ -202,9 +210,9 @@ export function Home() {
       <HomeAcademy />
 
       {/* FOUNDER */}
-      <section className="section-line">
-        <div className="wrap section founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
-          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
+      <ArchitecturalSection index="04" code="PROFILE // FOUNDER">
+        <div className="founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
+          <div style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 2, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
             <Wordmark height={34} label={h.logoAlt} style={{ display: "block", height: "auto", maxWidth: "74%", margin: "0 auto 22px", opacity: 0.92 }} />
             <div style={{ fontFamily: "var(--serif)", fontSize: 22, fontWeight: 500 }}>{h.founderName}</div>
@@ -242,7 +250,7 @@ export function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </ArchitecturalSection>
 
       {/* LEAD: the consent form that used to live only in the signed-in chat
           panel, now open on the page, right before the questions, where a
