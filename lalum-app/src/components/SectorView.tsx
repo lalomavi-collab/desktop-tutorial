@@ -4,6 +4,7 @@ import { Icon } from "../components/Icon";
 import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import { SectorAudit } from "./SectorAudit";
 import { MATERIAL_LABEL, SECTORS_UI, sectorCases, type Sector } from "../lib/sectors";
+import { articlesOf } from "../lib/rulings";
 
 // One rendering for every sector rubric. Everything shown comes from the
 // Sector it is handed, so the copy stays in sectors.ts, where the SEO
@@ -103,6 +104,9 @@ export function SectorView({ S }: { S: Sector }) {
                 <Link to={`/rulings?q=${encodeURIComponent(ruling.citation)}`} style={{ color: "var(--clay)", fontWeight: 600 }}>
                   {SECTORS_UI.rulingsLabel} &rarr;
                 </Link>
+                {articlesOf(ruling).map((a) => (
+                  <Link key={a.slug} to={`/insights/${a.slug}`} style={{ color: "var(--clay)", fontWeight: 600 }}>{a.title}</Link>
+                ))}
                 {ruling.sources.map((s) => (
                   <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--slate)" }}>{s.label}</a>
                 ))}
