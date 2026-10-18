@@ -17,9 +17,9 @@ import type { Sector } from "./sectors";
 //
 // Left out on purpose, because verification is not complete: the Israel Land
 // Authority's AI valuation system and the Appraisers Chamber's objections to
-// it (read from reports, not from the decision itself), and ע״א 3301/23
-// (delay compensation in a receivership), which is in the corpus but has no
-// public copy of the judgment to check against.
+// it (read from reports, not from the decision itself). ע״א 3301/23 (delay
+// compensation in a receivership) was also removed from the corpus, since no
+// public copy of the judgment could be checked against.
 //
 // Types are imported, never values, so this module and sectors.ts can import
 // each other without a cycle at run time.
