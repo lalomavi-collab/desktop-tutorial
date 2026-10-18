@@ -83,7 +83,7 @@ svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
 <div id="stamp">אושר על ידי עורך דין</div>
 <svg id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div class="txt" id="txt"></div>
-<div class="name" id="end" style="top:400px"><i>AI שאפשר להגן עליו.</i><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
+<div class="name" id="end" style="top:400px"><i>AI שאפשר לסמוך עליו.</i><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
 <script>
 const SCENES=${JSON.stringify(SCENES)};
 const ART=document.getElementById("art"),TXT=document.getElementById("txt"),END=document.getElementById("end"),WM=document.getElementById("wmTop");
