@@ -10,14 +10,15 @@
 - **בדיקה:** [לוח הפונקציות](https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions) יציג גרסה חדשה (מעל 58). שלח 31 הודעות מהירות מדפדפן אנונימי: ההודעה ה-31 צריכה להחזיר שגיאה.
 
 ### 2. אישור טלגרם לפניות מהאתר
-- **בעיה:** בבדיקה החיה סומן `notified_at`, כלומר נשלחה הודעה, ולא ראיתי שהגיעה.
+- **מצב:** בבדיקה החיה סומן `notified_at`, כלומר ה-API של טלגרם החזיר הצלחה, והסודות מוגדרים. נותר רק שתאשר שההודעה "ליד חדש מהאתר" הגיעה לצ׳אט שלך.
 - **איך:** בדוק בצ׳אט הטלגרם שלך הודעה "ליד חדש מהאתר". אם אין: [סודות הפונקציות](https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions/secrets) חייבים לכלול `TELEGRAM_BOT_TOKEN` ו-`TELEGRAM_CHAT_ID`. הרשמה לבוט: שלח לו הודעה ראשונה בעצמך.
 
 ### 3. פוסט 016
-- **איך:** [הרצת workflow `publish_post.yml`](https://github.com/lalomavi-collab/desktop-tutorial/actions/workflows/publish_post.yml) עם `016`, תחילה `dry_run` ואז הרצה אמיתית. אינסטגרם, טלגרם והוידאו ידנית.
+- **מצב:** הרצה יבשה של 016 ב-18.10 [נכשלה](https://github.com/lalomavi-collab/desktop-tutorial/actions/runs/39168589920) והסיבה ברורה: `[Facebook] skipped, missing: FACEBOOK_ACCESS_TOKEN`. הסקריפט יוצא בשגיאה כשאין מה לפרסם, גם ב-dry run. כך נכשלה גם הריצה מ-17.10. תוכן 016 עצמו תוקן ב-PR 981.
+- **איך לסגור:** או (א) להוסיף ב-[Secrets של הריפו](https://github.com/lalomavi-collab/desktop-tutorial/settings/secrets/actions) את `FACEBOOK_PAGE_ID`, `FACEBOOK_ACCESS_TOKEN`, `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_AUTHOR_URN` ([Facebook Pages API](https://developers.facebook.com/docs/pages-api/getting-started), [LinkedIn Posts API](https://learn.microsoft.com/linkedin/marketing/community-management/shares/posts-api)) ואז להריץ [את ה-workflow](https://github.com/lalomavi-collab/desktop-tutorial/actions/workflows/publish_post.yml), או (ב) לפרסם ידנית את הטקסט והתמונות מ-`posts/campaign_sept_2026.json` ו-`lalum-app/public/og/016_*`. בכל מקרה: אינסטגרם, טלגרם והוידאו ידנית.
 
-### 4. מיזוג PR 1003 (הפתיח)
-- [PR 1003](https://github.com/lalomavi-collab/desktop-tutorial/pull/1003). לאשר אחרי הצילומים, ולהחליט אם להשאיר את ההחרגות (מטריצה כ"דוגמה", עברית ישרה).
+### 4. PR 1003 (הפתיח, הסרת רשומה, מונה)
+- [PR 1003](https://github.com/lalomavi-collab/desktop-tutorial/pull/1003) ממוזג. לבדוק את האתר החי אחרי הפריסה האוטומטית של הדף.
 
 ## ב. לברר אתה (מידע שרק לך)
 
