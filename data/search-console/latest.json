@@ -1,13 +1,13 @@
 {
  "site": "https://lalumapp.com/",
- "fetchedAt": "2026-10-17T09:38:31.857Z",
+ "fetchedAt": "2026-10-18T09:51:28.464Z",
  "window": {
-  "start": "2026-09-16",
-  "end": "2026-10-14"
+  "start": "2026-09-17",
+  "end": "2026-10-15"
  },
  "totals": {
   "clicks": 66,
-  "impressions": 2679
+  "impressions": 2585
  },
  "queries": [
   {
@@ -15,27 +15,27 @@
     "אבי ללום"
    ],
    "clicks": 7,
-   "impressions": 31,
-   "ctr": 0.2258,
-   "position": 4.29
+   "impressions": 33,
+   "ctr": 0.2121,
+   "position": 4.09
   },
   {
    "keys": [
     "אברהם ללום"
    ],
    "clicks": 7,
-   "impressions": 12,
-   "ctr": 0.5833,
+   "impressions": 13,
+   "ctr": 0.5385,
    "position": 1
   },
   {
    "keys": [
     "lalum"
    ],
-   "clicks": 4,
-   "impressions": 120,
-   "ctr": 0.0333,
-   "position": 7.48
+   "clicks": 3,
+   "impressions": 122,
+   "ctr": 0.0246,
+   "position": 7.57
   },
   {
    "keys": [
@@ -51,9 +51,9 @@
     "abogado inmobiliario israel"
    ],
    "clicks": 0,
-   "impressions": 82,
+   "impressions": 85,
    "ctr": 0,
-   "position": 19.73
+   "position": 19.88
   },
   {
    "keys": [
@@ -132,9 +132,9 @@
     "eu ai act provider vs deployer"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 75
+   "position": 75.4
   },
   {
    "keys": [
@@ -153,15 +153,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 41
-  },
-  {
-   "keys": [
-    "luma inmobiliaria"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 81
   },
   {
    "keys": [
@@ -366,9 +357,9 @@
     "אמנת מס ישראל פורטוגל"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 18.4
+   "position": 17
   },
   {
    "keys": [
@@ -420,9 +411,9 @@
     "בדיקת חוזה"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 7,
    "ctr": 0,
-   "position": 70.63
+   "position": 70.57
   },
   {
    "keys": [
@@ -492,9 +483,9 @@
     "בינה מלאכותית למשרדי עורכי דין"
    ],
    "clicks": 0,
-   "impressions": 20,
+   "impressions": 18,
    "ctr": 0,
-   "position": 75.25
+   "position": 75.33
   },
   {
    "keys": [
@@ -564,9 +555,9 @@
     "גישור"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 39
+   "position": 38.33
   },
   {
    "keys": [
@@ -582,9 +573,9 @@
     "גישור בין שותפים עסקיים"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 18,
    "ctr": 0,
-   "position": 32.94
+   "position": 34.22
   },
   {
    "keys": [
@@ -600,9 +591,9 @@
     "גישור במערכת הבנקאית"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 27.25
+   "position": 20.33
   },
   {
    "keys": [
@@ -639,15 +630,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 69
-  },
-  {
-   "keys": [
-    "גישור מסחרי"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 43
   },
   {
    "keys": [
@@ -717,9 +699,9 @@
     "גישור פלילי"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 95
+   "position": 89.33
   },
   {
    "keys": [
@@ -741,21 +723,21 @@
   },
   {
    "keys": [
+    "דלום"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 57
+  },
+  {
+   "keys": [
     "האם יש יתרון להשקעות נדל\"ן בחו\"ל על פני בארץ?"
    ],
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
    "position": 9.5
-  },
-  {
-   "keys": [
-    "האם כדאי להשקיע בנדל\"ן בפורטוגל?"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
   },
   {
    "keys": [
@@ -807,7 +789,7 @@
     "הליך גישור"
    ],
    "clicks": 0,
-   "impressions": 20,
+   "impressions": 21,
    "ctr": 0,
    "position": 62.1
   },
@@ -870,36 +852,36 @@
     "השקעה בנדל\"ן באלגרבה"
    ],
    "clicks": 0,
-   "impressions": 11,
+   "impressions": 10,
    "ctr": 0,
-   "position": 43.09
+   "position": 43.8
   },
   {
    "keys": [
     "השקעה בנדל\"ן בליסבון"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 6,
    "ctr": 0,
-   "position": 52.75
+   "position": 48.33
   },
   {
    "keys": [
     "השקעה בנדל\"ן בפורטו"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 7,
    "ctr": 0,
-   "position": 32.67
+   "position": 32.71
   },
   {
    "keys": [
     "השקעה בנדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 1,
    "ctr": 0,
-   "position": 29
+   "position": 24
   },
   {
    "keys": [
@@ -915,36 +897,36 @@
     "השקעה בנדלן בפורטו"
    ],
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 2,
    "ctr": 0,
-   "position": 56.57
+   "position": 53.5
   },
   {
    "keys": [
     "השקעה בנדלן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 15,
    "ctr": 0,
-   "position": 23.82
+   "position": 23.4
   },
   {
    "keys": [
     "השקעה בפורטו"
    ],
    "clicks": 0,
-   "impressions": 22,
+   "impressions": 21,
    "ctr": 0,
-   "position": 18.05
+   "position": 18.19
   },
   {
    "keys": [
     "השקעה בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 37,
+   "impressions": 31,
    "ctr": 0,
-   "position": 20.49
+   "position": 20.77
   },
   {
    "keys": [
@@ -960,18 +942,18 @@
     "השקעות בפורטו"
    ],
    "clicks": 0,
-   "impressions": 19,
+   "impressions": 18,
    "ctr": 0,
-   "position": 13.95
+   "position": 13.89
   },
   {
    "keys": [
     "השקעות בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 47,
+   "impressions": 44,
    "ctr": 0,
-   "position": 21.85
+   "position": 22.14
   },
   {
    "keys": [
@@ -987,27 +969,27 @@
     "השקעות נדל\"ן בליסבון"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 4,
    "ctr": 0,
-   "position": 17.33
+   "position": 17
   },
   {
    "keys": [
     "השקעות נדל\"ן בפורטו"
    ],
    "clicks": 0,
-   "impressions": 16,
+   "impressions": 13,
    "ctr": 0,
-   "position": 24.13
+   "position": 23.38
   },
   {
    "keys": [
     "השקעות נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 42,
+   "impressions": 39,
    "ctr": 0,
-   "position": 19.48
+   "position": 19.21
   },
   {
    "keys": [
@@ -1023,18 +1005,18 @@
     "השקעות נדלן בפורטו"
    ],
    "clicks": 0,
-   "impressions": 35,
+   "impressions": 31,
    "ctr": 0,
-   "position": 23.66
+   "position": 23.84
   },
   {
    "keys": [
     "השקעות נדלן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 44,
+   "impressions": 42,
    "ctr": 0,
-   "position": 19.07
+   "position": 18.93
   },
   {
    "keys": [
@@ -1050,9 +1032,9 @@
     "השקעות נדלן פורטוגל"
    ],
    "clicks": 0,
-   "impressions": 20,
+   "impressions": 17,
    "ctr": 0,
-   "position": 15.5
+   "position": 15.47
   },
   {
    "keys": [
@@ -1068,18 +1050,18 @@
     "השקעת נדלן פורטוגל"
    ],
    "clicks": 0,
-   "impressions": 31,
+   "impressions": 29,
    "ctr": 0,
-   "position": 15.45
+   "position": 15.48
   },
   {
    "keys": [
     "חברה להשקעות נדלן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 15,
+   "impressions": 14,
    "ctr": 0,
-   "position": 8.47
+   "position": 7.43
   },
   {
    "keys": [
@@ -1149,9 +1131,9 @@
     "חוזה רכישת נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 20,
+   "impressions": 19,
    "ctr": 0,
-   "position": 18.15
+   "position": 18.21
   },
   {
    "keys": [
@@ -1293,18 +1275,9 @@
     "ייעוץ בנוגע לרגולציה"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 7,
    "ctr": 0,
-   "position": 51.22
-  },
-  {
-   "keys": [
-    "יעקבי יוניברסל תביעות"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 89
+   "position": 50.43
   },
   {
    "keys": [
@@ -1338,9 +1311,9 @@
     "כתיבת נהלי אבטחת מידע"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 51.67
+   "position": 50
   },
   {
    "keys": [
@@ -1365,9 +1338,9 @@
     "למה להשקיע בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 17,
    "ctr": 0,
-   "position": 9.83
+   "position": 9.76
   },
   {
    "keys": [
@@ -1446,9 +1419,9 @@
     "מה ההבדל בין תמא 38/1 לתמ א 38/2"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 16,
    "ctr": 0,
-   "position": 24.53
+   "position": 23.69
   },
   {
    "keys": [
@@ -1473,9 +1446,9 @@
     "מה זה גישור"
    ],
    "clicks": 0,
-   "impressions": 12,
+   "impressions": 13,
    "ctr": 0,
-   "position": 67.25
+   "position": 65.62
   },
   {
    "keys": [
@@ -1515,12 +1488,12 @@
   },
   {
    "keys": [
-    "מומלץ להשקיע בפורטוגל דרך חברה מנהלת או באופן עצמאי?"
+    "מה כדאי לבדוק לפני שקונים הדום לשימוש בסביבה חיצונית?"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 1
+   "position": 6.5
   },
   {
    "keys": [
@@ -1572,9 +1545,9 @@
     "מינוי dpo לארגון"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 28.6
+   "position": 30.67
   },
   {
    "keys": [
@@ -1599,27 +1572,27 @@
     "מיסוי נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 33,
+   "impressions": 27,
    "ctr": 0,
-   "position": 11.82
+   "position": 9.07
   },
   {
    "keys": [
     "מיסוי נדלן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 23,
+   "impressions": 21,
    "ctr": 0,
-   "position": 18
+   "position": 18.1
   },
   {
    "keys": [
     "מיסוי נדלן פורטוגל"
    ],
    "clicks": 0,
-   "impressions": 25,
+   "impressions": 24,
    "ctr": 0,
-   "position": 26.32
+   "position": 26.58
   },
   {
    "keys": [
@@ -1653,18 +1626,18 @@
     "ממונה הגנת פרטיות"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 69.6
+   "position": 72
   },
   {
    "keys": [
     "ממונה על הגנת הפרטיות"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 1,
    "ctr": 0,
-   "position": 51
+   "position": 24
   },
   {
    "keys": [
@@ -1704,15 +1677,6 @@
   },
   {
    "keys": [
-    "משכנתא בפורטוגל"
-   ],
-   "clicks": 0,
-   "impressions": 4,
-   "ctr": 0,
-   "position": 34
-  },
-  {
-   "keys": [
     "נדל\"ן בליסבון"
    ],
    "clicks": 0,
@@ -1725,9 +1689,9 @@
     "נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 3,
    "ctr": 0,
-   "position": 24.75
+   "position": 24.67
   },
   {
    "keys": [
@@ -1755,15 +1719,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 5
-  },
-  {
-   "keys": [
-    "נדלן מניב בפורטוגל"
-   ],
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 20.67
   },
   {
    "keys": [
@@ -1797,9 +1752,9 @@
     "נהלי אבטחת מידע לארגון"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 11,
    "ctr": 0,
-   "position": 23.2
+   "position": 25.73
   },
   {
    "keys": [
@@ -1842,18 +1797,18 @@
     "ניהול סיכונים בפרויקט התחדשות עירונית"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 20
+   "position": 16.5
   },
   {
    "keys": [
     "נכס להשקעה בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 4,
    "ctr": 0,
-   "position": 14.5
+   "position": 11.75
   },
   {
    "keys": [
@@ -1920,6 +1875,15 @@
   },
   {
    "keys": [
+    "סכסוכים"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 50
+  },
+  {
+   "keys": [
     "סכסוכים עסקיים"
    ],
    "clicks": 0,
@@ -1950,9 +1914,9 @@
     "עורך דין נהלי אבטחת מידע"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 24
+   "position": 48.5
   },
   {
    "keys": [
@@ -1962,6 +1926,15 @@
    "impressions": 4,
    "ctr": 0,
    "position": 29.5
+  },
+  {
+   "keys": [
+    "עלא תלאווי עורך דין"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 44
   },
   {
    "keys": [
@@ -1995,9 +1968,9 @@
     "עסקת קומבינציה פינוי בינוי"
    ],
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 19,
    "ctr": 0,
-   "position": 29.39
+   "position": 29.21
   },
   {
    "keys": [
@@ -2013,9 +1986,9 @@
     "עקרונות הגישור"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 60.5
+   "position": 60.67
   },
   {
    "keys": [
@@ -2040,18 +2013,18 @@
     "ערבות ביצוע קבלן"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 12,
    "ctr": 0,
-   "position": 90.6
+   "position": 90.5
   },
   {
    "keys": [
     "ערבות חוק מכר"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 77
+   "position": 80.2
   },
   {
    "keys": [
@@ -2061,6 +2034,15 @@
    "impressions": 5,
    "ctr": 0,
    "position": 18.4
+  },
+  {
+   "keys": [
+    "פאי גרופ תביעות"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
   },
   {
    "keys": [
@@ -2112,9 +2094,9 @@
     "פורטוגל השקעות נדלן"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 14,
    "ctr": 0,
-   "position": 16.24
+   "position": 16.07
   },
   {
    "keys": [
@@ -2172,15 +2154,6 @@
   },
   {
    "keys": [
-    "פסק דין בית משפט השלום"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 55
-  },
-  {
-   "keys": [
     "פסק דין לאור"
    ],
    "clicks": 0,
@@ -2190,48 +2163,12 @@
   },
   {
    "keys": [
-    "פסק דין לדוגמא"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 61
-  },
-  {
-   "keys": [
-    "פסק דין שמש"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 44
-  },
-  {
-   "keys": [
-    "פסקי דין חדשים"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 46
-  },
-  {
-   "keys": [
     "פסקי דין לקריאה"
    ],
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
    "position": 56
-  },
-  {
-   "keys": [
-    "פסקי דין מאגר"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 57
   },
   {
    "keys": [
@@ -2247,9 +2184,9 @@
     "פתרון מחלוקות בין שותפים"
    ],
    "clicks": 0,
-   "impressions": 16,
+   "impressions": 15,
    "ctr": 0,
-   "position": 30.69
+   "position": 29.87
   },
   {
    "keys": [
@@ -2267,7 +2204,7 @@
    "clicks": 0,
    "impressions": 18,
    "ctr": 0,
-   "position": 34.78
+   "position": 34.67
   },
   {
    "keys": [
@@ -2379,15 +2316,6 @@
   },
   {
    "keys": [
-    "רכישת נכס בפורטוגל"
-   ],
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 32
-  },
-  {
-   "keys": [
     "שכר דירה בפורטוגל"
    ],
    "clicks": 0,
@@ -2424,6 +2352,15 @@
   },
   {
    "keys": [
+    "תביעות על שימוש לא חוקי ביצירות"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
+  },
+  {
+   "keys": [
     "תוכנות ai לעורכי דין"
    ],
    "clicks": 0,
@@ -2445,9 +2382,9 @@
     "תיקון 13 לחוק הגנת הפרטיות"
    ],
    "clicks": 0,
-   "impressions": 35,
+   "impressions": 33,
    "ctr": 0,
-   "position": 94.71
+   "position": 94.33
   },
   {
    "keys": [
@@ -2457,6 +2394,15 @@
    "impressions": 1,
    "ctr": 0,
    "position": 79
+  },
+  {
+   "keys": [
+    "תיקון לחוק הגנת הפרטיות"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 92
   },
   {
    "keys": [
@@ -2517,18 +2463,18 @@
     "תקנות מיסוי נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 8,
    "ctr": 0,
-   "position": 33.44
+   "position": 33.75
   },
   {
    "keys": [
     "תשואות נדל\"ן בפורטוגל"
    ],
    "clicks": 0,
-   "impressions": 12,
+   "impressions": 8,
    "ctr": 0,
-   "position": 15
+   "position": 16
   },
   {
    "keys": [
@@ -2545,55 +2491,46 @@
    "keys": [
     "https://lalumapp.com/"
    ],
-   "clicks": 42,
+   "clicks": 44,
    "impressions": 204,
-   "ctr": 0.2059,
-   "position": 5.04
+   "ctr": 0.2157,
+   "position": 5.23
   },
   {
    "keys": [
     "https://lalumapp.com/en/"
    ],
    "clicks": 5,
-   "impressions": 27,
-   "ctr": 0.1852,
-   "position": 3.11
+   "impressions": 31,
+   "ctr": 0.1613,
+   "position": 3.06
   },
   {
    "keys": [
     "https://lalumapp.com/training/"
    ],
    "clicks": 3,
-   "impressions": 33,
-   "ctr": 0.0909,
-   "position": 18.79
+   "impressions": 34,
+   "ctr": 0.0882,
+   "position": 18.29
   },
   {
    "keys": [
     "https://lalumapp.com/cv"
    ],
    "clicks": 2,
-   "impressions": 63,
-   "ctr": 0.0317,
-   "position": 9.52
+   "impressions": 64,
+   "ctr": 0.0313,
+   "position": 10.09
   },
   {
    "keys": [
     "https://lalumapp.com/insights/gemini-guide-law/"
    ],
    "clicks": 2,
-   "impressions": 48,
-   "ctr": 0.0417,
-   "position": 5.73
-  },
-  {
-   "keys": [
-    "https://lalumapp.com/insights/israel-ai-regulation-policy/"
-   ],
-   "clicks": 2,
-   "impressions": 13,
-   "ctr": 0.1538,
-   "position": 20.38
+   "impressions": 47,
+   "ctr": 0.0426,
+   "position": 5.77
   },
   {
    "keys": [
@@ -2624,15 +2561,6 @@
   },
   {
    "keys": [
-    "https://lalumapp.com/fr/"
-   ],
-   "clicks": 1,
-   "impressions": 16,
-   "ctr": 0.0625,
-   "position": 5.81
-  },
-  {
-   "keys": [
     "https://lalumapp.com/insights/%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%90%D7%95%D7%91%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%91%D7%99%D7%AA-%D7%9B%D7%AA%D7%97%D7%9C%D7%99%D7%A3-%D7%9C%D7%94%D7%9C%D7%99%D7%9A-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%A0%D7%99%D7%AA%D7%95%D7%97-%D7%94%D7%9E%D7%9C%D7%A6%D7%94-%D7%95%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%97%D7%95%D7%A5-%D7%9C%D7%9B%D7%95%D7%AA%D7%9C%D7%99-%D7%91%D7%99%D7%AA-%D7%94%D7%9E%D7%A9%D7%A4%D7%98/"
    ],
    "clicks": 1,
@@ -2645,9 +2573,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94-%D7%A7%D7%95%D7%A8%D7%94-%D7%9B%D7%A9%D7%99%D7%96%D7%9D-%D7%A4%D7%95%D7%A9%D7%98-%D7%A8%D7%92%D7%9C-%D7%91%D7%90%D7%9E%D7%A6%D7%A2-%D7%A4%D7%99%D7%A0%D7%95%D7%99-%D7%91%D7%99%D7%A0%D7%95%D7%99-%D7%95%D7%90%D7%99%D7%9A-%D7%9E%D7%92%D7%A9%D7%A8-%D7%9E%D7%9C%D7%95%D7%95%D7%94-%D7%99%D7%9B%D7%95%D7%9C-%D7%9C%D7%94%D7%A6%D7%99%D7%9C-%D7%90%D7%AA-%D7%94%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98/"
    ],
    "clicks": 1,
-   "impressions": 18,
-   "ctr": 0.0556,
-   "position": 6
+   "impressions": 15,
+   "ctr": 0.0667,
+   "position": 6.4
   },
   {
    "keys": [
@@ -2663,9 +2591,9 @@
     "https://lalumapp.com/insights/algorithmic-transparency/"
    ],
    "clicks": 1,
-   "impressions": 4,
-   "ctr": 0.25,
-   "position": 7.75
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 7.67
   },
   {
    "keys": [
@@ -2678,12 +2606,21 @@
   },
   {
    "keys": [
+    "https://lalumapp.com/insights/israel-ai-regulation-policy/"
+   ],
+   "clicks": 1,
+   "impressions": 14,
+   "ctr": 0.0714,
+   "position": 19
+  },
+  {
+   "keys": [
     "https://lalumapp.com/insights/lalum-clinic-realestate-advice/"
    ],
    "clicks": 1,
-   "impressions": 18,
-   "ctr": 0.0556,
-   "position": 12.67
+   "impressions": 17,
+   "ctr": 0.0588,
+   "position": 13.29
   },
   {
    "keys": [
@@ -2699,36 +2636,36 @@
     "https://lalumapp.com/insights/partnership-dissolution-ai-ownership/"
    ],
    "clicks": 1,
-   "impressions": 3,
-   "ctr": 0.3333,
-   "position": 5
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 4.5
   },
   {
    "keys": [
     "https://lalumapp.com/advisory/"
    ],
    "clicks": 0,
-   "impressions": 27,
+   "impressions": 26,
    "ctr": 0,
-   "position": 14.96
+   "position": 15.38
   },
   {
    "keys": [
     "https://lalumapp.com/ai-legal-advisory/"
    ],
    "clicks": 0,
-   "impressions": 12,
+   "impressions": 10,
    "ctr": 0,
-   "position": 47.17
+   "position": 45.8
   },
   {
    "keys": [
     "https://lalumapp.com/ai-legal-advisory/local-authorities/"
    ],
    "clicks": 0,
-   "impressions": 15,
+   "impressions": 14,
    "ctr": 0,
-   "position": 6.53
+   "position": 6.5
   },
   {
    "keys": [
@@ -2762,27 +2699,36 @@
     "https://lalumapp.com/ar/mediation-dispute-resolution/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 7
+   "position": 7.33
   },
   {
    "keys": [
     "https://lalumapp.com/book/"
    ],
    "clicks": 0,
-   "impressions": 20,
+   "impressions": 19,
    "ctr": 0,
-   "position": 17.5
+   "position": 18.05
   },
   {
    "keys": [
     "https://lalumapp.com/cv-en"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 11,
    "ctr": 0,
-   "position": 3.33
+   "position": 3
+  },
+  {
+   "keys": [
+    "https://lalumapp.com/downloads/lalum-rashuyot-mekomiyot-ai.pdf"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7
   },
   {
    "keys": [
@@ -2807,27 +2753,27 @@
     "https://lalumapp.com/en/book/"
    ],
    "clicks": 0,
-   "impressions": 16,
+   "impressions": 17,
    "ctr": 0,
-   "position": 6.19
+   "position": 6.29
   },
   {
    "keys": [
     "https://lalumapp.com/en/insights/eu-ai-act-roles-obligations/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 7,
    "ctr": 0,
-   "position": 48
+   "position": 56
   },
   {
    "keys": [
     "https://lalumapp.com/en/legal/"
    ],
    "clicks": 0,
-   "impressions": 55,
+   "impressions": 57,
    "ctr": 0,
-   "position": 6.64
+   "position": 6.68
   },
   {
    "keys": [
@@ -2852,18 +2798,27 @@
     "https://lalumapp.com/es/real-estate-legal-advisory/"
    ],
    "clicks": 0,
-   "impressions": 85,
+   "impressions": 87,
    "ctr": 0,
-   "position": 20.24
+   "position": 19.67
   },
   {
    "keys": [
     "https://lalumapp.com/faq/"
    ],
    "clicks": 0,
-   "impressions": 22,
+   "impressions": 17,
    "ctr": 0,
-   "position": 7.45
+   "position": 8.18
+  },
+  {
+   "keys": [
+    "https://lalumapp.com/fr/"
+   ],
+   "clicks": 0,
+   "impressions": 15,
+   "ctr": 0,
+   "position": 6.07
   },
   {
    "keys": [
@@ -2888,9 +2843,9 @@
     "https://lalumapp.com/fr/knowledge/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 8,
    "ctr": 0,
-   "position": 5.89
+   "position": 6.5
   },
   {
    "keys": [
@@ -2906,9 +2861,9 @@
     "https://lalumapp.com/insights/"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 9,
    "ctr": 0,
-   "position": 11
+   "position": 12
   },
   {
    "keys": [
@@ -3005,9 +2960,9 @@
     "https://lalumapp.com/insights/%D7%94%D7%97%D7%9C%D7%98%D7%AA-%D7%91%D7%A0%D7%A7-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%95%D7%94%D7%A9%D7%9C%D7%9B%D7%95%D7%AA%D7%99%D7%94-%D7%A2%D7%9C-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%94%D7%99%D7%97%D7%A1%D7%99%D7%9D-%D7%94%D7%97%D7%95%D7%96%D7%99%D7%AA-%D7%91%D7%A2%D7%A0%D7%A3-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%99%D7%A0%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%A9%D7%9C-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%9E%D7%95%D7%93/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 37
+   "position": 34.25
   },
   {
    "keys": [
@@ -3048,15 +3003,6 @@
   {
    "keys": [
     "https://lalumapp.com/insights/%D7%94%D7%A6%D7%A2%D7%AA-%D7%9E%D7%92%D7%A9%D7%A8-%D7%94%D7%9E%D7%A9%D7%9E%D7%A2%D7%95%D7%AA-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%A2%D7%95%D7%92%D7%9F-%D7%9C%D7%94%D7%A1%D7%93%D7%A8-%D7%90%D7%95-%D7%9E%D7%A8%D7%97%D7%91-%D7%AA%D7%9E%D7%A8%D7%95%D7%9F-%D7%9C%D7%A1%D7%99%D7%95%D7%9D-%D7%94%D7%9C%D7%99%D7%9A/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 10
-  },
-  {
-   "keys": [
-    "https://lalumapp.com/insights/%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%94%D7%9B%D7%95%D7%9C-%D7%A0%D7%A7%D7%91%D7%A2-%D7%A8%D7%95%D7%A9%D7%9D-%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
    ],
    "clicks": 0,
    "impressions": 1,
@@ -3167,9 +3113,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99-%D7%9C%D7%9E%D7%AA%D7%95%D7%95%D7%9B%D7%99%D7%9D-%D7%A8%D7%A4%D7%95%D7%A8%D7%9E%D7%AA-%D7%94%D7%AA%D7%99%D7%95%D7%95%D7%9A-%D7%91%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F-%D7%A9%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 19,
+   "impressions": 18,
    "ctr": 0,
-   "position": 16.26
+   "position": 16.89
   },
   {
    "keys": [
@@ -3185,18 +3131,18 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 27,
+   "impressions": 32,
    "ctr": 0,
-   "position": 62.89
+   "position": 61.88
   },
   {
    "keys": [
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 39,
+   "impressions": 38,
    "ctr": 0,
-   "position": 64.03
+   "position": 63.16
   },
   {
    "keys": [
@@ -3230,9 +3176,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%A2%D7%91%D7%A8-%D7%9C%D7%9E%D7%99%D7%9C%D7%99%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A2%D7%9D-%D7%A8%D7%92%D7%A9%D7%95%D7%AA-%D7%A9%D7%A4%D7%AA-%D7%92%D7%95%D7%A3-%D7%95%D7%98%D7%9B%D7%A0%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94-%D7%97%D7%9B%D7%9E%D7%94/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 11.33
+   "position": 10.25
   },
   {
    "keys": [
@@ -3242,15 +3188,6 @@
    "impressions": 3,
    "ctr": 0,
    "position": 3.67
-  },
-  {
-   "keys": [
-    "https://lalumapp.com/insights/%D7%9E%D7%A9%D7%A2%D7%AA-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%9C%D7%A9%D7%92%D7%A8%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%97%D7%93%D7%A9%D7%94-%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%AA%D7%A7%D7%95%D7%A4%D7%94-%D7%94%D7%A0%D7%95%D7%9B%D7%97%D7%99%D7%AA-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%AA-%D7%94%D7%9C%D7%99%D7%98%D7%99%D7%92%D7%A6%D7%99%D7%94-%D7%95%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/?lang=fr"
-   ],
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 9
   },
   {
    "keys": [
@@ -3266,9 +3203,9 @@
     "https://lalumapp.com/insights/%D7%A1%D7%9B%D7%A1%D7%95%D7%9A-%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%93%D7%99%D7%9F-%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%94%D7%95%D7%90-%D7%94%D7%9E%D7%A1%D7%9C%D7%95%D7%9C-%D7%A9%D7%A0%D7%A9%D7%9B%D7%97-%D7%95%D7%94%D7%A0%D7%9B%D7%95%D7%9F-%D7%94%D7%A7%D7%93%D7%9E%D7%94-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A9%D7%95%D7%AA%D7%A4%D7%99/"
    ],
    "clicks": 0,
-   "impressions": 41,
+   "impressions": 40,
    "ctr": 0,
-   "position": 27.63
+   "position": 27.2
   },
   {
    "keys": [
@@ -3410,9 +3347,9 @@
     "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 37.33
+   "position": 48.5
   },
   {
    "keys": [
@@ -3425,12 +3362,21 @@
   },
   {
    "keys": [
+    "https://lalumapp.com/insights/%D7%AA%D7%A4%D7%A7%D7%99%D7%93-%D7%94%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%94%D7%97%D7%95%D7%96%D7%99%D7%AA-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%9F-%D7%A2%D7%A7%D7%A8%D7%95%D7%A0%D7%95%D7%AA-%D7%A4%D7%95%D7%A8%D7%9E%D7%9C%D7%99%D7%99%D7%9D-%D7%9C%D7%94%D7%91%D7%A0%D7%95%D7%AA-%D7%91%D7%9C%D7%AA%D7%99-%D7%9B%D7%AA%D7%95%D7%91%D7%95%D7%AA/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 67
+  },
+  {
+   "keys": [
     "https://lalumapp.com/insights/?lang=ar"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 5.33
+   "position": 5.5
   },
   {
    "keys": [
@@ -3446,9 +3392,9 @@
     "https://lalumapp.com/insights/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 7
+   "position": 6.25
   },
   {
    "keys": [
@@ -3461,12 +3407,21 @@
   },
   {
    "keys": [
-    "https://lalumapp.com/insights/ai-ethics-legal-risks/"
+    "https://lalumapp.com/insights/ai-elite-realestate/"
    ],
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 9
+   "position": 10
+  },
+  {
+   "keys": [
+    "https://lalumapp.com/insights/ai-ethics-legal-risks/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6
   },
   {
    "keys": [
@@ -3500,9 +3455,9 @@
     "https://lalumapp.com/insights/ai-legal-practice/?lang=ar"
    ],
    "clicks": 0,
-   "impressions": 11,
+   "impressions": 9,
    "ctr": 0,
-   "position": 76.09
+   "position": 76.44
   },
   {
    "keys": [
@@ -3542,6 +3497,15 @@
   },
   {
    "keys": [
+    "https://lalumapp.com/insights/ai-real-estate-valuation-reliance/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 28
+  },
+  {
+   "keys": [
     "https://lalumapp.com/insights/ai-realestate-risk-management/"
    ],
    "clicks": 0,
@@ -3554,9 +3518,9 @@
     "https://lalumapp.com/insights/ai-risk-frameworks-iso-42001-nist/"
    ],
    "clicks": 0,
-   "impressions": 21,
+   "impressions": 19,
    "ctr": 0,
-   "position": 9.48
+   "position": 10.21
   },
   {
    "keys": [
@@ -3581,9 +3545,9 @@
     "https://lalumapp.com/insights/ai-use-policy-organization/"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 14,
    "ctr": 0,
-   "position": 16.67
+   "position": 17.43
   },
   {
    "keys": [
@@ -3599,27 +3563,27 @@
     "https://lalumapp.com/insights/amendment-13-data-security-guide/"
    ],
    "clicks": 0,
-   "impressions": 60,
+   "impressions": 64,
    "ctr": 0,
-   "position": 40.53
+   "position": 40.02
   },
   {
    "keys": [
     "https://lalumapp.com/insights/amendment-13-dpo-appointment/"
    ],
    "clicks": 0,
-   "impressions": 122,
+   "impressions": 123,
    "ctr": 0,
-   "position": 27.43
+   "position": 27.59
   },
   {
    "keys": [
     "https://lalumapp.com/insights/attorney-client-privilege-ai/"
    ],
    "clicks": 0,
-   "impressions": 19,
+   "impressions": 18,
    "ctr": 0,
-   "position": 15.63
+   "position": 16.39
   },
   {
    "keys": [
@@ -3653,9 +3617,9 @@
     "https://lalumapp.com/insights/body-language-ai-future/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 3.67
+   "position": 3.5
   },
   {
    "keys": [
@@ -3689,9 +3653,9 @@
     "https://lalumapp.com/insights/building-ai-agents-realestate/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 37.25
+   "position": 47.33
   },
   {
    "keys": [
@@ -3707,9 +3671,9 @@
     "https://lalumapp.com/insights/business-mediation-relations/"
    ],
    "clicks": 0,
-   "impressions": 26,
+   "impressions": 27,
    "ctr": 0,
-   "position": 54.15
+   "position": 54.22
   },
   {
    "keys": [
@@ -3752,9 +3716,9 @@
     "https://lalumapp.com/insights/combination-deals-architecture/"
    ],
    "clicks": 0,
-   "impressions": 37,
+   "impressions": 38,
    "ctr": 0,
-   "position": 21.51
+   "position": 21.63
   },
   {
    "keys": [
@@ -3763,7 +3727,7 @@
    "clicks": 0,
    "impressions": 20,
    "ctr": 0,
-   "position": 58.05
+   "position": 54.55
   },
   {
    "keys": [
@@ -3779,9 +3743,9 @@
     "https://lalumapp.com/insights/contract-review-before-signing/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 5,
    "ctr": 0,
-   "position": 80.29
+   "position": 78.6
   },
   {
    "keys": [
@@ -3929,6 +3893,15 @@
   },
   {
    "keys": [
+    "https://lalumapp.com/insights/gemini-guide-law/?lang=en"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "keys": [
     "https://lalumapp.com/insights/homeowners-iron-dome/"
    ],
    "clicks": 0,
@@ -4040,9 +4013,9 @@
     "https://lalumapp.com/insights/lalum-clinic-experience/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 4,
    "ctr": 0,
-   "position": 6.5
+   "position": 5.25
   },
   {
    "keys": [
@@ -4114,7 +4087,7 @@
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 8.5
+   "position": 8
   },
   {
    "keys": [
@@ -4190,15 +4163,6 @@
   },
   {
    "keys": [
-    "https://lalumapp.com/insights/memory/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 5
-  },
-  {
-   "keys": [
     "https://lalumapp.com/insights/notebooklm-focus/"
    ],
    "clicks": 0,
@@ -4238,9 +4202,9 @@
     "https://lalumapp.com/insights/overseas-partnership-guide/"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 5,
    "ctr": 0,
-   "position": 14
+   "position": 10
   },
   {
    "keys": [
@@ -4256,9 +4220,9 @@
     "https://lalumapp.com/insights/overseas-property-due-diligence/"
    ],
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 8,
    "ctr": 0,
-   "position": 35.14
+   "position": 31.5
   },
   {
    "keys": [
@@ -4310,9 +4274,9 @@
     "https://lalumapp.com/insights/portugal-legal-due-diligence/"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 6
+   "position": 4
   },
   {
    "keys": [
@@ -4328,54 +4292,54 @@
     "https://lalumapp.com/insights/portugal-purchase-contract/"
    ],
    "clicks": 0,
-   "impressions": 15,
+   "impressions": 14,
    "ctr": 0,
-   "position": 32.53
+   "position": 30.64
   },
   {
    "keys": [
     "https://lalumapp.com/insights/portugal-real-estate-financing/"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 4,
    "ctr": 0,
-   "position": 19.63
+   "position": 5.25
   },
   {
    "keys": [
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 72,
+   "impressions": 63,
    "ctr": 0,
-   "position": 24.93
+   "position": 24.1
   },
   {
    "keys": [
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 99,
+   "impressions": 36,
    "ctr": 0,
-   "position": 23.92
+   "position": 25.11
   },
   {
    "keys": [
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 403,
+   "impressions": 386,
    "ctr": 0,
-   "position": 19.18
+   "position": 18.59
   },
   {
    "keys": [
     "https://lalumapp.com/insights/portugal-realestate-legal-guide/"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 6,
    "ctr": 0,
-   "position": 46.5
+   "position": 44.67
   },
   {
    "keys": [
@@ -4391,9 +4355,9 @@
     "https://lalumapp.com/insights/privacy-law-amendment-13-guide/"
    ],
    "clicks": 0,
-   "impressions": 107,
+   "impressions": 106,
    "ctr": 0,
-   "position": 46.11
+   "position": 45.51
   },
   {
    "keys": [
@@ -4445,9 +4409,9 @@
     "https://lalumapp.com/insights/realestate-master-course/"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 4
+   "position": 4.33
   },
   {
    "keys": [
@@ -4517,9 +4481,9 @@
     "https://lalumapp.com/insights/tama-38-1-vs-38-2-comparison/"
    ],
    "clicks": 0,
-   "impressions": 41,
+   "impressions": 40,
    "ctr": 0,
-   "position": 14.76
+   "position": 14.18
   },
   {
    "keys": [
@@ -4580,9 +4544,9 @@
     "https://lalumapp.com/insights/timeless-meeting-revolution/"
    ],
    "clicks": 0,
-   "impressions": 31,
+   "impressions": 30,
    "ctr": 0,
-   "position": 12.84
+   "position": 13.23
   },
   {
    "keys": [
@@ -4631,12 +4595,21 @@
   },
   {
    "keys": [
+    "https://lalumapp.com/insights/unfair-advantage-course/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "keys": [
     "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/"
    ],
    "clicks": 0,
-   "impressions": 14,
+   "impressions": 17,
    "ctr": 0,
-   "position": 86.71
+   "position": 87.47
   },
   {
    "keys": [
@@ -4652,9 +4625,9 @@
     "https://lalumapp.com/insights/urban-renewal-risk/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 20
+   "position": 16.5
   },
   {
    "keys": [
@@ -4688,9 +4661,9 @@
     "https://lalumapp.com/knowledge/"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 18,
    "ctr": 0,
-   "position": 9.24
+   "position": 12.67
   },
   {
    "keys": [
@@ -4715,18 +4688,18 @@
     "https://lalumapp.com/mediation-dispute-resolution/"
    ],
    "clicks": 0,
-   "impressions": 14,
+   "impressions": 13,
    "ctr": 0,
-   "position": 76.93
+   "position": 77.69
   },
   {
    "keys": [
     "https://lalumapp.com/real-estate-legal-advisory/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 10,
    "ctr": 0,
-   "position": 40
+   "position": 37.4
   },
   {
    "keys": [
@@ -4742,9 +4715,9 @@
     "https://lalumapp.com/rulings/"
    ],
    "clicks": 0,
-   "impressions": 107,
+   "impressions": 85,
    "ctr": 0,
-   "position": 19.58
+   "position": 18.68
   },
   {
    "keys": [
@@ -4835,9 +4808,9 @@
     "https://lalumapp.com/"
    ],
    "clicks": 7,
-   "impressions": 28,
-   "ctr": 0.25,
-   "position": 1.11
+   "impressions": 30,
+   "ctr": 0.2333,
+   "position": 1.1
   },
   {
    "keys": [
@@ -4845,8 +4818,8 @@
     "https://lalumapp.com/"
    ],
    "clicks": 7,
-   "impressions": 12,
-   "ctr": 0.5833,
+   "impressions": 13,
+   "ctr": 0.5385,
    "position": 1
   },
   {
@@ -4855,9 +4828,9 @@
     "https://lalumapp.com/en/"
    ],
    "clicks": 1,
-   "impressions": 2,
-   "ctr": 0.5,
-   "position": 1.5
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 1.33
   },
   {
    "keys": [
@@ -4881,16 +4854,6 @@
   },
   {
    "keys": [
-    "lalum",
-    "https://lalumapp.com/fr/"
-   ],
-   "clicks": 1,
-   "impressions": 11,
-   "ctr": 0.0909,
-   "position": 6.91
-  },
-  {
-   "keys": [
     "6025060",
     "https://lalumapp.com/mediation-dispute-resolution/"
    ],
@@ -4905,9 +4868,9 @@
     "https://lalumapp.com/es/real-estate-legal-advisory/"
    ],
    "clicks": 0,
-   "impressions": 82,
+   "impressions": 85,
    "ctr": 0,
-   "position": 19.73
+   "position": 19.88
   },
   {
    "keys": [
@@ -4995,9 +4958,9 @@
     "https://lalumapp.com/en/insights/eu-ai-act-roles-obligations/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 75
+   "position": 75.4
   },
   {
    "keys": [
@@ -5015,9 +4978,9 @@
     "https://lalumapp.com/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 6,
    "ctr": 0,
-   "position": 2.11
+   "position": 2.33
   },
   {
    "keys": [
@@ -5045,9 +5008,9 @@
     "https://lalumapp.com/book/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 11
+   "position": 12.33
   },
   {
    "keys": [
@@ -5075,9 +5038,19 @@
     "https://lalumapp.com/en/legal/"
    ],
    "clicks": 0,
-   "impressions": 42,
+   "impressions": 48,
    "ctr": 0,
-   "position": 7.19
+   "position": 7.04
+  },
+  {
+   "keys": [
+    "lalum",
+    "https://lalumapp.com/fr/"
+   ],
+   "clicks": 0,
+   "impressions": 10,
+   "ctr": 0,
+   "position": 7.4
   },
   {
    "keys": [
@@ -5085,9 +5058,9 @@
     "https://lalumapp.com/fr/knowledge/"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 7,
    "ctr": 0,
-   "position": 6.5
+   "position": 7.29
   },
   {
    "keys": [
@@ -5135,9 +5108,9 @@
     "https://lalumapp.com/insights/lalum-clinic-experience/?lang=en"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 4,
    "ctr": 0,
-   "position": 6.5
+   "position": 5.25
   },
   {
    "keys": [
@@ -5178,16 +5151,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 41
-  },
-  {
-   "keys": [
-    "luma inmobiliaria",
-    "https://lalumapp.com/es/real-estate-legal-advisory/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 81
   },
   {
    "keys": [
@@ -5455,9 +5418,9 @@
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 18.4
+   "position": 17
   },
   {
    "keys": [
@@ -5535,9 +5498,9 @@
     "https://lalumapp.com/insights/contract-review-before-signing/"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 7,
    "ctr": 0,
-   "position": 70.63
+   "position": 70.57
   },
   {
    "keys": [
@@ -5548,16 +5511,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 87
-  },
-  {
-   "keys": [
-    "בדיקת חוזה",
-    "https://lalumapp.com/insights/contract-review-before-signing/?lang=en"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 83
   },
   {
    "keys": [
@@ -5665,9 +5618,9 @@
     "https://lalumapp.com/insights/ai-legal-practice/?lang=ar"
    ],
    "clicks": 0,
-   "impressions": 11,
+   "impressions": 9,
    "ctr": 0,
-   "position": 76.09
+   "position": 76.44
   },
   {
    "keys": [
@@ -5765,9 +5718,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 39
+   "position": 38.33
   },
   {
    "keys": [
@@ -5785,9 +5738,9 @@
     "https://lalumapp.com/insights/business-mediation-relations/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 10,
    "ctr": 0,
-   "position": 50.33
+   "position": 50.9
   },
   {
    "keys": [
@@ -5825,9 +5778,9 @@
     "https://lalumapp.com/insights/%D7%94%D7%97%D7%9C%D7%98%D7%AA-%D7%91%D7%A0%D7%A7-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%95%D7%94%D7%A9%D7%9C%D7%9B%D7%95%D7%AA%D7%99%D7%94-%D7%A2%D7%9C-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%94%D7%99%D7%97%D7%A1%D7%99%D7%9D-%D7%94%D7%97%D7%95%D7%96%D7%99%D7%AA-%D7%91%D7%A2%D7%A0%D7%A3-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%99%D7%A0%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%A9%D7%9C-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%9E%D7%95%D7%93/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 27.25
+   "position": 20.33
   },
   {
    "keys": [
@@ -5918,16 +5871,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 69
-  },
-  {
-   "keys": [
-    "גישור מסחרי",
-    "https://lalumapp.com/mediation-dispute-resolution/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 43
   },
   {
    "keys": [
@@ -6025,9 +5968,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 95
+   "position": 89.33
   },
   {
    "keys": [
@@ -6051,6 +5994,16 @@
   },
   {
    "keys": [
+    "דלום",
+    "https://lalumapp.com/cv"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 57
+  },
+  {
+   "keys": [
     "האם יש יתרון להשקעות נדל\"ן בחו\"ל על פני בארץ?",
     "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%97%D7%9C%D7%95%D7%9D-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%90%D7%A4%D7%A9%D7%A8-%D7%91%D7%90%D7%9E%D7%AA-%D7%9C%D7%97%D7%A9%D7%91-%D7%90%D7%AA-%D7%94%D7%A1%D7%99%D7%9B%D7%95%D7%9F/"
    ],
@@ -6058,16 +6011,6 @@
    "impressions": 2,
    "ctr": 0,
    "position": 9.5
-  },
-  {
-   "keys": [
-    "האם כדאי להשקיע בנדל\"ן בפורטוגל?",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
   },
   {
    "keys": [
@@ -6145,9 +6088,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 10,
    "ctr": 0,
-   "position": 66
+   "position": 65.6
   },
   {
    "keys": [
@@ -6245,9 +6188,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 9,
    "ctr": 0,
-   "position": 38.7
+   "position": 39
   },
   {
    "keys": [
@@ -6265,9 +6208,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 3,
    "ctr": 0,
-   "position": 66.2
+   "position": 66.33
   },
   {
    "keys": [
@@ -6275,9 +6218,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 7,
    "ctr": 0,
-   "position": 32.67
+   "position": 32.71
   },
   {
    "keys": [
@@ -6288,16 +6231,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 24
-  },
-  {
-   "keys": [
-    "השקעה בנדל\"ן בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
-   ],
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 31.5
   },
   {
    "keys": [
@@ -6312,22 +6245,12 @@
   {
    "keys": [
     "השקעה בנדלן בפורטו",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 65.67
-  },
-  {
-   "keys": [
-    "השקעה בנדלן בפורטו",
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 2,
    "ctr": 0,
-   "position": 53.2
+   "position": 53.5
   },
   {
    "keys": [
@@ -6335,9 +6258,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 15,
    "ctr": 0,
-   "position": 23.82
+   "position": 23.4
   },
   {
    "keys": [
@@ -6345,7 +6268,7 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
    "position": 15
   },
@@ -6372,16 +6295,6 @@
   {
    "keys": [
     "השקעה בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 6,
-   "ctr": 0,
-   "position": 19
-  },
-  {
-   "keys": [
-    "השקעה בפורטוגל",
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
@@ -6398,16 +6311,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 73
-  },
-  {
-   "keys": [
-    "השקעות בפורטו",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 15
   },
   {
    "keys": [
@@ -6435,9 +6338,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 1,
    "ctr": 0,
-   "position": 17.5
+   "position": 17
   },
   {
    "keys": [
@@ -6465,9 +6368,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 4,
    "ctr": 0,
-   "position": 17.33
+   "position": 17
   },
   {
    "keys": [
@@ -6475,9 +6378,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 16,
+   "impressions": 13,
    "ctr": 0,
-   "position": 24.13
+   "position": 23.38
   },
   {
    "keys": [
@@ -6485,9 +6388,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 42,
+   "impressions": 39,
    "ctr": 0,
-   "position": 19.48
+   "position": 19.21
   },
   {
    "keys": [
@@ -6505,9 +6408,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 3,
    "ctr": 0,
-   "position": 21.83
+   "position": 22
   },
   {
    "keys": [
@@ -6515,9 +6418,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/?lang=fr"
    ],
    "clicks": 0,
-   "impressions": 29,
+   "impressions": 28,
    "ctr": 0,
-   "position": 24.03
+   "position": 24.04
   },
   {
    "keys": [
@@ -6525,9 +6428,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 2,
    "ctr": 0,
-   "position": 20.25
+   "position": 18.5
   },
   {
    "keys": [
@@ -6548,16 +6451,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 66
-  },
-  {
-   "keys": [
-    "השקעות נדלן פורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 15.67
   },
   {
    "keys": [
@@ -6605,7 +6498,7 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 1,
    "ctr": 0,
    "position": 15
   },
@@ -6618,16 +6511,6 @@
    "impressions": 18,
    "ctr": 0,
    "position": 15.06
-  },
-  {
-   "keys": [
-    "חברה להשקעות נדלן בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 23
   },
   {
    "keys": [
@@ -6735,9 +6618,9 @@
     "https://lalumapp.com/insights/portugal-purchase-contract/"
    ],
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 6,
    "ctr": 0,
-   "position": 43
+   "position": 40.33
   },
   {
    "keys": [
@@ -6745,9 +6628,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 3,
    "ctr": 0,
-   "position": 16.5
+   "position": 16.33
   },
   {
    "keys": [
@@ -6765,9 +6648,9 @@
     "https://lalumapp.com/insights/portugal-realestate-legal-guide/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 70.33
+   "position": 69
   },
   {
    "keys": [
@@ -6985,19 +6868,9 @@
     "https://lalumapp.com/ai-legal-advisory/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 7,
    "ctr": 0,
-   "position": 51.22
-  },
-  {
-   "keys": [
-    "יעקבי יוניברסל תביעות",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 89
+   "position": 50.43
   },
   {
    "keys": [
@@ -7045,9 +6918,9 @@
     "https://lalumapp.com/insights/amendment-13-data-security-guide/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 51.67
+   "position": 50
   },
   {
    "keys": [
@@ -7125,7 +6998,7 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 1,
    "ctr": 0,
    "position": 11
   },
@@ -7255,9 +7128,9 @@
     "https://lalumapp.com/insights/tama-38-1-vs-38-2-comparison/"
    ],
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 16,
    "ctr": 0,
-   "position": 24.53
+   "position": 23.69
   },
   {
    "keys": [
@@ -7278,6 +7151,16 @@
    "impressions": 30,
    "ctr": 0,
    "position": 20.03
+  },
+  {
+   "keys": [
+    "מה זה גישור",
+    "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 46
   },
   {
    "keys": [
@@ -7331,13 +7214,13 @@
   },
   {
    "keys": [
-    "מומלץ להשקיע בפורטוגל דרך חברה מנהלת או באופן עצמאי?",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
+    "מה כדאי לבדוק לפני שקונים הדום לשימוש בסביבה חיצונית?",
+    "https://lalumapp.com/insights/amendment-13-data-security-guide/"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 1
+   "position": 6.5
   },
   {
    "keys": [
@@ -7395,9 +7278,9 @@
     "https://lalumapp.com/insights/amendment-13-dpo-appointment/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 28.6
+   "position": 30.67
   },
   {
    "keys": [
@@ -7455,9 +7338,9 @@
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 12,
+   "impressions": 8,
    "ctr": 0,
-   "position": 28.83
+   "position": 27
   },
   {
    "keys": [
@@ -7465,9 +7348,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 1,
    "ctr": 0,
-   "position": 21.5
+   "position": 20
   },
   {
    "keys": [
@@ -7485,19 +7368,9 @@
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 14,
+   "impressions": 12,
    "ctr": 0,
-   "position": 26.07
-  },
-  {
-   "keys": [
-    "מיסוי נדלן בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 24.67
+   "position": 25.92
   },
   {
    "keys": [
@@ -7515,9 +7388,9 @@
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 17,
    "ctr": 0,
-   "position": 30.11
+   "position": 30.71
   },
   {
    "keys": [
@@ -7525,9 +7398,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 1,
    "ctr": 0,
-   "position": 30.33
+   "position": 15
   },
   {
    "keys": [
@@ -7575,9 +7448,9 @@
     "https://lalumapp.com/insights/amendment-13-dpo-appointment/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 69.6
+   "position": 72
   },
   {
    "keys": [
@@ -7585,9 +7458,9 @@
     "https://lalumapp.com/insights/amendment-13-dpo-appointment/"
    ],
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 1,
    "ctr": 0,
-   "position": 51
+   "position": 24
   },
   {
    "keys": [
@@ -7631,16 +7504,6 @@
   },
   {
    "keys": [
-    "משכנתא בפורטוגל",
-    "https://lalumapp.com/insights/portugal-real-estate-financing/"
-   ],
-   "clicks": 0,
-   "impressions": 4,
-   "ctr": 0,
-   "position": 34
-  },
-  {
-   "keys": [
     "נדל\"ן בליסבון",
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
@@ -7655,9 +7518,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 3,
    "ctr": 0,
-   "position": 24.75
+   "position": 24.67
   },
   {
    "keys": [
@@ -7688,16 +7551,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 5
-  },
-  {
-   "keys": [
-    "נדלן מניב בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 20.67
   },
   {
    "keys": [
@@ -7735,9 +7588,9 @@
     "https://lalumapp.com/insights/amendment-13-data-security-guide/"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 11,
    "ctr": 0,
-   "position": 23.2
+   "position": 25.73
   },
   {
    "keys": [
@@ -7785,9 +7638,9 @@
     "https://lalumapp.com/insights/urban-renewal-risk/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 20
+   "position": 16.5
   },
   {
    "keys": [
@@ -7805,9 +7658,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 1,
    "ctr": 0,
-   "position": 20.33
+   "position": 21
   },
   {
    "keys": [
@@ -7931,6 +7784,16 @@
   },
   {
    "keys": [
+    "סכסוכים",
+    "https://lalumapp.com/mediation-dispute-resolution/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 50
+  },
+  {
+   "keys": [
     "סכסוכים עסקיים",
     "https://lalumapp.com/mediation-dispute-resolution/"
    ],
@@ -7965,9 +7828,9 @@
     "https://lalumapp.com/insights/amendment-13-data-security-guide/"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 24
+   "position": 48.5
   },
   {
    "keys": [
@@ -7978,6 +7841,16 @@
    "impressions": 4,
    "ctr": 0,
    "position": 29.5
+  },
+  {
+   "keys": [
+    "עלא תלאווי עורך דין",
+    "https://lalumapp.com/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 44
   },
   {
    "keys": [
@@ -8015,9 +7888,9 @@
     "https://lalumapp.com/insights/combination-deals-architecture/"
    ],
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 19,
    "ctr": 0,
-   "position": 29.39
+   "position": 29.21
   },
   {
    "keys": [
@@ -8035,9 +7908,9 @@
     "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 58
+   "position": 59.5
   },
   {
    "keys": [
@@ -8075,9 +7948,9 @@
     "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/"
    ],
    "clicks": 0,
-   "impressions": 10,
+   "impressions": 12,
    "ctr": 0,
-   "position": 90.6
+   "position": 90.5
   },
   {
    "keys": [
@@ -8085,9 +7958,9 @@
     "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 77
+   "position": 80.2
   },
   {
    "keys": [
@@ -8098,6 +7971,16 @@
    "impressions": 5,
    "ctr": 0,
    "position": 18.4
+  },
+  {
+   "keys": [
+    "פאי גרופ תביעות",
+    "https://lalumapp.com/rulings/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
   },
   {
    "keys": [
@@ -8165,7 +8048,7 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 1,
    "ctr": 0,
    "position": 17
   },
@@ -8241,16 +8124,6 @@
   },
   {
    "keys": [
-    "פסק דין בית משפט השלום",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 55
-  },
-  {
-   "keys": [
     "פסק דין לאור",
     "https://lalumapp.com/rulings/"
    ],
@@ -8261,36 +8134,6 @@
   },
   {
    "keys": [
-    "פסק דין לדוגמא",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 61
-  },
-  {
-   "keys": [
-    "פסק דין שמש",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 44
-  },
-  {
-   "keys": [
-    "פסקי דין חדשים",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 46
-  },
-  {
-   "keys": [
     "פסקי דין לקריאה",
     "https://lalumapp.com/rulings/"
    ],
@@ -8298,16 +8141,6 @@
    "impressions": 1,
    "ctr": 0,
    "position": 56
-  },
-  {
-   "keys": [
-    "פסקי דין מאגר",
-    "https://lalumapp.com/rulings/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 57
   },
   {
    "keys": [
@@ -8345,9 +8178,9 @@
     "https://lalumapp.com/insights/%D7%A1%D7%9B%D7%A1%D7%95%D7%9A-%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%93%D7%99%D7%9F-%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%94%D7%95%D7%90-%D7%94%D7%9E%D7%A1%D7%9C%D7%95%D7%9C-%D7%A9%D7%A0%D7%A9%D7%9B%D7%97-%D7%95%D7%94%D7%A0%D7%9B%D7%95%D7%9F-%D7%94%D7%A7%D7%93%D7%9E%D7%94-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A9%D7%95%D7%AA%D7%A4%D7%99/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 8,
    "ctr": 0,
-   "position": 22.56
+   "position": 20
   },
   {
    "keys": [
@@ -8381,16 +8214,6 @@
   },
   {
    "keys": [
-    "פתרון מחלוקות בין שותפים",
-    "https://lalumapp.com/mediation-dispute-resolution/"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 74
-  },
-  {
-   "keys": [
     "פתרון סכסוך עסקי",
     "https://lalumapp.com/insights/business-mediation-strategic-dispute-resolution/"
    ],
@@ -8407,7 +8230,7 @@
    "clicks": 0,
    "impressions": 18,
    "ctr": 0,
-   "position": 34.78
+   "position": 34.67
   },
   {
    "keys": [
@@ -8531,16 +8354,6 @@
   },
   {
    "keys": [
-    "רכישת נכס בפורטוגל",
-    "https://lalumapp.com/insights/portugal-realestate-investment/"
-   ],
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 32
-  },
-  {
-   "keys": [
     "שכר דירה בפורטוגל",
     "https://lalumapp.com/insights/portugal-investment-guide/"
    ],
@@ -8601,6 +8414,16 @@
   },
   {
    "keys": [
+    "תביעות על שימוש לא חוקי ביצירות",
+    "https://lalumapp.com/rulings/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
+  },
+  {
+   "keys": [
     "תוכנות ai לעורכי דין",
     "https://lalumapp.com/insights/digital-lawyers-2026/"
    ],
@@ -8625,9 +8448,9 @@
     "https://lalumapp.com/insights/privacy-law-amendment-13-guide/"
    ],
    "clicks": 0,
-   "impressions": 35,
+   "impressions": 33,
    "ctr": 0,
-   "position": 94.71
+   "position": 94.33
   },
   {
    "keys": [
@@ -8638,6 +8461,16 @@
    "impressions": 1,
    "ctr": 0,
    "position": 79
+  },
+  {
+   "keys": [
+    "תיקון לחוק הגנת הפרטיות",
+    "https://lalumapp.com/insights/privacy-law-amendment-13-guide/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 92
   },
   {
    "keys": [
@@ -8715,9 +8548,9 @@
     "https://lalumapp.com/insights/portugal-real-estate-taxation/"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 60.33
+   "position": 66
   },
   {
    "keys": [
@@ -8725,9 +8558,9 @@
     "https://lalumapp.com/insights/portugal-realestate-legal-guide/"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 32.2
+   "position": 32.5
   },
   {
    "keys": [
@@ -8755,9 +8588,9 @@
     "https://lalumapp.com/insights/portugal-realestate-investment/"
    ],
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 5,
    "ctr": 0,
-   "position": 13.67
+   "position": 14.2
   },
   {
    "keys": [
@@ -8781,15 +8614,6 @@
   }
  ],
  "dates": [
-  {
-   "keys": [
-    "2026-09-16"
-   ],
-   "clicks": 3,
-   "impressions": 182,
-   "ctr": 0.0165,
-   "position": 24.13
-  },
   {
    "keys": [
     "2026-09-17"
@@ -9041,6 +8865,15 @@
    "impressions": 91,
    "ctr": 0.044,
    "position": 26.15
+  },
+  {
+   "keys": [
+    "2026-10-15"
+   ],
+   "clicks": 3,
+   "impressions": 88,
+   "ctr": 0.0341,
+   "position": 27.27
   }
  ],
  "countries": [
@@ -9048,19 +8881,10 @@
    "keys": [
     "isr"
    ],
-   "clicks": 60,
-   "impressions": 2253,
-   "ctr": 0.0266,
-   "position": 24.45
-  },
-  {
-   "keys": [
-    "fra"
-   ],
-   "clicks": 1,
-   "impressions": 9,
-   "ctr": 0.1111,
-   "position": 3.56
+   "clicks": 61,
+   "impressions": 2169,
+   "ctr": 0.0281,
+   "position": 24.47
   },
   {
    "keys": [
@@ -9076,9 +8900,9 @@
     "mex"
    ],
    "clicks": 1,
-   "impressions": 27,
-   "ctr": 0.037,
-   "position": 6.44
+   "impressions": 25,
+   "ctr": 0.04,
+   "position": 6.52
   },
   {
    "keys": [
@@ -9094,8 +8918,8 @@
     "usa"
    ],
    "clicks": 1,
-   "impressions": 103,
-   "ctr": 0.0097,
+   "impressions": 92,
+   "ctr": 0.0109,
    "position": 5.82
   },
   {
@@ -9130,9 +8954,9 @@
     "arg"
    ],
    "clicks": 0,
-   "impressions": 23,
+   "impressions": 24,
    "ctr": 0,
-   "position": 8.91
+   "position": 8.92
   },
   {
    "keys": [
@@ -9148,9 +8972,9 @@
     "aut"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 10
+   "position": 8.5
   },
   {
    "keys": [
@@ -9211,9 +9035,9 @@
     "can"
    ],
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 5,
    "ctr": 0,
-   "position": 5
+   "position": 5.2
   },
   {
    "keys": [
@@ -9283,9 +9107,9 @@
     "deu"
    ],
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 8,
    "ctr": 0,
-   "position": 36.71
+   "position": 50.25
   },
   {
    "keys": [
@@ -9310,9 +9134,18 @@
     "esp"
    ],
    "clicks": 0,
-   "impressions": 34,
+   "impressions": 32,
    "ctr": 0,
-   "position": 12.32
+   "position": 10.53
+  },
+  {
+   "keys": [
+    "fra"
+   ],
+   "clicks": 0,
+   "impressions": 8,
+   "ctr": 0,
+   "position": 3.88
   },
   {
    "keys": [
@@ -9321,7 +9154,7 @@
    "clicks": 0,
    "impressions": 23,
    "ctr": 0,
-   "position": 11.96
+   "position": 11.91
   },
   {
    "keys": [
@@ -9373,9 +9206,9 @@
     "idn"
    ],
    "clicks": 0,
-   "impressions": 11,
+   "impressions": 13,
    "ctr": 0,
-   "position": 7.27
+   "position": 7.08
   },
   {
    "keys": [
@@ -9397,15 +9230,6 @@
   },
   {
    "keys": [
-    "irn"
-   ],
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
-   "keys": [
     "irq"
    ],
    "clicks": 0,
@@ -9418,9 +9242,9 @@
     "ita"
    ],
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 9,
    "ctr": 0,
-   "position": 9.38
+   "position": 9.22
   },
   {
    "keys": [
@@ -9544,9 +9368,9 @@
     "omn"
    ],
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 4,
    "ctr": 0,
-   "position": 6
+   "position": 4.25
   },
   {
    "keys": [
@@ -9580,18 +9404,18 @@
     "prt"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 15.6
+   "position": 13.5
   },
   {
    "keys": [
     "pse"
    ],
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 4,
    "ctr": 0,
-   "position": 4.2
+   "position": 5
   },
   {
    "keys": [
@@ -9652,9 +9476,9 @@
     "syr"
    ],
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 7
+   "position": 7.5
   },
   {
    "keys": [
