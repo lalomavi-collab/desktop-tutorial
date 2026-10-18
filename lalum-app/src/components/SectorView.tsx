@@ -193,7 +193,9 @@ export function SectorView({ S }: { S: Sector }) {
         <SectorAudit questions={S.auditQuestions} bands={S.auditBands} />
       </section>
 
-      {/* DOWNLOAD */}
+      {/* DOWNLOAD. Absent while a sector has no booklet printed yet, so the page
+          never promises a file that is not in public/downloads. */}
+      {S.downloads.length > 0 && (
       <section className="wrap section section-line" style={{ maxWidth: 900 }}>
         <div style={{ maxWidth: "58ch", margin: "0 0 28px" }}>
           <p className="eyebrow">{S.downloadsEyebrow}</p>
@@ -216,6 +218,7 @@ export function SectorView({ S }: { S: Sector }) {
           ))}
         </div>
       </section>
+      )}
 
       {/* WHAT WE DO */}
       <section className="wrap section section-line">

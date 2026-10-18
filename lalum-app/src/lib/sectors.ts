@@ -1,6 +1,7 @@
 import type { IconName } from "./content";
 import type { QA } from "./schema";
 import { rulings, type Ruling } from "./rulings";
+import { governmentMinistries } from "./sectorGovernment";
 
 // Sector rubrics: the AI practice cut by the kind of body it serves, rather
 // than by the legal subject. A local authority, a government ministry and a
@@ -761,7 +762,7 @@ const localAuthorities: Sector = {
   disclaimer: `האמור בעמוד זה הוא מידע מקצועי כללי ואינו ייעוץ משפטי, אינו תחליף לבחינה פרטנית של הרשות ואינו יוצר יחסי עורך דין לקוח. תמצית של פסק דין אינה תחליף לקריאתו במקור.`,
 };
 
-export const SECTORS: Sector[] = [localAuthorities];
+export const SECTORS: Sector[] = [localAuthorities, governmentMinistries];
 
 export function sectorBySlug(slug: string): Sector | undefined {
   return SECTORS.find((s) => s.slug === slug);
@@ -787,6 +788,11 @@ export const SECTOR_TEASERS: SectorTeaser[] = [
     path: localAuthorities.path,
     title: `רשויות מקומיות`,
     body: `פסיקת העליון על שימוש בלתי מבוקר בבינה מלאכותית ברשות מנהלית, הבהרת הרשות להגנת הפרטיות על מצלמות LPR, חובות תיקון 13, ופרוטוקול בקרה וצ׳ק ליסט למנכ״ל.`,
+  },
+  {
+    path: governmentMinistries.path,
+    title: `משרדי ממשלה`,
+    body: `המדריך הממשלתי לשימוש אחראי ב-AI ומסלולי הרמזור שבו, מסמך העקרונות והחלטה 4255, טיוטת הנחיית הפרטיות, פסיקת העליון על בקרה אנושית והסמכה בדין, ופרוטוקול וצ׳ק ליסט למנכ״ל המשרד.`,
   },
 ];
 
