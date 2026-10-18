@@ -56,20 +56,20 @@ export function Home() {
       <section className="hero-home" style={{ position: "relative", overflow: "hidden" }}>
         <AmbientBackground />
         <div className="wrap hero-grid" style={{ position: "relative", zIndex: 1, padding: "96px 32px 88px", display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 64, alignItems: "center" }}>
-          <div>
-            <span className="pill">{h.heroPill}</span>
-            <h1 className="h1 hero-h1" style={{ margin: "26px 0 0", maxWidth: "16ch" }}>
+          <div className="hero-copy">
+            {/* One line and one action. The pill and the paragraph moved out of
+                sight (the lede stays in the DOM for search engines and screen
+                readers): the clip beside it now carries the explanation. */}
+            <span className="sr-only">{h.heroPill}</span>
+            <h1 className="h1 hero-h1" style={{ margin: 0, maxWidth: "14ch" }}>
               {h.heroH1a}
               {" "}
               <span className="italic-clay">{h.heroH1b}</span>
             </h1>
-            <p className="lede" style={{ maxWidth: "52ch", margin: "26px 0 34px" }}>{h.heroLede}</p>
-            <div className="hero-actions">
+            <p className="sr-only">{h.heroLede}</p>
+            <div className="hero-actions" style={{ marginTop: 30 }}>
               <Link to="/book" className="btn btn-clay">{t.practice.riskCalc.cta}</Link>
               <Link to="/advisory" className="btn btn-outline">{h.heroCtaAi}</Link>
-            </div>
-            <div className="hero-foot">
-              <Link to="/insights" className="hero-textlink">{h.quickInsightsTitle} <span aria-hidden="true">&larr;</span></Link>
             </div>
           </div>
 
