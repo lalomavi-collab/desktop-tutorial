@@ -2,17 +2,22 @@ import { NavLink } from "./AppLink";
 import { Icon } from "./Icon";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import { OPEN_SOS_EVENT } from "./SosMenu";
 
 // Fixed bottom navigation, shown on phones only (see .tabbar in index.css).
-// Four institutional destinations, no more: seven crammed tabs read as a retail
-// app. Courses, Knowledge and the direct channels (call, WhatsApp, Telegram, SOS)
-// are not lost: every one of them is in the menu in the header, which is the
-// single home for the full list. The client tab goes to the portal when signed
-// in and to the login otherwise.
+// This is the signature "native app" chrome: primary destinations always in
+// reach, with the active route highlighted. It stays otherwise navigational:
+// the plain phone-call action is NOT repeated here because the top header
+// already shows it on phones, and duplicating a single visible action across
+// two bars is exactly the clutter we want to avoid. SOS is the one deliberate
+// exception: it is a safety-critical action (call, WhatsApp, or Telegram in
+// one tap), not a single channel, so it earns its own always-reachable tab.
 const TABS = [
-  { to: "/", end: true, icon: "home", key: "platform" },
-  { to: "/advisory", end: false, icon: "gavel", key: "research" },
-  { to: "/book", end: false, icon: "calendar", key: "diagnostic" },
+  { to: "/", end: true, icon: "home", key: "home" },
+  { to: "/advisory", end: false, icon: "gavel", key: "advisory" },
+  { to: "/training", end: false, icon: "brain", key: "training" },
+  { to: "/knowledge", end: false, icon: "book", key: "knowledge" },
+  { to: "/book", end: false, icon: "calendar", key: "book" },
 ] as const;
 
 export function BottomTabBar() {
@@ -21,16 +26,25 @@ export function BottomTabBar() {
   const labels = t.ui.tabs;
 
   return (
-    <nav className="tabbar" aria-label={labels.platform}>
+    <nav className="tabbar" aria-label={t.ui.tabs.home}>
       {TABS.map((tb) => (
         <NavLink key={tb.key} to={tb.to} end={tb.end} className={({ isActive }) => "tabbar-item" + (isActive ? " active" : "")}>
-          <Icon name={tb.icon} size={20} />
+          <Icon name={tb.icon} size={21} />
           <span>{labels[tb.key]}</span>
         </NavLink>
       ))}
+      <button
+        type="button"
+        className="tabbar-item tabbar-sos"
+        onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
+        aria-label={t.ui.sos.aria}
+      >
+        <span className="tabbar-sos-badge" aria-hidden="true"><Icon name="headset" size={15} /></span>
+        <span>{t.ui.sos.tab}</span>
+      </button>
       <NavLink to={user ? "/portal" : "/login"} className={({ isActive }) => "tabbar-item" + (isActive ? " active" : "")}>
-        <Icon name="user" size={20} />
-        <span>{labels.portal}</span>
+        <Icon name="user" size={21} />
+        <span>{labels.client}</span>
       </NavLink>
     </nav>
   );

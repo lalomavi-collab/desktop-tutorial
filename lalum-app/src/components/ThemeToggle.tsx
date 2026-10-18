@@ -3,8 +3,8 @@ import { byLang } from "../lib/byLang";
 import { setStyle, useSiteStyle } from "../lib/siteStyle";
 
 // One round button, like the sun in the partners system: light or dark green.
-// It flips between the light paper site and Sovereign dark (the default); the
-// accessibility menu still cycles through all three looks, and both stay in step.
+// It flips between the classic site and Dark sage; the accessibility menu still
+// cycles through all three looks (Sovereign included), and both stay in step.
 const LABEL = {
   he: { dark: "מצב כהה", light: "מצב בהיר" },
   en: { dark: "Dark mode", light: "Light mode" },
@@ -16,13 +16,13 @@ const LABEL = {
 export function ThemeToggle() {
   const { lang } = useLang();
   const style = useSiteStyle();
-  const toDark = style === "classic"; // light (paper) -> sovereign dark; dark -> light
+  const toDark = style === "classic";
   const label = byLang(LABEL, lang)[toDark ? "dark" : "light"];
   return (
     <button
       type="button"
       className="tb-btn tb-theme"
-      onClick={() => setStyle(toDark ? "sovereign" : "classic")}
+      onClick={() => setStyle(toDark ? "sage" : "classic")}
       aria-label={label}
       title={label}
     >

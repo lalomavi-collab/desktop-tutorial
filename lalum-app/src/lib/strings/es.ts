@@ -7,7 +7,7 @@ export const es: Dict = {
     otherLangName: "English",
     otherLangShort: "EN",
     nav: { home: "Inicio", practice: "Áreas de práctica", strategy: "Estrategia previa al acuerdo", realEstate: "Inmobiliario", ai: "IA y Derecho", advisory: "Asesoría", training: "Cursos", insights: "Artículos", knowledge: "Conocimiento", pay: "Pago", clinic: "Clínica", engine: "Motor", decisionRoom: "Sala de Decisión", insightsMenu: "Recursos", menu: "Menú" },
-    tabs: { platform: "Plataforma", research: "Asesoría e investigación", diagnostic: "Reservar diagnóstico", portal: "Portal de clientes", home: "Inicio", advisory: "Asesoría", training: "Cursos", book: "Reservar", client: "Cliente", assistant: "Asistente", knowledge: "Conocimiento" },
+    tabs: { home: "Inicio", advisory: "Asesoría", training: "Cursos", book: "Reservar", client: "Cliente", assistant: "Asistente", knowledge: "Conocimiento" },
     share: { aria: "Compartir LALUM", copied: "Enlace copiado", text: "LALUM, Asesoría Tecnológico-Legal y Estratégica" },
     whatsapp: { aria: "Chatear con nosotros por WhatsApp", msg: "Hola, llegué desde la aplicación de LALUM y me gustaría hablar." },
     telegram: { aria: "Chatear con nosotros por Telegram" },
@@ -655,11 +655,9 @@ export const es: Dict = {
 
   home: {
     heroPill: "Legal AI · Gobernanza, Cumplimiento y Riesgo",
-    heroH1a: "IA en la que",
-    heroH1b: "se puede confiar.",
+    heroH1a: "IA que se",
+    heroH1b: "puede defender.",
     heroLede: "Legal AI es el eje del despacho: asesoría, acompañamiento continuo y formación para organizaciones que adoptan inteligencia artificial, desde la política de uso hasta la auditoría y la documentación.",
-    heroSub: "Cumplimiento, seguros, documentación y regulación de un vistazo. Una arquitectura jurídica y algorítmica que mapea y clasifica cada riesgo de la organización.",
-    heroRows: ["Cumplimiento (EU AI Act y normativa local)", "Seguros y responsabilidad de administradores", "Documentación y pista de auditoría", "Regulación y defensa jurídica (DOM/SRME)"],
     heroCtaAi: "Vea cómo encaja Legal AI en su caso",
     quickInsightsTitle: "Artículos y novedades",
     audienceTitle: "La entrada según lo que necesita, no según cómo se organiza el despacho",

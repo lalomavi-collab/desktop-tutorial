@@ -17,7 +17,10 @@
 - **מצב:** הרצה יבשה של 016 ב-18.10 [נכשלה](https://github.com/lalomavi-collab/desktop-tutorial/actions/runs/39168589920) והסיבה ברורה: `[Facebook] skipped, missing: FACEBOOK_ACCESS_TOKEN`. הסקריפט יוצא בשגיאה כשאין מה לפרסם, גם ב-dry run. כך נכשלה גם הריצה מ-17.10. תוכן 016 עצמו תוקן ב-PR 981.
 - **איך לסגור:** או (א) להוסיף ב-[Secrets של הריפו](https://github.com/lalomavi-collab/desktop-tutorial/settings/secrets/actions) את `FACEBOOK_PAGE_ID`, `FACEBOOK_ACCESS_TOKEN`, `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_AUTHOR_URN` ([Facebook Pages API](https://developers.facebook.com/docs/pages-api/getting-started), [LinkedIn Posts API](https://learn.microsoft.com/linkedin/marketing/community-management/shares/posts-api)) ואז להריץ [את ה-workflow](https://github.com/lalomavi-collab/desktop-tutorial/actions/workflows/publish_post.yml), או (ב) לפרסם ידנית את הטקסט והתמונות מ-`posts/campaign_sept_2026.json` ו-`lalum-app/public/og/016_*`. בכל מקרה: אינסטגרם, טלגרם והוידאו ידנית.
 
-### 4. PR 1003 (הפתיח, הסרת רשומה, מונה)
+### 4. פתיח דף הבית: הוחזר לגרסה שלפני השיפוץ
+- לפי הנחיית הבעלים הוחזר הפתיח (קליפ, כותרת "להגן עליו", ערכת הצבעים והלשוניות הקודמות). השיפוץ המלא נשאר בהיסטוריה ב-[PR 1003](https://github.com/lalomavi-collab/desktop-tutorial/pull/1003) (קומיט `dacf0b9`) וניתן להחזירו. הסרת הרשומה והמונה נשארו.
+
+### 4א. PR 1003 המקורי (הפתיח, הסרת רשומה, מונה)
 - [PR 1003](https://github.com/lalomavi-collab/desktop-tutorial/pull/1003) ממוזג. לבדוק את האתר החי אחרי הפריסה האוטומטית של הדף.
 
 ## ב. לברר אתה (מידע שרק לך)
