@@ -11,8 +11,8 @@ const SCOPES = {
   he: ["ממשל AI", "נדל״ן ותמ״א 38", "גישור ובוררות (DOM)"],
   en: ["AI Governance", "Real Estate & TAMA 38", "DOM Arbitration"],
   ar: ["حوكمة الذكاء الاصطناعي", "العقارات وتاما 38", "الوساطة والتحكيم (DOM)"],
-  es: ["Gobernanza de IA", "Inmobiliario y TAMA 38", "Arbitraje DOM"],
-  fr: ["Gouvernance de l'IA", "Immobilier et TAMA 38", "Arbitrage DOM"],
+  es: ["Gobernanza de IA", "Inmobiliario y TAMA 38", "Mediación y arbitraje (DOM)"],
+  fr: ["Gouvernance de l'IA", "Immobilier et TAMA 38", "Médiation et arbitrage (DOM)"],
 };
 const SCOPE_LABEL = { he: "היקף הסשן", en: "Session scope", ar: "نطاق الجلسة", es: "Alcance de la sesión", fr: "Périmètre de la séance" };
 
