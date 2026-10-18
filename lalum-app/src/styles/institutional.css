@@ -85,7 +85,6 @@
 }
 .hdr-cta:hover { background: #d9c29f; color: #07080b; }
 /* The top bar keeps one row: groups first to go on narrower desktops. */
-@media (max-width: 1280px) { .hdr-badge { display: none; } }
 @media (max-width: 1120px) { .header-groups { display: none; } }
 .header-more-wrap + .header-groups { margin-inline: 8px; }
 .header-login { border-radius: 2px; background: transparent; }
@@ -292,7 +291,14 @@
    the tools, so in those languages the four groups live in the menu (where
    they are the same four groups) and the menu button keeps its label. */
 html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
-html[lang="es"] .hdr-badge, html[lang="fr"] .hdr-badge { display: none; }
 @media (min-width: 1121px) {
   html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
 }
+
+/* ---------- light / dark button (sun, as in the partners system) ---------- */
+.tb-btn.tb-theme { background: transparent; border: 1px solid var(--line-strong); }
+.tb-btn.tb-theme:hover { background: var(--clay-tint); }
+
+/* The tag sits beside the wordmark inside the menu panel; the top bar keeps its
+   room for the groups and the tools. */
+.hm-brand { display: inline-flex; align-items: center; gap: 12px; }

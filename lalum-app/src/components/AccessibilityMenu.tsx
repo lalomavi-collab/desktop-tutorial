@@ -3,7 +3,7 @@ import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 import { useNearTopScroll } from "../hooks/useNearTopScroll";
-import { getStyle, nextStyle, setStyle, type SiteStyle } from "../lib/siteStyle";
+import { nextStyle, setStyle, useSiteStyle, type SiteStyle } from "../lib/siteStyle";
 import { byLang } from "../lib/byLang";
 
 const STYLE_LABEL = { he: "סגנון האתר", en: "Site style", ar: "نمط الموقع", es: "Estilo del sitio", fr: "Style du site" };
@@ -52,7 +52,7 @@ function apply(s: Settings) {
 export function AccessibilityMenu() {
   const { t, lang } = useLang();
   const a = t.ui.a11y;
-  const [look, setLook] = useState<SiteStyle>("classic");
+  const look = useSiteStyle();
   const names = byLang(STYLE_NAME, lang);
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<Settings>(DEFAULTS);
@@ -68,7 +68,6 @@ export function AccessibilityMenu() {
     const loaded = load();
     setS(loaded);
     apply(loaded);
-    setLook(getStyle());
   }, []);
 
   function update(next: Settings) {
@@ -117,7 +116,7 @@ export function AccessibilityMenu() {
             <span>{a.motion}</span><span className="a11y-knob" />
           </button>
 
-          <button type="button" className="a11y-toggle" onClick={() => { const n = nextStyle(look); setStyle(n); setLook(n); }}>
+          <button type="button" className="a11y-toggle" onClick={() => setStyle(nextStyle(look))}>
             <span>{byLang(STYLE_LABEL, lang)}</span>
             <span aria-live="polite" style={{ fontWeight: 600 }}>{names[look]}</span>
           </button>
