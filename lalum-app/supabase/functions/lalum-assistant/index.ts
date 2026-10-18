@@ -4,9 +4,10 @@
 // API key stays server-side. Returns { reply }. Self-contained to LALUM.
 //
 // Deploy: supabase functions deploy lalum-assistant
-// Requires env: ANTHROPIC_API_KEY (server only).
+// Requires env: ANTHROPIC_API_KEY (server only). SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (auto) for the rate limiter.
 
 import { RULINGS } from "./rulings.data.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
@@ -137,6 +138,31 @@ type Msg = { role: "user" | "assistant"; content: string };
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
+
+  // Abuse guard. This endpoint is reachable with the public anon key (the /os page uses it without a
+  // login), so the only thing between a script and the Anthropic bill is a counter. Same pattern as the
+  // other public functions (lalum_rate_limit, a hashed key counted in Postgres) and the same rule: if the
+  // counter itself is unavailable, the request goes through rather than the chat breaking.
+  {
+    const url = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (url && serviceKey) {
+      try {
+        const admin = createClient(url, serviceKey);
+        const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+        const user = token ? (await admin.auth.getUser(token)).data.user : null;
+        const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+        const raw = user ? `u:${user.id}` : `ip:${ip}`;
+        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+        const key = "assistant:" + Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
+        // A signed-in client gets a wider allowance than an anonymous visitor.
+        const { data, error } = await admin.rpc("lalum_rate_limit", { p_key: key, p_max: user ? 120 : 30, p_window_seconds: 3600 });
+        if (!error && data === false) return json(429, { code: "rate_limited" });
+      } catch (e) {
+        console.error(`lalum-assistant: rate_limit_unavailable ${String(e).slice(0, 120)}`);
+      }
+    }
+  }
 
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, { code: "not_configured" });
