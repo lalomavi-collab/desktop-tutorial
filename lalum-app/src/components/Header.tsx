@@ -11,11 +11,15 @@ import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
 import { LANGS, cvPath } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
+import { byLang } from "../lib/byLang";
 import { useScrollLock } from "../lib/useScrollLock";
 
 const HG = {
   he: { engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
   en: { engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation", contact: "Contact", call: "Call" },
+  ar: { engine: "المحرّك وغرفة القرار", practice: "مجالات العمل", clinic: "العيادة والأكاديمية", insights: "رؤى وملف شخصي", profile: "الملف الشخصي والسيرة الذاتية", cta: "جلسة تشخيص", group: "التنقل الرئيسي", contact: "التواصل", call: "اتصال" },
+  es: { engine: "Motor y Decisión", practice: "Áreas", clinic: "Clínica y Academia", insights: "Análisis y perfil", profile: "Perfil y CV", cta: "Sesión de diagnóstico", group: "Navegación principal", contact: "Contacto", call: "Llamar" },
+  fr: { engine: "Moteur et Décision", practice: "Domaines", clinic: "Clinique et Académie", insights: "Analyses et profil", profile: "Profil et CV", cta: "Séance de diagnostic", group: "Navigation principale", contact: "Contact", call: "Appeler" },
 };
 
 export function Header() {
@@ -69,7 +73,7 @@ export function Header() {
   // three is a new page or a new URL, only a new name for one already live.
   // Training and Knowledge have no slot of their own in this shape: they, and
   // Articles, follow the five links in the menu as the reading group.
-  const hg = HG[lang === "he" ? "he" : "en"];
+  const hg = byLang(HG, lang);
   // The four groups of the top bar. Every URL is one the site already serves;
   // the full list, with Knowledge and the rest, stays in the menu.
   const groups: { label: string; items: { to: string; label: string; plain?: boolean }[] }[] = [
@@ -294,7 +298,7 @@ export function Header() {
               point. Only the client login/portal button remains here, so the
               header stays uncluttered. */}
           <div className="hdr-langs hide-mobile" role="group" aria-label="Language">
-            {LANGS.filter((l) => l.code === "he" || l.code === "en").map((l) => (
+            {LANGS.filter((l) => l.code === "he" || l.code === "en" || l.code === lang).map((l) => (
               <button key={l.code} type="button" className={"mono" + (l.code === lang ? " on" : "")} aria-pressed={l.code === lang} onClick={() => setLang(l.code)}>
                 {l.code.toUpperCase()}
               </button>

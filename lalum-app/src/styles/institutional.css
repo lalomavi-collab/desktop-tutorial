@@ -288,3 +288,11 @@
   .header-more-menu .hm-link { font-size: 15px; }
 }
 @media (max-width: 360px) { .hm-links { grid-template-columns: 1fr; } }
+/* Arabic, Spanish and French labels are longer than the bar can hold beside
+   the tools, so in those languages the four groups live in the menu (where
+   they are the same four groups) and the menu button keeps its label. */
+html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
+html[lang="es"] .hdr-badge, html[lang="fr"] .hdr-badge { display: none; }
+@media (min-width: 1121px) {
+  html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
+}

@@ -4,6 +4,9 @@ import { contactEmail, officePhone, socialLinks, websiteDisplay, officeAddress }
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 import { Wordmark } from "./Wordmark";
 import { AppInstall } from "./AppInstall";
+import { byLang } from "../lib/byLang";
+
+const DIAG = { he: "לתיאום סשן אבחון טק-משפטי", en: "Schedule Tech-Legal Diagnostics", ar: "لتنسيق جلسة تشخيص تقني قانوني", es: "Programar un diagnóstico Tech-Legal", fr: "Planifier un diagnostic Tech-Legal" };
 
 function LinkedInIcon() {
   return (
@@ -116,7 +119,7 @@ export function Footer() {
           <address className="footer-address">
             {addr.map((line, i) => <span key={i}>{line}</span>)}
           </address>
-          <Link to="/book" className="footer-diag">{lang === "he" ? "לתיאום סשן אבחון טק-משפטי" : "Schedule Tech-Legal Diagnostics"} &rarr;</Link>
+          <Link to="/book" className="footer-diag">{byLang(DIAG, lang)} &rarr;</Link>
         </div>
       </div>
 

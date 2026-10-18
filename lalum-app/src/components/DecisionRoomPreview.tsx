@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../context/LangContext";
+import { byLang } from "../lib/byLang";
 
 // Interactive preview of the Engine: three decision nodes on one pane, and the
 // risk matrix and governance telemetry beside it follow the node you pick.
@@ -103,6 +104,111 @@ const EN: Copy = {
   ],
 };
 
+const ES: Copy = {
+  bar: "[LALUM-ENGINE // PREVIEW]",
+  barRight: "ILUSTRATIVO",
+  nodes: "Nodos de decisión",
+  matrix: "Matriz de riesgo",
+  tele: "Telemetría de gobernanza",
+  likelihood: "Probabilidad",
+  impact: "Impacto",
+  levels: { ok: "Bajo", warn: "Medio", high: "Alto" },
+  note: "Solo ilustrativo. Los valores son cualitativos, no datos de clientes ni una puntuación medida.",
+  list: [
+    {
+      code: "DOM",
+      title: "Decisiones y umbral de aprobación",
+      tele: [["Control", "Aprobación del abogado"], ["Base", "Razonamiento documentado"], ["Control de sesgo", "Posición contraria obligatoria"], ["Resultado", "Memorando de decisión"]],
+      at: [1, 1],
+      exposures: [{ label: "Umbral superado", tone: "warn" }, { label: "Sesgo de anclaje", tone: "warn" }, { label: "Falta de registro", tone: "ok" }],
+    },
+    {
+      code: "RECIR",
+      title: "Revisión de contratos y control de excepciones",
+      tele: [["Fuente", "Playbook aprobado"], ["Excepciones", "Marcadas por cláusula"], ["Autoridad", "Matriz de aprobaciones"], ["Resultado", "Informe de excepciones"]],
+      at: [2, 1],
+      exposures: [{ label: "Desviación del playbook", tone: "high" }, { label: "Cláusula de responsabilidad", tone: "warn" }, { label: "Plazos", tone: "ok" }],
+    },
+    {
+      code: "SRME",
+      title: "Monitoreo de riesgo y gobernanza de IA",
+      tele: [["Pista de auditoría", "Cada resultado registrado"], ["Supervisión humana", "Control antes de la salida"], ["Regulación", "Mapeada por régimen"], ["Resultado", "Registro de decisiones"]],
+      at: [0, 2],
+      exposures: [{ label: "Resultado sin revisión", tone: "high" }, { label: "Límite de responsabilidad", tone: "warn" }, { label: "Cumplimiento normativo", tone: "ok" }],
+    },
+  ],
+};
+
+const FR: Copy = {
+  bar: "[LALUM-ENGINE // PREVIEW]",
+  barRight: "ILLUSTRATIF",
+  nodes: "Nœuds de décision",
+  matrix: "Matrice de risque",
+  tele: "Télémétrie de gouvernance",
+  likelihood: "Probabilité",
+  impact: "Impact",
+  levels: { ok: "Faible", warn: "Moyen", high: "Élevé" },
+  note: "Illustration uniquement. Les valeurs sont qualitatives, ni données clients ni score mesuré.",
+  list: [
+    {
+      code: "DOM",
+      title: "Décisions et seuil d'approbation",
+      tele: [["Contrôle", "Validation de l'avocat"], ["Base", "Raisonnement documenté"], ["Contrôle des biais", "Position contraire obligatoire"], ["Livrable", "Note de décision"]],
+      at: [1, 1],
+      exposures: [{ label: "Seuil dépassé", tone: "warn" }, { label: "Biais d'ancrage", tone: "warn" }, { label: "Absence de trace", tone: "ok" }],
+    },
+    {
+      code: "RECIR",
+      title: "Revue de contrats et contrôle des exceptions",
+      tele: [["Source", "Playbook approuvé"], ["Exceptions", "Signalées par clause"], ["Autorité", "Matrice d'approbation"], ["Livrable", "Rapport d'exceptions"]],
+      at: [2, 1],
+      exposures: [{ label: "Écart au playbook", tone: "high" }, { label: "Clause de responsabilité", tone: "warn" }, { label: "Délais", tone: "ok" }],
+    },
+    {
+      code: "SRME",
+      title: "Suivi du risque et gouvernance de l'IA",
+      tele: [["Piste d'audit", "Chaque résultat journalisé"], ["Supervision humaine", "Contrôle avant diffusion"], ["Réglementation", "Cartographiée par régime"], ["Livrable", "Journal de décisions"]],
+      at: [0, 2],
+      exposures: [{ label: "Résultat sans revue", tone: "high" }, { label: "Limite de responsabilité", tone: "warn" }, { label: "Conformité réglementaire", tone: "ok" }],
+    },
+  ],
+};
+
+const AR: Copy = {
+  bar: "[LALUM-ENGINE // PREVIEW]",
+  barRight: "توضيحي",
+  nodes: "عُقد القرار",
+  matrix: "مصفوفة المخاطر",
+  tele: "قياسات الحوكمة",
+  likelihood: "الاحتمال",
+  impact: "الأثر",
+  levels: { ok: "منخفض", warn: "متوسط", high: "مرتفع" },
+  note: "للتوضيح فقط. القيم نوعية وليست بيانات عملاء أو درجة مقاسة.",
+  list: [
+    {
+      code: "DOM",
+      title: "اتخاذ القرار وحد الموافقة",
+      tele: [["البوابة", "موافقة المحامي"], ["الأساس", "تعليل موثّق"], ["فحص التحيز", "موقف مقابل إلزامي"], ["المخرج", "مذكرة قرار"]],
+      at: [1, 1],
+      exposures: [{ label: "تجاوز الحد", tone: "warn" }, { label: "تحيز الارتكاز", tone: "warn" }, { label: "غياب التوثيق", tone: "ok" }],
+    },
+    {
+      code: "RECIR",
+      title: "مراجعة العقود وضبط الاستثناءات",
+      tele: [["المصدر", "دليل معتمد"], ["الاستثناءات", "مُعلَّمة حسب البند"], ["الصلاحية", "مصفوفة الموافقات"], ["المخرج", "تقرير الاستثناءات"]],
+      at: [2, 1],
+      exposures: [{ label: "الانحراف عن الدليل", tone: "high" }, { label: "بند المسؤولية", tone: "warn" }, { label: "المواعيد", tone: "ok" }],
+    },
+    {
+      code: "SRME",
+      title: "مراقبة المخاطر وحوكمة الذكاء الاصطناعي",
+      tele: [["مسار التدقيق", "تسجيل كل مخرج"], ["الإشراف البشري", "بوابة قبل الإصدار"], ["التنظيم", "مُخطَّط حسب النظام"], ["المخرج", "سجل القرارات"]],
+      at: [0, 2],
+      exposures: [{ label: "مخرج دون مراجعة", tone: "high" }, { label: "حدود المسؤولية", tone: "warn" }, { label: "الامتثال للتنظيم", tone: "ok" }],
+    },
+  ],
+};
+
 function tone(l: number, i: number): Tone {
   const s = l + i;
   return s <= 1 ? "ok" : s <= 2 ? "warn" : "high";
@@ -110,7 +216,7 @@ function tone(l: number, i: number): Tone {
 
 export function DecisionRoomPreview() {
   const { lang } = useLang();
-  const c = lang === "he" ? HE : EN;
+  const c = byLang({ he: HE, en: EN, ar: AR, es: ES, fr: FR }, lang);
   const [active, setActive] = useState(0);
   const node = c.list[active];
   // Row 0 is the top row, so the highest likelihood sits at the top.
