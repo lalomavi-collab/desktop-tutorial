@@ -97,7 +97,7 @@ export function SectorView({ S }: { S: Sector }) {
                 </blockquote>
               ) : null}
 
-              <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: "0 0 8px" }}>{SECTORS_UI.whyLabel}</h4>
+              <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)", margin: "0 0 8px" }}>{S.whyLabel ?? SECTORS_UI.whyLabel}</h4>
               <p style={{ ...cardBody, marginBottom: 18 }}>{why}</p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", fontSize: 14.5 }}>

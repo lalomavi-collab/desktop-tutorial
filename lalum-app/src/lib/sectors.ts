@@ -2,6 +2,7 @@ import type { IconName } from "./content";
 import type { QA } from "./schema";
 import { rulings, type Ruling } from "./rulings";
 import { governmentMinistries } from "./sectorGovernment";
+import { hitechCompanies } from "./sectorHitech";
 
 // Sector rubrics: the AI practice cut by the kind of body it serves, rather
 // than by the legal subject. A local authority, a government ministry and a
@@ -140,6 +141,8 @@ export type Sector = {
   ctaH2: string;
   ctaBody: string;
   disclaimer: string;
+  /** Heading of the "why this matters to you" paragraph on a case card. Defaults to the municipal wording. */
+  whyLabel?: string;
 };
 
 const SITE = "https://lalumapp.com";
@@ -762,7 +765,7 @@ const localAuthorities: Sector = {
   disclaimer: `האמור בעמוד זה הוא מידע מקצועי כללי ואינו ייעוץ משפטי, אינו תחליף לבחינה פרטנית של הרשות ואינו יוצר יחסי עורך דין לקוח. תמצית של פסק דין אינה תחליף לקריאתו במקור.`,
 };
 
-export const SECTORS: Sector[] = [localAuthorities, governmentMinistries];
+export const SECTORS: Sector[] = [localAuthorities, governmentMinistries, hitechCompanies];
 
 export function sectorBySlug(slug: string): Sector | undefined {
   return SECTORS.find((s) => s.slug === slug);
@@ -793,6 +796,11 @@ export const SECTOR_TEASERS: SectorTeaser[] = [
     path: governmentMinistries.path,
     title: `משרדי ממשלה`,
     body: `המדריך הממשלתי לשימוש אחראי ב-AI ומסלולי הרמזור שבו, מסמך העקרונות והחלטה 4255, טיוטת הנחיית הפרטיות, פסיקת העליון על בקרה אנושית והסמכה בדין, ופרוטוקול וצ׳ק ליסט למנכ״ל המשרד.`,
+  },
+  {
+    path: hitechCompanies.path,
+    title: `חברות הייטק`,
+    body: `תחולת ה-EU AI Act על חברה ישראלית ולוח הזמנים אחרי ה-Omnibus, חוות דעת משרד המשפטים על אימון מודלים, תיקון 13, פסיקה זרה על אחריות וזכויות יוצרים, ופרוטוקול וצ׳ק ליסט ל-GC.`,
   },
 ];
 
