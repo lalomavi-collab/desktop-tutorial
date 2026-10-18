@@ -77,7 +77,7 @@ export const fr: Dict = {
       aiNote: "LEX est un outil d'intelligence artificielle. Ses réponses ne constituent pas un avis juridique et ne remplacent pas l'examen d'un avocat agréé.",
     },
     sos: {
-      open: "Contact direct",
+      open: "Conseil direct",
       tab: "Direct",
       aria: "Contact urgent",
       eyebrow: "LALUM",
