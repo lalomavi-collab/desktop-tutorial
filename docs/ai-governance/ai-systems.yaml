@@ -1,0 +1,17 @@
+systems:
+  - id: sys-001
+    name: "lalum-assistant (website chat, ChatWidget)"
+    owner: "Dr. Avraham Lalum"
+    description: "Client-facing chat on the site, Claude Haiku 4.5, includes browser voice. Signed-in clients only in the UI; server-side login enforcement NOT yet verified."
+    status: in_production
+    eu_nexus: true                 # stated: mostly Israel, possibly a few EU users
+    role: provider
+    role_basis: "Offered under the LALUM name with its own system prompt, built on a third-party GPAI model [verify against current AI Act text]"
+    tier: limited
+    tier_basis: "Interacts directly with people: Art. 50 transparency. Not an Annex III use [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Verify server-side login enforcement."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
