@@ -5385,3 +5385,40 @@ html.a11y-reduce-motion *::after {
   .hero-home .hero-copy { text-align: center; }
   .hero-home .hero-actions { justify-content: center; }
 }
+
+/* ---------- header: one sharp command bar ----------
+   The menu button and the chat and theme buttons join into a single bar with
+   1px square borders (kept from the overhaul, by the owner's decision). It is
+   self-contained: ink on white on the light site, hairline on near black on the
+   dark looks, so it does not depend on the palette tokens. */
+.site-header .header-menu-btn,
+.site-header .header-tools .tb-btn {
+  border-radius: 0;
+  background: #fff;
+  border: 1px solid #111;
+  box-shadow: none;
+  color: #0a0a0c;
+}
+.site-header .header-menu-btn { block-size: var(--ctrl-h, 40px); padding-inline: 14px; gap: 8px; font-size: 13.5px; font-weight: 500; }
+.site-header .header-tools .tb-btn + .tb-btn,
+.site-header .header-tools .tb-theme + .tb-btn { margin-inline-start: -1px; }
+.site-header .header-tools .tb-btn:hover,
+.site-header .header-menu-btn:hover { background: #0a0a0c; border-color: #0a0a0c; color: #f7f7f5; }
+.site-header .header-tools .tb-btn.tb-sos { border-radius: 0; background: #7a2432; border-color: #7a2432; color: #fff; }
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header :is(.header-menu-btn, .header-tools .tb-btn) {
+  background: #0d0f14;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header :is(.header-menu-btn, .header-tools .tb-btn):hover {
+  background: #c5a880;
+  border-color: #c5a880;
+  color: #07080b;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header .header-tools .tb-btn.tb-sos { background: #7a2432; border-color: #7a2432; color: #fff; }
+@media (max-width: 900px) {
+  /* menu button and the two tool buttons read as one bar */
+  .site-header .header-inner { gap: 0; }
+  .site-header .header-more-wrap { margin-inline-start: auto; }
+  .site-header .header-tools { margin-inline-start: -1px; gap: 0; }
+}
