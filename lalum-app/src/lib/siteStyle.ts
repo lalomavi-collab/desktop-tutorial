@@ -1,4 +1,4 @@
-// The site's look. "classic" is the default light site; "sage" and "sovereign"
+// The site's look. Sovereign (dark) is the default for a visitor who has not chosen; "classic" is the light paper site; "sage" and "sovereign"
 // are the two dark systems (src/styles/sovereign.css). The choice is the
 // visitor's, kept in localStorage and set on <html data-style> before first
 // paint by public/style-boot.js.
@@ -23,8 +23,9 @@ export function setStyle(s: SiteStyle) {
   else root.setAttribute("data-style", s);
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME[s]);
   try {
-    if (s === "classic") localStorage.removeItem(KEY);
-    else localStorage.setItem(KEY, s);
+    // Classic is stored too: with sovereign as the default, "nothing saved"
+    // and "chose light" are different answers.
+    localStorage.setItem(KEY, s);
   } catch { /* storage blocked: applies for this visit only */ }
   window.dispatchEvent(new Event(STYLE_EVENT));
 }
