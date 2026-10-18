@@ -21,6 +21,8 @@ import { EngineVideo } from "../components/EngineVideo";
 import { LeadForm } from "../components/LeadForm";
 import { ArchitecturalSection } from "../components/ArchitecturalSection";
 import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
+import { ClassifyCertifyDefendGrid } from "../components/ClassifyCertifyDefendGrid";
+import { RoleMatrixSwitcher } from "../components/RoleMatrixSwitcher";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
@@ -81,16 +83,20 @@ export function Home() {
         </div>
       </section>
 
-      {/* The two areas the practice leads with, first: a visitor should see
-          the whole shape of the practice, AI & Law and Real Estate, in one
-          glance right under the headline, before anything more granular.
-          Shared with /advisory. */}
-      <FocusAreas />
-
+      {/* The page speaks about Legal AI from the hero down to the engine. The
+          second area (real estate and urban renewal) and the entry-by-role
+          matrix follow lower, after the engine and the academy. */}
+      <ArchitecturalSection id="why" index="01" code="CLASSIFY // CERTIFY // DEFEND">
+        <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
+          <p className="eyebrow">Legal AI</p>
+          <h2 className="h2">{h.whyH2}</h2>
+        </div>
+        <ClassifyCertifyDefendGrid />
+      </ArchitecturalSection>
 
       {/* Order: services (areas, then the AI layer), proof (clients, then the writing), then the engine. */}
       {/* PRACTICE (AI + risk-governance pillars) */}
-      <ArchitecturalSection id="practice" index="01" code="PRACTICE // AI LAYER">
+      <ArchitecturalSection id="practice" index="02" code="PRACTICE // AI LAYER">
         <div style={{ maxWidth: "58ch", margin: "0 0 52px" }}>
           <p className="eyebrow">{h.pillarsEyebrow}</p>
           <h2 className="h2">{h.pillarsH2}</h2>
@@ -144,7 +150,7 @@ export function Home() {
           questions (t.data.faqs) follows, each one opening straight to its
           answer in the FAQ section below instead of only naming that the
           FAQ exists. */}
-      <ArchitecturalSection index="02" code="INSIGHTS // LIBRARY">
+      <ArchitecturalSection index="03" code="INSIGHTS // LIBRARY">
       <div className="home-insights">
         <div style={{ maxWidth: "58ch", margin: "0 0 44px" }}>
           <p className="eyebrow">{h.insightsEyebrow}</p>
@@ -186,7 +192,7 @@ export function Home() {
       <section id="engine" style={{ background: "var(--ink)", color: "var(--paper)", position: "relative", overflow: "hidden" }}>
         <AmbientBackground variant="lattice" />
         <div style={{ position: "relative", zIndex: 1 }}>
-        <ArchitecturalSection index="03" code="ENGINE // DECISION ROOM" status="PREVIEW">
+        <ArchitecturalSection index="04" code="ENGINE // DECISION ROOM" status="PREVIEW">
           <div style={{ maxWidth: "62ch", margin: "0 auto 52px", textAlign: "center" }}>
             <p className="eyebrow" style={{ color: "var(--clay-bright)" }}>{h.engineEyebrow}</p>
             <h2 className="h2" style={{ color: "var(--paper)", margin: "0 0 16px" }}>{h.engineH2}</h2>
@@ -209,8 +215,18 @@ export function Home() {
       {/* LALUM ACADEMY promo band */}
       <HomeAcademy />
 
+      {/* The second area and the entry-by-role matrix, lower on the page. */}
+      <FocusAreas />
+
+      <ArchitecturalSection id="roles" index="05" code="ENTRY // BY ROLE">
+        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
+          <h2 className="h2">{h.audienceTitle}</h2>
+        </div>
+        <RoleMatrixSwitcher />
+      </ArchitecturalSection>
+
       {/* FOUNDER */}
-      <ArchitecturalSection index="04" code="PROFILE // FOUNDER">
+      <ArchitecturalSection index="06" code="PROFILE // FOUNDER">
         <div className="founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
           <div className="founder-card" style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}

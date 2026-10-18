@@ -1,8 +1,6 @@
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
-import { Icon } from "./Icon";
-import { LeumiMark, PaymentBrands } from "./BrandMarks";
-import { contactEmail, officePhone, directPhone, personalLine, socialLinks, websiteDisplay, officeAddress, paymentsEnabled, bankTransfer, paymentsComingSoon } from "../lib/content";
+import { contactEmail, officePhone, socialLinks, websiteDisplay, officeAddress } from "../lib/content";
 import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 import { Wordmark } from "./Wordmark";
 import { AppInstall } from "./AppInstall";
@@ -110,51 +108,17 @@ export function Footer() {
           <a href={`mailto:${contactEmail}`} dir="ltr">{contactEmail}</a>
           {/* Cross-link from the app to the firm's main website (lalum.co). */}
           <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" aria-label={f.website} dir="ltr">{websiteDisplay}</a>
-          {/* Office line: answered by the AI voice assistant. */}
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
-            <span className="phone-tag phone-tag-ai">{t.ui.phoneAi}</span>
-          </span>
-          {/* New direct landline: personal, human answer. */}
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <a href={`tel:${personalLine.tel}`} dir="ltr">{personalLine.display}</a>
-            <span className="phone-tag">{t.ui.phonePersonal}</span>
-          </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <a href={`tel:${directPhone.tel}`} dir="ltr">{directPhone.display}</a>
-            <span className="muted" style={{ fontSize: 11 }}>{t.ui.urgentOnly}</span>
-          </span>
+          {/* One institutional contact block: the official office line, the
+              address, and the way in. The personal, direct and urgent numbers
+              stay where they are used (the contact sheet, the portal), not in
+              the footer. */}
+          <a href={`tel:${officePhone.tel}`} dir="ltr">{officePhone.display}</a>
           <address className="footer-address">
             {addr.map((line, i) => <span key={i}>{line}</span>)}
           </address>
+          <Link to="/book" className="footer-diag">{lang === "he" ? "לתיאום סשן אבחון טק-משפטי" : "Schedule Tech-Legal Diagnostics"} &rarr;</Link>
         </div>
       </div>
-
-      {(paymentsEnabled || bankTransfer.enabled || paymentsComingSoon) && (
-        <div className="wrap footer-pay" aria-label={f.paySecure}>
-          <span className="footer-pay-label">
-            <Icon name="shield" size={15} /> {f.paySecure}
-          </span>
-          <span className="footer-pay-badges">
-            {(bankTransfer.enabled || paymentsComingSoon) && (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                {bankTransfer.enabled ? (
-                  <Link to="/login" aria-label={f.paySecure} style={{ display: "inline-flex" }}><LeumiMark size={22} /></Link>
-                ) : (
-                  <LeumiMark size={22} />
-                )}
-                {!bankTransfer.enabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
-              </span>
-            )}
-            {(paymentsEnabled || paymentsComingSoon) && (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <PaymentBrands size={22} />
-                {!paymentsEnabled && <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--clay)", background: "var(--clay-tint)", borderRadius: 9999, padding: "2px 8px" }}>{t.ui.comingSoon}</span>}
-              </span>
-            )}
-          </span>
-        </div>
-      )}
 
       <div className="wrap footer-bottom">
         <span className="muted footer-copy" style={{ fontSize: 13 }}>

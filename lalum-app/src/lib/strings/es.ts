@@ -77,8 +77,8 @@ export const es: Dict = {
       aiNote: "LEX es una herramienta de IA. Sus respuestas no constituyen asesoramiento legal ni sustituyen la revisión de un abogado colegiado.",
     },
     sos: {
-      open: "SOS",
-      tab: "Urgente",
+      open: "Consulta directa",
+      tab: "Directo",
       aria: "Contacto urgente",
       eyebrow: "LALUM",
       title: "¿Necesita ayuda ahora mismo?",
