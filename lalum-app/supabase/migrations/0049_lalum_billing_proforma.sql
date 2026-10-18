@@ -204,3 +204,7 @@ begin
 end $$;
 revoke execute on function public.lalum_billing_release_wip(uuid, text) from public, anon;
 grant execute on function public.lalum_billing_release_wip(uuid, text) to authenticated;
+
+-- Trigger functions are never called directly: nobody needs EXECUTE on them (not checked when a trigger fires).
+revoke execute on function public.lalum_time_entries_guard() from public, anon, authenticated;
+revoke execute on function public.lalum_disbursements_guard() from public, anon, authenticated;

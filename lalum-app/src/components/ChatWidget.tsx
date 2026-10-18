@@ -7,6 +7,7 @@ import { extractText } from "../lib/extractText";
 import { OPEN_CHAT_EVENT, emitChatState } from "./chatEvents";
 import { bcp47For } from "../lib/hreflang";
 import { useNearTopScroll } from "../hooks/useNearTopScroll";
+import { LeadForm } from "./LeadForm";
 
 type Msg = { role: "user" | "assistant"; content: string; file?: string };
 
@@ -32,6 +33,7 @@ export function ChatWidget() {
   const [extracting, setExtracting] = useState(false);
   const [listening, setListening] = useState(false);
   const [readAloud, setReadAloud] = useState(false);
+  const [leadOpen, setLeadOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   // See useNearTopScroll: same fixed-dock-over-hero-CTA collision as
@@ -202,7 +204,9 @@ export function ChatWidget() {
           {!user ? (
             /* The assistant runs a paid model, so it is reserved for signed-in
                clients. Signed-out visitors see a friendly sign-in prompt. */
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 28, gap: 14 }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "safe center", textAlign: "center", padding: 28, gap: 14, overflowY: "auto" }}>
+{!leadOpen && (
+              <>
               <span style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--clay-tint)", color: "var(--clay)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
@@ -211,6 +215,9 @@ export function ChatWidget() {
               <div style={{ fontFamily: "var(--serif)", fontSize: 19 }}>{C.lockedTitle}</div>
               <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--slate)", margin: 0, maxWidth: "30ch" }}>{C.lockedBody}</p>
               <Link to="/login" onClick={() => setOpen(false)} className="btn btn-clay btn-sm" style={{ justifyContent: "center" }}>{C.lockedCta}</Link>
+              </>
+              )}
+              <LeadForm onOpenChange={setLeadOpen} />
             </div>
           ) : (
           <>
