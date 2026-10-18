@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./styles/sovereign.css";
-import "./styles/overhaul.css";
 import "./styles/institutional.css";
 import App from "./App";
 import { preloadLang } from "./context/LangContext";
