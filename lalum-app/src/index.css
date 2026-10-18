@@ -5272,3 +5272,96 @@ html.a11y-reduce-motion *::after {
 }
 .sos-action:hover { border-color: var(--sos); background: rgba(122, 36, 50, 0.06); }
 .sos-action-icon { background: var(--sos); }
+
+/* ---------- home: AI layer as cards, hero depth, lead band ---------- */
+/* The six bands of the AI layer read as a list; a grid of cards with an icon
+   badge lets the eye take the whole offering in at once and keeps the page
+   short on a phone (body copy is clamped there). */
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.pillar-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 24px 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+}
+.pillar-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 3px;
+  background: var(--clay);
+  opacity: 0.85;
+}
+.pillar-card .pillar-txt { flex: 1; }
+.pillar-card .pillar-title { font-size: 19px; }
+.pillar-card .pillar-body { font-size: 14.5px; margin-top: 8px; }
+.pillar-card .pillar-go { margin-inline-start: auto; }
+.pillar-card:hover,
+.pillar-card:focus-visible {
+  border-color: var(--clay);
+  box-shadow: 0 18px 36px -22px rgba(26, 24, 21, 0.45);
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pillar-card { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+}
+@media (max-width: 960px) {
+  .pillar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .pillar-grid { grid-template-columns: 1fr; gap: 12px; }
+  .pillar-card { padding: 18px 18px 16px; gap: 10px; }
+  .pillar-card .pillar-body {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pillar-card .pillar-go { display: none; }
+}
+
+/* Hero: a larger headline and a soft clay glow behind the clip, so the first
+   screen has a focal point instead of a flat field. */
+.hero-home .hero-h1 { font-size: clamp(38px, 5.2vw, 66px); line-height: 1.06; }
+.hero-home::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -8%;
+  inset-block-start: 8%;
+  inline-size: 46%;
+  block-size: 84%;
+  background: radial-gradient(closest-side, var(--clay-tint), transparent 72%);
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Lead band: a single centred card on the tinted ground. */
+.lead-band { display: flex; justify-content: center; }
+.lead-card {
+  inline-size: 100%;
+  max-inline-size: 560px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 24px 48px -32px rgba(26, 24, 21, 0.35);
+}
+@media (max-width: 620px) {
+  .lead-card { padding: 20px 18px; border-radius: 16px; }
+  /* Shorter phone page: two articles are enough, the library link follows. */
+  .home-insights .grid > :nth-child(n+3) { display: none; }
+  .home-founder-art { display: none; }
+}
