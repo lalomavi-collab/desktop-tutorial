@@ -12,10 +12,10 @@ const label = { display: "block", fontSize: 12.5, fontWeight: 600, color: "var(-
 
 // Contact form for a visitor who is not a client yet. It sits in the signed-out chat panel. Consent is an
 // unticked checkbox and is required; the server (functions/lalum-lead-submit) enforces that again.
-export function LeadForm({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
+export function LeadForm({ onOpenChange, startOpen = false, source = "chat" }: { onOpenChange?: (open: boolean) => void; startOpen?: boolean; source?: "chat" | "site" }) {
   const { lang } = useLang();
   const L = leadCopy(lang);
-  const [phase, setPhase] = useState<Phase>("closed");
+  const [phase, setPhase] = useState<Phase>(startOpen ? "form" : "closed");
   const [err, setErr] = useState("");
   const [f, setF] = useState({ name: "", phone: "", email: "", interest: "other" as Interest, note: "", website: "" });
   const [consent, setConsent] = useState(false);
@@ -30,7 +30,7 @@ export function LeadForm({ onOpenChange }: { onOpenChange?: (open: boolean) => v
     try {
       if (supabase) {
         const { data, error } = await supabase.functions.invoke("lalum-lead-submit", {
-          body: { name: f.name, phone: f.phone, email, interest: f.interest, note: f.note, website: f.website, lang, source: "chat", consent: true },
+          body: { name: f.name, phone: f.phone, email, interest: f.interest, note: f.note, website: f.website, lang, source, consent: true },
         });
         if (error || !data?.ok) { setErr(data?.code === "rate_limited" ? L.errRate : L.errGeneric); setPhase("form"); return; }
       }
@@ -88,7 +88,7 @@ export function LeadForm({ onOpenChange }: { onOpenChange?: (open: boolean) => v
       {err && <div role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>{err}</div>}
       <div style={{ display: "flex", gap: 10 }}>
         <button type="submit" disabled={phase === "sending"} className="btn btn-clay btn-sm" style={{ flex: 1, justifyContent: "center" }}>{phase === "sending" ? L.sending : L.submit}</button>
-        <button type="button" onClick={() => { setPhase("closed"); onOpenChange?.(false); }} className="btn btn-sm" style={{ justifyContent: "center" }}>{L.back}</button>
+        {!startOpen && <button type="button" onClick={() => { setPhase("closed"); onOpenChange?.(false); }} className="btn btn-sm" style={{ justifyContent: "center" }}>{L.back}</button>}
       </div>
     </form>
   );
