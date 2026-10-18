@@ -17,10 +17,9 @@ const MODEL = "claude-haiku-4-5-20251001";
 // deterministic, server-side signal to count against, rather than asking the
 // model to track its own turn count across the conversation (it had been
 // doing exactly that, in the prompt alone, and nothing stopped a user from
-// rephrasing past it). This endpoint has no accounts and no session of its
-// own, but the client already sends the full conversation on every call, so
-// the count can be computed fresh each time from that history: no database,
-// no rate-limit table, nothing to persist.
+// rephrasing past it). The count is kept in Postgres per client (see the
+// counters in the handler), with the history the client sends as a second,
+// weaker check.
 const CASE_LAW_MARKER = "⚖️";
 const FREE_CASE_LAW_LOOKUPS = 3;
 const CASE_LAW_LIMIT_REPLY =
@@ -139,28 +138,31 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
-  // Abuse guard. This endpoint is reachable with the public anon key (the /os page uses it without a
-  // login), so the only thing between a script and the Anthropic bill is a counter. Same pattern as the
-  // other public functions (lalum_rate_limit, a hashed key counted in Postgres) and the same rule: if the
-  // counter itself is unavailable, the request goes through rather than the chat breaking.
-  {
-    const url = Deno.env.get("SUPABASE_URL");
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (url && serviceKey) {
-      try {
-        const admin = createClient(url, serviceKey);
-        const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
-        const user = token ? (await admin.auth.getUser(token)).data.user : null;
-        const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-        const raw = user ? `u:${user.id}` : `ip:${ip}`;
-        const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
-        const key = "assistant:" + Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
-        // A signed-in client gets a wider allowance than an anonymous visitor.
-        const { data, error } = await admin.rpc("lalum_rate_limit", { p_key: key, p_max: user ? 120 : 30, p_window_seconds: 3600 });
-        if (!error && data === false) return json(429, { code: "rate_limited" });
-      } catch (e) {
-        console.error(`lalum-assistant: rate_limit_unavailable ${String(e).slice(0, 120)}`);
-      }
+  // Per-client counters. This endpoint is reachable with the public anon key (the /os page uses it without a
+  // login), so two counters sit in Postgres (lalum_rate_limit, a hashed key per client, the same pattern as
+  // the other public functions): an hourly cap on messages, and a daily cap on case law answers. Both fail
+  // open: if the counter itself is unavailable the request goes through rather than the chat breaking.
+  const supaUrl = Deno.env.get("SUPABASE_URL");
+  const supaKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  // deno-lint-ignore no-explicit-any
+  let counter: any = null;
+  let clientHash = "";
+  let signedIn = false;
+  if (supaUrl && supaKey) {
+    try {
+      counter = createClient(supaUrl, supaKey);
+      const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+      const user = token ? (await counter.auth.getUser(token)).data.user : null;
+      signedIn = !!user;
+      const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+      const raw = user ? `u:${user.id}` : `ip:${ip}`;
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+      clientHash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
+      // A signed-in client gets a wider allowance than an anonymous visitor.
+      const { data, error } = await counter.rpc("lalum_rate_limit", { p_key: `assistant:${clientHash}`, p_max: signedIn ? 120 : 30, p_window_seconds: 3600 });
+      if (!error && data === false) return json(429, { code: "rate_limited" });
+    } catch (e) {
+      console.error(`lalum-assistant: rate_limit_unavailable ${String(e).slice(0, 120)}`);
     }
   }
 
@@ -216,8 +218,20 @@ Deno.serve(async (req) => {
     // is replaced outright, never trimmed or partially shown: the point is
     // that no case law past the free count reaches the caller, in code, not
     // just in the system prompt's own wording.
-    if (reply.includes(CASE_LAW_MARKER) && priorCaseLawLookups >= FREE_CASE_LAW_LOOKUPS) {
-      reply = CASE_LAW_LIMIT_REPLY;
+    if (reply.includes(CASE_LAW_MARKER)) {
+      let over = priorCaseLawLookups >= FREE_CASE_LAW_LOOKUPS;
+      // The server-side counter is the one that holds: the history above is sent by the client and can be
+      // cleared or edited, a counter keyed to the client cannot. It counts the answers, one per case law
+      // reply, over a day (lalum_rate_hits keeps a day of rows).
+      if (!over && counter && clientHash) {
+        try {
+          const { data, error } = await counter.rpc("lalum_rate_limit", { p_key: `caselaw:${clientHash}`, p_max: FREE_CASE_LAW_LOOKUPS, p_window_seconds: 86400 });
+          if (!error && data === false) over = true;
+        } catch (e) {
+          console.error(`lalum-assistant: caselaw_counter_unavailable ${String(e).slice(0, 120)}`);
+        }
+      }
+      if (over) reply = CASE_LAW_LIMIT_REPLY;
     }
     return json(200, { reply });
   } catch (e) {
