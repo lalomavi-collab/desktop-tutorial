@@ -126,7 +126,7 @@ export const en = {
     chat: {
       title: "LEX · LALUM",
       subtitle: "General legal info, not legal advice",
-      greeting: "Hi, I'm LEX, your personal LALUM assistant. Ask a general legal question, get help finding your way around the app, or attach a contract and I'll share remarks. On startups, IP, AI regulation, contracts, or mediation.",
+      greeting: "Hi, I'm LEX, an AI assistant (not a human or a lawyer) from LALUM. Ask a general legal question, get help finding your way around the app, or attach a contract and I'll share remarks. On startups, IP, AI regulation, contracts, or mediation.",
       placeholder: "Ask a legal question…",
       send: "Send message",
       open: "Chat with the LALUM assistant",
