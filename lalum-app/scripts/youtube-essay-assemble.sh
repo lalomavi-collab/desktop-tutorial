@@ -4,7 +4,7 @@
 #   1. python3 scripts/youtube-essay-voice.py   (or the per paragraph Kokoro run) -> WORK/p-<scene>-<para>.wav, clips.json
 #   2. python3 scripts/youtube-essay-timing.py  -> WORK/vo-1..6.wav, narration.json
 #   3. python3 scripts/youtube-essay-music.py   -> WORK/music.wav (synthesized, no third party music)
-#   4. node scripts/youtube-essay-visuals.mjs   -> OUT/scene-1..6.mp4
+#   4. node scripts/youtube-essay-visuals.mjs   -> OUT/part-<frame>.mp4 (RANGE="a-b" renders frames a..b-1, run several in parallel)
 #   5. this script                              -> OUT/final.mp4
 #   6. python3 scripts/youtube-essay-package.py, node scripts/youtube-essay-thumbnail.mjs -> captions, description, thumbnail
 # The narration is synthetic (Kokoro, open model); the description says so.
@@ -12,7 +12,7 @@ set -euo pipefail
 OUT=${OUT:-/tmp/lalum-youtube-essay}; WORK=${WORK:-/tmp/tts}; cd "$WORK"
 for n in 1 2 3 4 5 6; do echo "file 'vo-$n.wav'"; done > vo.txt
 ffmpeg -v error -y -f concat -safe 0 -i vo.txt -c copy vo.wav
-for n in 1 2 3 4 5 6; do echo "file '$OUT/scene-$n.mp4'"; done > v.txt
+for f in $(ls "$OUT"/part-*.mp4 | sort); do echo "file '$f'"; done > v.txt
 ffmpeg -v error -y -f concat -safe 0 -i v.txt -c copy video.mp4
 # voice on top with a light room, music ducked under it, loudness normalised for YouTube (-14 LUFS class)
 ffmpeg -v error -y -i vo.wav -i music.wav -filter_complex \
