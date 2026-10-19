@@ -51,7 +51,8 @@ for name, a, b, title in CLIPS:
     fc = (
         "[0:v]split=2[bg][fg];"
         "[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,gblur=sigma=40,eq=brightness=-0.08:saturation=1.3[bgb];"
-        "[fg]scale=1080:-2[fgs];"
+        "[fg]crop=1920:1000:0:0,scale=1080:-2[fgs];"   # drops the film's own caption strip: one caption only, the large one below
+        
         "[bgb][fgs]overlay=0:(H-h)/2-260[v1];"
         f"[v1]drawtext=fontfile={FONT}:text='{esc(title)}':fontcolor=0xe7c27a:fontsize=52:x=(w-text_w)/2:y=330,"
         f"drawtext=fontfile={FONT}:text='AI voice':fontcolor=0xf5f1e8@0.8:fontsize=30:x=60:y=1790,"
