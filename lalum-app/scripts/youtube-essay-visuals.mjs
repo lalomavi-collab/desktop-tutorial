@@ -26,7 +26,7 @@
 // FPS      default 24
 //
 // Needs ffmpeg on PATH.
-import { readFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { readFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -628,9 +628,15 @@ if (process.env.PREVIEW) {
 const totalFrames = Math.floor(TOTAL * FPS);
 const [fa, fb] = (process.env.RANGE || "0-" + totalFrames).split("-").map(Number);
 const frames = path.join(process.env.TMPDIR || "/tmp", `lalum-yt-frames-${fa}`);
-if (existsSync(frames)) rmSync(frames, { recursive: true });
+// RESUME=1 keeps frames that were already written (the last one may be partial, so it is redone)
+if (!process.env.RESUME && existsSync(frames)) rmSync(frames, { recursive: true });
 mkdirSync(frames, { recursive: true });
+if (process.env.RESUME) {
+  const have = readdirSync(frames).filter((f) => f.endsWith(".jpg")).sort();
+  if (have.length) rmSync(path.join(frames, have[have.length - 1]));
+}
 for (let i = fa; i < Math.min(fb, totalFrames); i++) {
+  if (process.env.RESUME && existsSync(path.join(frames, `f${String(i - fa).padStart(5, "0")}.jpg`))) continue;
   await page.evaluate((t) => window.render(t), i / FPS);
   await page.screenshot({ path: path.join(frames, `f${String(i - fa).padStart(5, "0")}.jpg`), type: "jpeg", quality: 88 });
 }
