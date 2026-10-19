@@ -165,7 +165,12 @@ Deno.serve(async (req) => {
       const user = token ? (await counter.auth.getUser(token)).data.user : null;
       // Signed-in visitors only (owner decision, 2026-10-19). The client swaps this for its own translated text
       // when it sees login_required; the Hebrew reply is the fallback for any other caller.
-      if (!user) return json(200, { reply: LOGIN_REPLY, login_required: true });
+      if (!user) {
+        // Counted for the firm's daily report ("tried the chat without registering"). One row per attempt, no key
+        // material or address, capped so a bot cannot grow the table. The result is not used.
+        await counter.rpc("lalum_rate_limit", { p_key: "assistant-anon-day", p_max: 5000, p_window_seconds: 86400 }).catch(() => undefined);
+        return json(200, { reply: LOGIN_REPLY, login_required: true });
+      }
       const raw = `u:${user.id}`;
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
       const hash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);

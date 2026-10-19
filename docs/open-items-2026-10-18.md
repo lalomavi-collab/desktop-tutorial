@@ -159,3 +159,14 @@
 5. אל תריץ בלי dry_run. אל תפרסם.
 ```
 אחרי שה-dry run עבר, כתוב לי כאן "016 מאושר". אז אריץ או אכין לך את ההרצה האמיתית. אינסטגרם, טלגרם והוידאו נשארים ידניים, כמו בסעיף 3 למעלה.
+
+### משימה יא. פריסה: דוח יומי וצ׳אט (ספירת כניסות ללא הרשמה)
+```powershell
+cd $HOME\desktop-tutorial-deploy
+git pull origin main
+cd lalum-app
+npx supabase functions deploy lalum-daily-report --no-verify-jwt --project-ref meoymkcotomoluwlwues
+npx supabase functions deploy lalum-assistant --no-verify-jwt --project-ref meoymkcotomoluwlwues
+Invoke-RestMethod "https://meoymkcotomoluwlwues.supabase.co/functions/v1/lalum-assistant?health=1" | ConvertTo-Json
+```
+בדיקה תקינה: `rulings` ‏31 ו-`rulingsSha` שמתחיל ב-`fc8f566c`. הדוח היומי יציג שלוש שורות חדשות: הרשמות שהושלמו, ניסיונות הרשמה שלא אושרו, וניסיונות צ׳אט ללא הרשמה.
