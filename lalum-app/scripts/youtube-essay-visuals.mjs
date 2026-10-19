@@ -56,7 +56,7 @@ html,body{width:${W}px;height:${H}px;overflow:hidden;background:#0b100c}
 body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f1e8}
 .bg{position:absolute;inset:0;background:radial-gradient(90% 90% at 50% 25%,#1f3626 0%,#142019 55%,#0b100c 100%)}
 .grid{position:absolute;inset:0;opacity:.05;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:80px 80px}
-#world{position:absolute;inset:0;filter:contrast(1.1) saturate(1.12);perspective:2600px}
+#world{position:absolute;inset:0;perspective:2600px}
 .amber{text-shadow:0 0 26px rgba(231,194,122,.3)}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
 #world div,#hud div{position:absolute}
@@ -85,18 +85,18 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .cap{left:0;right:0;top:0;text-align:center;font-size:52px;font-weight:700;white-space:nowrap}
 .cap span{display:inline-block;padding:2px 11px;margin:0 3px;border-radius:12px;text-shadow:0 3px 14px rgba(0,0,0,.75)}
 .cap span.on{background:#e7c27a;color:#101712;text-shadow:none}
-#grain{left:-200px;top:-200px;width:2400px;height:1500px;opacity:.07;mix-blend-mode:screen}
+#grain{left:-200px;top:-200px;width:2400px;height:1500px;opacity:.05}
 #vig{inset:0;background:radial-gradient(75% 75% at 50% 48%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
 </style><body>
-<div class="bg"></div><canvas id="tex" width="512" height="512" style="position:absolute;left:-200px;top:-200px;width:2400px;height:1500px;opacity:.3;mix-blend-mode:overlay"></canvas><div class="grid"></div>
+<div class="bg"></div><canvas id="tex" width="512" height="512" style="position:absolute;left:-200px;top:-200px;width:2400px;height:1500px;opacity:.16"></canvas><div class="grid"></div>
 <div id="world"><div id="stage"></div></div>
 ${logo}
 <div id="hud">
   <div id="title" style="inset:0"></div>
-  <div id="leak" style="left:-1920px;top:120px;width:3840px;height:840px;opacity:0;mix-blend-mode:screen;background:linear-gradient(100deg,rgba(231,194,122,0) 38%,rgba(240,170,90,.5) 50%,rgba(231,194,122,0) 62%)"></div>
+  <div id="leak" style="left:-1920px;top:120px;width:3840px;height:840px;opacity:0;background:linear-gradient(100deg,rgba(231,194,122,0) 38%,rgba(240,170,90,.5) 50%,rgba(231,194,122,0) 62%)"></div>
   <div id="dust" style="inset:0"></div>
-  <div id="spot" style="left:200px;top:80px;width:1100px;height:900px;background:radial-gradient(closest-side,rgba(255,236,190,.2),rgba(255,236,190,0));mix-blend-mode:screen"></div>
-  <div id="grade" style="inset:0;mix-blend-mode:soft-light;background:linear-gradient(135deg,rgba(30,120,130,.6),rgba(0,0,0,0) 45%,rgba(235,150,60,.45))"></div>
+  <div id="spot" style="left:200px;top:80px;width:1100px;height:900px;background:radial-gradient(closest-side,rgba(255,236,190,.2),rgba(255,236,190,0))"></div>
+  <div id="grade" style="inset:0;background:linear-gradient(135deg,rgba(30,120,130,.16),rgba(0,0,0,0) 45%,rgba(235,150,60,.12))"></div>
   <div id="vig"></div>
   <div id="grain"></div>
   <div id="barT" style="left:0;right:0;top:0;height:120px;background:#000"></div>
@@ -159,7 +159,7 @@ function kin(S,text,times,x,y,w,o){o=o||{};const words=text.split(" ");
     s.style.cssText="display:inline-block;margin:0 .16em;opacity:0;"+(isHi?"color:#e7c27a;":"")+ext;c.appendChild(s);return s});
   const out=o.out==null?1e9:o.out;
   S.fx.push(t=>{sp.forEach((s,i)=>{const k=ease((t-tt(i))/.32);s.style.opacity=k;
-      s.style.transform="scale("+(1+(1-k)*.55)+") translateY("+((1-k)*28)+"px) skewX("+((1-k)*-8)+"deg)";s.style.filter="blur("+((1-k)*9)+"px)"});
+      s.style.transform="scale("+(1+(1-k)*.55)+") translateY("+((1-k)*28)+"px) skewX("+((1-k)*-8)+"deg)";s.style.filter=k<1?"blur("+((1-k)*9)+"px)":"none"});
     c.style.opacity=t<tt(0)-.05?0:ease((out-t)/.5)});
   return c}
 function strike(S,x,y,w,a,out){const l=box(x,y,0,8,"","");l.style.background="#e7c27a";out=out==null?1e9:out;
@@ -505,7 +505,7 @@ const OUTP={1:[740,872],2:[960,560],3:[960,560],4:[1420,374],5:[1740,600]};
 const INP={2:[510,240],3:[960,400],4:[130,200],5:[960,430],6:[960,500]};
 const CAMP={1:[.045,0,0],2:[.02,-40,0],3:[-.03,0,0],4:[.03,30,-12],5:[.035,0,14],6:[.03,0,0]};
 const BASE=.78;
-let NARR=null,ST={},CAPS=[],THR=[];
+let NARR=null,ST={},CAPS=[],THR=[],ROOM={};
 const sstep=u=>u*u*(3-2*u);
 function idle(n,t){const P=CAMP[n],kf=clamp(t/NARR[n].dur);return{cx:ROOMX[n]+960-P[1]*kf*1.3,cy:540-P[2]*kf*1.3,s:BASE*(1+P[0]*kf)}}
 function camera(T){
@@ -538,7 +538,7 @@ function buildCaps(){const box0=document.getElementById("caps");box0.innerHTML="
 const DUST=[];for(let i=0;i<34;i++){const e=document.createElement("div");const z=2+(i%3);e.style.cssText="width:"+z+"px;height:"+z+"px;border-radius:50%;background:#f5f1e8;filter:blur(1px)";document.getElementById("dust").appendChild(e);DUST.push(e)}
 
 window.buildAll=narr=>{NARR=narr;S0.innerHTML="";document.getElementById("tags").innerHTML="";HITS=[];ST={};
-  ORDER.forEach(n=>{const room=box(ROOMX[n],0,1920,1080,"","",S0);CURP=room;CUROFF=OFF[n];ST[n]=SCENES[n](narr[n]);bpGrid(ST[n],room)});
+  ORDER.forEach(n=>{const room=box(ROOMX[n],0,1920,1080,"","",S0);ROOM[n]=room;CURP=room;CUROFF=OFF[n];ST[n]=SCENES[n](narr[n]);bpGrid(ST[n],room)});
   CURP=S0;CUROFF=0;
   ORDER.forEach(n=>{ST[n].dur=narr[n].dur;ST[n].run(-100)});
   // the thread: leaves the last thing of a room, lands on the first thing of the next
@@ -556,11 +556,14 @@ window.buildAll=narr=>{NARR=narr;S0.innerHTML="";document.getElementById("tags")
 
 window.render=T=>{
   const n=sceneAt(T),d=NARR[n],t=T-OFF[n];
-  ORDER.forEach(k=>{const lt=clamp(T-OFF[k],-2,NARR[k].dur+2);if(ST[k].lastT!==lt){ST[k].lastT=lt;ST[k].run(lt)}});
   // beat
   const bt=T/BEAT,ph=bt%1,pulse=Math.exp(-ph*5.5)*((bt%4)<1?1.7:1);
   // camera
   const C=camera(T);
+  // only rooms inside the view are shown and animated (state is a pure function of the clamped time)
+  const half=960/C.s+60;
+  ORDER.forEach(k=>{const rx=ROOMX[k],vis3=(rx<C.cx+half)&&(rx+1920>C.cx-half);ROOM[k].style.display=vis3?"block":"none";
+    if(vis3){const lt=clamp(T-OFF[k],-2,NARR[k].dur+2);if(ST[k].lastT!==lt){ST[k].lastT=lt;ST[k].run(lt)}}});
   let dx=0,dy=0,sc=C.s*(1+.0035*pulse);
   HITS.forEach(h=>{const q=T-h;if(q>=0&&q<.4){const am=8*Math.exp(-q*10);dx+=Math.sin(q*95)*am;dy+=Math.cos(q*83)*am*.6;sc*=1+.012*Math.exp(-q*12)}});
   document.getElementById("stage").style.transform="translate("+dx+"px,"+dy+"px) translate(960px,540px) rotateY("+C.yaw+"deg) rotateZ("+C.roll+"deg) scale("+sc+") translate("+(-C.cx)+"px,"+(-C.cy)+"px)";
