@@ -135,6 +135,7 @@ export const es: Dict = {
       errorReply: "Algo salió mal al contactar al asistente. Inténtelo de nuevo en un momento, o reserve una llamada con nosotros.",
       loginRequired: "El asistente está disponible para usuarios registrados. Regístrese gratis con el botón y vuelva al chat.",
       loginCta: "Registro gratuito",
+      confidentialWarning: "No introduzca aquí nombres de clientes, números de identidad ni datos confidenciales de un asunto. La conversación es procesada por un proveedor externo de IA.",
       attach: "Suba un contrato para revisión y observaciones",
       attaching: "Leyendo el archivo…",
       attached: "Adjuntado",
