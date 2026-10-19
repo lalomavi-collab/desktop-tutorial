@@ -9,7 +9,7 @@ type AuthValue = {
   loading: boolean;
   demoMode: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
-  signUp: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string, leadLang?: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
   verifyRecoveryCode: (email: string, code: string) => Promise<AuthResult>;
@@ -45,6 +45,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      const u = session?.user;
+      const meta = (u?.user_metadata ?? {}) as { lead_pending?: boolean; lead_consent?: boolean; lead_lang?: string };
+      // A completed registration: a confirmed email with a live session and a sign-up that has not been reported yet.
+      // Run outside the callback (supabase-js can deadlock when the callback awaits its own client).
+      if (u && u.email_confirmed_at && meta.lead_pending && meta.lead_consent) {
+        setTimeout(() => {
+          void supabase!.functions.invoke("lalum-lead-submit", {
+            body: { name: (u.email ?? "").split("@")[0], email: u.email, consent: true, source: "signup", interest: "ai-governance", lang: meta.lead_lang ?? "he" },
+          }).then(({ error }: { error: unknown }) => {
+            if (!error) void supabase!.auth.updateUser({ data: { lead_pending: false } });
+          }).catch(() => undefined);
+        }, 0);
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -60,14 +73,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-  const signUp: AuthValue["signUp"] = async (email, password) => {
+  const signUp: AuthValue["signUp"] = async (email, password, leadLang) => {
     if (!supabase) {
       if (!email || password.length < 6) return { error: "Enter an email and a password of at least 6 characters." };
       try { localStorage.setItem(DEMO_KEY, email); } catch { /* ignore */ }
       setUser(demoUser(email));
       return { error: null, needsConfirmation: false };
     }
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    // The sign-up carries its consent and language in the user's metadata. The firm is told about the
+    // registration only once it is complete (first signed-in session after the email is confirmed), see below.
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { lead_pending: true, lead_consent: true, lead_lang: leadLang ?? "he" } } });
     if (error) return { error: error.message };
     // When email confirmation is off, signUp returns a live session and the
     // user is already signed in; otherwise they must confirm by email first.

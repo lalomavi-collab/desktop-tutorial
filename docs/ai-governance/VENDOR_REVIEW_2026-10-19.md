@@ -27,7 +27,7 @@ Gaps to decide: no ad hoc deletion at Anthropic means a deletion request to the 
 | Europe | Only Paid Services may be used for API clients available to users in the EEA, Switzerland or the UK; for those regions the paid-services data terms apply to all services | terms page |
 | Zero data retention | Not available on the Gemini Developer API; Vertex AI is the route for guaranteed ZDR | https://ai.google.dev/gemini-api/docs/zdr |
 
-**OWNER**: confirm whether the agent is active and whether its Google key belongs to a Cloud project with active billing (paid). If it is unpaid, invoices (third party personal data) would be used to improve Google products. Treat as not acceptable until confirmed.
+Owner confirmed on 2026-10-19 that the invoice agent is active. **OWNER**: confirm that its Google key belongs to a Cloud project with active billing (paid). If it is unpaid, invoices (third party personal data) would be used to improve Google products. Treat as not acceptable until confirmed.
 
 ## 3. OpenAI: sys-005 (voice webhook, only if `LLM_PROVIDER=openai`)
 - By default OpenAI does not train on inputs or outputs of business users, including the API (https://openai.com/business-data/; https://help.openai.com/en/articles/5722486-api-data-usage-policies).
@@ -38,7 +38,7 @@ Gaps to decide: no ad hoc deletion at Anthropic means a deletion request to the 
 - Synthesia states it does not use customer data, including inputs or outputs, to pre-train its AI components; fine-tuning on customer data happens only on the customer's written instruction (https://www.synthesia.io/legal/ai-governance-practices; https://www.synthesia.io/ai-governance).
 - Avatar creation processes biometric data (face and voice) with explicit consent; it is kept while the avatar exists or as the customer instructs (https://www.synthesia.io/legal/privacy-policy).
 - **Conflict to resolve**: the Data Processing Agreement dated 2023-01-25 lists "improving the content ... by including the Data in the AI training dataset" as part of the processing, with deletion at termination (https://www.synthesia.io/terms/data-processing-agreement-2023-01-25). The newer pages say customer data is not used for pre-training. Which text governs depends on the agreement the firm accepted and its date.
-- **OWNER**: confirm which terms and DPA version apply to the account, and that the avatar is the owner's own and consented.
+- Owner confirmed on 2026-10-19 that the avatar is his own and approved. **OWNER**: still confirm which terms and DPA version apply to the account.
 
 ## 5. Meta (WhatsApp Business): sys-004
 - Meta Terms for WhatsApp Business: https://www.whatsapp.com/legal/meta-terms-whatsapp-business. The contracting entity is Meta Platforms Ireland Limited, except for the United States, Canada and Brazil.
