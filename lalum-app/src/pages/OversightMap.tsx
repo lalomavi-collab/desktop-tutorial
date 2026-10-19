@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { PageMeta } from "../components/PageMeta";
 import { Link } from "../components/AppLink";
+import { LoopVideo } from "../components/LoopVideo";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES, type OversightSource } from "../lib/oversightMap";
 
@@ -48,6 +49,12 @@ export function OversightMap() {
           </h1>
           <p className="lede" style={{ fontSize: 19, lineHeight: 1.7, color: "var(--slate)", maxWidth: "64ch", margin: 0 }}>{OVERSIGHT_PAGE.lede}</p>
         </div>
+      </section>
+
+      {/* The framing clip: what a lawyer still sells when a machine drafts in
+          seconds, answered with two verbatim lines from the Supreme Court. */}
+      <section className="wrap" style={{ maxWidth: 1000, paddingBottom: 12 }}>
+        <LoopVideo src="/media/lalum-liability.mp4" poster="/media/lalum-liability.jpg" className="engine-video" label={OVERSIGHT_PAGE.videoAlt} />
       </section>
 
       <section className="wrap section section-line" style={{ maxWidth: 1000 }}>

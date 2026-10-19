@@ -647,6 +647,7 @@ function toolsBodyHtml(): string {
 // JavaScript came for.
 function oversightBodyHtml(): string {
   const out = [`        <h1>${esc(OVERSIGHT_PAGE.h1)}</h1>`, `        <p>${esc(OVERSIGHT_PAGE.lede)}</p>`];
+  out.push(`        <p>${esc(OVERSIGHT_PAGE.videoAlt)}</p>`);
   for (const p of OVERSIGHT_POINTS) {
     const src = OVERSIGHT_SOURCES[p.source];
     out.push(`        <h2>${esc(p.title)}</h2>`);
