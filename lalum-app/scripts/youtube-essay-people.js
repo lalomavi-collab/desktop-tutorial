@@ -54,10 +54,16 @@ function person(parent, o) {
     sv("path", { d: "M -56 -86 C -60 -150 60 -150 56 -86 C 56 -60 40 -34 0 -30 C -40 -34 -56 -60 -56 -86 Z", fill: hair }, head);
   }
   // arms (over the body)
-  const armG = sv("g", {}, root), arms = {};
+  let armAttrs = {};
+  if (o.clip) { const cpa = sv("clipPath", { id: cid + "a" }, svg); sv("rect", { x: -300, y: -260, width: 600, height: 260 + o.clip + 6 }, cpa); armAttrs = { "clip-path": "url(#" + cid + "a)" }; }
+  const armG = sv("g", armAttrs, root), arms = {};
   [["L", -88, 1], ["R", 88, -1]].forEach(a => {
     const g = sv("g", {}, armG);
-    arms[a[0]] = { S: { x: a[1], y: 38 }, sg: a[2], path: sv("path", { fill: "none", stroke: top, "stroke-width": 34, "stroke-linecap": "round", "stroke-linejoin": "round" }, g), hand: sv("circle", { r: 19, fill: skin }, g), prop: sv("g", {}, g), last: { x: a[1] * 1.3, y: 250 } };
+    arms[a[0]] = { S: { x: a[1], y: 38 }, sg: a[2], path: sv("path", { fill: "none", stroke: top, "stroke-width": 34, "stroke-linecap": "round", "stroke-linejoin": "round" }, g), hand: sv("g", {}, g), prop: sv("g", {}, g), last: { x: a[1] * 1.3, y: 250 } };
+    const hg = arms[a[0]].hand, cuff = sv("rect", { x: -17, y: -8, width: 34, height: 10, rx: 4, fill: top }, hg);
+    sv("rect", { x: -13, y: -2, width: 26, height: 26, rx: 11, fill: skin }, hg);
+    arms[a[0]].fingers = [-9, -3, 3, 9].map(fx => sv("line", { x1: fx, y1: 18, x2: fx, y2: 34, stroke: skin, "stroke-width": 7, "stroke-linecap": "round" }, hg));
+    arms[a[0]].thumb = sv("line", { x1: a[1] > 0 ? -11 : 11, y1: 8, x2: a[1] > 0 ? -21 : 21, y2: 20, stroke: skin, "stroke-width": 8, "stroke-linecap": "round" }, hg);
   });
   function propArt(g, kind) {
     if (kind === "pen") { sv("line", { x1: 0, y1: -16, x2: 0, y2: 64, stroke: "#f5f1e8", "stroke-width": 9, "stroke-linecap": "round" }, g); sv("line", { x1: 0, y1: 64, x2: 0, y2: 76, stroke: "#e7c27a", "stroke-width": 5, "stroke-linecap": "round" }, g); }
@@ -87,11 +93,16 @@ function person(parent, o) {
     const res = {};
     ["L", "R"].forEach(k => {
       const A = arms[k], tgt = p["h" + k.toLowerCase()] || null;
-      const T = tgt || { x: A.S.x * 1.35, y: 232 + Math.sin(t * 1.7 + ph) * 3 };
+      const T = tgt || (o.clip ? { x: A.S.x * .8, y: o.clip - 22 + Math.sin(t * 1.7 + ph) * 2 } : { x: A.S.x * 1.35, y: 232 + Math.sin(t * 1.7 + ph) * 3 });
       A.last = { x: lerp(A.last.x, T.x, .35), y: lerp(A.last.y, T.y, .35) };
-      const r = ik(A.S, A.last, 135, 125, A.sg);
+      const ak = o.clip ? .72 : 1, r = ik(A.S, A.last, 135 * ak, 125 * ak, A.sg);
       A.path.setAttribute("d", "M " + A.S.x + " " + A.S.y + " L " + r.E.x + " " + r.E.y + " L " + r.H.x + " " + r.H.y);
-      A.hand.setAttribute("cx", r.H.x); A.hand.setAttribute("cy", r.H.y);
+      // the hand follows the forearm, fingers curl with the grip (a prop or a pointed target closes them) and breathe a little
+      const fa = Math.atan2(r.H.y - r.E.y, r.H.x - r.E.x) * 180 / Math.PI - 90, held = (k === "R" ? o.propR : o.propL) ? 1 : 0;
+      const grip = p.grip != null ? p.grip : (held ? .85 : (tgt ? .25 : .45));
+      A.hand.setAttribute("transform", "translate(" + r.H.x + "," + r.H.y + ") rotate(" + fa + ") scale(1.2)");
+      A.fingers.forEach((f, i) => { const ln = (16 - Math.abs(i - 1.5) * 2) * (1 - grip * .62) + Math.sin(t * 2.3 + ph + i * 1.3 + (k === "R" ? 1 : 0)) * 1.2; f.setAttribute("y2", 18 + ln); f.setAttribute("x2", (i - 1.5) * 6 + (grip * (i - 1.5) * -1.5)); });
+      A.thumb.setAttribute("transform", "rotate(" + (grip * (k === "R" ? 25 : -25)) + " " + (k === "R" ? 11 : -11) + " 8)");
       A.prop.setAttribute("transform", "translate(" + r.H.x + "," + r.H.y + ") rotate(" + (p[k === "R" ? "ra" : "la"] || 0) + ")");
       res["h" + k.toLowerCase()] = r.H;
     });
