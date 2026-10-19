@@ -135,6 +135,7 @@ export const fr: Dict = {
       errorReply: "Une erreur est survenue lors de la connexion à l'assistant. Veuillez réessayer dans un instant, ou prendre rendez-vous avec nous.",
       loginRequired: "L'assistant est réservé aux utilisateurs inscrits. Inscrivez-vous gratuitement avec le bouton, puis revenez au chat.",
       loginCta: "Inscription gratuite",
+      confidentialWarning: "Ne saisissez ici ni noms de clients, ni numéros d'identité, ni détails confidentiels d'un dossier. La conversation est traitée par un prestataire d'IA externe.",
       attach: "Téléverser un contrat pour examen et remarques",
       attaching: "Lecture du fichier…",
       attached: "Joint",

@@ -139,6 +139,7 @@ export const en = {
       errorReply: "Something went wrong reaching the assistant. Please try again in a moment, or book a call with us.",
       loginRequired: "The assistant is available to registered users. Sign up free with the button, then come back to the chat.",
       loginCta: "Sign up free",
+      confidentialWarning: "Do not enter client names, ID numbers or confidential case details here. The conversation is processed by an external AI provider.",
       attach: "Upload a contract for review and remarks",
       attaching: "Reading the file…",
       attached: "Attached",

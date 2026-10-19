@@ -291,6 +291,7 @@ export function ChatWidget() {
                 ↑
               </button>
             </div>
+            <p style={{ margin: "8px 2px 0", fontSize: 12, lineHeight: 1.45, color: "var(--ink)", fontWeight: 600 }}>{C.confidentialWarning}</p>
             <p style={{ margin: "10px 2px 0", fontSize: 10.5, lineHeight: 1.5, color: "var(--slate)" }}>{C.disclaimer}</p>
           </div>
           </>

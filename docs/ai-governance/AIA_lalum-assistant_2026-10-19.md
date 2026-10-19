@@ -30,7 +30,7 @@ Red line from the practice profile: "storing the content of client chat conversa
 |---|---|---|
 | User believes they are speaking to a person | Greeting states it is an AI (PR 992). Disclosure appears at the start of every chat | Low |
 | Invented or wrong ruling | Citations only from the 31-ruling corpus; two-source rule for the corpus; case-law lookups capped | Medium: the model can still misstate law in free text. Disclaimer present. Keep red line active |
-| Confidential data typed by a user | Chat is general-purpose; no upload path in the widget except the contract attachment, which is processed by Anthropic | Medium. Needs an on-screen warning not to enter client secrets, and the Anthropic terms check |
+| Confidential data typed by a user | Chat is general-purpose; no upload path in the widget except the contract attachment, which is processed by Anthropic | Medium. On-screen warning added; the Anthropic terms check is still open |
 | Abuse and cost | Sign-in, per person limit, total limit | Low |
 | Unconsented marketing | Sign-up checkbox, consent version recorded, deletion on request | Low if the consent text is approved by the owner |
 | Prompt injection from pasted text | Not assessed in code for this review; the function writes only usage counters | Unverified |
@@ -38,7 +38,7 @@ Red line from the practice profile: "storing the content of client chat conversa
 
 ## 5. Gaps found
 1. Anthropic data terms are not verified: whether inputs train models, and retention. Blocks the final conclusion.
-2. No on-screen warning against entering confidential client information in the chat. Recommended.
+2. On-screen warning against entering confidential client information: added to the chat widget in five languages (2026-10-19). Wording not yet reviewed by a native speaker in ar, es, fr. The /os page does not carry it yet.
 3. Chat messages are not logged, so a client claim about an AI error (a consult-immediately trigger) could not be reconstructed. This is a deliberate trade-off against the red line; the owner should confirm it.
 4. The consent text for sign-up is drafted, not approved.
 
