@@ -21,7 +21,9 @@ const MODEL = "claude-haiku-4-5-20251001";
 // counters in the handler), with the history the client sends as a second,
 // weaker check.
 const CASE_LAW_MARKER = "⚖️";
+// Free case law answers: at most 2 per person per day, and 10 per day across all clients together.
 const FREE_CASE_LAW_LOOKUPS = 2;
+const FREE_CASE_LAW_DAILY_TOTAL = 10;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
 
@@ -225,8 +227,13 @@ Deno.serve(async (req) => {
       // reply, over a day (lalum_rate_hits keeps a day of rows).
       if (!over && counter && clientHash) {
         try {
-          const { data, error } = await counter.rpc("lalum_rate_limit", { p_key: `caselaw:${clientHash}`, p_max: FREE_CASE_LAW_LOOKUPS, p_window_seconds: 86400 });
-          if (!error && data === false) over = true;
+          // Per person first, so a person already at their two does not use up the shared ten.
+          const person = await counter.rpc("lalum_rate_limit", { p_key: `caselaw:${clientHash}`, p_max: FREE_CASE_LAW_LOOKUPS, p_window_seconds: 86400 });
+          if (!person.error && person.data === false) over = true;
+          if (!over) {
+            const all = await counter.rpc("lalum_rate_limit", { p_key: "caselaw:all", p_max: FREE_CASE_LAW_DAILY_TOTAL, p_window_seconds: 86400 });
+            if (!all.error && all.data === false) over = true;
+          }
         } catch (e) {
           console.error(`lalum-assistant: caselaw_counter_unavailable ${String(e).slice(0, 120)}`);
         }
