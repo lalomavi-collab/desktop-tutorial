@@ -22,12 +22,13 @@ const MODEL = "claude-haiku-4-5-20251001";
 // weaker check.
 const CASE_LAW_MARKER = "⚖️";
 // Free use of the assistant, counted per message: at most 2 per person per day, and 10 per day across all
-// clients together. A "person" is the signed-in user, or the visitor's network address when not signed in.
+// clients together. A "person" is the signed-in user; the assistant requires sign-in.
 const DAILY_PER_PERSON = 2;
 const DAILY_TOTAL = 10;
 const DAILY_LIMIT_REPLY =
   "השירות נמצא כרגע בשלב פיילוט ולכן השימוש בו מוגבל. נשמח לעמוד לרשותכם בשיחת אבחון קצרה עם ד״ר עו״ד אברהם ללום בכתובת lalumapp.com/book.";
 // The case law answers keep their own, tighter-in-wording guard (same two per person), see below.
+const LOGIN_REPLY = "השימוש בעוזר זמין למשתמשים רשומים. אפשר להירשם בחינם בכתובת lalumapp.com/login ולחזור לשיחה.";
 const FREE_CASE_LAW_LOOKUPS = 2;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
@@ -162,8 +163,10 @@ Deno.serve(async (req) => {
       const counter = createClient(supaUrl, supaKey);
       const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
       const user = token ? (await counter.auth.getUser(token)).data.user : null;
-      const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-      const raw = user ? `u:${user.id}` : `ip:${ip}`;
+      // Signed-in visitors only (owner decision, 2026-10-19). The client swaps this for its own translated text
+      // when it sees login_required; the Hebrew reply is the fallback for any other caller.
+      if (!user) return json(200, { reply: LOGIN_REPLY, login_required: true });
+      const raw = `u:${user.id}`;
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
       const hash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
       const person = await counter.rpc("lalum_rate_limit", { p_key: `assistant-day:${hash}`, p_max: DAILY_PER_PERSON, p_window_seconds: 86400 });

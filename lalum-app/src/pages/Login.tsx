@@ -10,7 +10,7 @@ const RESEND_COOLDOWN_SECONDS = 30;
 
 export function Login() {
   const { signIn, signUp, resetPassword, verifyRecoveryCode, demoMode } = useAuth();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const L = t.ui.login;
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -24,6 +24,7 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
+  const [leadConsent, setLeadConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -87,6 +88,13 @@ export function Login() {
     if (res.error) {
       setError(res.error);
       return;
+    }
+    // A new sign-up is a lead: the firm is told by the same consented route as the contact form. Best effort,
+    // never blocks the sign-up. Only the email goes in; the name field carries its local part.
+    if (mode === "up" && supabase) {
+      void supabase.functions.invoke("lalum-lead-submit", {
+        body: { name: email.split("@")[0], email, consent: true, source: "signup", interest: "ai-governance", lang },
+      }).catch(() => undefined);
     }
     if (mode === "up" && res.needsConfirmation) {
       setNotice(L.confirmEmail);
@@ -178,6 +186,12 @@ export function Login() {
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} style={{ width: 16, height: 16, accentColor: "var(--clay)" }} />
               {L.rememberMe}
             </label>
+            {mode === "up" && (
+              <label style={{ display: "flex", alignItems: "flex-start", gap: 9, fontSize: 13, color: "var(--slate)", cursor: "pointer" }}>
+                <input type="checkbox" required checked={leadConsent} onChange={(e) => setLeadConsent(e.target.checked)} style={{ width: 16, height: 16, marginTop: 2, accentColor: "var(--clay)" }} />
+                {L.leadConsent}
+              </label>
+            )}
             <button className="btn btn-clay" style={{ justifyContent: "center", marginTop: 4 }} disabled={busy}>
               {busy ? L.pleaseWait : mode === "in" ? L.signIn : L.createAccount}
             </button>

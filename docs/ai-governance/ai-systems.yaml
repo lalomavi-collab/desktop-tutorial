@@ -9,8 +9,8 @@ systems:
     role_basis: "Offered under the LALUM name with its own system prompt, built on a third-party GPAI model [verify against current AI Act text]"
     tier: limited
     tier_basis: "Interacts directly with people: Art. 50 transparency. Not an Annex III use [verify against current AI Act text]"
-    obligations_assessed: false
-    obligations_note: "Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Code check 2026-10-19: the server does NOT enforce login (anonymous requests are served, the public /os page uses the same function); exposure is capped by server-side counters (2 per person, 10 per day in total). Decide whether to require login."
+    obligations_assessed: true
+    obligations_note: "Impact assessment AIA_lalum-assistant_2026-10-19.md. Decision 2026-10-19: sign-in required, sign-ups saved as consented leads. Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Code check 2026-10-19: the server does NOT enforce login (anonymous requests are served, the public /os page uses the same function); exposure is capped by server-side counters (2 per person, 10 per day in total). Decide whether to require login."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
@@ -202,7 +202,7 @@ systems:
     tier: limited
     tier_basis: "Deepfake-type content: Art. 50(4) disclosure to viewers [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: conspicuous disclosure that the video is synthetic. Confirm it appears on every video."
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: conspicuous disclosure that the video is synthetic. Code check 2026-10-19: the script creates the video as private and never publishes it; it sends a link to the owner on Telegram. Disclosure now appears in the Synthesia description and as a pre-publication reminder in the Telegram message; the on-screen caption is added by the owner at publication."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"

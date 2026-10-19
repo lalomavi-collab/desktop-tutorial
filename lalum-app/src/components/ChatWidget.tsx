@@ -138,7 +138,10 @@ export function ChatWidget() {
       if (supabase) {
         const { data, error } = await supabase.functions.invoke("lalum-assistant", { body: { messages: convo } });
         if (error) throw error;
-        reply = ((data?.reply as string) || "").trim() || C.errorReply;
+        // The assistant is for signed-in users: the server says so, and the text is shown in the visitor's language.
+        reply = data?.login_required
+          ? `${C.loginRequired}\n${C.loginCta}: ${window.location.origin}/login`
+          : ((data?.reply as string) || "").trim() || C.errorReply;
       }
       setMsgs((m) => [...m, { role: "assistant", content: reply }]);
       if (readAloud) speak(reply);
