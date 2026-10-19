@@ -44,7 +44,7 @@ const narr = JSON.parse(readFileSync(path.join(work, "narration.json"), "utf8"))
 const order = ["1", "2", "3", "4", "5", "6"];
 const offsets = {};
 let acc = 0;
-for (const n of order) { offsets[n] = acc; acc += narr[n].dur; }
+for (const n of order) { if (!narr[n]) continue; offsets[n] = acc; acc += narr[n].dur; }
 const TOTAL = acc;
 
 const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf8").replace(/<svg /, '<svg class="wm" ');
@@ -81,7 +81,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 #hud .br{width:64px;height:64px;border:3px solid #3a5a42;opacity:.9}
 #caps{left:0;right:0;top:930px;height:80px}
 .cap{left:0;right:0;top:0;text-align:center;font-size:56px;font-weight:700;white-space:nowrap}
-.cap span{display:inline-block;padding:2px 14px;margin:0 2px;border-radius:12px;text-shadow:0 3px 14px rgba(0,0,0,.75)}
+.cap span{display:inline-block;padding:2px 11px;margin:0 3px;border-radius:12px;text-shadow:0 3px 14px rgba(0,0,0,.75)}
 .cap span.on{background:#e7c27a;color:#101712;text-shadow:none}
 #grain{left:-200px;top:-200px;width:2400px;height:1500px;opacity:.07;mix-blend-mode:screen}
 #vig{inset:0;background:radial-gradient(75% 75% at 50% 48%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
@@ -144,8 +144,8 @@ function kin(S,text,times,x,y,w,o){o=o||{};const words=text.split(" ");
       s.style.transform="scale("+(1+(1-k)*.55)+") translateY("+((1-k)*28)+"px) skewX("+((1-k)*-8)+"deg)";s.style.filter="blur("+((1-k)*9)+"px)"});
     c.style.opacity=t<tt(0)-.05?0:ease((out-t)/.5)});
   return c}
-function strike(S,x,y,w,a,h){const l=box(x,y,0,8,"","");l.style.background="#e7c27a";
-  S.fx.push(t=>{const k=ease((t-a)/.5);l.style.width=(w*k)+"px";l.style.opacity=k>0?1:0});return l}
+function strike(S,x,y,w,a,out){const l=box(x,y,0,8,"","");l.style.background="#e7c27a";out=out==null?1e9:out;
+  S.fx.push(t=>{const k=ease((t-a)/.5);l.style.width=(w*k)+"px";l.style.opacity=k>0?ease((out-t)/.5):0});return l}
 function win(x,y,w,h,title){const e=box(x,y,w,h,"card");e.style.overflow="hidden";
   const bar=box(0,0,w,64,"",'',e);bar.style.cssText+=";background:#1c2d22;border-bottom:2px solid #3a5a42";
   [0,1,2].forEach(i=>{const d=box(26+i*34,22,18,18,"","",bar);d.style.background=["#c0705f","#e7c27a","#769d79"][i];d.style.borderRadius="50%"});
@@ -248,7 +248,7 @@ function s3(d){const S=SC(),x=ctx(d);
   const srcs=["Documents","E-discovery","Contracts","Research","Legal AI"];
   const gD=x.a(5)-.2;
   const sb=srcs.map((s,i)=>S.reg(box(120,190+i*120,380,88,"chip",s),x.w(4,"once the work"),gD));
-  const node=box(800,300,360,360,"card am",'<div class="rel h2 amber" style="margin-top:130px;text-align:center">THE LAYER</div>');node.style.borderRadius="50%";
+  const node=box(800,300,360,360,"card am",'<div class="rel h2 amber" style="margin-top:150px;text-align:center;font-size:46px">THE LAYER</div>');node.style.borderRadius="50%";
   S.reg(node,x.w(4,"once the work"),gD);
   const sl=srcs.map((s,i)=>{const l=box(500,234+i*120,0,4,"","");l.style.background="#3a5a42";return l});
   S.fx.push(t=>{const a=x.w(4,"once the work");sl.forEach((l,i)=>{const k=ease((t-a-.5-i*.25)/.8);l.style.opacity=t<gD?1:0;l.style.width=(300*k)+"px"});node.style.boxShadow="0 0 "+(16+24*Math.max(0,Math.sin(t*2.6)))*(t>x.w(4,"but whoever")?1:.4)+"px rgba(231,194,122,.55)"});
@@ -257,9 +257,9 @@ function s3(d){const S=SC(),x=ctx(d);
   // part E: the race
   const q=kin(S,"\\u201Caccelerating a race among technology companies\\u201D",[x.w(5,"reuters"),x.w(5,"reuters")+.35,x.w(5,"a race"),x.w(5,"race")+.2,x.w(5,"among"),x.w(5,"technology"),x.w(5,"companies")],160,200,1600,{size:78,out:x.w(5,"the race is not")-.2,h:260});
   S.reg(tag("Reuters, 25.8.2026"),x.w(5,"reuters"),x.w(5,"the race is not")-.2);
-  kin(S,"NOT WHO DRAFTS FASTEST.",[x.w(5,"not about"),x.w(5,"who"),x.w(5,"drafts"),x.w(5,"fastest")],160,420,1600,{size:84,color:"#8a9a8c",out:1e9});
-  strike(S,430,478,1060,x.e(5,"drafts fastest")+.2);
-  kin(S,"THE LAYER.",[x.w(5,"the layer through"),x.w(5,"layer")],160,600,1600,{size:130,color:"#e7c27a"});
+  kin(S,"NOT WHO DRAFTS FASTEST.",[x.w(5,"not about"),x.w(5,"who"),x.w(5,"drafts"),x.w(5,"fastest")],160,420,1600,{size:84,color:"#8a9a8c",out:x.a(6)-.2});
+  strike(S,430,478,1060,x.e(5,"drafts fastest")+.2,x.a(6)-.2);
+  kin(S,"THE LAYER.",[x.w(5,"the layer through"),x.w(5,"layer")],160,600,1600,{size:130,color:"#e7c27a",out:x.a(6)-.2});
   // part F: the audit question
   kin(S,"\\u201Cwhich model is smartest\\u201D",x.ws(6,"which model is smartest"),160,230,1600,{size:64,color:"#8a9a8c",out:1e9,h:120});
   strike(S,480,262,960,x.e(6,"smartest")+.6);
@@ -268,6 +268,9 @@ function s3(d){const S=SC(),x=ctx(d);
 
 // ---------- scene 4: the billable hour ----------
 function s4(d){const S=SC(),x=ctx(d);
+  const clock=box(510,90,900,900,"",'<svg width="900" height="900" viewBox="-450 -450 900 900" fill="none" stroke-linecap="round"><circle r="420" stroke="#e7c27a" stroke-width="6"/><circle r="400" stroke="#e7c27a" stroke-width="2"/><g id="ck_m"><path d="M0 0V-330" stroke="#f5f1e8" stroke-width="12"/></g><g id="ck_h"><path d="M0 0V-210" stroke="#e7c27a" stroke-width="20"/></g><circle r="22" fill="#f5f1e8"/></svg>');
+  clock.style.opacity=.085;
+  S.fx.push(t=>{document.getElementById("ck_m").setAttribute("transform","rotate("+(t*6)+")");document.getElementById("ck_h").setAttribute("transform","rotate("+(t*.5)+")")});
   const kh=S.reg(box(130,170,800,60,"lbl green","KNOWN"),x.w(0,"what we know"),x.a(3)-.2);kh.style.textAlign="left";kh.style.letterSpacing="6px";
   const ih=S.reg(box(990,170,800,60,"lbl amber","INFERRED"),x.w(0,"what we are inferring"),x.a(3)-.2);ih.style.textAlign="left";ih.style.letterSpacing="6px";
   [["Legal work is priced by time.","prices legal work"],["More hours, more revenue.","more hours"],["Faster work earns less, unless the price changes.","whoever does"]].forEach((c,i)=>{const e=box(130,250+i*190,800,160,"card",'<div class="rel p" style="padding:30px 34px;color:#f5f1e8">'+c[0]+'</div>');S.reg(e,x.w(1,c[1]),x.a(3)-.2);
@@ -277,6 +280,7 @@ function s4(d){const S=SC(),x=ctx(d);
   kin(S,"NO FIGURE.",[x.w(3,"giving you a"),x.w(3,"figure")],160,260,1600,{size:150,out:x.a(4)-.2,h:230});
   kin(S,"THE DIRECTION OF PRESSURE IS CLEAR.",x.ws(3,"the direction of pressure is clear"),160,500,1600,{size:70,color:"#9cc29f",out:x.a(4)-.2,h:120});
   kin(S,"THE SIZE IS NOT.",x.ws(3,"and the size is not").slice(1),160,640,1600,{size:84,color:"#e7c27a",out:x.a(4)-.2,h:130});
+  kin(S,"WHAT REPLACES THE HOUR?",x.ws(4,"so what replaces the hour").slice(1),160,380,1600,{size:92,hi:[3],out:x.w(4,"fixed fees")-.3,h:260});
   [["Fixed fees","for defined outputs","fixed fees"],["Pricing for the decision","not the draft","pricing for the decision"],["A premium for judgment and accountability","someone whose licence is on the line","a premium"]].forEach((r,i)=>{
     const e=box(220,190+i*210,1480,170,"card"+(i==2?" am":""),'<div class="rel h2" style="margin:24px 0 0 50px;font-size:54px">'+r[0]+'</div><div class="rel p dim" style="margin:4px 0 0 50px">'+r[1]+'</div>');S.reg(e,x.w(4,r[2]),x.a(5)-.2)});
   S.reg(tag("Our analysis"),x.w(4,"so what replaces"),x.a(5)-.2);
@@ -300,9 +304,9 @@ function s5(d){const S=SC(),x=ctx(d);
   [["The client","the client"],["The court","the court"],["The opposing party","the opposing party"],["The profession","the profession"]].forEach((c,i)=>S.reg(box(150+i*430,380,390,260,"card",'<div class="rel h2" style="margin-top:92px;text-align:center;font-size:46px">'+c[0]+'</div>'),x.w(2,c[1]),x.a(3)-.2));
   S.reg(tag("HCJ 38379-12-24, para 15 (summary)"),x.w(2,"duties to"),x.a(3)-.2);
   kin(S,"NOT TO THE TOOL VENDOR.",x.ws(3,"not to the tool vendor"),160,230,1600,{size:84,color:"#8a9a8c",out:x.a(4)-.3,h:130});
-  strike(S,430,300,1060,x.e(3,"tool vendor")+.1);
+  strike(S,430,300,1060,x.e(3,"tool vendor")+.1,x.a(4)-.3);
   kin(S,"NOT TO THE MODEL.",x.ws(3,"not to the model").slice(0,4),160,400,1600,{size:84,color:"#8a9a8c",out:x.a(4)-.3,h:130});
-  strike(S,560,470,800,x.e(3,"the model")+.1);
+  strike(S,560,470,800,x.e(3,"the model")+.1,x.a(4)-.3);
   kin(S,"THE DUTY STAYS WITH THE PERSON.",x.ws(3,"the duty stays with the person"),160,570,1600,{size:92,color:"#e7c27a",out:x.a(4)-.3,h:220});
   kin(S,"SAME ACCOUNTABILITY.",[x.w(4,"changes nothing"),x.w(4,"about who")],160,320,1600,{size:100,out:x.a(5)-.3,h:170});
   kin(S,"EASIER TO STOP LOOKING.",[x.w(4,"how easy"),x.w(4,"it is to"),x.w(4,"to stop"),x.w(4,"looking")],160,500,1600,{size:100,color:"#e7c27a",out:x.a(5)-.3,h:170});
@@ -350,7 +354,7 @@ function buildCaps(d){const box0=document.getElementById("caps");box0.innerHTML=
     p.words.forEach(w=>{cur.push(w);const txt=cur.map(z=>z.t).join(" ");const end=/[.?!:]$/.test(w.t),comma=/[,;]$/.test(w.t);
       if(end||cur.length>=7||(comma&&cur.length>=3)||txt.length>34)flush()});flush()});
   CAPS=CAPS.map(ws=>{const e=document.createElement("div");e.className="cap";e.style.opacity=0;
-    e.innerHTML=ws.map(w=>"<span>"+w.t+"</span>").join(" ");box0.appendChild(e);return{ws,e,sp:[...e.children],a:ws[0].a-.08,b:ws[ws.length-1].b+.35}});
+    e.innerHTML=ws.map(w=>"<span>"+w.t+"</span>").join("");box0.appendChild(e);return{ws,e,sp:[...e.children],a:ws[0].a-.08,b:ws[ws.length-1].b+.35}});
   CAPS.forEach((c,i)=>{const nx=CAPS[i+1];if(nx&&nx.a<c.b)c.b=nx.a})}
 function overlay(n,t,d){
   const g=OFF[n]+t;
