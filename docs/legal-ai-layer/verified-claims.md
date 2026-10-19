@@ -35,3 +35,9 @@
 * **"מעורבות אנושית מצומצמת":** זה ניסוח של הסרטון ביוטיוב, לא של גוגל. גוגל כותבת בעצמה על "practitioner review" ועל "practitioner confirmation" בכמה מהתהליכים, ועל "minimal review overhead" בניסוח הסכמי סודיות. הסרטון לא טוען על רמת הפיקוח בפועל.
 * **התחרות בין תומסון רויטרס, הארווי ואנתרופיק על "שכבת התשתית":** לא אומתה. מצוין רק מה ש-Reuters דיווחה על מרוץ.
 * **פער בין קצב האימוץ להכשרה:** נתון של Bloomberg Law דרך הסרטון, לא אומת. הסרטון לא טוען עליו.
+
+## הוספה: שמות המחברים ובקרות (19.10.2026, לתסריט היוטיוב באנגלית)
+
+נקראו מחדש הודעת העיתונות והבלוג של גוגל מ-25.8.2026. שני המקורות הם של גוגל, ולכן הם מוכיחים מה גוגל הכריזה, לא שכל מחבר פעיל בפועל (המוצר ב-preview). כל שם מוצג כ"לפי גוגל".
+* רשימת המחברים: iManage, NetDocuments, Docusign, RelativityOne, Everlaw, Thomson Reuters (HighQ בבלוג), CourtListener, Courtroom5, Harvey, Solve Intelligence, Legora, וכן Google Workspace ו-Microsoft 365 בבלוג.
+* בקרות: VPC ו-CMEK בבלוג; "never used to train or fine-tune Google's foundation models" בבלוג, ו-"base models are never trained on customer data" בהודעה. מוצג כאמירה של גוגל.
