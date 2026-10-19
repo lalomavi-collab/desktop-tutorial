@@ -345,7 +345,7 @@ function s6(d){const S=SC(),x=ctx(d);
   kin(S,"NOT READY FOR AGENTS.",x.ws(3,"not ready for agents"),160,780,1600,{size:70,color:"#e7c27a",out:x.a(4)-.3,h:110});
   const e0=x.w(4,"at lalum"),tc=x.b(4)+3.4;
   const el=box(660,230,600,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:600px;opacity:1"');S.reg(el,e0,tc,1);
-  S.reg(box(0,470,W,70,"c h2","lalum.co"),e0+.8,tc);
+  S.reg(box(0,470,W,70,"c h2","lalumapp.com"),e0+.8,tc);
   S.reg(box(0,560,W,60,"c p dim","The governance around the work, not another tool."),x.w(4,"the governance"),tc);
   // end credits, rolling up like a film
   const row=(l,v)=>'<div class="rel c" style="margin-top:46px"><div class="rel mono dim" style="font-size:22px;letter-spacing:7px">'+l+'</div><div class="rel" style="font-size:42px;font-weight:700;margin-top:10px;line-height:1.25">'+v+'</div></div>';

@@ -60,7 +60,7 @@ Disclosures
 The narration of this video is synthetic (AI generated). The on-screen product windows are illustrative mockups, not screens of any real product. LALUM is not affiliated with Google. This video is general information, not legal advice.
 
 LALUM, Dr. Avraham Lalum, Adv.
-https://www.lalum.co
+https://lalumapp.com
 """
 open(os.path.join(OUT, "description.txt"), "w").write(desc)
 print(len(cues), "caption cues;", mmss(acc), "total")
