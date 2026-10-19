@@ -35,3 +35,28 @@ Run on `main` at `7a00b2c` and on the live Supabase project `meoymkcotomoluwlwue
 - Finding 5 fixed in code: `analyze-contract` and `compare-contracts` now also stop at 30 calls per day across all callers (HTTP 429, code `daily_cap`). Takes effect when the two functions are deployed. The page still shows its hourly limit message for any 429.
 - Owner account check: `avraham@lalum.co` is registered and confirmed, so nobody else can register that address (the admin helper also admits it by email).
 - Database tooling note: statements containing `drop` or `delete` hung in this session's SQL tool; policy and function changes were applied with `alter policy` and dynamic SQL.
+
+## Second pass: SECURITY DEFINER review and wider checks (owner approval)
+
+### SECURITY DEFINER functions executable by signed-in users (about 100)
+- None is executable by `anon`.
+- Writers: 7 financial functions lack a role helper by name in my first pattern, but each calls `lalum_fin_can(firm)`. `lalum_fin_can` goes through `lalum_fin_level`, which requires the caller to be a member of that firm, MFA verified, and at the required level. Sound as read.
+- Six read-only helpers have no check of their own (`lalum_matter_firm`, `lalum_original_referenced`, `lalum_original_slot_ok`, `lalum_purge_blocker`, `lalum_fin_collections_blocked`, `lalum_fin_dunning_blocked`). They return a uuid or a boolean for an id the caller must already know. They are used inside RLS policies, so revoking execute would break those policies. Left as is. Low.
+- Open item: `lalum_trust_post` with type REVERSAL looks up the reversed ledger row by id without checking that it belongs to the same firm or matter. With one firm today this has no effect. It matters when a second firm joins. Fix before then.
+
+### Fixed in this pass
+- **Group chat open to every signed-in user** (`lalum_group_chat_messages`): read and post policies now require an admin, a firm member, or a client with a matter access grant (migration 0054, applied). A signed-in stranger sees 0 rows. The room had 1 message and 1 author.
+- **`lalum-lead`** (course sign-up, deployed but never committed to the repository): had no per-address or overall limit, and every accepted lead sends a Telegram message and an email to the firm. Now 5 per address per hour and 100 per day overall. The source is now in the repository (`lalum-app/supabase/functions/lalum-lead/index.ts`). Needs deploy.
+- **`lalum-lead-submit`**: daily ceiling of 100 across everyone added. Needs deploy.
+
+### Checked and sound
+- No table in `public` without row level security. All four storage buckets are private with size limits. The one view uses `security_invoker`.
+- Anonymous role holds broad table privileges (Supabase default), but every table is RLS protected and the only anonymous policy is the intentional public read of `lalum_playbooks` (3 rows) and answered discussions.
+- Deployed functions with JWT verification off, read from the deployed source: `lalum-diag` (retired, returns "disabled"), `lalum-daily-report`, `lalum-newsletter-daily` (database held key, newsletters only send an item a human approved), `lalum-dispatch-worker` (worker key header), `lalum-inquiry-email` (Svix signature plus per firm limit), `lalum-pay-webhook` (shared secret, fail closed, constant time compare), `lalum-voice-webhook`, `lalum-esign`, `lalum-whatsapp-webhook` (Meta signature, fail closed).
+- Front end: no `dangerouslySetInnerHTML`, `eval` or dynamic function construction in `src`.
+
+### Remaining, for the owner
+1. `pii-gateway`: the unauthenticated `/health` answers, and `/health?deep=1` returns the audit log row count and whether keys and the upstream key are configured. Low, but it should require the gateway token. The source is generated from another package and is not in this repository.
+2. Leaked password protection in Supabase Auth (dashboard setting).
+3. About 100 `SECURITY DEFINER` functions are visible to signed-in users by design; a periodic review of new ones is advisable.
+4. Deploy list (from the repository): `analyze-contract`, `compare-contracts`, `lalum-lead`, `lalum-lead-submit`, `lalum-whatsapp-webhook`.

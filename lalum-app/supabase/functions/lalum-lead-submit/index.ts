@@ -99,6 +99,8 @@ Deno.serve(async (req) => {
 
   // Five submissions an hour per client, two per hour per contact (a double click, not a flood).
   if (!(await allowed(admin, `lead:ip:${await sha(clientIp(req))}`, 5, 3600))) return json(429, { code: "rate_limited" });
+  // A daily ceiling across everyone (2026-10-19): each stored lead sends a Telegram message to the firm.
+  if (!(await allowed(admin, "lead-submit:all", 100, 86400))) return json(429, { code: "daily_cap" });
   const contactKey = await sha(email || phone);
   if (!(await allowed(admin, `lead:contact:${contactKey}`, 2, 3600))) return json(200, { ok: true });
 
