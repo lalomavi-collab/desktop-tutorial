@@ -26,7 +26,7 @@ const CASE_LAW_MARKER = "⚖️";
 const DAILY_PER_PERSON = 2;
 const DAILY_TOTAL = 10;
 const DAILY_LIMIT_REPLY =
-  "הגעת למגבלת השימוש החינמית היומית בעוזר באתר. כדי להמשיך, הורידו את אפליקציית LALUM לנייד או תאמו שיחת אבחון קצרה בכתובת lalumapp.com/book.";
+  "השירות נמצא כרגע בשלב פיילוט ולכן השימוש בו מוגבל. נשמח לעמוד לרשותכם בשיחת אבחון קצרה עם ד״ר עו״ד אברהם ללום בכתובת lalumapp.com/book.";
 // The case law answers keep their own, tighter-in-wording guard (same two per person), see below.
 const FREE_CASE_LAW_LOOKUPS = 2;
 const CASE_LAW_LIMIT_REPLY =
