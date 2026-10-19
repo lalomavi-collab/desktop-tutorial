@@ -513,3 +513,9 @@ html:not([data-style]) #engine .arch { background: transparent; }
   border-radius: 2px;
 }
 :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) :is(.ins-card, .ins-reel) { box-shadow: none; }
+
+/* Notices on the dark marketing styles: the light-theme text colours above are too dark on the
+   translucent tint over a dark canvas, so each kind gets a lighter text colour (all above 7:1). */
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .notice-ok { color: #a6dcb9; }
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .notice-warn { color: #e6bda4; }
+:root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .notice-err { color: #f4aea2; }
