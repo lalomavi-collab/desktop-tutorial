@@ -60,3 +60,9 @@ Run on `main` at `7a00b2c` and on the live Supabase project `meoymkcotomoluwlwue
 2. Leaked password protection in Supabase Auth (dashboard setting).
 3. About 100 `SECURITY DEFINER` functions are visible to signed-in users by design; a periodic review of new ones is advisable.
 4. Deploy list (from the repository): `analyze-contract`, `compare-contracts`, `lalum-lead`, `lalum-lead-submit`, `lalum-whatsapp-webhook`.
+
+## Third pass (owner approval)
+- `lalum_trust_post` REVERSAL now requires the reversed entry to belong to the same firm and matter (migration 0055, applied). Grants unchanged (anon cannot execute).
+- Prompt injection assessment for the site assistant: the function gives the model no tools and writes only usage counters, so injected text can change a reply but cannot read or write data. Recorded in the impact assessment.
+- `/os` limit message reworded in five languages, since a 429 can now also mean the daily ceiling.
+- Vendor terms read for Google, OpenAI, Synthesia and Meta (see `VENDOR_REVIEW_2026-10-19.md`). Open: which Synthesia DPA version governs, and whether the Gemini key is on a paid project.
