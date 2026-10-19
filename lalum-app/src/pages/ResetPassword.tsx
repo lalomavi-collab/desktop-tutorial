@@ -5,7 +5,8 @@ import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { supabase, passwordRecovery } from "../lib/supabase";
 import { pwnedCount } from "../lib/pwnedCheck";
-import { generateStrongPassword } from "../lib/strongPassword";
+import { evaluatePassword } from "../lib/passwordPolicy";
+import { PasswordField } from "../components/PasswordField";
 import { MfaGate } from "./cockpit/MfaGate";
 import "../styles/cockpit.css";
 
@@ -29,30 +30,15 @@ import "../styles/cockpit.css";
 // challenges for the 6-digit code first when (and only when) a factor
 // exists, and otherwise renders the form straight through.
 export function ResetPassword() {
-  const { updatePassword, demoMode } = useAuth();
+  const { user, updatePassword, demoMode } = useAuth();
   const { t } = useLang();
   const L = t.ui.login;
   const navigate = useNavigate();
   const [ready, setReady] = useState(demoMode || passwordRecovery);
   const [password, setPassword] = useState("");
-  const [revealed, setRevealed] = useState(false);
-  const [copyLabel, setCopyLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
-
-  function onGenerate() {
-    setPassword(generateStrongPassword());
-    setRevealed(true);
-  }
-
-  async function onCopy() {
-    try {
-      await navigator.clipboard.writeText(password);
-      setCopyLabel(L.copiedPassword);
-      setTimeout(() => setCopyLabel(null), 1500);
-    } catch { /* clipboard unavailable; the field is still selectable */ }
-  }
 
   useEffect(() => {
     if (!supabase) return;
@@ -65,6 +51,10 @@ export function ResetPassword() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!evaluatePassword(password, { email: user?.email ?? undefined }).ok) {
+      setError(t.ui.pw.policyFailed);
+      return;
+    }
     setBusy(true);
     if (!demoMode && (await pwnedCount(password)) > 0) {
       setBusy(false);
@@ -72,11 +62,16 @@ export function ResetPassword() {
       return;
     }
     const res = await updatePassword(password);
-    setBusy(false);
     if (res.error) {
+      setBusy(false);
       setError(res.error);
       return;
     }
+    // A reset is often done because the account may be compromised: cut off every other session.
+    // Best effort; the new password is already saved either way.
+    if (supabase) await supabase.auth.signOut({ scope: "others" }).catch(() => undefined);
+    setBusy(false);
+    setPassword("");
     setDone(true);
   }
 
@@ -99,23 +94,19 @@ export function ResetPassword() {
           <MfaGate required={false}>
             <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 20 }}>
               {error && <div className="notice notice-err">{error}</div>}
-              <div>
-                <div className="label" style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-                  <span>{L.password}</span>
-                  <button type="button" onClick={onGenerate} style={{ background: "none", border: 0, color: "var(--clay)", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: 0 }}>
-                    {L.generatePassword}
-                  </button>
-                </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input className="field" type={revealed ? "text" : "password"} autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={L.passwordPlaceholder} dir="ltr" style={{ flex: 1 }} />
-                  {revealed && password && (
-                    <button type="button" className="btn" onClick={() => void onCopy()} style={{ flexShrink: 0 }}>
-                      {copyLabel ?? L.copyPassword}
-                    </button>
-                  )}
-                </div>
-                <p className="muted" style={{ fontSize: 12.5, margin: "6px 0 0" }}>{revealed ? L.passwordGenerated : L.passwordHint}</p>
-              </div>
+              <PasswordField
+                id="reset-password"
+                label={L.password}
+                value={password}
+                onChange={setPassword}
+                autoComplete="new-password"
+                required
+                showStrength
+                generate
+                context={{ email: user?.email ?? undefined }}
+                placeholder={L.passwordPlaceholder}
+                hint={L.passwordHint}
+              />
               <button className="btn btn-clay" style={{ justifyContent: "center" }} disabled={busy}>
                 {busy ? L.pleaseWait : L.newPasswordSubmit}
               </button>

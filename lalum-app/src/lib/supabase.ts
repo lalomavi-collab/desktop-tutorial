@@ -57,6 +57,19 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
     })
   : null;
 
+// A throwaway client that never stores a session. It exists so that "type your current
+// password" can be checked against the server WITHOUT touching the live session: signing in
+// on the main client would replace that session (and, for an account with a second factor,
+// drop it back to a first-factor session that can no longer change the password). The
+// caller signs this client out with scope "local" afterwards, which revokes only its own
+// session, never the user's others.
+export function createVerifierClient(): SupabaseClient | null {
+  if (!isSupabaseConfigured) return null;
+  return createClient(url as string, anonKey as string, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "lalum-pw-verifier" },
+  });
+}
+
 // The recovery link lands with the token already in the URL, and the client
 // processes it (and fires PASSWORD_RECOVERY) as soon as this module loads,
 // not when some later component asks. ResetPassword is a lazy route: by the
