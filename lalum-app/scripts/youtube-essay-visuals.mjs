@@ -88,7 +88,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 #grain{left:-200px;top:-200px;width:2400px;height:1500px;opacity:.05}
 #vig{inset:0;background:radial-gradient(75% 75% at 50% 48%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
 </style><body>
-<div class="bg"></div><canvas id="tex" width="512" height="512" style="position:absolute;left:-200px;top:-200px;width:2400px;height:1500px;opacity:.16"></canvas><div class="grid"></div>
+<div class="bg"></div><canvas id="texsrc" width="512" height="512" style="display:none"></canvas><div id="tex" style="position:absolute;left:0;top:0;width:1920px;height:1080px;opacity:.1;background-size:768px 768px"></div><div class="grid"></div>
 <div id="world"><div id="stage"></div></div>
 ${logo}
 <div id="hud">
@@ -518,10 +518,10 @@ function camera(T){
   const I=idle(n,T-OFF[n]);return Object.assign({},I,{roll:0,yaw:0,trans:0,u:0,dip:0})}
 function sceneAt(T){let n=1;for(let i=1;i<6;i++)if(T>=OFF[i+1]-.25)n=i+1;return n}
 
-(function(){const c=document.getElementById("tex"),g=c.getContext("2d"),im=g.createImageData(512,512);let sd=11;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+(function(){const c=document.getElementById("texsrc"),g=c.getContext("2d"),im=g.createImageData(512,512);let sd=11;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
   const oct=[8,16,32,64].map(n=>{const a=[];for(let i=0;i<(n+1)*(n+1);i++)a.push(R());return{n:n,a:a}});
   for(let y=0;y<512;y++)for(let x=0;x<512;x++){let v=0,ws=0;oct.forEach((o,k)=>{const fx=x/512*o.n,fy=y/512*o.n,ix=Math.floor(fx),iy=Math.floor(fy),tx=fx-ix,ty=fy-iy,N=o.n+1,a=o.a,v00=a[iy*N+ix],v10=a[iy*N+ix+1],v01=a[(iy+1)*N+ix],v11=a[(iy+1)*N+ix+1],w=1/(k+1);v+=w*((v00*(1-tx)+v10*tx)*(1-ty)+(v01*(1-tx)+v11*tx)*ty);ws+=w});
-    const g8=Math.floor(v/ws*255),i=(y*512+x)*4;im.data[i]=im.data[i+1]=im.data[i+2]=g8;im.data[i+3]=255}g.putImageData(im,0,0)})();
+    const g8=Math.floor(v/ws*255),i=(y*512+x)*4;im.data[i]=im.data[i+1]=im.data[i+2]=g8;im.data[i+3]=255}g.putImageData(im,0,0);document.getElementById("tex").style.backgroundImage="url("+c.toDataURL()+")"})();
 const SPOTX={1:560,2:650,3:760,4:900,5:900,6:960};
 const orb=document.getElementById("orb");
 const AV=avatar(orb);
@@ -567,7 +567,7 @@ window.render=T=>{
   let dx=0,dy=0,sc=C.s*(1+.0035*pulse);
   HITS.forEach(h=>{const q=T-h;if(q>=0&&q<.4){const am=8*Math.exp(-q*10);dx+=Math.sin(q*95)*am;dy+=Math.cos(q*83)*am*.6;sc*=1+.012*Math.exp(-q*12)}});
   document.getElementById("stage").style.transform="translate("+dx+"px,"+dy+"px) translate(960px,540px) rotateY("+C.yaw+"deg) rotateZ("+C.roll+"deg) scale("+sc+") translate("+(-C.cx)+"px,"+(-C.cy)+"px)";
-  document.getElementById("tex").style.transform="translate("+(-C.cx*.12)+"px,"+(-C.cy*.12)+"px)";
+  document.getElementById("tex").style.backgroundPosition=(-C.cx*.12)+"px "+(-C.cy*.12)+"px";
   document.getElementById("spot").style.left=(SPOTX[n]-550+40*Math.sin(T*.25))+"px";document.getElementById("spot").style.opacity=.8+.2*pulse;
   document.querySelector(".grid").style.backgroundPosition=(-C.cx*.3)+"px "+(-C.cy*.3)+"px";
   document.querySelector(".grid").style.opacity=.05+.035*pulse;

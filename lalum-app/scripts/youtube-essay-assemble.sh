@@ -18,5 +18,5 @@ for f in $(ls "$OUT"/part-*.mp4 | sort); do echo "file '$f'"; done > v.txt
 ffmpeg -v error -y -i vo.wav -i music.wav -filter_complex \
  "[0]aformat=sample_rates=48000:channel_layouts=stereo,highpass=f=70,acompressor=threshold=0.1:ratio=3,aecho=0.8:0.6:60:0.12,asplit=2[v][sc];[1]aformat=sample_rates=48000:channel_layouts=stereo,volume=0.75[m];[m][sc]sidechaincompress=threshold=0.02:ratio=6:attack=40:release=700[md];[v][md]amix=inputs=2:normalize=0,loudnorm=I=-15:TP=-1.5:LRA=9[o]" \
  -map "[o]" mix.wav
-ffmpeg -v error -y -f concat -safe 0 -i v.txt -i mix.wav -map 0:v -map 1:a -c:v libx264 -preset medium -crf 21 -maxrate 18M -bufsize 36M -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart "$OUT/final.mp4"
+ffmpeg -v error -y -f concat -safe 0 -i v.txt -i mix.wav -map 0:v -map 1:a -c:v libx264 -preset medium -crf 23 -maxrate 12M -bufsize 24M -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart "$OUT/final.mp4"
 ffprobe -v error -show_entries format=duration,size -of csv=p=0 "$OUT/final.mp4"
