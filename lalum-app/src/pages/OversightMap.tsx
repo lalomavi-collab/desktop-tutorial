@@ -52,9 +52,9 @@ export function OversightMap() {
       </section>
 
       {/* The framing clip: what a lawyer still sells when a machine drafts in
-          seconds, answered with two verbatim lines from the Supreme Court. */}
+          seconds, set against two verbatim lines from the Supreme Court. */}
       <section className="wrap" style={{ maxWidth: 1000, paddingBottom: 12 }}>
-        <LoopVideo src="/media/lalum-liability.mp4" poster="/media/lalum-liability.jpg" className="engine-video" label={OVERSIGHT_PAGE.videoAlt} />
+        <LoopVideo src="/media/lalum-legal-ai-layer.mp4" poster="/media/lalum-legal-ai-layer.jpg" className="engine-video" label={OVERSIGHT_PAGE.videoAlt} />
       </section>
 
       <section className="wrap section section-line" style={{ maxWidth: 1000 }}>
