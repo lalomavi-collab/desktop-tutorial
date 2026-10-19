@@ -196,6 +196,11 @@ Deno.serve(async (req) => {
     if (!(await allowed(admin, `analyze-contract:ip:${await sha(clientIp(req))}`, 10, 3600))) {
       return json(429, { code: "too_many_requests" });
     }
+    // A daily ceiling across all callers together (owner decision, 2026-10-19): the per client bound alone does
+    // not limit the bill when the calls come from many addresses.
+    if (!(await allowed(admin, "analyze-contract:all", 30, 86400))) {
+      return json(429, { code: "daily_cap" });
+    }
   }
 
   const playbookCriteria =
