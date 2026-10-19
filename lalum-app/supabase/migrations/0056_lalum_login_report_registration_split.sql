@@ -1,0 +1,5 @@
+-- lalum_login_report: a registration counts when the email is confirmed; unconfirmed sign-ups and visitors who tried
+-- the site chat without registering (counted by lalum-assistant under the key 'assistant-anon-day') are reported
+-- apart. Applied to production on 2026-10-19; the full function lives in the database.
+-- New fields in the returned json: unconfirmed_today, anonymous_chat_attempts_today.
+-- Counting query:   select count(*) from lalum_rate_hits where key = 'assistant-anon-day' and (hit_at at time zone tz)::date = d;
