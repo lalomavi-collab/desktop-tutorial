@@ -150,7 +150,7 @@ export function Login() {
                 <div className="label">{L.resetCodeLabel}</div>
                 <input className="field" inputMode="numeric" autoComplete="one-time-code" required maxLength={10} minLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder={L.resetCodePlaceholder} dir="ltr" />
               </div>
-              <button className="btn btn-clay" style={{ justifyContent: "center", marginTop: 4 }} disabled={busy || code.length !== 6}>
+              <button className="btn btn-clay" style={{ justifyContent: "center", marginTop: 4 }} disabled={busy || code.length < 6}>
                 {busy ? L.pleaseWait : L.resetCodeSubmit}
               </button>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
