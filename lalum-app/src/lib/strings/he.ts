@@ -172,7 +172,7 @@ export const he: Dict = {
       resetSend: "שליחת קישור לאיפוס",
       resetSent: "אם הכתובת קיימת במערכת, נשלח אליה קוד וגם קישור לאיפוס. הזינו את הקוד למטה, או פתחו את הקישור מתוך המייל.",
       resetCodeLabel: "קוד מהמייל",
-      resetCodePlaceholder: "123456",
+      resetCodePlaceholder: "12345678",
       resetCodeSubmit: "אימות קוד",
       resendCode: "שליחה חוזרת",
       changeEmail: "כתובת מייל אחרת",

@@ -172,7 +172,7 @@ export const fr: Dict = {
       resetSend: "Envoyer le lien",
       resetSent: "Si cette adresse existe dans notre système, un code et un lien viennent de lui être envoyés. Saisissez le code ci-dessous, ou ouvrez le lien reçu par courriel.",
       resetCodeLabel: "Code reçu par courriel",
-      resetCodePlaceholder: "123456",
+      resetCodePlaceholder: "12345678",
       resetCodeSubmit: "Vérifier le code",
       resendCode: "Renvoyer le code",
       changeEmail: "Utiliser une autre adresse",

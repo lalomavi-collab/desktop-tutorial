@@ -176,7 +176,7 @@ export const en = {
       resetSend: "Send reset link",
       resetSent: "If that address is in our system, we've sent it a code and a reset link. Enter the code below, or open the link from the email.",
       resetCodeLabel: "Code from the email",
-      resetCodePlaceholder: "123456",
+      resetCodePlaceholder: "12345678",
       resetCodeSubmit: "Verify code",
       resendCode: "Resend code",
       changeEmail: "Use a different email",

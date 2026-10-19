@@ -172,7 +172,7 @@ export const ar: Dict = {
       resetSend: "إرسال الرابط",
       resetSent: "إذا كان هذا العنوان مسجلاً لدينا، فقد أرسلنا إليه رمزاً ورابطاً لإعادة التعيين. أدخلوا الرمز أدناه، أو افتحوا الرابط من البريد.",
       resetCodeLabel: "الرمز من البريد",
-      resetCodePlaceholder: "123456",
+      resetCodePlaceholder: "12345678",
       resetCodeSubmit: "التحقق من الرمز",
       resendCode: "إعادة إرسال الرمز",
       changeEmail: "استخدام بريد آخر",
