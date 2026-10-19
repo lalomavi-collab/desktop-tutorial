@@ -24,6 +24,16 @@ const DS_KEY = Deno.env.get("DOCUSEAL_API_KEY") ?? "";
 const DS_BASE = (Deno.env.get("DOCUSEAL_BASE_URL") ?? "https://api.docuseal.com").replace(/\/+$/, "");
 const WH_SECRET = Deno.env.get("DOCUSEAL_WEBHOOK_SECRET") ?? "";
 
+// Constant-time comparison over SHA-256 digests (no timing or length leak).
+async function safeEqual(a: string, b: string): Promise<boolean> {
+  const enc = new TextEncoder();
+  const [da, db] = await Promise.all([crypto.subtle.digest("SHA-256", enc.encode(a)), crypto.subtle.digest("SHA-256", enc.encode(b))]);
+  const x = new Uint8Array(da), y = new Uint8Array(db);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
 const admin = createClient(SB_URL, SB_SERVICE, { auth: { persistSession: false } });
 
 const cors = {
@@ -88,7 +98,7 @@ Deno.serve(async (req) => {
 
   // DocuSeal -> us. Authenticated by the shared secret in the URL.
   if (action === "webhook") {
-    if (!WH_SECRET || url.searchParams.get("secret") !== WH_SECRET) return json({ error: "unauthorized" }, 401);
+    if (!WH_SECRET || !(await safeEqual(url.searchParams.get("secret") ?? "", WH_SECRET))) return json({ error: "unauthorized" }, 401);
     const event = String(body?.event_type ?? "");
     const d = body?.data ?? {};
     const subId = d?.submission_id != null ? String(d.submission_id) : null;

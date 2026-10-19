@@ -45,6 +45,7 @@ const NAMES = {
   "regulatory-readiness": "lalum-tikun-13-mukhanut.pdf",
   "contract-shield": "lalum-hitkashrut-sapak-ai.pdf",
   "algorithmic-dispute": "lalum-sikhsukh-algoritmi.pdf",
+  "security": "lalum-avtachat-meida.pdf",
 };
 
 const pages = readdirSync(src).filter((f) => f.endsWith("-booklet.html"));

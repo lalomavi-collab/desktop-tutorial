@@ -3,9 +3,10 @@ import { useLocation } from "react-router-dom";
 import { PageMeta } from "../components/PageMeta";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
+import { Link } from "../components/AppLink";
 
 export function Legal() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const g = t.legal;
   const { hash } = useLocation();
 
@@ -38,6 +39,11 @@ export function Legal() {
           {s.body.map((p, i) => (
             <p key={i} style={{ fontSize: 16, lineHeight: 1.72, color: "var(--slate)", margin: "0 0 14px", maxWidth: "66ch" }}>{p}</p>
           ))}
+          {s.id === "security" && lang === "he" && (
+            <p style={{ fontSize: 16, margin: "0 0 14px" }}>
+              <Link to="/security" style={{ color: "var(--clay)", fontWeight: 600 }}>לפירוט הבקרות שנבדקו, החוברת וסקריפט הביקורת &rarr;</Link>
+            </p>
+          )}
         </div>
       ))}
     </section>

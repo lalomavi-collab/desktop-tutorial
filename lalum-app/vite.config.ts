@@ -15,6 +15,8 @@ import { pillarPagesFor, type PillarPage } from "./src/lib/pillars";
 import { SECTORS, sectorCases, type Sector } from "./src/lib/sectors";
 import { LEGAL_TOOLS, TOOLS_PAGE, type LegalTool } from "./src/lib/legalTools";
 import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES } from "./src/lib/oversightMap";
+import { SECURITY_PAGE, SECURITY_GROUPS, CHECKED_ON } from "./src/lib/securityPage";
+import { SECURITY_TEMPLATES } from "./src/lib/securityTemplates";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
 import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
 import type { QA } from "./src/lib/schema";
@@ -102,6 +104,8 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: TOOLS_PAGE.path, title: `${TOOLS_PAGE.title} | LALUM`, desc: TOOLS_PAGE.desc },
   // The oversight map: where two frameworks name a human, quoted from the instruments.
   { path: OVERSIGHT_PAGE.path, title: `${OVERSIGHT_PAGE.title} | LALUM`, desc: OVERSIGHT_PAGE.desc },
+  // The security page: what is built, what was checked, what is not claimed.
+  { path: SECURITY_PAGE.path, title: `${SECURITY_PAGE.title} | LALUM`, desc: SECURITY_PAGE.desc },
   // One prerendered page per LALUM Academy program, In-House and Pro alike, so
   // each program resolves to a real file with its own title and description
   // instead of living only inside an accordion on the training page.
@@ -661,6 +665,67 @@ function oversightBodyHtml(): string {
   return out.join("\n");
 }
 
+// The security page. The static copy carries every claim with its limit, and the
+// templates with their corrections, because those sentences are the content.
+function securityBodyHtml(): string {
+  const out = [`        <h1>${esc(SECURITY_PAGE.h1)}</h1>`, `        <p>${esc(SECURITY_PAGE.lede)}</p>`];
+  out.push(`        <h2>${esc(SECURITY_PAGE.howToReadTitle)}</h2>`, `        <ul>${SECURITY_PAGE.howToRead.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`);
+  for (const g of SECURITY_GROUPS) {
+    out.push(`        <h2>${esc(g.title)}</h2>`);
+    for (const c of g.claims) {
+      out.push(`        <h3>${esc(c.title)}</h3>`, `        <p>${esc(c.text)}</p>`);
+      if (c.limit) out.push(`        <p>${esc(SECURITY_PAGE.limitLabel)}: ${esc(c.limit)}</p>`);
+      if (c.url) out.push(`        <p><a href="${esc(c.url)}">${esc(SECURITY_PAGE.providerLink)}</a></p>`);
+    }
+  }
+  out.push(`        <h2>${esc(SECURITY_PAGE.templatesTitle)}</h2>`, `        <p>${esc(SECURITY_PAGE.templatesLede)}</p>`);
+  for (const t of SECURITY_TEMPLATES) {
+    out.push(`        <h3>${esc(t.title)} (${esc(t.statusLabel)})</h3>`, `        <p>${esc(t.intro)}</p>`);
+    out.push(`        <ul>${t.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    if (t.corrections) out.push(`        <p>${esc(SECURITY_PAGE.correctionsLabel)}:</p>`, `        <ul>${t.corrections.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+  }
+  out.push(`        <h2>${esc(SECURITY_PAGE.notClaimedTitle)}</h2>`, `        <ul>${SECURITY_PAGE.notClaimed.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`);
+  out.push(`        <h2>${esc(SECURITY_PAGE.disclosureTitle)}</h2>`, ...SECURITY_PAGE.disclosure.map((t) => `        <p>${esc(t)}</p>`));
+  out.push(`        <p><a href="${esc(SECURITY_PAGE.bookletHref)}">${esc(SECURITY_PAGE.bookletLabel)}</a></p>`);
+  out.push(`        <p>${esc(SECURITY_PAGE.checked)}</p>`, `        <p>${esc(SECURITY_PAGE.disclaimer)}</p>`);
+  return out.join("\n");
+}
+
+// The security booklet: the same claims and templates as the page, plus the
+// whole audit script, printed to a PDF by scripts/build-booklet-pdf.mjs.
+function securityBookletHtml(wordmark: string): string {
+  const p = (t: string) => `<p>${esc(t)}</p>`;
+  const code = (text: string) => `<pre dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:isolate;font-family:Consolas,Menlo,monospace;font-size:7.6pt;line-height:1.5;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--line);border-radius:2mm;padding:3mm">${esc(text)}</pre>`;
+  const out: string[] = [`<p class="lede">${esc(SECURITY_PAGE.lede)}</p>`];
+  out.push(`<h2>${esc(SECURITY_PAGE.howToReadTitle)}</h2>`, `<ul>${SECURITY_PAGE.howToRead.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`);
+  for (const g of SECURITY_GROUPS) {
+    out.push(`<h2>${esc(g.title)}</h2>`);
+    for (const c of g.claims) {
+      out.push(`<article class="block"><p class="cite"><span dir="ltr">${esc(c.id)}</span>${c.source === "provider" ? ` · ${esc(SECURITY_PAGE.providerLabel)}` : ""}</p><h3>${esc(c.title)}</h3>${p(c.text)}${c.limit ? `<p class="meta"><b>${esc(SECURITY_PAGE.limitLabel)}:</b> ${esc(c.limit)}</p>` : ""}${c.url ? `<p class="src"><span dir="ltr">${esc(c.url)}</span></p>` : ""}</article>`);
+    }
+  }
+  out.push(`<h2>${esc(SECURITY_PAGE.notClaimedTitle)}</h2>`, `<ul>${SECURITY_PAGE.notClaimed.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`);
+  out.push(`<h2>${esc(SECURITY_PAGE.templatesTitle)}</h2>`, `<p class="lede">${esc(SECURITY_PAGE.templatesLede)}</p>`);
+  const audit = readFileSync(join(process.cwd(), "public", "downloads", "lalum-supabase-security-audit.sql"), "utf8");
+  for (const t of SECURITY_TEMPLATES) {
+    out.push(`<h3><span dir="ltr">${esc(t.id)}</span> ${esc(t.title)} (${esc(t.statusLabel)})</h3>`, p(t.intro), `<ul>${t.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    if (t.code) out.push(code(t.code.text));
+    if (t.download) out.push(code(audit));
+    if (t.corrections) out.push(`<h4>${esc(SECURITY_PAGE.correctionsLabel)}</h4>`, `<ul>${t.corrections.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    if (t.source) out.push(`<p class="src"><span dir="ltr">${esc(t.source.url)}</span></p>`);
+  }
+  out.push(`<h2>${esc(SECURITY_PAGE.disclosureTitle)}</h2>`, ...SECURITY_PAGE.disclosure.map(p));
+  return bookletShell({
+    wordmark,
+    title: SECURITY_PAGE.bookletTitle.replace(" להורדה", ""),
+    subtitle: SECURITY_PAGE.bookletSubtitle,
+    updated: `נבדק ב-${CHECKED_ON}`,
+    path: SECURITY_PAGE.path,
+    body: out.map((x) => `    ${x}`).join("\n"),
+    disclaimer: SECURITY_PAGE.disclaimer,
+  });
+}
+
 // The articles index. Without this it fell to pageBodyHtml, which emits only a
 // heading and a summary, so the static document listed zero of the 147
 // articles: a crawler that does not run JavaScript saw an index page with
@@ -958,6 +1023,7 @@ function seoPrerender(): Plugin {
           const staticBody =
             r.path === TOOLS_PAGE.path ? toolsBodyHtml()
             : r.path === OVERSIGHT_PAGE.path ? oversightBodyHtml()
+            : r.path === SECURITY_PAGE.path ? securityBodyHtml()
             : sector ? sectorBodyHtml(sector)
             : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
@@ -985,6 +1051,7 @@ function seoPrerender(): Plugin {
         };
         for (const sec of SECTORS) write(sec.slug, sectorBookletHtml(sec, wordmark));
         for (const tool of LEGAL_TOOLS) write(tool.slug, toolBookletHtml(tool, wordmark));
+        write("security", securityBookletHtml(wordmark));
       }
       // The readiness assessment and its shareable results. Each result is its
       // own prerendered document with its own Open Graph tags and preview

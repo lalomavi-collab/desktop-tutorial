@@ -12,12 +12,17 @@
 // unset, or the token does not match, the request is rejected.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Length-independent constant-time comparison, so the check does not leak the
-// secret through timing.
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
+// Constant-time comparison over SHA-256 digests, so neither the secret's
+// content nor its length leaks through timing.
+async function safeEqual(a: string, b: string): Promise<boolean> {
+  const enc = new TextEncoder();
+  const [da, db] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(a)),
+    crypto.subtle.digest("SHA-256", enc.encode(b)),
+  ]);
+  const x = new Uint8Array(da), y = new Uint8Array(db);
   let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
   return diff === 0;
 }
 
@@ -38,7 +43,7 @@ Deno.serve(async (req) => {
   // Authenticate the callback with the shared secret before doing anything.
   const secret = Deno.env.get("PAY_WEBHOOK_SECRET")?.trim();
   const provided = new URL(req.url).searchParams.get("t") ?? req.headers.get("x-webhook-token") ?? "";
-  if (!secret || !safeEqual(provided, secret)) {
+  if (!secret || !(await safeEqual(provided, secret))) {
     console.log("PAY_WEBHOOK_UNAUTHORIZED");
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
@@ -76,6 +81,23 @@ Deno.serve(async (req) => {
 
   if (url && serviceKey && milestoneId && looksSuccessful) {
     const admin = createClient(url, serviceKey);
+
+    // Cross-check the amount against the milestone when the callback carries
+    // one. A callback with a valid token but a different sum is not a payment
+    // of this milestone. When the callback carries no amount field we proceed
+    // as before and log it, so a real payment is never blocked by a field name
+    // we have not seen.
+    const paidRaw = pick(payload, ["Sum", "Amount", "TotalSum", "Total", "PaidSum"]);
+    if (paidRaw !== null) {
+      const { data: ms } = await admin.from("billing_milestones").select("amount").eq("id", milestoneId).maybeSingle();
+      const paid = Number(paidRaw.replace(/,/g, ""));
+      if (!ms || !Number.isFinite(paid) || Math.abs(paid - Number(ms.amount)) > 0.01) {
+        console.log(`PAY_AMOUNT_MISMATCH milestone=${milestoneId}`);
+        return new Response(JSON.stringify({ received: true }), { status: 200, headers: { "content-type": "application/json" } });
+      }
+    } else {
+      console.log(`PAY_AMOUNT_UNVERIFIED milestone=${milestoneId}`);
+    }
     await admin.from("billing_milestones").update({
       status: "paid",
       paid_at: new Date().toISOString(),
