@@ -1,4 +1,4 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // The pg_cron job passes ?k=<key>. The key lives in the database (lalum_private.report_keys) and is checked
 // through lalum_verify_report_key; it is never stored in this source.
