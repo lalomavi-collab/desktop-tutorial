@@ -9,7 +9,7 @@
 - **תיקון (כשלושים שניות), מהמחשב שלך בתיקיית הריפו:** `cd lalum-app && supabase functions deploy lalum-assistant --no-verify-jwt`. מדריך: https://supabase.com/docs/guides/functions/deploy
 - **בדיקה:** פתח `https://meoymkcotomoluwlwues.supabase.co/functions/v1/lalum-assistant?health=1`. התוצאה התקינה: `rulings` ‏31, `rulingsSha` שמתחיל ב-`fc8f566c`.
 - הגרסה כוללת גם: חובת התחברות לעוזר, מגבלת 2 לאדם ו-10 ביום.
-- **אותו דבר ל-WhatsApp:** `supabase functions deploy lalum-whatsapp-webhook --no-verify-jwt` (גילוי AI בהודעה הראשונה).
+- **אותו דבר ל-WhatsApp:** `supabase functions deploy lalum-whatsapp-webhook --no-verify-jwt` (בוצע ב-19.10 עד גרסה 30; יש לפרוס שוב אחרי מיזוג PR של שורת הפרטיות, ההגבלה לשולח ובקשת המחיקה).
 
 ### 2. אישור טלגרם לפניות מהאתר
 - **מצב:** בבדיקה החיה סומן `notified_at`, כלומר ה-API של טלגרם החזיר הצלחה, והסודות מוגדרים. נותר רק שתאשר שההודעה "ליד חדש מהאתר" הגיעה לצ׳אט שלך.
