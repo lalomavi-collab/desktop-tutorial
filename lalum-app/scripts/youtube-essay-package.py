@@ -64,3 +64,30 @@ https://lalumapp.com
 """
 open(os.path.join(OUT, "description.txt"), "w").write(desc)
 print(len(cues), "caption cues;", mmss(acc), "total")
+
+
+# Upload kit: metadata and a checklist, so the upload is a copy and paste job.
+title = "Google Just Built an AI Lawyer's Assistant. Who Signs?"
+tags = ["legal AI", "Gemini Enterprise for Legal", "AI agents", "billable hour", "legal technology", "AI governance",
+        "lawyers and AI", "AI accountability", "Google Cloud", "law firm", "LALUM", "legal tech"]
+meta = {"title": title, "language": "en", "category": "Education", "tags": tags, "visibility_first": "unlisted",
+        "synthetic_content_disclosure": "yes (AI generated narration, synthesized music)", "made_for_kids": False,
+        "captions": "captions.en.srt", "thumbnail": "thumbnail.png", "description_file": "description.txt",
+        "chapters": {names[n]: mmss(off[n]) for n in order}, "end_screen_from": mmss(acc - 20),
+        "pinned_comment": "Three questions that do not move to the machine: who approves, on what basis, and who signs. Does your firm answer them in writing? lalumapp.com"}
+json.dump(meta, open(os.path.join(OUT, "upload-metadata.json"), "w"), indent=1)
+check = f"""YouTube upload checklist
+1. Upload final.mp4 (1080p, 24 fps, H.264 and AAC).
+2. Title: {title}
+3. Description: paste description.txt (the chapters start at 0:00 and are each longer than 10 seconds).
+4. Thumbnail: thumbnail.png.
+5. Language English. Captions: upload captions.en.srt.
+6. Altered or synthetic content: answer YES (the narration is synthetic; the music is synthesized).
+7. Audience: not made for kids. Category: Education. Tags: {", ".join(tags)}.
+8. Visibility: Unlisted first, watch it once with sound, then set Public.
+9. End screen: the last 20 seconds, from {mmss(acc - 20)} (YouTube allows 5 to 20 seconds; the credits roll).
+10. Pin this comment after publishing: {meta["pinned_comment"]}
+11. Do not post anywhere else before the owner approves (social posts follow the approval flow in CLAUDE.md).
+"""
+open(os.path.join(OUT, "UPLOAD-CHECKLIST.txt"), "w").write(check)
+print("upload kit written")

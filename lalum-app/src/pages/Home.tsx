@@ -17,6 +17,7 @@ import { VoiceNote } from "../components/VoiceNote";
 import { coverThumb } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
+import { HomeFilm } from "../components/HomeFilm";
 import { EngineVideo } from "../components/EngineVideo";
 import { LeadForm } from "../components/LeadForm";
 import { ArchitecturalSection } from "../components/ArchitecturalSection";
@@ -93,6 +94,21 @@ export function Home() {
         </div>
         <ClassifyCertifyDefendGrid />
       </ArchitecturalSection>
+
+      {/* The film: below the first section, never in the hero (the top of the page is Legal AI alone).
+          Nothing but the poster loads until it is played. */}
+      <section id="film" className="section-line">
+        <div className="wrap section">
+          <div style={{ maxWidth: "58ch", margin: "0 0 36px" }}>
+            <p className="eyebrow">{h.filmEyebrow}</p>
+            <h2 className="h2">{h.filmH2}</h2>
+            <p className="p" style={{ marginTop: 12 }}>{h.filmP}</p>
+          </div>
+          <div style={{ maxWidth: 960 }}>
+            <HomeFilm />
+          </div>
+        </div>
+      </section>
 
       {/* Order: services (areas, then the AI layer), proof (clients, then the writing), then the engine. */}
       {/* PRACTICE (AI + risk-governance pillars) */}
