@@ -12,7 +12,7 @@ The brief's "grounding facts" were checked against Google Cloud's own press rele
 **Safe to state (verified, attribute to Google or Reuters):**
 * 25 Aug 2026: Google Cloud announced Gemini Enterprise for Legal, initially in preview.
 * Google's own words: agents that "complete work rather than return suggestions"; "a duty of confidentiality that does not bend for convenience".
-* Four building blocks as Google describes them: skills, connections, agents, a governed control plane. Connections inherit the permissions the firm already has.
+* Four building blocks as Google's blog describes them: skills, connections, agents, an open partner ecosystem, with a governed control plane running underneath all four. (The press release groups them differently: skills, connectors, third party agents and partners, governed platform. Use the blog's structure and attribute it to the blog.) Connections inherit the permissions the firm already has.
 * Connectors, as listed by Google (press release and blog, re-read 19 Oct 2026): iManage, NetDocuments, Docusign, RelativityOne, Everlaw, Thomson Reuters HighQ, CourtListener, Courtroom5, Harvey, Solve Intelligence, Legora; also Google Workspace and Microsoft 365. Attribute every name to Google ("Google lists"). Both sources are Google's own, so this proves what Google announced, not that each connector is live today (the product is in preview).
 * Google's control plane enforces VPC and CMEK; Google states customer data is "never used to train or fine-tune Google's foundation models". Say "Google says", never as an independent fact.
 * Workflows Google lists: contract review and negotiation, regulatory tracking, access requests, redaction in court filings, drafting NDAs.
@@ -36,7 +36,7 @@ On 25 August 2026, Google announced a product for lawyers. Not a chatbot. Agents
 
 Contract review. Negotiation. Tracking regulation. Redacting court filings. Drafting the NDA you have signed a hundred times.
 
-For a hundred years, a law firm sold one thing: the hours of a trained person. Now one of the largest technology companies on earth is offering to do the work itself.
+For generations, a law firm has sold mostly one thing: the hours of a trained person. Now one of the largest technology companies on earth is offering to do the work itself.
 
 So here is the question this video is really about. Not whether the machine can draft. It can. The question is: when it does, who decides, on what basis, and who signs?
 
@@ -64,7 +64,7 @@ Remember the first wave? You pasted a clause into a box. The box answered. You c
 
 An agent changes who moves.
 
-Google describes four building blocks. Skills, the know-how for a legal task. Connections, which plug the system into the tools a firm already uses. Agents, which run a task from start to finish. And a governed platform, a control plane, that sets what each one is allowed to touch.
+Google describes four building blocks. Skills, the know-how for a legal task. Connections, which plug the system into the tools a firm already uses. Agents, which carry a task through. And an open partner ecosystem around them. Underneath all four, Google puts a governed control plane that decides what each piece is allowed to touch.
 
 Notice what that last piece is. The pitch is not just "smarter". The pitch is "governed". Even Google understands that a legal agent without controls is a liability, not a product.
 
@@ -75,11 +75,11 @@ I will say plainly what this means. The chatbot era asked: can AI help me write?
 **B-roll / visual cues**
 * Split screen: left, a hand copy-pasting between windows (the old loop); right, a task card sliding across stages on its own.
 * Four blocks assemble into a stack, one at a time, as each is named.
-* Slow zoom on the top block, the control plane, as it lights amber.
+* The control plane base slab lights amber under all four.
 
 **On-screen text / kinetic graphics**
-* Left caption "2023: you move the text". Right caption "2026: the task moves".
-* Stack labels: SKILLS, CONNECTIONS, AGENTS, GOVERNED PLATFORM. Tag: "Per Google's description".
+* Left caption "The chatbot era: you move the text". Right caption "The agent era: the task moves". (No years: the dates of the "first wave" are not sourced.)
+* Stack labels: SKILLS, CONNECTIONS, AGENTS, OPEN PARTNER ECOSYSTEM, with GOVERNED CONTROL PLANE as the base. Tag: "Per Google's description".
 * List of workflows types in as a ticker: contract review, regulatory tracking, access requests, redaction, NDAs. Tag: "Workflows listed by Google".
 
 **GenAI prompts**
@@ -132,7 +132,7 @@ Now the money. And here I want to separate what we know from what we are inferri
 
 What we know: the traditional model prices legal work by time. More hours, more revenue. Whoever does the work faster earns less, unless the price changes.
 
-What we infer: when a system can do first-pass review in minutes, the hour stops measuring value. A client can ask why they are paying for ten hours of something a tool prepared in ten minutes.
+What we infer: when a system can do first-pass review in minutes, the hour stops measuring value. A client can ask why they are paying for hours of something a tool prepared in minutes.
 
 Notice I am not giving you a figure for how much time AI saves. You will find confident numbers online. Many have no traceable source, so I will not repeat them. What I will say is that the direction of pressure is clear, and the size is not.
 
@@ -226,3 +226,32 @@ At LALUM we build that answer: the governance around the work, not another tool.
 * Dashes: none as punctuation in captions or description (project rule).
 * Add the new items to `docs/legal-ai-layer/verified-claims.md` once the connector and control wording is re-read.
 * Disclaimer in description: not legal advice, no affiliation with Google.
+
+---
+
+## Five techniques: what is in the film and what needs an outside asset
+
+The film mixes five production techniques. Three of them, plus the dynamic typography, are rendered in code (`lalum-app/scripts/youtube-essay-visuals.mjs`). Two need an outside asset.
+
+| # | Technique | In the film | How |
+|---|-----------|-------------|-----|
+| 1 | Motion graphics | Yes | Stacks, flows, connector wall, layer diagram, drawn in code |
+| 2 | Filmed footage | No, slots reserved | Needs a camera or licensed stock (see inserts below) |
+| 3 | Cinematic | Yes | 2.39:1 letterbox with the captions in the bar, teal and amber grade, a different slow camera move per scene, impact shake on the slam words, dust in the beam, light leaks at the cuts, film grain, riser and low hit at every title card, fades through black |
+| 4 | Mockup | Yes | An agent run window (scene 2) and a review screen (scene 5), generic and labelled "illustrative" |
+| 5 | Avatar | Partly | A voice reactive narrator orb driven by the narration level. A human or AI presenter needs an outside asset |
+
+Dynamic typography runs on top of all five: key phrases slam in on the exact word of the narration, and the captions highlight the word being spoken. Narration is a synthetic voice and the film says so on screen.
+
+**Inserts to add in the edit (not in the render)**
+* 0:00 to 0:12 (scene 1): on camera cold open by Dr. Lalum, or one licensed shot of a law library at night, ending on "complete work rather than return suggestions".
+* Scene 3, paragraph 4 ("Trojan horse"): one licensed or generated shot behind the layer diagram (a partner reading an access dashboard).
+* Scene 5, paragraph 2: one licensed courthouse exterior before the Hebrew quote card.
+* Scene 6, last paragraph: on camera sign off by Dr. Lalum over the end card, if the presenter option is chosen.
+* A real presenter (the owner on camera, or an AI avatar service) replaces the orb. Disclose a synthetic presenter in the description and on screen.
+
+**Film structure.** Cold open (scene 1, the hook), then the title card "A LALUM FILM: Google just built an AI lawyer's assistant. Who signs?" (Act I, scenes 1 and 2), Act II (scenes 3 and 4, the layer and the money), Act III (scenes 5 and 6, who answers and the three questions), then end credits that roll like a film. Running time about 8:15, of which the credits are about 27 seconds.
+
+**Upload package** (generated by `scripts/youtube-essay-package.py` and `scripts/youtube-essay-thumbnail.mjs`): English captions (SRT) timed to the narration, a description with chapters and sources, and a 1280x720 thumbnail. The description discloses the synthetic narration and that the product windows are mockups.
+
+**Pipeline** (all scripts in `lalum-app/scripts/`): `youtube-essay-voice.py` (narration), `youtube-essay-timing.py` (timeline and word times), `youtube-essay-music.py` (music and sound design, synthesized), `youtube-essay-visuals.mjs` (picture), `youtube-essay-assemble.sh` (mix and mux).
