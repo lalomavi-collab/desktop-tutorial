@@ -38,7 +38,7 @@ Red line from the practice profile: "storing the content of client chat conversa
 
 ## 5. Gaps found
 1. Anthropic data terms are not verified: whether inputs train models, and retention. Blocks the final conclusion.
-2. On-screen warning against entering confidential client information: added to the chat widget in five languages (2026-10-19). Wording not yet reviewed by a native speaker in ar, es, fr. The /os page does not carry it yet.
+2. On-screen warning against entering confidential client information: added to the chat widget in five languages (2026-10-19). Wording not yet reviewed by a native speaker in ar, es, fr. The /os page carries an adapted version (document upload) in five languages.
 3. Chat messages are not logged, so a client claim about an AI error (a consult-immediately trigger) could not be reconstructed. This is a deliberate trade-off against the red line; the owner should confirm it.
 4. The consent text for sign-up is drafted, not approved.
 
