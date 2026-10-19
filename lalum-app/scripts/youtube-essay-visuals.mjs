@@ -47,6 +47,7 @@ let acc = 0;
 for (const n of order) { if (!narr[n]) continue; offsets[n] = acc; acc += narr[n].dur; }
 const TOTAL = acc;
 
+const people = readFileSync(path.join(root, "scripts/youtube-essay-people.js"), "utf8");
 const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf8").replace(/<svg /, '<svg class="wm" ');
 
 const html = `<!doctype html><html lang="en"><meta charset="utf-8"><style>
@@ -108,8 +109,8 @@ ${logo}
   <div id="tags" style="inset:0"></div>
   <div id="prog" style="left:90px;right:90px;top:1068px;height:3px;background:#1c2d22"></div>
   <div id="progF" style="left:90px;top:1068px;height:3px;width:0;background:#e7c27a"></div>
-  <div id="orbL" class="mono" style="left:176px;top:1004px;font-size:15px;letter-spacing:3px;color:#6f806f">AI NARRATOR</div>
-  <div id="orb" style="left:90px;top:978px;width:70px;height:70px"></div>
+  <div id="orbL" class="mono" style="left:178px;top:1004px;font-size:15px;letter-spacing:3px;color:#6f806f">AI NARRATOR</div>
+  <div id="orb" style="left:86px;top:971px;width:78px;height:78px"></div>
   <div id="caps"></div>
 </div>
 <script>
@@ -161,31 +162,46 @@ function win(x,y,w,h,title){const e=box(x,y,w,h,"card");e.style.overflow="hidden
   [0,1,2].forEach(i=>{const d=box(26+i*34,22,18,18,"","",bar);d.style.background=["#c0705f","#e7c27a","#769d79"][i];d.style.borderRadius="50%"});
   const t=box(150,16,w-180,40,"mono",title,bar);t.style.fontSize="24px";t.style.color="#9aaa9c";return e}
 
+${people}
+
 // ---------- scene 1: the hook ----------
 function s1(d){const S=SC(),x=ctx(d);
   const g0=x.w(0,"not a chatbot")-.1;
-  const date=S.reg(mk("c big","25.8.2026"),.3,g0);date.style.top="400px";
+  const date=S.reg(box(960,330,900,200,"c big","25.8.2026"),.3,g0);date.style.fontSize="124px";
   S.reg(tag("Google Cloud announcement, preview"),.5,g0);
-  kin(S,"NOT A CHATBOT.",x.ws(0,"not a chatbot"),0,230,W,{size:64,color:"#8a9a8c",out:x.b(0)+1});
-  kin(S,"complete work rather than return suggestions",x.ws(0,"complete work rather than return suggestions"),160,400,1600,{size:96,out:x.b(0)+1,hi:[0,1]});
+  kin(S,"NOT A CHATBOT.",x.ws(0,"not a chatbot"),960,220,900,{size:56,color:"#8a9a8c",out:x.b(0)+1});
+  kin(S,"complete work rather than return suggestions",x.ws(0,"complete work rather than return suggestions"),960,340,900,{size:72,out:x.b(0)+1,hi:[0,1],h:320});
   S.reg(tag("Google Cloud blog, 25.8.2026"),x.w(0,"agents"),x.b(0)+1);
   const rows=[["Contract review","contract review"],["Negotiation","negotiation"],["Tracking regulation","tracking regulation"],["Redacting court filings","redacting court filings"],["Drafting NDAs","drafting the nda"]];
-  rows.forEach((r,i)=>{const e=box(520,190+i*116,880,88,"chip",'<span class="h3">'+r[0]+'</span>');e.style.fontSize="42px";S.reg(e,x.w(1,r[1]),x.b(1)+.9)});
+  rows.forEach((r,i)=>{const e=box(1000,190+i*116,820,88,"chip",'<span class="h3">'+r[0]+'</span>');e.style.fontSize="42px";S.reg(e,x.w(1,r[1]),x.b(1)+.9)});
   S.reg(tag("Workflows Google lists"),x.w(1,"contract review"),x.b(1)+.9);
-  kin(S,"THE HOURS OF A TRAINED PERSON",x.ws(2,"the hours of a trained person"),160,300,1600,{size:88,hi:[1],out:x.w(2,"now one")-.1});
-  const page=box(580,200,760,590,"card");const widths=[620,700,540,690,300,0,660,610,700,480,650];
+  // the lawyer at the desk: typing, then watching the page write itself, then the pen over the line
+  const tA=.4,tB=x.w(2,"now one"),tC=x.a(3);
+  kin(S,"THE HOURS OF A TRAINED PERSON",x.ws(2,"the hours of a trained person"),960,300,900,{size:76,hi:[1],out:tB-.1});
+  const lawyer=person(S0,{x:520,y:650,s:1.25,skin:SKIN.a,hair:"#2a2a2a",style:"short",top:"#2f4a38",glasses:true,propR:"pen",ph:.4,clip:330});
+  S.reg(lawyer.wrap,tA,1e9);
+  const desk=box(40,800,980,300,"");desk.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(desk,tA,1e9);
+  const lid=box(330,696,380,118,"");lid.style.cssText+=";background:#2b3d31;border:3px solid #4a7054;border-radius:14px 14px 4px 4px";
+  box(177,44,26,26,"",'',lid).style.cssText+=";border-radius:50%;background:#e7c27a;opacity:.7";S.reg(lid,tA,tC-.2);
+  const paper=box(360,826,380,64,"");paper.style.cssText+=";background:#e9e4d4;border-radius:4px";
+  paper.innerHTML='<div style="left:20px;top:12px;width:210px;height:6px;background:#b8b4a2;border-radius:3px"></div><div style="left:20px;top:28px;width:150px;height:6px;background:#b8b4a2;border-radius:3px"></div><div style="left:200px;top:46px;width:150px;height:3px;background:#1b1b1b"></div>';
+  S.reg(paper,tC-.2,1e9);
+  S.fx.push(t=>{let p={};
+    if(t<tB){p.hl={x:-70+Math.sin(t*13)*8,y:134+Math.abs(Math.sin(t*13))*8};p.hr={x:70+Math.sin(t*11+1)*8,y:134+Math.abs(Math.cos(t*11))*8};p.look={x:.1,y:.5};p.tilt=1;lawyer.props.R.style.opacity=0}
+    else if(t<tC){p.hr={x:32,y:-14};p.hl={x:-130,y:136};p.look={x:.9,y:-.1};p.tilt=-3;p.brow=.6;lawyer.props.R.style.opacity=0}
+    else{const hov=.5+.5*Math.sin(t*2.1),trem=Math.sin(t*23)*1.6;p.hr={x:122+trem,y:89+hov*26};p.ra=20;p.hl={x:-76,y:138};p.look={x:.5,y:.9};p.tilt=3;p.brow=-.2;lawyer.props.R.style.opacity=1}
+    lawyer.update(t,p)});
+  const page=box(1000,200,760,590,"card");const widths=[620,700,540,690,300,0,660,610,700,480,650];
   const bars=widths.map((w,i)=>{const b=mk("bar","",page);b.style.top=(50+i*46)+"px";b.style.left="56px";return b});
   const cur=mk("cursor","",page);
-  const t0=x.w(2,"now one"),t1=x.b(2);
+  const t0=tB,t1=x.b(2);
   S.reg(page,t0,x.a(3)+.5);
   S.fx.push(t=>{let act=-1;bars.forEach((b,i)=>{const a=t0+(i/widths.length)*(t1-t0),k=clamp((t-a)/((t1-t0)/widths.length*1.1));b.style.width=(widths[i]*ease(k))+"px";if(k>0&&k<1)act=i});
     if(act>=0){cur.style.opacity=1;cur.style.left=(56+parseFloat(bars[act].style.width)+10)+"px";cur.style.top=(42+act*46)+"px"}else cur.style.opacity=Math.floor(t*2)%2?1:0});
-  kin(S,"Can the machine draft? It can.",x.ws(3,"not whether the machine can draft"),160,170,1600,{size:54,color:"#8a9a8c",out:x.w(3,"who decides")-.1});
-  kin(S,"WHO DECIDES?",[x.w(3,"who decides"),x.w(3,"decides")],160,230,1600,{size:104});
-  kin(S,"ON WHAT BASIS?",x.ws(3,"on what basis").slice(0,3),160,380,1600,{size:104});
-  kin(S,"WHO SIGNS?",[x.w(3,"and who signs")+.15,x.w(3,"signs")],160,530,1600,{size:120,color:"#e7c27a"});
-  const sig=box(520,740,880,4,"","");sig.style.background="#e7c27a";const xm=box(480,690,60,60,"h1 amber","&times;");
-  S.fx.push(t=>{const k=ease((t-x.w(3,"and who signs"))/1.2);sig.style.opacity=k;sig.style.width=(880*k)+"px";xm.style.opacity=k;sig.style.boxShadow="0 0 "+(18+12*Math.sin(t*4))+"px #e7c27a"});
+  kin(S,"Can the machine draft? It can.",x.ws(3,"not whether the machine can draft"),960,170,900,{size:48,color:"#8a9a8c",out:x.w(3,"who decides")-.1});
+  kin(S,"WHO DECIDES?",[x.w(3,"who decides"),x.w(3,"decides")],960,250,900,{size:92});
+  kin(S,"ON WHAT BASIS?",x.ws(3,"on what basis").slice(0,3),960,400,900,{size:92});
+  kin(S,"WHO SIGNS?",[x.w(3,"and who signs")+.15,x.w(3,"signs")],960,550,900,{size:112,color:"#e7c27a"});
   return S}
 
 // ---------- scene 2: chatbot to agent ----------
@@ -196,20 +212,24 @@ function s2(d){const S=SC(),x=ctx(d);
   const A=S.reg(box(150,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Chatbot</div>'),L0,x.a(2)-.3);
   const B=S.reg(box(640,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Document</div>'),L0,x.a(2)-.3);
   const tk=S.reg(box(0,0,70,92,"",""),L0,x.a(2)-.3);tk.style.background="#f5f1e8";tk.style.borderRadius="8px";
-  const you=S.reg(box(0,0,100,100,"","YOU"),L0,x.a(2)-.3);you.style.cssText+=";border:4px solid #e7c27a;border-radius:50%;font-size:30px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#e7c27a;background:#16241b";
+  const mover=person(S0,{x:520,y:700,s:1.2,skin:SKIN.b,hair:"#3a2a1f",style:"short",top:"#3b5a6b",tie:null,ph:1.1});S.reg(mover.wrap,L0,x.a(2)-.3);
   const k=[[L0,640-20],[x.w(0,"you pasted"),640-20],[x.w(0,"the box answered"),380-30],[x.w(0,"you copied"),380-30],[x.w(0,"the human did"),640-20],[x.b(0),640-20]];
   S.fx.push(t=>{let px=k[0][1];for(let i=0;i<k.length-1;i++){if(t>=k[i][0]&&t<k[i+1][0]){px=lerp(k[i][1],k[i+1][1],ease((t-k[i][0])/Math.min(1.3,k[i+1][0]-k[i][0])))}else if(t>=k[i+1][0])px=k[i+1][1]}
     tk.style.left=px+"px";tk.style.top="470px";tk.style.background=(t>x.w(0,"the box answered")&&t<x.w(0,"you copied")+.2)||t>x.w(0,"you copied")?"#9cc29f":"#f5f1e8";
-    you.style.left=(px-15)+"px";you.style.top="340px";const pulse=t>x.w(0,"the human did")?1+.12*Math.sin(t*9):1;you.style.transform="scale("+pulse+")"});
+    const tx=px+35,ty=548,left=tx<520,tgt={x:(tx-520)/1.2,y:(ty-700)/1.2};
+    const pose={look:{x:clamp((tx-520)/220,-1,1),y:-.4},tilt:clamp((tx-520)/60,-4,4)*-.3,brow:t>x.w(0,"the human did")?.8:0,smile:t>x.w(0,"the human did")?-.4:.2};
+    if(left)pose.hl=tgt;else pose.hr=tgt;
+    mover.update(t,pose)});
   // right: the agent flow
   const R0=x.a(1);
   const rt=S.reg(box(1000,200,820,80,"c h2 green","The agent era"),R0,x.a(2)-.3);rt.style.left="1000px";rt.style.right="auto";
   const names=["Skill","Connection","Agent","Result"];
   names.forEach((n,i)=>S.reg(box(1020+i*205,400,160,190,"card",'<div class="lbl rel" style="margin-top:70px;font-size:26px">'+n+'</div>'),R0,x.a(2)-.3));
   const tk2=S.reg(box(0,0,70,92,"",""),R0,x.a(2)-.3);tk2.style.background="#9cc29f";tk2.style.borderRadius="8px";
-  const y2=S.reg(box(1380,700,100,100,"","YOU"),R0,x.a(2)-.3);y2.style.cssText+=";border:4px solid #3a5a42;border-radius:50%;font-size:30px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#8a9a8c;background:#16241b";
-  S.fx.push(t=>{const m=((t-R0)%8)/8;const px=m<.9?lerp(1020+45,1020+3*205+45,m/.9):1020+3*205+45;tk2.style.left=px+"px";tk2.style.top="451px"});
-  kin(S,"AN AGENT CHANGES WHO MOVES.",x.ws(1,"an agent changes who moves"),0,820,W,{size:76,hi:[3,4],out:x.a(2)-.3});
+  const watcher=person(S0,{x:1500,y:760,s:1.05,skin:SKIN.c,hair:"#241a14",style:"long",top:"#d9d3c3",shirt:"#2f4a38",tie:null,ph:2.3});S.reg(watcher.wrap,R0,x.a(2)-.3);
+  S.fx.push(t=>{const m=((t-R0)%8)/8;const px=m<.9?lerp(1020+45,1020+3*205+45,m/.9):1020+3*205+45;tk2.style.left=px+"px";tk2.style.top="451px";
+    watcher.update(t,{look:{x:clamp((px-1500)/330,-1,1),y:-.3},tilt:Math.sin(t*1.1)*2,smile:.45,brow:Math.max(0,Math.sin(t*.9))*.4})});
+  kin(S,"AN AGENT CHANGES WHO MOVES.",x.ws(1,"an agent changes who moves"),0,60,W,{size:72,hi:[3,4],out:x.a(2)-.3,h:110});
   // the four blocks and the control plane
   const layers=[["SKILLS","instructions and context","skills"],["CONNECTIONS","inherit existing permissions","connections"],["AGENTS","carry the work through","agents"],["OPEN PARTNER ECOSYSTEM","integrators and legal tech","open partner"]];
   layers.forEach((l,i)=>S.reg(box(120,170+i*130,1100,110,"card",'<div class="rel h2" style="margin:12px 0 0 40px;font-size:46px">'+l[0]+'</div><div class="rel dim" style="margin:2px 0 0 40px;font-size:26px">'+l[1]+'</div>'),x.w(2,l[2]),x.a(4)-.2));
@@ -227,6 +247,10 @@ function s2(d){const S=SC(),x=ctx(d);
   const pill=box(40,470,920,90,"chip",'<span class="amber" style="font-size:32px;font-weight:700">Practitioner confirmation required</span>',mw);pill.style.borderColor="#e7c27a";
   S.fx.push(t=>{pill.style.opacity=ease((t-x.w(4,"those are not demos"))/.5)});
   S.reg(tag("Illustrative mockup, not a Google screen"),x.w(4,"reviewing"),x.a(5)-.2);
+  // a colleague following along
+  const viewer=person(S0,{x:1640,y:800,s:.95,skin:SKIN.b,hair:"#241a14",style:"bun",top:"#3b5a6b",glasses:true,tie:null,ph:4.2});S.reg(viewer.wrap,x.a(2),1e9);
+  S.fx.push(t=>{const thinking=t>x.w(4,"reviewing");
+    viewer.update(t,{look:{x:thinking?-.9:-.6,y:.1},tilt:thinking?4:Math.sin(t*1.3)*2,hr:thinking?{x:30,y:-6}:null,brow:(t>x.w(3,"governed")&&t<x.w(3,"governed")+2)?.9:0,smile:thinking?0:.3})});
   // the question
   kin(S,"The chatbot era asked: can AI help me write?",x.ws(5,"the chatbot era asked can ai help me write"),160,230,1600,{size:54,color:"#8a9a8c",out:1e9});
   kin(S,"WHICH PARTS OF THE WORK CAN I STOP TOUCHING?",x.ws(5,"which parts of the work can i stop touching"),160,420,1600,{size:92,color:"#e7c27a",h:300});
@@ -251,9 +275,23 @@ function s3(d){const S=SC(),x=ctx(d);
     g[3].forEach((n,i)=>{const c=box(g[1],g[2]+56+i*68,500,58,"chip",n[0]);c.style.fontSize="32px";S.reg(c,x.w(2,n[1]),gB)})});
   S.reg(tag("Connectors as listed by Google, 25.8.2026, preview"),x.w(2,"document management"),gB);
   // part C: the front door
-  kin(S,"NOTHING TO RIP OUT.",[x.w(3,"nobody"),x.w(3,"has to"),x.w(3,"rip"),x.w(3,"anything out")],160,230,1600,{size:92,out:x.a(4)-.2});
-  kin(S,"THE FRONT DOOR.",x.ws(3,"the front door"),160,400,1600,{size:92,color:"#e7c27a",out:x.a(4)-.2});
-  kin(S,"THE KEYS THE FIRM ALREADY ISSUED.",x.ws(3,"the keys the firm already issued"),160,570,1600,{size:70,color:"#cfd9cb",out:x.a(4)-.2});
+  kin(S,"NOTHING TO RIP OUT.",[x.w(3,"nobody"),x.w(3,"has to"),x.w(3,"rip"),x.w(3,"anything out")],80,230,900,{size:80,out:x.a(4)-.2});
+  kin(S,"THE FRONT DOOR.",x.ws(3,"the front door"),80,380,900,{size:80,color:"#e7c27a",out:x.a(4)-.2});
+  kin(S,"THE KEYS THE FIRM ALREADY ISSUED.",x.ws(3,"the keys the firm already issued"),80,540,900,{size:54,color:"#cfd9cb",out:x.a(4)-.2,h:220});
+  // a person with the key, and the front door
+  const g3=x.a(4)-.2,tP=x.w(3,"think"),tArr=x.w(3,"the agent arrives"),tTurn=x.w(3,"using the keys"),tOpen=x.w(3,"already issued");
+  const glow=box(1266,206,428,608,"");glow.style.cssText+=";background:radial-gradient(circle at 50% 55%,rgba(231,194,122,.9),rgba(231,194,122,.15) 70%);border-radius:10px 10px 0 0";S.reg(glow,tP,g3);
+  const chip3=box(1330,470,300,90,"chip amber","Agent");chip3.style.fontSize="44px";chip3.style.textAlign="center";chip3.style.opacity=0;S.items.push([chip3,tOpen+.7,g3,.6]);
+  const frame=box(1260,200,440,620,"");frame.style.cssText+=";border:6px solid #4a7054;border-radius:16px 16px 0 0";S.reg(frame,tP,g3);
+  const door=box(1266,206,428,608,"");door.style.cssText+=";background:linear-gradient(90deg,#2b4633,#22382a);border:4px solid #4a7054;border-radius:10px 10px 0 0;transform-origin:0 50%";
+  const knob=box(376,300,26,26,"","",door);knob.style.cssText+=";border-radius:50%;background:#e7c27a";
+  const keyer=person(S0,{x:1110,y:720,s:1.1,skin:SKIN.d,hair:"#6b4a2b",style:"bun",top:"#2f4a38",propR:"key",ph:3.1,clip:300});
+  const reg3=e=>S.reg(e,tP,g3);reg3(keyer.wrap);
+  S.fx.push(t=>{const dk=ease((t-tOpen)/1.5);door.style.transform="perspective(900px) rotateY("+(-dk*78)+"deg)";door.style.opacity=t<tP-.1||t>g3?0:1;
+    let p={look:{x:.2,y:0},smile:.4};
+    if(t>=tArr){p.hr={x:132,y:-150};p.ra=-90+ease((t-tTurn)/.8)*52;p.look={x:.9,y:-.2};p.brow=.5;p.tilt=2}
+    keyer.props.R.style.opacity=t>=tArr?1:0;
+    keyer.update(t,p)});
   // part D: the layer
   const srcs=["Documents","E-discovery","Contracts","Research","Legal AI"];
   const gD=x.a(5)-.2;
@@ -264,6 +302,8 @@ function s3(d){const S=SC(),x=ctx(d);
   S.fx.push(t=>{const a=x.w(4,"once the work");sl.forEach((l,i)=>{const k=ease((t-a-.5-i*.25)/.8);l.style.opacity=t<gD?1:0;l.style.width=(300*k)+"px"});node.style.boxShadow="0 0 "+(16+24*Math.max(0,Math.sin(t*2.6)))*(t>x.w(4,"but whoever")?1:.4)+"px rgba(231,194,122,.55)"});
   [["the matter","the matter"],["the documents","the documents"],["the clauses","the clauses"],["the outcomes","the outcomes"]].forEach((c,i)=>{const e=box(1260,200+i*100,540,76,"chip",c[0]);e.style.fontSize="38px";S.reg(e,x.w(4,c[1]),gD)});
   S.reg(tag("Our analysis, not a claim of fact"),x.w(4,"once the work"),gD);
+  kin(S,"THE TROJAN HORSE.",[x.w(4,"that is why"),x.w(4,"i call it"),x.w(4,"trojan horse")],160,380,1600,{size:120,hi:[2],out:x.w(4,"and i mean")-.2,h:200});
+  kin(S,"as analysis, not accusation.",x.ws(4,"as analysis not accusation"),160,560,1600,{size:56,color:"#8a9a8c",out:x.w(4,"once the work")-.2,h:100});
   // part E: the race
   const q=kin(S,"\\u201Caccelerating a race among technology companies\\u201D",[x.w(5,"reuters"),x.w(5,"reuters")+.35,x.w(5,"a race"),x.w(5,"race")+.2,x.w(5,"among"),x.w(5,"technology"),x.w(5,"companies")],160,200,1600,{size:78,out:x.w(5,"the race is not")-.2,h:260});
   S.reg(tag("Reuters, 25.8.2026"),x.w(5,"reuters"),x.w(5,"the race is not")-.2);
@@ -287,9 +327,25 @@ function s4(d){const S=SC(),x=ctx(d);
     S.fx.push(t=>{if(t>x.a(2))e.style.opacity=Math.min(parseFloat(e.style.opacity||1),.45+.55*ease((x.a(3)-.2-t)/.5))})});
   [["First-pass review takes minutes.","firstpass"],["The hour stops measuring value.","the hour stops"],["A client asks what they are paying for.","a client can ask"]].forEach((c,i)=>{const e=box(990,250+i*190,800,160,"card am",'<div class="rel p amber" style="padding:30px 34px">'+c[0]+'</div>');S.reg(e,x.w(2,c[1]),x.a(3)-.2)});
   S.reg(tag("Analysis"),x.w(0,"what we know"),x.a(3)-.2);
-  kin(S,"NO FIGURE.",[x.w(3,"giving you a"),x.w(3,"figure")],160,260,1600,{size:150,out:x.a(4)-.2,h:230});
-  kin(S,"THE DIRECTION OF PRESSURE IS CLEAR.",x.ws(3,"the direction of pressure is clear"),160,500,1600,{size:70,color:"#9cc29f",out:x.a(4)-.2,h:120});
-  kin(S,"THE SIZE IS NOT.",x.ws(3,"and the size is not").slice(1),160,640,1600,{size:84,color:"#e7c27a",out:x.a(4)-.2,h:130});
+  kin(S,"NO FIGURE.",[x.w(3,"giving you a"),x.w(3,"figure")],80,250,1000,{size:128,out:x.a(4)-.2,h:210});
+  kin(S,"THE DIRECTION OF PRESSURE IS CLEAR.",x.ws(3,"the direction of pressure is clear"),80,470,1000,{size:60,color:"#9cc29f",out:x.a(4)-.2,h:170});
+  kin(S,"THE SIZE IS NOT.",x.ws(3,"and the size is not").slice(1),80,660,1000,{size:80,color:"#e7c27a",out:x.a(4)-.2,h:130});
+  // the partner and the client at a table
+  const a3=x.a(3),b3=x.b(3),g4=x.a(4)-.2;
+  const partner=person(S0,{x:1230,y:480,s:.82,skin:SKIN.a,hair:"#8a8a8a",style:"short",top:"#2f4a38",glasses:true,ph:.7,clip:230});
+  const client=person(S0,{x:1590,y:480,s:.82,skin:SKIN.c,hair:"#1a1410",style:"short",top:"#3b5a6b",tie:null,ph:2.6,clip:230});
+  [partner.wrap,client.wrap].forEach(e=>S.reg(e,a3,g4));
+  const table=box(1060,660,700,420,"");table.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(table,a3,g4);
+  const inv=box(1330,676,170,52,"");inv.style.cssText+=";background:#e9e4d4;border-radius:4px";
+  inv.innerHTML='<div style="left:14px;top:12px;width:110px;height:5px;background:#b8b4a2"></div><div style="left:14px;top:26px;width:80px;height:5px;background:#b8b4a2"></div><div style="left:14px;top:39px;width:140px;height:4px;background:#e7c27a"></div>';S.reg(inv,a3,g4);
+  S.fx.push(t=>{const q=t-a3,talkC=q>1&&q<7?(.5+.5*Math.sin(t*12)):0,talkP=q>8&&q<14?(.5+.5*Math.sin(t*11+1)):0;
+    const shrug=t>x.w(3,"and the size is not")-.3;
+    const pc={look:{x:-.8,y:.1},tilt:-3,talk:talkC,smile:.1,brow:q>1&&q<7?.7:0};
+    if(q>1.5&&q<6)pc.hl={x:-210+Math.sin(t*3)*8,y:250};else if(shrug){pc.hl={x:-150,y:60};pc.hr={x:150,y:60}}
+    client.update(t,pc);
+    const pp={look:{x:.8,y:.1},tilt:3+Math.sin(t*2.2)*1.5,talk:talkP,smile:.25,brow:0};
+    if(q>8&&q<14)pp.hr={x:150,y:90};else if(shrug){pp.hl={x:-150,y:60};pp.hr={x:150,y:60};pp.brow=.8}
+    partner.update(t,pp)});
   kin(S,"WHAT REPLACES THE HOUR?",x.ws(4,"so what replaces the hour").slice(1),160,380,1600,{size:92,hi:[3],out:x.w(4,"fixed fees")-.3,h:260});
   [["Fixed fees","for defined outputs","fixed fees"],["Pricing for the decision","not the draft","pricing for the decision"],["A premium for judgment and accountability","someone whose licence is on the line","a premium"]].forEach((r,i)=>{
     const e=box(220,190+i*210,1480,170,"card"+(i==2?" am":""),'<div class="rel h2" style="margin:24px 0 0 50px;font-size:54px">'+r[0]+'</div><div class="rel p dim" style="margin:4px 0 0 50px">'+r[1]+'</div>');S.reg(e,x.w(4,r[2]),x.a(5)-.2)});
@@ -321,18 +377,25 @@ function s5(d){const S=SC(),x=ctx(d);
   kin(S,"SAME ACCOUNTABILITY.",[x.w(4,"changes nothing"),x.w(4,"about who")],160,320,1600,{size:100,out:x.a(5)-.3,h:170});
   kin(S,"EASIER TO STOP LOOKING.",[x.w(4,"how easy"),x.w(4,"it is to"),x.w(4,"to stop"),x.w(4,"looking")],160,500,1600,{size:100,color:"#e7c27a",out:x.a(5)-.3,h:170});
   // mockup: the review screen
-  const mw=win(200,170,1520,610,"review  /  illustrative mockup");S.reg(mw,x.w(5,"a machine produces"),1e9);
-  const L=box(40,100,700,470,"card","",mw);L.style.background="#101a14";
-  [640,520,600,420,580,360].forEach((w,i)=>{const b=box(30,34+i*62,w,16,"","",L);b.style.cssText+=";border-radius:8px;background:"+(i==3?"#e7c27a":"#35503b")});
+  const mw=win(580,170,1260,610,"review  /  illustrative mockup");S.reg(mw,x.w(5,"a machine produces"),1e9);
+  const L=box(30,100,540,470,"card","",mw);L.style.background="#101a14";
+  [480,400,460,320,440,280].forEach((w,i)=>{const b=box(30,34+i*62,w,16,"","",L);b.style.cssText+=";border-radius:8px;background:"+(i==3?"#e7c27a":"#35503b")});
   const flag=box(30,286,300,42,"mono","AI flag: liability cap",L);flag.style.cssText+=";font-size:22px;color:#101712;background:#e7c27a;border-radius:8px;padding:8px 14px;top:310px";
-  const Rr=box(780,100,700,470,"card am","",mw);
-  box(30,24,640,40,"mono","REVIEW RECORD",Rr).style.cssText+=";font-size:24px;color:#9aaa9c;letter-spacing:4px";
+  const Rr=box(610,100,620,470,"card am","",mw);
+  box(30,24,560,40,"mono","REVIEW RECORD",Rr).style.cssText+=";font-size:24px;color:#9aaa9c;letter-spacing:4px";
   const f=[["Checked against","what exactly did the human check"],["Reviewed by","a human signs it"],["Evidence kept","could they prove it"]];
-  const fe=f.map((r,i)=>{const e=box(30,90+i*100,640,76,"chip",'<span class="dim" style="font-size:28px">'+r[0]+'</span>',Rr);const ln=box(300,40,300,3,"","",e);ln.style.borderBottom="4px dashed #e7c27a";return e});
-  const btn=[["Approve",30],["Reject",350]].map(b=>{const e=box(b[1],390,290,60,"chip",b[0],Rr);e.style.cssText+=";text-align:center;font-size:30px;opacity:.35;padding:10px";return e});
+  const fe=f.map((r,i)=>{const e=box(30,90+i*100,560,76,"chip",'<span class="dim" style="font-size:28px">'+r[0]+'</span>',Rr);const ln=box(280,40,240,3,"","",e);ln.style.borderBottom="4px dashed #e7c27a";return e});
+  const btn=[["Approve",30],["Reject",300]].map(b=>{const e=box(b[1],390,260,60,"chip",b[0],Rr);e.style.cssText+=";text-align:center;font-size:30px;opacity:.35;padding:10px";return e});
   S.fx.push(t=>{fe.forEach((e,i)=>{const ta=x.w(5,f[i][1]);const k=ease((t-ta)/.5);e.style.opacity=.25+.75*k;e.style.borderColor=k>0&&t<ta+2?"#e7c27a":"#3a5a42"})});
   S.reg(L,x.w(5,"a machine produces"),1e9);S.reg(Rr,x.w(5,"a human signs"),1e9);
   S.reg(tag("Illustrative mockup"),x.w(5,"a machine produces"),1e9);
+  kin(S,"THE UNANSWERED QUESTION OF THIS ENTIRE MARKET",x.ws(5,"the unanswered question of this entire market"),300,360,1320,{size:70,hi:[2,3],out:x.w(5,"a machine produces")-.3,h:260});
+  // over the shoulder: the reviewer in the foreground, out of focus, reading
+  const tR=x.w(5,"a machine produces");
+  const rev=person(S0,{x:290,y:800,s:1.7,back:true,hair:"#17110d",top:"#0d1810",ph:.9});rev.wrap.style.filter="blur(1.6px)";S.reg(rev.wrap,tR-.4,1e9);
+  S.fx.push(t=>{const q=t-tR,scan=Math.sin(q*.9),think=t>x.w(5,"could they prove it");
+    const p={look:{x:.6+scan*.5,y:0},tilt:-2+scan*2.5,dx:6};if(think){p.hr={x:80,y:-70}}
+    rev.update(t,p)});
   return S}
 
 // ---------- scene 6: outro and credits ----------
@@ -340,9 +403,28 @@ function s6(d){const S=SC(),x=ctx(d);
   kin(S,"SO WHERE DOES THAT LEAVE US?",x.ws(0,"so where does that leave us"),60,400,1800,{size:84,out:x.b(0)+.6,h:260});
   kin(S,"THE LAYER IS COMING.",[x.w(1,"google and"),x.w(1,"building"),x.w(1,"the layer"),x.w(1,"that part is coming")],160,300,1600,{size:100,color:"#e7c27a",out:x.a(2)-.3,h:170});
   kin(S,"Pretending otherwise is a strategy for losing.",x.ws(1,"pretending otherwise is a strategy for losing"),160,500,1600,{size:56,color:"#8a9a8c",out:x.a(2)-.3,h:120});
-  [["WHO APPROVES?","who approves"],["ON WHAT BASIS?","on what basis"],["WHO SIGNS?","and who signs"]].forEach((c,i)=>{const e=box(130+i*560,300,500,260,"card"+(i==2?" am":""),'<div class="rel h2'+(i==2?" amber":"")+'" style="margin-top:92px;text-align:center;font-size:46px">'+c[0]+'</div>');S.reg(e,x.w(2,c[1]),x.a(4)-.3)});
-  kin(S,"IN WRITING.",[x.w(3,"in writing")],160,640,1600,{size:100,out:x.a(4)-.3,h:150});
-  kin(S,"NOT READY FOR AGENTS.",x.ws(3,"not ready for agents"),160,780,1600,{size:70,color:"#e7c27a",out:x.a(4)-.3,h:110});
+  const gS=x.a(4)-.3,tq=[x.w(2,"who approves"),x.w(2,"on what basis"),x.w(2,"and who signs")];
+  const cfg=[{skin:SKIN.a,hair:"#2a2a2a",style:"short",top:"#2f4a38"},{skin:SKIN.d,hair:"#6b4a2b",style:"bun",top:"#3b5a6b",glasses:true},{skin:SKIN.c,hair:"#241a14",style:"short",top:"#d9d3c3",shirt:"#2f4a38",propR:"pen"}];
+  const crew=[];
+  [["WHO APPROVES?","who approves"],["ON WHAT BASIS?","on what basis"],["WHO SIGNS?","and who signs"]].forEach((c,i)=>{
+    const e=box(130+i*560,200,500,170,"card"+(i==2?" am":""),'<div class="rel h2'+(i==2?" amber":"")+'" style="margin-top:50px;text-align:center;font-size:46px">'+c[0]+'</div>');S.reg(e,tq[i],gS);
+    const px=380+i*560,pr=person(S0,Object.assign({x:px,y:540,s:.66,ph:i*1.7,clip:210},cfg[i]));S.reg(pr.wrap,tq[i]+.2,gS);crew.push(pr);
+    const slab=box(px-190,676,380,16,"");slab.style.cssText+=";background:#26402e;border-top:4px solid #4a7054;border-radius:6px";S.reg(slab,tq[i]+.2,gS)});
+  const sheet=box(1370,640,260,40,"");sheet.style.cssText+=";background:#e9e4d4;border-radius:4px";
+  sheet.innerHTML='<svg width="260" height="40" viewBox="0 0 260 40" fill="none"><path id="sigp" d="M 40 28 q 10 -26 20 0 t 20 0 q 10 -22 26 0 t 26 -2 q 10 -18 24 4 q 14 6 30 -6" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>';
+  S.reg(sheet,tq[2]+.2,gS);
+  const tW=x.w(3,"in writing");
+  S.fx.push(t=>{
+    const wr=clamp((t-tW)/2.2);document.getElementById("sigp").setAttribute("stroke-dashoffset",1-wr);
+    // 0: the hand goes up for "who approves"
+    crew[0].update(t,{look:{x:.1,y:0},smile:.4,hr:(t>tq[0]&&t<tq[0]+3)?{x:150,y:-110}:null,brow:(t>tq[0]&&t<tq[0]+3)?.8:0,tilt:2});
+    // 1: thinking about the basis
+    crew[1].update(t,{look:{x:-.3,y:-.4},tilt:4,hr:t>tq[1]?{x:30,y:-8}:null,brow:t>tq[1]?.6:0,smile:0});
+    // 2: the pen above the page, then writing it down
+    const hov=t<tW;crew[2].props.R.style.opacity=t>tq[2]?1:0;
+    crew[2].update(t,{look:{x:0,y:.8},tilt:3,ra:20,hr:t>tq[2]?{x:(1500-1500)/.66+30+(hov?0:wr*60)+(hov?0:Math.sin(t*20)*3),y:(640-540)/.66-72+(hov?Math.sin(t*3)*8:12)}:null,smile:.1})});
+  kin(S,"IN WRITING.",[x.w(3,"in writing")],160,730,1600,{size:84,out:gS,h:130});
+  kin(S,"NOT READY FOR AGENTS.",x.ws(3,"not ready for agents"),160,850,1600,{size:56,color:"#e7c27a",out:gS,h:100});
   const e0=x.w(4,"at lalum"),tc=x.b(4)+3.4;
   const el=box(660,230,600,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:600px;opacity:1"');S.reg(el,e0,tc,1);
   S.reg(box(0,470,W,70,"c h2","lalumapp.com"),e0+.8,tc);
@@ -368,7 +450,7 @@ const SCENES={1:s1,2:s2,3:s3,4:s4,5:s5,6:s6};
 // ---------- overlay: HUD, captions, orb, grain, titles ----------
 let CUR=null,CAPS=[],ORB=null;
 const orb=document.getElementById("orb");
-orb.innerHTML='<svg width="70" height="70" viewBox="-55 -55 110 110" fill="none"><circle id="o1" r="46" stroke="#3a5a42" stroke-width="2"/><circle id="o2" r="34" stroke="#769d79" stroke-width="2"/><circle id="o3" r="20" fill="#e7c27a" opacity=".9"/></svg>';
+const AV=avatar(orb);
 const gr=document.createElement("canvas");gr.width=gr.height=200;{const g=gr.getContext("2d"),im=g.createImageData(200,200);let s=7;for(let i=0;i<im.data.length;i+=4){s=(s*16807)%2147483647;const v=(s%255);im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0)}
 document.getElementById("grain").style.backgroundImage="url("+gr.toDataURL()+")";
 function buildCaps(d){const box0=document.getElementById("caps");box0.innerHTML="";CAPS=[];
@@ -387,7 +469,7 @@ function overlay(n,t,d){
   CAPS.forEach(c=>{const on=t>=c.a&&t<c.b;c.e.style.opacity=on?Math.min(1,(t-c.a)/.12):0;
     if(on)c.sp.forEach((s,i)=>s.className=(t>=c.ws[i].a&&t<c.ws[i].b+.06)?"on":"")});
   const env=d.env[Math.min(d.env.length-1,Math.floor(t*FPS))]||0;
-  document.getElementById("o1").setAttribute("r",46+env*8);document.getElementById("o2").setAttribute("r",34+env*14);document.getElementById("o3").setAttribute("r",18+env*10);
+  AV(t,env);
   const fr=Math.floor(t*FPS);document.getElementById("grain").style.transform="translate("+(-(fr*37%200))+"px,"+(-(fr*91%200))+"px)";
   const CAM={1:[.045,0,0],2:[.02,-40,0],3:[-.03,0,0],4:[.03,30,-12],5:[.035,0,14],6:[.03,0,0]}[n],kf=t/d.dur;
   let dx=CAM[1]*kf,dy=CAM[2]*kf,sc=.78*(1+CAM[0]*kf);
