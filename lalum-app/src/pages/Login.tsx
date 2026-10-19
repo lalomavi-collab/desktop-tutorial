@@ -148,7 +148,7 @@ export function Login() {
             <form onSubmit={onCodeSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div>
                 <div className="label">{L.resetCodeLabel}</div>
-                <input className="field" inputMode="numeric" autoComplete="one-time-code" required maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder={L.resetCodePlaceholder} dir="ltr" />
+                <input className="field" inputMode="numeric" autoComplete="one-time-code" required maxLength={10} minLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder={L.resetCodePlaceholder} dir="ltr" />
               </div>
               <button className="btn btn-clay" style={{ justifyContent: "center", marginTop: 4 }} disabled={busy || code.length !== 6}>
                 {busy ? L.pleaseWait : L.resetCodeSubmit}

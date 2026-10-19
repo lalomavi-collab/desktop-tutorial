@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Digits only: a code copied out of the email can carry spaces or invisible direction marks.
     const token = code.replace(/\D/g, "");
     if (!supabase) {
-      if (token.length < 6) return { error: "Enter the 6-digit code from the email." };
+      if (token.length < 6) return { error: "Enter the code from the email." };
       return { error: null };
     }
     const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: "recovery" });
