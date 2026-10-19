@@ -110,6 +110,7 @@ const TOOLS = [
 
 const NEW_LEAD_DISCLAIMER =
   "\n\nהמידע הינו אינפורמטיבי ואינו מהווה ייעוץ משפטי או תחליף לו, ואינו מכונן יחסי עורך דין-לקוח.";
+const AI_DISCLOSURE = "שלום, כאן עוזר דיגיטלי מבוסס בינה מלאכותית של משרד ד״ר עו״ד אברהם ללום, לא אדם. אפשר לבקש בכל שלב העברה לאיש צוות.";
 const FALLBACK_REPLY =
   "התקבלה פנייתך. הסוגיה דורשת בדיקה פרטנית, ואנו נחזור אליך בהקדם. אפשר בינתיים לפרט את מהות הפנייה?";
 
@@ -354,6 +355,8 @@ async function handleInboundMessage(m: InboundText): Promise<void> {
   const ctx: Ctx = { contactId: contact_id, phone: m.from, name: m.name };
   let reply = await runAgent(history, ctx);
   if (created_lead) reply = `${reply}${NEW_LEAD_DISCLAIMER}`;
+  // EU AI Act Art. 50(1): say it is an AI in the first reply of a conversation.
+  if (!(recent ?? []).some((r) => r.direction === "out")) reply = `${AI_DISCLOSURE}\n\n${reply}`;
 
   await sendWhatsAppText(m.from, reply);
   await admin.rpc("lalum_whatsapp_log_message", {

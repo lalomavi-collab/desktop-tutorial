@@ -43,6 +43,16 @@ jobs:
         working-directory: lalum-app
         run: npm run seo-check
 
+      - name: Guard, no automatic merge of ruling records
+        # Rulings need two independent sources verified by a person (CLAUDE.md).
+        # An automatic merge must never carry them, whatever the build says.
+        run: |
+          changed=$(git diff --name-only origin/main...HEAD)
+          if echo "$changed" | grep -E '(^|/)rulings(\.data)?\.(json|ts)$'; then
+            echo "Ruling records changed: this needs a human review, not an automatic merge."
+            exit 1
+          fi
+
       - name: Merge to main, through a pull request
         # Not a direct push. A repository rule requires every change to main to
         # go through a pull request, so the `git push origin main` that used to

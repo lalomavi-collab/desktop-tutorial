@@ -10,7 +10,7 @@ systems:
     tier: limited
     tier_basis: "Interacts directly with people: Art. 50 transparency. Not an Annex III use [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Verify server-side login enforcement."
+    obligations_note: "Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Code check 2026-10-19: the server does NOT enforce login (anonymous requests are served, the public /os page uses the same function); exposure is capped by server-side counters (2 per person, 10 per day in total). Decide whether to require login."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
@@ -58,7 +58,7 @@ systems:
     tier: limited
     tier_basis: "Converses with people: Art. 50 disclosure [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Confirm the first WhatsApp message tells people they are talking to an AI."
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Code check 2026-10-19: no AI disclosure existed. Fixed in code: the first reply of a conversation now opens with an AI disclosure (Art. 50(1)); live after the function is deployed."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
@@ -186,7 +186,7 @@ systems:
     tier: minimal
     tier_basis: "Acts for the applicant, not a hiring use; no Annex III [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: human approval before each submission. Verify it is enforced in code."
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: human approval before each submission. Code check 2026-10-19: approval prompt exists in main.py and run_worker.py (CLI y/n/d) before each submission; confirmed in code, not tested."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
@@ -218,7 +218,7 @@ systems:
     tier: minimal
     tier_basis: "Internal automation [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: never for legal text, sources or ruling verification. Verify the workflow cannot touch rulings.json or articles."
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: never for legal text, sources or ruling verification. Code check 2026-10-19: the build was the only gate. A guard step now fails the run if rulings.json or rulings.data.ts changed. Articles are not guarded yet (owner to decide)."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
