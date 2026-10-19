@@ -30,13 +30,16 @@ Do not read this as a script. A rehearsed answer reads as a pitch. Record in two
 
 The interviewer adds one sentence of context, with the case card on screen.
 
-**Candidate:** Mata v. Avianca (S.D.N.Y., 22 June 2023). Corpus record: `lalum-app/src/data/rulings.json`, id `mata-avianca`.
+**Decision chosen (owner, 19 Oct 2026):** Israeli Supreme Court, בר״ם 37942-05-25, Ehrlich v. the Israel National Academy of Sciences and the Attorney General. Corpus record: `lalum-app/src/data/rulings.json`, id `bram-37942-05-25`. It replaces Mata v. Avianca, which could not be verified from this environment.
 
-**Verification status: NOT VERIFIED. Does not go in the film yet.** The corpus record lists one source (Justia). The project rule requires the decision's own text and a second independent source, agreeing on docket, court, date, bench and outcome. On 19 Oct 2026 this could not be done from this environment (Firecrawl out of credits, Justia and CourtListener blocked by the egress proxy, Descrybe needs re-authentication). Until it is done, the fine amount and every other detail stay out.
+**Verification status, 19 Oct 2026:**
+* Source 1, the decision itself, READ IN FULL (3 pages, PDF copy hosted at websitedc.s3.amazonaws.com, the link in the corpus record). Confirmed from the text: Supreme Court; Deputy President Noam Sohlberg sitting alone; applicant Avraham Ehrlich (unrepresented) against the Academy and the Attorney General; leave to appeal against the Jerusalem District Court (administrative matters) decision of 12.5.2025 in עת״מ 19546-05-25 (Judge A. Sela); decision dated 18 May 2025 (כ׳ אייר תשפ״ה); the application was dismissed, on the merits first (restraint in reviewing academic and professional decisions, including who speaks at a conference) and also on the AI point; costs of NIS 500 to the State Treasury, "on the low side", in view of the applicant being unrepresented. The quote in the corpus matches the text word for word (the decision uses dashes around "שאינם עניין טכני" and "אכן קיימים"; on screen use commas or parentheses, never dashes).
+* Source 2, an independent one: NOT FOUND. The corpus lists law.co.il, which the egress proxy blocks here. Web searches did not surface a second report of this decision. The PDF is a copy hosted by a third party, not the court's own site, so it counts as one instrument, not two sources.
+* Not to be confused with the other 2025 Israeli decision a law firm summary describes with a NIS 5,000 order against an unrepresented litigant. A different matter, not verified here.
 
-**Fallback candidate:** Israeli Supreme Court, בר״ם 37942-05-25 (18 May 2025), id `bram-37942-05-25`. Also to be opened against its own text before use.
+**Rule applied:** the project requires two independent sources. One is read in full; the second is missing, so the beat stays out of the film until the owner or a session with access opens the law.co.il entry or the court's own publication and the two agree on docket, court, date, bench and outcome. What may be said once that is done: the three facts above, the NIS 500 order, and the quote. Not to be said: that disclosing AI use cures the defect (the decision says the opposite), and nothing about the lower court beyond its docket number.
 
-**If neither is verified:** the beat is cut. The interview stands without it; the Israeli decision already in scene 5 carries the legal weight.
+**If the second source is not obtained:** the beat is cut. The interview stands without it; the Israeli decision already in scene 5 (HCJ 38379-12-24, which this decision itself cites at paras 12 to 13 and 26) carries the legal weight.
 
 ## 4. Cameo from the site clip (fallback audio, and the scene 6 call to action)
 
@@ -71,5 +74,5 @@ The 46 second voice note on the site (`lalum-voice.m4a`) has no transcript in th
 
 * Owner: approve the cameo subtitle translation.
 * Owner: record the three answers (section 5).
-* Verification: Mata v. Avianca against its own text and a second independent source, or choose the Israeli fallback and verify that instead.
+* Verification: second independent source for בר״ם 37942-05-25 (law.co.il entry or the court's own publication). Section 3.
 * Not done here: any change to the renderer. The scene is specified, not built, because it depends on the recording.
