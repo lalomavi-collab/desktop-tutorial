@@ -218,6 +218,7 @@ export const en = {
       changeSubmit: "Change password",
       changed: "Password changed. Other devices were signed out.",
       changedKept: "Password changed.",
+      changeAgain: "Change it again",
       failed: "The password could not be changed. Try again.",
       hint12: "Use at least 12 characters. A phrase of unrelated words works well.",
     },

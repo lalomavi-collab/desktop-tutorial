@@ -214,6 +214,7 @@ export const fr: Dict = {
       changeSubmit: "Changer le mot de passe",
       changed: "Mot de passe changé. Les autres appareils ont été déconnectés.",
       changedKept: "Mot de passe changé.",
+      changeAgain: "Changer à nouveau",
       failed: "Le mot de passe n'a pas pu être changé. Réessayez.",
       hint12: "Au moins 12 caractères. Une phrase de mots sans lien entre eux fonctionne bien.",
     },

@@ -135,13 +135,23 @@ export function ChangePassword({ onChanged }: { onChanged?: () => void }) {
     }
   }
 
+  // After a change the form gives way to the confirmation, so it cannot be missed and the old
+  // password is not typed again into a form that no longer accepts it.
+  if (done) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="notice notice-ok" role="status">{done}</div>
+        <button type="button" className="btn" style={{ alignSelf: "flex-start" }} onClick={() => setDone(null)}>{W.changeAgain}</button>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={(e) => void onSubmit(e)} style={{ display: "flex", flexDirection: "column", gap: 16 }} autoComplete="on" noValidate>
       {/* Lets a password manager tie the new password to this account. */}
       <input type="text" name="username" autoComplete="username" value={email ?? ""} readOnly aria-hidden="true" tabIndex={-1} style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />
       <p className="muted" style={{ fontSize: 14, margin: 0 }}>{W.changeIntro}</p>
       {error && <div className="notice notice-err" role="alert">{error}</div>}
-      {done && <div className="notice notice-ok" role="status">{done}</div>}
       <PasswordField id="pw-current" label={W.current} value={current} onChange={setCurrent} autoComplete="current-password" required />
       <PasswordField id="pw-new" label={W.newLabel} value={next} onChange={setNext} autoComplete="new-password" required showStrength generate context={{ email }} />
       <div>

@@ -214,6 +214,7 @@ export const es: Dict = {
       changeSubmit: "Cambiar contraseña",
       changed: "Contraseña cambiada. Se cerró la sesión en los demás dispositivos.",
       changedKept: "Contraseña cambiada.",
+      changeAgain: "Cambiar de nuevo",
       failed: "No se pudo cambiar la contraseña. Inténtelo de nuevo.",
       hint12: "Al menos 12 caracteres. Una frase de palabras sin relación funciona bien.",
     },
