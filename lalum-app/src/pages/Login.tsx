@@ -83,18 +83,11 @@ export function Login() {
       setError(L.leakedPassword);
       return;
     }
-    const res = mode === "in" ? await signIn(email, password) : await signUp(email, password);
+    const res = mode === "in" ? await signIn(email, password) : await signUp(email, password, lang);
     setBusy(false);
     if (res.error) {
       setError(res.error);
       return;
-    }
-    // A new sign-up is a lead: the firm is told by the same consented route as the contact form. Best effort,
-    // never blocks the sign-up. Only the email goes in; the name field carries its local part.
-    if (mode === "up" && supabase) {
-      void supabase.functions.invoke("lalum-lead-submit", {
-        body: { name: email.split("@")[0], email, consent: true, source: "signup", interest: "ai-governance", lang },
-      }).catch(() => undefined);
     }
     if (mode === "up" && res.needsConfirmation) {
       setNotice(L.confirmEmail);

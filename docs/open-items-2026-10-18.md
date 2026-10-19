@@ -142,3 +142,20 @@
 
 ### משימה ט. הודעת וואטסאפ ראשונה
 שלח הודעה כלשהי לבוט הוואטסאפ של המשרד ממספר שלא שוחח איתו. בדוק שבתשובה הראשונה מופיעים: גילוי שזה עוזר דיגיטלי מבוסס בינה מלאכותית, הודעת הפרטיות (30 יום, ספק חיצוני, בקשת מחיקה), והבקשה לא לשלוח מספרי זהות או מסמכים סודיים.
+
+### משימה י. פוסט 016 (פרסום בפייסבוק ובלינקדאין)
+לפי הנוהל בריפו, שום פוסט לא מפורסם לפני שאתה כותב "מאושר" בצ׳אט עם Claude Code. ההוראה ל-Chrome מכינה הכול ומריצה רק dry run.
+```
+1. פתח https://github.com/lalomavi-collab/desktop-tutorial/settings/secrets/actions
+   רשום לי אילו מהשמות הבאים קיימים (שמות בלבד, בלי ערכים): FACEBOOK_PAGE_ID, FACEBOOK_ACCESS_TOKEN, LINKEDIN_ACCESS_TOKEN, LINKEDIN_AUTHOR_URN.
+2. לכל סוד חסר, הוסף אותו כך (עצור ובקש ממני להדביק את הערך, אל תנחש):
+   - FACEBOOK_PAGE_ID: פתח את עמוד העסק בפייסבוק, About, Page transparency, Page ID.
+   - FACEBOOK_ACCESS_TOKEN: פתח https://developers.facebook.com/tools/explorer/ , בחר את האפליקציה, User or Page = Page access token של העמוד, הרשאות pages_manage_posts ו-pages_read_engagement. הפק טוקן ארוך טווח לפי https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/
+   - LINKEDIN_ACCESS_TOKEN ו-LINKEDIN_AUTHOR_URN: לפי https://learn.microsoft.com/linkedin/marketing/community-management/shares/posts-api . ה-URN הוא urn:li:person:<id> או urn:li:organization:<id>.
+   להוספה: New repository secret, שם, ערך, Add secret.
+3. פתח https://github.com/lalomavi-collab/desktop-tutorial/actions/workflows/publish_post.yml
+   לחץ Run workflow, number = 016, סמן dry_run = true, Run workflow.
+4. המתן לסיום ופתח את הריצה. דווח לי: הצלחה או כישלון, ואת שורת ה-Facebook ושורת ה-LinkedIn מהפלט (הצלחה, או skipped ואיזה סוד חסר).
+5. אל תריץ בלי dry_run. אל תפרסם.
+```
+אחרי שה-dry run עבר, כתוב לי כאן "016 מאושר". אז אריץ או אכין לך את ההרצה האמיתית. אינסטגרם, טלגרם והוידאו נשארים ידניים, כמו בסעיף 3 למעלה.
