@@ -1,10 +1,21 @@
 # LALUM redirect map (Wix -> new app). Full precise map built from the
-# Search Console export (188 ranked URLs + coverage). www host redirects are
-# handled at Cloudflare; these are the path-level 301s Netlify applies on the
-# apex. Order: specific rules first, general fallbacks, then SPA shell.
-
-# Canonicalize the www host to the apex, matching canonical/sitemap/OG/JSON-LD.
-https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
+# Search Console export (188 ranked URLs + coverage). Hosted on Cloudflare
+# Pages; these are the path-level 301s it applies. The www host redirect
+# lives in the zone's own Redirect Rule, not here: an absolute-URL rule
+# (https://www... -> https://...) is invalid in _redirects on Cloudflare
+# Pages ("Only relative URLs are allowed") and was silently skipped, which
+# is also why it never belonged in this file's dynamic-rule budget below.
+# Order: specific rules first, general fallbacks, then SPA shell. Every
+# rule with a `*` or a `:placeholder` is dynamic; Cloudflare Pages caps
+# dynamic rules at 100 per project and silently drops everything after the
+# cap once it is hit, counting a plain rule that comes after a dynamic one
+# in file order toward that same cap. That is exactly what swallowed /es,
+# /fr and /ar /partners (and everything after them) on 2026-10-17: 17
+# dynamic rules were scattered through the file instead of grouped at the
+# end, and Cloudflare's rule-ordering pass folded the plain rules after
+# each of them into the same 100-rule count. All dynamic rules now live
+# together in one block at the end of this file; never add a new `*` or
+# `:placeholder` rule anywhere else, or this breaks again.
 
 # --- Topic hubs: real estate is one subject, both sides of the border ---
 # The cross-border hub held eight articles alone; it and the older urban-renewal
@@ -223,10 +234,6 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 /post/תהליכי-בוררות-נדל-ן-פתרון-סכסוכי-נדל-ן-חוקיים  /insights/real-estate-arbitration/  301
 /post/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות  /insights/תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות/  301
 
-# Fallback for any /post/<slug> not individually mapped above (must come AFTER
-# the specific rules): send unknown legacy posts to the articles hub, never 404.
-/post/*   /insights   301
-
 # --- Legacy Wix pages -> closest equivalent in the new app ---
 /blog   /insights/   301
 /about  /  301
@@ -266,13 +273,10 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # canonical clears the error and keeps the signal. These specific rules are
 # matched before the prefixed-path-falls-to-404 behavior described below, and
 # they never touch the seven real translated pages (advisory, ai-legal-advisory,
-# real-estate-legal-advisory, knowledge, book, legal, home).
-# A single article segment (the shape Google actually holds, with no trailing
-# slash) redirects straight to the trailing-slash canonical in one hop, via a
-# :slug placeholder. The `*` rule stays below it as the fallback for a bare
-# directory or a path already ending in a slash, where it lands on the
-# canonical in one hop as well; the placeholder just spares the common article
-# path the extra trailing-slash hop it used to take.
+# real-estate-legal-advisory, knowledge, book, legal, home). The es/fr/ar
+# :slug and `*` dynamic rules that used to sit here are grouped at the end of
+# this file now (see the comment there for how the pair works); only the
+# static rules for the five real English article pages stay in place below.
 #
 # REAL English article pages. These five slugs have a prerendered English page
 # at /en/insights/<slug>/index.html (the pilot in EN_ARTICLE_SLUGS,
@@ -285,31 +289,18 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # own English canonical. Trade-off: a legacy /en/insights/<other-slug> with no
 # English page now returns a real 404 instead of a 301 to Hebrew (acceptable, and
 # consistent with the no-SPA-catch-all 404 policy at the foot of this file). The
-# es/fr/ar blankets stay, since those locales have no real pages to serve.
+# es/fr/ar blankets (dynamic, grouped at the end of this file) stay, since
+# those locales have no real pages to serve.
 # KEEP IN SYNC with EN_ARTICLE_SLUGS: a new English article needs its line here.
 /en/insights/second-opinion-real-estate-urban-renewal   /en/insights/second-opinion-real-estate-urban-renewal/  301
 /en/insights/israel-ai-regulation-policy   /en/insights/israel-ai-regulation-policy/  301
 /en/insights/eu-ai-act-israeli-companies   /en/insights/eu-ai-act-israeli-companies/  301
 /en/insights/gemini-guide-law   /en/insights/gemini-guide-law/  301
 /en/insights/urban-renewal-mistakes-guide   /en/insights/urban-renewal-mistakes-guide/  301
-/es/insights/:slug  /insights/:slug/  301
-/es/insights/*  /insights/:splat  301
-/fr/insights/:slug  /insights/:slug/  301
-/fr/insights/*  /insights/:splat  301
-/ar/insights/:slug  /insights/:slug/  301
-/ar/insights/*  /insights/:splat  301
 /en/insights  /insights/  301
 /es/insights  /insights/  301
 /fr/insights  /insights/  301
 /ar/insights  /insights/  301
-/en/rulings/:slug  /rulings/:slug/  301
-/en/rulings/*  /rulings/:splat  301
-/es/rulings/:slug  /rulings/:slug/  301
-/es/rulings/*  /rulings/:splat  301
-/fr/rulings/:slug  /rulings/:slug/  301
-/fr/rulings/*  /rulings/:splat  301
-/ar/rulings/:slug  /rulings/:slug/  301
-/ar/rulings/*  /rulings/:splat  301
 /en/rulings  /rulings/  301
 /es/rulings  /rulings/  301
 /fr/rulings  /rulings/  301
@@ -415,10 +406,10 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # entry).
 
 # --- Legacy /articles blog index -> new articles hub ---
-# An old path that never existed in the current app. Send it, and anything
-# under it, to the articles hub rather than to 404.
+# An old path that never existed in the current app. Send the bare path to
+# the articles hub; anything under it is caught by the dynamic /articles/*
+# rule grouped at the end of this file.
 /articles  /insights/  301
-/articles/*  /insights/  301
 
 # --- Language prefixes ---
 # /en, /es, /fr and /ar are now REAL paths: the build prerenders a document per
@@ -434,3 +425,43 @@ https://www.lalumapp.com/*  https://lalumapp.com/:splat  301!
 # shell, which is a soft 404: a crawler asking for /blog-posts-sitemap.xml or
 # any stale Wix path got a page instead of an error. With no catch-all,
 # unmatched paths fall through to 404.html with a real 404 status.
+
+# --- Dynamic rules (every `*` or `:placeholder` redirect in this file) ---
+# Grouped here, last, on purpose: see the note at the top of this file.
+# Cloudflare Pages caps dynamic rules at 100 per project and silently drops
+# everything past the cap, counting a plain rule that follows a dynamic one
+# in file order toward that same cap. Keeping every dynamic rule in this one
+# block, after every plain rule, is what keeps the plain rules above (os,
+# partners, login, about, contact, and all the rest) from ever being pushed
+# past the cap again. Do not add a new `*` or `:placeholder` rule anywhere
+# above this point.
+
+# Fallback for any /post/<slug> not individually mapped above: send unknown
+# legacy posts to the articles hub, never 404.
+/post/*   /insights   301
+
+# es/fr/ar /insights/<slug> and /rulings/<slug>: a single article or ruling
+# segment (the shape Google actually holds, with no trailing slash) redirects
+# straight to the Hebrew trailing-slash canonical in one hop, via a :slug
+# placeholder. The `*` rule stays below it as the fallback for a bare
+# directory or a path already ending in a slash, where it lands on the
+# canonical in one hop as well; the placeholder just spares the common
+# article path the extra trailing-slash hop it used to take.
+/es/insights/:slug  /insights/:slug/  301
+/es/insights/*  /insights/:splat  301
+/fr/insights/:slug  /insights/:slug/  301
+/fr/insights/*  /insights/:splat  301
+/ar/insights/:slug  /insights/:slug/  301
+/ar/insights/*  /insights/:splat  301
+/en/rulings/:slug  /rulings/:slug/  301
+/en/rulings/*  /rulings/:splat  301
+/es/rulings/:slug  /rulings/:slug/  301
+/es/rulings/*  /rulings/:splat  301
+/fr/rulings/:slug  /rulings/:slug/  301
+/fr/rulings/*  /rulings/:splat  301
+/ar/rulings/:slug  /rulings/:slug/  301
+/ar/rulings/*  /rulings/:splat  301
+
+# Legacy /articles blog index: anything under it, not just the bare path
+# above, goes to the articles hub rather than to 404.
+/articles/*  /insights/  301

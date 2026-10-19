@@ -18,9 +18,9 @@
  "sovereignty": {
   "topic": "ai-governance",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "shadow-it-law-firms",
-   "explainability",
-   "directors-liability-ai-era"
+   "explainability"
   ]
  },
  "board-liability": {
@@ -63,6 +63,86 @@
    "explainability"
   ]
  },
+ "human-in-the-loop-lawyer-judgment-ai": {
+  "topic": "mediation",
+  "related": [
+   "ai-force-majeure-delivery-delay-apartment-contracts",
+   "algorithmic-fiduciary-duty-ai",
+   "ai-real-estate-urban-renewal-legal-exposure"
+  ]
+ },
+ "legal-department-client-privilege-ai-data-security": {
+  "topic": "ai-governance",
+  "related": [
+   "shadow-it-law-firms",
+   "attorney-client-privilege-ai",
+   "ai-vendor-agreement-dpa-liability-indemnity"
+  ]
+ },
+ "ai-saas-enterprise-contract-legal-ops-playbook": {
+  "topic": "contracts",
+  "related": [
+   "ai-municipal-tender-review-pre-publication",
+   "legal-ai-contract-review-playbook",
+   "ai-urban-renewal-resident-agreements-comparison"
+  ]
+ },
+ "ai-adoption-methodology-prompt-library-organizations": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-shadow-ai-local-authority-staff",
+   "ai-legal-support-local-council-three-tracks",
+   "ai-inventory-risk-tiering-local-authority-guide"
+  ]
+ },
+ "ai-urban-renewal-resident-agreements-comparison": {
+  "topic": "real-estate",
+  "related": [
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-municipal-tender-review-pre-publication",
+   "pinui-binui-owner-guide"
+  ]
+ },
+ "ai-force-majeure-delivery-delay-apartment-contracts": {
+  "topic": "real-estate",
+  "related": [
+   "human-in-the-loop-lawyer-judgment-ai",
+   "administrative-accountability-ai-ramat-gan-ruling",
+   "ai-real-estate-due-diligence-acceleration"
+  ]
+ },
+ "ai-real-estate-due-diligence-acceleration": {
+  "topic": "contracts",
+  "related": [
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "portugal-legal-due-diligence",
+   "ai-building-permit-acceleration-plans-scan"
+  ]
+ },
+ "ai-municipal-tender-review-pre-publication": {
+  "topic": "mediation",
+  "related": [
+   "ai-saas-enterprise-contract-legal-ops-playbook",
+   "ai-urban-renewal-resident-agreements-comparison",
+   "ai-procurement-tender-local-authority"
+  ]
+ },
+ "ai-building-permit-acceleration-plans-scan": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-planning-permits-local-authority-discretion",
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-municipal-property-tax-collection"
+  ]
+ },
+ "administrative-accountability-ai-ramat-gan-ruling": {
+  "topic": "ai-governance",
+  "related": [
+   "effective-human-oversight-ai-systems",
+   "ai-local-authorities-uses-legal-limits",
+   "human-in-the-loop-lawyer-judgment-ai"
+  ]
+ },
  "legal-ai-pricing-client-disclosure": {
   "topic": "ai-governance",
   "related": [
@@ -98,9 +178,9 @@
  "legal-ai-contract-review-playbook": {
   "topic": "contracts",
   "related": [
+   "ai-saas-enterprise-contract-legal-ops-playbook",
    "legal-ai-pricing-client-disclosure",
-   "legal-ai-tool-selection-test",
-   "legal-ai-human-review-protocol"
+   "legal-ai-tool-selection-test"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -202,8 +282,8 @@
  "ai-algorithm-register-proactive-transparency": {
   "topic": "ai-governance",
   "related": [
-   "ai-local-authority-decision-reasoning-transparency",
    "ai-use-policy-local-authority",
+   "ai-local-authority-decision-reasoning-transparency",
    "ai-inventory-risk-tiering-local-authority-guide"
   ]
  },
@@ -220,7 +300,7 @@
   "related": [
    "ai-procurement-tender-local-authority",
    "ai-vendor-agreement-dpa-liability-indemnity",
-   "ai-resident-data-privacy-local-authority"
+   "legal-department-client-privilege-ai-data-security"
   ]
  },
  "ai-municipal-welfare-social-services": {
@@ -244,7 +324,7 @@
   "related": [
    "ai-product-liability-eu",
    "ai-healthcare-liability-regulation",
-   "algorithmic-fiduciary-duty-ai"
+   "ai-insurance-underwriting-pricing-regulation"
   ]
  },
  "selling-overseas-property-tax-credit-timing": {
@@ -363,8 +443,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-real-estate-valuation-reliance",
-   "ai-governance-municipal-corporations",
-   "ai-healthcare-liability-regulation"
+   "human-in-the-loop-lawyer-judgment-ai",
+   "ai-governance-municipal-corporations"
   ]
  },
  "algorithmic-pricing-antitrust-real-estate": {
@@ -378,17 +458,17 @@
  "ai-real-estate-urban-renewal-legal-exposure": {
   "topic": "real-estate",
   "related": [
+   "ai-real-estate-due-diligence-acceleration",
    "ai-real-estate-valuation-reliance",
-   "ai-planning-permits-local-authority-discretion",
-   "ai-international-transactions-overview"
+   "ai-planning-permits-local-authority-discretion"
   ]
  },
  "israel-land-authority-lease-capitalization-transfer": {
   "topic": "real-estate",
   "related": [
    "caution-note-real-estate-registration-removal",
-   "purchase-group-agreement-tax-risks",
-   "cyprus-realestate-israeli-buyer-guide"
+   "cyprus-realestate-israeli-buyer-guide",
+   "purchase-group-agreement-tax-risks"
   ]
  },
  "ai-generated-content-ownership-protection-contracts": {
@@ -420,7 +500,7 @@
   "related": [
    "suing-foreign-company-jurisdiction-service-enforcement",
    "caution-note-real-estate-registration-removal",
-   "buying-apartment-from-contractor-guarantee-bank-financing"
+   "overseas-property-holding-structure"
   ]
  },
  "buying-apartment-from-contractor-guarantee-bank-financing": {
@@ -451,8 +531,8 @@
   "topic": "contracts",
   "related": [
    "ai-vendor-data-processing-agreement-local-authority",
-   "ai-generated-content-ownership-protection-contracts",
-   "ai-marketing-advertising-privacy-deception-deepfake"
+   "legal-department-client-privilege-ai-data-security",
+   "ai-generated-content-ownership-protection-contracts"
   ]
  },
  "ai-marketing-advertising-privacy-deception-deepfake": {
@@ -531,8 +611,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-resident-data-privacy-local-authority",
-   "ai-healthcare-liability-regulation",
-   "attorney-client-privilege-ai"
+   "legal-department-client-privilege-ai-data-security",
+   "ai-healthcare-liability-regulation"
   ]
  },
  "ai-healthcare-liability-regulation": {
@@ -579,8 +659,8 @@
   "topic": "real-estate",
   "related": [
    "urban-renewal-principles-vs-detailed-agreement",
-   "pinui-binui-owner-guide",
-   "ai-vendor-data-processing-agreement-local-authority"
+   "ai-urban-renewal-resident-agreements-comparison",
+   "pinui-binui-owner-guide"
   ]
  },
  "pinui-binui-consideration-valuation": {
@@ -603,8 +683,8 @@
   "topic": "real-estate",
   "related": [
    "urban-renewal-small-building-private-home",
-   "pinui-binui-owner-guide",
-   "urban-renewal-taxation-owner"
+   "ai-urban-renewal-resident-agreements-comparison",
+   "pinui-binui-owner-guide"
   ]
  },
  "ai-municipal-chatbot-resident-liability": {
@@ -650,9 +730,9 @@
  "ai-planning-permits-local-authority-discretion": {
   "topic": "ai-governance",
   "related": [
+   "ai-building-permit-acceleration-plans-scan",
    "ai-use-policy-local-authority",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-local-authority-decision-reasoning-transparency"
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "ai-local-authorities-uses-legal-limits": {
@@ -667,8 +747,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-purchase-contract",
-   "buying-apartment-from-contractor-guarantee-bank-financing",
-   "urban-renewal-guarantees-sale-law-registration"
+   "ai-real-estate-due-diligence-acceleration",
+   "buying-apartment-from-contractor-guarantee-bank-financing"
   ]
  },
  "ai-insurance-underwriting-pricing-regulation": {
@@ -714,9 +794,9 @@
  "effective-human-oversight-ai-systems": {
   "topic": "ai-governance",
   "related": [
+   "administrative-accountability-ai-ramat-gan-ruling",
    "ai-education-public-institutions-use-policy",
-   "ai-use-policy-local-authority",
-   "ai-local-authorities-uses-legal-limits"
+   "ai-use-policy-local-authority"
   ]
  },
  "portugal-porto-vs-lisbon": {
@@ -724,7 +804,7 @@
   "related": [
    "portugal-real-estate-financing",
    "greece-realestate-israeli-buyer-guide",
-   "portugal-investment-guide"
+   "israeli-realestate-abroad"
   ]
  },
  "portugal-real-estate-taxation": {
@@ -756,7 +836,7 @@
   "related": [
    "portugal-purchase-contract",
    "overseas-property-due-diligence",
-   "second-opinion-real-estate-urban-renewal"
+   "ai-real-estate-due-diligence-acceleration"
   ]
  },
  "eu-ai-act-roles-obligations": {
@@ -796,7 +876,7 @@
   "related": [
    "ai-due-diligence-tech-acquisition",
    "partnership-dissolution-ai-ownership",
-   "ai-data-subject-rights-access-deletion-local-authority"
+   "legal-department-client-privilege-ai-data-security"
   ]
  },
  "saas-eu-compliance-israeli-companies": {
@@ -818,9 +898,9 @@
  "attorney-client-privilege-ai": {
   "topic": "ai-governance",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "shadow-it-law-firms",
-   "legal-ai-client-confidentiality-privilege",
-   "ai-health-data-privacy"
+   "legal-ai-client-confidentiality-privilege"
   ]
  },
  "partnership-dissolution-ai-ownership": {
@@ -947,8 +1027,8 @@
   "topic": "real-estate",
   "related": [
    "portugal-legal-due-diligence",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "combination-deals-architecture"
+   "ai-real-estate-due-diligence-acceleration",
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "eu-ai-act-israeli-companies": {
@@ -962,9 +1042,9 @@
  "shadow-it-law-firms": {
   "topic": "contracts",
   "related": [
+   "legal-department-client-privilege-ai-data-security",
    "attorney-client-privilege-ai",
-   "legal-ai-client-confidentiality-privilege",
-   "ai-shadow-ai-local-authority-staff"
+   "legal-ai-client-confidentiality-privilege"
   ]
  },
  "portugal-investment-guide": {
@@ -1042,9 +1122,9 @@
  "ai-hallucinations-citations": {
   "topic": "ai-governance",
   "related": [
+   "administrative-accountability-ai-ramat-gan-ruling",
    "california-sb574-ai-adjudication-ban",
-   "effective-human-oversight-ai-systems",
-   "ai-liability-ruling"
+   "effective-human-oversight-ai-systems"
   ]
  },
  "international-trade-guide-2026": {
@@ -1171,16 +1251,16 @@
   "topic": "ai-governance",
   "related": [
    "ai-workspace-encyclopedia",
-   "building-ai-agents-realestate",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "building-ai-agents-realestate"
   ]
  },
  "lawyer-wakeup-call": {
   "topic": "real-estate",
   "related": [
    "legal-ai-pricing-client-disclosure",
-   "law-algorithm-era",
-   "transcription-tools-guide"
+   "transcription-tools-guide",
+   "law-algorithm-era"
   ]
  },
  "digital-lawyers-2026": {
@@ -1227,8 +1307,8 @@
   "topic": "ai-governance",
   "related": [
    "why-realestate-needs-ai",
-   "digital-lawyers-2026",
-   "unfair-advantage-course"
+   "unfair-advantage-course",
+   "digital-lawyers-2026"
   ]
  },
  "unfair-advantage-course": {
@@ -1275,8 +1355,8 @@
   "topic": "real-estate",
   "related": [
    "second-opinion-revolution",
-   "homeowners-iron-dome",
-   "tenant-urban-renewal-guide"
+   "tenant-urban-renewal-guide",
+   "homeowners-iron-dome"
   ]
  },
  "overseas-property-holding": {
@@ -1732,7 +1812,7 @@
   "related": [
    "תפקיד-ההסכמה-החוזית-בגישור-מכוון-הכרעה-בין-עקרונות-פורמליים-להבנות-בלתי-כתובות",
    "understanding-mediation-process",
-   "הצעת-מגשר-המשמעות-במסגרת-גישור-מכוון-הכרעה-כעוגן-להסדר-או-מרחב-תמרון-לסיום-הליך"
+   "גישור-מכוון-הכרעה-פתרון-מתוך-הקשבה-הובלה-והכרעה"
   ]
  },
  "מהצד-השני-של-השולחן-הדרך-החדשה-התחילה-מהאולם-הישן": {
@@ -1907,8 +1987,8 @@
   "topic": "mediation",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "legal-mediation-benefits",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
+   "legal-mediation-benefits"
   ]
  },
  "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה": {
@@ -2003,8 +2083,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "effective-human-oversight-ai-systems",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-planning-permits-local-authority-discretion",
+   "effective-human-oversight-ai-systems"
   ]
  }
 }

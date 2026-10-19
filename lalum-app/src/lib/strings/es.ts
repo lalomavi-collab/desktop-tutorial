@@ -77,8 +77,8 @@ export const es: Dict = {
       aiNote: "LEX es una herramienta de IA. Sus respuestas no constituyen asesoramiento legal ni sustituyen la revisión de un abogado colegiado.",
     },
     sos: {
-      open: "SOS",
-      tab: "Urgente",
+      open: "Consulta directa",
+      tab: "Directo",
       aria: "Contacto urgente",
       eyebrow: "LALUM",
       title: "¿Necesita ayuda ahora mismo?",
@@ -122,7 +122,7 @@ export const es: Dict = {
     chat: {
       title: "LEX · LALUM",
       subtitle: "Información legal general, no asesoramiento legal",
-      greeting: "Hola, soy LEX, su asistente personal de LALUM. Hágame una pregunta legal general, obtenga ayuda para orientarse en la aplicación, o adjunte un contrato y le compartiré observaciones. Sobre startups, propiedad intelectual, regulación de IA, contratos o mediación.",
+      greeting: "Hola, soy LEX, un asistente de inteligencia artificial de LALUM (no soy una persona ni un abogado). Hágame una pregunta legal general, obtenga ayuda para orientarse en la aplicación, o adjunte un contrato y le compartiré observaciones. Sobre startups, propiedad intelectual, regulación de IA, contratos o mediación.",
       placeholder: "Haga una pregunta legal…",
       send: "Enviar mensaje",
       open: "Chatear con el asistente de LALUM",
@@ -655,8 +655,8 @@ export const es: Dict = {
 
   home: {
     heroPill: "Legal AI · Gobernanza, Cumplimiento y Riesgo",
-    heroH1a: "Gobernanza de IA, cumplimiento y riesgo,",
-    heroH1b: "diseñados para resistir.",
+    heroH1a: "IA que se",
+    heroH1b: "puede defender.",
     heroLede: "Legal AI es el eje del despacho: asesoría, acompañamiento continuo y formación para organizaciones que adoptan inteligencia artificial, desde la política de uso hasta la auditoría y la documentación.",
     heroCtaAi: "Vea cómo encaja Legal AI en su caso",
     quickInsightsTitle: "Artículos y novedades",

@@ -9,6 +9,7 @@ import type { ArticleBlock } from "../lib/content";
 import { blogMeta } from "../lib/blogMeta";
 import { enPosts } from "../data/enPosts";
 import { articleCorpus, relatedTo } from "../lib/related";
+import { rulingsForArticle } from "../lib/rulings";
 import { topicOfArticle, topicPath } from "../lib/topics";
 import { toIsoDate } from "../lib/isoDate";
 import { toBlocks, parseInline } from "../lib/articleBlocks";
@@ -107,6 +108,9 @@ export function Article() {
   // crawlers) moving between articles instead of dead-ending after one, and
   // being topical is what makes them worth following in either role.
   const related = relatedTo(slug ?? "", articleCorpus(t));
+  // The verified rulings this article is tied to. Hebrew only: the corpus is
+  // Hebrew, and a translated page would label foreign case law as its own.
+  const tiedRulings = lang === "he" && slug ? rulingsForArticle(slug) : [];
   // The subject this piece belongs to. Shown as a link so a reader who wants
   // more of the same has somewhere to go, and so the topic hubs are reachable
   // from the articles rather than only from the index.
@@ -227,6 +231,28 @@ export function Article() {
             {t.insights.heroPill}:{" "}
             <Link to={topicPath(topic.slug)} style={{ color: "var(--clay)" }}>{topic.name}</Link>
           </p>
+        </section>
+      )}
+
+      {tiedRulings.length > 0 && (
+        <section className="section-line">
+          <div className="wrap" style={{ maxWidth: 760, padding: "48px 32px 8px" }}>
+            <p className="eyebrow" style={{ textAlign: "center" }}>פסיקה מאומתת בנושא</p>
+            <div style={{ display: "grid", gap: 12, marginTop: 20 }}>
+              {tiedRulings.map((r) => (
+                <Link
+                  key={r.id}
+                  to={`/rulings?q=${encodeURIComponent(r.citation)}`}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12, padding: "16px 20px" }}
+                >
+                  <span style={{ fontSize: 16, lineHeight: 1.5 }}>
+                    <strong>{r.citation}</strong>{r.caption ? ` ${r.caption}` : ""} · {r.court}, {r.dateLabel}
+                  </span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </section>
       )}
 

@@ -5272,3 +5272,153 @@ html.a11y-reduce-motion *::after {
 }
 .sos-action:hover { border-color: var(--sos); background: rgba(122, 36, 50, 0.06); }
 .sos-action-icon { background: var(--sos); }
+
+/* ---------- home: AI layer as cards, hero depth, lead band ---------- */
+/* The six bands of the AI layer read as a list; a grid of cards with an icon
+   badge lets the eye take the whole offering in at once and keeps the page
+   short on a phone (body copy is clamped there). */
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.pillar-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 24px 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+}
+.pillar-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 3px;
+  background: var(--clay);
+  opacity: 0.85;
+}
+.pillar-card .pillar-txt { flex: 1; }
+.pillar-card .pillar-title { font-size: 19px; }
+.pillar-card .pillar-body { font-size: 14.5px; margin-top: 8px; }
+.pillar-card .pillar-go { margin-inline-start: auto; }
+.pillar-card:hover,
+.pillar-card:focus-visible {
+  border-color: var(--clay);
+  box-shadow: 0 18px 36px -22px rgba(26, 24, 21, 0.45);
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pillar-card { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+}
+@media (max-width: 960px) {
+  .pillar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .pillar-grid { grid-template-columns: 1fr; gap: 12px; }
+  .pillar-card { padding: 18px 18px 16px; gap: 10px; }
+  .pillar-card .pillar-body {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pillar-card .pillar-go { display: none; }
+}
+
+/* Hero: a larger headline and a soft clay glow behind the clip, so the first
+   screen has a focal point instead of a flat field. */
+.hero-home .hero-h1 { font-size: clamp(42px, 6vw, 76px); line-height: 1.04; }
+.hero-home::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -8%;
+  inset-block-start: 8%;
+  inline-size: 46%;
+  block-size: 84%;
+  background: radial-gradient(closest-side, var(--clay-tint), transparent 72%);
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Lead band: a single centred card on the tinted ground. */
+.lead-band { display: flex; justify-content: center; }
+.lead-card {
+  inline-size: 100%;
+  max-inline-size: 560px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 24px 48px -32px rgba(26, 24, 21, 0.35);
+}
+@media (max-width: 620px) {
+  .lead-card { padding: 20px 18px; border-radius: 16px; }
+  /* Shorter phone page: two articles are enough, the library link follows. */
+  .home-insights .grid > :nth-child(n+3) { display: none; }
+  .home-founder-art { display: none; }
+}
+
+/* Hero as an ad: the clip is the explanation, the copy is one line and one action. */
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 900px) {
+  /* Above the fold on a phone: the clip first, then the line and the button. */
+  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: 330px; margin-inline: auto; }
+  .hero-home .hero-h1 { font-size: clamp(34px, 9vw, 46px); max-inline-size: none; }
+  .hero-home .hero-copy { text-align: center; }
+  .hero-home .hero-actions { justify-content: center; }
+}
+
+/* ---------- header: one sharp command bar ----------
+   The menu button and the chat and theme buttons join into a single bar with
+   1px square borders (kept from the overhaul, by the owner's decision). It is
+   self-contained: ink on white on the light site, hairline on near black on the
+   dark looks, so it does not depend on the palette tokens. */
+.site-header .header-menu-btn,
+.site-header .header-tools .tb-btn {
+  border-radius: 0;
+  background: #fff;
+  border: 1px solid #111;
+  box-shadow: none;
+  color: #0a0a0c;
+}
+.site-header .header-menu-btn { block-size: var(--ctrl-h, 40px); padding-inline: 14px; gap: 8px; font-size: 13.5px; font-weight: 500; }
+.site-header .header-tools .tb-btn + .tb-btn,
+.site-header .header-tools .tb-theme + .tb-btn { margin-inline-start: -1px; }
+.site-header .header-tools .tb-btn:hover,
+.site-header .header-menu-btn:hover { background: #0a0a0c; border-color: #0a0a0c; color: #f7f7f5; }
+.site-header .header-tools .tb-btn.tb-sos { border-radius: 0; background: #7a2432; border-color: #7a2432; color: #fff; }
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header :is(.header-menu-btn, .header-tools .tb-btn) {
+  background: #0d0f14;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header :is(.header-menu-btn, .header-tools .tb-btn):hover {
+  background: #c5a880;
+  border-color: #c5a880;
+  color: #07080b;
+}
+:root:is([data-style="sovereign"], [data-style="sage"]) .site-header .header-tools .tb-btn.tb-sos { background: #7a2432; border-color: #7a2432; color: #fff; }
+@media (max-width: 900px) {
+  /* menu button and the two tool buttons read as one bar */
+  .site-header .header-inner { gap: 0; }
+  .site-header .header-more-wrap { margin-inline-start: auto; }
+  .site-header .header-tools { margin-inline-start: -1px; gap: 0; }
+}

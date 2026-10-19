@@ -81,8 +81,8 @@ export const en = {
       aiNote: "LEX is an AI tool. Its answers are not legal advice and do not replace review by a licensed attorney.",
     },
     sos: {
-      open: "SOS",
-      tab: "Urgent",
+      open: "Direct Counsel",
+      tab: "Direct",
       aria: "Urgent contact",
       eyebrow: "LALUM",
       title: "Need help right now?",
@@ -126,7 +126,7 @@ export const en = {
     chat: {
       title: "LEX · LALUM",
       subtitle: "General legal info, not legal advice",
-      greeting: "Hi, I'm LEX, your personal LALUM assistant. Ask a general legal question, get help finding your way around the app, or attach a contract and I'll share remarks. On startups, IP, AI regulation, contracts, or mediation.",
+      greeting: "Hi, I'm LEX, an AI assistant (not a human or a lawyer) from LALUM. Ask a general legal question, get help finding your way around the app, or attach a contract and I'll share remarks. On startups, IP, AI regulation, contracts, or mediation.",
       placeholder: "Ask a legal question…",
       send: "Send message",
       open: "Chat with the LALUM assistant",
@@ -661,8 +661,8 @@ export const en = {
 
   home: {
     heroPill: "Legal AI · Governance, Compliance & Risk",
-    heroH1a: "AI governance, compliance, and risk,",
-    heroH1b: "built to hold up.",
+    heroH1a: "AI you can",
+    heroH1b: "defend.",
     heroLede: "Legal AI is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence, from usage policy to audit and documentation.",
     heroCtaAi: "Check how Legal AI fits you",
     quickInsightsTitle: "Articles & Insights",

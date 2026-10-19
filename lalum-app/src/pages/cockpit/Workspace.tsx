@@ -87,6 +87,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
               <summary><span className="ck-mrow-main"><span className="ck-mrow-title">{name(x)}</span><span className="ck-mrow-sub"><span className={`ck-badge ${t}`}>{l}</span><span className="ck-meta">{MATTER_STATUS[x.matter_status]}</span></span></span></summary>
               <div className="ck-mrow-body">
                 <dl><dt>תחום</dt><dd>{PRACTICE[x.practice_area]}</dd><dt>סיכון</dt><dd>{risk(x.risk_level)}</dd><dt>תגובת שותף</dt><dd>{RESPONSE[x.partner_response]}</dd><dt>נקלט</dt><dd>{fmt(x.dispatched_at)}</dd></dl>
+                {isPartner && <label className="ck-mrow-pick"><input type="checkbox" checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} />&nbsp;סימון לפעולה על כמה תיקים</label>}
                 <div className="ck-row"><Link className="ck-btn primary" to={`/workspace?matter=${x.matter_id}`}>פתיחת התיק</Link>{isPartner && <button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button>}</div>
               </div>
             </details>); })}

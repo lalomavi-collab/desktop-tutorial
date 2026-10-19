@@ -1,4 +1,5 @@
 // Small dependency-free SVG charts for the cockpit dashboard. Each carries a text alternative (role="img" + aria-label) with its numbers.
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 // Colours come from tokens on .ck-root so the dark theme can lift them; the fallbacks are the mint-theme values.
@@ -20,7 +21,20 @@ function smooth(pts: Array<[number, number]>): string {
 
 /** Area chart. values and labels are in time order (oldest first). */
 export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[]; labels: string[]; unit: string; id?: string }) {
-  const W = 620, H = 230, L = 40, R = 14, T = 16, B = 32;
+  // Drawn at the width the box really has (no scaling), so axis labels keep their size on a phone.
+  const box = useRef<HTMLDivElement>(null);
+  const [boxW, setBoxW] = useState(620);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const set = () => setBoxW(Math.max(240, Math.round(el.clientWidth)));
+    set();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const W = boxW, H = 230, L = 40, R = 26, T = 16, B = 32;
   const max = Math.max(4, ...values);
   const nice = Math.ceil(max / 4) * 4;
   const step = values.length > 1 ? (W - L - R) / (values.length - 1) : 0;
@@ -31,14 +45,14 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
   const ticks = [0, 1, 2, 3, 4].map((i) => ({ y: T + ((H - T - B) * i) / 4, v: Math.round(nice - (nice * i) / 4) }));
   const last = p2[p2.length - 1];
   return (
-    <div style={{ overflowX: "auto" }}><svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`} style={{ direction: "ltr", display: "block", minWidth: 440 }}>
+    <div ref={box} style={{ width: "100%" }}><svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`} style={{ direction: "ltr", display: "block" }}>
       <defs>
         <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={SUN} stopOpacity=".75" /><stop offset="1" stopColor={SUN} stopOpacity=".04" /></linearGradient>
       </defs>
       {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke={GRID} strokeDasharray="3 5" /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="15" fill="var(--slate)">{t.v}</text></g>))}
       {area && <path d={area} fill={`url(#${id}-f)`} />}
       {line && <path d={line} fill="none" stroke={SUN_D} strokeWidth="3" strokeLinecap="round" />}
-      {p2.map((p, i) => (i % Math.ceil(values.length / 8) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="15" fill="var(--slate)">{labels[i]}</text> : null)}
+      {p2.map((p, i) => (i % Math.ceil(values.length / Math.max(2, Math.floor((W - L - R) / 62))) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="15" fill="var(--slate)">{labels[i]}</text> : null)}
       {last && <g><circle cx={last[0]} cy={last[1]} r="9" fill={GREEN} opacity=".18" /><circle cx={last[0]} cy={last[1]} r="5" fill="#fff" stroke={GREEN} strokeWidth="3" /></g>}
     </svg></div>
   );

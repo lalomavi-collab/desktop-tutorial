@@ -9,7 +9,7 @@ import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import {
   AREAS, DATABASES, EMPTY_QUERY, areaLabel, countByArea, courtsInCorpus,
-  rulingTitle, searchRulings, siteSearchUrl, webSearchUrl,
+  articlesOf, rulingTitle, searchRulings, siteSearchUrl, webSearchUrl,
   type AreaId, type Ruling, type Sort,
 } from "../lib/rulings";
 import { PillarArt } from "../components/PillarArt";
@@ -94,6 +94,11 @@ function RulingCard({ r }: { r: Ruling }) {
             {c.readArticle} <Icon name="chevron-l" size={14} />
           </Link>
         )}
+        {articlesOf(r).filter((a) => a.slug !== r.article).map((a) => (
+          <Link key={a.slug} to={`/insights/${a.slug}`} style={{ fontSize: 14, fontWeight: 600, color: "var(--clay)" }}>
+            {a.title}
+          </Link>
+        ))}
         {r.sources.map((s) => (
           <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: "var(--slate)" }}>
             {c.source}: {s.label}

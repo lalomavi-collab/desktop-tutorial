@@ -9,9 +9,19 @@ import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
 import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
-import { LANGS } from "../lib/hreflang";
+import { LANGS, cvPath } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
+import { ThemeToggle } from "./ThemeToggle";
+import { byLang } from "../lib/byLang";
 import { useScrollLock } from "../lib/useScrollLock";
+
+const HG = {
+  he: { engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
+  en: { engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation", contact: "Contact", call: "Call" },
+  ar: { engine: "المحرّك وغرفة القرار", practice: "مجالات العمل", clinic: "العيادة والأكاديمية", insights: "رؤى وملف شخصي", profile: "الملف الشخصي والسيرة الذاتية", cta: "جلسة تشخيص", group: "التنقل الرئيسي", contact: "التواصل", call: "اتصال" },
+  es: { engine: "Motor y Decisión", practice: "Áreas", clinic: "Clínica y Academia", insights: "Análisis y perfil", profile: "Perfil y CV", cta: "Sesión de diagnóstico", group: "Navegación principal", contact: "Contacto", call: "Llamar" },
+  fr: { engine: "Moteur et Décision", practice: "Domaines", clinic: "Clinique et Académie", insights: "Analyses et profil", profile: "Profil et CV", cta: "Séance de diagnostic", group: "Navigation principale", contact: "Contact", call: "Appeler" },
+};
 
 export function Header() {
   const { user } = useAuth();
@@ -64,17 +74,14 @@ export function Header() {
   // three is a new page or a new URL, only a new name for one already live.
   // Training and Knowledge have no slot of their own in this shape: they, and
   // Articles, follow the five links in the menu as the reading group.
-  const nav: { to: string; label: string; end: boolean; hash?: boolean }[] = [
-    { to: "/ai-legal-advisory", label: t.ui.nav.ai, end: false },
-    { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate, end: false },
-    { to: "/advisory", label: t.ui.nav.clinic, end: false },
-    { to: "/#engine", label: t.ui.nav.engine, end: false, hash: true },
-    { to: "/risk", label: t.ui.nav.decisionRoom, end: false },
-  ];
-  const insightsLinks = [
-    { to: "/insights", label: t.ui.nav.insights },
-    { to: "/knowledge", label: t.ui.nav.knowledge },
-    { to: "/training", label: t.ui.nav.training },
+  const hg = byLang(HG, lang);
+  // The four groups of the top bar. Every URL is one the site already serves;
+  // the full list, with Knowledge and the rest, stays in the menu.
+  const groups: { label: string; items: { to: string; label: string; plain?: boolean }[] }[] = [
+    { label: hg.engine, items: [{ to: "/#engine", label: t.ui.nav.engine }, { to: "/risk", label: t.ui.nav.decisionRoom }] },
+    { label: hg.practice, items: [{ to: "/ai-legal-advisory", label: t.ui.nav.ai }, { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate }] },
+    { label: hg.clinic, items: [{ to: "/advisory", label: t.ui.nav.clinic }, { to: "/training", label: t.ui.nav.training }] },
+    { label: hg.insights, items: [{ to: "/insights", label: t.ui.nav.insights }, { to: "/knowledge", label: t.ui.nav.knowledge }, { to: cvPath(lang), label: hg.profile, plain: true }] },
   ];
 
   return (
@@ -116,114 +123,80 @@ export function Header() {
                     desktop this row is hidden and the anchored dropdown stands
                     on its own. */}
                 <div className="header-more-head">
-                  <Wordmark height={17} />
+                  <span className="hm-brand"><Wordmark height={17} /><span dir="ltr" className="mono hdr-badge" aria-hidden="true">[LAW &amp; AI LAB]</span></span>
                   <button type="button" className="header-more-close" onClick={() => setMoreOpen(false)} aria-label={t.ui.quickAccess.close}>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
                   </button>
                 </div>
-                {/* Entry into the standalone assistant app, so the site and the
-                    app reach each other. The label is the product name, one form
-                    in every language, so it needs no translation string. A plain
-                    anchor, not <Link>: /os has no translated build (it is one
-                    Hebrew surface for every visitor), and <Link> would carry the
-                    current language's basename onto it ("/en/os"), a path with
-                    no prerendered file, 404ing on a direct hit or a refresh. */}
-                <a href="/os/" role="menuitem" className="header-more-item header-more-os" onClick={() => setMoreOpen(false)}>
-                  <Icon name="spark" size={18} /> LALUM LEX
-                </a>
-                {/* Quick payment folded into the menu instead of standing on
-                    its own in the phone header (header-tools' one visible
-                    child there, before this): a single-purpose ₪ icon
-                    floating alone next to the menu button read as two
-                    separate controls competing for the same corner. Desktop
-                    still reaches payment through the floating ContactRail,
-                    unaffected by this. */}
-                {paymentsEnabled && (
-                  <Link to={user ? "/portal" : "/login"} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
-                    <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
+                {/* The menu is organised, not listed: two entries first (the
+                    assistant app and the client portal, with quick payment as a
+                    third when it is on), then the same four groups the top bar
+                    uses, then contact as three short buttons, then the small
+                    utilities. Every link the flat list carried is still here,
+                    once. The assistant link is a plain anchor, not <Link>:
+                    /os has no translated build, and <Link> would carry the
+                    language basename onto a path with no prerendered file. */}
+                <div className="hm-top">
+                  <a href="/os/" role="menuitem" className="hm-tile hm-tile-os" onClick={() => setMoreOpen(false)}>
+                    <Icon name="spark" size={18} /> LALUM LEX
+                  </a>
+                  <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile" onClick={() => setMoreOpen(false)}>
+                    <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
                   </Link>
-                )}
-                {nav.map((n) =>
-                  n.hash ? (
-                    <Link key={n.to} to={n.to} role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
-                      {n.label}
+                  {paymentsEnabled && (
+                    <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile" onClick={() => setMoreOpen(false)}>
+                      <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
                     </Link>
-                  ) : (
-                    <NavLink
-                      key={n.to}
-                      to={n.to}
-                      end={n.end}
-                      role="menuitem"
-                      onClick={() => setMoreOpen(false)}
-                      className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
-                    >
-                      {n.label}
-                    </NavLink>
-                  )
-                )}
-                {insightsLinks.map((l) => (
-                  <NavLink
-                    key={l.to}
-                    to={l.to}
-                    role="menuitem"
-                    onClick={() => setMoreOpen(false)}
-                    className={({ isActive }) => "header-more-item" + (isActive ? " active" : "")}
-                  >
-                    {l.label}
-                  </NavLink>
+                  )}
+                </div>
+                {groups.map((g) => (
+                  <div key={g.label} role="group" aria-label={g.label} className="hm-group">
+                    <div className="hm-gh">{g.label}</div>
+                    <div className="hm-links">
+                      {g.items.map((it) => it.plain ? (
+                        <a key={it.to} href={it.to} role="menuitem" className="hm-link" onClick={() => setMoreOpen(false)}>{it.label}</a>
+                      ) : it.to.includes("#") ? (
+                        <Link key={it.to} to={it.to} role="menuitem" className="hm-link" onClick={() => setMoreOpen(false)}>{it.label}</Link>
+                      ) : (
+                        <NavLink key={it.to} to={it.to} role="menuitem" onClick={() => setMoreOpen(false)} className={({ isActive }) => "hm-link" + (isActive ? " active" : "")}>
+                          {it.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
                 ))}
-                <div className="header-more-divider" role="separator" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="header-more-item"
-                  onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}
-                >
-                  <Icon name="compass" size={18} /> {t.ui.guide.open}
-                </button>
-                <a role="menuitem" className="header-more-item" href={`tel:${officePhone.tel}`} onClick={() => setMoreOpen(false)}>
-                  <Icon name="headset" size={18} /> {t.ui.botCall.aria}
-                </a>
-                <a
-                  role="menuitem"
-                  className="header-more-item"
-                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMoreOpen(false)}
-                >
-                  <Icon name="whatsapp" size={18} /> {t.ui.whatsapp.aria}
-                </a>
-                <a role="menuitem" className="header-more-item" href={telegramUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMoreOpen(false)}>
-                  <Icon name="telegram" size={18} /> {t.ui.telegram.aria}
-                </a>
-                <button type="button" role="menuitem" className="header-more-item" onClick={share}>
-                  <Icon name="share" size={18} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
-                </button>
-                {canInstall && !appInstalled && (
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="header-more-item"
-                    onClick={() => { void promptInstall(); setMoreOpen(false); }}
-                  >
-                    <DownloadIcon size={18} /> {t.ui.footer.installApp}
+                <div role="group" aria-label={hg.contact} className="hm-group">
+                  <div className="hm-gh">{hg.contact}</div>
+                  <div className="hm-contact">
+                    <a role="menuitem" className="hm-ch" href={`tel:${officePhone.tel}`} aria-label={t.ui.botCall.aria} onClick={() => setMoreOpen(false)}>
+                      <Icon name="headset" size={20} /> {hg.call}
+                    </a>
+                    <a role="menuitem" className="hm-ch" href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.ui.whatsapp.msg)}`} target="_blank" rel="noopener noreferrer" aria-label={t.ui.whatsapp.aria} onClick={() => setMoreOpen(false)}>
+                      <Icon name="whatsapp" size={20} /> WhatsApp
+                    </a>
+                    <a role="menuitem" className="hm-ch" href={telegramUrl} target="_blank" rel="noopener noreferrer" aria-label={t.ui.telegram.aria} onClick={() => setMoreOpen(false)}>
+                      <Icon name="telegram" size={20} /> Telegram
+                    </a>
+                  </div>
+                </div>
+                <div className="hm-utils">
+                  <button type="button" role="menuitem" className="hm-util" onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}>
+                    <Icon name="compass" size={16} /> {t.ui.guide.open}
                   </button>
-                )}
-                <Link
-                  to={user ? "/portal" : "/login"}
-                  role="menuitem"
-                  className="header-more-item"
-                  onClick={() => setMoreOpen(false)}
-                >
-                  <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
-                </Link>
-                {/* Plain anchor, same reason as the LALUM LEX link above: /partners
-                    is Hebrew-only and has no file at "/en/partners" for <Link>'s
-                    basename-prefixed href to resolve to. */}
-                <a href="/partners/" role="menuitem" className="header-more-item" onClick={() => setMoreOpen(false)}>
-                  <Icon name="scale" size={18} /> {t.ui.partnerLogin}
-                </a>
+                  <button type="button" role="menuitem" className="hm-util" onClick={share}>
+                    <Icon name="share" size={16} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
+                  </button>
+                  {canInstall && !appInstalled && (
+                    <button type="button" role="menuitem" className="hm-util" onClick={() => { void promptInstall(); setMoreOpen(false); }}>
+                      <DownloadIcon size={16} /> {t.ui.footer.installApp}
+                    </button>
+                  )}
+                  {/* Plain anchor: /partners is Hebrew-only and has no file at
+                      "/en/partners" for <Link>'s basename-prefixed href. */}
+                  <a href="/partners/" role="menuitem" className="hm-util" onClick={() => setMoreOpen(false)}>
+                    <Icon name="scale" size={16} /> {t.ui.partnerLogin}
+                  </a>
+                </div>
                 <div className="header-more-divider" role="separator" />
                 <div className="header-more-langs">
                   {LANGS.map((l) => (
@@ -251,7 +224,28 @@ export function Header() {
             the single home for navigation, which leaves the bar with room to
             breathe. Only the quick utilities stay here (account, chat, SOS). */}
 
+        {/* The four groups. Desktop only: below 900px the menu sheet carries
+            every one of these links. Each group opens on hover or keyboard
+            focus; its first link is also its own destination. */}
+        <nav className="header-groups hide-mobile" aria-label={hg.group}>
+          {groups.map((g) => (
+            <div key={g.label} className="hg">
+              <span className="hg-label" tabIndex={0}>{g.label}</span>
+              <div className="hg-menu">
+                {g.items.map((it) => it.plain ? (
+                  <a key={it.to} href={it.to}>{it.label}</a>
+                ) : it.to.includes("#") ? (
+                  <Link key={it.to} to={it.to}>{it.label}</Link>
+                ) : (
+                  <NavLink key={it.to} to={it.to}>{it.label}</NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+
         <div className="header-tools">
+          <ThemeToggle />
           {/* The two controls that used to float in the page's bottom corner,
               one above the other: the quick-access dot and the chat launcher.
               Parked there they covered content on every screen and on every
@@ -304,9 +298,17 @@ export function Header() {
               closing section, so nothing was actually missing an entry
               point. Only the client login/portal button remains here, so the
               header stays uncluttered. */}
+          <div className="hdr-langs hide-mobile" role="group" aria-label="Language">
+            {LANGS.filter((l) => l.code === "he" || l.code === "en" || l.code === lang).map((l) => (
+              <button key={l.code} type="button" className={"mono" + (l.code === lang ? " on" : "")} aria-pressed={l.code === lang} onClick={() => setLang(l.code)}>
+                {l.code.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <Link to={user ? "/portal" : "/login"} className="header-login hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
+          <Link to="/book" className="hdr-cta hide-mobile">{hg.cta}</Link>
         </div>
       </div>
     </header>

@@ -11,6 +11,8 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { Icon } from "../components/Icon";
 import { SchedulingEmbed } from "../components/SchedulingEmbed";
+import { DiagnosticBriefing } from "../components/DiagnosticBriefing";
+import { getStyle } from "../lib/siteStyle";
 import { MarketingConsent } from "../components/MarketingConsent";
 import { meetingTypes, bookingBaseUrl, paymentsEnabled, type MeetingKey } from "../lib/content";
 import { ZoomMark, TeamsMark, PaymentBrands } from "../components/BrandMarks";
@@ -26,6 +28,8 @@ const SCHEDULING_URL = import.meta.env.VITE_SCHEDULING_URL || bookingBaseUrl;
 // Brand palette handed to the embedded scheduling widget (hex without '#'),
 // kept in sync with --paper / --ink / --clay-bright in index.css.
 const EMBED_THEME = { background: "fbf9f3", text: "1a1815", primary: "6b8f6e" };
+// The two dark site styles hand the widget the obsidian and gold palette.
+const EMBED_THEME_DARK = { background: "0d0f14", text: "f3f4f6", primary: "c5a880" };
 
 const SLOTS = ["09:00", "10:30", "12:00", "14:00", "15:30"];
 
@@ -120,6 +124,7 @@ export function Book() {
   if (SCHEDULING_URL) {
     const active = meetingTypes.find((m) => m.key === method) ?? meetingTypes[0];
     const activeUrl = active.url || SCHEDULING_URL;
+    const embedTheme = getStyle() === "classic" ? EMBED_THEME : EMBED_THEME_DARK;
     // Horizontal padding is left to the responsive `.wrap` rule (32px desktop,
     // 20px ≤900, 16px ≤560) instead of a fixed inline 32px, so on phones the
     // frame stays wide enough for the 320px-min scheduling embed and never clips
@@ -160,7 +165,7 @@ export function Book() {
             const on = m.key === method;
             return (
               <button type="button" key={m.key} onClick={() => setMethod(m.key)} aria-pressed={on}
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 18px", borderRadius: 9999,
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 18px", borderRadius: 2,
                   border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)",
                   color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 14.5, fontWeight: 600 }}>
                 {m.key === "zoom" ? <ZoomMark size={18} /> : m.key === "teams" ? <TeamsMark size={18} /> : <Icon name={m.icon} size={16} />} {B.methods[m.key]}
@@ -169,6 +174,7 @@ export function Book() {
           })}
         </div>
 
+        <DiagnosticBriefing>
         <div className="book-frame">
           <div className="book-frame-head">
             <span className="book-frame-secure"><Icon name="shield" size={15} /> {B.secureNote}</span>
@@ -178,9 +184,10 @@ export function Book() {
             </span>
           </div>
           <div style={{ padding: 8 }}>
-            <SchedulingEmbed key={active.key} url={activeUrl} theme={EMBED_THEME} height={720} />
+            <SchedulingEmbed key={active.key} url={activeUrl} theme={embedTheme} height={720} />
           </div>
         </div>
+        </DiagnosticBriefing>
       </section>
     );
   }
@@ -224,15 +231,15 @@ export function Book() {
           relevant either way. */}
       <FromAssessment />
 
-      <div className="card" style={{ padding: 34 }}>
-        <form onSubmit={submit}>
+      <DiagnosticBriefing>
+        <form onSubmit={submit} style={{ padding: 6 }}>
           <div className="label">{B.step1}</div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 22 }}>
             {days.map((d) => {
               const on = day === d.key;
               return (
                 <button type="button" key={d.key} onClick={() => { setDay(d.key); setMsg(null); }}
-                  style={{ flex: 1, minWidth: 92, padding: "12px 8px", borderRadius: 12, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay-tint)" : "var(--card)", cursor: "pointer", textAlign: "center" }}>
+                  style={{ flex: 1, minWidth: 92, padding: "12px 8px", borderRadius: 2, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay-tint)" : "var(--card)", cursor: "pointer", textAlign: "center" }}>
                   <div style={{ fontSize: 12, color: "var(--slate)" }}>{d.wd}</div>
                   <div style={{ fontFamily: "var(--serif)", fontSize: 17, marginTop: 4 }} dir="ltr">{d.dm}</div>
                 </button>
@@ -246,7 +253,7 @@ export function Book() {
               const on = slot === s;
               return (
                 <button type="button" key={s} onClick={() => { setSlot(s); setMsg(null); }}
-                  style={{ padding: "11px 20px", borderRadius: 9999, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)", color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 15, fontWeight: 600 }} dir="ltr">
+                  style={{ padding: "11px 20px", borderRadius: 2, border: `1px solid ${on ? "var(--clay)" : "var(--line-strong)"}`, background: on ? "var(--clay)" : "var(--card)", color: on ? "var(--paper)" : "var(--ink)", cursor: "pointer", fontSize: 15, fontWeight: 600 }} dir="ltr">
                   {s}
                 </button>
               );
@@ -274,7 +281,7 @@ export function Book() {
           </button>
           {msg && <div className={`notice ${msg.tone === "ok" ? "notice-ok" : "notice-err"}`} style={{ marginTop: 16 }}>{msg.text}</div>}
         </form>
-      </div>
+      </DiagnosticBriefing>
     </section>
   );
 }

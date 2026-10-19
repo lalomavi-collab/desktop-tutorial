@@ -77,8 +77,8 @@ export const fr: Dict = {
       aiNote: "LEX est un outil d'intelligence artificielle. Ses réponses ne constituent pas un avis juridique et ne remplacent pas l'examen d'un avocat agréé.",
     },
     sos: {
-      open: "SOS",
-      tab: "Urgent",
+      open: "Conseil direct",
+      tab: "Direct",
       aria: "Contact urgent",
       eyebrow: "LALUM",
       title: "Besoin d'aide tout de suite ?",
@@ -122,7 +122,7 @@ export const fr: Dict = {
     chat: {
       title: "LEX · LALUM",
       subtitle: "Informations juridiques générales, pas un avis juridique",
-      greeting: "Bonjour, je suis LEX, votre assistant personnel LALUM. Posez une question juridique générale, obtenez de l'aide pour vous repérer dans l'application, ou joignez un contrat et je vous transmettrai des remarques. Sur les startups, la propriété intellectuelle, la régulation de l'IA, les contrats ou la médiation.",
+      greeting: "Bonjour, je suis LEX, un assistant d'intelligence artificielle de LALUM (ni une personne ni un avocat). Posez une question juridique générale, obtenez de l'aide pour vous repérer dans l'application, ou joignez un contrat et je vous transmettrai des remarques. Sur les startups, la propriété intellectuelle, la régulation de l'IA, les contrats ou la médiation.",
       placeholder: "Posez une question juridique…",
       send: "Envoyer le message",
       open: "Discuter avec l'assistant LALUM",
@@ -653,8 +653,8 @@ export const fr: Dict = {
   },
   home: {
     heroPill: "Legal AI · Gouvernance, conformité et risque",
-    heroH1a: "Gouvernance de l'IA, conformité et risque,",
-    heroH1b: "conçus pour tenir.",
+    heroH1a: "Une IA que",
+    heroH1b: "l'on peut défendre.",
     heroLede: "Legal AI est l'axe du cabinet : conseil, accompagnement continu et formation pour les organisations qui adoptent l'intelligence artificielle, de la politique d'usage à l'audit et à la documentation.",
     heroCtaAi: "Voyez comment Legal AI s'applique à vous",
     quickInsightsTitle: "Articles et actualités",

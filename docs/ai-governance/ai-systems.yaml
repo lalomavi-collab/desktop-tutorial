@@ -1,0 +1,225 @@
+systems:
+  - id: sys-001
+    name: "lalum-assistant (website chat, ChatWidget)"
+    owner: "Dr. Avraham Lalum"
+    description: "Client-facing chat on the site, Claude Haiku 4.5, includes browser voice. Signed-in clients only in the UI; server-side login enforcement NOT yet verified."
+    status: in_production
+    eu_nexus: true                 # stated: mostly Israel, possibly a few EU users
+    role: provider
+    role_basis: "Offered under the LALUM name with its own system prompt, built on a third-party GPAI model [verify against current AI Act text]"
+    tier: limited
+    tier_basis: "Interacts directly with people: Art. 50 transparency. Not an Annex III use [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Gap: AI disclosure was only a 10.5px footnote; greeting now states AI up front (PR 992, merged 2026-10-18). Art. 50(1) disclosure to assess. Verify server-side login enforcement."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-002
+    name: "analyze-contract (LALUM LEX, /os)"
+    owner: "Dr. Avraham Lalum"
+    description: "Contract analysis for any visitor, no login; Claude Sonnet"
+    status: in_production
+    eu_nexus: true
+    role: provider
+    role_basis: "Offered under the LALUM name on a third-party GPAI model [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Analysis output, not a chat with a person, not an Annex III use [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Main risk is confidentiality and personal data in uploaded contracts (privacy law), not the AI Act. Rate limited."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-003
+    name: "compare-contracts"
+    owner: "Dr. Avraham Lalum"
+    description: "Stateless comparison of two contracts; Claude Sonnet"
+    status: in_production
+    eu_nexus: true
+    role: provider
+    role_basis: "Offered under the LALUM name on a third-party GPAI model [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Analysis output, not Annex III [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Stateless, no storage. Same confidentiality note as sys-002."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-004
+    name: "lalum-whatsapp-webhook"
+    owner: "Dr. Avraham Lalum"
+    description: "Triage, replies, leads and matter status over WhatsApp; Claude Haiku"
+    status: in_production
+    eu_nexus: true
+    role: provider
+    role_basis: "Own system prompt and channel under the LALUM name [verify against current AI Act text]"
+    tier: limited
+    tier_basis: "Converses with people: Art. 50 disclosure [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Confirm the first WhatsApp message tells people they are talking to an AI."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-005
+    name: "lalum-voice-webhook and voice-webhook"
+    owner: "Dr. Avraham Lalum"
+    description: "Intent extraction from call transcripts and billing calculation; Claude Haiku, or gpt-4o-mini if LLM_PROVIDER=openai"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Own pipeline for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Back-office extraction; no emotion recognition found in code, to be confirmed [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Check call recording consent (Israeli law) and whether OPENAI_API_KEY is set."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-006
+    name: "LiveKit voice agent (livekit_worker.py)"
+    owner: "Dr. Avraham Lalum"
+    description: "Voice agent skeleton; LLM not chosen"
+    status: planned
+    eu_nexus: false
+    role: provider
+    role_basis: "Would be offered under the LALUM name [verify against current AI Act text]"
+    tier: limited
+    tier_basis: "If activated it converses by voice: Art. 50 disclosure [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Not active. Re-classify before activation."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-007
+    name: "lalum-pipeline and pii-gateway"
+    owner: "Dr. Avraham Lalum"
+    description: "Document intake, PII redaction, conflict check; Claude Sonnet 5.5"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built and put into service for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Internal assistive tool [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). pii-gateway is the control that registry rule 2 depends on; test it periodically."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-008
+    name: "deal-analysis agent"
+    owner: "Dr. Avraham Lalum"
+    description: "Deal analysis; Claude Opus"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Internal assistive tool [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Lawyer reviews before reliance."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-009
+    name: "invoice-processing agent"
+    owner: "Dr. Avraham Lalum"
+    description: "Invoice collection via Google ADK, gemini-2.0-flash"
+    status: in_production
+    eu_nexus: false
+    role: deployer
+    role_basis: "Uses Google's model in an own pipeline [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Back-office extraction [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Second vendor (Google), contradicts 'Anthropic only'. Confirm it is active and review Google's data terms."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-010
+    name: "daily research, CEO report, Telegram bot"
+    owner: "Dr. Avraham Lalum"
+    description: "Scheduled research and reports; Claude"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Internal assistive tool [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Output goes to the owner via Telegram."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-011
+    name: "prompt_builder"
+    owner: "Dr. Avraham Lalum"
+    description: "Builds prompts; Claude"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Internal assistive tool [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). None beyond annual review."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-012
+    name: "job_agent"
+    owner: "Dr. Avraham Lalum"
+    description: "Autonomous agent applying to jobs in the owner's name"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Acts for the applicant, not a hiring use; no Annex III [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: human approval before each submission. Verify it is enforced in code."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-013
+    name: "Synthesia avatar video (daily_avatar_video.py)"
+    owner: "Dr. Avraham Lalum"
+    description: "Daily video of an avatar that simulates the owner"
+    status: in_production
+    eu_nexus: true
+    role: deployer
+    role_basis: "Uses Synthesia's system to publish synthetic content of a person [verify against current AI Act text]"
+    tier: limited
+    tier_basis: "Deepfake-type content: Art. 50(4) disclosure to viewers [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: conspicuous disclosure that the video is synthetic. Confirm it appears on every video."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"
+  - id: sys-014
+    name: "daily-audit-automerge"
+    owner: "Dr. Avraham Lalum"
+    description: "Workflow that merges an AI-written branch into main if the build passes"
+    status: in_production
+    eu_nexus: false
+    role: provider
+    role_basis: "Built for own use [verify against current AI Act text]"
+    tier: minimal
+    tier_basis: "Internal automation [verify against current AI Act text]"
+    obligations_assessed: false
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: never for legal text, sources or ruling verification. Verify the workflow cannot touch rulings.json or articles."
+    next_review: "2027-01-18"
+    review_trigger: "on substantial modification or annually"
+    created: "2026-10-18"
+    updated: "2026-10-18"

@@ -3,6 +3,17 @@ import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 import { useNearTopScroll } from "../hooks/useNearTopScroll";
+import { nextStyle, setStyle, useSiteStyle, type SiteStyle } from "../lib/siteStyle";
+import { byLang } from "../lib/byLang";
+
+const STYLE_LABEL = { he: "סגנון האתר", en: "Site style", ar: "نمط الموقع", es: "Estilo del sitio", fr: "Style du site" };
+const STYLE_NAME = {
+  he: { classic: "קלאסי", sage: "ירוק כהה", sovereign: "Sovereign" },
+  en: { classic: "Classic", sage: "Dark sage", sovereign: "Sovereign" },
+  ar: { classic: "كلاسيكي", sage: "أخضر داكن", sovereign: "Sovereign" },
+  es: { classic: "Clásico", sage: "Verde oscuro", sovereign: "Sovereign" },
+  fr: { classic: "Classique", sage: "Vert sombre", sovereign: "Sovereign" },
+} satisfies Record<string, Record<SiteStyle, string>>;
 
 // Self-contained accessibility menu (no third-party vendor). A fixed button at
 // the bottom-inline-start opens a panel of real controls: text size, high
@@ -39,8 +50,10 @@ function apply(s: Settings) {
 }
 
 export function AccessibilityMenu() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const a = t.ui.a11y;
+  const look = useSiteStyle();
+  const names = byLang(STYLE_NAME, lang);
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<Settings>(DEFAULTS);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -103,6 +116,10 @@ export function AccessibilityMenu() {
             <span>{a.motion}</span><span className="a11y-knob" />
           </button>
 
+          <button type="button" className="a11y-toggle" onClick={() => setStyle(nextStyle(look))}>
+            <span>{byLang(STYLE_LABEL, lang)}</span>
+            <span aria-live="polite" style={{ fontWeight: 600 }}>{names[look]}</span>
+          </button>
           <div className="a11y-panel-foot">
             <button type="button" className="a11y-reset" onClick={reset}>{a.reset}</button>
             <Link to="/legal#accessibility" className="a11y-statement" onClick={() => setOpen(false)}>{a.statement}</Link>

@@ -4,9 +4,10 @@
 // API key stays server-side. Returns { reply }. Self-contained to LALUM.
 //
 // Deploy: supabase functions deploy lalum-assistant
-// Requires env: ANTHROPIC_API_KEY (server only).
+// Requires env: ANTHROPIC_API_KEY (server only). SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (auto) for the rate limiter.
 
 import { RULINGS } from "./rulings.data.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
@@ -16,12 +17,18 @@ const MODEL = "claude-haiku-4-5-20251001";
 // deterministic, server-side signal to count against, rather than asking the
 // model to track its own turn count across the conversation (it had been
 // doing exactly that, in the prompt alone, and nothing stopped a user from
-// rephrasing past it). This endpoint has no accounts and no session of its
-// own, but the client already sends the full conversation on every call, so
-// the count can be computed fresh each time from that history: no database,
-// no rate-limit table, nothing to persist.
+// rephrasing past it). The count is kept in Postgres per client (see the
+// counters in the handler), with the history the client sends as a second,
+// weaker check.
 const CASE_LAW_MARKER = "⚖️";
-const FREE_CASE_LAW_LOOKUPS = 3;
+// Free use of the assistant, counted per message: at most 2 per person per day, and 10 per day across all
+// clients together. A "person" is the signed-in user, or the visitor's network address when not signed in.
+const DAILY_PER_PERSON = 2;
+const DAILY_TOTAL = 10;
+const DAILY_LIMIT_REPLY =
+  "השירות נמצא כרגע בשלב פיילוט ולכן השימוש בו מוגבל. נשמח לעמוד לרשותכם בשיחת אבחון קצרה עם ד״ר עו״ד אברהם ללום בכתובת lalumapp.com/book.";
+// The case law answers keep their own, tighter-in-wording guard (same two per person), see below.
+const FREE_CASE_LAW_LOOKUPS = 2;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
 
@@ -110,7 +117,7 @@ When a user asks for a precedent, a court ruling, or a "פסק דין" on a topi
 3. If nothing in the database matches, do NOT invent a ruling. Say: "לא נמצא פסק דין מדויק במאגר שלי בנושא זה. באפשרותך לחפש במאגר הפסיקה של האתר בכתובת lalumapp.com/rulings, שם מוצעות גם שאילתות מוכנות למאגרים הרשמיים."
 
 Conversion:
-- Limit free web queries to ${FREE_CASE_LAW_LOOKUPS} case law tasks per conversation. On the fourth, answer: "${CASE_LAW_LIMIT_REPLY}"
+- Limit free web queries to ${FREE_CASE_LAW_LOOKUPS} case law tasks, no more. On the one after that, answer: "${CASE_LAW_LIMIT_REPLY}"
 - Point to lalumapp.com/risk for the readiness assessment and lalumapp.com/book for scheduling a Tech-Legal diagnosis.
 
 Tone and Language:
@@ -136,7 +143,41 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  // Integrity probe: lets a deploy be checked against the repository without exposing anything but counts and
+  // hashes (of the verified case law and of the instructions). GET ?health=1 only.
+  if (req.method === "GET" && new URL(req.url).searchParams.get("health") === "1") {
+    const sha = async (t: string) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))).map((x) => x.toString(16).padStart(2, "0")).join("");
+    return json(200, { rulings: RULINGS.length, rulingsSha: await sha(JSON.stringify(RULINGS)), systemSha: await sha(SYSTEM), perPerson: DAILY_PER_PERSON, total: DAILY_TOTAL });
+  }
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
+
+  // Daily usage counters, kept in Postgres (lalum_rate_limit, a hashed key per person, the same pattern as the
+  // other public functions): every message counts, 2 per person per day and 10 per day across all clients.
+  // The person is checked first, so someone already at their two does not use up the shared ten. Both fail open:
+  // if the counter itself is unavailable the request goes through rather than the chat breaking.
+  const supaUrl = Deno.env.get("SUPABASE_URL");
+  const supaKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (supaUrl && supaKey) {
+    try {
+      const counter = createClient(supaUrl, supaKey);
+      const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+      const user = token ? (await counter.auth.getUser(token)).data.user : null;
+      const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+      const raw = user ? `u:${user.id}` : `ip:${ip}`;
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+      const hash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
+      const person = await counter.rpc("lalum_rate_limit", { p_key: `assistant-day:${hash}`, p_max: DAILY_PER_PERSON, p_window_seconds: 86400 });
+      let over = !person.error && person.data === false;
+      if (!over) {
+        const all = await counter.rpc("lalum_rate_limit", { p_key: "assistant-day:all", p_max: DAILY_TOTAL, p_window_seconds: 86400 });
+        over = !all.error && all.data === false;
+      }
+      // 200 with the message, not an error status: the chat shows a reply, and an error would read as "broken".
+      if (over) return json(200, { reply: DAILY_LIMIT_REPLY });
+    } catch (e) {
+      console.error(`lalum-assistant: counter_unavailable ${String(e).slice(0, 120)}`);
+    }
+  }
 
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, { code: "not_configured" });

@@ -1,0 +1,304 @@
+/* ============================================================
+   Institutional chrome and sections (all three site styles).
+   Written on the site's tokens, so classic, sage and sovereign each read it in
+   their own palette. Gold (#C5A880) is the one fixed colour: it is the firm's
+   accent in every style.
+   ============================================================ */
+
+/* ---------- header ---------- */
+.hdr-badge {
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--slate);
+  border: 1px solid var(--line-strong);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.header-groups {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+.hg { position: relative; }
+.hg-label {
+  display: block;
+  padding: 10px 9px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: default;
+}
+.hg:hover .hg-label,
+.hg:focus-within .hg-label { color: var(--clay); }
+.hg-menu {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 100%;
+  min-width: 100%;
+  display: none;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  z-index: 60;
+}
+.hg:hover .hg-menu,
+.hg:focus-within .hg-menu { display: flex; }
+.hg-menu a {
+  padding: 11px 16px;
+  font-size: 13.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.hg-menu a:last-child { border-bottom: 0; }
+.hg-menu a:hover,
+.hg-menu a.active { background: var(--clay-tint); color: var(--clay); }
+.hdr-langs { display: inline-flex; border: 1px solid var(--line-strong); }
+.hdr-langs button {
+  background: transparent;
+  border: 0;
+  color: var(--slate);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  padding: 0 10px;
+  height: calc(var(--ctrl-h, 40px) - 2px);
+  cursor: pointer;
+}
+.hdr-langs button.on { color: var(--ink); background: var(--clay-tint); }
+.hdr-cta {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ctrl-h, 40px);
+  padding: 0 16px;
+  background: #c5a880;
+  color: #07080b;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  border: 1px solid #c5a880;
+}
+.hdr-cta:hover { background: #d9c29f; color: #07080b; }
+/* The top bar keeps one row: groups first to go on narrower desktops. */
+@media (max-width: 1120px) { .header-groups { display: none; } }
+.header-more-wrap + .header-groups { margin-inline: 8px; }
+.header-login { border-radius: 2px; background: transparent; }
+.header-login .header-cta-label { display: none; }
+.header-login { padding: 0 12px; }
+/* With the groups on screen the menu button is the icon alone; its label
+   returns when the groups step aside. */
+@media (min-width: 1121px) { .header-menu-btn span { display: none; } .header-menu-btn { padding-inline: 12px; } }
+
+/* ---------- direct counsel (was SOS): one hairline of gold, no red ---------- */
+.tb-btn.tb-sos {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid #c5a880;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  filter: none;
+}
+.tb-btn.tb-sos:hover { background: rgba(197, 168, 128, 0.14); color: var(--ink); }
+@media (max-width: 900px) {
+  .tabbar-sos { color: var(--ink); }
+  .tabbar-sos-badge { background: transparent; border: 1px solid #c5a880; border-radius: 2px; color: var(--ink); }
+}
+.sos-action:hover { border-color: #c5a880; background: rgba(197, 168, 128, 0.08); }
+.sos-action-icon { background: #c5a880; color: #07080b; }
+
+/* ---------- footer: one contact block, one terminal strip ---------- */
+.footer-diag {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--clay);
+}
+.footer-terminal {
+  background: #0d0f14;
+  border-block: 1px solid rgba(255, 255, 255, 0.07);
+  color: #f3f4f6;
+  --ink: #f3f4f6;
+  --slate: #a3a9b5;
+  --line: rgba(255, 255, 255, 0.07);
+}
+.footer-terminal .footer-download {
+  background: transparent;
+  border: 0;
+  padding-block: 22px;
+  gap: 24px;
+  align-items: center;
+}
+.footer-terminal-tag {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: #c5a880;
+  margin-bottom: 8px;
+}
+.footer-terminal .footer-download-title { font-size: 16px; font-weight: 500; margin: 0 0 4px; color: #f3f4f6; }
+.footer-terminal .footer-download-sub { font-size: 13.5px; margin: 0 0 12px; color: #a3a9b5; }
+.footer-terminal .footer-qr-frame {
+  border: 1px solid rgba(197, 168, 128, 0.5);
+  border-radius: 2px;
+  padding: 6px;
+  box-shadow: none;
+}
+.footer-terminal .footer-qr-frame img { width: 84px; height: 84px; }
+.footer-terminal .footer-qr-hint { color: #a3a9b5; font-size: 11px; }
+.footer-terminal .btn-clay { background: #c5a880; border-color: #c5a880; color: #07080b; border-radius: 2px; }
+
+/* ---------- Classify, Certify, Defend ---------- */
+.ccd-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 980px) { .ccd-grid { grid-template-columns: 1fr; } }
+.ccd-cell {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+.ccd-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  color: var(--clay);
+  margin-bottom: 22px;
+}
+.ccd-head span:last-child { color: var(--slate); font-size: 10px; }
+.ccd-title { font-size: 22px; line-height: 1.3; margin: 0 0 12px; }
+.ccd-body { font-size: 15px; line-height: 1.7; color: var(--slate); margin: 0; text-align: start; }
+.ccd-art { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
+.ccd-art li { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 10.5px; letter-spacing: 0.1em; color: var(--slate); }
+.ccd-tiers li[data-on="true"] { color: var(--ink); }
+.ccd-tiers li[data-on="true"] span::before { content: "\25C6  "; color: #c5a880; }
+.ccd-tiers i { display: inline-flex; gap: 2px; }
+.ccd-tiers b { width: 16px; height: 4px; background: var(--line-strong); }
+.ccd-tiers b[data-fill="true"] { background: var(--clay); }
+.ccd-tiers li[data-on="true"] b[data-fill="true"] { background: var(--warning); }
+.ccd-cert li svg { color: var(--success); flex: none; }
+.ccd-trail { position: relative; gap: 0; }
+.ccd-trail li { justify-content: flex-start; padding: 7px 0; gap: 12px; }
+.ccd-trail li::before { content: ""; width: 8px; height: 8px; border: 1px solid var(--clay); flex: none; }
+.ccd-trail li[data-last="true"]::before { background: #c5a880; }
+.ccd-trail li[data-last="true"] { color: var(--ink); }
+
+/* ---------- role matrix ---------- */
+.rms-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-bottom: 0; }
+@media (max-width: 900px) { .rms-tabs { grid-template-columns: repeat(2, 1fr); } }
+.rms-tab {
+  text-align: start;
+  background: var(--paper);
+  border: 0;
+  color: var(--slate);
+  padding: 16px 18px;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 2px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.rms-tab:hover { background: var(--elev, var(--clay-tint)); color: var(--ink); }
+.rms-tab[aria-selected="true"] { color: var(--ink); border-top-color: #c5a880; background: var(--clay-tint); }
+.rms-code { font-size: 10.5px; letter-spacing: 0.12em; color: var(--clay); }
+.rms-name { font-size: 14.5px; line-height: 1.4; }
+.rms-panel { border: 1px solid var(--line); padding: 28px; }
+.rms-lede { font-size: 16.5px; line-height: 1.7; color: var(--slate); margin: 0 0 24px; max-width: 70ch; text-align: start; }
+.rms-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 720px) { .rms-grid { grid-template-columns: 1fr; } .rms-panel { padding: 18px; } }
+.rms-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 24px;
+  color: var(--ink);
+}
+.rms-cell strong { font-size: 16px; font-weight: 500; }
+.rms-cell span { font-size: 14px; line-height: 1.65; color: var(--slate); }
+.rms-cell em { font-style: normal; color: var(--clay); margin-top: auto; }
+.rms-cta { margin-top: 24px; }
+.rms-grid .rms-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* ---------- /book: executive command briefing intake ---------- */
+.dx { border: 1px solid var(--line-strong); background: var(--paper); text-align: start; }
+.dx-bar { padding: 11px 18px; border-bottom: 1px solid var(--line); background: rgba(7, 8, 11, 0.55); }
+.dx-bar .mono { font-size: 11px; letter-spacing: 0.12em; color: #c5a880; }
+.dx-scope { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+.dx-scope li { background: var(--paper); padding: 13px 16px; display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--ink); }
+.dx-idx { font-size: 10.5px; letter-spacing: 0.1em; color: var(--clay); flex: none; }
+@media (max-width: 640px) { .dx-scope { grid-template-columns: 1fr; } }
+.dx-body { padding: 26px; }
+@media (max-width: 560px) { .dx-body { padding: 14px; } }
+.dx .book-frame { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.dx .book-frame-head { border-radius: 0; }
+
+/* ---------- the menu, organised ---------- */
+@media (min-width: 901px) { .header-more-menu { min-width: 400px; } }
+.hm-top { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 2px 0 6px; }
+.hm-tile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px; min-height: 48px;
+  border: 1px solid var(--line-strong); border-radius: 2px;
+  color: var(--ink); font-size: 14.5px; font-weight: 600; text-decoration: none; background: transparent;
+}
+.hm-tile svg, .hm-tile .header-more-pay-symbol { color: var(--clay); flex: none; }
+.hm-tile:hover, .hm-tile:focus-visible { background: var(--clay-tint); }
+.hm-tile-os { border-color: var(--clay-soft); background: var(--clay-tint); }
+.hm-tile:nth-child(3) { grid-column: 1 / -1; }
+.hm-group { padding: 12px 2px 4px; border-top: 1px solid var(--line); margin-top: 8px; }
+.hm-gh { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); margin: 0 4px 8px; }
+.hm-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.hm-link {
+  display: flex; align-items: center; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 2px;
+  color: var(--ink); font-size: 14.5px; font-weight: 500; text-decoration: none; line-height: 1.3;
+}
+.hm-link:hover, .hm-link:focus-visible, .hm-link.active { background: var(--clay-tint); border-color: var(--clay-soft); }
+.hm-link.active { color: var(--clay); }
+.hm-contact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.hm-ch {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  min-height: 62px; padding: 10px 6px;
+  border: 1px solid var(--line); border-radius: 2px;
+  color: var(--ink); font-size: 12.5px; font-weight: 500; text-decoration: none;
+}
+.hm-ch svg { color: var(--clay); }
+.hm-ch:hover, .hm-ch:focus-visible { background: var(--clay-tint); }
+.hm-utils { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 14px 4px 6px; border-top: 1px solid var(--line); margin-top: 12px; }
+.hm-util {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; border: 0; padding: 6px 2px;
+  color: var(--slate); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer;
+}
+.hm-util svg { color: var(--clay); }
+.hm-util:hover, .hm-util:focus-visible { color: var(--ink); }
+@media (max-width: 900px) {
+  .header-more-menu .hm-link { font-size: 15px; }
+}
+@media (max-width: 360px) { .hm-links { grid-template-columns: 1fr; } }
+/* Arabic, Spanish and French labels are longer than the bar can hold beside
+   the tools, so in those languages the four groups live in the menu (where
+   they are the same four groups) and the menu button keeps its label. */
+html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
+@media (min-width: 1121px) {
+  html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
+}
+
+/* ---------- light / dark button (sun, as in the partners system) ---------- */
+.tb-btn.tb-theme { background: transparent; border: 1px solid var(--line-strong); }
+.tb-btn.tb-theme:hover { background: var(--clay-tint); }
+
+/* The tag sits beside the wordmark inside the menu panel; the top bar keeps its
+   room for the groups and the tools. */
+.hm-brand { display: inline-flex; align-items: center; gap: 12px; }

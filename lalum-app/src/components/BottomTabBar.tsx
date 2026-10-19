@@ -39,7 +39,7 @@ export function BottomTabBar() {
         onClick={() => window.dispatchEvent(new Event(OPEN_SOS_EVENT))}
         aria-label={t.ui.sos.aria}
       >
-        <span className="tabbar-sos-badge">{t.ui.sos.open}</span>
+        <span className="tabbar-sos-badge" aria-hidden="true"><Icon name="headset" size={15} /></span>
         <span>{t.ui.sos.tab}</span>
       </button>
       <NavLink to={user ? "/portal" : "/login"} className={({ isActive }) => "tabbar-item" + (isActive ? " active" : "")}>

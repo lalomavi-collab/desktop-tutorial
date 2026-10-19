@@ -1,17 +1,14 @@
--- HELD, NOT A MIGRATION. Do not move into migrations/ until all of the following are settled:
---   1. Cash or accrual basis, confirmed by the accountant. The firm is on cash basis in the app
---      (receivable = open PROFORMA), while this file creates INVOICE drafts, locks WIP on ISSUED and
---      records payments against INVOICE, which is the accrual model. Rewrite for PROFORMA first.
---   2. Payments must not be counted twice: lalum_billing_record_payment inserts into
---      lalum_fin_payments and also adds actual_amount to the cash forecast, and lalum_trust_apply_to_invoice
---      may also write a payment. Pick one source of truth for collections.
---   3. lalum_trust_apply_max calls lalum_trust_apply_to_invoice: re-check its signature and that it is
---      reachable only with a trust account (the firm currently has none).
---   4. The lalum.wip_release setting in lalum_time_entries_guard is a bypass keyed on a session
---      setting: confirm no end user can set it (it is set only inside the SECURITY DEFINER release).
--- Requires 0021_lalum_billing_wip.sql applied first.
+-- 0049: billing on the CASH basis. Replaces the held accrual draft (supabase/held/0021b, now removed).
+-- The firm bills with a PRO FORMA (a demand for payment). Revenue is recognised when money is received,
+-- which is the INVOICE_RECEIPT issued from the pro forma (source_proforma_id, migration 0025). So:
+--   * drafts made from WIP or from a milestone are PROFORMA, never INVOICE;
+--   * issuing the pro forma locks the reserved WIP; a pro forma voided through a credit can release it;
+--   * collection is the INVOICE_RECEIPT itself, so there is NO payment RPC and NO forecast write here.
+--     That removes the double count the accrual draft had (payments table plus forecast actuals).
+--   * the trust settlement RPC is not included: the firm holds no client trust funds.
+-- Requires 0021_lalum_billing_wip.sql. Apply 0049 only after reviewing against the live database.
 
--- ───────────────────────── drafts ─────────────────────────
+-- ───────────────────────── drafts (pro forma) ─────────────────────────
 
 create or replace function public.lalum_billing_draft_from_wip(
   p_matter uuid, p_to_date date default current_date, p_vat_rate numeric default null,
@@ -72,7 +69,7 @@ begin
   end if;
 
   v_doc := public.lalum_fin_save_draft(null, jsonb_build_object(
-    'customer_id', f.fin_customer_id, 'doc_type', 'INVOICE', 'subject', coalesce(p_subject, ''),
+    'customer_id', f.fin_customer_id, 'doc_type', 'PROFORMA', 'subject', coalesce(p_subject, ''),
     'tax_included', false, 'vat_rate', coalesce(p_vat_rate, 18), 'lines', v_lines));
 
   if v_entry_ids is not null then update public.lalum_time_entries set invoice_doc_id = v_doc where id = any(v_entry_ids); end if;
@@ -98,7 +95,7 @@ begin
   if not f.billing_active then raise exception 'BILLING_NOT_ACTIVE'; end if;
   if m.amount <= 0 then raise exception 'BAD_AMOUNT'; end if;
   v_doc := public.lalum_fin_save_draft(null, jsonb_build_object(
-    'customer_id', f.fin_customer_id, 'doc_type', 'INVOICE', 'subject', m.name, 'tax_included', false,
+    'customer_id', f.fin_customer_id, 'doc_type', 'PROFORMA', 'subject', m.name, 'tax_included', false,
     'vat_rate', coalesce(p_vat_rate, 18), 'lines', jsonb_build_array(jsonb_build_object('name', left(m.name, 200), 'qty', 1, 'price', m.amount))));
   update public.lalum_milestones set fin_document_id = v_doc where id = p_milestone;
   insert into public.lalum_fin_document_matters (document_id, matter_id, firm_id, amount) values (v_doc, m.matter_id, m.firm_id, m.amount);
@@ -107,40 +104,26 @@ end $$;
 revoke execute on function public.lalum_billing_draft_from_milestone(uuid, numeric) from public, anon;
 grant execute on function public.lalum_billing_draft_from_milestone(uuid, numeric) to authenticated;
 
--- ───────────────────────── lock when issued ─────────────────────────
+-- ───────────────────────── lock when the pro forma is issued ─────────────────────────
 
 create or replace function public.lalum_billing_on_issue() returns trigger
 language plpgsql security definer set search_path to 'public' as $$
 begin
-  if new.status = 'ISSUED' and old.status is distinct from 'ISSUED' then
+  if new.doc_type = 'PROFORMA' and new.status = 'ISSUED' and old.status is distinct from 'ISSUED' then
     update public.lalum_time_entries set status = 'billed' where invoice_doc_id = new.id and status = 'approved';
     update public.lalum_disbursements set status = 'BILLED' where invoice_doc_id = new.id and status = 'UNBILLED';
   end if;
   return new;
 end $$;
 revoke execute on function public.lalum_billing_on_issue() from public, anon, authenticated;
-drop trigger if exists lalum_billing_on_issue_t on public.lalum_fin_documents;
-create trigger lalum_billing_on_issue_t after update on public.lalum_fin_documents
+create or replace trigger lalum_billing_on_issue_t after update on public.lalum_fin_documents
   for each row execute function public.lalum_billing_on_issue();
 
--- Settle an issued invoice from trust with as much as the client's trust balance allows.
-create or replace function public.lalum_trust_apply_max(p_matter uuid, p_account uuid, p_doc uuid) returns jsonb
-language plpgsql security definer set search_path to 'public' as $$
-declare v_firm uuid := public.lalum_matter_firm(p_matter); v_bal numeric; v_open numeric; v_amt numeric; v_id bigint;
-begin
-  if v_firm is null or not public.lalum_fin_can(v_firm) then raise exception 'FORBIDDEN'; end if;
-  select coalesce(sum(amount), 0) into v_bal from public.lalum_trust_ledger where matter_id = p_matter;
-  v_open := public.lalum_invoice_open_amount(p_doc);
-  v_amt := least(v_bal, v_open);
-  if v_amt <= 0 then return jsonb_build_object('applied', 0, 'balance_due', v_open); end if;
-  v_id := public.lalum_trust_apply_to_invoice(p_matter, p_account, p_doc, v_amt);
-  return jsonb_build_object('applied', v_amt, 'ledger_entry', v_id, 'balance_due', v_open - v_amt);
-end $$;
-revoke execute on function public.lalum_trust_apply_max(uuid, uuid, uuid) from public, anon;
-grant execute on function public.lalum_trust_apply_max(uuid, uuid, uuid) to authenticated;
+-- ───────────────────────── guards ─────────────────────────
 
--- ───────────────────────── release after a credit invoice ─────────────────────────
-
+-- The release bypass below is keyed on a transaction-local setting that only lalum_billing_release_wip
+-- sets. PostgREST exposes only functions in public, set_config is not among them, and each request is one
+-- statement, so an end user cannot set it. Reviewed; the setting also has to equal the row id.
 create or replace function public.lalum_time_entries_guard() returns trigger
 language plpgsql set search_path to 'public' as $$
 declare v_partner boolean := public.lalum_fin_can(coalesce(new.firm_id, old.firm_id));
@@ -173,19 +156,36 @@ begin
   return new;
 end $$;
 
--- Only after the invoice has been fully cancelled by issued credit invoices.
+create or replace function public.lalum_disbursements_guard() returns trigger
+language plpgsql set search_path to 'public' as $$
+begin
+  if auth.uid() is null then return coalesce(new, old); end if;
+  if tg_op = 'DELETE' then
+    if old.status <> 'UNBILLED' then raise exception 'DISBURSEMENT_LOCKED'; end if;
+    return old;
+  end if;
+  if old.status <> 'UNBILLED' and old.invoice_doc_id is not null and new.status = 'UNBILLED' and new.invoice_doc_id is null then
+    return new;
+  end if;
+  if old.status <> 'UNBILLED' and (new.amount is distinct from old.amount or new.matter_id is distinct from old.matter_id
+     or new.expense_type is distinct from old.expense_type or new.invoice_doc_id is distinct from old.invoice_doc_id) then
+    raise exception 'DISBURSEMENT_LOCKED';
+  end if;
+  return new;
+end $$;
+
+-- ───────────────────────── release after the pro forma is voided ─────────────────────────
+
+-- Only for a pro forma that was voided through a credit (lalum_fin_void_document sets status VOID).
 -- p_action: 'release' puts the work back into WIP, 'write_off' closes it as lost.
 create or replace function public.lalum_billing_release_wip(p_doc uuid, p_action text) returns integer
 language plpgsql security definer set search_path to 'public' as $$
-declare d record; v_credited numeric; r record; n integer := 0;
+declare d record; r record; n integer := 0;
 begin
   select * into d from public.lalum_fin_documents where id = p_doc;
   if not found or not public.lalum_fin_can(d.firm_id) then raise exception 'FORBIDDEN'; end if;
   if p_action not in ('release','write_off') then raise exception 'BAD_ACTION'; end if;
-  if d.doc_type <> 'INVOICE' or d.status <> 'ISSUED' then raise exception 'NOT_AN_ISSUED_INVOICE'; end if;
-  select coalesce(sum(x.total), 0) into v_credited from public.lalum_fin_documents x
-   where x.related_doc_id = p_doc and x.doc_type = 'CREDIT' and x.status = 'ISSUED' and not x.is_test;
-  if v_credited < d.total then raise exception 'INVOICE_NOT_FULLY_CREDITED'; end if;
+  if d.doc_type <> 'PROFORMA' or d.status <> 'VOID' then raise exception 'NOT_A_VOIDED_PROFORMA'; end if;
   for r in select id from public.lalum_time_entries where invoice_doc_id = p_doc and status = 'billed' loop
     perform set_config('lalum.wip_release', r.id::text, true);
     if p_action = 'release' then
@@ -205,81 +205,6 @@ end $$;
 revoke execute on function public.lalum_billing_release_wip(uuid, text) from public, anon;
 grant execute on function public.lalum_billing_release_wip(uuid, text) to authenticated;
 
--- The disbursement guard must let a release through; it only blocks changes by end users, and the
--- release runs with the owner's rights on rows that have no auth check of their own.
-create or replace function public.lalum_disbursements_guard() returns trigger
-language plpgsql set search_path to 'public' as $$
-begin
-  if auth.uid() is null then return coalesce(new, old); end if;
-  if tg_op = 'DELETE' then
-    if old.status <> 'UNBILLED' then raise exception 'DISBURSEMENT_LOCKED'; end if;
-    return old;
-  end if;
-  if old.status <> 'UNBILLED' and old.invoice_doc_id is not null and new.status = 'UNBILLED' and new.invoice_doc_id is null then
-    return new;
-  end if;
-  if old.status <> 'UNBILLED' and (new.amount is distinct from old.amount or new.matter_id is distinct from old.matter_id
-     or new.expense_type is distinct from old.expense_type or new.invoice_doc_id is distinct from old.invoice_doc_id) then
-    raise exception 'DISBURSEMENT_LOCKED';
-  end if;
-  return new;
-end $$;
-
--- ───────────────────────── payments ─────────────────────────
-
-create or replace function public.lalum_billing_record_payment(
-  p_doc uuid, p_amount numeric, p_method text, p_reference text default null, p_paid_on date default current_date) returns jsonb
-language plpgsql security definer set search_path to 'public' as $$
-declare d record; v_open numeric; v_week date; v_id uuid;
-begin
-  select * into d from public.lalum_fin_documents where id = p_doc;
-  if not found or not public.lalum_fin_can(d.firm_id) then raise exception 'FORBIDDEN'; end if;
-  if d.doc_type <> 'INVOICE' or d.status <> 'ISSUED' or d.is_test then raise exception 'INVOICE_NOT_PAYABLE'; end if;
-  if coalesce(p_amount, 0) <= 0 then raise exception 'BAD_AMOUNT'; end if;
-  if p_paid_on > current_date then raise exception 'PAYMENT_DATE_IN_FUTURE'; end if;
-  v_open := public.lalum_invoice_open_amount(p_doc);
-  if p_amount > v_open then raise exception 'EXCEEDS_OPEN_AMOUNT: open %', v_open; end if;
-  insert into public.lalum_fin_payments (firm_id, customer_id, document_id, paid_on, amount, method, reference, created_by)
-    values (d.firm_id, d.customer_id, p_doc, p_paid_on, p_amount, p_method, p_reference, auth.uid()) returning id into v_id;
-  v_week := p_paid_on + ((5 - extract(dow from p_paid_on)::integer + 7) % 7);
-  insert into public.lalum_cash_forecast_items as c (firm_id, week_ending, category, projected_amount, actual_amount)
-    values (d.firm_id, v_week, 'INFLOW_COLLECTIONS', 0, p_amount)
-    on conflict (firm_id, week_ending, category) do update
-      set actual_amount = coalesce(c.actual_amount, 0) + p_amount, updated_at = now();
-  return jsonb_build_object('payment_id', v_id, 'balance_due', v_open - p_amount, 'status', case when v_open - p_amount <= 0.004 then 'PAID' else 'PARTIALLY_PAID' end);
-end $$;
-revoke execute on function public.lalum_billing_record_payment(uuid, numeric, text, text, date) from public, anon;
-grant execute on function public.lalum_billing_record_payment(uuid, numeric, text, text, date) to authenticated;
-
--- ───────────────────────── chart data ─────────────────────────
-
--- One call for the dashboard charts. Every series is computed from rows.
-create or replace function public.lalum_partner_charts(p_months integer default 12) returns jsonb
-language plpgsql security definer set search_path to 'public' as $$
-declare v_firm uuid := public.lalum_my_firm_id(); v_out jsonb; v_m integer := least(greatest(coalesce(p_months, 12), 3), 36);
-begin
-  if not public.lalum_fin_can(v_firm) then raise exception 'FORBIDDEN'; end if;
-  perform public.lalum_audit_write(v_firm, 'VIEWED_FINANCIALS', 'partner_charts', null, '{}'::jsonb);
-  select jsonb_build_object(
-    'months', (select coalesce(jsonb_agg(jsonb_build_object('month', to_char(m, 'YYYY-MM'),
-         'billed', coalesce((select sum(d.subtotal * case when d.doc_type = 'CREDIT' then -1 else 1 end) from public.lalum_fin_documents d
-                              where d.firm_id = v_firm and d.status = 'ISSUED' and not d.is_test and d.doc_type in ('INVOICE','INVOICE_RECEIPT','CREDIT')
-                                and date_trunc('month', d.issue_date) = m), 0),
-         'collected', coalesce((select sum(p.amount) from public.lalum_fin_payments p where p.firm_id = v_firm and date_trunc('month', p.paid_on) = m), 0),
-         'worked_hours', coalesce((select sum(te.worked_minutes) / 60.0 from public.lalum_time_entries te where te.firm_id = v_firm and date_trunc('month', te.work_date) = m and te.status <> 'draft'), 0),
-         'billable_hours', coalesce((select sum(te.billable_minutes) / 60.0 from public.lalum_time_entries te where te.firm_id = v_firm and date_trunc('month', te.work_date) = m and te.status <> 'draft'), 0)
-       ) order by m), '[]'::jsonb)
-       from generate_series(date_trunc('month', current_date) - ((v_m - 1) || ' months')::interval, date_trunc('month', current_date), interval '1 month') m),
-    'by_practice_area', (select coalesce(jsonb_agg(jsonb_build_object('practice_area', practice_area, 'hours', round(h, 1))), '[]'::jsonb)
-       from (select m.practice_area, sum(te.worked_minutes) / 60.0 as h from public.lalum_time_entries te
-               join public.lalum_cockpit_matters m on m.id = te.matter_id
-              where te.firm_id = v_firm and te.work_date >= current_date - 365 and te.status <> 'draft' group by m.practice_area) a),
-    'forecast', (select coalesce(jsonb_agg(jsonb_build_object('week_ending', week_ending, 'category', category,
-         'projected', projected_amount, 'actual', actual_amount) order by week_ending), '[]'::jsonb)
-       from public.lalum_cash_forecast_items where firm_id = v_firm and week_ending between current_date - 28 and current_date + 98),
-    'forecast_is_manual', true
-  ) into v_out;
-  return v_out;
-end $$;
-revoke execute on function public.lalum_partner_charts(integer) from public, anon;
-grant execute on function public.lalum_partner_charts(integer) to authenticated;
+-- Trigger functions are never called directly: nobody needs EXECUTE on them (not checked when a trigger fires).
+revoke execute on function public.lalum_time_entries_guard() from public, anon, authenticated;
+revoke execute on function public.lalum_disbursements_guard() from public, anon, authenticated;
