@@ -5,6 +5,8 @@ import { PageMeta } from "../components/PageMeta";
 import { useLang } from "../context/LangContext";
 import { REMEMBER_KEY, supabase } from "../lib/supabase";
 import { pwnedCount } from "../lib/pwnedCheck";
+import { evaluatePassword } from "../lib/passwordPolicy";
+import { PasswordField } from "../components/PasswordField";
 
 const RESEND_COOLDOWN_SECONDS = 30;
 
@@ -75,6 +77,12 @@ export function Login() {
     setBusy(true);
     // Record the choice before auth so the session lands in the right store.
     try { localStorage.setItem(REMEMBER_KEY, remember ? "1" : "0"); } catch { /* ignore */ }
+    // A new password must meet the policy (length, not common, not built from the email).
+    if (mode === "up" && !evaluatePassword(password, { email }).ok) {
+      setBusy(false);
+      setError(t.ui.pw.policyFailed);
+      return;
+    }
     // On account creation, reject passwords known from public breaches (the
     // free, in-app equivalent of Supabase's Pro leaked-password protection).
     // Skipped in demo mode, which has no real backend to protect.
@@ -161,11 +169,19 @@ export function Login() {
               <div className="label">{L.email}</div>
               <input className="field" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={L.emailPlaceholder} dir="ltr" />
             </div>
-            <div>
-              <div className="label">{L.password}</div>
-              <input className="field" type="password" autoComplete={mode === "in" ? "current-password" : "new-password"} required minLength={mode === "up" ? 8 : undefined} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={L.passwordPlaceholder} dir="ltr" />
-              {mode === "up" && <p className="muted" style={{ fontSize: 12.5, margin: "6px 0 0" }}>{L.passwordHint}</p>}
-            </div>
+            <PasswordField
+              id="login-password"
+              label={L.password}
+              value={password}
+              onChange={setPassword}
+              autoComplete={mode === "in" ? "current-password" : "new-password"}
+              required
+              showStrength={mode === "up"}
+              generate={mode === "up"}
+              context={{ email }}
+              placeholder={mode === "up" ? L.passwordPlaceholder : undefined}
+              hint={L.passwordHint}
+            />
             {mode === "in" && (
               <button
                 type="button"

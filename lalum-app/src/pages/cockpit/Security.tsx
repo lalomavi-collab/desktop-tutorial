@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { generateRecoveryCodes } from "../../lib/cockpit/recovery";
 import { TotpEnroll } from "./TotpEnroll";
+import { MfaGate } from "./MfaGate";
+import { ChangePassword } from "../../components/ChangePassword";
+import { useLang } from "../../context/LangContext";
 import { CockpitFrame } from "./CockpitFrame";
 
 interface Factor { id: string; friendly_name?: string; status: string }
@@ -29,8 +32,14 @@ function Panel() {
     if (r.codes) { setNewCodes(r.codes); setMsg({ ok: true, text: "הקודים החדשים מוצגים רק עכשיו. שמרו אותם." }); } else setMsg({ ok: false, text: r.error ?? "ההפקה נכשלה." });
   }
   const active = factors.filter((f) => f.status === "verified");
+  const { t } = useLang();
   return (
     <div className="ck-stack">
+      <div className="ck-card">
+        <div className="ck-title">{t.ui.pw.changeTitle}</div>
+        {/* With a second factor enrolled, the server only lets a stepped up (aal2) session change the password. */}
+        {active.length > 0 ? <MfaGate required={false}><ChangePassword /></MfaGate> : <ChangePassword />}
+      </div>
       <div className="ck-card">
         <div className="ck-title">אימות דו-שלבי (TOTP)</div>
         <div className="ck-meta">בנוסף לסיסמה, כל כניסה מחייבת קוד בן 6 ספרות מאפליקציית אימות (Google Authenticator, Microsoft Authenticator, 1Password ועוד). כך גם סיסמה שדלפה אינה מספיקה לגישה לחומר לקוחות.</div>
@@ -48,7 +57,7 @@ function Panel() {
 
 export function Security() {
   return (
-    <CockpitFrame title="אבטחת חשבון" description="הפעלה וניהול של אימות דו-שלבי לחשבון." path="/settings/security" needsFirm={false} mfa={false}>
+    <CockpitFrame title="אבטחת חשבון" description="שינוי סיסמה, והפעלה וניהול של אימות דו-שלבי לחשבון." path="/settings/security" needsFirm={false} mfa={false}>
       {() => <Panel />}
     </CockpitFrame>
   );
