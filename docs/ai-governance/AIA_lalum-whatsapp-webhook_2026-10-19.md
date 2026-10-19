@@ -48,6 +48,18 @@ Access: the two tables allow read to authenticated admins only (row level securi
 6. Verify Anthropic's data terms (shared open item with sys-001) and Meta's terms for the business account.
 
 ## 7. Conclusion
-Acceptable to keep running at limited risk only if recommendations 1 and 2 are done. Until then the channel conflicts with the owner's own red line and lacks a privacy notice. Re-assess on a model change, a change of vendor terms, a new tool, or by 2027-01-18.
+Acceptable to keep running at limited risk once recommendations 1 and 2 are live, which needs only the function deploy (see section 8). Until the deploy, the live function still stores bodies without the privacy line, although the 30 day blanking already applies. Re-assess on a model change, a change of vendor terms, a new tool, or by 2027-01-18.
+
+## 8. Status after owner approval (2026-10-19)
+| # | Recommendation | State |
+|---|---|---|
+| 1 | Blank message bodies after 30 days | Done in the database: `lalum_whatsapp_purge_bodies()` and a daily job (03:17 UTC). Metadata rows stay. Existing history is empty, so nothing was blanked yet |
+| 2 | Privacy line in the first reply | In code (merged), live after the function is deployed |
+| 3 | Per sender cap | In code: 10 per day per sender, then a pilot notice and no model call. Live after deploy |
+| 4 | Deletion on request | `lalum_whatsapp_erase_contact('<phone>')` exists (service role only). The model escalates a deletion request to the firm by email; a person then runs the function. Contacts that are not bare WhatsApp leads are kept |
+| 5 | No ID numbers or confidential documents | Included in the first reply, live after deploy |
+| 6 | Vendor terms (Anthropic, Meta) | Open |
+
+How to erase: in the Supabase SQL editor run `select public.lalum_whatsapp_erase_contact('+972500000000');` with the sender's number as WhatsApp reports it.
 
 Not legal advice. Prepared as an internal working document.
