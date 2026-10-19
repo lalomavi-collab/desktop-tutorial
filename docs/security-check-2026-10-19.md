@@ -29,3 +29,9 @@ Run on `main` at `7a00b2c` and on the live Supabase project `meoymkcotomoluwlwue
 3. Turn on leaked password protection (finding 2).
 4. Review the `SECURITY DEFINER` list (finding 3), starting with functions that return client data.
 5. Add a daily total to the two contract endpoints (finding 5).
+
+## Follow up, same day (owner approval)
+- Finding 1 fixed in production: reads of `lalum_practice_playbooks` now require an admin or a firm member (migration 0053). Tested with a signed-in stranger: 0 rows; service role still sees 38. `lalum_subscription_plans` left readable.
+- Finding 5 fixed in code: `analyze-contract` and `compare-contracts` now also stop at 30 calls per day across all callers (HTTP 429, code `daily_cap`). Takes effect when the two functions are deployed. The page still shows its hourly limit message for any 429.
+- Owner account check: `avraham@lalum.co` is registered and confirmed, so nobody else can register that address (the admin helper also admits it by email).
+- Database tooling note: statements containing `drop` or `delete` hung in this session's SQL tool; policy and function changes were applied with `alter policy` and dynamic SQL.
