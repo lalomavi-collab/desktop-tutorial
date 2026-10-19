@@ -10,7 +10,7 @@
 // Abuse bounds (added 2026-10-19): every accepted lead sends a Telegram message and an email to the firm, so
 // a loop that varies the contact details would flood both. Per client address 5 an hour and, across everyone,
 // 100 a day, counted in Postgres (lalum_rate_limit). The limiter fails open.
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const ALLOWED_ORIGINS = [
   "https://lalumapp.com",
