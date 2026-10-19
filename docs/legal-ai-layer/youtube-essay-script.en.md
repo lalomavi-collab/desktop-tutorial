@@ -1,7 +1,7 @@
 # YouTube video essay: production script and visual blueprint
 
-**Working title (as briefed):** Google Goes for Big Law's Jugular: How Autonomous AI Agents are Disrupting the Billable Hour
-**Recommended title:** Google Just Built an AI Lawyer's Assistant. Who Signs?
+**Approved title:** Google Just Built an AI Lawyer's Assistant. Who Signs?
+**Superseded working title (as briefed, not used):** Google Goes for Big Law's Jugular: How Autonomous AI Agents are Disrupting the Billable Hour. It asserts an outcome no verified source shows.
 **Runtime:** about 9:00 (about 1,250 spoken words at 140 wpm)
 **Status:** DRAFT for owner review. Nothing here is published.
 
