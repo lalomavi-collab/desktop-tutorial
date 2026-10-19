@@ -13,16 +13,17 @@ The brief's "grounding facts" were checked against Google Cloud's own press rele
 * 25 Aug 2026: Google Cloud announced Gemini Enterprise for Legal, initially in preview.
 * Google's own words: agents that "complete work rather than return suggestions"; "a duty of confidentiality that does not bend for convenience".
 * Four building blocks as Google describes them: skills, connections, agents, a governed control plane. Connections inherit the permissions the firm already has.
+* Connectors, as listed by Google (press release and blog, re-read 19 Oct 2026): iManage, NetDocuments, Docusign, RelativityOne, Everlaw, Thomson Reuters HighQ, CourtListener, Courtroom5, Harvey, Solve Intelligence, Legora; also Google Workspace and Microsoft 365. Attribute every name to Google ("Google lists"). Both sources are Google's own, so this proves what Google announced, not that each connector is live today (the product is in preview).
+* Google's control plane enforces VPC and CMEK; Google states customer data is "never used to train or fine-tune Google's foundation models". Say "Google says", never as an independent fact.
 * Workflows Google lists: contract review and negotiation, regulatory tracking, access requests, redaction in court filings, drafting NDAs.
 * Reuters: the launch is "accelerating a race among technology companies to meet legal sector demand for AI".
 * Israeli Supreme Court, HCJ 38379-12-24 (23 Feb 2025), official text: para 26 (AI use does not release lawyers from their responsibility and professional judgment) and para 15 (a lawyer who files fabricated material breaches duties to the client, the court, the opposing party and the profession).
 
 **Do NOT say until verified from the primary source (all appear in the brief):**
 * "$24.8B Google Cloud Q2 revenue", "0.25% AI spend vs 11.7% revenue growth", "$600+/hr", "15 to 20 hours down to seconds". No source traced. Per the project rule, a number we cannot trace does not go up.
-* "Zero model training on firm data", "Multi-Agent Orchestration" as a product name, a HighQ connector. Not confirmed in the release text.
-* "Claude for Legal", Thomson Reuters CoCounsel positioning, Harvey as a rival or as a tenant. Re-check each against the vendor's own page, and do not describe a competitor's product from memory.
+* "Multi-Agent Orchestration" as a product name. Not in the release text.
+* "Claude for Legal" and Thomson Reuters CoCounsel positioning. Re-check each against the vendor's own page. Harvey and Thomson Reuters appear in Google's own text as connected platforms, so do not call them rivals or victims of the launch.
 * Launch customers: the release names Cleary, Freshfields, Weil and Williams & Connolly. A popular YouTube video on this topic lists Wachtell instead. It is wrong on this point. Do not use it as a source.
-* Connector names (iManage, NetDocuments, RelativityOne, Docusign and others) and controls such as customer-managed keys: re-read the release wording before the graphic is locked, then show only what it says.
 
 **Editorial risk in the brief:** "Jugular" and "disrupting the billable hour" assert the outcome. Nothing verified shows firms losing revenue. The script therefore frames the billable hour as a structural tension (analysis, labelled as such), not as a result.
 
@@ -95,6 +96,8 @@ Here is the part most coverage skips, and it is the strategic heart of the story
 
 An agent is only as useful as the systems it can reach. Law firms keep their lifeblood in document management, e-discovery, research and e-signature platforms. Google's design connects to those, and the connections, it says, inherit the permissions a firm has already set.
 
+Google's list is long. Document management: iManage and NetDocuments. Contracts: Docusign. E-discovery: Everlaw and RelativityOne. Research and knowledge: Thomson Reuters HighQ, CourtListener and Courtroom5. Even legal AI specialists, Harvey and Legora, appear on that list. And of course Microsoft 365 and Google Workspace.
+
 Think about why that matters. Nobody has to rip anything out. The agent arrives through the front door, using the keys the firm already issued.
 
 That is why I call it a Trojan horse, and I mean it as analysis, not accusation. Once the work flows through one layer, that layer sees the matter, the documents, the clauses, the outcomes. The firm keeps the files. But whoever owns the layer sees how the work moves.
@@ -113,7 +116,7 @@ If you run a firm, the question is not "which model is smartest". It is "who con
 * Central node labelled "THE LAYER". Tag: "Our analysis, not a claim of fact".
 * Quote card: "accelerating a race among technology companies". Source: Reuters, 25.8.2026.
 * Closing card: "The race is not who drafts fastest. It is who owns the layer."
-* Re-check before locking: if connector names are shown, show only those in Google's release, as plain text, no logos.
+* Connector wall, plain text only, no logos, grouped as Google groups them: DOCUMENT MANAGEMENT iManage, NetDocuments. CONTRACTS Docusign. E-DISCOVERY Everlaw, RelativityOne. RESEARCH Thomson Reuters HighQ, CourtListener, Courtroom5. LEGAL AI Harvey, Solve Intelligence, Legora. PRODUCTIVITY Google Workspace, Microsoft 365. Tag: "Connectors as listed by Google, 25.8.2026, preview".
 
 **GenAI prompts**
 * Midjourney v6: `a horse silhouette made of glowing circuit traces standing inside an open ancient stone gate, evening, sci-fi noir, teal rim light, no text --ar 16:9 --style raw`
