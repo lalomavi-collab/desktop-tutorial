@@ -1,0 +1,19 @@
+{
+  "id": "2026-01",
+  "recordedOn": "",
+  "interviewee": {
+    "name": "",
+    "role": "",
+    "organization": "",
+    "roleSourceUrl": "",
+    "roleVerified": false
+  },
+  "consentSigned": false,
+  "anonymizationChecked": false,
+  "answers": [
+    { "question": "איפה AI עוזר לך בעבודה, ואיפה הוא מסוכן?", "quote": "", "approvedByInterviewee": false },
+    { "question": "מה לא היית מוסר למכונה להכריע, ולמה?", "quote": "", "approvedByInterviewee": false },
+    { "question": "איזו שאלה היית רוצה שמישהו יענה לך עליה לפני שמטמיעים AI אצלך?", "quote": "", "approvedByInterviewee": false }
+  ],
+  "approvedForPublication": false
+}
