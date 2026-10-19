@@ -79,7 +79,7 @@ def create_video(cfg: dict, spoken_text: str, today: str) -> dict:
     payload = json.dumps({
         "test": False,
         "title": f"Daily Legal Update — {today}",
-        "description": f"נדל\"ן ומקרקעין — עדכון יומי {today}",
+        "description": f"נדל\"ן ומקרקעין, עדכון יומי {today}. סרטון סינתטי שנוצר בבינה מלאכותית (אווטאר).",
         "visibility": "private",
         "input": [{
             "avatarId": cfg["avatar_id"],
@@ -158,6 +158,7 @@ def notify_telegram(result: dict, today: str):
         f"🎬 *וידאו אווטר יומי מוכן — {today}*\n\n"
         f"✅ הוידאו מוכן!\n"
         f"🔗 [צפה בוידאו]({video_url})\n\n"
+        f"⚠️ לפני פרסום: להוסיף כיתוב בולט שהסרטון נוצר בבינה מלאכותית (אווטאר), ולאשר את התוכן.\n"
         f"_נוצר אוטומטית ע\"י Synthesia_"
     )
     data = urllib.parse.urlencode({

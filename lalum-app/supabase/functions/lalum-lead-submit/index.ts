@@ -29,7 +29,7 @@ const CONSENT_VERSION = "2026-10-v1";
 const INTERESTS = new Set(["real-estate", "ai-governance", "other"]);
 const INTEREST_LABEL: Record<string, string> = { "real-estate": "נדל״ן והתחדשות עירונית", "ai-governance": "AI וממשל", other: "אחר" };
 const LANGS = new Set(["he", "en", "ar", "es", "fr"]);
-const SOURCES = new Set(["site", "chat"]);
+const SOURCES = new Set(["site", "chat", "signup"]);
 const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
 // Same abuse guard as the other public functions: a hashed key per route, counted in Postgres. Fails open.
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
 
   const firstName = name.split(/\s+/)[0];
   const sent = await telegram(
-    `ליד חדש מהאתר\nתחום: ${INTEREST_LABEL[interest]}\nשם פרטי: ${firstName}\nשפה: ${lang}\nהפרטים המלאים בטבלה (lalum_site_leads).`,
+    `${source === "signup" ? "הרשמה חדשה לאתר" : "ליד חדש מהאתר"}\nתחום: ${INTEREST_LABEL[interest]}\n${source === "signup" ? "" : `שם פרטי: ${firstName}\n`}שפה: ${lang}\nהפרטים המלאים בטבלה (lalum_site_leads).`,
   );
   if (sent) await admin.from("lalum_site_leads").update({ notified_at: new Date().toISOString() }).eq("id", data.id);
 
