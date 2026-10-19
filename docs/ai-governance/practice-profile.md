@@ -46,7 +46,7 @@ LALUM & Co. Law firm plus a legal-AI platform (LALUM Legal Engine). Two focus ar
 
 ## Vendor AI governance
 **Vendors in use per the owner:** the LLM vendor is Anthropic (2026-10-18). **Code check 2026-10-18:** python/agents/invoice-processing/agent.py uses Google ADK with model gemini-2.0-flash (invoice-collect workflow); lalum-voice-webhook can switch to OpenAI via LLM_PROVIDER=openai (default anthropic); daily-research.yml calls Synthesia when SYNTHESIA_API_KEY is set. Whether each is actually enabled (secrets, schedules) is NOT yet confirmed. [PENDING: reconcile with owner statement]
-**Written agreement:** owner has no written AI agreement (2026-10-18). Anthropic terms read on 2026-10-19 (docs/ai-governance/VENDOR_REVIEW_2026-10-19.md): under the Commercial Terms there is no training on customer content and API data is deleted within 30 days. Still to confirm by the owner: that the API key belongs to a Console (API) organization, not a consumer plan. [PENDING: owner confirmation]
+**Written agreement:** owner has no written AI agreement (2026-10-18). Anthropic terms read on 2026-10-19 (docs/ai-governance/VENDOR_REVIEW_2026-10-19.md): under the Commercial Terms there is no training on customer content and API data is deleted within 30 days. Confirmed by the owner 2026-10-19: the connection is through console.anthropic.com (API). No zero data retention agreement.
 **Client-facing AI commitment:** the fee agreement carries an AI statement (owner). Text not provided. [PENDING]
 
 ## AI policy commitments

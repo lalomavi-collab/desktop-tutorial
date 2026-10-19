@@ -14,7 +14,7 @@ Prepared for the owner (ד״ר עו״ד אברהם ללום). Working document, 
 | Zero data retention | Available by agreement for eligible API features, requested through Anthropic sales; not available for the Covered Models (Fable and Mythos families) | https://platform.claude.com/docs/en/manage-claude/api-and-data-retention |
 | Contracting entity | Anthropic PBC for customers outside the EEA, Switzerland and UK | commercial terms |
 
-Conclusion: if the key used by the functions belongs to an API organization under the Commercial Terms, inputs are not used for training and are deleted within 30 days. **OWNER**: confirm that `ANTHROPIC_API_KEY` belongs to a Console (API) organization and not a consumer plan. Consumer plans follow different terms. The privacy notice sent in WhatsApp ("30 days", "external AI provider") is consistent with this.
+Conclusion: if the key used by the functions belongs to an API organization under the Commercial Terms, inputs are not used for training and are deleted within 30 days. **Confirmed by the owner on 2026-10-19:** the connection is through console.anthropic.com, so the Commercial Terms apply. Standard retention is up to 30 days; zero data retention is not in place (the owner has no written agreement with Anthropic, 2026-10-18). The privacy notice sent in WhatsApp ("30 days", "external AI provider") is consistent with this.
 
 Gaps to decide: no ad hoc deletion at Anthropic means a deletion request to the firm cannot be extended to Anthropic's copy before the 30 days pass; the notice says 30 days, which matches. Whether to request zero data retention is a business choice.
 

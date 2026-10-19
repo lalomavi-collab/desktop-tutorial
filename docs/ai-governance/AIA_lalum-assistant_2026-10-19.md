@@ -37,12 +37,12 @@ Red line from the practice profile: "storing the content of client chat conversa
 | Bias | Not a decision system | Not applicable |
 
 ## 5. Gaps found
-1. Anthropic data terms: read on 2026-10-19 (see VENDOR_REVIEW_2026-10-19.md). No training on API customer content, deletion within 30 days. Holds if the key belongs to an API organization under the Commercial Terms; the owner has not yet confirmed the account type.
+1. Anthropic data terms: read on 2026-10-19 (see VENDOR_REVIEW_2026-10-19.md). No training on API customer content, deletion within 30 days. The owner confirmed on 2026-10-19 that the connection is through console.anthropic.com (API, Commercial Terms).
 2. On-screen warning against entering confidential client information: added to the chat widget in five languages (2026-10-19). Wording not yet reviewed by a native speaker in ar, es, fr. The /os page carries an adapted version (document upload) in five languages.
 3. Chat messages are not logged, so a client claim about an AI error (a consult-immediately trigger) could not be reconstructed. This is a deliberate trade-off against the red line; the owner should confirm it.
 4. The consent text for sign-up is drafted, not approved.
 
 ## 6. Conclusion
-Acceptable to keep in production at limited risk, conditional on the owner confirming the Anthropic account type (item 1) and on native speaker review of the warnings (item 2). Re-assess on a model change, a change of vendor terms, removal of the sign-in requirement, or by 2027-01-18.
+Acceptable to keep in production at limited risk, conditional on native speaker review of the warnings (item 2). Re-assess on a model change, a change of vendor terms, removal of the sign-in requirement, or by 2027-01-18.
 
 Not legal advice. Prepared as an internal working document.
