@@ -204,10 +204,10 @@ function s1(d){const S=SC(),x=ctx(d);
   S.reg(doc,x.w(0,"defend")+.4,null);
   S.fx.push(t=>{
     const rd=t>x.w(1,"someone")?1:0;
-    L.update(t,{look:{x:.3,y:.3},smile:.35,hr:{x:70,y:-60+Math.sin(t*1.3)*6},hl:{x:-120,y:120},ra:-8,tilt:2,brow:rd?.7:0});
-    A.update(t,{look:{x:-.4,y:.6},hl:{x:-70+Math.sin(t*9)*10,y:215},hr:{x:70-Math.sin(t*9)*10,y:215},tilt:2});
+    L.update(t,{look:{x:.3,y:.3},smile:.35,hr:{x:70,y:-60+Math.sin(t*1.3)*6},hl:{x:-70,y:166},ra:-8,tilt:2,brow:rd?.7:0});
+    A.update(t,{look:{x:-.4,y:.6},hl:{x:-60+Math.sin(t*9)*8,y:188},hr:{x:60-Math.sin(t*9)*8,y:188},tilt:2,grip:.5});
     B.update(t,{look:{x:.2,y:-.1},hr:{x:60,y:-140},talk:Math.abs(Math.sin(t*5.3))*.8,smile:.2,tilt:-3});
-    C.update(t,{look:{x:-.5,y:.2},hl:{x:-60+Math.sin(t*7)*8,y:215},hr:{x:60-Math.sin(t*7)*8,y:215}});
+    C.update(t,{look:{x:-.5,y:.2},hl:{x:-60+Math.sin(t*7)*8,y:188},hr:{x:60-Math.sin(t*7)*8,y:188},grip:.5});
     const w=((t*70)%1500);walker.wrap.style.left=(1900-w-150)+"px";walker.update(t,{lean:Math.sin(t*6)*2,look:{x:-.6,y:0},hl:{x:-50+Math.sin(t*6)*35,y:240},hr:{x:50-Math.sin(t*6)*35,y:240}});
     doc.style.transform="translateY("+(Math.sin(t*1.3)*5)+"px) rotate("+(-8+Math.sin(t*.9)*2)+"deg)"});
   return S}
@@ -230,7 +230,7 @@ function s2(d){const S=SC(),x=ctx(d);
     const sp=t>tW[0]&&t<tW[0]+2.2;
     people[0].update(t,{look:{x:.5,y:.1},hr:sp?{x:260,y:-30}:{x:70,y:215},smile:.4,tilt:2});
     people[1].update(t,{look:{x:-.5,y:.1},hl:t>tW[1]?{x:-120,y:80+Math.sin(t*3)*5}:null,talk:t>tW[1]&&t<tW[1]+2?Math.abs(Math.sin(t*6))*.7:0,tilt:-3});
-    people[2].update(t,{tilt:Math.sin(t*1.4)*3,hl:{x:-60+Math.sin(t*8)*8,y:220},hr:{x:60-Math.sin(t*8)*8,y:220}});
+    people[2].update(t,{tilt:Math.sin(t*1.4)*3,hl:{x:-60+Math.sin(t*8)*8,y:206},hr:{x:60-Math.sin(t*8)*8,y:206},grip:.5});
     people[3].update(t,{tilt:Math.sin(t*1.1+1)*3})});
   return S}
 
@@ -258,7 +258,7 @@ function s3(d){const S=SC(),x=ctx(d),svg=layer(CURP);
     nodes.forEach((n,i)=>{const on=t>tt[i]&&(i==3||t<tt[i]+1.5);n.style.borderColor=(i==3&&t>tt[3])?"#e7c27a":(on?"#9cc29f":"#3a5a42")});
     const sg=t>tt[3]+.6&&t<tt[3]+1.9;
     lawyer.update(t,{look:{x:-.3,y:.4},hr:sg?{x:-30,y:150+Math.sin(t*16)*6}:{x:70,y:-20},smile:.3,tilt:2,ra:sg?20:0});
-    a1.update(t,{tilt:Math.sin(t*1.3)*2});cl.update(t,{look:{x:.5,y:.2},hr:{x:60,y:-30+Math.sin(t*1.6)*8},ra:-8,smile:.4,tilt:2});au.update(t,{look:{x:-.5,y:.1},hl:{x:-50,y:60+Math.sin(t*3)*6},smile:.3,tilt:-2});a2.update(t,{look:{x:-.4,y:.2},hl:{x:-60+Math.sin(t*8)*8,y:220},hr:{x:60-Math.sin(t*8)*8,y:220}})});
+    a1.update(t,{tilt:Math.sin(t*1.3)*2});cl.update(t,{look:{x:.5,y:.2},hr:{x:60,y:-30+Math.sin(t*1.6)*8},ra:-8,smile:.4,tilt:2});au.update(t,{look:{x:-.5,y:.1},hl:{x:-50,y:60+Math.sin(t*3)*6},smile:.3,tilt:-2});a2.update(t,{look:{x:-.4,y:.2},hl:{x:-60+Math.sin(t*8)*8,y:190},hr:{x:60-Math.sin(t*8)*8,y:190},grip:.5})});
   return S}
 
 // ---------- scene 4: the clinic ----------
@@ -274,7 +274,7 @@ function s4(d){const S=SC(),x=ctx(d);
   S.fx.push(t=>{
     const ta=Math.abs(Math.sin(t*4.1))>.35,tb=!ta;
     L.update(t,{look:{x:.5,y:.1},talk:ta&&t>tQ-1?Math.abs(Math.sin(t*9))*.7:0,hr:{x:80,y:20+Math.sin(t*2)*10},smile:.35,tilt:2});
-    C.update(t,{look:{x:-.5,y:.1},talk:tb&&t>tQ?Math.abs(Math.sin(t*8))*.6:0,smile:.3,tilt:-2,hl:{x:-40,y:220}});
+    C.update(t,{look:{x:-.5,y:.1},talk:tb&&t>tQ?Math.abs(Math.sin(t*8))*.6:0,smile:.3,tilt:-2,hl:{x:-50,y:200}});
     pres.update(t,{look:{x:-.3,y:0},talk:Math.abs(Math.sin(t*5))*.6,hl:{x:-200,y:-40+Math.sin(t*2)*18},smile:.3});
     aud.forEach((a,i)=>a.update(t,{tilt:Math.sin(t*1.2+i*2)*3+((t+i)%4<.4?4:0)}))});
   return S}
@@ -296,7 +296,7 @@ function s5(d){const S=SC(),x=ctx(d);
   S.fx.push(t=>{
     const q=clamp((t-tA)/(tB-tA-.4));const n=Math.min(8,1+Math.floor(q*8));qn.textContent=n+" / 8";bar.style.width=(416*q)+"px";
     dv.sway(t);dv.wrap.style.opacity=t>x.w(1,"start at")-.2?Math.max(0,1-(t-x.w(1,"start at")+.2)*2):1;
-    you.update(t,{look:{x:.4,y:.3},hl:{x:-30+Math.sin(t*10)*10,y:200},hr:{x:80,y:210-Math.sin(t*10)*10},smile:.2,tilt:2});
+    you.update(t,{look:{x:.4,y:.3},hl:{x:-40+Math.sin(t*10)*8,y:196},hr:{x:70,y:198-Math.sin(t*10)*8},smile:.2,tilt:2,grip:.5});
     lw.update(t,{look:{x:-.5,y:0},smile:.5,tilt:-2,hl:t>tB?{x:-70,y:-90}:null,brow:t>tB?.6:0})});
   return S}
 
