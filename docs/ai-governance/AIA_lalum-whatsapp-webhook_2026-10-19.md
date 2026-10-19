@@ -15,7 +15,7 @@ Supabase edge function receiving the WhatsApp Business Cloud API webhook. Model:
 |---|---|---|
 | Sender's phone number and WhatsApp profile name | `lalum_contacts` (created as a lead on first message), `lalum_whatsapp_messages` | **No purge job covers these tables** |
 | Full text of every inbound and outbound message | `lalum_whatsapp_messages.body` | **Indefinite** |
-| Last 12 message bodies of the conversation | Sent to Anthropic for each reply | Anthropic terms **not verified** |
+| Last 12 message bodies of the conversation | Sent to Anthropic for each reply | Anthropic terms read, see vendor review |
 | Lead summary, practice area | `lalum_whatsapp_tasks` | Indefinite |
 | Escalation reason, phone, name | Email to the firm through Resend | Mailbox policy |
 | Message content to Meta | WhatsApp itself is operated by Meta | Outside the firm's control |
@@ -58,7 +58,7 @@ Acceptable to keep running at limited risk once recommendations 1 and 2 are live
 | 3 | Per sender cap | In code: 10 per day per sender, then a pilot notice and no model call. Live after deploy |
 | 4 | Deletion on request | `lalum_whatsapp_erase_contact('<phone>')` exists (service role only). The model escalates a deletion request to the firm by email; a person then runs the function. Contacts that are not bare WhatsApp leads are kept |
 | 5 | No ID numbers or confidential documents | Included in the first reply, live after deploy |
-| 6 | Vendor terms (Anthropic, Meta) | Open |
+| 6 | Vendor terms (Anthropic, Meta) | Anthropic read on 2026-10-19 (VENDOR_REVIEW_2026-10-19.md), subject to the owner confirming the account type. Meta not read |
 
 How to erase: in the Supabase SQL editor run `select public.lalum_whatsapp_erase_contact('+972500000000');` with the sender's number as WhatsApp reports it.
 
