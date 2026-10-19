@@ -33,7 +33,7 @@ Red line from the practice profile: "storing the content of client chat conversa
 | Confidential data typed by a user | Chat is general-purpose; no upload path in the widget except the contract attachment, which is processed by Anthropic | Medium. On-screen warning added; Anthropic terms read, account type to confirm |
 | Abuse and cost | Sign-in, per person limit, total limit | Low |
 | Unconsented marketing | Sign-up checkbox, consent version recorded, deletion on request | Low if the consent text is approved by the owner |
-| Prompt injection from pasted text | Not assessed in code for this review; the function writes only usage counters | Unverified |
+| Prompt injection from pasted text | Code read on 2026-10-19: the function gives the model no tools and writes only usage counters, so injected text can change the reply but cannot read or write data | Low |
 | Bias | Not a decision system | Not applicable |
 
 ## 5. Gaps found
