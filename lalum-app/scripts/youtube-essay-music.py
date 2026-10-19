@@ -48,6 +48,9 @@ def add(buf, sig, at, gain=1.0, pan=0.0):
     i = int(at * SR)
     if i >= buf.shape[1] or i + len(sig) <= 0:
         return
+    if i < 0:
+        sig = sig[-i:]
+        i = 0
     j = min(buf.shape[1], i + len(sig))
     s = sig[: j - i] * gain
     buf[0, i:j] += s * (1 - max(0, pan))

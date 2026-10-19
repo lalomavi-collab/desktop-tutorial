@@ -55,7 +55,8 @@ html,body{width:${W}px;height:${H}px;overflow:hidden;background:#0b100c}
 body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f1e8}
 .bg{position:absolute;inset:0;background:radial-gradient(90% 90% at 50% 25%,#1f3626 0%,#142019 55%,#0b100c 100%)}
 .grid{position:absolute;inset:0;opacity:.05;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:80px 80px}
-#world{position:absolute;inset:0}
+#world{position:absolute;inset:0;filter:contrast(1.1) saturate(1.12)}
+.amber{text-shadow:0 0 26px rgba(231,194,122,.3)}
 #stage{position:absolute;inset:0;transform-origin:50% 45%}
 #world div,#hud div{position:absolute}
 .wm{position:absolute;right:70px;bottom:44px;width:150px;opacity:.5}
@@ -68,7 +69,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .dim{color:#8a9a8c}
 .amber{color:#e7c27a}
 .green{color:#9cc29f}
-.tag{left:90px;top:104px;font-size:26px;color:#9aaa9c;padding-left:16px;border-left:4px solid #769d79;letter-spacing:.3px}
+.tag{left:90px;top:74px;font-size:26px;color:#9aaa9c;padding-left:16px;border-left:4px solid #769d79;letter-spacing:.3px}
 .card{background:#16241b;border:2.5px solid #3a5a42;border-radius:26px}
 .card.am{border-color:#e7c27a}
 .bar{height:16px;border-radius:8px;background:#35503b;width:0}
@@ -79,8 +80,8 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .rel{position:relative !important}
 .mono{font-family:"Liberation Mono","DejaVu Sans Mono",monospace}
 #hud .br{width:64px;height:64px;border:3px solid #3a5a42;opacity:.9}
-#caps{left:0;right:0;top:930px;height:80px}
-.cap{left:0;right:0;top:0;text-align:center;font-size:56px;font-weight:700;white-space:nowrap}
+#caps{left:0;right:0;top:984px;height:70px}
+.cap{left:0;right:0;top:0;text-align:center;font-size:52px;font-weight:700;white-space:nowrap}
 .cap span{display:inline-block;padding:2px 11px;margin:0 3px;border-radius:12px;text-shadow:0 3px 14px rgba(0,0,0,.75)}
 .cap span.on{background:#e7c27a;color:#101712;text-shadow:none}
 #grain{left:-200px;top:-200px;width:2400px;height:1500px;opacity:.07;mix-blend-mode:screen}
@@ -90,24 +91,31 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 <div id="world"><div id="stage"></div></div>
 ${logo}
 <div id="hud">
-  <div class="br" style="left:36px;top:36px;border-right:0;border-bottom:0"></div>
-  <div class="br" style="right:36px;top:36px;border-left:0;border-bottom:0"></div>
-  <div class="br" style="left:36px;bottom:36px;border-right:0;border-top:0"></div>
-  <div class="br" style="right:36px;bottom:36px;border-left:0;border-top:0"></div>
-  <div id="hudL" class="mono" style="left:90px;top:52px;font-size:24px;letter-spacing:4px;color:#8a9a8c"></div>
-  <div id="hudR" class="mono" style="right:90px;top:52px;font-size:24px;letter-spacing:3px;color:#8a9a8c;text-align:right"></div>
-  <div id="prog" style="left:90px;right:90px;top:1066px;height:4px;background:#1c2d22"></div>
-  <div id="progF" style="left:90px;top:1066px;height:4px;width:0;background:#e7c27a"></div>
-  <div id="orbL" class="mono" style="left:84px;top:868px;font-size:16px;letter-spacing:3px;color:#6f806f">AI NARRATOR</div>
-  <div id="orb" style="left:90px;top:900px;width:110px;height:110px"></div>
-  <div id="caps"></div>
   <div id="title" style="inset:0"></div>
+  <div id="leak" style="left:-1920px;top:120px;width:3840px;height:840px;opacity:0;mix-blend-mode:screen;background:linear-gradient(100deg,rgba(231,194,122,0) 38%,rgba(240,170,90,.5) 50%,rgba(231,194,122,0) 62%)"></div>
+  <div id="dust" style="inset:0"></div>
+  <div id="grade" style="inset:0;mix-blend-mode:soft-light;background:linear-gradient(135deg,rgba(30,120,130,.6),rgba(0,0,0,0) 45%,rgba(235,150,60,.45))"></div>
   <div id="vig"></div>
   <div id="grain"></div>
+  <div id="barT" style="left:0;right:0;top:0;height:120px;background:#000"></div>
+  <div id="barB" style="left:0;right:0;bottom:0;height:120px;background:#000"></div>
+  <div class="br" style="left:36px;top:136px;border-right:0;border-bottom:0"></div>
+  <div class="br" style="right:36px;top:136px;border-left:0;border-bottom:0"></div>
+  <div class="br" style="left:36px;bottom:136px;border-right:0;border-top:0"></div>
+  <div class="br" style="right:36px;bottom:136px;border-left:0;border-top:0"></div>
+  <div id="hudL" class="mono" style="left:90px;top:32px;font-size:22px;letter-spacing:4px;color:#8a9a8c"></div>
+  <div id="hudR" class="mono" style="right:90px;top:32px;font-size:22px;letter-spacing:3px;color:#8a9a8c;text-align:right"></div>
+  <div id="tags" style="inset:0"></div>
+  <div id="prog" style="left:90px;right:90px;top:1068px;height:3px;background:#1c2d22"></div>
+  <div id="progF" style="left:90px;top:1068px;height:3px;width:0;background:#e7c27a"></div>
+  <div id="orbL" class="mono" style="left:176px;top:1004px;font-size:15px;letter-spacing:3px;color:#6f806f">AI NARRATOR</div>
+  <div id="orb" style="left:90px;top:978px;width:70px;height:70px"></div>
+  <div id="caps"></div>
 </div>
 <script>
 const W=${W},H=${H},FPS=${FPS},TOTAL=${TOTAL};
 const OFF=${JSON.stringify(offsets)};
+const ACT={3:"ACT II",5:"ACT III"};
 const NAMES={1:"THE HOOK",2:"AGENTS",3:"THE LAYER",4:"THE HOUR",5:"WHO ANSWERS",6:"THE THREE QUESTIONS"};
 const S0=document.getElementById("stage"),WM=document.querySelector(".wm");
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
@@ -116,7 +124,8 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 function mk(cls,html,parent){const e=document.createElement("div");e.className=cls||"";if(html!=null)e.innerHTML=html;(parent||S0).appendChild(e);return e}
 function box(x,y,w,h,cls,html,parent){const e=mk(cls,html,parent);Object.assign(e.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"});return e}
 function vis(e,t,a,b,d){d=d||.6;b=b==null?1e9:b;const k=Math.min(ease((t-a)/d),ease((b-t)/(d*.8)));e.style.opacity=k;e.style.transform="translateY("+((1-k)*18)+"px)";return k}
-function tag(text){return mk("tag",text)}
+function tag(text){return mk("tag",text,document.getElementById("tags"))}
+let HITS=[];
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,"");
 function ctx(d){
   const P=d.paras,T=P.map(p=>p.words.map(w=>norm(w.t)));
@@ -134,8 +143,9 @@ function SC(){const S={items:[],fx:[]};
   S.reg=(e,a,b,d)=>{S.items.push([e,a,b,d]);return e};
   S.run=t=>{S.items.forEach(([e,a,b,d])=>vis(e,t,a,b,d));S.fx.forEach(f=>f(t))};return S}
 // dynamic typography: each word slams in on its own time
+function x0time(a){return a[0]}
 function kin(S,text,times,x,y,w,o){o=o||{};const words=text.split(" ");
-  const c=box(x,y,w,o.h||220,"c "+(o.cls||"h1"));c.style.fontSize=(o.size||92)+"px";c.style.textAlign=o.align||"center";if(o.color)c.style.color=o.color;
+  const c=box(x,y,w,o.h||220,"c "+(o.cls||"h1"));if((o.size||92)>=84)HITS.push(x0time(times));c.style.fontSize=(o.size||92)+"px";c.style.textAlign=o.align||"center";if(o.color)c.style.color=o.color;
   const tt=i=>times[i]!=null?times[i]:times[times.length-1]+.28*(i-times.length+1);
   const sp=words.map((t,i)=>{const s=document.createElement("span");s.textContent=t;
     s.style.cssText="display:inline-block;margin:0 .16em;opacity:0;"+(o.hi&&o.hi.indexOf(i)>=0?"color:#e7c27a;":"");c.appendChild(s);return s});
@@ -294,7 +304,7 @@ function s5(d){const S=SC(),x=ctx(d);
   kin(S,"WHAT NO LAUNCH ANSWERS",[x.w(0,"the part"),x.w(0,"that no"),x.w(0,"product launch"),x.w(0,"answers")],160,400,1600,{size:92,hi:[4],out:x.b(0)+.6}).style.fontSize="92px";
   kin(S,"\\u201Ca duty of confidentiality that does not bend for convenience\\u201D",x.ws(1,"a duty of confidentiality that does not bend for convenience"),160,330,1600,{size:70,out:x.w(1,"good")+.6,h:300});
   S.reg(tag("Google Cloud blog, 25.8.2026"),x.w(1,"google writes"),x.w(1,"good")+.6);
-  kin(S,"WHO ANSWERS?",x.ws(1,"who answers"),160,340,1600,{size:170,color:"#e7c27a",h:260});
+  kin(S,"WHO ANSWERS?",x.ws(1,"who answers"),160,340,1600,{size:170,color:"#e7c27a",out:x.a(2)-.2,h:260});
   const he=box(260,210,1400,400,"card am",'<div class="rel rtl h2" style="padding:54px 64px;line-height:1.35;font-size:56px">&quot;שימוש שעושים עורכי דין בכלי בינה מלאכותית, אין משמעו כי הם יכולים להתפרק מאחריותם ומשיקול דעתם המקצועי&quot;</div>');
   const tEnd=x.w(2,"and it set out")-.1;
   S.reg(he,x.w(2,"israels supreme court"),tEnd);
@@ -325,20 +335,32 @@ function s5(d){const S=SC(),x=ctx(d);
   S.reg(tag("Illustrative mockup"),x.w(5,"a machine produces"),1e9);
   return S}
 
-// ---------- scene 6: outro ----------
+// ---------- scene 6: outro and credits ----------
 function s6(d){const S=SC(),x=ctx(d);
-  kin(S,"SO WHERE DOES THAT LEAVE US?",x.ws(0,"so where does that leave us"),160,380,1600,{size:92,out:x.b(0)+.6,h:260});
+  kin(S,"SO WHERE DOES THAT LEAVE US?",x.ws(0,"so where does that leave us"),60,400,1800,{size:84,out:x.b(0)+.6,h:260});
   kin(S,"THE LAYER IS COMING.",[x.w(1,"google and"),x.w(1,"building"),x.w(1,"the layer"),x.w(1,"that part is coming")],160,300,1600,{size:100,color:"#e7c27a",out:x.a(2)-.3,h:170});
   kin(S,"Pretending otherwise is a strategy for losing.",x.ws(1,"pretending otherwise is a strategy for losing"),160,500,1600,{size:56,color:"#8a9a8c",out:x.a(2)-.3,h:120});
   [["WHO APPROVES?","who approves"],["ON WHAT BASIS?","on what basis"],["WHO SIGNS?","and who signs"]].forEach((c,i)=>{const e=box(130+i*560,300,500,260,"card"+(i==2?" am":""),'<div class="rel h2'+(i==2?" amber":"")+'" style="margin-top:92px;text-align:center;font-size:46px">'+c[0]+'</div>');S.reg(e,x.w(2,c[1]),x.a(4)-.3)});
   kin(S,"IN WRITING.",[x.w(3,"in writing")],160,640,1600,{size:100,out:x.a(4)-.3,h:150});
   kin(S,"NOT READY FOR AGENTS.",x.ws(3,"not ready for agents"),160,780,1600,{size:70,color:"#e7c27a",out:x.a(4)-.3,h:110});
-  const e0=x.w(4,"at lalum");
-  const el=box(660,230,600,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:600px;opacity:1"');S.reg(el,e0,1e9,1);
-  S.reg(box(0,470,W,70,"c h2","lalum.co"),e0+.8,1e9);
-  S.reg(box(0,560,W,60,"c p dim","The governance around the work, not another tool."),x.w(4,"the governance"),1e9);
-  const ft=box(120,700,1680,110,"c dim","Sources: Google Cloud press release and blog, 25.8.2026; Reuters, 25.8.2026; HCJ 38379-12-24.<br>Narration is synthetic (AI). LALUM is not affiliated with Google. This video is not legal advice.");ft.style.fontSize="24px";ft.style.lineHeight="1.55";
-  S.reg(ft,e0+3,1e9);
+  const e0=x.w(4,"at lalum"),tc=x.b(4)+3.4;
+  const el=box(660,230,600,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:600px;opacity:1"');S.reg(el,e0,tc,1);
+  S.reg(box(0,470,W,70,"c h2","lalum.co"),e0+.8,tc);
+  S.reg(box(0,560,W,60,"c p dim","The governance around the work, not another tool."),x.w(4,"the governance"),tc);
+  // end credits, rolling up like a film
+  const row=(l,v)=>'<div class="rel c" style="margin-top:46px"><div class="rel mono dim" style="font-size:22px;letter-spacing:7px">'+l+'</div><div class="rel" style="font-size:42px;font-weight:700;margin-top:10px;line-height:1.25">'+v+'</div></div>';
+  const cr=box(0,0,W,1700,"");
+  cr.innerHTML='<div class="rel c mono" style="font-size:26px;letter-spacing:14px;color:#8a9a8c;margin-top:0">A LALUM FILM</div>'
+    +'<div class="rel c h1 amber" style="font-size:72px;margin-top:20px;line-height:1.15">GOOGLE JUST BUILT AN<br>AI LAWYER\\'S ASSISTANT.<br>WHO SIGNS?</div>'
+    +row("WRITTEN AND PRODUCED BY","LALUM")
+    +row("NARRATION","Synthetic voice (AI)")
+    +row("MUSIC AND SOUND DESIGN","Synthesized, no third party music")
+    +row("GRAPHICS","Drawn in code")
+    +row("SOURCES","Google Cloud press release, 25.8.2026<br>Google Cloud blog, 25.8.2026<br>Reuters, 25.8.2026<br>Supreme Court of Israel, HCJ 38379-12-24")
+    +row("NOTES","Product windows are illustrative mockups.<br>LALUM is not affiliated with Google.<br>This film is not legal advice.")
+    +'<div class="rel c" style="margin-top:70px">'+document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:380px;opacity:1;position:relative"')+'</div>';
+  const t1=d.dur-.9;
+  S.fx.push(t=>{const k=clamp((t-tc)/(t1-tc));cr.style.top=(1020-k*(1020+1250))+"px";cr.style.opacity=ease((t-tc)/.8)});
   return S}
 
 const SCENES={1:s1,2:s2,3:s3,4:s4,5:s5,6:s6};
@@ -346,7 +368,7 @@ const SCENES={1:s1,2:s2,3:s3,4:s4,5:s5,6:s6};
 // ---------- overlay: HUD, captions, orb, grain, titles ----------
 let CUR=null,CAPS=[],ORB=null;
 const orb=document.getElementById("orb");
-orb.innerHTML='<svg width="110" height="110" viewBox="-55 -55 110 110" fill="none"><circle id="o1" r="46" stroke="#3a5a42" stroke-width="2"/><circle id="o2" r="34" stroke="#769d79" stroke-width="2"/><circle id="o3" r="20" fill="#e7c27a" opacity=".9"/></svg>';
+orb.innerHTML='<svg width="70" height="70" viewBox="-55 -55 110 110" fill="none"><circle id="o1" r="46" stroke="#3a5a42" stroke-width="2"/><circle id="o2" r="34" stroke="#769d79" stroke-width="2"/><circle id="o3" r="20" fill="#e7c27a" opacity=".9"/></svg>';
 const gr=document.createElement("canvas");gr.width=gr.height=200;{const g=gr.getContext("2d"),im=g.createImageData(200,200);let s=7;for(let i=0;i<im.data.length;i+=4){s=(s*16807)%2147483647;const v=(s%255);im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0)}
 document.getElementById("grain").style.backgroundImage="url("+gr.toDataURL()+")";
 function buildCaps(d){const box0=document.getElementById("caps");box0.innerHTML="";CAPS=[];
@@ -367,20 +389,29 @@ function overlay(n,t,d){
   const env=d.env[Math.min(d.env.length-1,Math.floor(t*FPS))]||0;
   document.getElementById("o1").setAttribute("r",46+env*8);document.getElementById("o2").setAttribute("r",34+env*14);document.getElementById("o3").setAttribute("r",18+env*10);
   const fr=Math.floor(t*FPS);document.getElementById("grain").style.transform="translate("+(-(fr*37%200))+"px,"+(-(fr*91%200))+"px)";
-  document.getElementById("stage").style.transform="scale("+(1+.035*t/d.dur)+")";
+  const CAM={1:[.045,0,0],2:[.02,-40,0],3:[-.03,0,0],4:[.03,30,-12],5:[.035,0,14],6:[.03,0,0]}[n],kf=t/d.dur;
+  let dx=CAM[1]*kf,dy=CAM[2]*kf,sc=.78*(1+CAM[0]*kf);
+  HITS.forEach(h=>{const q=t-h;if(q>=0&&q<.4){const am=8*Math.exp(-q*10);dx+=Math.sin(q*95)*am;dy+=Math.cos(q*83)*am*.6;sc*=1+.012*Math.exp(-q*12)}});
+  document.getElementById("stage").style.transform="translate("+dx+"px,"+dy+"px) scale("+sc+")";
+  // dust in the beam
+  DUST.forEach((e,i)=>{const x=((i*173+t*(8+(i%5)*3))%1960)-20,y=120+(((i*97)%840)-t*(5+(i%4)*2)+840*10)%840;e.style.left=x+"px";e.style.top=y+"px";e.style.opacity=.16+.16*Math.sin(t*1.3+i)})
+  // light leak sweeping through at the cuts
+  const lk=document.getElementById("leak");let lv=0,lp=0;if(t<1.6){lp=t/1.6;lv=Math.sin(lp*Math.PI)}else if(d.dur-t<1.2){lp=1-(d.dur-t)/1.2;lv=Math.sin(lp*Math.PI)*.8}
+  lk.style.opacity=lv*.9;lk.style.transform="translateX("+(lp*1500)+"px)";
   // title card over the first seconds of a scene
   const lead=d.paras[0].a,ti=document.getElementById("title");
   if(t<lead-.1&&n!="1"){
     const k=Math.min(ease((t-.1)/.5),ease((lead-.2-t)/.5));
     let h="";
     if(n=="2"){const L=["GOOGLE JUST BUILT AN","AI LAWYER'S ASSISTANT.","WHO SIGNS?"];
-      h=L.map((s,i)=>'<div class="c h1" style="top:'+(300+i*130)+'px;font-size:96px;opacity:'+ease((t-.2-i*.6)/.4)+';color:'+(i==2?"#e7c27a":"#f5f1e8")+'">'+s+'</div>').join("")}
-    else h='<div class="c mono" style="top:340px;font-size:34px;letter-spacing:10px;color:#e7c27a">0'+n+' / 06</div><div class="c big" style="top:410px;font-size:130px;opacity:'+ease((t-.3)/.5)+'">'+NAMES[n]+'</div><div style="left:760px;top:600px;width:'+(400*ease((t-.4)/.8))+'px;height:4px;background:#e7c27a"></div>';
+      h='<div class="c mono" style="top:196px;font-size:26px;letter-spacing:14px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">A LALUM FILM</div>'+L.map((s,i)=>'<div class="c h1" style="top:'+(290+i*120)+'px;font-size:92px;opacity:'+ease((t-.5-i*.6)/.4)+';color:'+(i==2?"#e7c27a":"#f5f1e8")+'">'+s+'</div>').join("")+'<div class="c mono" style="top:700px;font-size:24px;letter-spacing:10px;color:#e7c27a;opacity:'+ease((t-2.6)/.5)+'">ACT I</div>'}
+    else h=(ACT[n]?'<div class="c mono" style="top:300px;font-size:26px;letter-spacing:12px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">'+ACT[n]+'</div>':"")+'<div class="c mono" style="top:350px;font-size:30px;letter-spacing:10px;color:#e7c27a">0'+n+' / 06</div><div class="c big" style="top:410px;font-size:120px;opacity:'+ease((t-.3)/.5)+'">'+NAMES[n]+'</div><div style="left:760px;top:590px;width:'+(400*ease((t-.4)/.8))+'px;height:4px;background:#e7c27a"></div>';
     ti.innerHTML=h;ti.style.opacity=k}else{ti.innerHTML="";ti.style.opacity=0}
   // fade through black at both ends of a scene
   document.getElementById("world").style.opacity=Math.min(1,t/.3,(d.dur-t)/.5);
 }
-window.build=(n,d)=>{S0.innerHTML="";WM.style.opacity=.5;CUR=SCENES[n](d);buildCaps(d);
+const DUST=[];for(let i=0;i<34;i++){const e=document.createElement("div");const z=2+(i%3);e.style.cssText="width:"+z+"px;height:"+z+"px;border-radius:50%;background:#f5f1e8;filter:blur(1px)";document.getElementById("dust").appendChild(e);DUST.push(e)}
+window.build=(n,d)=>{S0.innerHTML="";document.getElementById("tags").innerHTML="";HITS=[];WM.style.opacity=.5;CUR=SCENES[n](d);buildCaps(d);
   window.render=t=>{CUR.run(t);overlay(n,t,d)}};
 </script></body></html>`;
 

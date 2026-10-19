@@ -12,7 +12,7 @@ WORK = os.environ.get("WORK", "/tmp/tts")
 FPS = int(os.environ.get("FPS", "24"))
 SR = 24000
 LEAD = {"1": 0.8, "2": 3.6, "3": 2.8, "4": 2.8, "5": 2.8, "6": 2.8}
-TAIL = {"1": 2.4, "2": 1.6, "3": 1.8, "4": 1.8, "5": 2.0, "6": 9.0}
+TAIL = {"1": 2.4, "2": 1.6, "3": 1.8, "4": 1.8, "5": 2.0, "6": 27.0}
 GAP = 1.3
 GAPS = {  # extra room after a paragraph, where the picture needs to land
     "1": {1: 1.0, 3: 0.0},
