@@ -21,9 +21,14 @@ const MODEL = "claude-haiku-4-5-20251001";
 // counters in the handler), with the history the client sends as a second,
 // weaker check.
 const CASE_LAW_MARKER = "⚖️";
-// Free case law answers: at most 2 per person per day, and 10 per day across all clients together.
+// Free use of the assistant, counted per message: at most 2 per person per day, and 10 per day across all
+// clients together. A "person" is the signed-in user, or the visitor's network address when not signed in.
+const DAILY_PER_PERSON = 2;
+const DAILY_TOTAL = 10;
+const DAILY_LIMIT_REPLY =
+  "הגעת למגבלת השימוש החינמית היומית בעוזר באתר. כדי להמשיך, הורידו את אפליקציית LALUM לנייד או תאמו שיחת אבחון קצרה בכתובת lalumapp.com/book.";
+// The case law answers keep their own, tighter-in-wording guard (same two per person), see below.
 const FREE_CASE_LAW_LOOKUPS = 2;
-const FREE_CASE_LAW_DAILY_TOTAL = 10;
 const CASE_LAW_LIMIT_REPLY =
   "הגעת למגבלת החיפושים החינמיים באתר. כדי להמשיך להשתמש במנוע חיפוש הפסיקה ולנסח כתבי טענות על בסיסו, הורידו את אפליקציית LALUM לנייד.";
 
@@ -140,31 +145,31 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
-  // Per-client counters. This endpoint is reachable with the public anon key (the /os page uses it without a
-  // login), so two counters sit in Postgres (lalum_rate_limit, a hashed key per client, the same pattern as
-  // the other public functions): an hourly cap on messages, and a daily cap on case law answers. Both fail
-  // open: if the counter itself is unavailable the request goes through rather than the chat breaking.
+  // Daily usage counters, kept in Postgres (lalum_rate_limit, a hashed key per person, the same pattern as the
+  // other public functions): every message counts, 2 per person per day and 10 per day across all clients.
+  // The person is checked first, so someone already at their two does not use up the shared ten. Both fail open:
+  // if the counter itself is unavailable the request goes through rather than the chat breaking.
   const supaUrl = Deno.env.get("SUPABASE_URL");
   const supaKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  // deno-lint-ignore no-explicit-any
-  let counter: any = null;
-  let clientHash = "";
-  let signedIn = false;
   if (supaUrl && supaKey) {
     try {
-      counter = createClient(supaUrl, supaKey);
+      const counter = createClient(supaUrl, supaKey);
       const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
       const user = token ? (await counter.auth.getUser(token)).data.user : null;
-      signedIn = !!user;
       const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
       const raw = user ? `u:${user.id}` : `ip:${ip}`;
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
-      clientHash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
-      // A signed-in client gets a wider allowance than an anonymous visitor.
-      const { data, error } = await counter.rpc("lalum_rate_limit", { p_key: `assistant:${clientHash}`, p_max: signedIn ? 120 : 30, p_window_seconds: 3600 });
-      if (!error && data === false) return json(429, { code: "rate_limited" });
+      const hash = Array.from(new Uint8Array(digest)).map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 32);
+      const person = await counter.rpc("lalum_rate_limit", { p_key: `assistant-day:${hash}`, p_max: DAILY_PER_PERSON, p_window_seconds: 86400 });
+      let over = !person.error && person.data === false;
+      if (!over) {
+        const all = await counter.rpc("lalum_rate_limit", { p_key: "assistant-day:all", p_max: DAILY_TOTAL, p_window_seconds: 86400 });
+        over = !all.error && all.data === false;
+      }
+      // 200 with the message, not an error status: the chat shows a reply, and an error would read as "broken".
+      if (over) return json(200, { reply: DAILY_LIMIT_REPLY });
     } catch (e) {
-      console.error(`lalum-assistant: rate_limit_unavailable ${String(e).slice(0, 120)}`);
+      console.error(`lalum-assistant: counter_unavailable ${String(e).slice(0, 120)}`);
     }
   }
 
@@ -220,25 +225,8 @@ Deno.serve(async (req) => {
     // is replaced outright, never trimmed or partially shown: the point is
     // that no case law past the free count reaches the caller, in code, not
     // just in the system prompt's own wording.
-    if (reply.includes(CASE_LAW_MARKER)) {
-      let over = priorCaseLawLookups >= FREE_CASE_LAW_LOOKUPS;
-      // The server-side counter is the one that holds: the history above is sent by the client and can be
-      // cleared or edited, a counter keyed to the client cannot. It counts the answers, one per case law
-      // reply, over a day (lalum_rate_hits keeps a day of rows).
-      if (!over && counter && clientHash) {
-        try {
-          // Per person first, so a person already at their two does not use up the shared ten.
-          const person = await counter.rpc("lalum_rate_limit", { p_key: `caselaw:${clientHash}`, p_max: FREE_CASE_LAW_LOOKUPS, p_window_seconds: 86400 });
-          if (!person.error && person.data === false) over = true;
-          if (!over) {
-            const all = await counter.rpc("lalum_rate_limit", { p_key: "caselaw:all", p_max: FREE_CASE_LAW_DAILY_TOTAL, p_window_seconds: 86400 });
-            if (!all.error && all.data === false) over = true;
-          }
-        } catch (e) {
-          console.error(`lalum-assistant: caselaw_counter_unavailable ${String(e).slice(0, 120)}`);
-        }
-      }
-      if (over) reply = CASE_LAW_LIMIT_REPLY;
+    if (reply.includes(CASE_LAW_MARKER) && priorCaseLawLookups >= FREE_CASE_LAW_LOOKUPS) {
+      reply = CASE_LAW_LIMIT_REPLY;
     }
     return json(200, { reply });
   } catch (e) {
