@@ -102,6 +102,7 @@ type OsCopy = {
   send: string;
   thinking: string;
   disclaimer: string;
+  confidential: string;
   zeroSub: string;
   zeroPrompt: string;
   langLabel: string;
@@ -157,6 +158,7 @@ const OS: Record<Lang, OsCopy> = {
     send: "שליחה",
     thinking: "מנתח…",
     disclaimer: "מידע בלבד, אינו ייעוץ משפטי ואינו יוצר יחסי עורך דין לקוח.",
+    confidential: "לפני הדבקה או העלאה של מסמך, הסירו שמות לקוחות, מספרי זהות ופרטים סודיים. התוכן מעובד על ידי ספק בינה מלאכותית חיצוני.",
     zeroSub: "הנדסת משפט וארכיטקטורת סיכונים אוטונומית",
     zeroPrompt: "הקלד פקודה, הדבק סעיף או תיק, או נסח הנחיה מבצעית:",
     langLabel: "שפה",
@@ -225,6 +227,7 @@ const OS: Record<Lang, OsCopy> = {
     send: "Send",
     thinking: "Analyzing…",
     disclaimer: "Informational only, not legal advice, and no attorney client relationship.",
+    confidential: "Before pasting or uploading a document, remove client names, ID numbers and confidential details. The content is processed by an external AI provider.",
     zeroSub: "Autonomous Legal Engineering and Risk Architecture",
     zeroPrompt: "Type a command, paste a clause or a docket, or state an operational directive:",
     langLabel: "Language",
@@ -293,6 +296,7 @@ const OS: Record<Lang, OsCopy> = {
     send: "Enviar",
     thinking: "Analizando…",
     disclaimer: "Solo informativo, no es asesoramiento legal ni crea relación abogado cliente.",
+    confidential: "Antes de pegar o subir un documento, elimine nombres de clientes, números de identidad y datos confidenciales. El contenido es procesado por un proveedor externo de IA.",
     zeroSub: "Ingeniería Legal Autónoma y Arquitectura de Riesgo",
     zeroPrompt: "Escribe un comando, pega una cláusula o un expediente, o indica una directiva operativa:",
     langLabel: "Idioma",
@@ -361,6 +365,7 @@ const OS: Record<Lang, OsCopy> = {
     send: "Envoyer",
     thinking: "Analyse…",
     disclaimer: "Informatif seulement, pas un conseil juridique, aucune relation avocat client.",
+    confidential: "Avant de coller ou de téléverser un document, supprimez les noms de clients, les numéros d'identité et les détails confidentiels. Le contenu est traité par un prestataire d'IA externe.",
     zeroSub: "Ingénierie Juridique Autonome et Architecture du Risque",
     zeroPrompt: "Tapez une commande, collez une clause ou un dossier, ou donnez une directive opérationnelle:",
     langLabel: "Langue",
@@ -429,6 +434,7 @@ const OS: Record<Lang, OsCopy> = {
     send: "إرسال",
     thinking: "جارٍ التحليل…",
     disclaimer: "للمعلومات فقط، وليس استشارة قانونية ولا ينشئ علاقة محامٍ وموكل.",
+    confidential: "قبل لصق مستند أو رفعه، احذفوا أسماء العملاء وأرقام الهوية والتفاصيل السرية. تتم معالجة المحتوى بواسطة مزوّد خارجي للذكاء الاصطناعي.",
     zeroSub: "هندسة قانونية مستقلة وبنية إدارة المخاطر",
     zeroPrompt: "اكتب أمرًا، الصق بندًا أو ملفًا، أو حدد توجيهًا تشغيليًا:",
     langLabel: "اللغة",
@@ -1147,6 +1153,7 @@ export function LegalOS() {
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" /></svg>
             </button>
           </div>
+          <p className="los-warn" dir="auto" lang={bcp47For(lang)}>{copy.confidential}</p>
           <p className="los-disclaimer" dir="auto" lang={bcp47For(lang)}>{copy.disclaimer}</p>
         </div>
       </main>
@@ -1293,6 +1300,7 @@ const LOS_CSS = `
 .los-send:not(:disabled):hover{background:#4c6850}
 .los-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#8fc090;animation:los-spin .7s linear infinite}
 @keyframes los-spin{to{transform:rotate(360deg)}}
+.los-warn{max-width:760px;margin:8px auto 0;text-align:center;color:#5a5245;font-size:12px;font-weight:600}
 .los-disclaimer{max-width:760px;margin:8px auto 0;text-align:center;color:#8c8272;font-size:11.5px}
 .los-scrim{display:none}
 @media (max-width:820px){
