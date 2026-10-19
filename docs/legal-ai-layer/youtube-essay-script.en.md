@@ -36,7 +36,7 @@ On 25 August 2026, Google announced a product for lawyers. Not a chatbot. Agents
 
 Contract review. Negotiation. Tracking regulation. Redacting court filings. Drafting the NDA you have signed a hundred times.
 
-For a hundred years, a law firm sold one thing: the hours of a trained person. Now one of the largest technology companies on earth is offering to do the work itself.
+For generations, a law firm has sold mostly one thing: the hours of a trained person. Now one of the largest technology companies on earth is offering to do the work itself.
 
 So here is the question this video is really about. Not whether the machine can draft. It can. The question is: when it does, who decides, on what basis, and who signs?
 
@@ -132,7 +132,7 @@ Now the money. And here I want to separate what we know from what we are inferri
 
 What we know: the traditional model prices legal work by time. More hours, more revenue. Whoever does the work faster earns less, unless the price changes.
 
-What we infer: when a system can do first-pass review in minutes, the hour stops measuring value. A client can ask why they are paying for ten hours of something a tool prepared in ten minutes.
+What we infer: when a system can do first-pass review in minutes, the hour stops measuring value. A client can ask why they are paying for hours of something a tool prepared in minutes.
 
 Notice I am not giving you a figure for how much time AI saves. You will find confident numbers online. Many have no traceable source, so I will not repeat them. What I will say is that the direction of pressure is clear, and the size is not.
 
@@ -226,3 +226,26 @@ At LALUM we build that answer: the governance around the work, not another tool.
 * Dashes: none as punctuation in captions or description (project rule).
 * Add the new items to `docs/legal-ai-layer/verified-claims.md` once the connector and control wording is re-read.
 * Disclaimer in description: not legal advice, no affiliation with Google.
+
+---
+
+## Five techniques: what is in the film and what needs an outside asset
+
+The film mixes five production techniques. Three of them, plus the dynamic typography, are rendered in code (`lalum-app/scripts/youtube-essay-visuals.mjs`). Two need an outside asset.
+
+| # | Technique | In the film | How |
+|---|-----------|-------------|-----|
+| 1 | Motion graphics | Yes | Stacks, flows, connector wall, layer diagram, drawn in code |
+| 2 | Filmed footage | No, slots reserved | Needs a camera or licensed stock (see inserts below) |
+| 3 | Cinematic | Yes | Slow push on every scene, vignette, film grain, scene title cards, fades through black |
+| 4 | Mockup | Yes | An agent run window (scene 2) and a review screen (scene 5), generic and labelled "illustrative" |
+| 5 | Avatar | Partly | A voice reactive narrator orb driven by the narration level. A human or AI presenter needs an outside asset |
+
+Dynamic typography runs on top of all five: key phrases slam in on the exact word of the narration, and the captions highlight the word being spoken. Narration is a synthetic voice and the film says so on screen.
+
+**Inserts to add in the edit (not in the render)**
+* 0:00 to 0:12 (scene 1): on camera cold open by Dr. Lalum, or one licensed shot of a law library at night, ending on "complete work rather than return suggestions".
+* Scene 3, paragraph 4 ("Trojan horse"): one licensed or generated shot behind the layer diagram (a partner reading an access dashboard).
+* Scene 5, paragraph 2: one licensed courthouse exterior before the Hebrew quote card.
+* Scene 6, last paragraph: on camera sign off by Dr. Lalum over the end card, if the presenter option is chosen.
+* A real presenter (the owner on camera, or an AI avatar service) replaces the orb. Disclose a synthetic presenter in the description and on screen.
