@@ -4,9 +4,12 @@
 
 ## א. לבצע אתה (פקודה או לחיצה)
 
-### 1. פריסת `lalum-assistant` (בוצע ואומת)
-- נפרסה גרסה 59 ב-19.10.2026. בדיקת בריאות חיה (`?health=1`) החזירה 31 פסיקות, `rulingsSha` ו-`systemSha` זהים לחישוב המקומי, 2 הודעות לאדם ביום ו-10 ביום לכלל הלקוחות.
-- אין צורך בפעולה. לבדיקה עצמית: https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions
+### 1. פריסת `lalum-assistant` (דחוף: הגרסה החיה ללא פסיקות)
+- **מצב ב-19.10.2026:** בגרסה החיה (62) מאגר הפסיקות ריק (`rulings: 0`). העוזר לא ימציא פסיקה, אבל גם לא יצטט את 31 הרשומות המאומתות. הקוד בריפו תקין. הסיבה: פריסה דרך הממשק הידני של Supabase לא העבירה את קובץ הפסיקות המלא.
+- **תיקון (כשלושים שניות), מהמחשב שלך בתיקיית הריפו:** `cd lalum-app && supabase functions deploy lalum-assistant --no-verify-jwt`. מדריך: https://supabase.com/docs/guides/functions/deploy
+- **בדיקה:** פתח `https://meoymkcotomoluwlwues.supabase.co/functions/v1/lalum-assistant?health=1`. התוצאה התקינה: `rulings` ‏31, `rulingsSha` שמתחיל ב-`fc8f566c`.
+- הגרסה כוללת גם: חובת התחברות לעוזר, מגבלת 2 לאדם ו-10 ביום.
+- **אותו דבר ל-WhatsApp:** `supabase functions deploy lalum-whatsapp-webhook --no-verify-jwt` (גילוי AI בהודעה הראשונה).
 
 ### 2. אישור טלגרם לפניות מהאתר
 - **מצב:** בבדיקה החיה סומן `notified_at`, כלומר ה-API של טלגרם החזיר הצלחה, והסודות מוגדרים. נותר רק שתאשר שההודעה "ליד חדש מהאתר" הגיעה לצ׳אט שלך.
