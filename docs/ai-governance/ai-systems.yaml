@@ -57,8 +57,8 @@ systems:
     role_basis: "Own system prompt and channel under the LALUM name [verify against current AI Act text]"
     tier: limited
     tier_basis: "Converses with people: Art. 50 disclosure [verify against current AI Act text]"
-    obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Code check 2026-10-19: no AI disclosure existed. Fixed in code: the first reply of a conversation now opens with an AI disclosure (Art. 50(1)); live after the function is deployed."
+    obligations_assessed: true
+    obligations_note: "Impact assessment AIA_lalum-whatsapp-webhook_2026-10-19.md: message bodies stored indefinitely (conflicts with the red line on storing chat content), no privacy notice, no per-sender cap, no deletion path. Proposed 2026-10-18 under owner delegation (not individually confirmed). Code check 2026-10-19: no AI disclosure existed. Fixed in code: the first reply of a conversation now opens with an AI disclosure (Art. 50(1)); live after the function is deployed."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"
