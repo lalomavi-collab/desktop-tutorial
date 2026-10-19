@@ -26,20 +26,11 @@ Short, plain, no claim of fact inside them.
 
 Do not read this as a script. A rehearsed answer reads as a pitch. Record in two or three takes and keep the one that sounds like him.
 
-## 3. Court decision slot (optional beat, 10 to 12 seconds, between questions 1 and 2)
+## 3. Court decision beat: CUT (owner decision, 19 Oct 2026)
 
-The interviewer adds one sentence of context, with the case card on screen.
+The optional decision beat is removed from the interview. The interview runs three questions, no case card. The Israeli Supreme Court text already in scene 5 (HCJ 38379-12-24, paras 26 and 15) carries the legal weight.
 
-**Decision chosen (owner, 19 Oct 2026):** Israeli Supreme Court, בר״ם 37942-05-25, Ehrlich v. the Israel National Academy of Sciences and the Attorney General. Corpus record: `lalum-app/src/data/rulings.json`, id `bram-37942-05-25`. It replaces Mata v. Avianca, which could not be verified from this environment.
-
-**Verification status, 19 Oct 2026:**
-* Source 1, the decision itself, READ IN FULL (3 pages, PDF copy hosted at websitedc.s3.amazonaws.com, the link in the corpus record). Confirmed from the text: Supreme Court; Deputy President Noam Sohlberg sitting alone; applicant Avraham Ehrlich (unrepresented) against the Academy and the Attorney General; leave to appeal against the Jerusalem District Court (administrative matters) decision of 12.5.2025 in עת״מ 19546-05-25 (Judge A. Sela); decision dated 18 May 2025 (כ׳ אייר תשפ״ה); the application was dismissed, on the merits first (restraint in reviewing academic and professional decisions, including who speaks at a conference) and also on the AI point; costs of NIS 500 to the State Treasury, "on the low side", in view of the applicant being unrepresented. The quote in the corpus matches the text word for word (the decision uses dashes around "שאינם עניין טכני" and "אכן קיימים"; on screen use commas or parentheses, never dashes).
-* Source 2, an independent one: NOT FOUND. The corpus lists law.co.il, which the egress proxy blocks here. Web searches did not surface a second report of this decision. The PDF is a copy hosted by a third party, not the court's own site, so it counts as one instrument, not two sources.
-* Not to be confused with the other 2025 Israeli decision a law firm summary describes with a NIS 5,000 order against an unrepresented litigant. A different matter, not verified here.
-
-**Rule applied:** the project requires two independent sources. One is read in full; the second is missing, so the beat stays out of the film until the owner or a session with access opens the law.co.il entry or the court's own publication and the two agree on docket, court, date, bench and outcome. What may be said once that is done: the three facts above, the NIS 500 order, and the quote. Not to be said: that disclosing AI use cures the defect (the decision says the opposite), and nothing about the lower court beyond its docket number.
-
-**If the second source is not obtained:** the beat is cut. The interview stands without it; the Israeli decision already in scene 5 (HCJ 38379-12-24, which this decision itself cites at paras 12 to 13 and 26) carries the legal weight.
+Why it was cut: no decision cleared the project's two source rule from this environment. Mata v. Avianca could not be opened at all. בר״ם 37942-05-25 was read in full (one source) but a second independent source was not reachable. It can return later without touching the structure: it needs a second source (law.co.il entry or the court's own publication) agreeing on docket, court, date, bench and outcome, and then a 10 second card between questions 1 and 2. Facts confirmed from its text, for that day: Deputy President Sohlberg alone; decision of 18 May 2025; application dismissed; NIS 500 costs to the State Treasury; disclosure of AI use does not cure unverified citations.
 
 ## 4. Cameo from the site clip (fallback audio, and the scene 6 call to action)
 
@@ -51,6 +42,8 @@ Use: a vertical panel inside the 16:9 frame, original audio kept low under the s
 2. "Usually it is not the complicated clause in the contract."
 3. "It is the simple thing nobody documented."
 4. "Eight questions, two minutes, and then we talk."
+
+On screen with the cameo: the single address lalumapp.com (the readiness quiz page is lalumapp.com/risk). No other domain appears anywhere in the film or its files.
 
 The 46 second voice note on the site (`lalum-voice.m4a`) has no transcript in the repository. It is not used until the owner supplies the text.
 
@@ -64,7 +57,7 @@ The 46 second voice note on the site (`lalum-voice.m4a`) has no transcript in th
 
 ## 6. Production steps once the recording arrives
 
-1. Add the interviewer lines to the voice run (Kokoro, same voice family as the narration, a distinct voice from it).
+1. Interviewer lines: DONE as `scripts/youtube-essay-interviewer.py` (Kokoro, voice af_nicole, distinct from the narrator). Run lengths: 3.0 s, 4.5 s, 1.9 s.
 2. Add an interview scene to `youtube-essay-visuals.mjs` as scene `5b`: waveform panel, portrait panel, lower third, subtitles. The bar grid stays (84 BPM, the scene starts on a downbeat).
 3. Add the cameo panel to scene 6 at its call to action.
 4. Re-time the film (`youtube-essay-timing.py`), re-render, re-assemble, re-check, then PR and merge.
@@ -74,5 +67,5 @@ The 46 second voice note on the site (`lalum-voice.m4a`) has no transcript in th
 
 * Owner: approve the cameo subtitle translation.
 * Owner: record the three answers (section 5).
-* Verification: second independent source for בר״ם 37942-05-25 (law.co.il entry or the court's own publication). Section 3.
+* Optional, later: second independent source for בר״ם 37942-05-25 to restore the decision beat (section 3).
 * Not done here: any change to the renderer. The scene is specified, not built, because it depends on the recording.
