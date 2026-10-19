@@ -1,14 +1,14 @@
 {
  "site": "https://lalumapp.com/",
- "inspectedAt": "2026-10-18T10:00:39.502Z",
- "count": 343,
+ "inspectedAt": "2026-10-19T11:21:30.374Z",
+ "count": 346,
  "summary": {
-  "Submitted and indexed": 315,
-  "Discovered - currently not indexed": 7,
-  "Crawled - currently not indexed": 1,
-  "Alternate page with proper canonical tag": 6,
+  "Submitted and indexed": 329,
+  "Discovered - currently not indexed": 3,
+  "Alternate page with proper canonical tag": 4,
   "Page with redirect": 3,
-  "URL is unknown to Google": 11
+  "Crawled - currently not indexed": 2,
+  "URL is unknown to Google": 5
  },
  "canonicalMismatch": [],
  "results": [
@@ -19,7 +19,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T14:08:51Z",
+   "lastCrawlTime": "2026-10-18T21:13:13Z",
    "googleCanonical": "https://lalumapp.com/",
    "userCanonical": "https://lalumapp.com/",
    "sitemap": [
@@ -33,7 +33,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-18T00:17:20Z",
+   "lastCrawlTime": "2026-10-19T00:04:49Z",
    "googleCanonical": "https://lalumapp.com/advisory/",
    "userCanonical": "https://lalumapp.com/advisory/",
    "sitemap": [
@@ -49,15 +49,37 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-12T10:18:42Z",
    "googleCanonical": "https://lalumapp.com/ai-legal-advisory/",
-   "userCanonical": "https://lalumapp.com/ai-legal-advisory/"
+   "userCanonical": "https://lalumapp.com/ai-legal-advisory/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
-   "url": "https://lalumapp.com/ai-legal-advisory/human-oversight/",
+   "url": "https://lalumapp.com/ai-legal-advisory/government-ministries/",
    "verdict": "NEUTRAL",
    "coverageState": "URL is unknown to Google",
    "indexingState": "INDEXING_STATE_UNSPECIFIED",
    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
    "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+  },
+  {
+   "url": "https://lalumapp.com/ai-legal-advisory/hitech-companies/",
+   "verdict": "NEUTRAL",
+   "coverageState": "URL is unknown to Google",
+   "indexingState": "INDEXING_STATE_UNSPECIFIED",
+   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+  },
+  {
+   "url": "https://lalumapp.com/ai-legal-advisory/human-oversight/",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T14:21:36Z",
+   "googleCanonical": "https://lalumapp.com/ai-legal-advisory/human-oversight/",
+   "userCanonical": "https://lalumapp.com/ai-legal-advisory/human-oversight/"
   },
   {
    "url": "https://lalumapp.com/ai-legal-advisory/local-authorities/",
@@ -66,9 +88,23 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-02T04:36:21Z",
+   "lastCrawlTime": "2026-10-18T16:06:31Z",
    "googleCanonical": "https://lalumapp.com/ai-legal-advisory/local-authorities/",
-   "userCanonical": "https://lalumapp.com/ai-legal-advisory/local-authorities/"
+   "userCanonical": "https://lalumapp.com/ai-legal-advisory/local-authorities/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
+  },
+  {
+   "url": "https://lalumapp.com/ai-legal-advisory/real-estate-companies/",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-19T10:23:03Z",
+   "googleCanonical": "https://lalumapp.com/ai-legal-advisory/real-estate-companies/",
+   "userCanonical": "https://lalumapp.com/ai-legal-advisory/real-estate-companies/"
   },
   {
    "url": "https://lalumapp.com/ai-legal-advisory/tools/",
@@ -93,7 +129,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T15:20:23Z",
    "googleCanonical": "https://lalumapp.com/ar/",
-   "userCanonical": "https://lalumapp.com/ar/"
+   "userCanonical": "https://lalumapp.com/ar/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/ar/advisory/",
@@ -144,7 +183,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-29T20:34:03Z",
+   "lastCrawlTime": "2026-10-18T23:36:50Z",
    "googleCanonical": "https://lalumapp.com/ar/knowledge/",
    "userCanonical": "https://lalumapp.com/ar/knowledge/",
    "sitemap": [
@@ -174,10 +213,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-03T12:49:30Z",
    "googleCanonical": "https://lalumapp.com/ar/mediation-dispute-resolution/",
-   "userCanonical": "https://lalumapp.com/ar/mediation-dispute-resolution/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/ar/mediation-dispute-resolution/"
   },
   {
    "url": "https://lalumapp.com/ar/real-estate-legal-advisory/",
@@ -214,9 +250,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T03:33:51Z",
+   "lastCrawlTime": "2026-10-18T11:35:59Z",
    "googleCanonical": "https://lalumapp.com/cv",
-   "userCanonical": "https://lalumapp.com/cv"
+   "userCanonical": "https://lalumapp.com/cv",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/cv-en",
@@ -239,12 +278,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-15T12:04:09Z",
+   "lastCrawlTime": "2026-10-19T09:18:44Z",
    "googleCanonical": "https://lalumapp.com/en/",
-   "userCanonical": "https://lalumapp.com/en/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/en/"
   },
   {
    "url": "https://lalumapp.com/en/advisory/",
@@ -269,10 +305,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-18T04:14:57Z",
    "googleCanonical": "https://lalumapp.com/en/ai-legal-advisory/",
-   "userCanonical": "https://lalumapp.com/en/ai-legal-advisory/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/en/ai-legal-advisory/"
   },
   {
    "url": "https://lalumapp.com/en/book/",
@@ -283,10 +316,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-10T02:41:02Z",
    "googleCanonical": "https://lalumapp.com/en/book/",
-   "userCanonical": "https://lalumapp.com/en/book/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/en/book/"
   },
   {
    "url": "https://lalumapp.com/en/insights/ai-international-transactions-overview/",
@@ -303,12 +333,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T23:32:01Z",
+   "lastCrawlTime": "2026-10-18T19:22:21Z",
    "googleCanonical": "https://lalumapp.com/en/insights/combination-deals-architecture/",
-   "userCanonical": "https://lalumapp.com/en/insights/combination-deals-architecture/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/en/insights/combination-deals-architecture/"
   },
   {
    "url": "https://lalumapp.com/en/insights/cyprus-realestate-israeli-buyer-guide/",
@@ -338,13 +365,10 @@
   {
    "url": "https://lalumapp.com/en/insights/eu-ai-act-high-risk-classification/",
    "verdict": "NEUTRAL",
-   "coverageState": "Discovered - currently not indexed",
+   "coverageState": "URL is unknown to Google",
    "indexingState": "INDEXING_STATE_UNSPECIFIED",
    "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
   },
   {
    "url": "https://lalumapp.com/en/insights/eu-ai-act-israeli-companies/",
@@ -355,7 +379,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-26T16:17:08Z",
    "googleCanonical": "https://lalumapp.com/insights/eu-ai-act-israeli-companies/",
-   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-israeli-companies/"
+   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-israeli-companies/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/en/insights/eu-ai-act-roles-obligations/",
@@ -388,7 +415,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-09T20:41:31Z",
    "googleCanonical": "https://lalumapp.com/en/insights/gemini-guide-law/",
-   "userCanonical": "https://lalumapp.com/en/insights/gemini-guide-law/"
+   "userCanonical": "https://lalumapp.com/en/insights/gemini-guide-law/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/en/insights/greece-realestate-israeli-buyer-guide/",
@@ -432,10 +462,13 @@
   {
    "url": "https://lalumapp.com/en/insights/portugal-investment-guide/",
    "verdict": "NEUTRAL",
-   "coverageState": "Discovered - currently not indexed",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+   "coverageState": "Crawled - currently not indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-19T09:36:28Z",
+   "googleCanonical": "https://lalumapp.com/en/insights/portugal-investment-guide/",
+   "userCanonical": "https://lalumapp.com/en/insights/portugal-investment-guide/",
    "sitemap": [
     "https://lalumapp.com/sitemap.xml"
    ]
@@ -463,7 +496,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T08:01:45Z",
    "googleCanonical": "https://lalumapp.com/en/insights/urban-renewal-mistakes-guide/",
-   "userCanonical": "https://lalumapp.com/en/insights/urban-renewal-mistakes-guide/"
+   "userCanonical": "https://lalumapp.com/en/insights/urban-renewal-mistakes-guide/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/en/knowledge/",
@@ -502,10 +538,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-03T08:16:51Z",
    "googleCanonical": "https://lalumapp.com/en/mediation-dispute-resolution/",
-   "userCanonical": "https://lalumapp.com/en/mediation-dispute-resolution/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/en/mediation-dispute-resolution/"
   },
   {
    "url": "https://lalumapp.com/en/real-estate-legal-advisory/",
@@ -516,7 +549,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-12T02:26:19Z",
    "googleCanonical": "https://lalumapp.com/en/real-estate-legal-advisory/",
-   "userCanonical": "https://lalumapp.com/en/real-estate-legal-advisory/"
+   "userCanonical": "https://lalumapp.com/en/real-estate-legal-advisory/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/es/",
@@ -583,10 +619,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T10:39:01Z",
    "googleCanonical": "https://lalumapp.com/es/knowledge/",
-   "userCanonical": "https://lalumapp.com/es/knowledge/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/es/knowledge/"
   },
   {
    "url": "https://lalumapp.com/es/legal/",
@@ -597,10 +630,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-08-29T21:01:02Z",
    "googleCanonical": "https://lalumapp.com/es/legal/",
-   "userCanonical": "https://lalumapp.com/es/legal/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/es/legal/"
   },
   {
    "url": "https://lalumapp.com/es/mediation-dispute-resolution/",
@@ -611,10 +641,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-03T07:55:22Z",
    "googleCanonical": "https://lalumapp.com/es/mediation-dispute-resolution/",
-   "userCanonical": "https://lalumapp.com/es/mediation-dispute-resolution/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/es/mediation-dispute-resolution/"
   },
   {
    "url": "https://lalumapp.com/es/real-estate-legal-advisory/",
@@ -623,7 +650,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-06T11:22:57Z",
+   "lastCrawlTime": "2026-10-15T06:29:47Z",
    "googleCanonical": "https://lalumapp.com/es/real-estate-legal-advisory/",
    "userCanonical": "https://lalumapp.com/es/real-estate-legal-advisory/",
    "sitemap": [
@@ -639,7 +666,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-12T06:49:37Z",
    "googleCanonical": "https://lalumapp.com/faq/",
-   "userCanonical": "https://lalumapp.com/faq/"
+   "userCanonical": "https://lalumapp.com/faq/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/fr/",
@@ -648,7 +678,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-13T17:39:46Z",
+   "lastCrawlTime": "2026-10-19T00:27:58Z",
    "googleCanonical": "https://lalumapp.com/fr/",
    "userCanonical": "https://lalumapp.com/fr/",
    "sitemap": [
@@ -662,9 +692,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-29T20:11:02Z",
+   "lastCrawlTime": "2026-10-19T00:46:45Z",
    "googleCanonical": "https://lalumapp.com/fr/advisory/",
-   "userCanonical": "https://lalumapp.com/fr/advisory/"
+   "userCanonical": "https://lalumapp.com/fr/advisory/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/fr/ai-legal-advisory/",
@@ -701,7 +734,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T13:11:06Z",
+   "lastCrawlTime": "2026-10-18T20:37:52Z",
    "googleCanonical": "https://lalumapp.com/fr/knowledge/",
    "userCanonical": "https://lalumapp.com/fr/knowledge/",
    "sitemap": [
@@ -743,12 +776,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-29T22:34:22Z",
+   "lastCrawlTime": "2026-10-19T06:49:10Z",
    "googleCanonical": "https://lalumapp.com/fr/real-estate-legal-advisory/",
-   "userCanonical": "https://lalumapp.com/fr/real-estate-legal-advisory/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/fr/real-estate-legal-advisory/"
   },
   {
    "url": "https://lalumapp.com/insights/",
@@ -757,7 +787,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T04:50:02Z",
+   "lastCrawlTime": "2026-10-19T06:11:40Z",
    "googleCanonical": "https://lalumapp.com/insights/",
    "userCanonical": "https://lalumapp.com/insights/",
    "sitemap": [
@@ -771,7 +801,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T10:32:45Z",
+   "lastCrawlTime": "2026-10-18T19:22:21Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%91%D7%95%D7%A8%D7%A8%D7%95%D7%AA-%D7%9E%D7%95%D7%90%D7%A6%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%A6%D7%A8%D7%99%D7%9A-%D7%9C%D7%A4%D7%A2%D7%9E%D7%99%D7%9D-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%9E%D7%94%D7%99%D7%A8%D7%94-%D7%95%D7%99%D7%A2%D7%99%D7%9C%D7%94/",
    "userCanonical": "https://lalumapp.com/insights/%D7%91%D7%95%D7%A8%D7%A8%D7%95%D7%AA-%D7%9E%D7%95%D7%90%D7%A6%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%A6%D7%A8%D7%99%D7%9A-%D7%9C%D7%A4%D7%A2%D7%9E%D7%99%D7%9D-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%9E%D7%94%D7%99%D7%A8%D7%94-%D7%95%D7%99%D7%A2%D7%99%D7%9C%D7%94/",
    "sitemap": [
@@ -785,7 +815,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-04T09:08:24Z",
+   "lastCrawlTime": "2026-10-19T10:33:45Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%91%D7%99%D7%9F-%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%9C%D7%A8%D7%92%D7%A2-%D7%A9%D7%9C-%D7%90%D7%9E%D7%AA-%D7%AA%D7%95%D7%91%D7%A0%D7%95%D7%AA-%D7%90%D7%99%D7%A9%D7%99%D7%95%D7%AA-%D7%9E%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A2%D7%A1%D7%A7%D7%99-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
    "userCanonical": "https://lalumapp.com/insights/%D7%91%D7%99%D7%9F-%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%9C%D7%A8%D7%92%D7%A2-%D7%A9%D7%9C-%D7%90%D7%9E%D7%AA-%D7%AA%D7%95%D7%91%D7%A0%D7%95%D7%AA-%D7%90%D7%99%D7%A9%D7%99%D7%95%D7%AA-%D7%9E%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A2%D7%A1%D7%A7%D7%99-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
    "sitemap": [
@@ -827,7 +857,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T23:32:00Z",
+   "lastCrawlTime": "2026-10-18T22:40:25Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%91%D7%94%D7%AA%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-%D7%A4%D7%AA%D7%A8%D7%95%D7%A0%D7%95%D7%AA-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%93%D7%A8%D7%9A-%D7%99%D7%A6%D7%99%D7%A8%D7%AA%D7%99%D7%AA/",
    "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%91%D7%94%D7%AA%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-%D7%A4%D7%AA%D7%A8%D7%95%D7%A0%D7%95%D7%AA-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%93%D7%A8%D7%9A-%D7%99%D7%A6%D7%99%D7%A8%D7%AA%D7%99%D7%AA/",
    "sitemap": [
@@ -843,7 +873,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T22:33:48Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%91%D7%99%D7%9E%D7%99-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%94%D7%93%D7%A8%D7%9A-%D7%9C%D7%9E%D7%A0%D7%95%D7%A2-%D7%A7%D7%A8%D7%99%D7%A1%D7%94-%D7%A2%D7%A1%D7%A7%D7%99%D7%AA-%D7%9B%D7%A9%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%90-%D7%96%D7%9E%D7%99%D7%A0%D7%99%D7%9D/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%91%D7%99%D7%9E%D7%99-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%94%D7%93%D7%A8%D7%9A-%D7%9C%D7%9E%D7%A0%D7%95%D7%A2-%D7%A7%D7%A8%D7%99%D7%A1%D7%94-%D7%A2%D7%A1%D7%A7%D7%99%D7%AA-%D7%9B%D7%A9%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%90-%D7%96%D7%9E%D7%99%D7%A0%D7%99%D7%9D/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%91%D7%99%D7%9E%D7%99-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%94%D7%93%D7%A8%D7%9A-%D7%9C%D7%9E%D7%A0%D7%95%D7%A2-%D7%A7%D7%A8%D7%99%D7%A1%D7%94-%D7%A2%D7%A1%D7%A7%D7%99%D7%AA-%D7%9B%D7%A9%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%90-%D7%96%D7%9E%D7%99%D7%A0%D7%99%D7%9D/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%99%D7%97%D7%94-%D7%95%D7%94%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%AA%D7%99%D7%90%D7%95%D7%A8%D7%98%D7%99%D7%AA-%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%9E%D7%91%D7%99%D7%A0%D7%99%D7%9D-%D7%A9%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%91%D7%93%D7%95-%D7%90%D7%99%D7%A0%D7%95-%D7%9E%D7%A1%D7%A4%D7%99%D7%A7/",
@@ -852,7 +885,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-13T05:07:54Z",
+   "lastCrawlTime": "2026-10-19T09:49:02Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%99%D7%97%D7%94-%D7%95%D7%94%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%AA%D7%99%D7%90%D7%95%D7%A8%D7%98%D7%99%D7%AA-%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%9E%D7%91%D7%99%D7%A0%D7%99%D7%9D-%D7%A9%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%91%D7%93%D7%95-%D7%90%D7%99%D7%A0%D7%95-%D7%9E%D7%A1%D7%A4%D7%99%D7%A7/",
    "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%99%D7%97%D7%94-%D7%95%D7%94%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%AA%D7%99%D7%90%D7%95%D7%A8%D7%98%D7%99%D7%AA-%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%9E%D7%91%D7%99%D7%A0%D7%99%D7%9D-%D7%A9%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%91%D7%93%D7%95-%D7%90%D7%99%D7%A0%D7%95-%D7%9E%D7%A1%D7%A4%D7%99%D7%A7/",
    "sitemap": [
@@ -866,9 +899,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-13T09:31:33Z",
+   "lastCrawlTime": "2026-10-19T09:10:32Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%AA%D7%95%D7%9A-%D7%94%D7%A7%D7%A9%D7%91%D7%94-%D7%94%D7%95%D7%91%D7%9C%D7%94-%D7%95%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%AA%D7%95%D7%9A-%D7%94%D7%A7%D7%A9%D7%91%D7%94-%D7%94%D7%95%D7%91%D7%9C%D7%94-%D7%95%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%AA%D7%95%D7%9A-%D7%94%D7%A7%D7%A9%D7%91%D7%94-%D7%94%D7%95%D7%91%D7%9C%D7%94-%D7%95%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A9%D7%9E%D7%91%D7%95%D7%A1%D7%A1-%D7%A2%D7%9C-%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F-%D7%9C%D7%90-%D7%A8%D7%A7-%D7%A2%D7%9C-%D7%9B%D7%95%D7%95%D7%A0%D7%95%D7%AA-%D7%98%D7%95%D7%91%D7%95%D7%AA/",
@@ -879,21 +915,18 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-24T18:39:18Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A9%D7%9E%D7%91%D7%95%D7%A1%D7%A1-%D7%A2%D7%9C-%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F-%D7%9C%D7%90-%D7%A8%D7%A7-%D7%A2%D7%9C-%D7%9B%D7%95%D7%95%D7%A0%D7%95%D7%AA-%D7%98%D7%95%D7%91%D7%95%D7%AA/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A9%D7%9E%D7%91%D7%95%D7%A1%D7%A1-%D7%A2%D7%9C-%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F-%D7%9C%D7%90-%D7%A8%D7%A7-%D7%A2%D7%9C-%D7%9B%D7%95%D7%95%D7%A0%D7%95%D7%AA-%D7%98%D7%95%D7%91%D7%95%D7%AA/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A9%D7%9E%D7%91%D7%95%D7%A1%D7%A1-%D7%A2%D7%9C-%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F-%D7%9C%D7%90-%D7%A8%D7%A7-%D7%A2%D7%9C-%D7%9B%D7%95%D7%95%D7%A0%D7%95%D7%AA-%D7%98%D7%95%D7%91%D7%95%D7%AA/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%90%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%9C%D7%9B%D7%9C-%D7%A1%D7%95%D7%92%D7%99-%D7%94%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
-   "verdict": "NEUTRAL",
-   "coverageState": "Alternate page with proper canonical tag",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-20T10:45:18Z",
-   "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%90%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%9C%D7%9B%D7%9C-%D7%A1%D7%95%D7%92%D7%99-%D7%94%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%90%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%9C%D7%9B%D7%9C-%D7%A1%D7%95%D7%92%D7%99-%D7%94%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D",
+   "lastCrawlTime": "2026-10-18T21:48:21Z",
+   "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%90%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%9C%D7%9B%D7%9C-%D7%A1%D7%95%D7%92%D7%99-%D7%94%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%90%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%9C%D7%9B%D7%9C-%D7%A1%D7%95%D7%92%D7%99-%D7%94%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
    "sitemap": [
     "https://lalumapp.com/sitemap.xml"
    ]
@@ -991,10 +1024,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T13:18:24Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%90%D7%95%D7%A8%D7%97-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%9C%D7%99%D7%9C%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%90%D7%95%D7%A8%D7%97-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%9C%D7%99%D7%9C%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%90%D7%95%D7%A8%D7%97-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%9C%D7%99%D7%9C%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%A1%D7%95%D7%93-%D7%A9%D7%91%D7%96%D7%9E%D7%9F-%D7%94%D7%A0%D7%9B%D7%95%D7%9F-%D7%95%D7%9E%D7%94-%D7%A9%D7%91%D7%90%D7%9E%D7%AA-%D7%A7%D7%95%D7%91%D7%A2/",
@@ -1019,7 +1049,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-01T23:06:01Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%9E%D7%AA%D7%95%D7%9A-%D7%A2%D7%99%D7%99%D7%A4%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%96%D7%95-%D7%91%D7%90%D7%9E%D7%AA-%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%9E%D7%AA%D7%95%D7%9A-%D7%A2%D7%99%D7%99%D7%A4%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%96%D7%95-%D7%91%D7%90%D7%9E%D7%AA-%D7%94%D7%A1%D7%9B%D7%9E%D7%94/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%9E%D7%AA%D7%95%D7%9A-%D7%A2%D7%99%D7%99%D7%A4%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%96%D7%95-%D7%91%D7%90%D7%9E%D7%AA-%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%A2%D7%AA%D7%99%D7%93-%D7%A9%D7%9C-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%95%D7%AA%D7%97%D7%96%D7%99%D7%95%D7%AA/",
@@ -1053,7 +1086,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-27T21:51:56Z",
+   "lastCrawlTime": "2026-10-19T00:26:48Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%A6%D7%A2%D7%AA-%D7%9E%D7%92%D7%A9%D7%A8-%D7%94%D7%9E%D7%A9%D7%9E%D7%A2%D7%95%D7%AA-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%A2%D7%95%D7%92%D7%9F-%D7%9C%D7%94%D7%A1%D7%93%D7%A8-%D7%90%D7%95-%D7%9E%D7%A8%D7%97%D7%91-%D7%AA%D7%9E%D7%A8%D7%95%D7%9F-%D7%9C%D7%A1%D7%99%D7%95%D7%9D-%D7%94%D7%9C%D7%99%D7%9A/",
    "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A6%D7%A2%D7%AA-%D7%9E%D7%92%D7%A9%D7%A8-%D7%94%D7%9E%D7%A9%D7%9E%D7%A2%D7%95%D7%AA-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%9B%D7%A2%D7%95%D7%92%D7%9F-%D7%9C%D7%94%D7%A1%D7%93%D7%A8-%D7%90%D7%95-%D7%9E%D7%A8%D7%97%D7%91-%D7%AA%D7%9E%D7%A8%D7%95%D7%9F-%D7%9C%D7%A1%D7%99%D7%95%D7%9D-%D7%94%D7%9C%D7%99%D7%9A/",
    "sitemap": [
@@ -1069,7 +1102,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T02:23:02Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%94%D7%9B%D7%95%D7%9C-%D7%A0%D7%A7%D7%91%D7%A2-%D7%A8%D7%95%D7%A9%D7%9D-%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%94%D7%9B%D7%95%D7%9C-%D7%A0%D7%A7%D7%91%D7%A2-%D7%A8%D7%95%D7%A9%D7%9D-%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A8%D7%92%D7%A2-%D7%A9%D7%91%D7%95-%D7%94%D7%9B%D7%95%D7%9C-%D7%A0%D7%A7%D7%91%D7%A2-%D7%A8%D7%95%D7%A9%D7%9D-%D7%A8%D7%90%D7%A9%D7%95%D7%A0%D7%99-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A4%D7%A2%D7%AA-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%94-%D7%94%D7%A2%D7%95%D7%9C%D7%9E%D7%99%D7%AA-%D7%95%D7%A9%D7%95%D7%A7-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%9C%D7%90%D7%97%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/",
@@ -1080,10 +1116,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T15:37:41Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A4%D7%A2%D7%AA-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%94-%D7%94%D7%A2%D7%95%D7%9C%D7%9E%D7%99%D7%AA-%D7%95%D7%A9%D7%95%D7%A7-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%9C%D7%90%D7%97%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A4%D7%A2%D7%AA-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%94-%D7%94%D7%A2%D7%95%D7%9C%D7%9E%D7%99%D7%AA-%D7%95%D7%A9%D7%95%D7%A7-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%9C%D7%90%D7%97%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A4%D7%A2%D7%AA-%D7%9E%D7%92%D7%9E%D7%95%D7%AA-%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%94-%D7%94%D7%A2%D7%95%D7%9C%D7%9E%D7%99%D7%AA-%D7%95%D7%A9%D7%95%D7%A7-%D7%94%D7%A0%D7%93%D7%9C-%D7%9F-%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%9C%D7%90%D7%97%D7%A8-%D7%9E%D7%A9%D7%91%D7%A8-%D7%94%D7%A7%D7%95%D7%A8%D7%95%D7%A0%D7%94/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%97%D7%9C%D7%95%D7%9D-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%90%D7%A4%D7%A9%D7%A8-%D7%91%D7%90%D7%9E%D7%AA-%D7%9C%D7%97%D7%A9%D7%91-%D7%90%D7%AA-%D7%94%D7%A1%D7%99%D7%9B%D7%95%D7%9F/",
@@ -1094,10 +1127,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-21T14:44:32Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%97%D7%9C%D7%95%D7%9D-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%90%D7%A4%D7%A9%D7%A8-%D7%91%D7%90%D7%9E%D7%AA-%D7%9C%D7%97%D7%A9%D7%91-%D7%90%D7%AA-%D7%94%D7%A1%D7%99%D7%9B%D7%95%D7%9F/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%97%D7%9C%D7%95%D7%9D-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%90%D7%A4%D7%A9%D7%A8-%D7%91%D7%90%D7%9E%D7%AA-%D7%9C%D7%97%D7%A9%D7%91-%D7%90%D7%AA-%D7%94%D7%A1%D7%99%D7%9B%D7%95%D7%9F/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%97%D7%9C%D7%95%D7%9D-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%90%D7%A4%D7%A9%D7%A8-%D7%91%D7%90%D7%9E%D7%AA-%D7%9C%D7%97%D7%A9%D7%91-%D7%90%D7%AA-%D7%94%D7%A1%D7%99%D7%9B%D7%95%D7%9F/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%A9%D7%9C-%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D-%D7%95%D7%92%D7%95%D7%A4%D7%99%D7%9D-%D7%9E%D7%95%D7%A1%D7%93%D7%99%D7%99%D7%9D-%D7%91%D7%97%D7%95-%D7%9C-%D7%91%D7%99%D7%9F-%D7%AA%D7%9E%D7%A8%D7%95%D7%A8%D7%99-%D7%90%D7%96%D7%94%D7%A8%D7%94-%D7%91%D7%9E%D7%A2%D7%A8%D7%91-%D7%90%D7%99%D7%A8%D7%95%D7%A4%D7%94-%D7%9C%D7%94%D7%96%D7%93%D7%9E%D7%A0%D7%95%D7%99%D7%95%D7%AA-%D7%96%D7%94%D7%99%D7%A8%D7%95%D7%AA-%D7%91%D7%9E%D7%96%D7%A8%D7%97/",
@@ -1120,7 +1150,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-06T03:14:30Z",
+   "lastCrawlTime": "2026-10-19T08:24:31Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%91%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F-%D7%A1%D7%95%D7%92%D7%99%D7%99%D7%AA-%D7%94%D7%91%D7%A2%D7%9C%D7%95%D7%AA-%D7%A2%D7%9C-%D7%A8%D7%A7%D7%A2-%D7%A4%D7%A1%D7%99%D7%A7%D7%94-%D7%A2%D7%93%D7%9B%D7%A0%D7%99%D7%AA/",
    "userCanonical": "https://lalumapp.com/insights/%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%91%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F-%D7%A1%D7%95%D7%92%D7%99%D7%99%D7%AA-%D7%94%D7%91%D7%A2%D7%9C%D7%95%D7%AA-%D7%A2%D7%9C-%D7%A8%D7%A7%D7%A2-%D7%A4%D7%A1%D7%99%D7%A7%D7%94-%D7%A2%D7%93%D7%9B%D7%A0%D7%99%D7%AA/",
    "sitemap": [
@@ -1136,10 +1166,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-02T14:36:24Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%90%D7%95%D7%91%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%91%D7%99%D7%AA-%D7%9B%D7%AA%D7%97%D7%9C%D7%99%D7%A3-%D7%9C%D7%94%D7%9C%D7%99%D7%9A-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%A0%D7%99%D7%AA%D7%95%D7%97-%D7%94%D7%9E%D7%9C%D7%A6%D7%94-%D7%95%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%97%D7%95%D7%A5-%D7%9C%D7%9B%D7%95%D7%AA%D7%9C%D7%99-%D7%91%D7%99%D7%AA-%D7%94%D7%9E%D7%A9%D7%A4%D7%98/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%90%D7%95%D7%91%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%91%D7%99%D7%AA-%D7%9B%D7%AA%D7%97%D7%9C%D7%99%D7%A3-%D7%9C%D7%94%D7%9C%D7%99%D7%9A-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%A0%D7%99%D7%AA%D7%95%D7%97-%D7%94%D7%9E%D7%9C%D7%A6%D7%94-%D7%95%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%97%D7%95%D7%A5-%D7%9C%D7%9B%D7%95%D7%AA%D7%9C%D7%99-%D7%91%D7%99%D7%AA-%D7%94%D7%9E%D7%A9%D7%A4%D7%98/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%90%D7%95%D7%91%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%91%D7%99%D7%AA-%D7%9B%D7%AA%D7%97%D7%9C%D7%99%D7%A3-%D7%9C%D7%94%D7%9C%D7%99%D7%9A-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%A0%D7%99%D7%AA%D7%95%D7%97-%D7%94%D7%9E%D7%9C%D7%A6%D7%94-%D7%95%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%97%D7%95%D7%A5-%D7%9C%D7%9B%D7%95%D7%AA%D7%9C%D7%99-%D7%91%D7%99%D7%AA-%D7%94%D7%9E%D7%A9%D7%A4%D7%98/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%97%D7%93%D7%A9%D7%A0%D7%99%D7%95%D7%AA-%D7%95%D7%93%D7%99%D7%A0%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
@@ -1150,10 +1177,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-18T07:10:51Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%97%D7%93%D7%A9%D7%A0%D7%99%D7%95%D7%AA-%D7%95%D7%93%D7%99%D7%A0%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%97%D7%93%D7%A9%D7%A0%D7%99%D7%95%D7%AA-%D7%95%D7%93%D7%99%D7%A0%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%97%D7%93%D7%A9%D7%A0%D7%99%D7%95%D7%AA-%D7%95%D7%93%D7%99%D7%A0%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%94%D7%AA%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-%D7%91%D7%99%D7%9F-%D7%97%D7%96%D7%95%D7%9F-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99-%D7%9C%D7%9E%D7%A6%D7%99%D7%90%D7%95%D7%AA-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA/",
@@ -1190,12 +1214,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-13T17:55:23Z",
+   "lastCrawlTime": "2026-10-19T08:30:56Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%9C%D7%90-%D7%9E%D7%AA%D7%96%D7%9E%D7%A0%D7%99%D7%9D-%D7%A9%D7%95%D7%A7-%D7%91%D7%95%D7%A0%D7%99%D7%9D-%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%A0%D7%9B%D7%95%D7%A0%D7%94-%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%A4%D7%A8%D7%A7%D7%98%D7%99%D7%AA-%D7%9C%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-2025/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%9C%D7%90-%D7%9E%D7%AA%D7%96%D7%9E%D7%A0%D7%99%D7%9D-%D7%A9%D7%95%D7%A7-%D7%91%D7%95%D7%A0%D7%99%D7%9D-%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%A0%D7%9B%D7%95%D7%A0%D7%94-%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%A4%D7%A8%D7%A7%D7%98%D7%99%D7%AA-%D7%9C%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-2025/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%9C%D7%90-%D7%9E%D7%AA%D7%96%D7%9E%D7%A0%D7%99%D7%9D-%D7%A9%D7%95%D7%A7-%D7%91%D7%95%D7%A0%D7%99%D7%9D-%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%A0%D7%9B%D7%95%D7%A0%D7%94-%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%A4%D7%A8%D7%A7%D7%98%D7%99%D7%AA-%D7%9C%D7%94%D7%A9%D7%A7%D7%A2%D7%95%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-2025/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%9C%D7%9E%D7%94-%D7%97%D7%A9%D7%95%D7%91-%D7%A9%D7%A2%D7%95%D7%A8%D7%9A-%D7%93%D7%99%D7%9F-%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99-%D7%99%D7%9C%D7%95%D7%95%D7%94-%D7%90%D7%95%D7%AA%D7%9A-%D7%91%D7%A2%D7%A1%D7%A7%D7%AA-%D7%A0%D7%93%D7%9C-%D7%9F-%D7%9E%D7%A2%D7%91%D7%A8-%D7%9C%D7%99%D7%9D-%D7%92%D7%9D-%D7%90%D7%9D-%D7%94%D7%95%D7%90-%D7%9C%D7%90-%D7%A0%D7%95%D7%AA%D7%9F-%D7%99%D7%99%D7%A2%D7%95%D7%A5-%D7%9C%D7%A4%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%96%D7%A8/",
@@ -1271,7 +1292,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T00:06:43Z",
+   "lastCrawlTime": "2026-10-19T07:59:14Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99-%D7%9C%D7%9E%D7%AA%D7%95%D7%95%D7%9B%D7%99%D7%9D-%D7%A8%D7%A4%D7%95%D7%A8%D7%9E%D7%AA-%D7%94%D7%AA%D7%99%D7%95%D7%95%D7%9A-%D7%91%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F-%D7%A9%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
    "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99-%D7%9C%D7%9E%D7%AA%D7%95%D7%95%D7%9B%D7%99%D7%9D-%D7%A8%D7%A4%D7%95%D7%A8%D7%9E%D7%AA-%D7%94%D7%AA%D7%99%D7%95%D7%95%D7%9A-%D7%91%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F-%D7%A9%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
    "sitemap": [
@@ -1301,10 +1322,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-14T19:37:07Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94-%D7%A7%D7%95%D7%A8%D7%94-%D7%9B%D7%A9%D7%99%D7%96%D7%9D-%D7%A4%D7%95%D7%A9%D7%98-%D7%A8%D7%92%D7%9C-%D7%91%D7%90%D7%9E%D7%A6%D7%A2-%D7%A4%D7%99%D7%A0%D7%95%D7%99-%D7%91%D7%99%D7%A0%D7%95%D7%99-%D7%95%D7%90%D7%99%D7%9A-%D7%9E%D7%92%D7%A9%D7%A8-%D7%9E%D7%9C%D7%95%D7%95%D7%94-%D7%99%D7%9B%D7%95%D7%9C-%D7%9C%D7%94%D7%A6%D7%99%D7%9C-%D7%90%D7%AA-%D7%94%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94-%D7%A7%D7%95%D7%A8%D7%94-%D7%9B%D7%A9%D7%99%D7%96%D7%9D-%D7%A4%D7%95%D7%A9%D7%98-%D7%A8%D7%92%D7%9C-%D7%91%D7%90%D7%9E%D7%A6%D7%A2-%D7%A4%D7%99%D7%A0%D7%95%D7%99-%D7%91%D7%99%D7%A0%D7%95%D7%99-%D7%95%D7%90%D7%99%D7%9A-%D7%9E%D7%92%D7%A9%D7%A8-%D7%9E%D7%9C%D7%95%D7%95%D7%94-%D7%99%D7%9B%D7%95%D7%9C-%D7%9C%D7%94%D7%A6%D7%99%D7%9C-%D7%90%D7%AA-%D7%94%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94-%D7%A7%D7%95%D7%A8%D7%94-%D7%9B%D7%A9%D7%99%D7%96%D7%9D-%D7%A4%D7%95%D7%A9%D7%98-%D7%A8%D7%92%D7%9C-%D7%91%D7%90%D7%9E%D7%A6%D7%A2-%D7%A4%D7%99%D7%A0%D7%95%D7%99-%D7%91%D7%99%D7%A0%D7%95%D7%99-%D7%95%D7%90%D7%99%D7%9A-%D7%9E%D7%92%D7%A9%D7%A8-%D7%9E%D7%9C%D7%95%D7%95%D7%94-%D7%99%D7%9B%D7%95%D7%9C-%D7%9C%D7%94%D7%A6%D7%99%D7%9C-%D7%90%D7%AA-%D7%94%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%9E%D7%94%D7%90%D7%99%D7%A0%D7%93%D7%99%D7%A7%D7%A6%D7%99%D7%94-%D7%9C%D7%94%D7%97%D7%9C%D7%98%D7%94-%D7%A4%D7%A8%D7%95%D7%98%D7%95%D7%A7%D7%95%D7%9C-bl-%D7%9C%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%AA%D7%A7%D7%93%D7%9D-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
@@ -1343,7 +1361,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-17T06:16:26Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%94%D7%95-%D7%94%D7%9C%D7%99%D7%9A-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%99%D7%99%D7%A2-%D7%91%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%9E%D7%94%D7%9E%D7%A9%D7%91%D7%A8-%D7%9C%D7%A9%D7%95%D7%AA%D7%A4%D7%95%D7%AA-%D7%97%D7%93%D7%A9%D7%94-%D7%90%D7%99%D7%9A-%D7%A1%D7%9B%D7%A1%D7%95%D7%9A-%D7%A2%D7%A1%D7%A7%D7%99-%D7%94%D7%91%D7%99%D7%90-%D7%9C%D7%94%D7%91%D7%A0%D7%94-%D7%A2%D7%9E%D7%95%D7%A7%D7%94-%D7%99%D7%95%D7%AA%D7%A8-%D7%91%D7%96%D7%9B%D7%95%D7%AA-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
@@ -1410,10 +1431,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-05T11:25:30Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%9E%D7%A9%D7%A2%D7%AA-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%9C%D7%A9%D7%92%D7%A8%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%97%D7%93%D7%A9%D7%94-%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%AA%D7%A7%D7%95%D7%A4%D7%94-%D7%94%D7%A0%D7%95%D7%9B%D7%97%D7%99%D7%AA-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%AA-%D7%94%D7%9C%D7%99%D7%98%D7%99%D7%92%D7%A6%D7%99%D7%94-%D7%95%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%A9%D7%A2%D7%AA-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%9C%D7%A9%D7%92%D7%A8%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%97%D7%93%D7%A9%D7%94-%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%AA%D7%A7%D7%95%D7%A4%D7%94-%D7%94%D7%A0%D7%95%D7%9B%D7%97%D7%99%D7%AA-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%AA-%D7%94%D7%9C%D7%99%D7%98%D7%99%D7%92%D7%A6%D7%99%D7%94-%D7%95%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/%D7%9E%D7%A9%D7%A2%D7%AA-%D7%97%D7%99%D7%A8%D7%95%D7%9D-%D7%9C%D7%A9%D7%92%D7%A8%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%97%D7%93%D7%A9%D7%94-%D7%9B%D7%99%D7%A6%D7%93-%D7%94%D7%AA%D7%A7%D7%95%D7%A4%D7%94-%D7%94%D7%A0%D7%95%D7%9B%D7%97%D7%99%D7%AA-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%AA-%D7%94%D7%9C%D7%99%D7%98%D7%99%D7%92%D7%A6%D7%99%D7%94-%D7%95%D7%9C%D7%9E%D7%94-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%9E%D7%A9%D7%A8%D7%93%D7%99-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%95%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93%D7%99-%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%93%D7%99%D7%9F-%D7%9E%D7%94-%D7%9E%D7%AA%D7%90%D7%99%D7%9D-%D7%99%D7%95%D7%AA%D7%A8-%D7%9C%D7%A1%D7%9B%D7%A1%D7%95%D7%9A-%D7%A9%D7%9C%D7%9A-%D7%9B%D7%99%D7%A6%D7%93-%D7%91%D7%97%D7%A8%D7%95-%D7%94%D7%A6%D7%93%D7%93%D7%99%D7%9D-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%95%D7%9E%D7%94/",
@@ -1436,7 +1454,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-26T08:58:25Z",
+   "lastCrawlTime": "2026-10-18T17:07:05Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%A1%D7%99%D7%A4%D7%95%D7%A8-%D7%97%D7%95%D7%91%D7%94-%D7%9C%D7%9E%D7%AA%D7%95%D7%95%D7%9B%D7%99%D7%9D-%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%93%D7%99%D7%9F-%D7%95%D7%A8%D7%95%D7%9B%D7%A9%D7%99-%D7%93%D7%99%D7%A8%D7%95%D7%AA/",
    "userCanonical": "https://lalumapp.com/insights/%D7%A1%D7%99%D7%A4%D7%95%D7%A8-%D7%97%D7%95%D7%91%D7%94-%D7%9C%D7%9E%D7%AA%D7%95%D7%95%D7%9B%D7%99%D7%9D-%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%93%D7%99%D7%9F-%D7%95%D7%A8%D7%95%D7%9B%D7%A9%D7%99-%D7%93%D7%99%D7%A8%D7%95%D7%AA/",
    "sitemap": [
@@ -1480,7 +1498,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-18T03:23:08Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%99%D7%9D-%D7%95%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%9F-%D7%AA%D7%A8%D7%91%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%99%D7%9D-%D7%95%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%9F-%D7%AA%D7%A8%D7%91%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%99%D7%9D-%D7%95%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%9F-%D7%AA%D7%A8%D7%91%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%A2%D7%95-%D7%93-%D7%90%D7%91%D7%A8%D7%94%D7%9D-%D7%9C%D7%9C%D7%95%D7%9D-%D7%9E%D7%92%D7%A9%D7%A8-%D7%91%D7%95%D7%A8%D7%A8-%D7%95%D7%9E%D7%95%D7%9E%D7%97%D7%94-%D7%9C%D7%A0%D7%93%D7%9C-%D7%9F-%D7%95%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D/",
@@ -1519,7 +1540,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T13:58:01Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%A4%D7%92%D7%99%D7%A9%D7%AA-%D7%99%D7%99%D7%A2%D7%95%D7%A5-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%95%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%97%D7%99%D7%A6%D7%95%D7%A0%D7%99%D7%AA-%D7%9E%D7%AA%D7%99-%D7%A0%D7%9B%D7%95%D7%9F-%D7%9C%D7%A4%D7%A0%D7%95%D7%AA-%D7%9C%D7%A2%D7%95%D7%A8%D7%9A-%D7%93%D7%99%D7%9F-%D7%9E%D7%95%D7%9E%D7%97%D7%94-%D7%95%D7%9E%D7%94%D7%9D-%D7%94%D7%93%D7%92%D7%A9%D7%99%D7%9D-%D7%A9%D7%97%D7%A9%D7%95%D7%91-%D7%9C%D7%93%D7%A2%D7%AA/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%A4%D7%92%D7%99%D7%A9%D7%AA-%D7%99%D7%99%D7%A2%D7%95%D7%A5-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%95%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%97%D7%99%D7%A6%D7%95%D7%A0%D7%99%D7%AA-%D7%9E%D7%AA%D7%99-%D7%A0%D7%9B%D7%95%D7%9F-%D7%9C%D7%A4%D7%A0%D7%95%D7%AA-%D7%9C%D7%A2%D7%95%D7%A8%D7%9A-%D7%93%D7%99%D7%9F-%D7%9E%D7%95%D7%9E%D7%97%D7%94-%D7%95%D7%9E%D7%94%D7%9D-%D7%94%D7%93%D7%92%D7%A9%D7%99%D7%9D-%D7%A9%D7%97%D7%A9%D7%95%D7%91-%D7%9C%D7%93%D7%A2%D7%AA/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%A4%D7%92%D7%99%D7%A9%D7%AA-%D7%99%D7%99%D7%A2%D7%95%D7%A5-%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%95%D7%97%D7%95%D7%95%D7%AA-%D7%93%D7%A2%D7%AA-%D7%97%D7%99%D7%A6%D7%95%D7%A0%D7%99%D7%AA-%D7%9E%D7%AA%D7%99-%D7%A0%D7%9B%D7%95%D7%9F-%D7%9C%D7%A4%D7%A0%D7%95%D7%AA-%D7%9C%D7%A2%D7%95%D7%A8%D7%9A-%D7%93%D7%99%D7%9F-%D7%9E%D7%95%D7%9E%D7%97%D7%94-%D7%95%D7%9E%D7%94%D7%9D-%D7%94%D7%93%D7%92%D7%A9%D7%99%D7%9D-%D7%A9%D7%97%D7%A9%D7%95%D7%91-%D7%9C%D7%93%D7%A2%D7%AA/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%A4%D7%92%D7%A8%D7%AA-%D7%94%D7%A7%D7%99%D7%A5-%D7%A2%D7%99%D7%AA%D7%95%D7%99-%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99-%D7%9C%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%97%D7%9C%D7%95%D7%A7%D7%95%D7%AA/",
@@ -1551,17 +1575,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
-   "verdict": "NEUTRAL",
-   "coverageState": "Alternate page with proper canonical tag",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-08-24T13:09:17Z",
-   "googleCanonical": "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94",
-   "userCanonical": "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "lastCrawlTime": "2026-10-19T01:56:33Z",
+   "googleCanonical": "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/",
+   "userCanonical": "https://lalumapp.com/insights/%D7%A9%D7%99%D7%A0%D7%95%D7%99-%D7%A4%D7%A0%D7%99-%D7%94%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%95%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%98%D7%9B%D7%A0%D7%99%D7%A7%D7%95%D7%AA-%D7%9C%D7%99%D7%99%D7%A9%D7%95%D7%91-%D7%A1%D7%9B%D7%A1%D7%95%D7%9B%D7%99%D7%9D-%D7%91%D7%99%D7%9F-%D7%A1%D7%9E%D7%9B%D7%95%D7%AA-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94/"
   },
   {
    "url": "https://lalumapp.com/insights/%D7%A9%D7%A0%D7%99-%D7%A9%D7%9B%D7%A0%D7%99%D7%9D-%D7%A0%D7%A6%D7%99%D7%92%D7%95%D7%AA-%D7%90%D7%97%D7%AA-%D7%95%D7%97%D7%96%D7%99%D7%AA-%D7%A9%D7%91%D7%95%D7%A8%D7%94-%D7%90%D7%99%D7%9A-%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%A4%D7%AA%D7%97-%D7%93%D7%A8%D7%9A-%D7%9C%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%9E%D7%A7%D7%A8%D7%94-%D7%90%D7%9E%D7%99%D7%AA%D7%99-%D7%A9%D7%9C-%D7%A1%D7%9B%D7%A1%D7%95%D7%9A-%D7%A9%D7%9B%D7%A0%D7%99%D7%9D-%D7%91%D7%A2%D7%A7%D7%91%D7%95%D7%AA-%D7%A0%D7%96%D7%A7%D7%99/",
@@ -1586,7 +1607,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:53:19Z",
    "googleCanonical": "https://lalumapp.com/insights/%D7%A9%D7%A4%D7%AA-%D7%92%D7%95%D7%A3-%D7%95%D7%A2%D7%A1%D7%A7%D7%90%D7%95%D7%AA-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%99%D7%9E%D7%93-%D7%94%D7%A1%D7%9E%D7%95%D7%99-%D7%91%D7%9E%D7%A9%D7%90-%D7%95%D7%9E%D7%AA%D7%9F-%D7%97%D7%95%D7%A6%D7%94-%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA/",
-   "userCanonical": "https://lalumapp.com/insights/%D7%A9%D7%A4%D7%AA-%D7%92%D7%95%D7%A3-%D7%95%D7%A2%D7%A1%D7%A7%D7%90%D7%95%D7%AA-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%99%D7%9E%D7%93-%D7%94%D7%A1%D7%9E%D7%95%D7%99-%D7%91%D7%9E%D7%A9%D7%90-%D7%95%D7%9E%D7%AA%D7%9F-%D7%97%D7%95%D7%A6%D7%94-%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA/"
+   "userCanonical": "https://lalumapp.com/insights/%D7%A9%D7%A4%D7%AA-%D7%92%D7%95%D7%A3-%D7%95%D7%A2%D7%A1%D7%A7%D7%90%D7%95%D7%AA-%D7%91%D7%99%D7%A0%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%99%D7%9E%D7%93-%D7%94%D7%A1%D7%9E%D7%95%D7%99-%D7%91%D7%9E%D7%A9%D7%90-%D7%95%D7%9E%D7%AA%D7%9F-%D7%97%D7%95%D7%A6%D7%94-%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/%D7%AA%D7%A4%D7%A7%D7%99%D7%93-%D7%94%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%94%D7%97%D7%95%D7%96%D7%99%D7%AA-%D7%91%D7%92%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9B%D7%95%D7%95%D7%9F-%D7%94%D7%9B%D7%A8%D7%A2%D7%94-%D7%91%D7%99%D7%9F-%D7%A2%D7%A7%D7%A8%D7%95%D7%A0%D7%95%D7%AA-%D7%A4%D7%95%D7%A8%D7%9E%D7%9C%D7%99%D7%99%D7%9D-%D7%9C%D7%94%D7%91%D7%A0%D7%95%D7%AA-%D7%91%D7%9C%D7%AA%D7%99-%D7%9B%D7%AA%D7%95%D7%91%D7%95%D7%AA/",
@@ -1604,11 +1628,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/administrative-accountability-ai-ramat-gan-ruling/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T12:22:27Z",
+   "googleCanonical": "https://lalumapp.com/insights/administrative-accountability-ai-ramat-gan-ruling/",
+   "userCanonical": "https://lalumapp.com/insights/administrative-accountability-ai-ramat-gan-ruling/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-adoption-methodology-prompt-library-organizations/",
@@ -1686,18 +1713,18 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:17:26Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-banking-finance-regulation-risk/",
-   "userCanonical": "https://lalumapp.com/insights/ai-banking-finance-regulation-risk/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-banking-finance-regulation-risk/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-building-permit-acceleration-plans-scan/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T11:06:41Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-building-permit-acceleration-plans-scan/",
+   "userCanonical": "https://lalumapp.com/insights/ai-building-permit-acceleration-plans-scan/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-clinical-system-deployment/",
@@ -1733,10 +1760,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T20:15:20Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-cross-border-data-transfer-foreign-cloud-local-authority/",
-   "userCanonical": "https://lalumapp.com/insights/ai-cross-border-data-transfer-foreign-cloud-local-authority/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-cross-border-data-transfer-foreign-cloud-local-authority/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-data-security-protections-local-authority/",
@@ -1747,10 +1771,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:15:54Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-data-security-protections-local-authority/",
-   "userCanonical": "https://lalumapp.com/insights/ai-data-security-protections-local-authority/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-data-security-protections-local-authority/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-data-subject-rights-access-deletion-local-authority/",
@@ -1829,7 +1850,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-18T09:41:42Z",
+   "lastCrawlTime": "2026-10-19T08:00:15Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-elite-realestate/",
    "userCanonical": "https://lalumapp.com/insights/ai-elite-realestate/",
    "sitemap": [
@@ -1881,10 +1902,13 @@
   {
    "url": "https://lalumapp.com/insights/ai-force-majeure-delivery-delay-apartment-contracts/",
    "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "coverageState": "Crawled - currently not indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T13:10:39Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-force-majeure-delivery-delay-apartment-contracts/",
+   "userCanonical": "https://lalumapp.com/insights/ai-force-majeure-delivery-delay-apartment-contracts/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-generated-content-ownership-protection-contracts/",
@@ -1948,10 +1972,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:32:40Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-health-data-privacy/",
-   "userCanonical": "https://lalumapp.com/insights/ai-health-data-privacy/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-health-data-privacy/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-healthcare-informed-consent/",
@@ -2018,7 +2039,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T19:58:15Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-incident-response-local-authority-guide/",
-   "userCanonical": "https://lalumapp.com/insights/ai-incident-response-local-authority-guide/"
+   "userCanonical": "https://lalumapp.com/insights/ai-incident-response-local-authority-guide/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-insurance-underwriting-pricing-regulation/",
@@ -2027,7 +2051,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T23:23:01Z",
+   "lastCrawlTime": "2026-10-19T09:03:55Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-insurance-underwriting-pricing-regulation/",
    "userCanonical": "https://lalumapp.com/insights/ai-insurance-underwriting-pricing-regulation/",
    "sitemap": [
@@ -2043,10 +2067,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T16:33:23Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-inter-authority-government-data-sharing/",
-   "userCanonical": "https://lalumapp.com/insights/ai-inter-authority-government-data-sharing/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-inter-authority-government-data-sharing/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-international-transactions-overview/",
@@ -2057,10 +2078,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:02:40Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-international-transactions-overview/",
-   "userCanonical": "https://lalumapp.com/insights/ai-international-transactions-overview/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-international-transactions-overview/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-inventory-risk-tiering-local-authority-guide/",
@@ -2099,10 +2117,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T13:01:50Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-legal-practice/",
-   "userCanonical": "https://lalumapp.com/insights/ai-legal-practice/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-legal-practice/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-legal-support-local-council-three-tracks/",
@@ -2113,7 +2128,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T18:58:05Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-legal-support-local-council-three-tracks/",
-   "userCanonical": "https://lalumapp.com/insights/ai-legal-support-local-council-three-tracks/"
+   "userCanonical": "https://lalumapp.com/insights/ai-legal-support-local-council-three-tracks/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-liability-ruling/",
@@ -2152,7 +2170,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:09:13Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-local-authority-allocation-bias-equality/",
-   "userCanonical": "https://lalumapp.com/insights/ai-local-authority-allocation-bias-equality/"
+   "userCanonical": "https://lalumapp.com/insights/ai-local-authority-allocation-bias-equality/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-local-authority-decision-reasoning-transparency/",
@@ -2170,11 +2191,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/ai-local-authority-tort-liability-damage/",
-   "verdict": "NEUTRAL",
-   "coverageState": "Discovered - currently not indexed",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T19:29:02Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-local-authority-tort-liability-damage/",
+   "userCanonical": "https://lalumapp.com/insights/ai-local-authority-tort-liability-damage/",
    "sitemap": [
     "https://lalumapp.com/sitemap.xml"
    ]
@@ -2202,7 +2226,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:11:52Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-municipal-accessibility-multilingual/",
-   "userCanonical": "https://lalumapp.com/insights/ai-municipal-accessibility-multilingual/"
+   "userCanonical": "https://lalumapp.com/insights/ai-municipal-accessibility-multilingual/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-municipal-algorithmic-enforcement-due-process/",
@@ -2213,10 +2240,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-09T09:53:57Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-municipal-algorithmic-enforcement-due-process/",
-   "userCanonical": "https://lalumapp.com/insights/ai-municipal-algorithmic-enforcement-due-process/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-municipal-algorithmic-enforcement-due-process/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-municipal-chatbot-resident-liability/",
@@ -2227,7 +2251,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T23:23:52Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-municipal-chatbot-resident-liability/",
-   "userCanonical": "https://lalumapp.com/insights/ai-municipal-chatbot-resident-liability/"
+   "userCanonical": "https://lalumapp.com/insights/ai-municipal-chatbot-resident-liability/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-municipal-facial-recognition-surveillance/",
@@ -2259,11 +2286,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/ai-municipal-tender-review-pre-publication/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T14:10:15Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-municipal-tender-review-pre-publication/",
+   "userCanonical": "https://lalumapp.com/insights/ai-municipal-tender-review-pre-publication/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-municipal-welfare-social-services/",
@@ -2299,7 +2329,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-08-22T22:09:31Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-presentation-tools",
-   "userCanonical": "https://lalumapp.com/insights/ai-presentation-tools"
+   "userCanonical": "https://lalumapp.com/insights/ai-presentation-tools",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/ai-privacy-impact-assessment-dpia-local-authority-guide/",
@@ -2359,11 +2392,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/ai-real-estate-due-diligence-acceleration/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T19:40:54Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-real-estate-due-diligence-acceleration/",
+   "userCanonical": "https://lalumapp.com/insights/ai-real-estate-due-diligence-acceleration/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-real-estate-urban-renewal-legal-exposure/",
@@ -2413,18 +2449,18 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:48:22Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-recruitment-screening-discrimination/",
-   "userCanonical": "https://lalumapp.com/insights/ai-recruitment-screening-discrimination/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-recruitment-screening-discrimination/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-regulation-us-vs-eu-israeli-companies/",
-   "verdict": "NEUTRAL",
-   "coverageState": "Discovered - currently not indexed",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-19T10:52:51Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-regulation-us-vs-eu-israeli-companies/",
+   "userCanonical": "https://lalumapp.com/insights/ai-regulation-us-vs-eu-israeli-companies/",
    "sitemap": [
     "https://lalumapp.com/sitemap.xml"
    ]
@@ -2459,11 +2495,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/ai-saas-enterprise-contract-legal-ops-playbook/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T13:58:32Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-saas-enterprise-contract-legal-ops-playbook/",
+   "userCanonical": "https://lalumapp.com/insights/ai-saas-enterprise-contract-legal-ops-playbook/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-shadow-ai-local-authority-staff/",
@@ -2472,12 +2511,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T22:27:55Z",
+   "lastCrawlTime": "2026-10-19T08:38:29Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-shadow-ai-local-authority-staff/",
-   "userCanonical": "https://lalumapp.com/insights/ai-shadow-ai-local-authority-staff/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-shadow-ai-local-authority-staff/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-turning-point-2026/",
@@ -2495,11 +2531,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/ai-urban-renewal-resident-agreements-comparison/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T12:16:15Z",
+   "googleCanonical": "https://lalumapp.com/insights/ai-urban-renewal-resident-agreements-comparison/",
+   "userCanonical": "https://lalumapp.com/insights/ai-urban-renewal-resident-agreements-comparison/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-use-policy-local-authority/",
@@ -2524,19 +2563,16 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-04T16:04:13Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-use-policy-organization/",
-   "userCanonical": "https://lalumapp.com/insights/ai-use-policy-organization/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/ai-use-policy-organization/"
   },
   {
    "url": "https://lalumapp.com/insights/ai-vendor-agreement-dpa-liability-indemnity/",
-   "verdict": "NEUTRAL",
-   "coverageState": "Crawled - currently not indexed",
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T22:48:02Z",
+   "lastCrawlTime": "2026-10-18T22:52:23Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-vendor-agreement-dpa-liability-indemnity/",
    "userCanonical": "https://lalumapp.com/insights/ai-vendor-agreement-dpa-liability-indemnity/",
    "sitemap": [
@@ -2564,7 +2600,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-28T09:30:58Z",
+   "lastCrawlTime": "2026-10-18T15:08:59Z",
    "googleCanonical": "https://lalumapp.com/insights/ai-workspace-encyclopedia/",
    "userCanonical": "https://lalumapp.com/insights/ai-workspace-encyclopedia/",
    "sitemap": [
@@ -2589,7 +2625,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-13T19:22:11Z",
+   "lastCrawlTime": "2026-10-19T07:54:46Z",
    "googleCanonical": "https://lalumapp.com/insights/algorithmic-pricing-antitrust-real-estate/",
    "userCanonical": "https://lalumapp.com/insights/algorithmic-pricing-antitrust-real-estate/"
   },
@@ -2602,10 +2638,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T21:30:34Z",
    "googleCanonical": "https://lalumapp.com/insights/algorithmic-transparency/",
-   "userCanonical": "https://lalumapp.com/insights/algorithmic-transparency/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/algorithmic-transparency/"
   },
   {
    "url": "https://lalumapp.com/insights/amendment-13-data-security-guide/",
@@ -2630,7 +2663,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T03:50:38Z",
    "googleCanonical": "https://lalumapp.com/insights/amendment-13-dpo-appointment/",
-   "userCanonical": "https://lalumapp.com/insights/amendment-13-dpo-appointment/"
+   "userCanonical": "https://lalumapp.com/insights/amendment-13-dpo-appointment/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/attorney-client-privilege-ai/",
@@ -2667,7 +2703,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T15:26:49Z",
+   "lastCrawlTime": "2026-10-18T22:35:10Z",
    "googleCanonical": "https://lalumapp.com/insights/board-liability/",
    "userCanonical": "https://lalumapp.com/insights/board-liability/",
    "sitemap": [
@@ -2695,7 +2731,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-24T01:36:04Z",
+   "lastCrawlTime": "2026-10-18T16:14:05Z",
    "googleCanonical": "https://lalumapp.com/insights/building-ai-agents-realestate/",
    "userCanonical": "https://lalumapp.com/insights/building-ai-agents-realestate/",
    "sitemap": [
@@ -2711,10 +2747,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-15T05:55:42Z",
    "googleCanonical": "https://lalumapp.com/insights/business-arbitration/",
-   "userCanonical": "https://lalumapp.com/insights/business-arbitration/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/business-arbitration/"
   },
   {
    "url": "https://lalumapp.com/insights/business-mediation-relations/",
@@ -2765,7 +2798,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T21:21:55Z",
+   "lastCrawlTime": "2026-10-19T00:07:23Z",
    "googleCanonical": "https://lalumapp.com/insights/california-sb574-ai-adjudication-ban/",
    "userCanonical": "https://lalumapp.com/insights/california-sb574-ai-adjudication-ban/",
    "sitemap": [
@@ -2837,10 +2870,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-25T05:20:34Z",
    "googleCanonical": "https://lalumapp.com/insights/contract-review-before-signing/",
-   "userCanonical": "https://lalumapp.com/insights/contract-review-before-signing/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/contract-review-before-signing/"
   },
   {
    "url": "https://lalumapp.com/insights/custom-mediation/",
@@ -2891,7 +2921,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-18T04:40:50Z",
+   "lastCrawlTime": "2026-10-18T15:14:07Z",
    "googleCanonical": "https://lalumapp.com/insights/decision-oriented-mediation-benefits/",
    "userCanonical": "https://lalumapp.com/insights/decision-oriented-mediation-benefits/",
    "sitemap": [
@@ -2921,10 +2951,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T21:52:03Z",
    "googleCanonical": "https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/",
-   "userCanonical": "https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/"
   },
   {
    "url": "https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/",
@@ -2935,7 +2962,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:47:42Z",
    "googleCanonical": "https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/",
-   "userCanonical": "https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/"
+   "userCanonical": "https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/digital-lawyers-2026/",
@@ -2974,10 +3004,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-25T04:36:27Z",
    "googleCanonical": "https://lalumapp.com/insights/directors-liability-ai-era/",
-   "userCanonical": "https://lalumapp.com/insights/directors-liability-ai-era/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/directors-liability-ai-era/"
   },
   {
    "url": "https://lalumapp.com/insights/effective-human-oversight-ai-systems/",
@@ -3002,10 +3029,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T15:26:49Z",
    "googleCanonical": "https://lalumapp.com/insights/eu-ai-act-2026/",
-   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-2026/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-2026/"
   },
   {
    "url": "https://lalumapp.com/insights/eu-ai-act-conformity-file-preparation/",
@@ -3016,7 +3040,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-02T19:36:23Z",
    "googleCanonical": "https://lalumapp.com/insights/eu-ai-act-conformity-file-preparation/",
-   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-conformity-file-preparation/"
+   "userCanonical": "https://lalumapp.com/insights/eu-ai-act-conformity-file-preparation/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/eu-ai-act-high-risk-classification/",
@@ -3053,7 +3080,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-08T14:26:28Z",
+   "lastCrawlTime": "2026-10-18T10:17:57Z",
    "googleCanonical": "https://lalumapp.com/insights/eu-ai-act-roles-obligations/",
    "userCanonical": "https://lalumapp.com/insights/eu-ai-act-roles-obligations/",
    "sitemap": [
@@ -3081,12 +3108,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T11:39:01Z",
+   "lastCrawlTime": "2026-10-19T03:16:41Z",
    "googleCanonical": "https://lalumapp.com/insights/explainability/",
-   "userCanonical": "https://lalumapp.com/insights/explainability/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/explainability/"
   },
   {
    "url": "https://lalumapp.com/insights/four-opinions-one-agreement/",
@@ -3095,7 +3119,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-11T02:15:34Z",
+   "lastCrawlTime": "2026-10-18T17:41:02Z",
    "googleCanonical": "https://lalumapp.com/insights/four-opinions-one-agreement/",
    "userCanonical": "https://lalumapp.com/insights/four-opinions-one-agreement/",
    "sitemap": [
@@ -3111,10 +3135,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-13T16:13:19Z",
    "googleCanonical": "https://lalumapp.com/insights/free-lawyer-illusion/",
-   "userCanonical": "https://lalumapp.com/insights/free-lawyer-illusion/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/free-lawyer-illusion/"
   },
   {
    "url": "https://lalumapp.com/insights/gdpr-israeli-companies-ai/",
@@ -3125,10 +3146,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T15:31:45Z",
    "googleCanonical": "https://lalumapp.com/insights/gdpr-israeli-companies-ai/",
-   "userCanonical": "https://lalumapp.com/insights/gdpr-israeli-companies-ai/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/gdpr-israeli-companies-ai/"
   },
   {
    "url": "https://lalumapp.com/insights/gemini-guide-law/",
@@ -3188,11 +3206,14 @@
   },
   {
    "url": "https://lalumapp.com/insights/human-in-the-loop-lawyer-judgment-ai/",
-   "verdict": "NEUTRAL",
-   "coverageState": "URL is unknown to Google",
-   "indexingState": "INDEXING_STATE_UNSPECIFIED",
-   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
-   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "indexingState": "INDEXING_ALLOWED",
+   "robotsTxtState": "ALLOWED",
+   "pageFetchState": "SUCCESSFUL",
+   "lastCrawlTime": "2026-10-18T12:05:35Z",
+   "googleCanonical": "https://lalumapp.com/insights/human-in-the-loop-lawyer-judgment-ai/",
+   "userCanonical": "https://lalumapp.com/insights/human-in-the-loop-lawyer-judgment-ai/"
   },
   {
    "url": "https://lalumapp.com/insights/integrated-toolbox-israel/",
@@ -3203,7 +3224,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-23T15:01:51Z",
    "googleCanonical": "https://lalumapp.com/insights/integrated-toolbox-israel/",
-   "userCanonical": "https://lalumapp.com/insights/integrated-toolbox-israel/"
+   "userCanonical": "https://lalumapp.com/insights/integrated-toolbox-israel/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/international-trade-guide-2026/",
@@ -3256,7 +3280,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T03:10:01Z",
    "googleCanonical": "https://lalumapp.com/insights/israel-ai-regulation-policy/",
-   "userCanonical": "https://lalumapp.com/insights/israel-ai-regulation-policy/"
+   "userCanonical": "https://lalumapp.com/insights/israel-ai-regulation-policy/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/israel-land-authority-lease-capitalization-transfer/",
@@ -3307,7 +3334,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-13T22:10:24Z",
+   "lastCrawlTime": "2026-10-19T08:25:49Z",
    "googleCanonical": "https://lalumapp.com/insights/lalum-clinic-realestate-advice/",
    "userCanonical": "https://lalumapp.com/insights/lalum-clinic-realestate-advice/",
    "sitemap": [
@@ -3351,10 +3378,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-29T23:54:30Z",
    "googleCanonical": "https://lalumapp.com/insights/lalum-together/",
-   "userCanonical": "https://lalumapp.com/insights/lalum-together/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/lalum-together/"
   },
   {
    "url": "https://lalumapp.com/insights/law-algorithm-era/",
@@ -3407,10 +3431,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-23T01:41:51Z",
    "googleCanonical": "https://lalumapp.com/insights/legal-ai-chatbots-analysis/",
-   "userCanonical": "https://lalumapp.com/insights/legal-ai-chatbots-analysis/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/legal-ai-chatbots-analysis/"
   },
   {
    "url": "https://lalumapp.com/insights/legal-ai-client-confidentiality-privilege/",
@@ -3476,10 +3497,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-08-29T10:20:36Z",
    "googleCanonical": "https://lalumapp.com/insights/legal-algorist/",
-   "userCanonical": "https://lalumapp.com/insights/legal-algorist/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/legal-algorist/"
   },
   {
    "url": "https://lalumapp.com/insights/legal-clinic-business-realestate/",
@@ -3490,7 +3508,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-03T18:56:41Z",
    "googleCanonical": "https://lalumapp.com/insights/legal-clinic-business-realestate/",
-   "userCanonical": "https://lalumapp.com/insights/legal-clinic-business-realestate/"
+   "userCanonical": "https://lalumapp.com/insights/legal-clinic-business-realestate/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/legal-department-client-privilege-ai-data-security/",
@@ -3499,7 +3520,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-18T04:20:33Z",
+   "lastCrawlTime": "2026-10-18T20:37:53Z",
    "googleCanonical": "https://lalumapp.com/insights/legal-department-client-privilege-ai-data-security/",
    "userCanonical": "https://lalumapp.com/insights/legal-department-client-privilege-ai-data-security/"
   },
@@ -3512,10 +3533,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-08-25T07:08:03Z",
    "googleCanonical": "https://lalumapp.com/insights/legal-logic",
-   "userCanonical": "https://lalumapp.com/insights/legal-logic",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/legal-logic"
   },
   {
    "url": "https://lalumapp.com/insights/legal-mediation-benefits/",
@@ -3540,7 +3558,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-08-28T15:27:03Z",
    "googleCanonical": "https://lalumapp.com/insights/mediator-tools-body-language-field-experience/",
-   "userCanonical": "https://lalumapp.com/insights/mediator-tools-body-language-field-experience/"
+   "userCanonical": "https://lalumapp.com/insights/mediator-tools-body-language-field-experience/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/memory/",
@@ -3579,10 +3600,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-30T02:24:27Z",
    "googleCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%93%D7%9C%D7%AA-%D7%9C%D7%A2%D7%95%D7%9C%D7%9D-%D7%97%D7%93%D7%A9-%D7%A9%D7%9C-%D7%9C%D7%99%D7%95%D7%95%D7%99-%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99-%D7%90%D7%99%D7%A9%D7%99-%D7%9C%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-%D7%95%D7%A2%D7%9E%D7%95%D7%AA%D7%95%D7%AA/",
-   "userCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%93%D7%9C%D7%AA-%D7%9C%D7%A2%D7%95%D7%9C%D7%9D-%D7%97%D7%93%D7%A9-%D7%A9%D7%9C-%D7%9C%D7%99%D7%95%D7%95%D7%99-%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99-%D7%90%D7%99%D7%A9%D7%99-%D7%9C%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-%D7%95%D7%A2%D7%9E%D7%95%D7%AA%D7%95%D7%AA/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%93%D7%9C%D7%AA-%D7%9C%D7%A2%D7%95%D7%9C%D7%9D-%D7%97%D7%93%D7%A9-%D7%A9%D7%9C-%D7%9C%D7%99%D7%95%D7%95%D7%99-%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99-%D7%90%D7%99%D7%A9%D7%99-%D7%9C%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-%D7%95%D7%A2%D7%9E%D7%95%D7%AA%D7%95%D7%AA/"
   },
   {
    "url": "https://lalumapp.com/insights/one-board-%D7%94%D7%9E%D7%95%D7%93%D7%9C-%D7%A9%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%99%D7%9A-%D7%A9%D7%94%D7%A0%D7%94%D7%9C%D7%95%D7%AA-%D7%9E%D7%A7%D7%91%D7%9C%D7%95%D7%AA-%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA/",
@@ -3591,12 +3609,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T17:08:52Z",
+   "lastCrawlTime": "2026-10-19T01:24:12Z",
    "googleCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%9E%D7%95%D7%93%D7%9C-%D7%A9%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%99%D7%9A-%D7%A9%D7%94%D7%A0%D7%94%D7%9C%D7%95%D7%AA-%D7%9E%D7%A7%D7%91%D7%9C%D7%95%D7%AA-%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA/",
-   "userCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%9E%D7%95%D7%93%D7%9C-%D7%A9%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%99%D7%9A-%D7%A9%D7%94%D7%A0%D7%94%D7%9C%D7%95%D7%AA-%D7%9E%D7%A7%D7%91%D7%9C%D7%95%D7%AA-%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/one-board-%D7%94%D7%9E%D7%95%D7%93%D7%9C-%D7%A9%D7%9E%D7%A9%D7%A0%D7%94-%D7%90%D7%99%D7%9A-%D7%A9%D7%94%D7%A0%D7%94%D7%9C%D7%95%D7%AA-%D7%9E%D7%A7%D7%91%D7%9C%D7%95%D7%AA-%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA/"
   },
   {
    "url": "https://lalumapp.com/insights/overseas-developer-contract-guarantees/",
@@ -3607,7 +3622,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:26:30Z",
    "googleCanonical": "https://lalumapp.com/insights/overseas-developer-contract-guarantees/",
-   "userCanonical": "https://lalumapp.com/insights/overseas-developer-contract-guarantees/"
+   "userCanonical": "https://lalumapp.com/insights/overseas-developer-contract-guarantees/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/overseas-partnership-guide/",
@@ -3632,10 +3650,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-14T00:32:27Z",
    "googleCanonical": "https://lalumapp.com/insights/overseas-property-due-diligence/",
-   "userCanonical": "https://lalumapp.com/insights/overseas-property-due-diligence/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/overseas-property-due-diligence/"
   },
   {
    "url": "https://lalumapp.com/insights/overseas-property-financing-israeli-investor/",
@@ -3658,7 +3673,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-19T09:53:37Z",
+   "lastCrawlTime": "2026-10-18T11:46:02Z",
    "googleCanonical": "https://lalumapp.com/insights/overseas-property-holding-structure/",
    "userCanonical": "https://lalumapp.com/insights/overseas-property-holding-structure/",
    "sitemap": [
@@ -3672,9 +3687,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-06T02:53:46Z",
+   "lastCrawlTime": "2026-10-19T08:13:55Z",
    "googleCanonical": "https://lalumapp.com/insights/overseas-property-holding/",
-   "userCanonical": "https://lalumapp.com/insights/overseas-property-holding/"
+   "userCanonical": "https://lalumapp.com/insights/overseas-property-holding/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/partnership-dissolution-ai-ownership/",
@@ -3699,7 +3717,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:33:22Z",
    "googleCanonical": "https://lalumapp.com/insights/pinui-binui-consideration-valuation/",
-   "userCanonical": "https://lalumapp.com/insights/pinui-binui-consideration-valuation/"
+   "userCanonical": "https://lalumapp.com/insights/pinui-binui-consideration-valuation/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/pinui-binui-owner-guide/",
@@ -3708,7 +3729,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-30T01:46:57Z",
+   "lastCrawlTime": "2026-10-19T07:43:50Z",
    "googleCanonical": "https://lalumapp.com/insights/pinui-binui-owner-guide/",
    "userCanonical": "https://lalumapp.com/insights/pinui-binui-owner-guide/",
    "sitemap": [
@@ -3722,7 +3743,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-18T22:54:19Z",
+   "lastCrawlTime": "2026-10-19T07:57:39Z",
    "googleCanonical": "https://lalumapp.com/insights/portugal-investment-guide/",
    "userCanonical": "https://lalumapp.com/insights/portugal-investment-guide/",
    "sitemap": [
@@ -3750,9 +3771,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-26T13:13:36Z",
+   "lastCrawlTime": "2026-10-19T08:11:45Z",
    "googleCanonical": "https://lalumapp.com/insights/portugal-porto-vs-lisbon/",
-   "userCanonical": "https://lalumapp.com/insights/portugal-porto-vs-lisbon/"
+   "userCanonical": "https://lalumapp.com/insights/portugal-porto-vs-lisbon/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/portugal-purchase-contract/",
@@ -3763,7 +3787,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-17T14:13:42Z",
    "googleCanonical": "https://lalumapp.com/insights/portugal-purchase-contract/",
-   "userCanonical": "https://lalumapp.com/insights/portugal-purchase-contract/"
+   "userCanonical": "https://lalumapp.com/insights/portugal-purchase-contract/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/portugal-real-estate-financing/",
@@ -3774,7 +3801,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T18:01:44Z",
    "googleCanonical": "https://lalumapp.com/insights/portugal-real-estate-financing/",
-   "userCanonical": "https://lalumapp.com/insights/portugal-real-estate-financing/"
+   "userCanonical": "https://lalumapp.com/insights/portugal-real-estate-financing/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/portugal-real-estate-taxation/",
@@ -3785,7 +3815,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-28T00:34:27Z",
    "googleCanonical": "https://lalumapp.com/insights/portugal-real-estate-taxation/",
-   "userCanonical": "https://lalumapp.com/insights/portugal-real-estate-taxation/"
+   "userCanonical": "https://lalumapp.com/insights/portugal-real-estate-taxation/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/privacy-law-amendment-13-guide/",
@@ -3808,7 +3841,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T13:29:34Z",
+   "lastCrawlTime": "2026-10-19T07:53:25Z",
    "googleCanonical": "https://lalumapp.com/insights/procurement/",
    "userCanonical": "https://lalumapp.com/insights/procurement/"
   },
@@ -3861,9 +3894,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-19T12:28:37Z",
+   "lastCrawlTime": "2026-10-18T17:52:33Z",
    "googleCanonical": "https://lalumapp.com/insights/realestate-master-course/",
-   "userCanonical": "https://lalumapp.com/insights/realestate-master-course/"
+   "userCanonical": "https://lalumapp.com/insights/realestate-master-course/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/saas-eu-compliance-israeli-companies/",
@@ -3872,9 +3908,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-17T15:28:41Z",
+   "lastCrawlTime": "2026-10-19T00:18:45Z",
    "googleCanonical": "https://lalumapp.com/insights/saas-eu-compliance-israeli-companies/",
-   "userCanonical": "https://lalumapp.com/insights/saas-eu-compliance-israeli-companies/"
+   "userCanonical": "https://lalumapp.com/insights/saas-eu-compliance-israeli-companies/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/second-opinion-real-estate-urban-renewal/",
@@ -3883,12 +3922,9 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-17T00:48:59Z",
+   "lastCrawlTime": "2026-10-18T21:24:25Z",
    "googleCanonical": "https://lalumapp.com/insights/second-opinion-real-estate-urban-renewal/",
-   "userCanonical": "https://lalumapp.com/insights/second-opinion-real-estate-urban-renewal/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/second-opinion-real-estate-urban-renewal/"
   },
   {
    "url": "https://lalumapp.com/insights/second-opinion-revolution/",
@@ -3897,9 +3933,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-27T03:26:25Z",
+   "lastCrawlTime": "2026-10-18T20:03:02Z",
    "googleCanonical": "https://lalumapp.com/insights/second-opinion-revolution/",
-   "userCanonical": "https://lalumapp.com/insights/second-opinion-revolution/"
+   "userCanonical": "https://lalumapp.com/insights/second-opinion-revolution/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/selling-overseas-property-tax-credit-timing/",
@@ -3910,7 +3949,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T21:10:18Z",
    "googleCanonical": "https://lalumapp.com/insights/selling-overseas-property-tax-credit-timing/",
-   "userCanonical": "https://lalumapp.com/insights/selling-overseas-property-tax-credit-timing/"
+   "userCanonical": "https://lalumapp.com/insights/selling-overseas-property-tax-credit-timing/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/shadow-it-law-firms/",
@@ -3935,7 +3977,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-16T22:23:58Z",
    "googleCanonical": "https://lalumapp.com/insights/sovereignty/",
-   "userCanonical": "https://lalumapp.com/insights/sovereignty/"
+   "userCanonical": "https://lalumapp.com/insights/sovereignty/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/suing-foreign-company-jurisdiction-service-enforcement/",
@@ -3986,7 +4031,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-10T14:53:52Z",
+   "lastCrawlTime": "2026-10-18T19:25:25Z",
    "googleCanonical": "https://lalumapp.com/insights/the-code-realestate/",
    "userCanonical": "https://lalumapp.com/insights/the-code-realestate/",
    "sitemap": [
@@ -4002,7 +4047,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-13T18:15:48Z",
    "googleCanonical": "https://lalumapp.com/insights/the-decision-room-%D7%94%D7%97%D7%93%D7%A8-%D7%A9%D7%91%D7%95-%D7%A0%D7%95%D7%9C%D7%93%D7%94-%D7%94%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
-   "userCanonical": "https://lalumapp.com/insights/the-decision-room-%D7%94%D7%97%D7%93%D7%A8-%D7%A9%D7%91%D7%95-%D7%A0%D7%95%D7%9C%D7%93%D7%94-%D7%94%D7%94%D7%9B%D7%A8%D7%A2%D7%94/"
+   "userCanonical": "https://lalumapp.com/insights/the-decision-room-%D7%94%D7%97%D7%93%D7%A8-%D7%A9%D7%91%D7%95-%D7%A0%D7%95%D7%9C%D7%93%D7%94-%D7%94%D7%94%D7%9B%D7%A8%D7%A2%D7%94/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/three-minute-legal-check/",
@@ -4024,10 +4072,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-13T19:07:52Z",
    "googleCanonical": "https://lalumapp.com/insights/timeless-meeting-revolution/",
-   "userCanonical": "https://lalumapp.com/insights/timeless-meeting-revolution/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/timeless-meeting-revolution/"
   },
   {
    "url": "https://lalumapp.com/insights/topics/ai-governance/",
@@ -4036,9 +4081,12 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-18T08:59:52Z",
+   "lastCrawlTime": "2026-10-18T21:31:58Z",
    "googleCanonical": "https://lalumapp.com/insights/topics/ai-governance/",
-   "userCanonical": "https://lalumapp.com/insights/topics/ai-governance/"
+   "userCanonical": "https://lalumapp.com/insights/topics/ai-governance/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/topics/contracts/",
@@ -4063,7 +4111,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-21T15:02:20Z",
    "googleCanonical": "https://lalumapp.com/insights/topics/mediation/",
-   "userCanonical": "https://lalumapp.com/insights/topics/mediation/"
+   "userCanonical": "https://lalumapp.com/insights/topics/mediation/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/insights/topics/real-estate/",
@@ -4088,10 +4139,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-09-15T02:30:35Z",
    "googleCanonical": "https://lalumapp.com/insights/transcription-tools-guide/",
-   "userCanonical": "https://lalumapp.com/insights/transcription-tools-guide/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/transcription-tools-guide/"
   },
   {
    "url": "https://lalumapp.com/insights/understanding-mediation-process/",
@@ -4100,7 +4148,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-09-28T17:01:59Z",
+   "lastCrawlTime": "2026-10-18T12:51:00Z",
    "googleCanonical": "https://lalumapp.com/insights/understanding-mediation-process/",
    "userCanonical": "https://lalumapp.com/insights/understanding-mediation-process/",
    "sitemap": [
@@ -4116,10 +4164,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-17T18:01:44Z",
    "googleCanonical": "https://lalumapp.com/insights/unfair-advantage-course/",
-   "userCanonical": "https://lalumapp.com/insights/unfair-advantage-course/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/insights/unfair-advantage-course/"
   },
   {
    "url": "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/",
@@ -4128,7 +4173,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T21:14:07Z",
+   "lastCrawlTime": "2026-10-19T07:53:25Z",
    "googleCanonical": "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/",
    "userCanonical": "https://lalumapp.com/insights/urban-renewal-guarantees-sale-law-registration/",
    "sitemap": [
@@ -4156,7 +4201,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T22:26:15Z",
+   "lastCrawlTime": "2026-10-19T08:16:49Z",
    "googleCanonical": "https://lalumapp.com/insights/urban-renewal-owners-representation/",
    "userCanonical": "https://lalumapp.com/insights/urban-renewal-owners-representation/",
    "sitemap": [
@@ -4226,7 +4271,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-16T20:57:35Z",
+   "lastCrawlTime": "2026-10-19T10:27:37Z",
    "googleCanonical": "https://lalumapp.com/insights/urban-renewal-taxation-owner/",
    "userCanonical": "https://lalumapp.com/insights/urban-renewal-taxation-owner/",
    "sitemap": [
@@ -4298,7 +4343,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-13T17:13:25Z",
    "googleCanonical": "https://lalumapp.com/mediation-dispute-resolution/",
-   "userCanonical": "https://lalumapp.com/mediation-dispute-resolution/"
+   "userCanonical": "https://lalumapp.com/mediation-dispute-resolution/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/real-estate-legal-advisory/",
@@ -4349,7 +4397,7 @@
    "indexingState": "INDEXING_ALLOWED",
    "robotsTxtState": "ALLOWED",
    "pageFetchState": "SUCCESSFUL",
-   "lastCrawlTime": "2026-10-14T01:04:34Z",
+   "lastCrawlTime": "2026-10-19T02:01:40Z",
    "googleCanonical": "https://lalumapp.com/training/",
    "userCanonical": "https://lalumapp.com/training/",
    "sitemap": [
@@ -4365,10 +4413,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-12T00:32:55Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-automotive/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-automotive/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-automotive/"
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-corporate/",
@@ -4379,10 +4424,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-14T02:03:07Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-corporate/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-corporate/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-corporate/"
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-cyber/",
@@ -4393,10 +4435,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-11T20:52:49Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-cyber/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-cyber/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-cyber/"
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-energy/",
@@ -4407,7 +4446,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-11T10:23:18Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-energy/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-energy/"
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-energy/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-finance/",
@@ -4485,10 +4527,7 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-08T04:02:02Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-pro-appraisal/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-pro-appraisal/",
-   "sitemap": [
-    "https://lalumapp.com/sitemap.xml"
-   ]
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-pro-appraisal/"
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-pro-law/",
@@ -4513,7 +4552,10 @@
    "pageFetchState": "SUCCESSFUL",
    "lastCrawlTime": "2026-10-13T11:07:41Z",
    "googleCanonical": "https://lalumapp.com/training/lalum-academy-public-sector/",
-   "userCanonical": "https://lalumapp.com/training/lalum-academy-public-sector/"
+   "userCanonical": "https://lalumapp.com/training/lalum-academy-public-sector/",
+   "sitemap": [
+    "https://lalumapp.com/sitemap.xml"
+   ]
   },
   {
    "url": "https://lalumapp.com/training/lalum-academy-real-estate/",
