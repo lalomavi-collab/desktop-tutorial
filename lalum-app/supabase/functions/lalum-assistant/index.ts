@@ -168,7 +168,8 @@ Deno.serve(async (req) => {
       if (!user) {
         // Counted for the firm's daily report ("tried the chat without registering"). One row per attempt, no key
         // material or address, capped so a bot cannot grow the table. The result is not used.
-        await counter.rpc("lalum_rate_limit", { p_key: "assistant-anon-day", p_max: 5000, p_window_seconds: 86400 }).catch(() => undefined);
+        // supabase-js builders have no .catch (the call would throw before sending), so await inside try.
+        try { await counter.rpc("lalum_rate_limit", { p_key: "assistant-anon-day", p_max: 5000, p_window_seconds: 86400 }); } catch { /* counting is best effort */ }
         return json(200, { reply: LOGIN_REPLY, login_required: true });
       }
       const raw = `u:${user.id}`;
