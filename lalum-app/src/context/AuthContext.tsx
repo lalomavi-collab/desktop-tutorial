@@ -111,11 +111,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // session a clicked link would (fires PASSWORD_RECOVERY), so everything
   // downstream (the MFA gate, the new-password form) stays the one path.
   const verifyRecoveryCode: AuthValue["verifyRecoveryCode"] = async (email, code) => {
+    // Digits only: a code copied out of the email can carry spaces or invisible direction marks.
+    const token = code.replace(/\D/g, "");
     if (!supabase) {
-      if (code.trim().length < 6) return { error: "Enter the 6-digit code from the email." };
+      if (token.length < 6) return { error: "Enter the code from the email." };
       return { error: null };
     }
-    const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: "recovery" });
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: "recovery" });
     return { error: error?.message ?? null };
   };
 

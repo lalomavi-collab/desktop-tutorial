@@ -1,3 +1,4 @@
+import { ChangePassword } from "../components/ChangePassword";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { PageMeta } from "../components/PageMeta";
@@ -351,6 +352,13 @@ export function Portal() {
       </div>
 
       {demoMode && <div className="notice notice-warn" style={{ marginBottom: 28 }}>{P.demo}</div>}
+
+      <details className="card" style={{ padding: "16px 24px", marginBottom: 28 }}>
+        <summary style={{ cursor: "pointer", fontWeight: 600 }}>{t.ui.pw.changeTitle}</summary>
+        <div style={{ marginTop: 16, maxWidth: 480 }}>
+          <ChangePassword />
+        </div>
+      </details>
 
       {/* Firm members reach their work in the management cockpit, not the client
           area. A clear entry here keeps the two apart: the portal for clients,
