@@ -13,6 +13,8 @@ FPS = int(os.environ.get("FPS", "24"))
 SR = 24000
 LEAD = {"1": 0.8, "2": 3.6, "3": 2.8, "4": 2.8, "5": 2.8, "6": 2.8}
 TAIL = {"1": 2.4, "2": 1.6, "3": 1.8, "4": 1.8, "5": 2.0, "6": 27.0}
+BPM = 84
+BAR = 4 * 60.0 / BPM
 GAP = 1.3
 GAPS = {  # extra room after a paragraph, where the picture needs to land
     "1": {1: 1.0, 3: 0.0},
@@ -53,6 +55,7 @@ for n, paras in clips.items():
         audio.append((t, a))
         t += dur + GAP + GAPS.get(n, {}).get(i, 0.0)
     total = t - GAP - GAPS.get(n, {}).get(len(paras) - 1, 0.0) + TAIL[n]
+    total = float(np.ceil(total / BAR - 1e-9) * BAR)  # every scene starts on a downbeat of the music
     wav = np.zeros(int(total * SR) + 1, dtype=np.float32)
     for st, a in audio:
         i = int(st * SR)

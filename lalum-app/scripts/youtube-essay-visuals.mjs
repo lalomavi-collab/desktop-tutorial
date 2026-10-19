@@ -56,9 +56,9 @@ html,body{width:${W}px;height:${H}px;overflow:hidden;background:#0b100c}
 body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f1e8}
 .bg{position:absolute;inset:0;background:radial-gradient(90% 90% at 50% 25%,#1f3626 0%,#142019 55%,#0b100c 100%)}
 .grid{position:absolute;inset:0;opacity:.05;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:80px 80px}
-#world{position:absolute;inset:0;filter:contrast(1.1) saturate(1.12)}
+#world{position:absolute;inset:0;filter:contrast(1.1) saturate(1.12);perspective:2600px}
 .amber{text-shadow:0 0 26px rgba(231,194,122,.3)}
-#stage{position:absolute;inset:0;transform-origin:50% 45%}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
 #world div,#hud div{position:absolute}
 .wm{position:absolute;right:70px;bottom:44px;width:150px;opacity:.5}
 .c{left:0;right:0;text-align:center}
@@ -122,7 +122,10 @@ const S0=document.getElementById("stage"),WM=document.querySelector(".wm");
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const ease=x=>1-Math.pow(1-clamp(x),3);
 const lerp=(a,b,t)=>a+(b-a)*t;
-function mk(cls,html,parent){const e=document.createElement("div");e.className=cls||"";if(html!=null)e.innerHTML=html;(parent||S0).appendChild(e);return e}
+let CURP=S0,CUROFF=0;
+const BPM=84,BEAT=60/BPM,SIX=BEAT/4;
+const snap=t=>Math.round(t/SIX)*SIX;
+function mk(cls,html,parent){const e=document.createElement("div");e.className=cls||"";if(html!=null)e.innerHTML=html;(parent||CURP).appendChild(e);return e}
 function box(x,y,w,h,cls,html,parent){const e=mk(cls,html,parent);Object.assign(e.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"});return e}
 function vis(e,t,a,b,d){d=d||.6;b=b==null?1e9:b;const k=Math.min(ease((t-a)/d),ease((b-t)/(d*.8)));e.style.opacity=k;e.style.transform="translateY("+((1-k)*18)+"px)";return k}
 function tag(text){return mk("tag",text,document.getElementById("tags"))}
@@ -142,11 +145,12 @@ function ctx(d){
 }
 function SC(){const S={items:[],fx:[]};
   S.reg=(e,a,b,d)=>{S.items.push([e,a,b,d]);return e};
-  S.run=t=>{S.items.forEach(([e,a,b,d])=>vis(e,t,a,b,d));S.fx.forEach(f=>f(t))};return S}
+  S.run=t=>{S.items.forEach(([e,a,b,d])=>{vis(e,t,a,b,d);if(S.dur&&t>S.dur-.4&&e.classList.contains("tag"))e.style.opacity=0});S.fx.forEach(f=>f(t))};return S}
 // dynamic typography: each word slams in on its own time
 function x0time(a){return a[0]}
 function kin(S,text,times,x,y,w,o){o=o||{};const words=text.split(" ");
-  const c=box(x,y,w,o.h||220,"c "+(o.cls||"h1"));if((o.size||92)>=84)HITS.push(x0time(times));c.style.fontSize=(o.size||92)+"px";c.style.textAlign=o.align||"center";if(o.color)c.style.color=o.color;
+  if((o.size||92)>=72)times=times.map(snap);
+  const c=box(x,y,w,o.h||220,"c "+(o.cls||"h1"));if((o.size||92)>=84)HITS.push(CUROFF+x0time(times));c.style.fontSize=(o.size||92)+"px";c.style.textAlign=o.align||"center";if(o.color)c.style.color=o.color;
   const tt=i=>times[i]!=null?times[i]:times[times.length-1]+.28*(i-times.length+1);
   const sp=words.map((t,i)=>{const s=document.createElement("span");s.textContent=t;
     s.style.cssText="display:inline-block;margin:0 .16em;opacity:0;"+(o.hi&&o.hi.indexOf(i)>=0?"color:#e7c27a;":"");c.appendChild(s);return s});
@@ -178,7 +182,7 @@ function s1(d){const S=SC(),x=ctx(d);
   // the lawyer at the desk: typing, then watching the page write itself, then the pen over the line
   const tA=.4,tB=x.w(2,"now one"),tC=x.a(3);
   kin(S,"THE HOURS OF A TRAINED PERSON",x.ws(2,"the hours of a trained person"),960,300,900,{size:76,hi:[1],out:tB-.1});
-  const lawyer=person(S0,{x:520,y:650,s:1.25,skin:SKIN.a,hair:"#2a2a2a",style:"short",top:"#2f4a38",glasses:true,propR:"pen",ph:.4,clip:330});
+  const lawyer=person(CURP,{x:520,y:650,s:1.25,skin:SKIN.a,hair:"#2a2a2a",style:"short",top:"#2f4a38",glasses:true,propR:"pen",ph:.4,clip:330});
   S.reg(lawyer.wrap,tA,1e9);
   const desk=box(40,800,980,300,"");desk.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(desk,tA,1e9);
   const lid=box(330,696,380,118,"");lid.style.cssText+=";background:#2b3d31;border:3px solid #4a7054;border-radius:14px 14px 4px 4px";
@@ -212,7 +216,7 @@ function s2(d){const S=SC(),x=ctx(d);
   const A=S.reg(box(150,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Chatbot</div>'),L0,x.a(2)-.3);
   const B=S.reg(box(640,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Document</div>'),L0,x.a(2)-.3);
   const tk=S.reg(box(0,0,70,92,"",""),L0,x.a(2)-.3);tk.style.background="#f5f1e8";tk.style.borderRadius="8px";
-  const mover=person(S0,{x:520,y:700,s:1.2,skin:SKIN.b,hair:"#3a2a1f",style:"short",top:"#3b5a6b",tie:null,ph:1.1});S.reg(mover.wrap,L0,x.a(2)-.3);
+  const mover=person(CURP,{x:520,y:700,s:1.2,skin:SKIN.b,hair:"#3a2a1f",style:"short",top:"#3b5a6b",tie:null,ph:1.1});S.reg(mover.wrap,L0,x.a(2)-.3);
   const k=[[L0,640-20],[x.w(0,"you pasted"),640-20],[x.w(0,"the box answered"),380-30],[x.w(0,"you copied"),380-30],[x.w(0,"the human did"),640-20],[x.b(0),640-20]];
   S.fx.push(t=>{let px=k[0][1];for(let i=0;i<k.length-1;i++){if(t>=k[i][0]&&t<k[i+1][0]){px=lerp(k[i][1],k[i+1][1],ease((t-k[i][0])/Math.min(1.3,k[i+1][0]-k[i][0])))}else if(t>=k[i+1][0])px=k[i+1][1]}
     tk.style.left=px+"px";tk.style.top="470px";tk.style.background=(t>x.w(0,"the box answered")&&t<x.w(0,"you copied")+.2)||t>x.w(0,"you copied")?"#9cc29f":"#f5f1e8";
@@ -226,7 +230,7 @@ function s2(d){const S=SC(),x=ctx(d);
   const names=["Skill","Connection","Agent","Result"];
   names.forEach((n,i)=>S.reg(box(1020+i*205,400,160,190,"card",'<div class="lbl rel" style="margin-top:70px;font-size:26px">'+n+'</div>'),R0,x.a(2)-.3));
   const tk2=S.reg(box(0,0,70,92,"",""),R0,x.a(2)-.3);tk2.style.background="#9cc29f";tk2.style.borderRadius="8px";
-  const watcher=person(S0,{x:1500,y:760,s:1.05,skin:SKIN.c,hair:"#241a14",style:"long",top:"#d9d3c3",shirt:"#2f4a38",tie:null,ph:2.3});S.reg(watcher.wrap,R0,x.a(2)-.3);
+  const watcher=person(CURP,{x:1500,y:760,s:1.05,skin:SKIN.c,hair:"#241a14",style:"long",top:"#d9d3c3",shirt:"#2f4a38",tie:null,ph:2.3});S.reg(watcher.wrap,R0,x.a(2)-.3);
   S.fx.push(t=>{const m=((t-R0)%8)/8;const px=m<.9?lerp(1020+45,1020+3*205+45,m/.9):1020+3*205+45;tk2.style.left=px+"px";tk2.style.top="451px";
     watcher.update(t,{look:{x:clamp((px-1500)/330,-1,1),y:-.3},tilt:Math.sin(t*1.1)*2,smile:.45,brow:Math.max(0,Math.sin(t*.9))*.4})});
   kin(S,"AN AGENT CHANGES WHO MOVES.",x.ws(1,"an agent changes who moves"),0,60,W,{size:72,hi:[3,4],out:x.a(2)-.3,h:110});
@@ -248,7 +252,7 @@ function s2(d){const S=SC(),x=ctx(d);
   S.fx.push(t=>{pill.style.opacity=ease((t-x.w(4,"those are not demos"))/.5)});
   S.reg(tag("Illustrative mockup, not a Google screen"),x.w(4,"reviewing"),x.a(5)-.2);
   // a colleague following along
-  const viewer=person(S0,{x:1640,y:800,s:.95,skin:SKIN.b,hair:"#241a14",style:"bun",top:"#3b5a6b",glasses:true,tie:null,ph:4.2});S.reg(viewer.wrap,x.a(2),1e9);
+  const viewer=person(CURP,{x:1640,y:800,s:.95,skin:SKIN.b,hair:"#241a14",style:"bun",top:"#3b5a6b",glasses:true,tie:null,ph:4.2});S.reg(viewer.wrap,x.a(2),1e9);
   S.fx.push(t=>{const thinking=t>x.w(4,"reviewing");
     viewer.update(t,{look:{x:thinking?-.9:-.6,y:.1},tilt:thinking?4:Math.sin(t*1.3)*2,hr:thinking?{x:30,y:-6}:null,brow:(t>x.w(3,"governed")&&t<x.w(3,"governed")+2)?.9:0,smile:thinking?0:.3})});
   // the question
@@ -285,7 +289,7 @@ function s3(d){const S=SC(),x=ctx(d);
   const frame=box(1260,200,440,620,"");frame.style.cssText+=";border:6px solid #4a7054;border-radius:16px 16px 0 0";S.reg(frame,tP,g3);
   const door=box(1266,206,428,608,"");door.style.cssText+=";background:linear-gradient(90deg,#2b4633,#22382a);border:4px solid #4a7054;border-radius:10px 10px 0 0;transform-origin:0 50%";
   const knob=box(376,300,26,26,"","",door);knob.style.cssText+=";border-radius:50%;background:#e7c27a";
-  const keyer=person(S0,{x:1110,y:720,s:1.1,skin:SKIN.d,hair:"#6b4a2b",style:"bun",top:"#2f4a38",propR:"key",ph:3.1,clip:300});
+  const keyer=person(CURP,{x:1110,y:720,s:1.1,skin:SKIN.d,hair:"#6b4a2b",style:"bun",top:"#2f4a38",propR:"key",ph:3.1,clip:300});
   const reg3=e=>S.reg(e,tP,g3);reg3(keyer.wrap);
   S.fx.push(t=>{const dk=ease((t-tOpen)/1.5);door.style.transform="perspective(900px) rotateY("+(-dk*78)+"deg)";door.style.opacity=t<tP-.1||t>g3?0:1;
     let p={look:{x:.2,y:0},smile:.4};
@@ -332,8 +336,8 @@ function s4(d){const S=SC(),x=ctx(d);
   kin(S,"THE SIZE IS NOT.",x.ws(3,"and the size is not").slice(1),80,660,1000,{size:80,color:"#e7c27a",out:x.a(4)-.2,h:130});
   // the partner and the client at a table
   const a3=x.a(3),b3=x.b(3),g4=x.a(4)-.2;
-  const partner=person(S0,{x:1230,y:480,s:.82,skin:SKIN.a,hair:"#8a8a8a",style:"short",top:"#2f4a38",glasses:true,ph:.7,clip:230});
-  const client=person(S0,{x:1590,y:480,s:.82,skin:SKIN.c,hair:"#1a1410",style:"short",top:"#3b5a6b",tie:null,ph:2.6,clip:230});
+  const partner=person(CURP,{x:1230,y:480,s:.82,skin:SKIN.a,hair:"#8a8a8a",style:"short",top:"#2f4a38",glasses:true,ph:.7,clip:230});
+  const client=person(CURP,{x:1590,y:480,s:.82,skin:SKIN.c,hair:"#1a1410",style:"short",top:"#3b5a6b",tie:null,ph:2.6,clip:230});
   [partner.wrap,client.wrap].forEach(e=>S.reg(e,a3,g4));
   const table=box(1060,660,700,420,"");table.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(table,a3,g4);
   const inv=box(1330,676,170,52,"");inv.style.cssText+=";background:#e9e4d4;border-radius:4px";
@@ -392,7 +396,7 @@ function s5(d){const S=SC(),x=ctx(d);
   kin(S,"THE UNANSWERED QUESTION OF THIS ENTIRE MARKET",x.ws(5,"the unanswered question of this entire market"),300,360,1320,{size:70,hi:[2,3],out:x.w(5,"a machine produces")-.3,h:260});
   // over the shoulder: the reviewer in the foreground, out of focus, reading
   const tR=x.w(5,"a machine produces");
-  const rev=person(S0,{x:290,y:800,s:1.7,back:true,hair:"#17110d",top:"#0d1810",ph:.9});rev.wrap.style.filter="blur(1.6px)";S.reg(rev.wrap,tR-.4,1e9);
+  const rev=person(CURP,{x:290,y:800,s:1.7,back:true,hair:"#17110d",top:"#0d1810",ph:.9});rev.wrap.style.filter="blur(1.6px)";S.reg(rev.wrap,tR-.4,1e9);
   S.fx.push(t=>{const q=t-tR,scan=Math.sin(q*.9),think=t>x.w(5,"could they prove it");
     const p={look:{x:.6+scan*.5,y:0},tilt:-2+scan*2.5,dx:6};if(think){p.hr={x:80,y:-70}}
     rev.update(t,p)});
@@ -408,7 +412,7 @@ function s6(d){const S=SC(),x=ctx(d);
   const crew=[];
   [["WHO APPROVES?","who approves"],["ON WHAT BASIS?","on what basis"],["WHO SIGNS?","and who signs"]].forEach((c,i)=>{
     const e=box(130+i*560,200,500,170,"card"+(i==2?" am":""),'<div class="rel h2'+(i==2?" amber":"")+'" style="margin-top:50px;text-align:center;font-size:46px">'+c[0]+'</div>');S.reg(e,tq[i],gS);
-    const px=380+i*560,pr=person(S0,Object.assign({x:px,y:540,s:.66,ph:i*1.7,clip:210},cfg[i]));S.reg(pr.wrap,tq[i]+.2,gS);crew.push(pr);
+    const px=380+i*560,pr=person(CURP,Object.assign({x:px,y:540,s:.66,ph:i*1.7,clip:210},cfg[i]));S.reg(pr.wrap,tq[i]+.2,gS);crew.push(pr);
     const slab=box(px-190,676,380,16,"");slab.style.cssText+=";background:#26402e;border-top:4px solid #4a7054;border-radius:6px";S.reg(slab,tq[i]+.2,gS)});
   const sheet=box(1370,640,260,40,"");sheet.style.cssText+=";background:#e9e4d4;border-radius:4px";
   sheet.innerHTML='<svg width="260" height="40" viewBox="0 0 260 40" fill="none"><path id="sigp" d="M 40 28 q 10 -26 20 0 t 20 0 q 10 -22 26 0 t 26 -2 q 10 -18 24 4 q 14 6 30 -6" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>';
@@ -447,72 +451,114 @@ function s6(d){const S=SC(),x=ctx(d);
 
 const SCENES={1:s1,2:s2,3:s3,4:s4,5:s5,6:s6};
 
-// ---------- overlay: HUD, captions, orb, grain, titles ----------
-let CUR=null,CAPS=[],ORB=null;
+// ---------- the one shot world: six rooms, a camera that travels between them, a thread of amber ----------
+const ORDER=[1,2,3,4,5,6];
+const ROOMX={};ORDER.forEach((n,i)=>ROOMX[n]=i*2300);
+// where the thread leaves a room and where it lands in the next one (room coordinates)
+const OUTP={1:[740,872],2:[960,560],3:[960,560],4:[1420,374],5:[1740,600]};
+const INP={2:[510,240],3:[960,400],4:[130,200],5:[960,430],6:[960,500]};
+const CAMP={1:[.045,0,0],2:[.02,-40,0],3:[-.03,0,0],4:[.03,30,-12],5:[.035,0,14],6:[.03,0,0]};
+const BASE=.78;
+let NARR=null,ST={},CAPS=[],THR=[];
+const sstep=u=>u*u*(3-2*u);
+function idle(n,t){const P=CAMP[n],kf=clamp(t/NARR[n].dur);return{cx:ROOMX[n]+960-P[1]*kf*1.3,cy:540-P[2]*kf*1.3,s:BASE*(1+P[0]*kf)}}
+function camera(T){
+  for(let i=1;i<6;i++){const t0=OFF[i+1]-1.1,t1=OFF[i+1]+.9;
+    if(T>=t0&&T<=t1){const u=(T-t0)/(t1-t0),e=sstep(u),A=idle(i,t0-OFF[i]),B=idle(i+1,t1-OFF[i+1]);
+      const m=1-e,cx=m*m*m*A.cx+3*m*m*e*(A.cx+900)+3*m*e*e*(B.cx-900)+e*e*e*B.cx,cy=m*m*m*A.cy+3*m*m*e*(A.cy-140)+3*m*e*e*(B.cy+140)+e*e*e*B.cy;
+      const dip=Math.sin(Math.PI*u);
+      return{cx,cy,s:lerp(A.s,B.s,e)*(1-.34*dip),roll:2.4*Math.sin(2*Math.PI*u),yaw:-9*dip,trans:i,u,dip}}}
+  let n=1;for(let i=1;i<6;i++)if(T>=OFF[i+1]+.9)n=i+1;
+  const I=idle(n,T-OFF[n]);return Object.assign({},I,{roll:0,yaw:0,trans:0,u:0,dip:0})}
+function sceneAt(T){let n=1;for(let i=1;i<6;i++)if(T>=OFF[i+1]-.25)n=i+1;return n}
+
 const orb=document.getElementById("orb");
 const AV=avatar(orb);
-const gr=document.createElement("canvas");gr.width=gr.height=200;{const g=gr.getContext("2d"),im=g.createImageData(200,200);let s=7;for(let i=0;i<im.data.length;i+=4){s=(s*16807)%2147483647;const v=(s%255);im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0)}
+const gr=document.createElement("canvas");gr.width=gr.height=200;{const g=gr.getContext("2d"),im=g.createImageData(200,200);let sd=7;for(let i=0;i<im.data.length;i+=4){sd=(sd*16807)%2147483647;const v=(sd%255);im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}g.putImageData(im,0,0)}
 document.getElementById("grain").style.backgroundImage="url("+gr.toDataURL()+")";
-function buildCaps(d){const box0=document.getElementById("caps");box0.innerHTML="";CAPS=[];
-  d.paras.forEach(p=>{let cur=[];const flush=()=>{if(cur.length){CAPS.push(cur);cur=[]}};
+function buildCaps(){const box0=document.getElementById("caps");box0.innerHTML="";CAPS=[];
+  ORDER.forEach(n=>{const d=NARR[n];d.paras.forEach(p=>{let cur=[];const chunks=[];const flush=()=>{if(cur.length){chunks.push(cur);cur=[]}};
     p.words.forEach(w=>{cur.push(w);const txt=cur.map(z=>z.t).join(" ");const end=/[.?!:]$/.test(w.t),comma=/[,;]$/.test(w.t);
-      if(end||cur.length>=7||(comma&&cur.length>=3)||txt.length>34)flush()});flush()});
-  CAPS=CAPS.map(ws=>{const e=document.createElement("div");e.className="cap";e.style.opacity=0;
-    e.innerHTML=ws.map(w=>"<span>"+w.t+"</span>").join("");box0.appendChild(e);return{ws,e,sp:[...e.children],a:ws[0].a-.08,b:ws[ws.length-1].b+.35}});
+      if(end||cur.length>=7||(comma&&cur.length>=3)||txt.length>34)flush()});flush();
+    chunks.forEach(ws=>{const e=document.createElement("div");e.className="cap";e.style.opacity=0;
+      e.innerHTML=ws.map(w=>"<span>"+w.t+"</span>").join("");box0.appendChild(e);
+      CAPS.push({n,ws,e,sp:[...e.children],a:OFF[n]+ws[0].a-.08,b:OFF[n]+ws[ws.length-1].b+.35,o:OFF[n]})})})});
   CAPS.forEach((c,i)=>{const nx=CAPS[i+1];if(nx&&nx.a<c.b)c.b=nx.a})}
-function overlay(n,t,d){
-  const g=OFF[n]+t;
-  document.getElementById("hudL").innerHTML='<span style="color:#e7c27a">0'+n+'</span> / 06 &nbsp; '+NAMES[n];
-  const mm=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0");
-  document.getElementById("hudR").textContent=mm(g)+" / "+mm(TOTAL);
-  document.getElementById("progF").style.width=(1740*clamp(g/TOTAL))+"px";
-  CAPS.forEach(c=>{const on=t>=c.a&&t<c.b;c.e.style.opacity=on?Math.min(1,(t-c.a)/.12):0;
-    if(on)c.sp.forEach((s,i)=>s.className=(t>=c.ws[i].a&&t<c.ws[i].b+.06)?"on":"")});
-  const env=d.env[Math.min(d.env.length-1,Math.floor(t*FPS))]||0;
-  AV(t,env);
-  const fr=Math.floor(t*FPS);document.getElementById("grain").style.transform="translate("+(-(fr*37%200))+"px,"+(-(fr*91%200))+"px)";
-  const CAM={1:[.045,0,0],2:[.02,-40,0],3:[-.03,0,0],4:[.03,30,-12],5:[.035,0,14],6:[.03,0,0]}[n],kf=t/d.dur;
-  let dx=CAM[1]*kf,dy=CAM[2]*kf,sc=.78*(1+CAM[0]*kf);
-  HITS.forEach(h=>{const q=t-h;if(q>=0&&q<.4){const am=8*Math.exp(-q*10);dx+=Math.sin(q*95)*am;dy+=Math.cos(q*83)*am*.6;sc*=1+.012*Math.exp(-q*12)}});
-  document.getElementById("stage").style.transform="translate("+dx+"px,"+dy+"px) scale("+sc+")";
-  // dust in the beam
-  DUST.forEach((e,i)=>{const x=((i*173+t*(8+(i%5)*3))%1960)-20,y=120+(((i*97)%840)-t*(5+(i%4)*2)+840*10)%840;e.style.left=x+"px";e.style.top=y+"px";e.style.opacity=.16+.16*Math.sin(t*1.3+i)})
-  // light leak sweeping through at the cuts
-  const lk=document.getElementById("leak");let lv=0,lp=0;if(t<1.6){lp=t/1.6;lv=Math.sin(lp*Math.PI)}else if(d.dur-t<1.2){lp=1-(d.dur-t)/1.2;lv=Math.sin(lp*Math.PI)*.8}
-  lk.style.opacity=lv*.9;lk.style.transform="translateX("+(lp*1500)+"px)";
-  // title card over the first seconds of a scene
+const DUST=[];for(let i=0;i<34;i++){const e=document.createElement("div");const z=2+(i%3);e.style.cssText="width:"+z+"px;height:"+z+"px;border-radius:50%;background:#f5f1e8;filter:blur(1px)";document.getElementById("dust").appendChild(e);DUST.push(e)}
+
+window.buildAll=narr=>{NARR=narr;S0.innerHTML="";document.getElementById("tags").innerHTML="";HITS=[];ST={};
+  ORDER.forEach(n=>{const room=box(ROOMX[n],0,1920,1080,"","",S0);CURP=room;CUROFF=OFF[n];ST[n]=SCENES[n](narr[n])});
+  CURP=S0;CUROFF=0;
+  ORDER.forEach(n=>{ST[n].dur=narr[n].dur;ST[n].run(-100)});
+  // the thread: leaves the last thing of a room, lands on the first thing of the next
+  const svg=sv("svg",{id:"thread",width:14000,height:1200,style:"position:absolute;left:0;top:0;overflow:visible"},S0);
+  THR=[];
+  for(let i=1;i<6;i++){const A=[ROOMX[i]+OUTP[i][0],OUTP[i][1]],B=[ROOMX[i+1]+INP[i+1][0],INP[i+1][1]];
+    const dd="M "+A[0]+" "+A[1]+" C "+(A[0]+800)+" "+(A[1]-60)+" "+(B[0]-800)+" "+(B[1]+60)+" "+B[0]+" "+B[1];
+    const glow=sv("path",{d:dd,fill:"none",stroke:"#e7c27a","stroke-width":22,"stroke-linecap":"round",opacity:.22},svg);
+    const core=sv("path",{d:dd,fill:"none",stroke:"#e7c27a","stroke-width":6,"stroke-linecap":"round"},svg);
+    const tip=sv("circle",{r:12,fill:"#fff3cf",opacity:0},svg);
+    const L=core.getTotalLength();[glow,core].forEach(e=>{e.setAttribute("stroke-dasharray",L);e.setAttribute("stroke-dashoffset",L)});
+    THR.push({i,glow,core,tip,L,t0:OFF[i+1]-1.1,t1:OFF[i+1]+.9})}
+  buildCaps()};
+
+window.render=T=>{
+  const n=sceneAt(T),d=NARR[n],t=T-OFF[n];
+  ORDER.forEach(k=>{const lt=T-OFF[k];if(lt>-4&&lt<NARR[k].dur+4)ST[k].run(lt)});
+  // beat
+  const bt=T/BEAT,ph=bt%1,pulse=Math.exp(-ph*5.5)*((bt%4)<1?1.7:1);
+  // camera
+  const C=camera(T);
+  let dx=0,dy=0,sc=C.s*(1+.0035*pulse);
+  HITS.forEach(h=>{const q=T-h;if(q>=0&&q<.4){const am=8*Math.exp(-q*10);dx+=Math.sin(q*95)*am;dy+=Math.cos(q*83)*am*.6;sc*=1+.012*Math.exp(-q*12)}});
+  document.getElementById("stage").style.transform="translate("+dx+"px,"+dy+"px) translate(960px,540px) rotateY("+C.yaw+"deg) rotateZ("+C.roll+"deg) scale("+sc+") translate("+(-C.cx)+"px,"+(-C.cy)+"px)";
+  document.querySelector(".grid").style.backgroundPosition=(-C.cx*.3)+"px "+(-C.cy*.3)+"px";
+  document.querySelector(".grid").style.opacity=.05+.035*pulse;
+  // thread
+  THR.forEach(h=>{const p=clamp((T-(h.t0+.12))/1.5),e=sstep(p),vis2=T<h.t1+.3?1:clamp((h.t1+1.2-T)/.9);
+    [h.glow,h.core].forEach(el=>el.setAttribute("stroke-dashoffset",h.L*(1-e)));
+    h.glow.style.opacity=.22*vis2;h.core.style.opacity=(T>h.t0?1:0)*vis2;
+    if(p>0&&p<1){const pt=h.core.getPointAtLength(h.L*e);h.tip.setAttribute("cx",pt.x);h.tip.setAttribute("cy",pt.y);h.tip.setAttribute("opacity",1)}else h.tip.setAttribute("opacity",0)});
+  // hud
+  document.getElementById("hudL").innerHTML='<span style="color:#e7c27a">0'+n+'</span> / 06 &nbsp; '+NAMES[n]+' &nbsp;<span style="color:#e7c27a;opacity:'+(.25+.75*pulse)+'">&#9679;</span>';
+  const mm=q=>String(Math.floor(q/60)).padStart(2,"0")+":"+String(Math.floor(q%60)).padStart(2,"0");
+  document.getElementById("hudR").textContent=mm(T)+" / "+mm(TOTAL);
+  document.getElementById("progF").style.width=(1740*clamp(T/TOTAL))+"px";
+  CAPS.forEach(c=>{const on=T>=c.a&&T<c.b;c.e.style.opacity=on?Math.min(1,(T-c.a)/.12):0;
+    if(on)c.sp.forEach((sp,i)=>sp.className=(T-c.o>=c.ws[i].a&&T-c.o<c.ws[i].b+.06)?"on":"")});
+  const env=d.env[Math.max(0,Math.min(d.env.length-1,Math.floor(t*FPS)))]||0;
+  AV(T,env);
+  const fr=Math.floor(T*FPS);document.getElementById("grain").style.transform="translate("+(-(fr*37%200))+"px,"+(-(fr*91%200))+"px)";
+  document.getElementById("grade").style.opacity=.85+.15*pulse;
+  DUST.forEach((e,i)=>{const x=(((i*173+T*(8+(i%5)*3)-C.cx*.04*(1+i%3))%1960)+1960)%1960-20,y=120+(((i*97)%840)-T*(5+(i%4)*2)+840*10)%840;e.style.left=x+"px";e.style.top=y+"px";e.style.opacity=.16+.16*Math.sin(T*1.3+i)});
+  const lk=document.getElementById("leak");lk.style.opacity=C.trans?C.dip*.85:0;lk.style.transform="translateX("+((C.u-.1)*1700)+"px)";
+  // title cards while the camera arrives in a room
   const lead=d.paras[0].a,ti=document.getElementById("title");
-  if(t<lead-.1&&n!="1"){
-    const k=Math.min(ease((t-.1)/.5),ease((lead-.2-t)/.5));
-    let h="";
-    if(n=="2"){const L=["GOOGLE JUST BUILT AN","AI LAWYER'S ASSISTANT.","WHO SIGNS?"];
-      h='<div class="c mono" style="top:196px;font-size:26px;letter-spacing:14px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">A LALUM FILM</div>'+L.map((s,i)=>'<div class="c h1" style="top:'+(290+i*120)+'px;font-size:92px;opacity:'+ease((t-.5-i*.6)/.4)+';color:'+(i==2?"#e7c27a":"#f5f1e8")+'">'+s+'</div>').join("")+'<div class="c mono" style="top:700px;font-size:24px;letter-spacing:10px;color:#e7c27a;opacity:'+ease((t-2.6)/.5)+'">ACT I</div>'}
+  if(t>=0&&t<lead-.1&&n!=1){
+    const k=Math.min(ease((t-.1)/.5),ease((lead-.2-t)/.5));let h="";
+    if(n==2){const L=["GOOGLE JUST BUILT AN","AI LAWYER'S ASSISTANT.","WHO SIGNS?"];
+      h='<div class="c mono" style="top:196px;font-size:26px;letter-spacing:14px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">A LALUM FILM</div>'+L.map((q,i)=>'<div class="c h1" style="top:'+(290+i*120)+'px;font-size:92px;opacity:'+ease((t-.5-i*.6)/.4)+';color:'+(i==2?"#e7c27a":"#f5f1e8")+'">'+q+'</div>').join("")+'<div class="c mono" style="top:700px;font-size:24px;letter-spacing:10px;color:#e7c27a;opacity:'+ease((t-2.6)/.5)+'">ACT I</div>'}
     else h=(ACT[n]?'<div class="c mono" style="top:300px;font-size:26px;letter-spacing:12px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">'+ACT[n]+'</div>':"")+'<div class="c mono" style="top:350px;font-size:30px;letter-spacing:10px;color:#e7c27a">0'+n+' / 06</div><div class="c big" style="top:410px;font-size:120px;opacity:'+ease((t-.3)/.5)+'">'+NAMES[n]+'</div><div style="left:760px;top:590px;width:'+(400*ease((t-.4)/.8))+'px;height:4px;background:#e7c27a"></div>';
     ti.innerHTML=h;ti.style.opacity=k}else{ti.innerHTML="";ti.style.opacity=0}
-  // fade through black at both ends of a scene
-  document.getElementById("world").style.opacity=Math.min(1,t/.3,(d.dur-t)/.5);
-}
-const DUST=[];for(let i=0;i<34;i++){const e=document.createElement("div");const z=2+(i%3);e.style.cssText="width:"+z+"px;height:"+z+"px;border-radius:50%;background:#f5f1e8;filter:blur(1px)";document.getElementById("dust").appendChild(e);DUST.push(e)}
-window.build=(n,d)=>{S0.innerHTML="";document.getElementById("tags").innerHTML="";HITS=[];WM.style.opacity=.5;CUR=SCENES[n](d);buildCaps(d);
-  window.render=t=>{CUR.run(t);overlay(n,t,d)}};
+  document.getElementById("world").style.opacity=Math.min(1,T/.5,(TOTAL-T)/.8);
+};
 </script></body></html>`;
 
-const want = (process.env.SCENES || "1,2,3,4,5,6").split(",");
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 page.on("pageerror", (e) => { console.error("PAGE ERROR", e.message); process.exit(1); });
 await page.setContent(html);
 await page.evaluate(() => document.fonts.ready);
-
-const build = (n) => page.evaluate(([s, d]) => window.build(s, d), [n, narr[n]]);
+await page.evaluate((nr) => window.buildAll(nr), narr);
 
 if (process.env.PREVIEW) {
+  // "3:10,50;5:20" local moments of a scene, or "G:123.4" for a global time
   for (const spec of process.env.PREVIEW.split(";")) {
     const [n, ts] = spec.split(":");
-    await build(n);
     for (const t of ts.split(",")) {
-      await page.evaluate((x) => window.render(x), Number(t));
-      await page.screenshot({ path: path.join(out, "preview", `s${n}-t${t}.png`) });
+      const T = n === "G" ? Number(t) : offsets[n] + Number(t);
+      await page.evaluate((x) => window.render(x), T);
+      await page.screenshot({ path: path.join(out, "preview", `${n === "G" ? "g" : "s" + n}-t${t}.png`) });
     }
   }
   await browser.close();
@@ -520,20 +566,19 @@ if (process.env.PREVIEW) {
   process.exit(0);
 }
 
-for (const n of want) {
-  const frames = path.join(process.env.TMPDIR || "/tmp", `lalum-yt-frames-${n}`);
-  if (existsSync(frames)) rmSync(frames, { recursive: true });
-  mkdirSync(frames, { recursive: true });
-  await build(n);
-  const total = Math.floor(narr[n].dur * FPS);
-  for (let i = 0; i < total; i++) {
-    await page.evaluate((t) => window.render(t), i / FPS);
-    await page.screenshot({ path: path.join(frames, `f${String(i).padStart(5, "0")}.jpg`), type: "jpeg", quality: 88 });
-  }
-  const file = path.join(out, `scene-${n}.mp4`);
-  execFileSync("ffmpeg", ["-v", "error", "-y", "-framerate", String(FPS), "-i", path.join(frames, "f%05d.jpg"),
-    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "medium", "-movflags", "+faststart", "-an", file], { stdio: "inherit" });
-  rmSync(frames, { recursive: true });
-  console.log("wrote", file);
+// RANGE="a-b" renders global frames a..b-1 into OUT/part-<a>.mp4 (default: the whole film)
+const totalFrames = Math.floor(TOTAL * FPS);
+const [fa, fb] = (process.env.RANGE || "0-" + totalFrames).split("-").map(Number);
+const frames = path.join(process.env.TMPDIR || "/tmp", `lalum-yt-frames-${fa}`);
+if (existsSync(frames)) rmSync(frames, { recursive: true });
+mkdirSync(frames, { recursive: true });
+for (let i = fa; i < Math.min(fb, totalFrames); i++) {
+  await page.evaluate((t) => window.render(t), i / FPS);
+  await page.screenshot({ path: path.join(frames, `f${String(i - fa).padStart(5, "0")}.jpg`), type: "jpeg", quality: 88 });
 }
+const file = path.join(out, `part-${String(fa).padStart(6, "0")}.mp4`);
+execFileSync("ffmpeg", ["-v", "error", "-y", "-framerate", String(FPS), "-i", path.join(frames, "f%05d.jpg"),
+  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "medium", "-movflags", "+faststart", "-an", file], { stdio: "inherit" });
+rmSync(frames, { recursive: true });
+console.log("wrote", file);
 await browser.close();
