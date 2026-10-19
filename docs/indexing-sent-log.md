@@ -56,23 +56,43 @@
 | 2026-08-31 | https://lalumapp.com/en/knowledge/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/en/book/ | נשלח |
 | 2026-08-31 | https://lalumapp.com/en/legal/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/legal-ai-client-confidentiality-privilege/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/legal-ai-contract-review-playbook/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/legal-ai-human-review-protocol/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/legal-ai-pricing-client-disclosure/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/legal-ai-tool-selection-test/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-drafted-real-estate-contract-review/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-real-estate-urban-renewal-legal-exposure/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/israel-land-authority-lease-capitalization-transfer/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/overseas-developer-contract-guarantees/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/pinui-binui-consideration-valuation/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/purchase-group-agreement-tax-risks/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-owners-representation/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-principles-vs-detailed-agreement/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/urban-renewal-required-majority-holdout/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-banking-finance-regulation-risk/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-clinical-system-deployment/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-diagnosis-imaging-clinical/ | נשלח |
-| 2026-10-17 | https://lalumapp.com/insights/ai-employee-evaluation-decisions/ | נשלח |
+| 2026-10-18 | https://lalumapp.com/insights/legal-ai-client-confidentiality-privilege/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/legal-ai-contract-review-playbook/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/legal-ai-human-review-protocol/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/legal-ai-pricing-client-disclosure/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/legal-ai-tool-selection-test/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-drafted-real-estate-contract-review/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-real-estate-urban-renewal-legal-exposure/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/delay-delivery-overseas-property-buyer-rights/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/developer-agreement-urban-renewal-critical-clauses/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/israel-land-authority-lease-capitalization-transfer/ | כבר ב-Google (דילוג; חלק מיום 1 נשלח ב-17.10, לא ידוע אילו) |
+| 2026-10-18 | https://lalumapp.com/insights/overseas-developer-contract-guarantees/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/pinui-binui-consideration-valuation/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/purchase-group-agreement-tax-risks/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/urban-renewal-owners-representation/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/urban-renewal-principles-vs-detailed-agreement/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/urban-renewal-required-majority-holdout/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-banking-finance-regulation-risk/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-clinical-system-deployment/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-diagnosis-imaging-clinical/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-employee-evaluation-decisions/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-employee-monitoring-privacy/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-health-data-privacy/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-healthcare-informed-consent/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-healthcare-liability-regulation/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-hr-overview-legal-exposure/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-insurance-underwriting-pricing-regulation/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-international-transactions-overview/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-marketing-advertising-privacy-deception-deepfake/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-recruitment-screening-discrimination/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-regulation-us-vs-eu-israeli-companies/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-vendor-agreement-dpa-liability-indemnity/ | נשלח |
+| 2026-10-18 | https://lalumapp.com/insights/lawyers-ai-ethics-accountability/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-local-authority-allocation-bias-equality/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-local-authority-tort-liability-damage/ | נשלח |
+| 2026-10-18 | https://lalumapp.com/insights/ai-municipal-chatbot-resident-liability/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-planning-permits-local-authority-discretion/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-privacy-impact-assessment-dpia-local-authority-guide/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-procurement-tender-local-authority/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/ai-resident-data-privacy-local-authority/ | כבר ב-Google (דילוג) |
+| 2026-10-18 | https://lalumapp.com/insights/suing-foreign-company-jurisdiction-service-enforcement/ | כבר ב-Google (דילוג) |
