@@ -143,6 +143,12 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  // Integrity probe: lets a deploy be checked against the repository without exposing anything but counts and
+  // hashes (of the verified case law and of the instructions). GET ?health=1 only.
+  if (req.method === "GET" && new URL(req.url).searchParams.get("health") === "1") {
+    const sha = async (t: string) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))).map((x) => x.toString(16).padStart(2, "0")).join("");
+    return json(200, { rulings: RULINGS.length, rulingsSha: await sha(JSON.stringify(RULINGS)), systemSha: await sha(SYSTEM), perPerson: DAILY_PER_PERSON, total: DAILY_TOTAL });
+  }
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
   // Daily usage counters, kept in Postgres (lalum_rate_limit, a hashed key per person, the same pattern as the

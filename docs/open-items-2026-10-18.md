@@ -4,10 +4,9 @@
 
 ## א. לבצע אתה (פקודה או לחיצה)
 
-### 1. פריסת `lalum-assistant` עם הגבלת הקצב והמונה (דחוף, אבטחה)
-- **בעיה:** הפונקציה החיה ציבורית לגמרי וללא מונה. הגבלת הקצב ממוזגת ב-[PR 1002](https://github.com/lalomavi-collab/desktop-tutorial/pull/1002), והמונה ו-31 הרשומות המסונכרנות ב-PR 1003. **יש לפרוס אחרי מיזוג 1003**, ואז הפריסה כוללת את שניהם. הנתונים בפונקציה החיה ישנים: אין בהם את הפסיקה שנוספה ב-987.
-- **איך:** מהמחשב שלך, בתיקיית `lalum-app`: `supabase functions deploy lalum-assistant --no-verify-jwt`. מדריך: https://supabase.com/docs/guides/functions/deploy
-- **בדיקה:** [לוח הפונקציות](https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions) יציג גרסה חדשה (מעל 58). שלח 31 הודעות מהירות מדפדפן אנונימי: ההודעה ה-31 צריכה להחזיר שגיאה.
+### 1. פריסת `lalum-assistant` (בוצע ואומת)
+- נפרסה גרסה 59 ב-19.10.2026. בדיקת בריאות חיה (`?health=1`) החזירה 31 פסיקות, `rulingsSha` ו-`systemSha` זהים לחישוב המקומי, 2 הודעות לאדם ביום ו-10 ביום לכלל הלקוחות.
+- אין צורך בפעולה. לבדיקה עצמית: https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions
 
 ### 2. אישור טלגרם לפניות מהאתר
 - **מצב:** בבדיקה החיה סומן `notified_at`, כלומר ה-API של טלגרם החזיר הצלחה, והסודות מוגדרים. נותר רק שתאשר שההודעה "ליד חדש מהאתר" הגיעה לצ׳אט שלך.
@@ -53,3 +52,41 @@
 
 ## ד. ראיון ה-cold-start
 - חלקים 1 עד 6 נענו. נשארו: הערכת השפעה ראשונה (`/ai-governance-legal:aia-generation`), בדיקת ספקים (`/ai-governance-legal:vendor-ai-review`) אחרי סעיפים 5 ו-6, וביקורת שנתית של מלאי המערכות. הקבצים: `docs/ai-governance/`.
+
+## ה. הוראות ל-Claude in Chrome (משימות שדורשות אותך)
+
+הדבק כל בלוק כפי שהוא ל-Claude in Chrome. הוא ייעצר ויבקש ממך כל הזנת סוד או אישור. אל תדביק לו ערכי סודות בצ׳אט.
+
+### משימה א. סודות פרסום ופוסט 016
+```
+פתח https://github.com/lalomavi-collab/desktop-tutorial/settings/secrets/actions
+בדוק אילו מהסודות הבאים קיימים: FACEBOOK_PAGE_ID, FACEBOOK_ACCESS_TOKEN, LINKEDIN_ACCESS_TOKEN, LINKEDIN_AUTHOR_URN.
+דווח לי רק אילו חסרים. אל תציג ערכים.
+לכל סוד חסר, לחץ New repository secret, הזן את השם, ועצור כדי שאני אדביק את הערך בעצמי.
+אחרי שהסודות קיימים, פתח https://github.com/lalomavi-collab/desktop-tutorial/actions/workflows/publish_post.yml
+לחץ Run workflow, בחר dry_run=true והפעל. המתן לסיום ודווח אם הצליח.
+אל תפעיל ריצה אמיתית בלי אישור שלי.
+```
+
+### משימה ב. אישור טלגרם
+```
+פתח את הצ׳אט שלי עם הבוט בטלגרם (web.telegram.org) וחפש הודעה "ליד חדש מהאתר". דווח אם קיימת ומתי.
+אם לא קיימת, פתח https://supabase.com/dashboard/project/meoymkcotomoluwlwues/functions/secrets
+ובדוק ששני השמות TELEGRAM_BOT_TOKEN ו-TELEGRAM_CHAT_ID קיימים. דווח רק על השמות.
+```
+
+### משימה ג. ספקי AI והסכם שכר הטרחה
+```
+פתח https://github.com/lalomavi-collab/desktop-tutorial/settings/secrets/actions
+רשום אילו שמות קיימים מתוך: GEMINI_API_KEY, GOOGLE_API_KEY, SYNTHESIA_API_KEY, OPENAI_API_KEY. שמות בלבד.
+אחר כך פתח https://www.anthropic.com/legal/commercial-terms ו-https://ai.google.dev/gemini-api/terms
+וסכם לכל ספק: האם הקלט משמש לאימון, תקופת שמירה, ומה צריך לעשות כדי לבטל אימון. ציין את הציטוט המדויק ואת הכתובת.
+```
+בסיום, שלח לי בצ׳אט הזה את הרשימה ואת סעיף ה-AI בהסכם שכר הטרחה, ואעדכן את `practice-profile.md`, `ai-systems.yaml` ואת המדיניות.
+
+### משימה ד. בדיקת אתר חי
+```
+פתח https://lalumapp.com בחלון 390 פיקסלים. ודא: סרגל עליון ישר עם שורת פקודה, פתיח עם הקליפ והכותרת "AI שאפשר להגן עליו.", ושבתחתית יש שבע לשוניות.
+בצ׳אט שלח שלוש הודעות. הראשונות שתיים אמורות להיענות, והשלישית אמורה להחזיר: "השירות נמצא כרגע בשלב פיילוט ולכן השימוש בו מוגבל".
+דווח מה קרה. אם ההודעה השלישית נענתה, זה כשל.
+```
