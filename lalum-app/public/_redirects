@@ -25,6 +25,23 @@
 /insights/topics/urban-renewal  /insights/topics/real-estate/  301
 /insights/topics/urban-renewal/  /insights/topics/real-estate/  301
 
+# --- Topic hubs: bare /topics/<slug>, missing the /insights prefix ---
+# Google Search Console's URL Inspection holds these four without the
+# /insights/ segment (404, verified: no route ever served a bare /topics/*
+# path, in this file's own history or in App.tsx) and reports the correct
+# address as not found when it is re-checked under the wrong path. Each
+# topic hub's real address starts with /insights/, so the one-hop 301 lands
+# on it directly rather than leaving a second indexable 404 for a page that
+# does exist, just not at the address being tested.
+/topics/real-estate  /insights/topics/real-estate/  301
+/topics/real-estate/  /insights/topics/real-estate/  301
+/topics/ai-governance  /insights/topics/ai-governance/  301
+/topics/ai-governance/  /insights/topics/ai-governance/  301
+/topics/contracts  /insights/topics/contracts/  301
+/topics/contracts/  /insights/topics/contracts/  301
+/topics/mediation  /insights/topics/mediation/  301
+/topics/mediation/  /insights/topics/mediation/  301
+
 # --- Duplicate article consolidated ---
 # The same piece was published twice under two titles: the bodies are 99.99%
 # identical, one character apart. The topical title survives; this URL keeps
