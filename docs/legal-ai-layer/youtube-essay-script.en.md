@@ -12,7 +12,7 @@ The brief's "grounding facts" were checked against Google Cloud's own press rele
 **Safe to state (verified, attribute to Google or Reuters):**
 * 25 Aug 2026: Google Cloud announced Gemini Enterprise for Legal, initially in preview.
 * Google's own words: agents that "complete work rather than return suggestions"; "a duty of confidentiality that does not bend for convenience".
-* Four building blocks as Google describes them: skills, connections, agents, a governed control plane. Connections inherit the permissions the firm already has.
+* Four building blocks as Google's blog describes them: skills, connections, agents, an open partner ecosystem, with a governed control plane running underneath all four. (The press release groups them differently: skills, connectors, third party agents and partners, governed platform. Use the blog's structure and attribute it to the blog.) Connections inherit the permissions the firm already has.
 * Connectors, as listed by Google (press release and blog, re-read 19 Oct 2026): iManage, NetDocuments, Docusign, RelativityOne, Everlaw, Thomson Reuters HighQ, CourtListener, Courtroom5, Harvey, Solve Intelligence, Legora; also Google Workspace and Microsoft 365. Attribute every name to Google ("Google lists"). Both sources are Google's own, so this proves what Google announced, not that each connector is live today (the product is in preview).
 * Google's control plane enforces VPC and CMEK; Google states customer data is "never used to train or fine-tune Google's foundation models". Say "Google says", never as an independent fact.
 * Workflows Google lists: contract review and negotiation, regulatory tracking, access requests, redaction in court filings, drafting NDAs.
@@ -64,7 +64,7 @@ Remember the first wave? You pasted a clause into a box. The box answered. You c
 
 An agent changes who moves.
 
-Google describes four building blocks. Skills, the know-how for a legal task. Connections, which plug the system into the tools a firm already uses. Agents, which run a task from start to finish. And a governed platform, a control plane, that sets what each one is allowed to touch.
+Google describes four building blocks. Skills, the know-how for a legal task. Connections, which plug the system into the tools a firm already uses. Agents, which carry a task through. And an open partner ecosystem around them. Underneath all four, Google puts a governed control plane that decides what each piece is allowed to touch.
 
 Notice what that last piece is. The pitch is not just "smarter". The pitch is "governed". Even Google understands that a legal agent without controls is a liability, not a product.
 
@@ -75,11 +75,11 @@ I will say plainly what this means. The chatbot era asked: can AI help me write?
 **B-roll / visual cues**
 * Split screen: left, a hand copy-pasting between windows (the old loop); right, a task card sliding across stages on its own.
 * Four blocks assemble into a stack, one at a time, as each is named.
-* Slow zoom on the top block, the control plane, as it lights amber.
+* The control plane base slab lights amber under all four.
 
 **On-screen text / kinetic graphics**
-* Left caption "2023: you move the text". Right caption "2026: the task moves".
-* Stack labels: SKILLS, CONNECTIONS, AGENTS, GOVERNED PLATFORM. Tag: "Per Google's description".
+* Left caption "The chatbot era: you move the text". Right caption "The agent era: the task moves". (No years: the dates of the "first wave" are not sourced.)
+* Stack labels: SKILLS, CONNECTIONS, AGENTS, OPEN PARTNER ECOSYSTEM, with GOVERNED CONTROL PLANE as the base. Tag: "Per Google's description".
 * List of workflows types in as a ticker: contract review, regulatory tracking, access requests, redaction, NDAs. Tag: "Workflows listed by Google".
 
 **GenAI prompts**
