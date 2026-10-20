@@ -42,13 +42,13 @@
 /* Arabic keeps Cairo and Markazi (the three faces below carry no Arabic). */
 html:is([data-style="sovereign"], [data-style="sage"]):not([lang="ar"]):has(.site-header) {
   --sans: "Heebo", system-ui, "Segoe UI", sans-serif;
-  --serif: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+  --serif: "Lalum Serif", "Frank Ruhl Libre", "David Libre", Georgia, serif;
 }
 html[lang="he"]:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) body {
   font-weight: 400;
 }
-/* Frank Ruhl Libre has real 400/500/700 faces, so Hebrew headings no longer
-   need Suez One's single heavy weight. Display sizes sit on 500. */
+/* Lalum Serif has real 400/500/700 faces, so Hebrew headings need no single
+   heavy weight. Display sizes sit on 500. */
 html:is([data-style="sovereign"], [data-style="sage"]):not([lang="ar"]):has(.site-header) :is(.h1, .h2, h1.serif, h2.serif) {
   font-weight: 500;
 }
