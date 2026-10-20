@@ -40,7 +40,8 @@
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",
     "crm-check": "node scripts/crm-check.mjs",
-    "password-check": "node scripts/password-check.mjs"
+    "password-check": "node scripts/password-check.mjs",
+    "mcp-check": "node scripts/mcp-check.mjs"
   },
   "dependencies": {
     "@accounter/shaam-uniform-format-generator": "0.2.6",
