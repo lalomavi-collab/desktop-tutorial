@@ -797,7 +797,7 @@ export const fr: Dict = {
     filmEyebrow: "Regarder",
     filmH2: "Une IA que vous pouvez défendre, en une minute",
     filmP: "Le moteur, la clinique et la salle de décision, comme une seule pratique.",
-    filmPlay: "Lancer le film (1 minute 11 secondes, narration en anglais par une voix d’IA)",
+    filmPlay: "Lancer le film (1 minute 11 secondes, narration en anglais par une voix d’IA, certaines personnes générées par IA)",
     filmPosterAlt: "Un film sur LALUM : des personnes au travail, le moteur, la clinique et la salle de décision.",
     founderName: "Dr. Avraham Lalum, Adv.",
     founderCreds1: "Avocat · Docteur en droit et économie",

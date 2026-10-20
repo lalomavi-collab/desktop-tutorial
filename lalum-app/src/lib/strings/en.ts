@@ -805,7 +805,7 @@ export const en = {
     filmEyebrow: "Watch",
     filmH2: "AI you can defend, in about a minute",
     filmP: "The engine, the clinic and the decision room, as one practice.",
-    filmPlay: "Play the film (1 minute 11 seconds, English narration by an AI voice)",
+    filmPlay: "Play the film (1 minute 11 seconds, English narration by an AI voice, some people AI generated)",
     filmPosterAlt: "A film about LALUM: people at work, the engine, the clinic and the decision room.",
     founderName: "Dr. Avraham Lalum, Adv.",
     founderCreds1: "Attorney · Ph.D. Law & Economics",
