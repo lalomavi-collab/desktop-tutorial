@@ -75,6 +75,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 <div id="world"><div id="stage"></div></div>
 ${logo}
 <div id="hud">
+  <div id="bridge" style="inset:0;opacity:0"><img style="position:absolute;left:0;top:0;width:1920px;height:1080px;object-fit:cover"></div>
   <div id="title" style="inset:0"></div>
   <div id="leak" style="left:-1920px;top:120px;width:3840px;height:840px;opacity:0;background:linear-gradient(100deg,rgba(231,194,122,0) 38%,rgba(240,170,90,.5) 50%,rgba(231,194,122,0) 62%)"></div>
   <div id="dust" style="inset:0"></div>
@@ -189,115 +190,98 @@ function P(S,key,x,y,s,a,b,extra){const pr=person(CURP,Object.assign({x:x,y:y,s:
 function slab(S,x,y,w,a,b,col){const e=box(x,y,w,16,"");e.style.cssText+=";background:"+(col||"#26402e")+";border-top:4px solid #4a7054;border-radius:6px";S.reg(e,a,b);return e}
 function chipAt(S,txt,x,y,a,b,cls){const e=box(x,y,0,0,"chip"+(cls?" "+cls:""),txt);S.reg(e,a,b);return e}
 
+// live action plates: frames of a generated clip (scripts/home-film-live-prep.sh) shown inside the room, so they
+// move with the camera. The frame is chosen from the time, so every render is deterministic. Always labelled.
+const PENDING=[];
+// key: one plate, or a list of plates that cut into each other inside the same frame (a second shot per room).
+// o.cuts: share of the time each shot gets (default equal). Missing plates are skipped; none left, no panel.
+function livePanel(S,key,x,y,w,h,a,b,o){o=o||{};const keys=[].concat(key).filter(k=>window.LIVE&&window.LIVE[k]);
+  if(!keys.length)return null;
+  const e=box(x,y,w,h,"","");e.style.cssText+=";overflow:hidden;border-radius:"+(o.r==null?18:o.r)+"px;"+(o.border===false?"":"border:2px solid #e7c27a;")+"box-shadow:0 30px 60px rgba(0,0,0,.55);background:#0b100c";
+  const ims=keys.map(()=>{const im=document.createElement("img");im.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:0";e.appendChild(im);return im});
+  const tg=box(0,h-44,w,44,"mono","AI-GENERATED PEOPLE");tg.style.cssText+=";font-size:17px;letter-spacing:4px;color:#e7c27a;padding:12px 22px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6))";e.appendChild(tg);
+  S.reg(e,a,b,o.d||.7);
+  const sp=o.speed||.5,last=keys.map(()=>"");
+  // start times of the shots inside the panel
+  const shares=o.cuts||keys.map(()=>1/keys.length);
+  S.fx.push(t=>{const end=b==null?(S.dur||20)-.3:b,span=Math.max(1,end-a),starts=[];let acc=0;shares.forEach(sh=>{starts.push(a+acc*span);acc+=sh});
+    keys.forEach((k,i)=>{const L=window.LIVE[k],t0=starts[i],t1=i<keys.length-1?starts[i+1]:1e9,xf=.45;
+      const vis=Math.min(clamp((t-t0)/xf+(i==0?1:0)),clamp((t1-t)/xf+(i==keys.length-1?1:0)));ims[i].style.opacity=vis;
+      if(vis<=0)return;
+      const f=Math.max(0,Math.min(L.n-1,Math.floor((t-t0)*sp*48))),src="http://live.local/"+k+"/"+String(f+1).padStart(4,"0")+".jpg";
+      if(src!==last[i]){last[i]=src;ims[i].src=src;PENDING.push(ims[i].decode().catch(()=>{}))}
+      ims[i].style.transform="scale("+(1+.05*Math.max(0,Math.min(1,(t-t0)/(L.n/48/sp+1))))+")"})});
+  return e}
+
 // ---------- scene 1: the morning ----------
 function s1(d){const S=SC(),x=ctx(d);
-  const tA=x.w(0,"ai you can defend");
   kin(S,"AI YOU CAN",[x.w(0,"ai"),x.w(0,"you"),x.w(0,"can")],160,100,1600,{size:96,out:x.a(1)-.2,h:140});
   kin(S,"DEFEND.",[x.w(0,"defend")],160,200,1600,{size:120,color:"#e7c27a",out:x.a(1)-.2,h:160});
-  // the foreground lawyer with the document, a desk, three colleagues behind her
-  slab(S,240,872,760,.1,null);slab(S,1010,716,880,.2,null,"#1f3326");
-  const L=P(S,"lawyer",560,650,1.25,.1,null,{propR:"paper",clip:190});
-  const A=P(S,"dev",1180,540,.7,.3,null,{clip:200}),B=P(S,"mgr",1450,530,.68,.4,null,{clip:200}),C=P(S,"aud",1730,540,.68,.5,null,{back:false,clip:200});
-  const walker=P(S,"client",1500,730,.62,x.w(1,"because"),null,{tie:null});
-  const doc=box(610,480,120,150,"","");doc.style.cssText+=";background:#f5f1e8;border-radius:6px;box-shadow:0 20px 40px rgba(0,0,0,.45)";
-  for(let i=0;i<4;i++){const ln=box(18,26+i*26,84,6,"","",doc);ln.style.background="#9aa597"}
-  S.reg(doc,x.w(0,"defend")+.4,null);
-  S.fx.push(t=>{
-    const rd=t>x.w(1,"someone")?1:0;
-    L.update(t,{look:{x:.3,y:.3},smile:.35,hr:{x:70,y:-60+Math.sin(t*1.3)*6},hl:{x:-70,y:166},ra:-8,tilt:2,brow:rd?.7:0});
-    A.update(t,{look:{x:-.4,y:.6},hl:{x:-60+Math.sin(t*9)*8,y:188},hr:{x:60-Math.sin(t*9)*8,y:188},tilt:2,grip:.5});
-    B.update(t,{look:{x:.2,y:-.1},hr:{x:60,y:-140},talk:Math.abs(Math.sin(t*5.3))*.8,smile:.2,tilt:-3});
-    C.update(t,{look:{x:-.5,y:.2},hl:{x:-60+Math.sin(t*7)*8,y:188},hr:{x:60-Math.sin(t*7)*8,y:188},grip:.5});
-    const w=((t*70)%1500);walker.wrap.style.left=(1900-w-150)+"px";walker.update(t,{lean:Math.sin(t*6)*2,look:{x:-.6,y:0},hl:{x:-50+Math.sin(t*6)*35,y:240},hr:{x:50-Math.sin(t*6)*35,y:240}});
-    doc.style.transform="translateY("+(Math.sin(t*1.3)*5)+"px) rotate("+(-8+Math.sin(t*.9)*2)+"deg)"});
+  livePanel(S,["office","x1"],432,372,1056,603,.2,null,{speed:.5,cuts:[.6,.4]});
   return S}
 
 // ---------- scene 2: the team ----------
 function s2(d){const S=SC(),x=ctx(d);
-  kin(S,"LEGAL AI IS THE AXIS.",x.ws(0,"legal ai is the axis"),160,105,1600,{size:96,color:"#e7c27a",out:x.a(1)-.2,h:150});
-  const tbl=box(300,830,1320,26,"");tbl.style.cssText+=";background:#26402e;border-top:5px solid #4a7054;border-radius:12px";S.reg(tbl,.2,null);
-  const dv=device(720,360,480,300,CURP);dv.wrap.style.opacity=1;
-  const scr=box(18,18,444,264,"","",dv.lid);scr.style.cssText+=";background:#0f1b14;border-radius:10px;overflow:hidden";
-  const rows=["USAGE POLICY","AUDIT","DOCUMENTATION"].map((tx,i)=>{const r=box(20,22+i*82,404,62,"mono",tx,scr);r.style.cssText+=";border:2px solid #3a5a42;border-radius:8px;color:#9aaa9c;font-size:24px;letter-spacing:4px;padding:14px 16px;opacity:0";return r});
-  const people=[["lawyer",360,640,.95,false],["mgr",1560,640,.95,true],["dev",640,580,.75,false],["aud",1280,580,.75,true]].map((q,i)=>{
-    const pr=P(S,q[0],q[1],q[2],q[3],.2+i*.15,null,{flip:q[4],clip:230,back:i>1});return pr});
+  kin(S,"AI AND LAW IS THE AXIS.",x.ws(0,"ai and law is the axis"),160,105,1600,{size:96,color:"#e7c27a",out:x.a(1)-.2,h:150});
+  livePanel(S,["team","x2"],120,262,1010,577,.2,null,{speed:.5,cuts:[.6,.4]});
   const tW=[x.w(1,"usage policy"),x.w(1,"audit"),x.w(1,"documentation")];
-  const chips=[["ADVISORY","advisory"],["ONGOING","ongoing accompaniment"],["TRAINING","and training"]];
-  chips.forEach((c,i)=>{const e=box(260+i*480,880,420,80,"chip",'<div class="lbl" style="margin-top:12px">'+c[0]+"</div>");S.reg(e,x.w(0,c[1]),x.a(1)-.2)});
-  S.fx.push(t=>{
-    rows.forEach((r,i)=>{const k=ease((t-tW[i])/.4);r.style.opacity=k;r.style.borderColor=k>0&&t<tW[i]+1.2?"#e7c27a":"#3a5a42"});
-    dv.sway(t);
-    const sp=t>tW[0]&&t<tW[0]+2.2;
-    people[0].update(t,{look:{x:.5,y:.1},hr:sp?{x:260,y:-30}:{x:70,y:215},smile:.4,tilt:2});
-    people[1].update(t,{look:{x:-.5,y:.1},hl:t>tW[1]?{x:-120,y:80+Math.sin(t*3)*5}:null,talk:t>tW[1]&&t<tW[1]+2?Math.abs(Math.sin(t*6))*.7:0,tilt:-3});
-    people[2].update(t,{tilt:Math.sin(t*1.4)*3,hl:{x:-60+Math.sin(t*8)*8,y:206},hr:{x:60-Math.sin(t*8)*8,y:206},grip:.5});
-    people[3].update(t,{tilt:Math.sin(t*1.1+1)*3})});
+  const rows=["USAGE POLICY","AUDIT","DOCUMENTATION"].map((tx,i)=>{const r=box(1260,290+i*170,540,120,"mono",tx);r.style.cssText+=";border:3px solid #3a5a42;border-radius:16px;background:#16241b;color:#9aaa9c;font-size:32px;letter-spacing:5px;padding:40px 30px;opacity:0";return r});
+  [["ADVISORY","advisory"],["ONGOING","ongoing accompaniment"],["TRAINING","and training"]].forEach((c,i)=>{const e=box(260+i*480,880,420,80,"chip",'<div class="lbl" style="margin-top:12px">'+c[0]+"</div>");S.reg(e,x.w(0,c[1]),x.a(1)-.2)});
+  S.fx.push(t=>{rows.forEach((r,i)=>{const k=ease((t-tW[i])/.4);r.style.opacity=k;r.style.borderColor=k>0&&t<tW[i]+1.2?"#e7c27a":"#3a5a42";r.style.color=k>0&&t<tW[i]+1.2?"#f5f1e8":"#9aaa9c"})});
   return S}
 
 // ---------- scene 3: the engine ----------
+// People only: five plates (d1 to d5) above the five stations, one per step. A missing plate leaves the station without it.
 function s3(d){const S=SC(),x=ctx(d),svg=layer(CURP);
   kin(S,"THE ENGINE RUNS",[x.w(0,"the engine"),x.w(0,"runs"),x.w(0,"inside")],160,120,1600,{size:92,out:x.a(1)-.2,h:150});
   kin(S,"INSIDE YOUR PRACTICE.",[x.w(0,"inside"),x.w(0,"your"),x.w(0,"practice")],160,225,1600,{size:92,color:"#e7c27a",out:x.a(1)-.2,h:150});
-  const NX=[250,610,970,1330,1690],NY=560,labels=["INTAKE","CLASSIFY","RISK FLAG","LAWYER DECIDES","TRAIL"];
+  const NX=[250,610,970,1330,1690],NY=600,labels=["INTAKE","CLASSIFY","RISK FLAG","LAWYER DECIDES","TRAIL"];
   const tt=[x.w(0,"engine")+.4,x.w(1,"it audits"),x.w(1,"exposure"),x.w(2,"and it puts"),x.w(1,"documented trail")];
+  NX.forEach((nx,i)=>livePanel(S,i==3?["d4","x3"]:"d"+(i+1),nx-165,215,330,290,i==0?x.a(1)-.1:tt[i]-.5,null,{speed:.5,r:12,cuts:[.6,.4]}));
   const nodes=NX.map((nx,i)=>{const e=box(nx-120,NY-60,240,120,"card"+(i==3?" am":""),'<div class="lbl" style="margin-top:38px;font-size:'+(i==3?24:28)+'px">'+labels[i]+"</div>");S.reg(e,tt[i]-.5,null);return e});
   for(let i=0;i<4;i++)bp(S,svg,"M "+(NX[i]+120)+" "+NY+" L "+(NX[i+1]-120)+" "+NY,tt[i]-.2,.6,{c:"#7fae86",o:.9,w:3});
-  // the recorded trail: a line under the whole flow that fills as the decisions are written down
-  const trail=bp(S,svg,"M "+(NX[0]-120)+" 760 L "+(NX[4]+120)+" 760",x.w(1,"documented trail"),1.8,{c:"#e7c27a",o:.9,w:4});
-  bpT(S,svg,"A DOCUMENTED TRAIL ON EVERY DECISION",960,806,x.w(1,"documented trail")+.6,{c:"#e7c27a",s:24,anchor:"middle"});
+  const trail=bp(S,svg,"M "+(NX[0]-120)+" 790 L "+(NX[4]+120)+" 790",x.w(1,"documented trail"),1.8,{c:"#e7c27a",o:.9,w:4});
+  bpT(S,svg,"A DOCUMENTED TRAIL ON EVERY DECISION",960,836,x.w(1,"documented trail")+.6,{c:"#e7c27a",s:24,anchor:"middle"});
   // the document that travels and stops only at the lawyer
   const doc=box(0,0,70,90,"","");doc.style.cssText+=";background:#f5f1e8;border-radius:6px;box-shadow:0 12px 24px rgba(0,0,0,.45)";S.reg(doc,.5,null);
   const stops=[NX[0],NX[1],NX[2],NX[3]],st=[tt[0],tt[1],tt[2],tt[3]];
-  const lawyer=P(S,"lawyer",NX[3],300,.85,x.w(1,"documented")-.3,null,{propR:"pen",clip:215});
-  const cl=P(S,"client",NX[0],330,.6,tt[0]-.4,null,{propR:"paper",clip:200}),au=P(S,"mgr",NX[4],330,.6,x.w(1,"documented")-.3,null,{clip:200}),a1=P(S,"aud",NX[1]-60,330,.6,tt[1]-.4,null,{back:true,clip:200}),a2=P(S,"dev",NX[2]+60,330,.6,tt[2]-.4,null,{clip:200});
   const stamp=box(NX[3]-70,NY+70,140,50,"mono","APPROVED");stamp.style.cssText+=";border:4px solid #9cc29f;color:#9cc29f;font-size:26px;letter-spacing:4px;text-align:center;padding-top:6px;border-radius:8px;transform:rotate(-8deg)";S.reg(stamp,x.w(2,"with the lawyer"),null);
   kin(S,"WITH THE LAWYER.",x.ws(2,"with the lawyer"),160,900,1600,{size:70,color:"#e7c27a",h:110});
   S.fx.push(t=>{
-    let px=stops[0],k=0;for(let i=0;i<3;i++){const u=ease((t-st[i+1]+.5)/.9);if(u>0)px=lerp(stops[i],stops[i+1],u)}
+    let px=stops[0];for(let i=0;i<3;i++){const u=ease((t-st[i+1]+.5)/.9);if(u>0)px=lerp(stops[i],stops[i+1],u)}
     doc.style.left=(px-35)+"px";doc.style.top=(NY-45+Math.sin(t*3)*4)+"px";
-    nodes.forEach((n,i)=>{const on=t>tt[i]&&(i==3||t<tt[i]+1.5);n.style.borderColor=(i==3&&t>tt[3])?"#e7c27a":(on?"#9cc29f":"#3a5a42")});
-    const sg=t>tt[3]+.6&&t<tt[3]+1.9;
-    lawyer.update(t,{look:{x:-.3,y:.4},hr:sg?{x:-30,y:150+Math.sin(t*16)*6}:{x:70,y:-20},smile:.3,tilt:2,ra:sg?20:0});
-    a1.update(t,{tilt:Math.sin(t*1.3)*2});cl.update(t,{look:{x:.5,y:.2},hr:{x:60,y:-30+Math.sin(t*1.6)*8},ra:-8,smile:.4,tilt:2});au.update(t,{look:{x:-.5,y:.1},hl:{x:-50,y:60+Math.sin(t*3)*6},smile:.3,tilt:-2});a2.update(t,{look:{x:-.4,y:.2},hl:{x:-60+Math.sin(t*8)*8,y:190},hr:{x:60-Math.sin(t*8)*8,y:190},grip:.5})});
+    nodes.forEach((n,i)=>{const on=t>tt[i]&&(i==3||t<tt[i]+1.5);n.style.borderColor=(i==3&&t>tt[3])?"#e7c27a":(on?"#9cc29f":"#3a5a42")})});
   return S}
 
 // ---------- scene 4: the clinic ----------
+// People only: e1 a consultation, e2 a training room.
 function s4(d){const S=SC(),x=ctx(d);
-  kin(S,"THE CLINIC",x.ws(0,"that is the clinic"),160,120,1600,{size:112,color:"#e7c27a",out:x.a(1)-.2,h:170});
-  slab(S,200,860,900,.2,null);
-  const L=P(S,"lawyer",440,640,1.0,.2,null,{propR:"pen",clip:215}),C=P(S,"client",940,660,.95,.35,null,{flip:true,clip:215});
-  const board=box(1220,300,560,320,"card","",CURP);S.reg(board,.3,null);
-  ["ADVISORY","ONGOING","TRAINING"].forEach((tx,i)=>{const r=box(36,34+i*92,488,64,"mono",tx,board);r.style.cssText+=";border:2px solid #3a5a42;border-radius:10px;color:#9aaa9c;font-size:26px;letter-spacing:5px;padding:14px 18px;opacity:0";r.dataset.k=i;S.fx.push(t=>{const tm=[x.w(0,"advisory"),x.w(0,"ongoing accompaniment"),x.w(0,"and training")][i],k=ease((t-tm)/.4);r.style.opacity=k;r.style.borderColor=(k>0&&t<tm+1.3)?"#e7c27a":"#3a5a42";r.style.color=(k>0&&t<tm+1.3)?"#f5f1e8":"#9aaa9c"})});
-  const pres=P(S,"pres",1500,760,.7,.4,null,{clip:210});
-  const aud=[1300,1500,1700].map((px,i)=>P(S,["dev","mgr","aud"][i],px,970,.62,.45+i*.05,null,{back:true,clip:180}));
-  const tQ=x.w(1,"real questions");
-  S.fx.push(t=>{
-    const ta=Math.abs(Math.sin(t*4.1))>.35,tb=!ta;
-    L.update(t,{look:{x:.5,y:.1},talk:ta&&t>tQ-1?Math.abs(Math.sin(t*9))*.7:0,hr:{x:80,y:20+Math.sin(t*2)*10},smile:.35,tilt:2});
-    C.update(t,{look:{x:-.5,y:.1},talk:tb&&t>tQ?Math.abs(Math.sin(t*8))*.6:0,smile:.3,tilt:-2,hl:{x:-50,y:200}});
-    pres.update(t,{look:{x:-.3,y:0},talk:Math.abs(Math.sin(t*5))*.6,hl:{x:-200,y:-40+Math.sin(t*2)*18},smile:.3});
-    aud.forEach((a,i)=>a.update(t,{tilt:Math.sin(t*1.2+i*2)*3+((t+i)%4<.4?4:0)}))});
+  kin(S,"THE CLINIC",x.ws(0,"that is the clinic"),160,110,1600,{size:112,color:"#e7c27a",out:x.a(1)-.2,h:170});
+  livePanel(S,["e1","x4"],130,300,880,495,.3,null,{speed:.5,cuts:[.65,.35]});
+  livePanel(S,["e2","x5"],1060,300,730,411,.45,null,{speed:.5,cuts:[.65,.35]});
+  const chips=[["ADVISORY","advisory"],["ONGOING","ongoing accompaniment"],["TRAINING","and training"]].map((c,i)=>{const e=box(260+i*480,860,420,80,"chip",'<div class="lbl" style="margin-top:12px">'+c[0]+"</div>");S.reg(e,.3,null);return e});
+  const tm=[x.w(0,"advisory"),x.w(0,"ongoing accompaniment"),x.w(0,"and training")];
+  S.fx.push(t=>{chips.forEach((e,i)=>{const on=t>tm[i]&&t<tm[i]+1.3;e.style.borderColor=on?"#e7c27a":"#3a5a42";e.style.color=on?"#f5f1e8":"#9aaa9c"})});
+  kin(S,"REAL QUESTIONS, ANSWERED BY A PERSON.",x.ws(1,"real questions answered by a person"),160,150,1600,{size:56,color:"#e7c27a",h:90});
   return S}
 
 // ---------- scene 5: the decision room ----------
+// People only: f1 a person at a laptop, then the closing corridor (walk) behind the wordmark.
 function s5(d){const S=SC(),x=ctx(d);
   kin(S,"EIGHT QUESTIONS.",x.ws(0,"eight questions"),160,100,1600,{size:84,out:x.a(1)-.2,h:130});
   kin(S,"TWO MINUTES.",x.ws(0,"two minutes"),160,190,1600,{size:84,color:"#e7c27a",out:x.a(1)-.2,h:130});
   kin(S,"THEN WE TALK.",x.ws(0,"then we talk"),160,280,1600,{size:84,out:x.a(1)-.2,h:130});
-  slab(S,560,872,800,.1,null);
-  const dv=device(700,430,520,300,CURP);
-  const scr=box(22,22,476,256,"","",dv.lid);scr.style.cssText+=";background:#0f1b14;border-radius:10px;overflow:hidden";
-  const qn=box(0,30,476,110,"c big","1 / 8",scr);qn.style.fontSize="96px";
-  const bar=box(30,190,416,16,"bar","",scr);bar.style.width="0px";
-  const you=P(S,"client",380,700,1.05,.1,null,{flip:false,clip:215}),lw=P(S,"lawyer",1540,700,1.05,x.w(0,"then we talk"),null,{flip:true,clip:215,propR:"pen"});
+  livePanel(S,["f1","x6","x7"],200,420,840,473,.1,null,{speed:.5,cuts:[.4,.3,.3]});
+  const card=box(1130,470,560,300,"card");S.reg(card,.1,null);
+  const qn=box(0,50,560,130,"c big","1 / 8",card);qn.style.fontSize="104px";
+  const bar=box(40,230,480,16,"bar","",card);bar.style.width="0px";
   const tA=x.a(0)+.2,tB=x.w(0,"then we talk");
+  livePanel(S,"walk",0,0,1920,1080,x.w(1,"start at")-.3,null,{speed:.5,r:0,border:false,d:.9});
+  const shade=box(0,0,1920,1080,"","");shade.style.background="rgba(8,12,9,.5)";S.reg(shade,x.w(1,"start at")-.3,null,.9);
   const el=box(700,470,520,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:520px;opacity:1"');S.reg(el,x.w(1,"start at"),null,1);
   S.reg(box(0,690,W,80,"c h2","lalumapp.com"),x.w(1,"lalumappcom"),null);
   S.fx.push(t=>{
-    const q=clamp((t-tA)/(tB-tA-.4));const n=Math.min(8,1+Math.floor(q*8));qn.textContent=n+" / 8";bar.style.width=(416*q)+"px";
-    dv.sway(t);dv.wrap.style.opacity=t>x.w(1,"start at")-.2?Math.max(0,1-(t-x.w(1,"start at")+.2)*2):1;
-    you.update(t,{look:{x:.4,y:.3},hl:{x:-40+Math.sin(t*10)*8,y:196},hr:{x:70,y:198-Math.sin(t*10)*8},smile:.2,tilt:2,grip:.5});
-    lw.update(t,{look:{x:-.5,y:0},smile:.5,tilt:-2,hl:t>tB?{x:-70,y:-90}:null,brow:t>tB?.6:0})});
+    const q=clamp((t-tA)/(tB-tA-.4));const n=Math.min(8,1+Math.floor(q*8));qn.textContent=n+" / 8";bar.style.width=(480*q)+"px"});
   return S}
 
 const SCENES={1:s1,2:s2,3:s3,4:s4,5:s5};
@@ -327,6 +311,7 @@ function sceneAt(T){let n=1;for(let i=1;i<5;i++)if(T>=OFF[i+1]-.25)n=i+1;return 
   const oct=[8,16,32,64].map(n=>{const a=[];for(let i=0;i<(n+1)*(n+1);i++)a.push(R());return{n:n,a:a}});
   for(let y=0;y<512;y++)for(let x=0;x<512;x++){let v=0,ws=0;oct.forEach((o,k)=>{const fx=x/512*o.n,fy=y/512*o.n,ix=Math.floor(fx),iy=Math.floor(fy),tx=fx-ix,ty=fy-iy,N=o.n+1,a=o.a,v00=a[iy*N+ix],v10=a[iy*N+ix+1],v01=a[(iy+1)*N+ix],v11=a[(iy+1)*N+ix+1],w=1/(k+1);v+=w*((v00*(1-tx)+v10*tx)*(1-ty)+(v01*(1-tx)+v11*tx)*ty);ws+=w});
     const g8=Math.floor(v/ws*255),i=(y*512+x)*4;im.data[i]=im.data[i+1]=im.data[i+2]=g8;im.data[i+3]=255}g.putImageData(im,0,0);document.getElementById("tex").style.backgroundImage="url("+c.toDataURL()+")"})();
+const BRIDGE={2:"b1",4:"b2"};
 const SPOTX={1:560,2:650,3:760,4:900,5:900};
 const orb=document.getElementById("orb");
 const AV=avatar(orb);
@@ -382,6 +367,12 @@ window.render=T=>{
     h.glow.style.opacity=.22*vis2;h.core.style.opacity=(T>h.t0?1:0)*vis2;
     const nv=(T>h.t0-.4&&T<h.t1+1.2)?1:0,nr=1+.5*Math.sin(T*8);h.nodeA.setAttribute("opacity",nv*.9*vis2);h.nodeB.setAttribute("opacity",(T>h.t0+.9?1:0)*nv*.9*vis2);h.nodeA.setAttribute("r",18*nr);h.nodeB.setAttribute("r",18*nr);
     if(p>0&&p<1){const pt=h.core.getPointAtLength(h.L*e);h.tip.setAttribute("cx",pt.x);h.tip.setAttribute("cy",pt.y);h.tip.setAttribute("opacity",1)}else h.tip.setAttribute("opacity",0)});
+  // connecting shots: while the camera travels between two rooms, a short live plate cuts in over the sweep
+  (function(){const br=document.getElementById("bridge"),key=BRIDGE[C.trans],L=key&&window.LIVE&&window.LIVE[key];
+    if(!C.trans||!L){br.style.opacity=0;return}
+    const f=Math.max(0,Math.min(L.n-1,Math.floor(C.u*95))),src="http://live.local/"+key+"/"+String(f+1).padStart(4,"0")+".jpg",im=br.firstChild;
+    if(im.getAttribute("src")!==src){im.setAttribute("src",src);PENDING.push(im.decode().catch(()=>{}))}
+    br.style.opacity=Math.pow(Math.sin(Math.PI*C.u),.6)*.95})();
   // hud
   
   const mm=q=>String(Math.floor(q/60)).padStart(2,"0")+":"+String(Math.floor(q%60)).padStart(2,"0");
@@ -396,13 +387,19 @@ window.render=T=>{
   DUST.forEach((e,i)=>{const x=(((i*173+T*(8+(i%5)*3)-C.cx*.04*(1+i%3))%1960)+1960)%1960-20,y=120+(((i*97)%840)-T*(5+(i%4)*2)+840*10)%840;e.style.left=x+"px";e.style.top=y+"px";e.style.opacity=.16+.16*Math.sin(T*1.3+i)});
   const lk=document.getElementById("leak");lk.style.opacity=C.trans?C.dip*.85:0;lk.style.transform="translateX("+((C.u-.1)*1700)+"px)";
   document.getElementById("world").style.opacity=Math.min(1,T/.5,(TOTAL-T)/1.2);
+  return Promise.all(PENDING.splice(0));
 };
 </script></body></html>`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 page.on("pageerror", (e) => { console.error("PAGE ERROR", e.message); process.exit(1); });
+const LIVEDIR = process.env.LIVE || "/tmp/hf-live";
+const liveCfg = {};
+if (existsSync(LIVEDIR)) for (const k of readdirSync(LIVEDIR)) { const n = readdirSync(path.join(LIVEDIR, k)).filter((f) => f.endsWith(".jpg")).length; if (n) liveCfg[k] = { n }; }
+await page.route("http://live.local/**", (route) => route.fulfill({ path: path.join(LIVEDIR, new URL(route.request().url()).pathname) }));
 await page.setContent(html);
+await page.evaluate((c) => { window.LIVE = c; }, liveCfg);
 await page.evaluate(() => document.fonts.ready);
 await page.evaluate((nr) => window.buildAll(nr), narr);
 

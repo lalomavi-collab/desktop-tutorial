@@ -195,14 +195,14 @@ systems:
     name: "Synthesia avatar video (daily_avatar_video.py)"
     owner: "Dr. Avraham Lalum"
     description: "Daily video of an avatar that simulates the owner"
-    status: in_production
+    status: planned
     eu_nexus: true
     role: deployer
     role_basis: "Uses Synthesia's system to publish synthetic content of a person [verify against current AI Act text]"
     tier: limited
     tier_basis: "Deepfake-type content: Art. 50(4) disclosure to viewers [verify against current AI Act text]"
     obligations_assessed: false
-    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: conspicuous disclosure that the video is synthetic. Code check 2026-10-19: the script creates the video as private and never publishes it; it sends a link to the owner on Telegram. Disclosure now appears in the Synthesia description and as a pre-publication reminder in the Telegram message; the on-screen caption is added by the owner at publication."
+    obligations_note: "Proposed 2026-10-18 under owner delegation (not individually confirmed). Registry rule: conspicuous disclosure that the video is synthetic. Code check 2026-10-19: the script creates the video as private and never publishes it; it sends a link to the owner on Telegram. Status check 2026-10-20: NOT running. The Synthesia account is on the Basic plan with no personal avatar (0/1), no SYNTHESIA_API_KEY secret exists in the repository, and avatar-config/soul_config.json has no avatar_id (status not_trained), so the script cannot run. Re-assess before activation. Disclosure now appears in the Synthesia description and as a pre-publication reminder in the Telegram message; the on-screen caption is added by the owner at publication."
     next_review: "2027-01-18"
     review_trigger: "on substantial modification or annually"
     created: "2026-10-18"

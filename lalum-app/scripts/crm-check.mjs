@@ -6,6 +6,7 @@ import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
 import { partnerFinance } from "../src/lib/cockpit/crmFinanceCore.ts";
 import { parseOverview, parseMatterWip, rpcFailure } from "../src/lib/cockpit/billingWipCore.ts";
 import { isUuid, timeSummary, hours, stageIndex } from "../src/lib/cockpit/matter360Core.ts";
+import { parseHoursIndex, ratios, totals, flags, fmtHM, fmtPct, monthRange, billableFor, clockError } from "../src/lib/cockpit/hoursIndexCore.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const today = new Date(2026, 9, 10); // Saturday 10 Oct 2026
@@ -121,4 +122,64 @@ t("an RPC missing from the database reads as unavailable, a refusal as denied", 
   assert.equal(rpcFailure({ code: "42883", message: "function does not exist" }), "unavailable");
   assert.equal(rpcFailure({ code: "P0001", message: "FORBIDDEN" }), "denied");
   assert.equal(rpcFailure(null), "denied");
+});
+
+const hoursRpc = {
+  from: "2026-10-01", to: "2026-10-31",
+  people: [
+    { name: "א", role: "ATTORNEY", attendance_minutes: 480, attendance_days: 1, open_sessions: 0, logged_minutes: 600, billable_minutes: 588, billed_minutes: 0, draft_minutes: 0, written_off_minutes: 0, value: "4900.00", entries_without_rate: 0, days_over: 1, days_no_attendance: 1 },
+    { name: "ב", role: "ATTORNEY", attendance_minutes: 0, attendance_days: 0, open_sessions: 1, logged_minutes: 0, billable_minutes: 0, billed_minutes: 0, draft_minutes: 90, written_off_minutes: 0, value: 0, entries_without_rate: 2, days_over: 0, days_no_attendance: 0 },
+  ],
+  matters: [{ matter_id: "m1", matter_code: "A-1", title: "t", fee_model: "hourly", people: 1, logged_minutes: 600, billable_minutes: 588, billed_minutes: 0, written_off_minutes: 0, value: 4900 }],
+  split: [{ matter_id: "m1", name: "א", logged_minutes: 600, billable_minutes: 588 }],
+};
+t("hours index parses to numbers and rejects non-objects", () => {
+  const h = parseHoursIndex(hoursRpc);
+  assert.equal(h.people[0].value, 4900);
+  assert.equal(h.matters[0].feeModel, "hourly");
+  assert.equal(h.split[0].logged, 600);
+  assert.equal(parseHoursIndex(null), null);
+  assert.equal(parseHoursIndex([]), null);
+});
+t("hours ratios: presence, logged and billable stay separate, and no denominator means no figure", () => {
+  const [a, b] = parseHoursIndex(hoursRpc).people;
+  const ra = ratios(a);
+  assert.equal(ra.unallocated, 0); // logged above presence is a flag, never a negative gap
+  assert.equal(ra.utilization, 600 / 480);
+  assert.equal(ra.billableShare, 588 / 600);
+  const rb = ratios(b);
+  assert.equal(rb.utilization, null);
+  assert.equal(rb.billableShare, null);
+  assert.equal(rb.billableOfAttendance, null);
+  assert.equal(ratios({ attendance: 480, logged: 300, billable: 240 }).unallocated, 180);
+  assert.equal(fmtPct(null), "אין נתון");
+  assert.equal(fmtPct(0.5), "50%");
+});
+t("hours totals add up and the flags name what needs the partner", () => {
+  const { people } = parseHoursIndex(hoursRpc);
+  const tot = totals(people);
+  assert.equal(tot.logged, 600);
+  assert.equal(tot.draft, 90);
+  assert.equal(tot.value, 4900);
+  assert.equal(tot.openSessions, 1);
+  assert.equal(flags(people[0]).length, 2);
+  assert.equal(flags(people[1]).length, 3);
+  assert.deepEqual(flags({ ...people[0], daysOver: 0, daysNoAttendance: 0 }), []);
+});
+t("hours formatting, month range and billable rounding follow the 6 minute rule", () => {
+  assert.equal(fmtHM(450), "7:30");
+  assert.equal(fmtHM(5), "0:05");
+  assert.deepEqual(monthRange(new Date(2026, 9, 20)), { from: "2026-10-01", to: "2026-10-31" });
+  assert.deepEqual(monthRange(new Date(2026, 9, 20), -1), { from: "2026-09-01", to: "2026-09-30" });
+  assert.deepEqual(monthRange(new Date(2026, 0, 5), -1), { from: "2025-12-01", to: "2025-12-31" });
+  assert.equal(billableFor(1), 0); // under 6 minutes worked, no whole unit fits under the worked time
+  assert.equal(billableFor(60), 60);
+  assert.equal(billableFor(63), 60);
+  assert.equal(billableFor(65), 60);
+  for (let w = 1; w <= 1440; w++) { const b = billableFor(w); assert.ok(b % 6 === 0 && b <= w, `worked ${w} gave ${b}`); }
+});
+t("clock errors read as Hebrew and never leak raw database text", () => {
+  assert.match(clockError({ message: "ALREADY_CLOCKED_IN" }), /החתמת כניסה/);
+  assert.match(clockError("xx SESSION_TOO_LONG_NEEDS_CORRECTION xx"), /24 שעות/);
+  assert.equal(clockError("duplicate key value violates unique constraint"), "הפעולה נכשלה.");
 });

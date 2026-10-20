@@ -48,13 +48,93 @@ Status of each fact is marked. Nothing here is legal advice.
   send, far more than drafting needs, an unjustified exposure for a mailbox that holds client correspondence). The
   owner sent it manually instead, 16 October 2026, 09:29 Israel time, to `mokedmh@shaam.gov.il` (a general Tax
   Authority service address found by web search, not an address this project independently verified as the correct
-  one for software-house questions specifically). Awaiting a reply.
-  Separately blocked on the client side: this working environment cannot reach gov.il at all (outbound network
+  one for software-house questions specifically).
+- 19 October 2026: the owner also sent a more detailed version of the same question, from a personal Gmail account
+  (`lalomavi@gmail.com`, not the firm's own Outlook), to `APISupport@taxes.gov.il` and `lakohot-bt@taxes.gov.il`.
+  These are the verified correct addresses for this team: a reply came back the same day from `APISupport@taxes.gov.il`
+  (signed "מלכה"). The reply answers part of the question, not all of it:
+  - Registering as a software house (needed for the production environment) is not handled by this team; call the
+    Tax Authority's general line, `*4954`, for that track.
+  - The sandbox/test environment is different: any user can register there directly, no software-house registration
+    needed. Registration is self-serve at `https://openapi-portal.taxes.gov.il/sandbox` (CREATE ACCOUNT & SIGN IN),
+    with a reply expected within 5 business days. This is very likely why the registration screen the owner found
+    showed no software-house-specific fields with sensible self-use answers: that screen was probably the sandbox
+    flow, which does not carry the "number of users" question. The production software-house registration (where
+    that field most likely lives) is a separate, later step, consistent with the plan to hold that off until just
+    before the 2027-01-01 switch.
+  - The other five questions in the owner's email (software registration number field, the correct host for test vs.
+    production, access/refresh token lifetimes, whether a registered intermediary service may be used, expected
+    turnaround and cost) were not answered in this reply and remain open.
+  - The owner completed sandbox registration at the link above on 20 October 2026, via a separate browser session
+    (not blocked by this environment's network policy, which still cannot reach any `gov.il` host). Awaiting the
+    Tax Authority's response, up to 5 business days per their own reply.
+  - Still on 20 October 2026, via that same separate browser session (the working environment here still cannot
+    reach any `gov.il` host directly), the owner signed in to the portal and browsed the authenticated API Products
+    catalog: 21 products, confirmed under business number `031471261` (matches the practice's own number, see
+    above). The signed-out catalog shows only 4 of these, among them `EilatInvoices` (`EilatInvoiceApprovalApi`),
+    which is scoped to Eilat free-trade-zone transactions, not the general invoice call. The likely candidate for
+    the general allocation-number call is a different product, `invoices_approval`, whose listed services are
+    `Invoices v2` and `Multi-invoices v2` (also `invoice-information v1`, `InvoiceDecisionApi v1`,
+    `MultiInvoiceInformationApi v1`); a separate product plainly named `Invoices` appears to be query/information
+    only. The portal's own Name search is unreliable (searching "Invoice" returned no results although matching
+    products exist) so filtering by name should not be trusted; browsing the full catalog (21 products, one page
+    at 75 items per page) is.
+  - Still on 20 October 2026, the same browser session opened `Invoices v2`'s own OpenAPI 3.0.1 definition on the
+    product page (`https://openapi-portal.taxes.gov.il/sandbox/product/28607/api/18168`) and read it directly, in
+    page memory, no file saved. This confirms the candidate above: the service is titled "Allocation Number
+    Retrieval Service for Invoices (Supplier Side)".
+    - Call: `POST /Invoices/v2/Approval`. Sandbox host: `https://openapi.taxes.gov.il/shaam/tsandbox/Invoices/v2/Approval`
+      (the same path also exists under `t-ita-api.taxes.gov.il` and `ita-api.taxes.gov.il`). The same service also
+      exposes `GET /Invoices/v2/health` and `GET /Invoices/v2/alive`.
+    - Request body (`InvoiceRequest`), 13 required fields: `invoice_id` (string, up to 50 chars, internal/temporary
+      bookkeeping reference), `invoice_type` (one of the fixed codes 300, 305, 310, 320, 330, 332, 340, 345, 348),
+      `vat_number`, `invoice_reference_number` (string, up to 20 chars, the mandatory reference number noted
+      above), `customer_vat_number`, `invoice_date`, `invoice_issuance_date` (`YYYY-MM-DD`),
+      `accounting_software_number` (int32, matches this design's own field of the same name), `amount_before_discount`,
+      `discount`, `payment_amount`, `vat_amount`, `payment_amount_including_vat` (amounts as doubles). Optional
+      fields include `action` (0, 3 or 4), customer/company identifiers, delivery/transport fields, up to three
+      `additional_information*` fields reserved for future use, and an `items[]` array of invoice lines
+      (`InvoiceItem`: index, catalog id, category, description, unit, quantity, unit price, discount, total,
+      VAT rate, VAT amount).
+    - Response (`ResponseApproval`): `status`, `message`, `confirmation_number` (string; this is the allocation
+      number), `approved` (boolean). Documented response codes: 200, 400, 406, 500; a 400 example shows code 434,
+      "Invoice date is too old for approval", with `confirmation_number` `"0"`.
+    - Sandbox test VAT numbers documented on the page: `777777715` allocates; `777777723` simulates a delayed
+      invoice; `777777731` an invoice found with no instruction on how to proceed; `777777749` an invoice found
+      where the next step was already chosen.
+    - Auth: OAuth2, authorization-code flow, provider `longtimetoken`
+      (`.../longtimetoken/oauth2/authorize` and `.../oauth2/token`, same three hosts as above), scope `scope` or
+      `invoices_scope` ("Security Option 1" / "Security Option 2" on the page), `Authorization: Bearer` header,
+      JSON content type.
+    - Not yet checked: `Multi-invoices v2` and `InvoiceDecisionApi` (the latter likely handles the "delayed
+      invoice" case above). No PDF version of this definition was found on the page, only "Download as
+      JSON/YAML" links that generate a temporary in-browser file, not a stable URL.
+  - 20 October 2026, continued: the owner registered an application in the sandbox portal ("Get access"),
+    named `lalum-invoices-sandbox`, redirect URI `https://localhost/callback`, subscribed to the product's
+    Default Plan (100 calls/minute), covering `Invoices v2`, `Multi-invoices v2`, `InvoiceDecisionApi v1`,
+    `MultiInvoiceInformationApi v1` and `invoice-Information v2`. This answers the open question above: the
+    portal issued a **Key and Secret pair** ("Credentials for your new application", shown once), not only a
+    bearer token, so a `client_id`/`client_secret`-style credential does exist. Handled carefully: no
+    screenshot of the credentials dialog, the owner copied them directly into his own password vault, and no
+    session here has seen or stored either value.
+  - Still 20 October 2026: after the subscription completed, the same browser session checked the `Invoices v2`
+    page again (view only) for anything new. Two of the three open questions above are now answered: the
+    portal's "Key" is the OAuth2 `client_id`; and no `X-IBM-Client-Id` header is required, confirmed by the
+    page's own Parameters list (only `Accept` and `Content-Type`, both optional) and its sample code (only
+    `Authorization`, `content-type`, `accept`). Auth is OAuth2 authorization-code only. What this means in
+    practice: getting an access token needs an interactive browser login (redirect to
+    `https://localhost/callback`, then exchanging the returned code for a token), which only the owner can do
+    (it needs his own sandbox login); not yet done. Still open: the token's and any refresh token's lifetime,
+    and exactly how long the resulting access token stays usable before that login has to be repeated.
+  Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
-  `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
-  actual client code is not started. Next: once a reply arrives, or gov.il is opened to this environment's allowed
-  domains, or the two PDFs are shared directly, a session can read the real spec instead of building against
-  secondhand summaries.
+  `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet, and
+  the live OAuth/HTTP call cannot be exercised from here either way. The request/response shape is specific
+  enough that the typed client code is already built (`src/lib/cockpit/shaamClient.ts`, see Phases below), in
+  TypeScript, consistent with the rest of this app and its existing Supabase edge functions (Deno); any live
+  call this project makes stays in that same stack, not a separate language. Next: the owner completes the
+  authorization-code login once to obtain an access token, then a session here can build the edge function
+  that performs the token exchange and the live call, reading Key/Secret from a Supabase edge function secret.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
@@ -112,10 +192,20 @@ Rules the design enforces regardless of the answers above:
      10014, RECEIPT 30019, INVOICE_RECEIPT 70145, CREDIT 50004, PROFORMA 90091 (273 archive rows total,
      matching the archive's own row count exactly). The first number sealed by the own engine for each
      type will be one above these.
-   - Still to build, blocked: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the
-     live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
-     practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
-     site, not before.
+   - Done, 20 October 2026 (built earlier than the original plan below, per the owner's 15 October decision
+     to start now): the pure request/response mapping for the live "Invoices v2 Approval" call,
+     `src/lib/cockpit/shaamClient.ts`. Builds the `InvoiceRequest` body from a sealed `FinDocument`
+     (reusing `DOC_TYPE_CODE` from `shaamExport.ts` for `invoice_type`), parses `ResponseApproval`
+     (reusing `allocationShort` from `financeAllocation.ts`), and flags missing or malformed required
+     fields before ever sending anything. No network code: `npm run shaam-client-check` proves the mapping
+     against the definition's own documented examples, not that gov.il accepts a real call.
+   - Still to build, blocked: the actual OAuth2 call and the SEALING -> ALLOCATED -> SEALED edge function
+     that uses the client above. Blocked on two unknowns the Tax Authority's reply has not addressed:
+     whether the credential from registering an application ("Get access") is a long-lived token to use
+     directly or a client_id/client_secret pair to exchange per call, and access/refresh token lifetimes.
+     PDF generation is separately still to build. Originally deliberately held until the final stage before
+     the switch; the owner's 15 October decision moved the client code earlier, but the live call itself
+     still needs the owner's own application registration first.
    - Done: the uniform-structure file export module (the owner's decision above, taking the stricter reading
      rather than wait for a verified answer), `src/lib/cockpit/shaamExport.ts`. Builds INI.TXT and BKMVDATA.TXT
      from the finance ledger via `@accounter/shaam-uniform-format-generator` (pinned exactly at `0.2.6`: its

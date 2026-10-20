@@ -7,7 +7,7 @@ import type { MatterWip, Overview } from "./billingWipCore.ts";
 
 export type Loaded<T> = { state: "idle" | "loading" | "denied" | "unavailable" } | { state: "ready"; data: T };
 
-function useRpc<T>(enabled: boolean, key: string, call: () => PromiseLike<{ data: unknown; error: unknown }>, parse: (j: unknown) => T | null): Loaded<T> {
+export function useRpc<T>(enabled: boolean, key: string, call: () => PromiseLike<{ data: unknown; error: unknown }>, parse: (j: unknown) => T | null): Loaded<T> {
   const [s, setS] = useState<Loaded<T>>({ state: enabled && supabase ? "loading" : "idle" });
   useEffect(() => {
     if (!enabled || !supabase) return;
