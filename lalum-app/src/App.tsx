@@ -27,6 +27,8 @@ const Course = lazy(() => import("./pages/Course").then((m) => ({ default: m.Cou
 const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m.Insights })));
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const Rulings = lazy(() => import("./pages/Rulings").then((m) => ({ default: m.Rulings })));
+const Ethics = lazy(() => import("./pages/Ethics").then((m) => ({ default: m.Ethics })));
+const Updates = lazy(() => import("./pages/Updates").then((m) => ({ default: m.Updates })));
 const SecurityTrust = lazy(() => import("./pages/SecurityTrust").then((m) => ({ default: m.SecurityTrust })));
 const Faq = lazy(() => import("./pages/Faq").then((m) => ({ default: m.Faq })));
 const Risk = lazy(() => import("./pages/Risk").then((m) => ({ default: m.Risk })));
@@ -161,6 +163,8 @@ export default function App() {
             <Route path="insights/:slug" element={<Article />} />
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="rulings" element={<Rulings />} />
+            <Route path="ethics" element={<Ethics />} />
+            <Route path="updates" element={<Updates />} />
             <Route path="security" element={<SecurityTrust />} />
             <Route path="faq" element={<Faq />} />
             <Route path="risk" element={<Risk />} />
