@@ -1,36 +1,40 @@
-# שוטים של אנשים אמיתיים ל-Google Flow: חבילת הדבקה
+# שוטים של בני אדם ל-Google Flow: חבילת הדבקה מלאה
 
-**הקישור:** https://labs.google/fx/tools/flow (התחבר עם חשבון Google, ובחר ליצור סרט חדש). הנתיב מבוסס על מקורות משניים, ואין בידי דף רשמי של Google. אם הקישור אינו נפתח, חפש "Google Flow" ב-labs.google.
+**הקישור:** https://labs.google/fx/tools/flow (חשבון Google, יצירת סרט חדש). הנתיב מבוסס על מקורות משניים. אם הוא לא נפתח, חפש "Google Flow" ב-labs.google.
 
-**לפני שמתחילים (חשוב):**
-* ההיקף החינמי לא ברור: מקורות שונים מדווחים על 50 קרדיטים ליום, על 100 חד פעמיים, ועל דרישה למנוי. בדוק בחשבון עצמו.
-* בחשבון חינמי ייתכנו סימן מים וחוסר זכויות שימוש מסחרי. **לפני שימוש בקליפ באתר או ב-YouTube יש לבדוק את תנאי השימוש בחשבון שלך.** בלי זכויות מסחר, הקליפ לא עולה.
-* כל אדם שנוצר ב-AI מסומן כך בסרט ובעמוד, ואסור דמיון לאדם אמיתי.
-* **סימן המותג היחיד הוא LALUM** (קובץ הוורדמארק המאושר), והוא מתווסף בעריכה בלבד, לא נוצר במודל. אסור שיופיע בקליפ לוגו שנוצר (למשל "LegalAI", שהוא מותג של חברה אחרת), שם מותג או טקסט כלשהו. אם קליפ שנוצר כולל כתובת או לוגו, הוא נפסל.
-* שוטים של עד 8 שניות, בלי ידיים בתקריב (ידיים הן החלק החלש של מודלי וידאו), בלי טקסט על המסך.
+**המטרה:** סרט עמוד הבית ללא דמויות מצוירות. כל חדר מקבל בני אדם אמיתיים למראה. הגרפיקה, הכתוביות והקריינות נשארות בקוד, והסרט עצמו כבר יודע לקבל את השוטים ולהרכיב אותם. שוט שחסר פשוט לא מופיע, ואין יותר דמויות מצוירות בשום חדר.
 
-**איך משתמשים:** הדבק כל פרומפט בנפרד, בחר 16:9, בחר 2 עד 3 טייקים, והורד את הטוב ביותר. שלח לי את הקבצים (או הקישור), ואשלב אותם בסרט.
+## כללים
 
-## הפרומפטים (באנגלית, כמו שמודל הווידאו צריך)
+* שוטים של 8 שניות, 16:9, בלי טקסט, בלי לוגו ובלי שלטים. ללא ידיים בתקריב (החלק החלש של מודלי וידאו).
+* **סימן המותג היחיד הוא LALUM**, ונוסף בעריכה. קליפ שנוצר עם לוגו או טקסט, למשל "LegalAI", נפסל.
+* אנשים מגוונים בגיל ובמראה, בלי דמיון לאדם אמיתי. כל שוט מסומן בסרט "AI-GENERATED PEOPLE".
+* ההיקף החינמי ב-Flow לא ברור (בערך חמישה שוטים ביום לפי מקורות). לפני שימוש בקליפ באתר או ב-YouTube יש לבדוק זכויות שימוש בחשבון.
 
-**1. המשרד בבוקר**
-Cinematic wide shot of a modern law office in the morning, a woman lawyer in her forties with a hair bun and round glasses reading a document at her desk, colleagues working softly out of focus behind her, soft window light from the left, muted green and amber color grade, slow push in, 35mm lens, shallow depth of field, film grain. No text, no logos, no subtitles.
+## איך שולחים לי
 
-**2. הצוות סביב השולחן**
-Medium shot over the shoulder of four colleagues of different ages and backgrounds around a table, looking at one laptop screen and talking calmly, one nods and turns toward another, slow lateral camera move, warm window light, muted green palette, shallow depth of field, cinematic. The laptop screen is not readable. No text, no logos.
+צרף את הקובץ לצ'אט וכתוב ליד כל אחד את **שם הלוחית** מהטבלה (למשל "d4"). אני ממיר ל-48 פריימים לשנייה, מיישר צבע ומרנדר.
 
-**3. מסדרון זכוכית**
-Smooth tracking shot following a professional walking along a glass walled office corridor, seen from behind, carrying a folder against the chest, people working behind the glass, soft daylight, muted green and amber grade, cinematic, shallow depth of field. No close ups of hands, no text.
+## סדר יצירה מומלץ
 
-**4. שיחת ייעוץ**
-Side profile two shot of a lawyer and a client talking across a desk, the lawyer listens attentively and nods, the client speaks, hands kept low and out of frame, soft daylight, calm mood, shallow depth of field, cinematic. No text, no logos.
+* **יום ראשון (חמישה שוטים):** e1, e2, f1, d4, d1.
+* **יום שני:** d2, d3, d5, b1, b2.
 
-**5. חדר הדרכה**
-Wide shot of a small training room, a presenter at a blank whiteboard speaking, three attendees seen from behind taking notes, soft light, slow dolly in, muted green palette, cinematic. Nothing readable on the board, no logos.
+## הפרומפטים
 
-**6. רגע ההחלטה**
-Close up on a person's face lit by a laptop screen in a dark office, concentrating, then a small relieved smile, shallow depth of field, green tint, cinematic. Face only, no hands visible, no text on the screen.
+| לוחית | חדר ותפקיד | פרומפט (להדבקה) |
+|---|---|---|
+| **d1** | חדר 3, תחנת INTAKE | Medium shot of a client in a business jacket handing a closed folder across a reception desk to a smiling legal assistant, bright modern law office entrance, warm window light, muted green and amber palette, shallow depth of field, slow push in, cinematic. Hands kept low and mostly out of frame. No text, no logos, no signage. |
+| **d2** | חדר 3, תחנת CLASSIFY | Over the shoulder shot of a paralegal at a desk in front of a large monitor, reading attentively, the screen is out of focus and unreadable, stacks of folders beside, soft side light, muted green and amber palette, shallow depth of field, slow lateral camera move, cinematic. No text, no logos. |
+| **d3** | חדר 3, תחנת RISK FLAG | Medium close shot of a compliance reviewer with glasses concentrating on something off camera, one eyebrow slowly rises, then she nods and makes a note out of frame, soft window light, muted green grade, shallow depth of field, cinematic. Face and shoulders only, no hands visible, no text. |
+| **d4** | חדר 3, תחנת LAWYER DECIDES (הכי חשוב) | Medium shot of a senior lawyer at a desk, calm and decisive, looking at a document, then looking up at someone across the desk and giving a firm nod, then closing the folder. Warm side light, muted green and amber palette, shallow depth of field, slow push in, cinematic. Hands low and not the focus. No text, no logos. |
+| **d5** | חדר 3, תחנת TRAIL | Wide shot of a quiet records room with tall shelves of plain archive boxes, a person in a dark blazer walks slowly between the shelves carrying one folder, soft overhead light, muted green palette, slow tracking shot, shallow depth of field, cinematic. Nothing readable on the boxes, no logos. |
+| **e1** | חדר 4, שיחת ייעוץ | Side profile two shot of a lawyer and a client talking across a desk. The lawyer listens attentively and nods while the client speaks. Hands kept low and out of frame, soft daylight, calm mood, shallow depth of field, muted green and amber palette, cinematic. No text, no logos. |
+| **e2** | חדר 4, הדרכה | Wide shot of a small training room: a presenter speaks beside a completely blank whiteboard while three attendees, seen from behind, take notes. Soft light, slow dolly in, muted green palette, cinematic. No text, no logos. |
+| **f1** | חדר 5, חדר ההחלטה | Close up of a person's face in a dark office lit softly by a laptop, concentrating, then a small relieved smile. Shallow depth of field, green tint, cinematic. Face only, no hands visible, the screen is out of frame, no text, no logos. |
+| **b1** | קטע מקשר לפני חדר 3 | Smooth tracking shot of two colleagues walking side by side down a bright glass office corridor, talking, seen slightly from behind, soft daylight, muted green and amber grade, shallow depth of field, cinematic. No text, no logos. |
+| **b2** | קטע מקשר לפני חדר 5 | Slow shot of a person standing at a tall office window at dusk, a silhouette against warm city light, then turning toward the room. Muted green and amber palette, shallow depth of field, cinematic. Silhouette only, no text, no logos. |
 
-## אחרי שיש קליפים
+## מה כבר קיים
 
-אני ממיר ל-24 פריימים לשנייה, מיישר צבע וגרגר לעולם של הסרט, ומחליף את הדמויות המצוירות בחדרים המתאימים. הגרפיקה, הכתוביות והקריינות נשארות כמו שהן. בעמוד ובקרדיטים מופיע "אנשים שנוצרו ב-AI".
+שלושה שוטים מ-HeyGen כבר בסרט: משרד בבוקר (office, חדר 1), צוות סביב שולחן (team, חדר 2), מסדרון (walk, השוט האחרון).
