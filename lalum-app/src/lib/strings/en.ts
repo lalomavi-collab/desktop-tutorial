@@ -704,8 +704,9 @@ export const en = {
     heroH1b: "defend.",
     heroLede: "Legal AI is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence, from usage policy to audit and documentation.",
     heroCtaAi: "Check how Legal AI fits you",
-    securityLead: "Security.",
-    securityBody: "Automated security checks of the site and the code run every week.",
+    securityLead: "Security, in the open.",
+    securityBody: "What was built, what was checked, and what we do not promise. All on one page.",
+    securityPage: "Security page (in Hebrew)",
     quickInsightsTitle: "Articles & Insights",
     audienceTitle: "Entry by what you need, not by how the firm is organised",
     audiences: [

@@ -85,12 +85,13 @@ export function Home() {
         </div>
       </section>
 
-      {/* One line under the hero. It states only what the weekly workflow does (.github/workflows/weekly-security-check.yml):
-          automated checks of the site and the code, every week. No claim about a standard or a certification. */}
+      {/* One line under the hero that points at /security and says no more than the page does: what was built,
+          what was checked, what is not promised. No claim about a standard or a certification. */}
       <div className="wrap" style={{ padding: "0 32px" }}>
         <p style={{ margin: 0, padding: "16px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", fontSize: 15, lineHeight: 1.7, color: "var(--slate)" }}>
           <b style={{ color: "var(--ink)" }}>{h.securityLead}</b>{" "}
-          {h.securityBody}
+          {h.securityBody}{" "}
+          <a href="/security/" style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityPage}</a>
         </p>
       </div>
 
