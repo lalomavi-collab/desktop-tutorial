@@ -68,12 +68,26 @@ Status of each fact is marked. Nothing here is legal advice.
   - The owner completed sandbox registration at the link above on 20 October 2026, via a separate browser session
     (not blocked by this environment's network policy, which still cannot reach any `gov.il` host). Awaiting the
     Tax Authority's response, up to 5 business days per their own reply.
+  - Still on 20 October 2026, via that same separate browser session (the working environment here still cannot
+    reach any `gov.il` host directly), the owner signed in to the portal and browsed the authenticated API Products
+    catalog: 21 products, confirmed under business number `031471261` (matches the practice's own number, see
+    above). The signed-out catalog shows only 4 of these, among them `EilatInvoices` (`EilatInvoiceApprovalApi`),
+    which is scoped to Eilat free-trade-zone transactions, not the general invoice call. The likely candidate for
+    the general allocation-number call is a different product, `invoices_approval`, whose listed services are
+    `Invoices v2` and `Multi-invoices v2` (also `invoice-information v1`, `InvoiceDecisionApi v1`,
+    `MultiInvoiceInformationApi v1`); a separate product plainly named `Invoices` appears to be query/information
+    only. This is a name-based inference, not yet verified: nobody has opened `Invoices v2`'s own API definition to
+    confirm it is in fact the allocation-number call, read its request/response shape, or ruled out that a
+    similar-sounding service does something else. The portal's own Name search is unreliable (searching "Invoice"
+    returned no results although matching products exist) so filtering by name should not be trusted; browsing the
+    full catalog (21 products, one page at 75 items per page) is.
   Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
-  actual client code is not started. Next: once the sandbox registration is approved, or gov.il is opened to this
-  environment's allowed domains, or the two PDFs are shared directly, a session can read the real spec and start
-  building against it instead of secondhand summaries.
+  actual client code is not started. Next: open `Invoices v2`'s own definition in the sandbox portal (via the same
+  separate browser session) to read the real endpoint, method, request/response schema and auth requirements before
+  building anything, and once the sandbox registration is approved, or gov.il is opened to this environment's
+  allowed domains, or the two PDFs are shared directly, a session can also read the official spec directly.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
