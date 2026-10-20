@@ -36,7 +36,12 @@ import {
 } from "@accounter/shaam-uniform-format-generator";
 import type { DocType, FinDocument, FinCustomer, PayMethod } from "./finance";
 
-const DOC_TYPE_CODE: Partial<Record<DocType, string>> = {
+/** The national SHAAM "סוג מסמך" (document type) code table. Exported because shaamClient.ts's
+ *  `invoice_type` field (the live Invoices v2 Approval call) uses the same four codes for the same
+ *  four document types, confirmed by their `invoice_type` allow-list including exactly 305, 320,
+ *  330, 340 alongside the other codes this ledger never produces; not independently re-verified
+ *  beyond that overlap. */
+export const DOC_TYPE_CODE: Partial<Record<DocType, string>> = {
   INVOICE: "305", // חשבונית מס
   RECEIPT: "340", // קבלה
   INVOICE_RECEIPT: "320", // חשבונית מס קבלה
