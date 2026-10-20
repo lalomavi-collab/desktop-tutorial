@@ -19,12 +19,10 @@ colors:
 typography:
   body-latin:
     fontFamily: "Hanken Grotesk"
-  display-latin:
-    fontFamily: "Newsreader"
+  display:
+    fontFamily: "Lalum Serif"
   body-hebrew:
     fontFamily: "Assistant"
-  display-hebrew:
-    fontFamily: "Suez One"
 ---
 
 # Design system: LALUM (app and site)
@@ -47,9 +45,9 @@ A warm ivory ground, near black ink, one muted sage accent, hairline borders. Ed
 
 ## Typography
 
-- Latin: Hanken Grotesk for body and interface, Newsreader for display and card titles.
-- Hebrew (`html[lang="he"]`): Assistant for body, Suez One for display, with Heebo and David Libre as fallbacks. Hebrew gets slightly more line height so descenders never clip.
-- Arabic and other languages use the stacks already loaded in `index.html`. Do not add families.
+- Display, all languages except Arabic: Lalum Serif, a merged cut of Frank Ruhl Libre (Hebrew) and Newsreader (Latin), self-hosted, with real 400, 500 and 700 faces and a 400 italic. Headlines sit on 500. See `brand/fonts/README.md`. Never set the LALUM name in it as a logo.
+- Body, Latin: Hanken Grotesk. Body, Hebrew (`html[lang="he"]`): Assistant, with Heebo as fallback. Hebrew gets slightly more line height so descenders never clip.
+- Arabic keeps Markazi Text and Cairo. Do not add families.
 - Mono (JetBrains Mono) is for data and code only.
 
 ## Layout

@@ -181,10 +181,10 @@
 .partners-art { width: 100%; max-width: 360px; aspect-ratio: 1 / 1; }
 
 /* Cockpit typography and line-art (design lane: no copy changes).
-   Hebrew: Suez One carries display titles (single true weight, so no faux bold), Assistant carries the UI.
+   Hebrew: Lalum Serif carries display titles, Assistant carries the UI.
    Latin: Newsreader for titles, Hanken Grotesk for the UI. Both come from the --serif / --sans tokens. */
 .ck-root { font-feature-settings: "kern", "liga"; -webkit-font-smoothing: antialiased; }
-.ck-top h1, .ck-hero-title, .ck-doc h2 { font-family: var(--serif); font-weight: 400; letter-spacing: 0; }
+.ck-top h1, .ck-hero-title, .ck-doc h2 { font-family: var(--serif); font-weight: 500; letter-spacing: 0; }
 .ck-top h1 { font-size: clamp(24px, 3vw, 30px); line-height: 1.2; }
 .ck-hero-title { font-size: clamp(20px, 2.4vw, 26px); line-height: 1.25; }
 .ck-doc h2 { font-size: 21px; }

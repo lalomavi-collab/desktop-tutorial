@@ -3,6 +3,17 @@
    Ported from the Home-en / Training Claude Design sources.
    ============================================================ */
 
+/* ---------- Lalum Serif, the display family ----------
+   Hebrew from Frank Ruhl Libre, Latin from Newsreader at its display optical
+   size, merged into one file per style (SIL OFL, see /fonts/OFL.txt and
+   brand/fonts/README.md). Real 400, 500 and 700 faces and one italic, so no
+   weight is ever synthesised. Self-hosted: no third party request for the
+   headings. */
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/lalum-serif-400.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/lalum-serif-500.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/lalum-serif-700.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/lalum-serif-400-italic.woff2") format("woff2"); }
+
 :root {
   --ivory: #f5f1e8;
   --paper: #fbf9f3;
@@ -44,26 +55,23 @@
   --warning: #b8842a;
 
   --sans: "Hanken Grotesk", system-ui, sans-serif;
-  --serif: "Newsreader", Georgia, serif;
+  --serif: "Lalum Serif", "Newsreader", Georgia, serif;
   --sec: 108px;
   --maxw: 1180px;
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
-   Assistant is a modern, crisp Hebrew sans for body; Suez One is a modern Hebrew
-   editorial slab-serif for headings, giving the display type real weight and a
-   premium, authoritative voice. David/Georgia serif faces are fallbacks. Slightly
-   more line-height so Hebrew descenders never clip. */
+   Assistant is a modern, crisp Hebrew sans for body; Lalum Serif (Frank Ruhl
+   Libre letters, the Hebrew classic of legal and editorial print) carries the
+   headings. David/Georgia serif faces are fallbacks. Slightly more line-height
+   so Hebrew descenders never clip. */
 html[lang="he"] {
   --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
-  --serif: "Suez One", "David Libre", Georgia, serif;
+  --serif: "Lalum Serif", "David Libre", Georgia, serif;
 }
-/* Suez One ships a single (already heavy) weight. Various heading classes across
-   the app request 500/700, which the browser would fake as a smeared bold on a
-   display face. Disabling weight synthesis makes every Hebrew heading render
-   Suez One's true weight, so the display type is uniform on every page. Body
-   text is unaffected: Assistant carries real 400-800 faces, so nothing there is
-   ever synthesised. Hierarchy comes from size, as it should for a display face. */
+/* Lalum Serif has real 400, 500 and 700 faces, so nothing is synthesised. The
+   Hebrew body face, Assistant, has real 400 to 800. Synthesis stays off so a
+   weight a face does not carry is never smeared into a faux bold. */
 html[lang="he"] {
   font-synthesis-weight: none;
 }
@@ -78,31 +86,30 @@ html[lang="he"] .btn {
 html[lang="he"] .eyebrow {
   letter-spacing: 0.04em;
 }
-/* Hebrew display type. Suez One is a single-weight editorial slab, already heavy
-   and confident, so the headings use its natural weight (400) rather than a faux
-   bold, which would smear a display face. Latin negative tracking is neutralised
-   (it thins Hebrew letterforms), and the accent line uses colour instead of
-   italic, which Hebrew has no genuine form of. */
+/* Hebrew display type. Headings sit on the 500 face of Lalum Serif. Latin
+   negative tracking is neutralised (it thins Hebrew letterforms), and the
+   accent line uses colour instead of italic, which Hebrew has no genuine form
+   of. */
 html[lang="he"] .h1,
 html[lang="he"] h1.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.15;
 }
 html[lang="he"] .h2,
 html[lang="he"] h2.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.2;
 }
 html[lang="he"] .h3,
 html[lang="he"] h3.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
 }
 html[lang="he"] .italic-clay {
   font-style: normal;
-  font-weight: 400;
+  font-weight: inherit;
 }
 
 /* Arabic swaps to complex-script fonts for the same reason as Hebrew: the
