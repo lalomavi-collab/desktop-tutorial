@@ -1,4 +1,4 @@
--- 0057: the audit log cannot be emptied or altered by the roles the app uses.
+-- 0060: the audit log cannot be emptied or altered by the roles the app uses.
 --
 -- Found in the live project on 2026-10-20 (SEC-16 evidence): service_role holds TRUNCATE, DELETE, UPDATE,
 -- TRIGGER and REFERENCES on public.lalum_matter_audit_log, and authenticated holds TRIGGER and REFERENCES.
@@ -18,7 +18,7 @@
 do $$
 begin
   if to_regclass('public.lalum_matter_audit_log') is null then
-    raise notice '0057: public.lalum_matter_audit_log not present, nothing to harden';
+    raise notice '0060: public.lalum_matter_audit_log not present, nothing to harden';
     return;
   end if;
 

@@ -1,7 +1,7 @@
--- Tests for migration 0057 (audit log hardening). Where public.lalum_matter_audit_log does not exist (the
+-- Tests for migration 0060 (audit log hardening). Where public.lalum_matter_audit_log does not exist (the
 -- repository's stub schema) the file prints a notice and passes; on a database that has it, every assertion
 -- raises on failure, so a clean run is the pass signal. Fixtures roll back at the end.
---   psql -v ON_ERROR_STOP=1 -f 0057_lalum_audit_log_hardening.sql -f audit_log_hardening.sql
+--   psql -v ON_ERROR_STOP=1 -f 0060_lalum_audit_log_hardening.sql -f audit_log_hardening.sql
 begin;
 do $$
 declare v text;
