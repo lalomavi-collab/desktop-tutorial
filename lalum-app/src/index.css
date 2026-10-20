@@ -5544,3 +5544,6 @@ html:not([lang="ar"]) .hero-home .hero-h1 {
   .voice-btn { inline-size: 44px; block-size: 44px; }
   .lead-card .field { min-block-size: 44px; }
 }
+
+/* The drawn forward arrow (FwdArrow) sits on the text line like a glyph would. */
+.fwd-arrow { display: inline-block; vertical-align: -0.125em; flex: none; }

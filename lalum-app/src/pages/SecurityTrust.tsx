@@ -3,6 +3,7 @@ import { Link } from "../components/AppLink";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { SECURITY_PAGE, SECURITY_GROUPS } from "../lib/securityPage";
 import { SECURITY_TEMPLATES } from "../lib/securityTemplates";
+import { FwdArrow } from "../components/FwdArrow";
 
 // The security page: what is built, what was checked, and what is not claimed.
 // Every statement comes from lib/securityPage.ts, where it carries the id of its
@@ -67,7 +68,7 @@ export function SecurityTrust() {
                 )}
                 {c.url && (
                   <p style={{ margin: "10px 0 0" }}>
-                    <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{P.providerLink} &rarr;</a>
+                    <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{P.providerLink} <FwdArrow /></a>
                   </p>
                 )}
               </article>
@@ -104,7 +105,7 @@ export function SecurityTrust() {
               )}
               {t.source && (
                 <p style={{ margin: "12px 0 0" }}>
-                  <a href={t.source.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{t.source.label} &rarr;</a>
+                  <a href={t.source.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{t.source.label} <FwdArrow /></a>
                 </p>
               )}
             </article>
@@ -130,7 +131,7 @@ export function SecurityTrust() {
 
       <section className="wrap section" style={{ maxWidth: 760, textAlign: "center" }}>
         <p style={{ fontSize: 15.5, margin: "0 0 18px" }}>
-          <Link to={P.legalHref} style={{ color: "var(--clay)", fontWeight: 600 }}>{P.legalLabel} &rarr;</Link>
+          <Link to={P.legalHref} style={{ color: "var(--clay)", fontWeight: 600 }}>{P.legalLabel} <FwdArrow /></Link>
         </p>
         <p style={{ fontSize: 14, color: "var(--slate)", margin: "0 0 10px" }}>{P.checked}</p>
         <p style={{ fontSize: 13, color: "var(--slate)", margin: 0 }}>{P.disclaimer}</p>

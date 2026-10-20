@@ -9,6 +9,7 @@ import { blogMeta } from "../lib/blogMeta";
 import { coverFor, coverThumb } from "../lib/covers";
 import { TOPICS_IN_ORDER, topicBySlug, topicPath } from "../lib/topics";
 import articleIndex from "../data/articleIndex.json";
+import { FwdArrow } from "../components/FwdArrow";
 
 // The articles page: a lead story, a reel, a topic filter and one grid in which
 // every article has its own cover (src/lib/covers.ts). Nothing here changes the
@@ -93,7 +94,7 @@ export function Insights() {
         <p className="ins-dek">{c.dek}</p>
         <div className="ins-meta">
           <span>{c.date}</span>{c.read ? <><span aria-hidden="true">·</span><span>{c.read}</span></> : null}
-          <span className="ins-go">{t.ui.article.read} &rarr;</span>
+          <span className="ins-go">{t.ui.article.read} <FwdArrow /></span>
         </div>
       </div>
     </Link>

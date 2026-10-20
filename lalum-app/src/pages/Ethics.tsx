@@ -6,6 +6,7 @@ import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { instruments, shown, ETHICS_TITLE, ETHICS_DESC } from "../lib/ethics";
 import { rulings, rulingTitle } from "../lib/rulings";
+import { FwdArrow } from "../components/FwdArrow";
 
 // The Israel Bar's ethics rules on AI, one instrument at a time.
 //
@@ -49,7 +50,7 @@ export function Ethics() {
               </p>
               <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "16px 0 0" }}>{i.summary}</p>
               <p style={{ margin: "14px 0 0" }}>
-                <a href={i.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{i.sourceLabel} &larr;</a>
+                <a href={i.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{i.sourceLabel} <FwdArrow /></a>
               </p>
               {i.signedBy && <p className="muted" style={{ fontSize: 13.5, margin: "8px 0 0" }}>נחתם בידי {i.signedBy}.</p>}
 
@@ -98,7 +99,7 @@ export function Ethics() {
                 </li>
               ))}
             </ul>
-            <p style={{ margin: "16px 0 0" }}><Link to="/updates" style={{ color: "var(--clay)", fontWeight: 600 }}>כל העדכונים &larr;</Link></p>
+            <p style={{ margin: "16px 0 0" }}><Link to="/updates" style={{ color: "var(--clay)", fontWeight: 600 }}>כל העדכונים <FwdArrow /></Link></p>
           </div>
 
           <p className="muted" style={{ fontSize: 13, lineHeight: 1.7, margin: 0 }}>
