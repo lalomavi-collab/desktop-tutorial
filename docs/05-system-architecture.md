@@ -120,4 +120,4 @@
 - Escrow/settlement is a state machine with explicit, audited transitions;
   no money moves without a recorded dual signature + PSP confirmation.
 - AI is non-critical-path: degrade gracefully (feature disabled, never blocks core).
-- Backups: PITR on Postgres; storage versioning for legal documents.
+- Backups: target is PITR on Postgres and storage versioning for legal documents. Not in place on the current Free plan (checked 2026-10-20), see 08-security-architecture.md.
