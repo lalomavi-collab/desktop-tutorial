@@ -62,7 +62,7 @@ Policy patterns:
 ## 7. Data protection
 - **In transit:** TLS everywhere. **At rest:** managed encryption (Postgres +
   Storage). Secrets in a secret manager / Edge env, never in the client bundle.
-- Backups: Postgres PITR; Storage versioning for legal documents. Restore tested.
+- Backups: TARGET design is Postgres PITR plus Storage versioning for legal documents, restore tested. NOT in place as of 2026-10-20: the Supabase organization is on the Free plan (read through the Supabase API), which has no PITR. Needs the Pro plan or an equivalent scheduled dump.
 - Key management via the platform provider's KMS; rotate on schedule.
 
 ## 8. Privacy & compliance (GDPR + Israeli PPL)
