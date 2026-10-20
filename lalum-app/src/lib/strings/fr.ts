@@ -696,8 +696,9 @@ export const fr: Dict = {
     heroH1b: "l'on peut défendre.",
     heroLede: "Legal AI est l'axe du cabinet : conseil, accompagnement continu et formation pour les organisations qui adoptent l'intelligence artificielle, de la politique d'usage à l'audit et à la documentation.",
     heroCtaAi: "Voyez comment Legal AI s'applique à vous",
-    securityLead: "Sécurité.",
-    securityBody: "Des contrôles de sécurité automatiques du site et du code sont exécutés chaque semaine.",
+    securityLead: "Une sécurité à découvert.",
+    securityBody: "Ce qui a été construit, ce qui a été vérifié et ce que nous ne promettons pas. Le tout sur une seule page.",
+    securityPage: "Page de sécurité (en hébreu)",
     quickInsightsTitle: "Articles et actualités",
     audienceTitle: `L’entrée par le besoin, non par l’organisation du cabinet`,
     audiences: [
