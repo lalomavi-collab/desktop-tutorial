@@ -19,8 +19,10 @@ The audit log (`lalum_matter_audit_log`) is an append-only hash chain. Whatever 
 
 - **Two existing rows** (`SIGNATURE_SIGNED`) keep the signer's name they were written with. Rewriting them breaks the chain.
   Accept it, or record a documented exception; the owner decides.
-- **Free text.** `lalum_set_conflict_status` writes the partner's `note` (up to 2000 characters) into `meta`. A key rule cannot see names inside
-  a value. No live row uses it yet. If it is used, the safer shape is the note's length or hash in the chain and the text on the matter.
+- **Free text.** Migration 0064 moves the partner's conflict note out of the chain. `lalum_set_conflict_status` now writes the text to `lalum_conflict_notes`
+  (readable by the firm's partner or admin, no direct write grant) and puts only `note_chars` and `note_sha256` into `meta`, so the chain still proves which
+  text was recorded. `lalum_finish_purge_matter` clears the notes with the matter's other children. Checked on the live project on 2026-10-20: no
+  `CONFLICT_STATUS_SET` row exists yet, so no earlier note sits in the chain. Test: `supabase/tests/conflict_notes.sql`.
 - This is a technical control, not a legal analysis of retention or erasure duties for the log. That question stays with the owner.
 
 ## Tests
