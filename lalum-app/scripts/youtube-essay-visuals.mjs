@@ -193,6 +193,27 @@ function bpGrid(S,room){const svg=layer(room);let k=0;
 
 ${people}
 
+// live action plates (scripts/home-film-live-prep.sh): generated people shown in the scene instead of drawn ones.
+// Frame chosen from the time, so every render is deterministic. Always labelled. Plates cycle so no shot freezes.
+const PENDING=[];
+function livePanel(S,key,x,y,w,h,a,b,o){o=o||{};const base=[].concat(key).filter(k=>window.LIVE&&window.LIVE[k]);
+  if(!base.length)return null;
+  const sp=o.speed||.5,keys=[];for(let i=0,n=Math.max(base.length,Math.ceil((b-a)/13));i<n;i++)keys.push(base[i%base.length]);
+  const e=box(x,y,w,h,"","");e.style.cssText+=";overflow:hidden;border-radius:"+(o.r==null?18:o.r)+"px;border:2px solid #e7c27a;box-shadow:0 30px 60px rgba(0,0,0,.55);background:#0b100c";
+  const ims=keys.map(()=>{const im=document.createElement("img");im.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:0";e.appendChild(im);return im});
+  const tg=box(0,h-40,w,40,"mono","AI-GENERATED PEOPLE");tg.style.cssText+=";font-size:15px;letter-spacing:4px;color:#e7c27a;padding:11px 20px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6))";e.appendChild(tg);
+  S.reg(e,a,b,.7);
+  const last=keys.map(()=>""),span=(b-a)/keys.length;
+  S.fx.push(t=>{keys.forEach((k,i)=>{const L=window.LIVE[k],t0=a+i*span,t1=t0+span,xf=.45;
+    const vis0=Math.min(clamp((t-t0)/xf+(i==0?1:0)),clamp((t1-t)/xf+(i==keys.length-1?1:0)));ims[i].style.opacity=vis0;
+    if(vis0<=0)return;
+    const f=Math.max(0,Math.min(L.n-1,Math.floor((t-t0)*sp*48))),src="http://live.local/"+k+"/"+String(f+1).padStart(4,"0")+".jpg";
+    if(src!==last[i]){last[i]=src;ims[i].src=src;PENDING.push(ims[i].decode().catch(()=>{}))}
+    ims[i].style.transform="scale("+(1+.05*Math.max(0,Math.min(1,(t-t0)/(L.n/48/sp+1))))+")"})});
+  return e}
+// stands in for a drawn person: the same calls keep working, nothing is drawn by them
+function liveGuy(S,key,x,y,w,h,a,b,o){livePanel(S,key,x,y,w,h,a,b,o);return{wrap:document.createElement("div"),update(){},props:{R:{style:{}}}}}
+
 // ---------- scene 1: the hook ----------
 function s1(d){const S=SC(),x=ctx(d);
   const g0=x.w(0,"not a chatbot")-.1;
@@ -207,14 +228,8 @@ function s1(d){const S=SC(),x=ctx(d);
   // the lawyer at the desk: typing, then watching the page write itself, then the pen over the line
   const tA=.4,tB=x.w(2,"now one"),tC=x.a(3);
   kin(S,"THE HOURS OF A TRAINED PERSON",x.ws(2,"the hours of a trained person"),960,300,900,{size:76,hi:[1],out:tB-.1});
-  const lawyer=person(CURP,{x:520,y:650,s:1.25,skin:SKIN.a,hair:"#2a2a2a",style:"short",top:"#2f4a38",glasses:true,propR:"pen",ph:.4,clip:330});
+  const lawyer=liveGuy(S,["d2","d3","d4"],40,300,900,514,tA,d.dur-.3);
   S.reg(lawyer.wrap,tA,1e9);
-  const desk=box(40,800,980,300,"");desk.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(desk,tA,1e9);
-  const lid=box(330,696,380,118,"");lid.style.cssText+=";background:#2b3d31;border:3px solid #4a7054;border-radius:14px 14px 4px 4px";
-  box(177,44,26,26,"",'',lid).style.cssText+=";border-radius:50%;background:#e7c27a;opacity:.7";S.reg(lid,tA,tC-.2);
-  const paper=box(360,826,380,64,"");paper.style.cssText+=";background:#e9e4d4;border-radius:4px";
-  paper.innerHTML='<div style="left:20px;top:12px;width:210px;height:6px;background:#b8b4a2;border-radius:3px"></div><div style="left:20px;top:28px;width:150px;height:6px;background:#b8b4a2;border-radius:3px"></div><div style="left:200px;top:46px;width:150px;height:3px;background:#1b1b1b"></div>';
-  S.reg(paper,tC-.2,1e9);
   S.fx.push(t=>{let p={};
     if(t<tB){p.hl={x:-70+Math.sin(t*13)*8,y:134+Math.abs(Math.sin(t*13))*8};p.hr={x:70+Math.sin(t*11+1)*8,y:134+Math.abs(Math.cos(t*11))*8};p.look={x:.1,y:.5};p.tilt=1;lawyer.props.R.style.opacity=0}
     else if(t<tC){p.hr={x:32,y:-14};p.hl={x:-130,y:136};p.look={x:.9,y:-.1};p.tilt=-3;p.brow=.6;lawyer.props.R.style.opacity=0}
@@ -241,7 +256,7 @@ function s2(d){const S=SC(),x=ctx(d);
   const A=S.reg(box(150,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Chatbot</div>'),L0,x.a(2)-.3);
   const B=S.reg(box(640,380,230,230,"card",'<div class="lbl rel" style="margin-top:92px">Document</div>'),L0,x.a(2)-.3);
   const tk=S.reg(box(0,0,70,92,"",""),L0,x.a(2)-.3);tk.style.background="#f5f1e8";tk.style.borderRadius="8px";
-  const mover=person(CURP,{x:520,y:700,s:1.2,skin:SKIN.b,hair:"#3a2a1f",style:"short",top:"#3b5a6b",tie:null,ph:1.1});S.reg(mover.wrap,L0,x.a(2)-.3);
+  const mover=liveGuy(S,["d5","f1"],100,650,820,400,L0,x.a(2)-.3);
   const k=[[L0,640-20],[x.w(0,"you pasted"),640-20],[x.w(0,"the box answered"),380-30],[x.w(0,"you copied"),380-30],[x.w(0,"the human did"),640-20],[x.b(0),640-20]];
   S.fx.push(t=>{let px=k[0][1];for(let i=0;i<k.length-1;i++){if(t>=k[i][0]&&t<k[i+1][0]){px=lerp(k[i][1],k[i+1][1],ease((t-k[i][0])/Math.min(1.3,k[i+1][0]-k[i][0])))}else if(t>=k[i+1][0])px=k[i+1][1]}
     tk.style.left=px+"px";tk.style.top="470px";tk.style.background=(t>x.w(0,"the box answered")&&t<x.w(0,"you copied")+.2)||t>x.w(0,"you copied")?"#9cc29f":"#f5f1e8";
@@ -255,7 +270,7 @@ function s2(d){const S=SC(),x=ctx(d);
   const names=["Skill","Connection","Agent","Result"];
   names.forEach((n,i)=>S.reg(box(1020+i*205,400,160,190,"card",'<div class="lbl rel" style="margin-top:70px;font-size:26px">'+n+'</div>'),R0,x.a(2)-.3));
   const tk2=S.reg(box(0,0,70,92,"",""),R0,x.a(2)-.3);tk2.style.background="#9cc29f";tk2.style.borderRadius="8px";
-  const watcher=person(CURP,{x:1500,y:760,s:1.05,skin:SKIN.c,hair:"#241a14",style:"long",top:"#d9d3c3",shirt:"#2f4a38",tie:null,ph:2.3});S.reg(watcher.wrap,R0,x.a(2)-.3);
+  const watcher=liveGuy(S,["e2","d3"],1000,650,820,400,R0,x.a(2)-.3);
   S.fx.push(t=>{const m=((t-R0)%8)/8;const px=m<.9?lerp(1020+45,1020+3*205+45,m/.9):1020+3*205+45;tk2.style.left=px+"px";tk2.style.top="451px";
     watcher.update(t,{look:{x:clamp((px-1500)/330,-1,1),y:-.3},tilt:Math.sin(t*1.1)*2,smile:.45,brow:Math.max(0,Math.sin(t*.9))*.4})});
   kin(S,"AN AGENT CHANGES WHO MOVES.",x.ws(1,"an agent changes who moves"),0,60,W,{size:72,hi:[3,4],out:x.a(2)-.3,h:110});
@@ -284,7 +299,7 @@ function s2(d){const S=SC(),x=ctx(d);
   S.fx.push(t=>{pill.style.opacity=ease((t-x.w(4,"those are not demos"))/.5)});
   S.reg(tag("Illustrative mockup, not a Google screen"),x.w(4,"reviewing"),x.a(5)-.2);
   // a colleague following along
-  const viewer=person(CURP,{x:1640,y:800,s:.95,skin:SKIN.b,hair:"#241a14",style:"bun",top:"#3b5a6b",glasses:true,tie:null,ph:4.2});S.reg(viewer.wrap,x.a(2),1e9);
+  const viewer=liveGuy(S,["d1","e1"],1400,590,480,270,x.a(2),d.dur-.3);
   S.fx.push(t=>{const thinking=t>x.w(4,"reviewing");
     viewer.update(t,{look:{x:thinking?-.9:-.6,y:.1},tilt:thinking?4:Math.sin(t*1.3)*2,hr:thinking?{x:30,y:-6}:null,brow:(t>x.w(3,"governed")&&t<x.w(3,"governed")+2)?.9:0,smile:thinking?0:.3})});
   // the question
@@ -321,7 +336,7 @@ function s3(d){const S=SC(),x=ctx(d);
   const frame=box(1260,200,440,620,"");frame.style.cssText+=";border:6px solid #4a7054;border-radius:16px 16px 0 0";S.reg(frame,tP,g3);
   const door=box(1266,206,428,608,"");door.style.cssText+=";background:linear-gradient(90deg,#2b4633,#22382a);border:4px solid #4a7054;border-radius:10px 10px 0 0;transform-origin:0 50%";
   const knob=box(376,300,26,26,"","",door);knob.style.cssText+=";border-radius:50%;background:#e7c27a";
-  const keyer=person(CURP,{x:1110,y:720,s:1.1,skin:SKIN.d,hair:"#6b4a2b",style:"bun",top:"#2f4a38",propR:"key",ph:3.1,clip:300});
+  const keyer=liveGuy(S,["d3","e1"],700,500,520,293,tP,g3);
   const reg3=e=>S.reg(e,tP,g3);reg3(keyer.wrap);
   S.fx.push(t=>{const dk=ease((t-tOpen)/1.5);door.style.transform="perspective(900px) rotateY("+(-dk*78)+"deg)";door.style.opacity=t<tP-.1||t>g3?0:1;
     let p={look:{x:.2,y:0},smile:.4};
@@ -381,12 +396,8 @@ function s4(d){const S=SC(),x=ctx(d);
   kin(S,"THE SIZE IS NOT.",x.ws(3,"and the size is not").slice(1),80,660,1000,{size:80,color:"#e7c27a",out:x.a(4)-.2,h:130});
   // the partner and the client at a table
   const a3=x.a(3),b3=x.b(3),g4=x.a(4)-.2;
-  const partner=person(CURP,{x:1230,y:480,s:.82,skin:SKIN.a,hair:"#8a8a8a",style:"short",top:"#2f4a38",glasses:true,ph:.7,clip:230});
-  const client=person(CURP,{x:1590,y:480,s:.82,skin:SKIN.c,hair:"#1a1410",style:"short",top:"#3b5a6b",tie:null,ph:2.6,clip:230});
+  const partner=liveGuy(S,["e1","d1","e2"],1020,420,780,439,a3,g4),client={wrap:document.createElement("div"),update(){}};
   [partner.wrap,client.wrap].forEach(e=>S.reg(e,a3,g4));
-  const table=box(1060,660,700,420,"");table.style.cssText+=";background:linear-gradient(#26402e,#17261c);border-top:5px solid #4a7054;border-radius:10px 10px 0 0";S.reg(table,a3,g4);
-  const inv=box(1330,676,170,52,"");inv.style.cssText+=";background:#e9e4d4;border-radius:4px";
-  inv.innerHTML='<div style="left:14px;top:12px;width:110px;height:5px;background:#b8b4a2"></div><div style="left:14px;top:26px;width:80px;height:5px;background:#b8b4a2"></div><div style="left:14px;top:39px;width:140px;height:4px;background:#e7c27a"></div>';S.reg(inv,a3,g4);
   S.fx.push(t=>{const q=t-a3,talkC=q>1&&q<7?(.5+.5*Math.sin(t*12)):0,talkP=q>8&&q<14?(.5+.5*Math.sin(t*11+1)):0;
     const shrug=t>x.w(3,"and the size is not")-.3;
     const pc={look:{x:-.8,y:.1},tilt:-3,talk:talkC,smile:.1,brow:q>1&&q<7?.7:0};
@@ -441,7 +452,7 @@ function s5(d){const S=SC(),x=ctx(d);
   kin(S,"THE UNANSWERED QUESTION OF THIS ENTIRE MARKET",x.ws(5,"the unanswered question of this entire market"),300,360,1320,{size:70,hi:[2,3],out:x.w(5,"a machine produces")-.3,h:260});
   // over the shoulder: the reviewer in the foreground, out of focus, reading
   const tR=x.w(5,"a machine produces");
-  const rev=person(CURP,{x:290,y:800,s:1.7,back:true,hair:"#17110d",top:"#0d1810",ph:.9});rev.wrap.style.filter="blur(1.6px)";S.reg(rev.wrap,tR-.4,1e9);
+  const rev=liveGuy(S,["d4","d5"],60,620,560,315,tR-.4,d.dur-.3);
   S.fx.push(t=>{const q=t-tR,scan=Math.sin(q*.9),think=t>x.w(5,"could they prove it");
     const p={look:{x:.6+scan*.5,y:0},tilt:-2+scan*2.5,dx:6};if(think){p.hr={x:80,y:-70}}
     rev.update(t,p)});
@@ -457,9 +468,8 @@ function s6(d){const S=SC(),x=ctx(d);
   const crew=[];
   [["WHO APPROVES?","who approves"],["ON WHAT BASIS?","on what basis"],["WHO SIGNS?","and who signs"]].forEach((c,i)=>{
     const e=box(130+i*560,200,500,170,"card"+(i==2?" am":""),'<div class="rel h2'+(i==2?" amber":"")+'" style="margin-top:50px;text-align:center;font-size:46px">'+c[0]+'</div>');S.reg(e,tq[i],gS);
-    const px=380+i*560,pr=person(CURP,Object.assign({x:px,y:540,s:.66,ph:i*1.7,clip:210},cfg[i]));S.reg(pr.wrap,tq[i]+.2,gS);crew.push(pr);
-    const slab=box(px-190,676,380,16,"");slab.style.cssText+=";background:#26402e;border-top:4px solid #4a7054;border-radius:6px";S.reg(slab,tq[i]+.2,gS)});
-  const sheet=box(1370,640,260,40,"");sheet.style.cssText+=";background:#e9e4d4;border-radius:4px";
+    const px=380+i*560,pr=liveGuy(S,[["d5","d2"],["e2","d3"],["f1","d4"]][i],px-250,385,500,282,tq[i]+.2,gS);crew.push(pr)});
+  const sheet=box(1370,684,260,40,"");sheet.style.cssText+=";background:#e9e4d4;border-radius:4px";
   sheet.innerHTML='<svg width="260" height="40" viewBox="0 0 260 40" fill="none"><path id="sigp" d="M 40 28 q 10 -26 20 0 t 20 0 q 10 -22 26 0 t 26 -2 q 10 -18 24 4 q 14 6 30 -6" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>';
   S.reg(sheet,tq[2]+.2,gS);
   const tW=x.w(3,"in writing");
@@ -599,13 +609,19 @@ window.render=T=>{
     else h=(ACT[n]?'<div class="c mono" style="top:300px;font-size:26px;letter-spacing:12px;color:#8a9a8c;opacity:'+ease((t-.1)/.5)+'">'+ACT[n]+'</div>':"")+'<div class="c mono" style="top:350px;font-size:30px;letter-spacing:10px;color:#e7c27a">0'+n+' / 06</div><div class="c big" style="top:410px;font-size:120px;opacity:'+ease((t-.3)/.5)+'">'+NAMES[n]+'</div><div style="left:760px;top:590px;width:'+(400*ease((t-.4)/.8))+'px;height:4px;background:#e7c27a"></div>';
     ti.innerHTML=h;ti.style.opacity=k}else{ti.innerHTML="";ti.style.opacity=0}
   document.getElementById("world").style.opacity=Math.min(1,T/.5,(TOTAL-T)/.8);
+  return Promise.all(PENDING.splice(0));
 };
 </script></body></html>`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 page.on("pageerror", (e) => { console.error("PAGE ERROR", e.message); process.exit(1); });
+const LIVEDIR = process.env.LIVE || "/tmp/hf-live";
+const liveCfg = {};
+if (existsSync(LIVEDIR)) for (const k of readdirSync(LIVEDIR)) { const n = readdirSync(path.join(LIVEDIR, k)).filter((f) => f.endsWith(".jpg")).length; if (n) liveCfg[k] = { n }; }
+await page.route("http://live.local/**", (route) => route.fulfill({ path: path.join(LIVEDIR, new URL(route.request().url()).pathname) }));
 await page.setContent(html);
+await page.evaluate((c) => { window.LIVE = c; }, liveCfg);
 await page.evaluate(() => document.fonts.ready);
 await page.evaluate((nr) => window.buildAll(nr), narr);
 
