@@ -105,22 +105,30 @@ Status of each fact is marked. Nothing here is legal advice.
     - Auth: OAuth2, authorization-code flow, provider `longtimetoken`
       (`.../longtimetoken/oauth2/authorize` and `.../oauth2/token`, same three hosts as above), scope `scope` or
       `invoices_scope` ("Security Option 1" / "Security Option 2" on the page), `Authorization: Bearer` header,
-      JSON content type. Not confirmed from the definition itself: whether a registered app also needs a
-      `client_id`/`client_secret` pair (plausible for this kind of API gateway, but the page's own definition does
-      not say so; flagged as inference, not fact).
+      JSON content type.
     - Not yet checked: `Multi-invoices v2` and `InvoiceDecisionApi` (the latter likely handles the "delayed
       invoice" case above). No PDF version of this definition was found on the page, only "Download as
       JSON/YAML" links that generate a temporary in-browser file, not a stable URL.
-    - Still blocked: testing the call itself needs a registered application ("Get access" / Try it both say so),
-      which creates real access credentials, so the owner does this step personally rather than a session doing
-      it on his behalf.
+  - 20 October 2026, continued: the owner registered an application in the sandbox portal ("Get access"),
+    named `lalum-invoices-sandbox`, redirect URI `https://localhost/callback`, subscribed to the product's
+    Default Plan (100 calls/minute), covering `Invoices v2`, `Multi-invoices v2`, `InvoiceDecisionApi v1`,
+    `MultiInvoiceInformationApi v1` and `invoice-Information v2`. This answers the open question above: the
+    portal issued a **Key and Secret pair** ("Credentials for your new application", shown once), not only a
+    bearer token, so a `client_id`/`client_secret`-style credential does exist. Handled carefully: no
+    screenshot of the credentials dialog, the owner copied them directly into his own password vault, and no
+    session here has seen or stored either value. Still unconfirmed: how Key/Secret feed the documented
+    `longtimetoken` OAuth2 authorization-code flow (most likely as `client_id`/`client_secret` at the token
+    endpoint, but not yet read anywhere), and whether a call also needs an `X-IBM-Client-Id` header (the
+    hosting platform's URL shape suggests IBM API Connect, which usually wants one, but the service
+    definition itself does not mention it); check the portal's own documentation on this once the
+    subscription step finishes.
   Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet, and
-  the live OAuth/HTTP call cannot be exercised from here either way until gov.il is reachable or credentials exist.
-  The request/response shape above is specific enough to start the typed client code (request builder, response
-  parser, the fixed `invoice_type` codes) without a live call; next: draft that, then wire the live call once the
-  owner has registered an application and credentials exist.
+  the live OAuth/HTTP call cannot be exercised from here either way. The request/response shape is specific
+  enough that the typed client code is already built (`src/lib/cockpit/shaamClient.ts`, see Phases below);
+  next: wire the live OAuth2 call once the Key/Secret pair is stored as a Supabase edge function secret and
+  the token exchange itself is confirmed.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
