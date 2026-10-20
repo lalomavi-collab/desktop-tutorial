@@ -8,6 +8,7 @@
 
 import { RULINGS } from "./rulings.data.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { mcpRequestExtras, parseMcpServers } from "./mcp-client.ts";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
@@ -148,7 +149,7 @@ Deno.serve(async (req) => {
   // hashes (of the verified case law and of the instructions). GET ?health=1 only.
   if (req.method === "GET" && new URL(req.url).searchParams.get("health") === "1") {
     const sha = async (t: string) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))).map((x) => x.toString(16).padStart(2, "0")).join("");
-    return json(200, { rulings: RULINGS.length, rulingsSha: await sha(JSON.stringify(RULINGS)), systemSha: await sha(SYSTEM), perPerson: DAILY_PER_PERSON, total: DAILY_TOTAL });
+    return json(200, { rulings: RULINGS.length, rulingsSha: await sha(JSON.stringify(RULINGS)), systemSha: await sha(SYSTEM), perPerson: DAILY_PER_PERSON, total: DAILY_TOTAL, mcpServers: parseMcpServers(Deno.env.get("LALUM_MCP_SERVERS"), (k) => Deno.env.get(k)).servers.map((x) => x.name) });
   }
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
@@ -221,11 +222,26 @@ Deno.serve(async (req) => {
     ? `${SYSTEM}\n\nThe user just invoked the /${engine} engine explicitly, via the command bar in the app, not by typing the words themselves. Apply exactly this frame to the reply, and no other: ${FRAME_BY_KEY[engine]}`
     : SYSTEM;
 
+  // Optional MCP connectors (see mcp-client.ts). With none configured, the request below is exactly what it was
+  // before: no beta header, no server list, no extra prompt text. Invalid entries are dropped and logged by name,
+  // never with a token, so a typo in the secret degrades to "no MCP" rather than to a broken chat.
+  const mcp = parseMcpServers(Deno.env.get("LALUM_MCP_SERVERS"), (k) => Deno.env.get(k));
+  for (const p of mcp.problems) console.error(`lalum-assistant: mcp_config ${p}`);
+  const extras = mcpRequestExtras(mcp, system);
+
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: MODEL, max_tokens: 1200, system, messages }),
+      headers: {
+        "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json",
+        ...extras.headers,
+      },
+      body: JSON.stringify({
+        model: MODEL, max_tokens: 1200,
+        system: extras.system,
+        messages,
+        ...extras.body,
+      }),
     });
     if (!res.ok) {
       console.error(`lalum-assistant: upstream ${res.status}`);
