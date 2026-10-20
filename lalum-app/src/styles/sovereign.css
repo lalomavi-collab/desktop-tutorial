@@ -278,10 +278,10 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
   border-bottom: 1px solid var(--line);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: var(--clay);
+  color: var(--clay-bright);
   background: rgba(7, 8, 11, 0.6);
 }
-.drp-bar span:last-child { color: #6b7280; }
+.drp-bar span:last-child { color: var(--drp-muted); }
 .drp-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -297,7 +297,7 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--drp-muted);
   margin: 0 0 14px;
 }
 .drp-node {
@@ -323,7 +323,7 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
   display: block;
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: var(--clay);
+  color: var(--clay-bright);
   margin-bottom: 6px;
 }
 .drp-node-title { display: block; font-size: 14.5px; line-height: 1.45; }
@@ -375,7 +375,7 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
   margin-top: 8px;
   font-size: 10.5px;
   letter-spacing: 0.1em;
-  color: #6b7280;
+  color: var(--drp-muted);
   text-transform: uppercase;
 }
 .drp-exp { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; }
@@ -399,7 +399,7 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
 .drp-note {
   margin: 14px 4px 4px;
   font-size: 12.5px;
-  color: #6b7280;
+  color: var(--drp-muted);
 }
 
 /* ---------- dossier (cv-style 12 column ledger) ---------- */
@@ -430,6 +430,12 @@ html.a11y-contrast:is([data-style="sovereign"], [data-style="sage"]):has(.site-h
 /* The Decision Room frame sits inside the engine band, whose local token swap
    would otherwise turn it light: it restores the dark pair for itself. */
 .drp { --ink: var(--ink-d, #f3f4f6); --paper: var(--paper-d, #0d0f14); }
+/* The frame also restores the dark pair for the secondary text and the accent
+   it uses on its own near black surface. Without this the light-theme --slate
+   (2.4:1) and --clay (3.1 to 3.6:1) leak in and fail 4.5:1; --clay-bright is
+   the token the palette reserves for text on --ink. --drp-muted is the quiet
+   label grey, 6:1 on the panel. */
+.drp { --slate: var(--slate-d, #a3a9b5); --drp-muted: #8b93a1; }
 /* The readiness calculator is an ordinary raised panel, but /advisory puts it
    inside an inverted band; it restores the dark pair there. */
 :root:is([data-style="sovereign"], [data-style="sage"]):has(.site-header) .riskcalc { --ink: var(--ink-d); --paper: var(--paper-d); }

@@ -5,6 +5,7 @@ import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 import { Wordmark } from "./Wordmark";
 import { AppInstall } from "./AppInstall";
 import { byLang } from "../lib/byLang";
+import { FwdArrow } from "./FwdArrow";
 
 const DIAG = { he: "לתיאום סשן אבחון טק-משפטי", en: "Schedule Tech-Legal Diagnostics", ar: "لتنسيق جلسة تشخيص تقني قانوني", es: "Programar un diagnóstico Tech-Legal", fr: "Planifier un diagnostic Tech-Legal" };
 
@@ -119,7 +120,7 @@ export function Footer() {
           <address className="footer-address">
             {addr.map((line, i) => <span key={i}>{line}</span>)}
           </address>
-          <Link to="/book" className="footer-diag">{byLang(DIAG, lang)} &rarr;</Link>
+          <Link to="/book" className="footer-diag">{byLang(DIAG, lang)} <FwdArrow /></Link>
         </div>
       </div>
 

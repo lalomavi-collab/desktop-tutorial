@@ -4143,16 +4143,16 @@ html.a11y-reduce-motion *::after {
   .header-tools { gap: 6px; }
   .header-tools .tb-btn,
   .header-tools .share-btn {
-    width: 34px;
-    height: 34px;
+    width: var(--ctrl-h, 34px);
+    height: var(--ctrl-h, 34px);
   }
 }
 @media (max-width: 360px) {
   .header-tools { gap: 5px; }
   .header-tools .tb-btn,
   .header-tools .share-btn {
-    width: 31px;
-    height: 31px;
+    width: calc(var(--ctrl-h, 35px) - 4px);
+    height: calc(var(--ctrl-h, 35px) - 4px);
   }
 }
 
@@ -5439,3 +5439,27 @@ html.a11y-reduce-motion *::after {
 .oauth-divider { display: flex; align-items: center; text-align: center; color: var(--slate); font-size: 13px; margin: 2px 0 20px; }
 .oauth-divider::before, .oauth-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .oauth-divider span { padding: 0 14px; }
+
+/* ---------- touch targets ----------
+   WCAG 2.2 AA asks for 24 by 24 CSS px at minimum; the primary controls go to
+   44 on touch and narrow screens. Text links in the footer keep their look and
+   gain a taller hit area. */
+.footer-col a,
+.footer-legal a,
+.footer-legal-btn {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 24px;
+  min-inline-size: 24px;
+}
+.voice-seek { block-size: 24px; }
+.site-header .brand { padding-block: 6px; }
+@media (max-width: 900px), (pointer: coarse) {
+  :root { --ctrl-h: 44px; }
+  .footer-col a,
+  .footer-legal a,
+  .footer-legal-btn { min-block-size: 36px; }
+  .footer-social-link { width: 44px; height: 44px; }
+  .voice-btn { inline-size: 44px; block-size: 44px; }
+  .lead-card .field { min-block-size: 44px; }
+}
