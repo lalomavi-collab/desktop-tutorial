@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import { money } from "../../lib/cockpit/shared";
 import type { Membership } from "../../lib/cockpit/shared";
 import { FEE_MODEL_LABEL, TIME_STATUS_LABEL } from "../../lib/cockpit/matter360Core.ts";
-import { billableFor, flags, fmtHM, fmtPct, isoDay, monthRange, ratios, totals } from "../../lib/cockpit/hoursIndexCore.ts";
+import { billableFor, buildHoursDemo, flags, fmtHM, fmtPct, HOURS_DEMO_NOTE, isoDay, monthRange, ratios, totals } from "../../lib/cockpit/hoursIndexCore.ts";
 import * as api from "../../lib/cockpit/hoursIndex";
 import type { Entry, MatterOption, Session, Timer } from "../../lib/cockpit/hoursIndex";
 import { CockpitFrame } from "./CockpitFrame";
@@ -202,14 +202,14 @@ function Kpi({ title, value, sub }: { title: string; value: string; sub?: string
 }
 
 /** Presence against logged against billable, per person and per matter. */
-function PartnerReport({ firmId }: { firmId: string }) {
+function PartnerReport({ firmId, demo }: { firmId: string; demo: boolean }) {
   const { name } = useClientNames();
   const [range, setRange] = useState(() => monthRange(new Date()));
   const [tick, setTick] = useState(0);
-  const res = api.useHoursIndex(range.from, range.to, tick, true);
+  const res = api.useHoursIndex(range.from, range.to, tick, !demo);
   const [open, setOpen] = useState<string | null>(null);
-  const data = res.state === "ready" ? res.data : null;
-  const tot = useMemo(() => (data ? totals(data.people) : null), [data]);
+  const data = demo ? buildHoursDemo(new Date()) : res.state === "ready" ? res.data : null;
+  const tot = data ? totals(data.people) : null;
   const rt = tot ? ratios(tot) : null;
   return (
     <>
@@ -224,9 +224,10 @@ function PartnerReport({ firmId }: { firmId: string }) {
         </div>
         <div className="ck-meta">נוכחות היא החתמות כניסה ויציאה שנסגרו. רשום על תיקים הוא זמן העבודה ברישומים, בכל סטטוס. לחיוב הוא זמן מוגש, מאושר או שחויב. נוכחות אינה מחולקת בין תיקים: מה שלא נרשם על תיק מופיע כפער. כל צפייה בדוח נרשמת ביומן הביקורת.</div>
       </div>
-      {res.state === "loading" && <div className="ck-meta">טוען...</div>}
-      {res.state === "unavailable" && <div className="ck-card ck-empty">הדוח עדיין לא הופעל במסד הנתונים (מיגרציה 0058).</div>}
-      {res.state === "denied" && <div className="ck-card ck-empty">אין הרשאה לדוח, או שנדרש אימות דו שלבי.</div>}
+      {demo && <div className="ck-warn" role="note">{HOURS_DEMO_NOTE}</div>}
+      {!demo && res.state === "loading" && <div className="ck-meta">טוען...</div>}
+      {!demo && res.state === "unavailable" && <div className="ck-card ck-empty">הדוח עדיין לא הופעל במסד הנתונים (מיגרציה 0058).</div>}
+      {!demo && res.state === "denied" && <div className="ck-card ck-empty">אין הרשאה לדוח, או שנדרש אימות דו שלבי.</div>}
       {data && tot && rt && (
         <>
           <div className="ck-grid2">
@@ -260,20 +261,27 @@ function PartnerReport({ firmId }: { firmId: string }) {
           </tbody></table></div>
         </>
       )}
-      <SessionsPanel firmId={firmId} from={range.from} onChanged={() => setTick((t) => t + 1)} />
+      {!demo && <SessionsPanel firmId={firmId} from={range.from} onChanged={() => setTick((t) => t + 1)} />}
     </>
   );
 }
 
 function HoursBody({ member }: { member: Membership }) {
   const { user } = useAuth();
-  if (!user) return null;
   const partner = ["FIRM_PARTNER", "ADMIN"].includes(member.role);
+  // The preview is for partners only, is never stored, and hides the real punch and timer so nobody clocks in by accident during a demo.
+  const [demo, setDemo] = useState(() => partner && new URLSearchParams(window.location.search).get("demo") === "1");
+  if (!user) return null;
   return (
     <div className="ck-stack">
-      <ClockCard userId={user.id} />
-      <MyWork firmId={member.firm_id} userId={user.id} />
-      {partner && <PartnerReport firmId={member.firm_id} />}
+      {partner && (
+        <div className="ck-row">
+          <button className={`ck-btn${demo ? " primary" : ""}`} aria-pressed={demo} onClick={() => setDemo((d) => !d)}>{demo ? "יציאה מתצוגת הדגמה" : "תצוגת הדגמה (נתונים בדויים)"}</button>
+        </div>
+      )}
+      {!demo && <ClockCard userId={user.id} />}
+      {!demo && <MyWork firmId={member.firm_id} userId={user.id} />}
+      {partner && <PartnerReport firmId={member.firm_id} demo={demo} />}
     </div>
   );
 }

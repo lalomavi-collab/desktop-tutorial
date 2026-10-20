@@ -6,7 +6,7 @@ import { buildDemo } from "../src/lib/cockpit/crmDemo.ts";
 import { partnerFinance } from "../src/lib/cockpit/crmFinanceCore.ts";
 import { parseOverview, parseMatterWip, rpcFailure } from "../src/lib/cockpit/billingWipCore.ts";
 import { isUuid, timeSummary, hours, stageIndex } from "../src/lib/cockpit/matter360Core.ts";
-import { parseHoursIndex, ratios, totals, flags, fmtHM, fmtPct, monthRange, billableFor, clockError } from "../src/lib/cockpit/hoursIndexCore.ts";
+import { parseHoursIndex, ratios, totals, flags, fmtHM, fmtPct, monthRange, billableFor, clockError, buildHoursDemo, HOURS_DEMO_NOTE } from "../src/lib/cockpit/hoursIndexCore.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const today = new Date(2026, 9, 10); // Saturday 10 Oct 2026
@@ -182,4 +182,20 @@ t("clock errors read as Hebrew and never leak raw database text", () => {
   assert.match(clockError({ message: "ALREADY_CLOCKED_IN" }), /החתמת כניסה/);
   assert.match(clockError("xx SESSION_TOO_LONG_NEEDS_CORRECTION xx"), /24 שעות/);
   assert.equal(clockError("duplicate key value violates unique constraint"), "הפעולה נכשלה.");
+});
+
+t("hours demo: invented data that agrees with itself, like the real report", () => {
+  const d = buildHoursDemo(new Date(2026, 9, 20));
+  assert.equal(d.from, "2026-10-01");
+  assert.equal(d.people.length, 4);
+  const sum = (a) => a.reduce((x, y) => x + y, 0);
+  assert.equal(sum(d.people.map((p) => p.logged)), sum(d.matters.map((m) => m.logged)));
+  assert.equal(sum(d.people.map((p) => p.billable)), sum(d.matters.map((m) => m.billable)));
+  assert.equal(sum(d.people.map((p) => p.billed)), sum(d.matters.map((m) => m.billed)));
+  assert.equal(Math.round(sum(d.people.map((p) => p.value))), Math.round(sum(d.matters.map((m) => m.value))));
+  for (const m of d.matters) assert.equal(sum(d.split.filter((s) => s.matterId === m.matterId).map((s) => s.logged)), m.logged);
+  for (const p of d.people) { assert.ok(p.billable <= p.logged && p.billable % 6 === 0); assert.ok(p.billed <= p.billable); }
+  assert.equal(d.matters.find((m) => m.feeModel === "fixed").value, 0); // a fixed fee matter is never priced by the hour
+  assert.ok(d.people.some((p) => p.daysOver > 0) && d.people.some((p) => p.openSessions > 0)); // the preview shows the flags too
+  assert.match(HOURS_DEMO_NOTE, /בדויים/);
 });

@@ -130,3 +130,46 @@ export function clockError(message: unknown): string {
   for (const k of Object.keys(CLOCK_ERRORS)) if (m.includes(k)) return CLOCK_ERRORS[k];
   return "הפעולה נכשלה.";
 }
+
+export const HOURS_DEMO_NOTE = "נתוני הדגמה בדויים. כל השמות, הדקות והסכומים כאן מומצאים ואינם נתוני המשרד. שום דבר לא נשמר במסד הנתונים.";
+
+/**
+ * SYNTHETIC data for the partner report preview. Every name, code, minute and rate is invented. Nothing here touches the database.
+ * People and matters are built from one matrix of minutes, so the matter totals and the per person totals agree by construction,
+ * which is what the real report guarantees.
+ */
+export function buildHoursDemo(today: Date): HoursIndex {
+  const { from, to } = monthRange(today);
+  const matters = [
+    { id: "d1", code: "דמו-101", title: "תיק לדוגמה 1", fee: "hourly" },
+    { id: "d2", code: "דמו-102", title: "תיק לדוגמה 2", fee: "capped" },
+    { id: "d3", code: "דמו-103", title: "תיק לדוגמה 3", fee: "fixed" },
+    { id: "d4", code: "דמו-104", title: "תיק לדוגמה 4", fee: "retainer" },
+    { id: "d5", code: "דמו-105", title: "תיק לדוגמה 5", fee: "hourly" },
+  ];
+  // logged and billable minutes per matter (same order as `matters`), billable always in 6 minute units and under logged.
+  const staff = [
+    { name: "עורך דין לדוגמה א", role: "ATTORNEY", rate: 600, attendance: 9600, days: 20, logged: [3000, 2400, 1200, 600, 600], billable: [2880, 2280, 1020, 480, 540], draft: 300, off: 0, open: 0, over: 0, none: 0, noRate: 0 },
+    { name: "עורך דין לדוגמה ב", role: "ATTORNEY", rate: 450, attendance: 9000, days: 19, logged: [1800, 1200, 1200, 600, 600], billable: [1680, 1080, 960, 540, 540], draft: 0, off: 120, open: 0, over: 2, none: 1, noRate: 0 },
+    { name: "עורכת דין לדוגמה ג", role: "ATTORNEY", rate: 350, attendance: 9900, days: 21, logged: [3000, 2400, 1800, 900, 600], billable: [2100, 1800, 1200, 600, 300], draft: 600, off: 0, open: 1, over: 0, none: 0, noRate: 3 },
+    { name: "שותף לדוגמה", role: "FIRM_PARTNER", rate: 900, attendance: 7200, days: 15, logged: [600, 600, 600, 600, 600], billable: [600, 480, 480, 420, 420], draft: 0, off: 0, open: 0, over: 0, none: 0, noRate: 0 },
+  ];
+  const priced = (fee: string): boolean => fee === "hourly" || fee === "capped" || fee === "hybrid";
+  const sum = (a: number[]): number => a.reduce((x, y) => x + y, 0);
+  const billedOf = (b: number): number => Math.floor((b * 0.6) / 6) * 6;
+  const value = (rate: number, minutes: number): number => Math.round((minutes / 60) * rate * 100) / 100;
+
+  const people: PersonHours[] = staff.map((s) => ({
+    name: s.name, role: s.role, attendance: s.attendance, attendanceDays: s.days, openSessions: s.open,
+    logged: sum(s.logged), billable: sum(s.billable), billed: sum(s.billable.map(billedOf)), draft: s.draft, writtenOff: s.off,
+    value: Math.round(sum(s.billable.map((b, i) => (priced(matters[i].fee) ? value(s.rate, b) : 0))) * 100) / 100,
+    entriesWithoutRate: s.noRate, daysOver: s.over, daysNoAttendance: s.none,
+  }));
+  const matterRows: MatterHours[] = matters.map((m, i) => ({
+    matterId: m.id, matterCode: m.code, title: m.title, feeModel: m.fee, people: staff.length,
+    logged: sum(staff.map((s) => s.logged[i])), billable: sum(staff.map((s) => s.billable[i])), billed: sum(staff.map((s) => billedOf(s.billable[i]))),
+    writtenOff: 0, value: priced(m.fee) ? Math.round(sum(staff.map((s) => value(s.rate, s.billable[i]))) * 100) / 100 : 0,
+  }));
+  const split: SplitRow[] = matters.flatMap((m, i) => staff.map((s) => ({ matterId: m.id, name: s.name, logged: s.logged[i], billable: s.billable[i] })));
+  return { from, to, people, matters: matterRows, split };
+}
