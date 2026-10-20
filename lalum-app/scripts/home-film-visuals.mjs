@@ -214,7 +214,7 @@ function s1(d){const S=SC(),x=ctx(d);
 
 // ---------- scene 2: the team ----------
 function s2(d){const S=SC(),x=ctx(d);
-  kin(S,"LEGAL AI IS THE AXIS.",x.ws(0,"legal ai is the axis"),160,105,1600,{size:96,color:"#e7c27a",out:x.a(1)-.2,h:150});
+  kin(S,"AI AND LAW IS THE AXIS.",x.ws(0,"ai and law is the axis"),160,105,1600,{size:96,color:"#e7c27a",out:x.a(1)-.2,h:150});
   const tbl=box(300,830,1320,26,"");tbl.style.cssText+=";background:#26402e;border-top:5px solid #4a7054;border-radius:12px";S.reg(tbl,.2,null);
   const dv=device(720,360,480,300,CURP);dv.wrap.style.opacity=1;
   const scr=box(18,18,444,264,"","",dv.lid);scr.style.cssText+=";background:#0f1b14;border-radius:10px;overflow:hidden";

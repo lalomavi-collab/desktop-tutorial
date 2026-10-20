@@ -23,7 +23,7 @@ os.chdir(WORK)
 
 VO = {
     "1": ["AI you can defend.", "Because the work moves fast, and someone still has to answer for it."],
-    "2": ["Legal AI is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence.",
+    "2": ["AI and law is the axis of the firm: advisory, ongoing accompaniment, and training for organizations adopting artificial intelligence.",
           "From usage policy, to audit, to documentation."],
     "3": ["The engine runs inside your practice.",
           "It audits exposure as the work happens, automates the routine, and keeps a documented trail on every decision.",
