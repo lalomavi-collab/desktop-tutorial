@@ -382,12 +382,26 @@ article p {
     -webkit-hyphens: manual;
     hyphens: manual;
   }
-  /* The hero lede is a short, centred statement, not running text: it keeps start alignment. */
-  .lede {
+  /* The home hero lede is a short statement, not running text: it keeps start alignment. */
+  .hero-copy .lede {
     text-align: start;
     -webkit-hyphens: manual;
     hyphens: manual;
   }
+}
+
+/* Every public page (owner request, 20.10.2026: "all pages justified"): running text in
+   paragraphs and list items is justified on every route, phone and desktop. Zero specificity
+   (:where), so any component that sets its own alignment (centred bands, tables, buttons,
+   nav, the cockpit) keeps it. Eyebrows, labels, screen reader text and anything inside a
+   centred block (inline text-align: center, .panel-dark, .founder-card, .course-dark) are excluded. */
+:where(main) :where(p, li, dd, blockquote):not(.eyebrow, .label, .sr-only, [style*="text-align: center"] *, [style*="text-align:center"] *, .panel-dark *, .founder-card *, .course-dark *) {
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: start;
+  text-wrap: pretty;
+  -webkit-hyphens: manual;
+  hyphens: manual;
 }
 
 /* ── Core practice-area cards ─────────────────────────────────────────── */
@@ -3423,8 +3437,8 @@ html.a11y-reduce-motion *::after {
     display: none;
   }
   /* Section copy and card bodies stay justified on phones (owner decision, see the rules near
-     "Card bodies"); only the hero lede, a short statement, flows from the start edge. */
-  .lede {
+     "Card bodies"); only the home hero lede, a short statement, flows from the start edge. */
+  .hero-copy .lede {
     text-align: start;
     -webkit-hyphens: manual;
     hyphens: manual;

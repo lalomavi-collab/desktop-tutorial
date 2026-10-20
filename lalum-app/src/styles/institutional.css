@@ -179,7 +179,7 @@
 }
 .ccd-head span:last-child { color: var(--slate); font-size: 10px; }
 .ccd-title { font-size: 22px; line-height: 1.3; margin: 0 0 12px; }
-.ccd-body { font-size: 15px; line-height: 1.7; color: var(--slate); margin: 0; text-align: start; }
+.ccd-body { font-size: 15px; line-height: 1.7; color: var(--slate); margin: 0; text-align: justify; text-justify: inter-word; text-align-last: start; text-wrap: pretty; }
 .ccd-art { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
 .ccd-art li { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 10.5px; letter-spacing: 0.1em; color: var(--slate); }
 .ccd-tiers li[data-on="true"] { color: var(--ink); }
