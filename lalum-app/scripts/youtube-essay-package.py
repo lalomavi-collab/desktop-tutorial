@@ -57,7 +57,7 @@ Reuters, 25 August 2026: https://www.reuters.com/business/google-expands-gemini-
 Supreme Court of Israel, HCJ 38379-12-24, 23 February 2025 (paragraphs 15 and 26)
 
 Disclosures
-The narration of this video is synthetic (AI generated). The on-screen product windows are illustrative mockups, not screens of any real product. LALUM is not affiliated with Google. This video is general information, not legal advice.
+The narration of this video is synthetic (AI generated), and the people shown on screen are AI generated and labelled as such. The on-screen product windows are illustrative mockups, not screens of any real product. LALUM is not affiliated with Google. This video is general information, not legal advice.
 
 LALUM, Dr. Avraham Lalum, Adv.
 https://lalumapp.com
@@ -71,7 +71,7 @@ title = "Google Just Built an AI Lawyer's Assistant. Who Signs?"
 tags = ["AI and law", "Gemini Enterprise for Legal", "AI agents", "billable hour", "legal technology", "AI governance",
         "lawyers and AI", "AI accountability", "Google Cloud", "law firm", "LALUM", "legal tech"]
 meta = {"title": title, "language": "en", "category": "Education", "tags": tags, "visibility_first": "unlisted",
-        "synthetic_content_disclosure": "yes (AI generated narration, synthesized music)", "made_for_kids": False,
+        "synthetic_content_disclosure": "yes (AI generated narration, AI generated people, synthesized music)", "made_for_kids": False,
         "captions": "captions.en.srt", "thumbnail": "thumbnail.png", "description_file": "description.txt",
         "chapters": {names[n]: mmss(off[n]) for n in order}, "end_screen_from": mmss(acc - 20),
         "pinned_comment": "Three questions that do not move to the machine: who approves, on what basis, and who signs. Does your firm answer them in writing? lalumapp.com"}
@@ -82,7 +82,7 @@ check = f"""YouTube upload checklist
 3. Description: paste description.txt (the chapters start at 0:00 and are each longer than 10 seconds).
 4. Thumbnail: thumbnail.png.
 5. Language English. Captions: upload captions.en.srt.
-6. Altered or synthetic content: answer YES (the narration is synthetic; the music is synthesized).
+6. Altered or synthetic content: answer YES (the narration is synthetic, the people on screen are AI generated, the music is synthesized).
 7. Audience: not made for kids. Category: Education. Tags: {", ".join(tags)}.
 8. Visibility: Unlisted first, watch it once with sound, then set Public.
 9. End screen: the last 20 seconds, from {mmss(acc - 20)} (YouTube allows 5 to 20 seconds; the credits roll).
