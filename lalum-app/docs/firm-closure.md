@@ -1,6 +1,6 @@
 # Closing a firm (offboarding a tenant)
 
-Status: the checklist (0062), begin closing / cancel closing (0063) and finish closing (0065) are built. The other steps below are manual today; what is not built is listed at the end.
+Status: the checklist (0062), begin closing / cancel closing (0063), finish closing (0065) and the database half of the export package (0066) are built. The other steps below are manual today; what is not built is listed at the end.
 
 ## What it means
 
@@ -21,7 +21,7 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 |---|---|---|
 | 0. Check | Run `select public.lalum_firm_closure_checklist(:firm)` as a partner of the firm (behind MFA) or as the platform admin (second factor session). It returns counts and amounts only. Blockers: client money held, a legal hold, a pending statutory deadline, a signature in flight, a tax document mid issuance. Do not begin while a blocker is non zero. | Built |
 | 1. Freeze | `lalum_firm_begin_closing` sets the status to `SUSPENDED` and clears the intake token (see below). Revoke the tax connections and their vault secrets by hand. Tell the clients. | Built, tax connections manual |
-| 2. Hand over | Per matter archive export (the cockpit has an archive export, its completeness is not reviewed). A firm wide package (matters, financial ledger, audit chain with the result of `lalum_verify_audit_chain`, a manifest with hashes) is not built. | Partly |
+| 2. Hand over | Per matter archive export (the cockpit has one, see the gaps below). Firm wide: `lalum_firm_export_manifest`, `lalum_firm_export_page` and `lalum_firm_export_originals` (0066) give the database half. The ZIP builder and the batch signer for the originals are not built. | Partly |
 | 3. Retention clock | `lalum_purge_blocker` blocks a purge only when `handling_ended_at` is set. **On the live project it is set on none of the 22 matters, so no retention block works today.** `lalum_firm_begin_closing` sets it to the effective date on every unpurged matter that has none, and stores which ones, so cancelling undoes exactly those. | Built |
 | 4. Revoke access | Ban members' logins in Auth, except one custodian with read access. | Manual |
 | 5. Scrub | After retention, per matter, through the existing flow: bin, request purge (typed confirmation, legal hold and retention checks), remove originals from Storage, finish purge. The matter row stays, blanked, with `MATTER_PURGED` in the chain. | Existing flow |
@@ -50,6 +50,19 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 - **It cannot be undone.** `lalum_firm_cancel_closing` only works on `SUSPENDED`, and `lalum_firm_begin_closing` refuses a firm that is not `ACTIVE`. A firm that must come back is a new decision by the owner, not a function.
 - Test: `supabase/tests/firm_finish_closing.sql`, run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063 and 0065.
 
+## Export package (0066)
+
+The firm is owed its own records, complete and checkable. 0066 adds the read side; the files are assembled by a client and an Edge Function that are **not built yet**.
+
+- `lalum_firm_export_manifest(firm)`: per included table a row count and a sha256, the audit chain check (`lalum_verify_audit_chain`, first broken sequence or none, head sequence and hash), the originals in Storage (count, bytes, how many have no sha256), the excluded tables with a reason, and `unclassified`. Writes one `FIRM_EXPORT_MANIFEST` row to the chain (counts only).
+- `lalum_firm_export_page(firm, table, offset, limit)`: the rows of one table as the exact JSON text the hash was computed over, ordered by that text, at most 500 per call. Join all pages of a table with newlines and the sha256 equals the manifest value, so the receiver can verify each `.jsonl` file without trusting the platform.
+- `lalum_firm_export_originals(firm)`: document, matter, path, sha256, size, mime and file name for every stored original of a live matter; writes one `FIRM_EXPORT_ORIGINALS` row. Signing the paths and zipping them is the Edge Function's job, in one batch with one audit row. Do not use `lalum_open_original` for 250 files: it writes one chain row and one 60 second link per file.
+- **Who may call:** a partner or admin of the firm behind MFA with financial permission, or the platform admin in a second factor session. Allowed in any firm status, `CANCELED` included.
+- **Classification, not silence.** Every table with a `firm_id` is included or excluded with a reason (blind index hashes, tax connection credentials, delivery queues, counters, platform records, client portal access, timers, import logs). A table added later and not decided shows in `unclassified` and `complete` turns false: do not hand over a package that says `complete: false`. Checked on the live project on 2026-10-20: 46 included, 11 excluded, none unclassified, none missing `firm_id`. A listed table that loses its `firm_id` fails the manifest loudly instead of exporting an empty file.
+- **Names.** Documents are stored with party names replaced by tokens such as `[CLIENT_NAME_1]`; the real names are in the originals. A package without the originals is not a handover. The manifest reports their count so the receiver can check it.
+- **Known gap in the per matter export.** `ArchiveExport.tsx` tells the client the original is not kept by the platform and exports only the two text versions. The live project holds 250 originals (68 MB, largest 8.6 MB), each with a sha256. The text is stale and the export omits the originals. That is a copy and product decision for the owner, not changed here.
+- Test: `supabase/tests/firm_export_package.sql`, run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063 and 0066.
+
 ## Decisions that are the owner's
 
 1. **Who holds the data after closure.** Recommended: the firm stays responsible for its client data and LALUM acts as processor; the contract must say what is returned, when it is deleted, and who is the custodian of the files. Not analysed here.
@@ -66,6 +79,6 @@ No blockers and no warnings. Info: 8 live matters, 14 in the bin, 22 matters wit
 
 ## Not built
 
-The firm wide export package; blocking logins and revoking tax connections in one call; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
+The ZIP builder and the batch signer for the export package (the database half is built); blocking logins and revoking tax connections in one call; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
 
 Tests: `supabase/tests/firm_closure_checklist.sql` (40 assertions) and `supabase/tests/firm_begin_closing.sql` (58 assertions), run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062 and 0063. They create stand ins for the tables no repository migration builds, and run in any order.
