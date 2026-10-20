@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLang } from "../context/LangContext";
 import { byLang } from "../lib/byLang";
+import { FwdArrow } from "./FwdArrow";
 
 // Interactive preview of the Engine: three decision nodes on one pane, and the
 // risk matrix and governance telemetry beside it follow the node you pick.
@@ -263,7 +264,7 @@ export function DecisionRoomPreview() {
           </div>
           <div className="drp-axes">
             <span>{c.likelihood} &uarr;</span>
-            <span>{c.impact} &rarr;</span>
+            <span>{c.impact} <FwdArrow /></span>
           </div>
           <ul className="drp-exp">
             {node.exposures.map((e) => (

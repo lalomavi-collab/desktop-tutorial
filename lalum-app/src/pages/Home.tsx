@@ -25,6 +25,7 @@ import { ArchitecturalSection } from "../components/ArchitecturalSection";
 import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
 import { ClassifyCertifyDefendGrid } from "../components/ClassifyCertifyDefendGrid";
 import { RoleMatrixSwitcher } from "../components/RoleMatrixSwitcher";
+import { FwdArrow } from "../components/FwdArrow";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
@@ -145,7 +146,7 @@ export function Home() {
                 </span>
                 <p className="pillar-body">{p.body}</p>
               </span>
-              <span className="pillar-go" aria-hidden="true">&rarr;</span>
+              <span className="pillar-go" aria-hidden="true"><FwdArrow /></span>
             </Link>
           ))}
         </div>
@@ -201,7 +202,7 @@ export function Home() {
                   <p className="article-card-dek">{a.dek}</p>
                   <div className="article-card-meta">
                     <span>{a.date}</span><span style={{ color: p.accent }}>·</span><span>{a.read}</span>
-                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} &rarr;</span>
+                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} <FwdArrow /></span>
                   </div>
                 </div>
               </Link>

@@ -105,6 +105,7 @@ export function Header() {
             onClick={() => setMoreOpen((v) => !v)}
             aria-haspopup="menu"
             aria-expanded={moreOpen}
+            aria-label={t.ui.nav.menu}
           >
             <Icon name="menu" size={17} />
             <span>{t.ui.nav.menu}</span>
@@ -231,7 +232,7 @@ export function Header() {
         <nav className="header-groups hide-mobile" aria-label={hg.group}>
           {groups.map((g) => (
             <div key={g.label} className="hg">
-              <span className="hg-label" tabIndex={0}>{g.label}</span>
+              <span className="hg-label" role="button" aria-haspopup="true" tabIndex={0}>{g.label}</span>
               <div className="hg-menu">
                 {g.items.map((it) => it.plain ? (
                   <a key={it.to} href={it.to}>{it.label}</a>
