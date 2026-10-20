@@ -130,6 +130,24 @@ export function Header() {
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
                   </button>
                 </div>
+                {/* The language switch sits right under the panel header so it is
+                    on the first screen without scrolling; at the bottom it was the
+                    one control a phone visitor had to scroll to find. */}
+                <div className="header-more-langs" role="group" aria-label="Language">
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      role="menuitemradio"
+                      aria-checked={l.code === lang}
+                      onClick={() => { setLang(l.code); setMoreOpen(false); }}
+                      dir={l.dir}
+                      className={"header-more-lang" + (l.code === lang ? " active" : "")}
+                    >
+                      {l.autonym}
+                    </button>
+                  ))}
+                </div>
                 {/* The menu is organised, not listed: two entries first (the
                     assistant app and the client portal, with quick payment as a
                     third when it is on), then the same four groups the top bar
@@ -198,22 +216,6 @@ export function Header() {
                   <a href="/partners/" role="menuitem" className="hm-util" onClick={() => setMoreOpen(false)}>
                     <Icon name="scale" size={16} /> {t.ui.partnerLogin}
                   </a>
-                </div>
-                <div className="header-more-divider" role="separator" />
-                <div className="header-more-langs">
-                  {LANGS.map((l) => (
-                    <button
-                      key={l.code}
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={l.code === lang}
-                      onClick={() => { setLang(l.code); setMoreOpen(false); }}
-                      dir={l.dir}
-                      className={"header-more-lang" + (l.code === lang ? " active" : "")}
-                    >
-                      {l.autonym}
-                    </button>
-                  ))}
                 </div>
               </div>
             </>
