@@ -810,7 +810,6 @@ export const en = {
     filmP: "The engine, the clinic and the decision room, as one practice.",
     filmPlay: "Play the film (1 minute 11 seconds, English narration by an AI voice, some people AI generated)",
     filmPosterAlt: "A film about LALUM: people at work, the engine, the clinic and the decision room.",
-    filmLong: "The full 8 minute essay on YouTube (in English): Google just built an AI lawyer's assistant. Who signs?",
     founderName: "Dr. Avraham Lalum, Adv.",
     founderCreds1: "Attorney · Ph.D. Law & Economics",
     founderCreds2: "Head of AI, Lalum.",
