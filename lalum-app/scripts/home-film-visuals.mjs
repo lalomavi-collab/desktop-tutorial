@@ -189,49 +189,35 @@ function P(S,key,x,y,s,a,b,extra){const pr=person(CURP,Object.assign({x:x,y:y,s:
 function slab(S,x,y,w,a,b,col){const e=box(x,y,w,16,"");e.style.cssText+=";background:"+(col||"#26402e")+";border-top:4px solid #4a7054;border-radius:6px";S.reg(e,a,b);return e}
 function chipAt(S,txt,x,y,a,b,cls){const e=box(x,y,0,0,"chip"+(cls?" "+cls:""),txt);S.reg(e,a,b);return e}
 
+// live action plates: frames of a generated clip (scripts/home-film-live-prep.sh) shown inside the room, so they
+// move with the camera. The frame is chosen from the time, so every render is deterministic. Always labelled.
+const PENDING=[];
+function livePanel(S,key,x,y,w,h,a,b,o){o=o||{};const L=window.LIVE&&window.LIVE[key];
+  const e=box(x,y,w,h,"","");e.style.cssText+=";overflow:hidden;border-radius:"+(o.r==null?18:o.r)+"px;"+(o.border===false?"":"border:2px solid #e7c27a;")+"box-shadow:0 30px 60px rgba(0,0,0,.55);background:#0b100c";
+  const im=document.createElement("img");im.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover";e.appendChild(im);
+  const tg=box(0,h-44,w,44,"mono","AI-GENERATED PEOPLE");tg.style.cssText+=";font-size:17px;letter-spacing:4px;color:#e7c27a;padding:12px 22px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6))";e.appendChild(tg);
+  S.reg(e,a,b,o.d||.7);
+  let last="";
+  S.fx.push(t=>{if(!L)return;const sp=o.speed||.5,f=Math.max(0,Math.min(L.n-1,Math.floor((t-a)*sp*48))),src="http://live.local/"+key+"/"+String(f+1).padStart(4,"0")+".jpg";
+    if(src!==last){last=src;im.src=src;PENDING.push(im.decode().catch(()=>{}))}
+    im.style.transform="scale("+(1+.05*Math.max(0,Math.min(1,(t-a)/(L.n/48/sp+1))))+")"});
+  return e}
+
 // ---------- scene 1: the morning ----------
 function s1(d){const S=SC(),x=ctx(d);
-  const tA=x.w(0,"ai you can defend");
   kin(S,"AI YOU CAN",[x.w(0,"ai"),x.w(0,"you"),x.w(0,"can")],160,100,1600,{size:96,out:x.a(1)-.2,h:140});
   kin(S,"DEFEND.",[x.w(0,"defend")],160,200,1600,{size:120,color:"#e7c27a",out:x.a(1)-.2,h:160});
-  // the foreground lawyer with the document, a desk, three colleagues behind her
-  slab(S,240,872,760,.1,null);slab(S,1010,716,880,.2,null,"#1f3326");
-  const L=P(S,"lawyer",560,650,1.25,.1,null,{propR:"paper",clip:190});
-  const A=P(S,"dev",1180,540,.7,.3,null,{clip:200}),B=P(S,"mgr",1450,530,.68,.4,null,{clip:200}),C=P(S,"aud",1730,540,.68,.5,null,{back:false,clip:200});
-  const walker=P(S,"client",1500,730,.62,x.w(1,"because"),null,{tie:null});
-  const doc=box(610,480,120,150,"","");doc.style.cssText+=";background:#f5f1e8;border-radius:6px;box-shadow:0 20px 40px rgba(0,0,0,.45)";
-  for(let i=0;i<4;i++){const ln=box(18,26+i*26,84,6,"","",doc);ln.style.background="#9aa597"}
-  S.reg(doc,x.w(0,"defend")+.4,null);
-  S.fx.push(t=>{
-    const rd=t>x.w(1,"someone")?1:0;
-    L.update(t,{look:{x:.3,y:.3},smile:.35,hr:{x:70,y:-60+Math.sin(t*1.3)*6},hl:{x:-70,y:166},ra:-8,tilt:2,brow:rd?.7:0});
-    A.update(t,{look:{x:-.4,y:.6},hl:{x:-60+Math.sin(t*9)*8,y:188},hr:{x:60-Math.sin(t*9)*8,y:188},tilt:2,grip:.5});
-    B.update(t,{look:{x:.2,y:-.1},hr:{x:60,y:-140},talk:Math.abs(Math.sin(t*5.3))*.8,smile:.2,tilt:-3});
-    C.update(t,{look:{x:-.5,y:.2},hl:{x:-60+Math.sin(t*7)*8,y:188},hr:{x:60-Math.sin(t*7)*8,y:188},grip:.5});
-    const w=((t*70)%1500);walker.wrap.style.left=(1900-w-150)+"px";walker.update(t,{lean:Math.sin(t*6)*2,look:{x:-.6,y:0},hl:{x:-50+Math.sin(t*6)*35,y:240},hr:{x:50-Math.sin(t*6)*35,y:240}});
-    doc.style.transform="translateY("+(Math.sin(t*1.3)*5)+"px) rotate("+(-8+Math.sin(t*.9)*2)+"deg)"});
+  livePanel(S,"office",432,372,1056,603,.2,null,{speed:.5});
   return S}
 
 // ---------- scene 2: the team ----------
 function s2(d){const S=SC(),x=ctx(d);
   kin(S,"AI AND LAW IS THE AXIS.",x.ws(0,"ai and law is the axis"),160,105,1600,{size:96,color:"#e7c27a",out:x.a(1)-.2,h:150});
-  const tbl=box(300,830,1320,26,"");tbl.style.cssText+=";background:#26402e;border-top:5px solid #4a7054;border-radius:12px";S.reg(tbl,.2,null);
-  const dv=device(720,360,480,300,CURP);dv.wrap.style.opacity=1;
-  const scr=box(18,18,444,264,"","",dv.lid);scr.style.cssText+=";background:#0f1b14;border-radius:10px;overflow:hidden";
-  const rows=["USAGE POLICY","AUDIT","DOCUMENTATION"].map((tx,i)=>{const r=box(20,22+i*82,404,62,"mono",tx,scr);r.style.cssText+=";border:2px solid #3a5a42;border-radius:8px;color:#9aaa9c;font-size:24px;letter-spacing:4px;padding:14px 16px;opacity:0";return r});
-  const people=[["lawyer",360,640,.95,false],["mgr",1560,640,.95,true],["dev",640,580,.75,false],["aud",1280,580,.75,true]].map((q,i)=>{
-    const pr=P(S,q[0],q[1],q[2],q[3],.2+i*.15,null,{flip:q[4],clip:230,back:i>1});return pr});
+  livePanel(S,"team",120,262,1010,577,.2,null,{speed:.5});
   const tW=[x.w(1,"usage policy"),x.w(1,"audit"),x.w(1,"documentation")];
-  const chips=[["ADVISORY","advisory"],["ONGOING","ongoing accompaniment"],["TRAINING","and training"]];
-  chips.forEach((c,i)=>{const e=box(260+i*480,880,420,80,"chip",'<div class="lbl" style="margin-top:12px">'+c[0]+"</div>");S.reg(e,x.w(0,c[1]),x.a(1)-.2)});
-  S.fx.push(t=>{
-    rows.forEach((r,i)=>{const k=ease((t-tW[i])/.4);r.style.opacity=k;r.style.borderColor=k>0&&t<tW[i]+1.2?"#e7c27a":"#3a5a42"});
-    dv.sway(t);
-    const sp=t>tW[0]&&t<tW[0]+2.2;
-    people[0].update(t,{look:{x:.5,y:.1},hr:sp?{x:260,y:-30}:{x:70,y:215},smile:.4,tilt:2});
-    people[1].update(t,{look:{x:-.5,y:.1},hl:t>tW[1]?{x:-120,y:80+Math.sin(t*3)*5}:null,talk:t>tW[1]&&t<tW[1]+2?Math.abs(Math.sin(t*6))*.7:0,tilt:-3});
-    people[2].update(t,{tilt:Math.sin(t*1.4)*3,hl:{x:-60+Math.sin(t*8)*8,y:206},hr:{x:60-Math.sin(t*8)*8,y:206},grip:.5});
-    people[3].update(t,{tilt:Math.sin(t*1.1+1)*3})});
+  const rows=["USAGE POLICY","AUDIT","DOCUMENTATION"].map((tx,i)=>{const r=box(1260,290+i*170,540,120,"mono",tx);r.style.cssText+=";border:3px solid #3a5a42;border-radius:16px;background:#16241b;color:#9aaa9c;font-size:32px;letter-spacing:5px;padding:40px 30px;opacity:0";return r});
+  [["ADVISORY","advisory"],["ONGOING","ongoing accompaniment"],["TRAINING","and training"]].forEach((c,i)=>{const e=box(260+i*480,880,420,80,"chip",'<div class="lbl" style="margin-top:12px">'+c[0]+"</div>");S.reg(e,x.w(0,c[1]),x.a(1)-.2)});
+  S.fx.push(t=>{rows.forEach((r,i)=>{const k=ease((t-tW[i])/.4);r.style.opacity=k;r.style.borderColor=k>0&&t<tW[i]+1.2?"#e7c27a":"#3a5a42";r.style.color=k>0&&t<tW[i]+1.2?"#f5f1e8":"#9aaa9c"})});
   return S}
 
 // ---------- scene 3: the engine ----------
@@ -291,6 +277,8 @@ function s5(d){const S=SC(),x=ctx(d);
   const bar=box(30,190,416,16,"bar","",scr);bar.style.width="0px";
   const you=P(S,"client",380,700,1.05,.1,null,{flip:false,clip:215}),lw=P(S,"lawyer",1540,700,1.05,x.w(0,"then we talk"),null,{flip:true,clip:215,propR:"pen"});
   const tA=x.a(0)+.2,tB=x.w(0,"then we talk");
+  livePanel(S,"walk",0,0,1920,1080,x.w(1,"start at")-.3,null,{speed:.5,r:0,border:false,d:.9});
+  const shade=box(0,0,1920,1080,"","");shade.style.background="rgba(8,12,9,.5)";S.reg(shade,x.w(1,"start at")-.3,null,.9);
   const el=box(700,470,520,200,"","");el.innerHTML=document.querySelector(".wm").outerHTML.replace('class="wm"','style="width:520px;opacity:1"');S.reg(el,x.w(1,"start at"),null,1);
   S.reg(box(0,690,W,80,"c h2","lalumapp.com"),x.w(1,"lalumappcom"),null);
   S.fx.push(t=>{
@@ -396,13 +384,19 @@ window.render=T=>{
   DUST.forEach((e,i)=>{const x=(((i*173+T*(8+(i%5)*3)-C.cx*.04*(1+i%3))%1960)+1960)%1960-20,y=120+(((i*97)%840)-T*(5+(i%4)*2)+840*10)%840;e.style.left=x+"px";e.style.top=y+"px";e.style.opacity=.16+.16*Math.sin(T*1.3+i)});
   const lk=document.getElementById("leak");lk.style.opacity=C.trans?C.dip*.85:0;lk.style.transform="translateX("+((C.u-.1)*1700)+"px)";
   document.getElementById("world").style.opacity=Math.min(1,T/.5,(TOTAL-T)/1.2);
+  return Promise.all(PENDING.splice(0));
 };
 </script></body></html>`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 page.on("pageerror", (e) => { console.error("PAGE ERROR", e.message); process.exit(1); });
+const LIVEDIR = process.env.LIVE || "/tmp/hf-live";
+const liveCfg = {};
+if (existsSync(LIVEDIR)) for (const k of readdirSync(LIVEDIR)) { const n = readdirSync(path.join(LIVEDIR, k)).filter((f) => f.endsWith(".jpg")).length; if (n) liveCfg[k] = { n }; }
+await page.route("http://live.local/**", (route) => route.fulfill({ path: path.join(LIVEDIR, new URL(route.request().url()).pathname) }));
 await page.setContent(html);
+await page.evaluate((c) => { window.LIVE = c; }, liveCfg);
 await page.evaluate(() => document.fonts.ready);
 await page.evaluate((nr) => window.buildAll(nr), narr);
 
