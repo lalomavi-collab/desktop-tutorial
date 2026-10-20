@@ -91,7 +91,7 @@ A session that needs to cross into another lane should do the smallest possible 
 - Alignment: headings and signatures aligned right or centered; body paragraphs justified (`both`).
 - Fonts: use a complex-script Hebrew font (Arial as a safe default, or Frank Ruhl Libre / Heebo for html). Set the `w:cs` font and `w:szCs` so Hebrew renders correctly.
 - Mixed direction: keep Latin and technical tokens (emails, URLs, code, `UTF-8`) isolated LTR inside Hebrew text.
-- Brand colors (Prestige Executive): Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`.
+- Brand colors for documents and posts only (Prestige Executive; the app and site use their own ivory and sage system in `lalum-app/DESIGN.md`, never this palette): Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`.
 - Always include a short disclaimer on sample legal documents (not legal advice, not binding).
 - Verify the output: confirm no forbidden dashes and correct RTL before delivering.
 
@@ -111,7 +111,7 @@ Every post MUST follow this flow:
 - English wide (1200x630) for LinkedIn
 - Hebrew square (1080x1080) for Instagram
 - Save to `posts/images/`
-- Use Prestige Executive color scheme (Obsidian #1B1B1B, Gold #D4AF37, Cream #FFFDD0, Burgundy #800020)
+- Use Prestige Executive color scheme for post images (Obsidian #1B1B1B, Gold #D4AF37, Cream #FFFDD0, Burgundy #800020)
 
 ### Step 3: Preview Page
 - Create/update `posts/preview.html` showing ALL content:
