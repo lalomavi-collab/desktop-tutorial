@@ -8,8 +8,8 @@ import os, re, subprocess
 OUT = os.environ.get("OUT", "/tmp/lalum-youtube-essay")
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 CLIPS = [  # name, start, end (seconds into the film), title
-    ("billable-hour", 258.5, 292.8, "THE BILLABLE HOUR"),
-    ("accountability", 363.3, 398.0, "THE DUTY STAYS WITH A PERSON"),
+    ("not-a-chatbot", 0.3, 38.6, "NOT A CHATBOT"),
+    ("the-question", 39.2, 53.0, "WHO DECIDES? WHO SIGNS?"),
     ("who-signs", 424.4, 459.0, "WHO SIGNS?"),
 ]
 
