@@ -68,7 +68,7 @@ print(len(cues), "caption cues;", mmss(acc), "total")
 
 # Upload kit: metadata and a checklist, so the upload is a copy and paste job.
 title = "Google Just Built an AI Lawyer's Assistant. Who Signs?"
-tags = ["legal AI", "Gemini Enterprise for Legal", "AI agents", "billable hour", "legal technology", "AI governance",
+tags = ["AI and law", "Gemini Enterprise for Legal", "AI agents", "billable hour", "legal technology", "AI governance",
         "lawyers and AI", "AI accountability", "Google Cloud", "law firm", "LALUM", "legal tech"]
 meta = {"title": title, "language": "en", "category": "Education", "tags": tags, "visibility_first": "unlisted",
         "synthetic_content_disclosure": "yes (AI generated narration, synthesized music)", "made_for_kids": False,
