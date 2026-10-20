@@ -13,8 +13,7 @@ type AuthValue = {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
   verifyRecoveryCode: (email: string, code: string) => Promise<AuthResult>;
-  /** `currentPassword` is sent too, so the server can enforce it once "Require current password when updating" is on. */
-  updatePassword: (password: string, currentPassword?: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -122,12 +121,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
-  const updatePassword: AuthValue["updatePassword"] = async (password, currentPassword) => {
+  const updatePassword: AuthValue["updatePassword"] = async (password) => {
     if (!supabase) {
       if (password.length < 6) return { error: "Enter a password of at least 6 characters." };
       return { error: null };
     }
-    const { error } = await supabase.auth.updateUser({ password, ...(currentPassword ? { current_password: currentPassword } : {}) });
+    const { error } = await supabase.auth.updateUser({ password });
     return { error: error?.message ?? null };
   };
 
