@@ -25,6 +25,7 @@ import { toBlocks, blocksToText, parseInline } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import { rulings, areaLabel, rulingTitle } from "./src/lib/rulings";
+import { instruments, feed, KIND_LABEL, ETHICS_TITLE, ETHICS_DESC, UPDATES_TITLE, UPDATES_DESC } from "./src/lib/ethics";
 import type { ArticleBlock } from "./src/lib/content";
 import { courses, courseFramework, courseSlug } from "./src/lib/courses";
 import { academyPro } from "./src/lib/academyPro";
@@ -51,6 +52,8 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "training", title: "קורס AI לעורכי דין והכשרות בינה מלאכותית לארגונים | LALUM", desc: "קורס AI לעורכי דין ולמשרדי עורכי דין, והכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי לדירקטוריונים ולצוותי מוצר." },
   { path: "knowledge", title: "מרכז הידע של LALUM: נדל״ן, מיזוגים ורכישות ו-AI", desc: "קורסים, מאמרים ושאלות ותשובות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, במקום אחד." },
   { path: "rulings", title: "חיפוש פסקי דין: בינה מלאכותית, נדל״ן והתחדשות עירונית | LALUM", desc: "מאגר פסיקה בר חיפוש עם תמצית לכל פסק דין שהמשרד כתב עליו, בבינה מלאכותית ובחובות המקצוע, לצד שאילתות מוכנות למאגרים הרשמיים." },
+  { path: "ethics", title: ETHICS_TITLE, desc: ETHICS_DESC },
+  { path: "updates", title: UPDATES_TITLE, desc: UPDATES_DESC },
   { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד״ר עו״ד אברהם ללום ומשרד LALUM." },
   { path: "faq", title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM." },
   { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד״ר עו״ד אברהם ללום, LALUM." },
@@ -779,6 +782,35 @@ function rulingsBodyHtml(title: string, desc: string): string {
   return out.join("\n");
 }
 
+// The ethics rules and the updates feed carry real records, so the static
+// document reads them: a crawler that runs no JavaScript sees each opinion and
+// each update, with the source it rests on.
+function ethicsBodyHtml(title: string, desc: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
+  for (const i of instruments) {
+    out.push(`        <h2>${esc(`${i.number}: ${i.title}`)}</h2>`);
+    out.push(`        <p>${esc(`${i.body}, ${i.dateLabel}`)}</p>`);
+    out.push(`        <p>${esc(i.summary)}</p>`);
+    for (const s of i.sections) {
+      out.push(`        <h3>${esc(`${s.letter}. ${s.heading}`)}</h3>`);
+      for (const p of s.points) out.push(`        <p>${esc(`סעיף ${p.para}. ${p.text}`)}</p>`);
+    }
+  }
+  out.push(`        <p>${esc("התמצית נכתבה בידי המשרד ואינה תחליף לקריאת גילוי הדעת במקור. אין באמור ייעוץ משפטי.")}</p>`);
+  return out.join("\n");
+}
+function updatesBodyHtml(title: string, desc: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
+  for (const it of feed()) {
+    out.push(`        <h2>${esc(it.title)}</h2>`);
+    out.push(`        <p>${esc(`${it.dateLabel}, ${KIND_LABEL[it.kind]}`)}</p>`);
+    out.push(`        <p>${esc(it.summary)}</p>`);
+  }
+  return out.join("\n");
+}
+
 // The home page, built from the same dictionary the page component renders
 // from: the hero, the positioning paragraphs, the six AI and risk layers, the
 // reasons, and the Q&A the page already publishes. The root document is the one
@@ -1027,6 +1059,8 @@ function seoPrerender(): Plugin {
             : sector ? sectorBodyHtml(sector)
             : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
+            : r.path === "ethics" ? ethicsBodyHtml(r.title, r.desc)
+            : r.path === "updates" ? updatesBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
             : pillar ? pillarBodyHtml(pillar)
             : pageBodyHtml(r.title, r.desc, r.path);

@@ -16,11 +16,11 @@ import { byLang } from "../lib/byLang";
 import { useScrollLock } from "../lib/useScrollLock";
 
 const HG = {
-  he: { engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
-  en: { engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation", contact: "Contact", call: "Call" },
-  ar: { engine: "المحرّك وغرفة القرار", practice: "مجالات العمل", clinic: "العيادة والأكاديمية", insights: "رؤى وملف شخصي", profile: "الملف الشخصي والسيرة الذاتية", cta: "جلسة تشخيص", group: "التنقل الرئيسي", contact: "التواصل", call: "اتصال" },
-  es: { engine: "Motor y Decisión", practice: "Áreas", clinic: "Clínica y Academia", insights: "Análisis y perfil", profile: "Perfil y CV", cta: "Sesión de diagnóstico", group: "Navegación principal", contact: "Contacto", call: "Llamar" },
-  fr: { engine: "Moteur et Décision", practice: "Domaines", clinic: "Clinique et Académie", insights: "Analyses et profil", profile: "Profil et CV", cta: "Séance de diagnostic", group: "Navigation principale", contact: "Contact", call: "Appeler" },
+  he: { ethics: "אתיקה ועדכונים", ethicsLink: "כללי האתיקה ו-AI", updatesLink: "חדשנו", engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
+  en: { ethics: "Ethics & Updates", ethicsLink: "AI ethics rules", updatesLink: "What's new", engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation", contact: "Contact", call: "Call" },
+  ar: { ethics: "الأخلاقيات والمستجدات", ethicsLink: "قواعد أخلاقيات الذكاء الاصطناعي", updatesLink: "المستجدات", engine: "المحرّك وغرفة القرار", practice: "مجالات العمل", clinic: "العيادة والأكاديمية", insights: "رؤى وملف شخصي", profile: "الملف الشخصي والسيرة الذاتية", cta: "جلسة تشخيص", group: "التنقل الرئيسي", contact: "التواصل", call: "اتصال" },
+  es: { ethics: "Ética y novedades", ethicsLink: "Reglas éticas sobre IA", updatesLink: "Novedades", engine: "Motor y Decisión", practice: "Áreas", clinic: "Clínica y Academia", insights: "Análisis y perfil", profile: "Perfil y CV", cta: "Sesión de diagnóstico", group: "Navegación principal", contact: "Contacto", call: "Llamar" },
+  fr: { ethics: "Éthique et nouveautés", ethicsLink: "Règles d'éthique sur l'IA", updatesLink: "Nouveautés", engine: "Moteur et Décision", practice: "Domaines", clinic: "Clinique et Académie", insights: "Analyses et profil", profile: "Profil et CV", cta: "Séance de diagnostic", group: "Navigation principale", contact: "Contact", call: "Appeler" },
 };
 
 export function Header() {
@@ -81,6 +81,7 @@ export function Header() {
     { label: hg.engine, items: [{ to: "/#engine", label: t.ui.nav.engine }, { to: "/risk", label: t.ui.nav.decisionRoom }] },
     { label: hg.practice, items: [{ to: "/ai-legal-advisory", label: t.ui.nav.ai }, { to: "/real-estate-legal-advisory", label: t.ui.nav.realEstate }] },
     { label: hg.clinic, items: [{ to: "/advisory", label: t.ui.nav.clinic }, { to: "/training", label: t.ui.nav.training }] },
+    { label: hg.ethics, items: [{ to: "/ethics", label: hg.ethicsLink }, { to: "/updates", label: hg.updatesLink }] },
     { label: hg.insights, items: [{ to: "/insights", label: t.ui.nav.insights }, { to: "/knowledge", label: t.ui.nav.knowledge }, { to: cvPath(lang), label: hg.profile, plain: true }] },
   ];
 
