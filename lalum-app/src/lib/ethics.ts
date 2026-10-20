@@ -29,10 +29,10 @@ export const shown = (c?: Commentary): string => (c && c.status === "approved" &
 export type FeedKind = "ethics" | "ruling" | "development";
 export type FeedItem = {
   id: string; date: string; dateLabel: string; kind: FeedKind; title: string; summary: string;
-  href: string; external?: boolean;
+  href: string; external?: boolean; sources?: { label: string; href: string }[];
 };
 
-type ManualUpdate = Omit<FeedItem, "kind"> & { kind?: FeedKind };
+type ManualUpdate = Omit<FeedItem, "kind" | "href"> & { kind?: FeedKind; href?: string };
 const manual = (updatesData as { items: ManualUpdate[] }).items;
 
 export function feed(): FeedItem[] {
@@ -48,7 +48,10 @@ export function feed(): FeedItem[] {
       href: `/rulings?q=${encodeURIComponent(r.citation)}`,
     });
   }
-  for (const m of manual) items.push({ ...m, kind: m.kind ?? "development" });
+  for (const m of manual) {
+    const first = m.sources?.[0]?.href;
+    items.push({ ...m, kind: m.kind ?? "development", href: m.href ?? first ?? "/updates", external: m.external ?? (!m.href && !!first) });
+  }
   return items.sort((a, b) => b.date.localeCompare(a.date));
 }
 
