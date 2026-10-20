@@ -39,7 +39,6 @@ export function HomeFilm() {
           </span>
         </button>
       )}
-      <figcaption className="dim" style={{ marginTop: 12, fontSize: 15 }}>{h.filmDisclosure}</figcaption>
     </figure>
   );
 }
