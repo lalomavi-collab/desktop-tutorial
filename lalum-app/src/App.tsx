@@ -54,6 +54,7 @@ const Payments = lazy(() => import("./pages/cockpit/Payments").then((m) => ({ de
 const Members = lazy(() => import("./pages/cockpit/Members").then((m) => ({ default: m.Members })));
 const Partners = lazy(() => import("./pages/cockpit/Partners").then((m) => ({ default: m.Partners })));
 const ImportFolderPage = lazy(() => import("./pages/cockpit/ImportFolder").then((m) => ({ default: m.ImportFolderPage })));
+const Hours = lazy(() => import("./pages/cockpit/Hours").then((m) => ({ default: m.Hours })));
 const PartnerDashboardPage = lazy(() => import("./pages/cockpit/PartnerDashboard").then((m) => ({ default: m.PartnerDashboardPage })));
 const Matter360Page = lazy(() => import("./pages/cockpit/Matter360").then((m) => ({ default: m.Matter360Page })));
 const PortalPreviewPage = lazy(() => import("./pages/cockpit/PortalPreview").then((m) => ({ default: m.PortalPreviewPage })));
@@ -110,6 +111,7 @@ export default function App() {
           <Route path="partners" element={<Suspense fallback={null}><Partners /></Suspense>} />
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
           <Route path="workspace/import" element={<Suspense fallback={null}><ImportFolderPage /></Suspense>} />
+          <Route path="workspace/hours" element={<Suspense fallback={null}><Hours /></Suspense>} />
           <Route path="workspace/partner" element={<Suspense fallback={null}><PartnerDashboardPage /></Suspense>} />
           <Route path="workspace/matter-360" element={<Suspense fallback={null}><Matter360Page /></Suspense>} />
           <Route path="workspace/portal-preview" element={<Suspense fallback={null}><PortalPreviewPage /></Suspense>} />

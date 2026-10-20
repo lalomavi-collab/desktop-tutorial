@@ -34,6 +34,7 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
   { heading: "עבודת המשרד", items: [
     ["/workspace/tasks", "משימות", false, "check"],
     ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
+    ["/workspace/hours", "שעות עבודה", false, "calendar"],
     ["/workspace/scorecard", "מדדי שירות", false, "scale"],
     ["/workspace/import", "ייבוא תיקים", false, "plus"],
     ["/admin/matters", "ניהול תיקים", false, "gavel"],
@@ -64,7 +65,7 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/settings/security": ShieldArt, "/workspace/guide": BookArt,
   // The screens separated out of the client portal, and the roster screen.
   "/workspace/calls": HeadsetArt, "/workspace/inbox": InboxArt, "/workspace/client-docs": FolderArt,
-  "/workspace/payments": ScalesArt, "/workspace/discussions": CheckArt, "/workspace/scheduling": TasksArt,
+  "/workspace/payments": ScalesArt, "/workspace/discussions": CheckArt, "/workspace/scheduling": TasksArt, "/workspace/hours": ChartArt,
   "/settings/members": GavelArt,
 };
 
