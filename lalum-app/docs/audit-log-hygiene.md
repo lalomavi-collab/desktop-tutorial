@@ -17,8 +17,13 @@ The audit log (`lalum_matter_audit_log`) is an append-only hash chain. Whatever 
 
 ## What this does not cover
 
-- **Two existing rows** (`SIGNATURE_SIGNED`) keep the signer's name they were written with. Rewriting them breaks the chain.
-  Accept it, or record a documented exception; the owner decides.
+- **Documented exception: two existing `SIGNATURE_SIGNED` rows.** Recorded on 2026-10-20 at the owner's instruction. Two rows written before 0061
+  carry the signer's typed name in `meta` (checked on the live project: exactly two rows have a `name` key). The chain is append only and each row is
+  hashed into the next, so rewriting or deleting either one breaks verification of every later row of that firm. They are therefore left as they are.
+  - *Scope:* these two rows only. From 0061 on, `lalum_portal_sign` writes the request id alone and `lalum_append_audit` refuses a personal data key, so no new row can add to the exception.
+  - *Where the name lives:* `lalum_signature_requests.signed_name`, which can be erased with the signature record. The chain copy cannot.
+  - *If an erasure request names one of these signers:* erase the signature record, state in the reply that two audit entries keep the name for the integrity of the log, and take the legal view (a record kept to prove who signed, and the log's integrity purpose) from counsel for that case. This is a recorded position, not a legal analysis.
+  - *Revisit when:* a second tenant joins, or the first erasure request that touches these rows. The remedy then is a new chain segment agreed with the owner, never an edit in place.
 - **Free text.** Migration 0064 moves the partner's conflict note out of the chain. `lalum_set_conflict_status` now writes the text to `lalum_conflict_notes`
   (readable by the firm's partner or admin, no direct write grant) and puts only `note_chars` and `note_sha256` into `meta`, so the chain still proves which
   text was recorded. `lalum_finish_purge_matter` clears the notes with the matter's other children. Checked on the live project on 2026-10-20: no
