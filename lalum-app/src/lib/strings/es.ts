@@ -695,6 +695,10 @@ export const es: Dict = {
     heroH1b: "puede defender.",
     heroLede: "Legal AI es el eje del despacho: asesoría, acompañamiento continuo y formación para organizaciones que adoptan inteligencia artificial, desde la política de uso hasta la auditoría y la documentación.",
     heroCtaAi: "Vea cómo encaja Legal AI en su caso",
+    securityLead: "Seguridad que se puede comprobar.",
+    securityBody: "Qué se construyó, qué se comprobó el {date} y qué no se promete.",
+    securityBooklet: "Cuadernillo de seguridad (PDF, en hebreo)",
+    securityPage: "Página de seguridad (en hebreo)",
     quickInsightsTitle: "Artículos y novedades",
     audienceTitle: "La entrada según lo que necesita, no según cómo se organiza el despacho",
     audiences: [

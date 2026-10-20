@@ -18,6 +18,7 @@ import { coverThumb } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
 import { HomeFilm } from "../components/HomeFilm";
+import { CHECKED_ON } from "../lib/securityPage";
 import { EngineVideo } from "../components/EngineVideo";
 import { LeadForm } from "../components/LeadForm";
 import { ArchitecturalSection } from "../components/ArchitecturalSection";
@@ -83,6 +84,19 @@ export function Home() {
           <HeroVideo />
         </div>
       </section>
+
+      {/* One line under the hero that points at the security booklet and page and says no more than
+          they do: what was built, what was checked and on which date, and what is not promised. The
+          booklet and /security are the only statement; this line never summarises them more strongly. */}
+      <div className="wrap" style={{ padding: "0 32px" }}>
+        <p style={{ margin: 0, padding: "16px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", fontSize: 15, lineHeight: 1.7, color: "var(--slate)" }}>
+          <b style={{ color: "var(--ink)" }}>{h.securityLead}</b>{" "}
+          {h.securityBody.replace("{date}", CHECKED_ON)}{" "}
+          <a href="/downloads/lalum-avtachat-meida.pdf" download style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityBooklet}</a>
+          {" \u00B7 "}
+          <a href="/security/" style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityPage}</a>
+        </p>
+      </div>
 
       {/* The page speaks about Legal AI from the hero down to the engine. The
           second area (real estate and urban renewal) and the entry-by-role
