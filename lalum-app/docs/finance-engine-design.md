@@ -126,15 +126,28 @@ Status of each fact is marked. Nothing here is legal advice.
     `https://localhost/callback`, then exchanging the returned code for a token), which only the owner can do
     (it needs his own sandbox login); not yet done. Still open: the token's and any refresh token's lifetime,
     and exactly how long the resulting access token stays usable before that login has to be repeated.
+  - 20 October 2026, continued: the owner attempted the authorization-code login himself (browser, outside this
+    environment, since gov.il is unreachable here either way), using a one-off local script (Python, run in his
+    own terminal, never pasted into any session here) to exchange the returned code for a token. Along the way
+    he deleted `lalum-invoices-sandbox` (kept only `lalum-invoices-sandbox-2`, to remove the ambiguity of two
+    registered apps) and confirmed he still holds that app's Key and Secret. The token exchange returned
+    `HTTP 401 Unauthorized` with no further detail (the first script version did not capture the response
+    body on that specific request; a corrected version that does was handed to him but not yet run to
+    completion). Root cause not yet established: candidates include a stale/expired authorization code (it is
+    short-lived), a mismatch between the SMS/login verification step and the OAuth code itself (the owner was
+    unsure which "code" was which at one point), or something the scope (`invoices_scope`) or redirect URI
+    needs that is not yet understood. The owner is calling the Tax Authority's own support line to troubleshoot
+    directly rather than continuing to guess. Paused here; token lifetime and refresh-token behavior remain
+    unknown until a token is actually obtained.
   Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet, and
   the live OAuth/HTTP call cannot be exercised from here either way. The request/response shape is specific
   enough that the typed client code is already built (`src/lib/cockpit/shaamClient.ts`, see Phases below), in
   TypeScript, consistent with the rest of this app and its existing Supabase edge functions (Deno); any live
-  call this project makes stays in that same stack, not a separate language. Next: the owner completes the
-  authorization-code login once to obtain an access token, then a session here can build the edge function
-  that performs the token exchange and the live call, reading Key/Secret from a Supabase edge function secret.
+  call this project makes stays in that same stack, not a separate language. Next: once the owner has a working
+  access token (after Tax Authority support resolves the 401), a session here can build the edge function that
+  performs the token exchange and the live call, reading Key/Secret from a Supabase edge function secret.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
