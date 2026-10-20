@@ -1,6 +1,6 @@
 Amatic SC: Copyright 2015 The Amatic SC Project Authors
 (https://github.com/googlefonts/AmaticSC), SIL Open Font License 1.1. Used unmodified apart from
-subsetting to Hebrew and basic Latin (public/fonts/amatic-sc-700.woff2), for the home page headline.
+subsetting to Hebrew and basic Latin (public/fonts/amatic-sc-400.woff2), for the home page headline.
 
 Lalum Serif is a modified, merged version of two fonts, both licensed under
 the SIL Open Font License, Version 1.1 (below):

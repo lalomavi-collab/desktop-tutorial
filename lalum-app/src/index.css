@@ -13,8 +13,8 @@
 @font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/lalum-serif-500.woff2") format("woff2"); }
 @font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/lalum-serif-700.woff2") format("woff2"); }
 @font-face { font-family: "Lalum Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/lalum-serif-400-italic.woff2") format("woff2"); }
-/* Signature face for the home page headline only (owner choice, 20.10.2026): Amatic SC Bold (SIL OFL), a 23 KB subset, Hebrew and basic Latin. */
-@font-face { font-family: "Amatic SC"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/amatic-sc-700.woff2") format("woff2"); }
+/* Signature face for the home page headline only (owner choice, 20.10.2026): Amatic SC Regular (SIL OFL), a 24 KB subset, Hebrew and basic Latin. */
+@font-face { font-family: "Amatic SC"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/amatic-sc-400.woff2") format("woff2"); }
 
 :root {
   --ivory: #f5f1e8;
@@ -5363,13 +5363,13 @@ html.a11y-reduce-motion *::after {
 /* Hero: a larger headline and a soft clay glow behind the clip, so the first
    screen has a focal point instead of a flat field. */
 .hero-home .hero-h1 { font-size: clamp(42px, 6vw, 76px); line-height: 1.04; }
-/* The page sentence is set like a signature: one condensed handwritten face, bold, no tracking.
+/* The page sentence is set like a signature: one condensed handwritten face, regular weight, one ink colour, no tracking.
    Amatic SC runs small and narrow for its size, so it is set larger than the serif it replaces
    (display ceiling 6rem) and balanced over two lines. Arabic has no glyphs in it and keeps its
    own display face. */
 html:not([lang="ar"]) .hero-home .hero-h1 {
   font-family: "Amatic SC", var(--serif);
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0;
   font-size: clamp(60px, 7.6vw, 96px);
   line-height: 1.04;
@@ -5379,7 +5379,7 @@ html:not([lang="ar"]) .hero-home .hero-h1 {
   html:not([lang="ar"]) .hero-home .hero-h1 { font-size: clamp(56px, 15vw, 72px); }
 }
 /* Hebrew and English are short enough to be signed on one line, the way a signature is written.
-   The line is sized so it fits the column at every width from 320px up (Amatic SC Bold is about
+   The line is sized so it fits the column at every width from 320px up (Amatic SC is about
    5 em wide for "AI שאפשר להגן עליו."). Spanish and French are longer and keep two balanced lines. */
 html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 {
   max-width: none;
@@ -5402,11 +5402,11 @@ html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .hero-ai {
   html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 { font-size: clamp(40px, 15vw, 64px); }
 }
 html:not(:is([lang="he"], [lang="en"])) .hero-home .hero-h1 { max-width: 14ch; }
-/* A thin pen stroke under the second line instead of the broad highlighter bar, which would
-   outweigh letters this light. */
+/* The whole sentence is one colour (the page ink) with no underline: a signature is not highlighted. */
 html:not([lang="ar"]) .hero-home .hero-h1 .italic-clay {
-  background: linear-gradient(color-mix(in srgb, var(--clay) 60%, transparent), color-mix(in srgb, var(--clay) 60%, transparent)) no-repeat 0 100% / 100% 4px;
-  padding-bottom: 8px;
+  color: inherit;
+  background: none;
+  padding-bottom: 0;
 }
 .hero-home::after {
   content: "";
