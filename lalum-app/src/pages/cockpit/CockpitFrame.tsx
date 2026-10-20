@@ -51,6 +51,7 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/settings/members", "חברי המשרד", false, "user"],
     ["/settings/billing", "חיוב והגדרות", false, "card"],
     ["/settings/security", "אבטחה", false, "shield"],
+    ["/workspace/export", "ייצוא נתוני המשרד", false, "file"],
   ] },
   { heading: "כללי", items: [
     ["/workspace/bin", "סל מיחזור", true, "trash"],

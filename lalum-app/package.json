@@ -41,6 +41,7 @@
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",
     "crm-check": "node scripts/crm-check.mjs",
+    "firm-export-check": "node scripts/firm-export-check.mjs",
     "password-check": "node scripts/password-check.mjs",
     "mcp-check": "node scripts/mcp-check.mjs",
     "mcp-client-check": "node scripts/mcp-client-check.mjs"
