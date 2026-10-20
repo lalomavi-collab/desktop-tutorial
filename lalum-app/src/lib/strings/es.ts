@@ -801,6 +801,7 @@ export const es: Dict = {
     filmP: "El motor, la clínica y la sala de decisión, como una sola práctica.",
     filmPlay: "Reproducir el vídeo (1 minuto 11 segundos, narración en inglés con voz de IA, algunas personas generadas con IA)",
     filmPosterAlt: "Un vídeo sobre LALUM: personas trabajando, el motor, la clínica y la sala de decisión.",
+    filmLong: "El ensayo completo de 8 minutos en YouTube (en inglés): Google acaba de crear un asistente de IA para abogados. ¿Quién firma?",
     founderName: "Dr. Avraham Lalum, Adv.",
     founderCreds1: "Abogado · Doctor en Derecho y Economía",
     founderCreds2: "Director de IA, Lalum.",
