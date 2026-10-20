@@ -21,6 +21,7 @@
     "finance-check": "node scripts/finance-check.mjs",
     "cockpit-text-check": "node scripts/cockpit-text-check.mjs",
     "shaam-check": "node scripts/shaam-check.mjs",
+    "shaam-client-check": "node scripts/shaam-client-check.mjs",
     "ar-aging-check": "node scripts/ar-aging-check.mjs",
     "cashflow-check": "node scripts/cashflow-check.mjs",
     "dunning-send-check": "node scripts/dunning-send-check.mjs",

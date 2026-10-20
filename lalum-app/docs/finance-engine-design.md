@@ -178,10 +178,20 @@ Rules the design enforces regardless of the answers above:
      10014, RECEIPT 30019, INVOICE_RECEIPT 70145, CREDIT 50004, PROFORMA 90091 (273 archive rows total,
      matching the archive's own row count exactly). The first number sealed by the own engine for each
      type will be one above these.
-   - Still to build, blocked: the Shaam client and the SEALING -> ALLOCATED -> SEALED edge function (the
-     live gov.il call), plus PDF generation. Deliberately held until the final stage before the switch: the
-     practice owner does Shaam onboarding together with a future session, directly on the Tax Authority
-     site, not before.
+   - Done, 20 October 2026 (built earlier than the original plan below, per the owner's 15 October decision
+     to start now): the pure request/response mapping for the live "Invoices v2 Approval" call,
+     `src/lib/cockpit/shaamClient.ts`. Builds the `InvoiceRequest` body from a sealed `FinDocument`
+     (reusing `DOC_TYPE_CODE` from `shaamExport.ts` for `invoice_type`), parses `ResponseApproval`
+     (reusing `allocationShort` from `financeAllocation.ts`), and flags missing or malformed required
+     fields before ever sending anything. No network code: `npm run shaam-client-check` proves the mapping
+     against the definition's own documented examples, not that gov.il accepts a real call.
+   - Still to build, blocked: the actual OAuth2 call and the SEALING -> ALLOCATED -> SEALED edge function
+     that uses the client above. Blocked on two unknowns the Tax Authority's reply has not addressed:
+     whether the credential from registering an application ("Get access") is a long-lived token to use
+     directly or a client_id/client_secret pair to exchange per call, and access/refresh token lifetimes.
+     PDF generation is separately still to build. Originally deliberately held until the final stage before
+     the switch; the owner's 15 October decision moved the client code earlier, but the live call itself
+     still needs the owner's own application registration first.
    - Done: the uniform-structure file export module (the owner's decision above, taking the stricter reading
      rather than wait for a verified answer), `src/lib/cockpit/shaamExport.ts`. Builds INI.TXT and BKMVDATA.TXT
      from the finance ledger via `@accounter/shaam-uniform-format-generator` (pinned exactly at `0.2.6`: its
