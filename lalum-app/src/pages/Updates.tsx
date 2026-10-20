@@ -42,6 +42,14 @@ export function Updates() {
                 {it.external ? <a href={it.href} target="_blank" rel="noopener noreferrer">{it.title}</a> : <Link to={it.href}>{it.title}</Link>}
               </h2>
               <p style={{ fontSize: 14.5, lineHeight: 1.7, margin: "8px 0 0" }}>{it.summary}</p>
+              {it.sources && it.sources.length > 0 && (
+                <p className="muted" style={{ fontSize: 13, margin: "8px 0 0" }}>
+                  מקורות:{" "}
+                  {it.sources.map((s, i) => (
+                    <span key={s.href}>{i > 0 && " · "}<a href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a></span>
+                  ))}
+                </p>
+              )}
             </article>
           ))}
           <p className="muted" style={{ fontSize: 13, lineHeight: 1.7, margin: "8px 0 0" }}>

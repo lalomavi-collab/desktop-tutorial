@@ -53,6 +53,21 @@ jobs:
             exit 1
           fi
 
+      - name: Guard, the daily updates branch may change only the updates feed
+        # The daily updates job writes developments to lalum-app/src/data/updates.json and nothing else.
+        # Its two source rule is enforced by scripts/updates-check.mjs inside the build above.
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            claude/daily-audit-updates-*)
+              others=$(git diff --name-only origin/main...HEAD | grep -v '^lalum-app/src/data/updates\.json$' || true)
+              if [ -n "$others" ]; then
+                echo "The daily updates branch changed files outside the feed:"
+                echo "$others"
+                exit 1
+              fi
+              ;;
+          esac
+
       - name: Merge to main, through a pull request
         # Not a direct push. A repository rule requires every change to main to
         # go through a pull request, so the `git push origin main` that used to
