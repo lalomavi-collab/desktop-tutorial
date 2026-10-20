@@ -2,7 +2,9 @@
 # Prepares the live action plates of the home film: every clip becomes a numbered frame sequence at 48 fps
 # (motion interpolated, so the slow motion playback in the film stays smooth), one folder per plate.
 #   scripts/home-film-live-prep.sh office=clip1.mp4 team=clip2.mp4 walk=clip3.mp4
-# Plates the film knows: office (scene 1), team (scene 2), walk (closing shot of scene 5).
+# Plates the film knows: office (scene 1), team (scene 2), d1 to d5 (the five stations of scene 3), e1 and e2 (scene 4),
+# f1 (scene 5), walk (closing shot), b1 and b2 (short connecting shots over the camera sweeps into scenes 3 and 5).
+# A missing plate is simply left out: the film never draws cartoon people any more.
 # Output: LIVE (default /tmp/hf-live)/<plate>/0001.jpg ... The clips are AI generated people and are labelled as such in the film.
 set -euo pipefail
 LIVE=${LIVE:-/tmp/hf-live}
