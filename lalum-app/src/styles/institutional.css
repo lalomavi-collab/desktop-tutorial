@@ -342,3 +342,19 @@ html[lang="en"] .header-groups, html[lang="ar"] .header-groups, html[lang="es"] 
   .header-more-menu .hm-utils { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; padding: 6px 2px 0; margin-top: 0; }
   .header-more-menu .hm-util { min-height: calc(var(--hm-row) - 4px); font-size: 12.5px; }
 }
+
+/* ---------- language buttons on the page ----------
+   One row of the five languages on the home page (right under the hero) and in
+   the footer, so a phone visitor never has to open the menu to change language. */
+.lang-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.lang-buttons-btn {
+  min-block-size: 44px; padding-inline: 16px;
+  border: 1px solid var(--line-strong); border-radius: 9999px;
+  background: transparent; color: var(--ink);
+  font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.lang-buttons-btn:hover { background: var(--clay-tint); }
+.lang-buttons-btn.on { background: var(--clay-tint); border-color: var(--clay-soft); font-weight: 700; }
+.lang-strip { padding-block: 18px 6px; }
+.footer-langs { padding-block: 18px 6px; }
+@media (max-width: 900px) { .lang-buttons { flex-wrap: nowrap; gap: 5px; } .lang-buttons-btn { flex: 1 1 0; min-inline-size: 0; padding-inline: 4px; font-size: 13px; } }

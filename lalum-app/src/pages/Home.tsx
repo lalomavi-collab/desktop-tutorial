@@ -5,6 +5,7 @@ import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { HomeAcademy } from "../components/HomeAcademy";
 import { FocusAreas } from "../components/FocusAreas";
+import { LangButtons } from "../components/LangButtons";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { coreFaqsForPath } from "../lib/pageFaqsCore";
@@ -86,6 +87,8 @@ export function Home() {
           <HeroVideo />
         </div>
       </section>
+
+      <div className="wrap lang-strip"><LangButtons /></div>
 
       {/* The page speaks about Legal AI from the hero down to the engine. The
           second area (real estate and urban renewal) and the entry-by-role
