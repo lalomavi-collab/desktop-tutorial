@@ -85,14 +85,17 @@
 }
 .hdr-cta:hover { background: #d9c29f; color: #07080b; }
 /* The top bar keeps one row: groups first to go on narrower desktops. */
-@media (max-width: 1120px) { .header-groups { display: none; } }
+/* The four groups need about 625px beside the brand, the menu and the tools.
+   Below 1171px even the Hebrew labels overlap the neighbours, so the groups
+   step aside there and the menu button gets its label back. */
+@media (max-width: 1170px) { .header-groups { display: none; } }
 .header-more-wrap + .header-groups { margin-inline: 8px; }
 .header-login { border-radius: 2px; background: transparent; }
 .header-login .header-cta-label { display: none; }
 .header-login { padding: 0 12px; }
 /* With the groups on screen the menu button is the icon alone; its label
    returns when the groups step aside. */
-@media (min-width: 1121px) { .header-menu-btn span { display: none; } .header-menu-btn { padding-inline: 12px; } }
+@media (min-width: 1171px) { .header-menu-btn span { display: none; } .header-menu-btn { padding-inline: 12px; } }
 
 /* ---------- direct counsel (was SOS): one hairline of gold, no red ---------- */
 .tb-btn.tb-sos {
@@ -287,12 +290,14 @@
   .header-more-menu .hm-link { font-size: 15px; }
 }
 @media (max-width: 360px) { .hm-links { grid-template-columns: 1fr; } }
-/* Arabic, Spanish and French labels are longer than the bar can hold beside
-   the tools, so in those languages the four groups live in the menu (where
-   they are the same four groups) and the menu button keeps its label. */
-html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
-@media (min-width: 1121px) {
-  html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
+/* English, Arabic, Spanish and French labels are longer than the bar can hold
+   beside the tools (English measures about 620px for the groups against 360px
+   free, at every width, because the page column stops at 1180px), so in those
+   languages the four groups live in the menu (where they are the same four
+   groups) and the menu button keeps its label. */
+html[lang="en"] .header-groups, html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
+@media (min-width: 1171px) {
+  html[lang="en"] .header-menu-btn span, html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
 }
 
 /* ---------- light / dark button (sun, as in the partners system) ---------- */
