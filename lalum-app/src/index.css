@@ -5378,6 +5378,30 @@ html:not([lang="ar"]) .hero-home .hero-h1 {
 @media (max-width: 760px) {
   html:not([lang="ar"]) .hero-home .hero-h1 { font-size: clamp(56px, 15vw, 72px); }
 }
+/* Hebrew and English are short enough to be signed on one line, the way a signature is written.
+   The line is sized so it fits the column at every width from 320px up (Amatic SC Bold is about
+   5 em wide for "AI שאפשר להגן עליו."). Spanish and French are longer and keep two balanced lines. */
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 {
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(60px, 6.8vw, 92px);
+  line-height: 1.1;
+}
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .italic-clay { margin-inline-start: 0.12em; font-style: normal; }
+/* One line means the word AI sits inline at the sentence size here, not as the large mark above
+   the headline (that arrangement stays for Spanish, French and Arabic). */
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .hero-ai {
+  display: inline;
+  font-size: 1em;
+  line-height: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 { font-size: clamp(40px, 15vw, 64px); }
+}
+html:not(:is([lang="he"], [lang="en"])) .hero-home .hero-h1 { max-width: 14ch; }
 /* A thin pen stroke under the second line instead of the broad highlighter bar, which would
    outweigh letters this light. */
 html:not([lang="ar"]) .hero-home .hero-h1 .italic-clay {

@@ -65,7 +65,7 @@ export function Home() {
                 sight (the lede stays in the DOM for search engines and screen
                 readers): the clip beside it now carries the explanation. */}
             <span className="sr-only">{h.heroPill}</span>
-            <h1 className="h1 hero-h1" style={{ margin: 0, maxWidth: "14ch" }}>
+            <h1 className="h1 hero-h1" style={{ margin: 0 }}>
               {bigAi ? <><span className="hero-ai">{heroFirst}</span>{" "}{heroRest.join(" ")}</> : h.heroH1a}
               {" "}
               <span className="italic-clay">{h.heroH1b}</span>
