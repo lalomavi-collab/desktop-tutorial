@@ -4328,28 +4328,6 @@ html.a11y-reduce-motion *::after {
   background: var(--line);
   margin: 6px 4px;
 }
-.header-more-langs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 4px 2px;
-}
-.header-more-lang {
-  padding: 7px 13px;
-  border-radius: 9999px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.header-more-lang.active {
-  background: var(--clay-tint);
-  border-color: var(--clay-soft);
-  font-weight: 700;
-}
 
 .guide-overlay {
   position: fixed;

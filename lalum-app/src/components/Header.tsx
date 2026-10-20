@@ -9,9 +9,10 @@ import { OPEN_GUIDE_EVENT } from "./UserGuide";
 import { OPEN_SOS_EVENT } from "./SosMenu";
 import { OPEN_CHAT_EVENT } from "./chatEvents";
 import { whatsappNumber, telegramUrl, officePhone, paymentsEnabled } from "../lib/content";
-import { LANGS, cvPath } from "../lib/hreflang";
+import { cvPath } from "../lib/hreflang";
 import { Wordmark } from "./Wordmark";
 import { ThemeToggle } from "./ThemeToggle";
+import { LangMenu } from "./LangMenu";
 import { byLang } from "../lib/byLang";
 import { useScrollLock } from "../lib/useScrollLock";
 
@@ -25,7 +26,7 @@ const HG = {
 
 export function Header() {
   const { user } = useAuth();
-  const { t, lang, setLang } = useLang();
+  const { t, lang } = useLang();
   const [moreOpen, setMoreOpen] = useState(false);
   // The full menu renders as a bottom sheet only below 900px; above it, it is a
   // small anchored dropdown. Scroll-lock the page behind the sheet, but not
@@ -130,24 +131,6 @@ export function Header() {
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
                   </button>
                 </div>
-                {/* The language switch sits right under the panel header so it is
-                    on the first screen without scrolling; at the bottom it was the
-                    one control a phone visitor had to scroll to find. */}
-                <div className="header-more-langs" role="group" aria-label="Language">
-                  {LANGS.map((l) => (
-                    <button
-                      key={l.code}
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={l.code === lang}
-                      onClick={() => { setLang(l.code); setMoreOpen(false); }}
-                      dir={l.dir}
-                      className={"header-more-lang" + (l.code === lang ? " active" : "")}
-                    >
-                      {l.autonym}
-                    </button>
-                  ))}
-                </div>
                 {/* The menu is organised, not listed: two entries first (the
                     assistant app and the client portal, with quick payment as a
                     third when it is on), then the same four groups the top bar
@@ -250,6 +233,7 @@ export function Header() {
 
         <div className="header-tools">
           <ThemeToggle />
+          <LangMenu />
           {/* The two controls that used to float in the page's bottom corner,
               one above the other: the quick-access dot and the chat launcher.
               Parked there they covered content on every screen and on every
@@ -302,13 +286,6 @@ export function Header() {
               closing section, so nothing was actually missing an entry
               point. Only the client login/portal button remains here, so the
               header stays uncluttered. */}
-          <div className="hdr-langs hide-mobile" role="group" aria-label="Language">
-            {LANGS.filter((l) => l.code === "he" || l.code === "en" || l.code === lang).map((l) => (
-              <button key={l.code} type="button" className={"mono" + (l.code === lang ? " on" : "")} aria-pressed={l.code === lang} onClick={() => setLang(l.code)}>
-                {l.code.toUpperCase()}
-              </button>
-            ))}
-          </div>
           <Link to={user ? "/portal" : "/login"} className="header-login hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
