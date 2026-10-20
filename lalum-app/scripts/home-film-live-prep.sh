@@ -15,7 +15,9 @@ for pair in "$@"; do
   case "${file,,}" in
     *.jpg|*.jpeg|*.png|*.webp)
       # a still becomes a slow camera move (push in, with a slight drift), 300 frames at 48 fps, graded a touch toward green
-      ffmpeg -v error -y -framerate 48 -loop 1 -i "$file" -t 6.25 -vf "scale=2688:1512:force_original_aspect_ratio=increase,crop=2688:1512,zoompan=z='1+0.12*on/300':x='iw/2-(iw/zoom/2)+(on-150)*0.35':y='ih/2-(ih/zoom/2)':d=1:s=1344x768:fps=48,colorbalance=gs=0.05:gm=0.03:rm=-0.02,eq=saturation=0.92" -q:v 3 "$LIVE/$name/%04d.jpg" ;;
+      # a stray sign or brand mark in the picture is blurred out first: DELOGO_<plate>="x:y:w:h" in source pixels
+      dl=""; v="DELOGO_$name"; [ -n "${!v:-}" ] && { IFS=: read -r lx ly lw lh <<<"${!v}"; dl="delogo=x=$lx:y=$ly:w=$lw:h=$lh,"; }
+      ffmpeg -v error -y -framerate 48 -loop 1 -i "$file" -t 6.25 -vf "${dl}scale=2688:1512:force_original_aspect_ratio=increase,crop=2688:1512,zoompan=z='1+0.12*on/300':x='iw/2-(iw/zoom/2)+(on-150)*0.35':y='ih/2-(ih/zoom/2)':d=1:s=1344x768:fps=48,colorbalance=gs=0.05:gm=0.03:rm=-0.02,eq=saturation=0.92" -q:v 3 "$LIVE/$name/%04d.jpg" ;;
     *)
       ffmpeg -v error -y -i "$file" -an -vf "minterpolate=fps=48:mi_mode=mci:mc_mode=aobmc:vsbmc=1,scale=1344:768" -q:v 3 "$LIVE/$name/%04d.jpg" ;;
   esac
