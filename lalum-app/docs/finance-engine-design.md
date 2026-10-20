@@ -116,19 +116,25 @@ Status of each fact is marked. Nothing here is legal advice.
     portal issued a **Key and Secret pair** ("Credentials for your new application", shown once), not only a
     bearer token, so a `client_id`/`client_secret`-style credential does exist. Handled carefully: no
     screenshot of the credentials dialog, the owner copied them directly into his own password vault, and no
-    session here has seen or stored either value. Still unconfirmed: how Key/Secret feed the documented
-    `longtimetoken` OAuth2 authorization-code flow (most likely as `client_id`/`client_secret` at the token
-    endpoint, but not yet read anywhere), and whether a call also needs an `X-IBM-Client-Id` header (the
-    hosting platform's URL shape suggests IBM API Connect, which usually wants one, but the service
-    definition itself does not mention it); check the portal's own documentation on this once the
-    subscription step finishes.
+    session here has seen or stored either value.
+  - Still 20 October 2026: after the subscription completed, the same browser session checked the `Invoices v2`
+    page again (view only) for anything new. Two of the three open questions above are now answered: the
+    portal's "Key" is the OAuth2 `client_id`; and no `X-IBM-Client-Id` header is required, confirmed by the
+    page's own Parameters list (only `Accept` and `Content-Type`, both optional) and its sample code (only
+    `Authorization`, `content-type`, `accept`). Auth is OAuth2 authorization-code only. What this means in
+    practice: getting an access token needs an interactive browser login (redirect to
+    `https://localhost/callback`, then exchanging the returned code for a token), which only the owner can do
+    (it needs his own sandbox login); not yet done. Still open: the token's and any refresh token's lifetime,
+    and exactly how long the resulting access token stays usable before that login has to be repeated.
   Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet, and
   the live OAuth/HTTP call cannot be exercised from here either way. The request/response shape is specific
-  enough that the typed client code is already built (`src/lib/cockpit/shaamClient.ts`, see Phases below);
-  next: wire the live OAuth2 call once the Key/Secret pair is stored as a Supabase edge function secret and
-  the token exchange itself is confirmed.
+  enough that the typed client code is already built (`src/lib/cockpit/shaamClient.ts`, see Phases below), in
+  TypeScript, consistent with the rest of this app and its existing Supabase edge functions (Deno); any live
+  call this project makes stays in that same stack, not a separate language. Next: the owner completes the
+  authorization-code login once to obtain an access token, then a session here can build the edge function
+  that performs the token exchange and the live call, reading Key/Secret from a Supabase edge function secret.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
