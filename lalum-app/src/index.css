@@ -5410,14 +5410,38 @@ html.a11y-reduce-motion *::after {
      button under the bottom tab bar. It is capped by the screen height (width is 0.8 of
      its height), so the headline and the first action stay in view; on a tall phone the
      330px cap still wins and nothing changes. */
-  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: min(330px, calc(48vh * 0.8)); margin-inline: auto; }
+  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: min(330px, calc(44vh * 0.8)); margin-inline: auto; }
   @supports (height: 1svh) {
-    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(48svh * 0.8)); }
+    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44svh * 0.8)); }
   }
   .hero-home .hero-h1 { font-size: clamp(34px, 9vw, 46px); max-inline-size: none; }
   .hero-home .hero-copy { text-align: center; }
   .hero-home .hero-actions { justify-content: center; }
 }
+/* The word "AI" as a mark: one large block above the sentence, in the same face, not a
+   second typeface and not an effect. It steps down with the screen; the clip is capped to
+   44 percent of the screen height so the clip, the headline and both actions end above the
+   tab bar on every phone that has room for the second line. */
+.hero-home .hero-h1 .hero-ai {
+  display: block;
+  font-size: 2.7em;
+  line-height: 0.8;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  margin: 0 0 0.08em;
+}
+@media (max-width: 900px) {
+  .hero-home .hero-h1 .hero-ai { font-size: 1.85em; margin-bottom: 0.04em; }
+}
+@media (max-width: 900px) and (max-height: 760px) {
+  .hero-home .hero-h1 .hero-ai { font-size: 1.5em; margin-bottom: 0.03em; }
+}
+/* On a screen about 700px high or less there is no room for a second line in the headline
+   above the tab bar, so the word goes back inline at the sentence size. */
+@media (max-width: 900px) and (max-height: 700px) {
+  .hero-home .hero-h1 .hero-ai { display: inline; font-size: 1em; line-height: inherit; letter-spacing: inherit; margin: 0; }
+}
+
 /* A short phone (a 667px screen is 600 usable pixels after the tab bar) cannot hold the
    clip, the headline and both actions at the default spacing, and the second action
    ended up under the tab bar. Here the clip follows the screen a little closer and the
