@@ -10,10 +10,10 @@ import { rulings, rulingTitle } from "./rulings";
 
 export type Commentary = { status: "draft" | "approved"; text: string };
 export type EthicsPoint = { para: string; text: string; quote?: string; commentary?: Commentary };
-export type EthicsSection = { letter: string; heading: string; paragraphs: string; points: EthicsPoint[] };
+export type EthicsSection = { letter: string; heading: string; paragraphs: string; points: EthicsPoint[]; note?: string; commentary?: Commentary };
 export type EthicsInstrument = {
   id: string; number: string; title: string; body: string; dateLabel: string; date: string;
-  earlier?: string; sourceUrl: string; sourceLabel: string; summary: string;
+  earlier?: string; signedBy?: string; crossCheckUrl?: string; sourceUrl: string; sourceLabel: string; summary: string;
   sections: EthicsSection[];
   rulesCited: { rule: string; asQuotedInOpinion: string }[];
   casesCited: { citation: string; court?: string; date?: string }[];

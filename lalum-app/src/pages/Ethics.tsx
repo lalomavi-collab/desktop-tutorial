@@ -51,6 +51,7 @@ export function Ethics() {
               <p style={{ margin: "14px 0 0" }}>
                 <a href={i.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>{i.sourceLabel} &larr;</a>
               </p>
+              {i.signedBy && <p className="muted" style={{ fontSize: 13.5, margin: "8px 0 0" }}>נחתם בידי {i.signedBy}.</p>}
 
               {shown(i.commentary) && (
                 <div style={{ marginTop: 18, paddingInlineStart: 16, borderInlineStart: "3px solid var(--clay)" }}>
@@ -64,6 +65,13 @@ export function Ethics() {
                   <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 16 }}>
                     {s.letter}. {s.heading} <span className="muted" style={{ fontWeight: 400, fontSize: 13.5 }}>(סעיפים {s.paragraphs})</span>
                   </summary>
+                  {s.note && <p className="muted" style={{ fontSize: 13.5, margin: "10px 0 0" }}>{s.note}</p>}
+                  {shown(s.commentary) && (
+                    <div style={{ margin: "12px 0 0", paddingInlineStart: 14, borderInlineStart: "3px solid var(--clay)" }}>
+                      <p style={label}>התייחסות ד״ר ללום</p>
+                      <p style={{ fontSize: 15, lineHeight: 1.7, margin: 0 }}>{shown(s.commentary)}</p>
+                    </div>
+                  )}
                   <ul style={{ margin: "12px 0 0", paddingInlineStart: 20, display: "flex", flexDirection: "column", gap: 12 }}>
                     {s.points.map((p) => (
                       <li key={p.para} style={{ fontSize: 15, lineHeight: 1.7 }}>
