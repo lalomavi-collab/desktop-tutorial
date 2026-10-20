@@ -5399,6 +5399,20 @@ html.a11y-reduce-motion *::after {
   .hero-home .hero-copy { text-align: center; }
   .hero-home .hero-actions { justify-content: center; }
 }
+/* A short phone (a 667px screen is 600 usable pixels after the tab bar) cannot hold the
+   clip, the headline and both actions at the default spacing, and the second action
+   ended up under the tab bar. Here the clip follows the screen a little closer and the
+   gaps tighten, which brings the whole stack above the bar. Taller phones are unchanged. */
+@media (max-width: 900px) and (max-height: 760px) {
+  .hero-home .hero-grid { padding-top: 20px !important; gap: 16px !important; }
+  .hero-home .hero-actions { margin-top: 18px !important; gap: 10px; }
+  .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44vh * 0.8)); }
+}
+@supports (height: 1svh) {
+  @media (max-width: 900px) and (max-height: 760px) {
+    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44svh * 0.8)); }
+  }
+}
 
 /* ---------- header: one sharp command bar ----------
    The menu button and the chat and theme buttons join into a single bar with
