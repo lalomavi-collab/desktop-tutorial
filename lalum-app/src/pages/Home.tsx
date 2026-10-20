@@ -35,6 +35,10 @@ const INSIGHTS_PALETTE = [{ accent: "var(--clay)", tint: "var(--clay-tint)" }];
 export function Home() {
   const { t, lang } = useLang();
   const h = t.home;
+  // The word "AI" is the point of the headline: it is set as a large mark above the rest of the
+  // sentence (hero-ai in index.css). Only where the sentence opens with it; the text is unchanged.
+  const [heroFirst, ...heroRest] = h.heroH1a.split(" ");
+  const bigAi = heroFirst === "AI" || heroFirst === "IA";
   const [faqOpen, setFaqOpen] = useState<number>(-1);
   const [faqShown, setFaqShown] = useState(false);
 
@@ -62,7 +66,7 @@ export function Home() {
                 readers): the clip beside it now carries the explanation. */}
             <span className="sr-only">{h.heroPill}</span>
             <h1 className="h1 hero-h1" style={{ margin: 0, maxWidth: "14ch" }}>
-              {h.heroH1a}
+              {bigAi ? <><span className="hero-ai">{heroFirst}</span>{" "}{heroRest.join(" ")}</> : h.heroH1a}
               {" "}
               <span className="italic-clay">{h.heroH1b}</span>
             </h1>
