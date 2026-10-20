@@ -237,7 +237,7 @@ function s3(d){const S=SC(),x=ctx(d),svg=layer(CURP);
   kin(S,"INSIDE YOUR PRACTICE.",[x.w(0,"inside"),x.w(0,"your"),x.w(0,"practice")],160,225,1600,{size:92,color:"#e7c27a",out:x.a(1)-.2,h:150});
   const NX=[250,610,970,1330,1690],NY=600,labels=["INTAKE","CLASSIFY","RISK FLAG","LAWYER DECIDES","TRAIL"];
   const tt=[x.w(0,"engine")+.4,x.w(1,"it audits"),x.w(1,"exposure"),x.w(2,"and it puts"),x.w(1,"documented trail")];
-  NX.forEach((nx,i)=>livePanel(S,i==3?["d4","x3"]:"d"+(i+1),nx-165,215,330,290,tt[i]-.5,null,{speed:.5,r:12,cuts:[.6,.4]}));
+  NX.forEach((nx,i)=>livePanel(S,i==3?["d4","x3"]:"d"+(i+1),nx-165,215,330,290,i==0?x.a(1)-.1:tt[i]-.5,null,{speed:.5,r:12,cuts:[.6,.4]}));
   const nodes=NX.map((nx,i)=>{const e=box(nx-120,NY-60,240,120,"card"+(i==3?" am":""),'<div class="lbl" style="margin-top:38px;font-size:'+(i==3?24:28)+'px">'+labels[i]+"</div>");S.reg(e,tt[i]-.5,null);return e});
   for(let i=0;i<4;i++)bp(S,svg,"M "+(NX[i]+120)+" "+NY+" L "+(NX[i+1]-120)+" "+NY,tt[i]-.2,.6,{c:"#7fae86",o:.9,w:3});
   const trail=bp(S,svg,"M "+(NX[0]-120)+" 790 L "+(NX[4]+120)+" 790",x.w(1,"documented trail"),1.8,{c:"#e7c27a",o:.9,w:4});
