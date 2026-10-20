@@ -1,0 +1,63 @@
+name: Weekly security check
+
+# Read only. Runs the password policy tests, builds the site and scans the bundle for keys, then probes the
+# live site and two functions (lalum-app/scripts/weekly-security-check.mjs). It does not touch the database:
+# the SQL audit (public/downloads/lalum-supabase-security-audit.sql) needs a database session and stays manual.
+# The result goes to the firm's Telegram (existing TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets).
+# A failed check fails the run, so it also shows red in the Actions tab.
+
+on:
+  schedule:
+    # Mondays 05:00 UTC, 08:00 in Israel during summer time.
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lalum-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: lalum-app/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Password policy tests
+        run: npm run password-check
+
+      - name: Build
+        run: npm run build
+
+      - name: Security checks
+        id: sec
+        run: |
+          set +e
+          node scripts/weekly-security-check.mjs | tee /tmp/sec.txt
+          code=${PIPESTATUS[0]}
+          echo "summary=$(tail -n 1 /tmp/sec.txt)" >> "$GITHUB_OUTPUT"
+          exit $code
+
+      - name: Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUMMARY: ${{ steps.sec.outputs.summary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          [ -z "$TELEGRAM_BOT_TOKEN" ] && exit 0
+          text="בדיקת אבטחה שבועית: ${JOB_STATUS}"$'\n'"${SUMMARY:-הבדיקה לא הגיעה לשלב הסיכום}"$'\n'"${RUN_URL}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text=${text}" > /dev/null
