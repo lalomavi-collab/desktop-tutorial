@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
-import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { HomeAcademy } from "../components/HomeAcademy";
@@ -23,7 +22,6 @@ import { LeadForm } from "../components/LeadForm";
 import { ArchitecturalSection } from "../components/ArchitecturalSection";
 import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
 import { ClassifyCertifyDefendGrid } from "../components/ClassifyCertifyDefendGrid";
-import { RoleMatrixSwitcher } from "../components/RoleMatrixSwitcher";
 import { FwdArrow } from "../components/FwdArrow";
 
 // One accent for the four cards: the site's own green. Four different edge
@@ -245,15 +243,11 @@ export function Home() {
       {/* The second area and the entry-by-role matrix, lower on the page. */}
       <FocusAreas />
 
-      <ArchitecturalSection id="roles" index="05" code="ENTRY // BY ROLE">
-        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
-          <h2 className="h2">{h.audienceTitle}</h2>
-        </div>
-        <RoleMatrixSwitcher />
-      </ArchitecturalSection>
+      {/* Entry by role (four tabs and a list of links) is navigation, not proof:
+          it lives on /advisory, the hub the nav already points at. */}
 
       {/* FOUNDER */}
-      <ArchitecturalSection index="06" code="PROFILE // FOUNDER">
+      <ArchitecturalSection index="05" code="PROFILE // FOUNDER">
         <div className="founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
           <div className="founder-card" style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
@@ -348,7 +342,9 @@ export function Home() {
         )}
       </section>
 
-      <ContactCTA title={h.ctaTitle} body={h.ctaBody} primaryLabel={t.ui.initiateRisk} />
+      {/* No closing band: the open lead form above and the founder band in the
+          footer already carry the contact actions, and a third ask under a
+          different name only competed with them. */}
     </>
   );
 }
