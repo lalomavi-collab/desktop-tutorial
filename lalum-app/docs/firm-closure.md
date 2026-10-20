@@ -1,6 +1,6 @@
 # Closing a firm (offboarding a tenant)
 
-Status: the checklist is built (migration 0062). Every other step below is a manual procedure today; what is not built is listed at the end.
+Status: the checklist (0062) and begin closing / cancel closing (0063) are built. The other steps below are manual today; what is not built is listed at the end.
 
 ## What it means
 
@@ -20,16 +20,25 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 | Step | What happens | Today |
 |---|---|---|
 | 0. Check | Run `select public.lalum_firm_closure_checklist(:firm)` as a partner of the firm (behind MFA) or as the platform admin (second factor session). It returns counts and amounts only. Blockers: client money held, a legal hold, a pending statutory deadline, a signature in flight, a tax document mid issuance. Do not begin while a blocker is non zero. | Built |
-| 1. Freeze | Status `SUSPENDED`. Revoke the intake token (`lalum_rotate_intake_token`, then discard it) and the tax connections. Tell the clients. | Manual |
+| 1. Freeze | `lalum_firm_begin_closing` sets the status to `SUSPENDED` and clears the intake token (see below). Revoke the tax connections and their vault secrets by hand. Tell the clients. | Built, tax connections manual |
 | 2. Hand over | Per matter archive export (the cockpit has an archive export, its completeness is not reviewed). A firm wide package (matters, financial ledger, audit chain with the result of `lalum_verify_audit_chain`, a manifest with hashes) is not built. | Partly |
-| 3. Retention clock | `lalum_purge_blocker` blocks a purge only when `handling_ended_at` is set. **On the live project it is set on none of the 22 matters, so no retention block works today.** At closure set it to the closing date on every unpurged matter that has none. | Manual SQL |
+| 3. Retention clock | `lalum_purge_blocker` blocks a purge only when `handling_ended_at` is set. **On the live project it is set on none of the 22 matters, so no retention block works today.** `lalum_firm_begin_closing` sets it to the effective date on every unpurged matter that has none, and stores which ones, so cancelling undoes exactly those. | Built |
 | 4. Revoke access | Ban members' logins in Auth, except one custodian with read access. | Manual |
 | 5. Scrub | After retention, per matter, through the existing flow: bin, request purge (typed confirmation, legal hold and retention checks), remove originals from Storage, finish purge. The matter row stays, blanked, with `MATTER_PURGED` in the chain. | Existing flow |
 | 6. Tombstone | Status `CANCELED`. The firm row and the audit chain stay (the chain holds ids and counts only since 0061). | Manual |
 
-Step 3 today is an update run by the platform admin after the checklist, for example
-`update public.lalum_cockpit_matters set handling_ended_at = date '2026-12-31' where firm_id = :firm and purged_at is null and handling_ended_at is null;`
-It bypasses any audited path, so write the date, the firm and the reason in the closure record until an audited function replaces it.
+## Begin closing and cancel closing (0063)
+
+`lalum_firm_begin_closing(firm, effective_date, reason, typed_firm_name, dry_run default true)`. Only the platform admin in a second factor session may call it: a partner asks, LALUM executes.
+
+1. **Dry run first (the default).** It changes nothing and returns whether it would proceed, the blockers, how many matters would get a retention clock, how many of those are in the bin, whether the intake token would be cleared, and the manual steps.
+2. **A real run** (`dry_run := false`) needs the firm's exact name typed, a reason of at least 10 characters, an effective date from today to one year ahead (a past date would shorten retention), and zero blockers from the checklist. It then sets the status to `SUSPENDED`, starts the retention clock where there is none (a matter that already has a date keeps it), clears the intake token, writes the closure record (`lalum_firm_closures`, with the reason and the ids it clocked) and `CLOSURE_STARTED` to the audit chain (ids, counts and fixed words only; the reason text is not in the chain).
+3. **Read before a real run.** A matter in the bin also gets a retention clock, so it cannot be purged until the retention period after the effective date ends. The dry run counts them (`bin_matters_not_purgeable_until_retention_ends`).
+4. **Not done by it, listed in the result as manual steps:** the tax connections and their vault secrets, members' logins, the handover export.
+
+`lalum_firm_cancel_closing(firm, reason)` takes it back: the previous status returns, the clocks it set are cleared (only those still equal to the effective date; one changed later is left alone), the closure record is marked cancelled, `CLOSURE_CANCELLED` goes to the chain. It refuses while a purge is in progress. It cannot restore the intake token: issue a new one.
+
+**Do not run a real closing on the live firm.** It is the only tenant and the owner's own: suspending it stops the intake pipeline (HTTP 402), and its 14 bin matters would become unpurgeable for the retention period. A dry run is safe and is the way to look.
 
 ## Decisions that are the owner's
 
@@ -44,6 +53,6 @@ No blockers and no warnings. Info: 8 live matters, 14 in the bin, 22 matters wit
 
 ## Not built
 
-An audited `begin closing` function (status, retention clock and revocations in one step, with `CLOSURE_STARTED` in the chain); the firm wide export package; a finishing function that scrubs what retention allows and writes the tombstone; blocking logins in one call; a rehearsal on a Supabase branch with a fake firm. Build these when a second tenant is close.
+The firm wide export package; a finishing function that scrubs what retention allows and writes the tombstone; blocking logins and revoking tax connections in one call; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
 
-Tests: `supabase/tests/firm_closure_checklist.sql` (40 assertions, run after the stubs, 0018, 0014, 0019 and 0062; it creates stand ins for the tables no repository migration builds).
+Tests: `supabase/tests/firm_closure_checklist.sql` (40 assertions) and `supabase/tests/firm_begin_closing.sql` (58 assertions), run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062 and 0063. They create stand ins for the tables no repository migration builds, and run in any order.
