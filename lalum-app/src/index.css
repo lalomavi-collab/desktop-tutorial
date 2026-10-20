@@ -5380,7 +5380,14 @@ html.a11y-reduce-motion *::after {
 }
 @media (max-width: 900px) {
   /* Above the fold on a phone: the clip first, then the line and the button. */
-  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: 330px; margin-inline: auto; }
+  /* On a short phone the 4:5 clip alone is 412px tall and pushes the headline and the
+     button under the bottom tab bar. It is capped by the screen height (width is 0.8 of
+     its height), so the headline and the first action stay in view; on a tall phone the
+     330px cap still wins and nothing changes. */
+  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: min(330px, calc(48vh * 0.8)); margin-inline: auto; }
+  @supports (height: 1svh) {
+    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(48svh * 0.8)); }
+  }
   .hero-home .hero-h1 { font-size: clamp(34px, 9vw, 46px); max-inline-size: none; }
   .hero-home .hero-copy { text-align: center; }
   .hero-home .hero-actions { justify-content: center; }
