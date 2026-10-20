@@ -1,6 +1,6 @@
 # Closing a firm (offboarding a tenant)
 
-Status: the checklist (0062) and begin closing / cancel closing (0063) are built. The other steps below are manual today; what is not built is listed at the end.
+Status: the checklist (0062), begin closing / cancel closing (0063) and finish closing (0065) are built. The other steps below are manual today; what is not built is listed at the end.
 
 ## What it means
 
@@ -25,7 +25,7 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 | 3. Retention clock | `lalum_purge_blocker` blocks a purge only when `handling_ended_at` is set. **On the live project it is set on none of the 22 matters, so no retention block works today.** `lalum_firm_begin_closing` sets it to the effective date on every unpurged matter that has none, and stores which ones, so cancelling undoes exactly those. | Built |
 | 4. Revoke access | Ban members' logins in Auth, except one custodian with read access. | Manual |
 | 5. Scrub | After retention, per matter, through the existing flow: bin, request purge (typed confirmation, legal hold and retention checks), remove originals from Storage, finish purge. The matter row stays, blanked, with `MATTER_PURGED` in the chain. | Existing flow |
-| 6. Tombstone | Status `CANCELED`. The firm row and the audit chain stay (the chain holds ids and counts only since 0061). | Manual |
+| 6. Tombstone | `lalum_firm_finish_closing` sets the status to `CANCELED` once every matter is purged, no tax connection and no intake token is left and the checklist has no blocker. The firm row, the closure record and the audit chain stay (the chain holds ids and counts only since 0061). | Built |
 
 ## Begin closing and cancel closing (0063)
 
@@ -39,6 +39,16 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 `lalum_firm_cancel_closing(firm, reason)` takes it back: the previous status returns, the clocks it set are cleared (only those still equal to the effective date; one changed later is left alone), the closure record is marked cancelled, `CLOSURE_CANCELLED` goes to the chain. It refuses while a purge is in progress. It cannot restore the intake token: issue a new one.
 
 **Do not run a real closing on the live firm.** It is the only tenant and the owner's own: suspending it stops the intake pipeline (HTTP 402), and its 14 bin matters would become unpurgeable for the retention period. A dry run is safe and is the way to look.
+
+## Finish closing (0065)
+
+`lalum_firm_finish_closing(firm, reason, typed_firm_name, dry_run default true)`. Same gate as 0063: only the platform admin in a second factor session, a dry run by default, the firm's exact name typed and a reason of at least 10 characters for a real run.
+
+- **It refuses (`BLOCKED`) while** any matter of the firm is not purged, a tax connection is left, an intake token is set, or the closing checklist reports a blocker. The dry run lists each one.
+- **It reports, and does not gate,** `members_logins_not_banned` (members whose Auth login has no future `banned_until`). The platform does not own Auth and one custodian may stay, so banning is the manual step it names.
+- **A real run** sets the status to `CANCELED`, stamps `finished_at`, `finished_by` and `finish_reason` on the closure record, and writes `CLOSURE_FINISHED` to the chain with counts and fixed words only (the reason text is not in the chain).
+- **It cannot be undone.** `lalum_firm_cancel_closing` only works on `SUSPENDED`, and `lalum_firm_begin_closing` refuses a firm that is not `ACTIVE`. A firm that must come back is a new decision by the owner, not a function.
+- Test: `supabase/tests/firm_finish_closing.sql`, run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063 and 0065.
 
 ## Decisions that are the owner's
 
@@ -56,6 +66,6 @@ No blockers and no warnings. Info: 8 live matters, 14 in the bin, 22 matters wit
 
 ## Not built
 
-The firm wide export package; a finishing function that scrubs what retention allows and writes the tombstone; blocking logins and revoking tax connections in one call; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
+The firm wide export package; blocking logins and revoking tax connections in one call; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
 
 Tests: `supabase/tests/firm_closure_checklist.sql` (40 assertions) and `supabase/tests/firm_begin_closing.sql` (58 assertions), run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062 and 0063. They create stand ins for the tables no repository migration builds, and run in any order.
