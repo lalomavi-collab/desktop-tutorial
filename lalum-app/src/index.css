@@ -3006,11 +3006,17 @@ html.a11y-reduce-motion *::after {
    text above the actions gives each its own full-width row, which is what
    "compact" actually looks like at this width. */
 @media (max-width: 900px) {
+  /* The hero's two buttons sit right above the tab bar on a phone, exactly where
+     a banner docked to the bottom lands, so a first visit could not see or tap
+     them until it chose. On phones the banner now docks under the sticky header
+     (77px), over the hero's decorative clip instead of over the actions, and its
+     three buttons share one row of equal width so it is one short block. */
   .cookie-banner {
-    bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+    top: 78px;
+    bottom: auto;
     inset-inline: 8px;
-    padding: 10px 12px;
-    gap: 10px;
+    padding: 8px 10px;
+    gap: 8px;
     border-radius: 12px;
     flex-direction: column;
     align-items: stretch;
@@ -3023,10 +3029,16 @@ html.a11y-reduce-motion *::after {
   }
   .cookie-banner-actions {
     gap: 6px;
-    justify-content: flex-end;
+    flex-wrap: nowrap;
   }
   .cookie-banner-actions .btn {
-    padding: 0 12px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 6px;
+    font-size: 12.5px;
+    white-space: normal;
+    line-height: 1.2;
+    min-block-size: 40px;
   }
 }
 /* Anonymous engagement-scenario card (sector, challenge, what we did, outcome). */
