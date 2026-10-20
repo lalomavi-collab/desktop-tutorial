@@ -9,6 +9,7 @@ type AuthValue = {
   loading: boolean;
   demoMode: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
+  signInWithProvider: (provider: "google" | "azure") => Promise<AuthResult>;
   signUp: (email: string, password: string, leadLang?: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<AuthResult>;
@@ -73,6 +74,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
+  // Quick sign-in with a social identity provider (Google, or Microsoft, which
+  // Supabase names "azure"). This is a full-page redirect to the provider and
+  // back: supabase-js finishes the handshake from the returned URL on load, so
+  // the caller usually navigates away before this resolves. The providers must
+  // be enabled and configured in the Supabase dashboard; until then the button
+  // is simply hidden, because demo mode has no backend to redirect to.
+  const signInWithProvider: AuthValue["signInWithProvider"] = async (provider) => {
+    if (!supabase) return { error: "Social sign-in needs the live backend, which is not configured here." };
+    const redirectTo = `${window.location.origin}/portal`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        // Microsoft needs these scopes to return an email and a basic profile;
+        // Google returns them by default.
+        ...(provider === "azure" ? { scopes: "openid email profile" } : {}),
+      },
+    });
+    return { error: error?.message ?? null };
+  };
+
   const signUp: AuthValue["signUp"] = async (email, password, leadLang) => {
     if (!supabase) {
       if (!email || password.length < 6) return { error: "Enter an email and a password of at least 6 characters." };
@@ -131,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut, resetPassword, verifyRecoveryCode, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, demoMode: !isSupabaseConfigured, signIn, signInWithProvider, signUp, signOut, resetPassword, verifyRecoveryCode, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );
