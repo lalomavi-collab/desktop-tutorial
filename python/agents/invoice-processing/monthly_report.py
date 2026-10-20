@@ -60,12 +60,20 @@ def already_sent(month: str) -> dict | None:
         return {"when": "unknown"}
 
 
+def content_fingerprint(attachments: list) -> str:
+    """טביעת תוכן של משלוח: שמות הקבצים הממוינים. זהה = אותו חומר בדיוק."""
+    import hashlib
+    names = sorted(Path(str(a)).name for a in attachments)
+    return hashlib.sha256("|".join(names).encode("utf-8")).hexdigest()[:16]
+
+
 def mark_sent(month: str, result: dict):
     SENT_DIR.mkdir(parents=True, exist_ok=True)
     _marker(month).write_text(json.dumps({
         "when": datetime.now().isoformat(timespec="seconds"),
         "to": result.get("to"),
         "attachments": result.get("attachments_sent", []),
+        "content_hash": content_fingerprint(result.get("attachments_sent", [])),
     }, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
@@ -188,8 +196,17 @@ def main():
     if args.send:
         prev = already_sent(month)
         if prev and not args.force:
-            print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')}. --force לשליחה חוזרת.")
-            return EXIT_SENT
+            # הגנת הכפילות משווה תוכן, לא רק חודש: שליחת ביניים באמצע
+            # החודש אינה חוסמת את המשלוח המלא של סוף החודש, שמכיל חומר
+            # חדש. רק אותו סט קבצים בדיוק נחסם כשליחה כפולה.
+            prev_hash = prev.get("content_hash")
+            cur_hash = content_fingerprint(mail["attachments"])
+            if prev_hash is None or prev_hash == cur_hash:
+                print(f"\n🛑 החודש {month} כבר נשלח ב-{prev.get('when')} אל {prev.get('to')} "
+                      f"עם אותו תוכן בדיוק. לא נשלח שוב. --force לשליחה חוזרת מכוונת.")
+                return EXIT_SENT
+            print(f"\nℹ️  נשלחה שליחת ביניים ב-{prev.get('when')}, ומאז התווסף חומר. "
+                  "נשלח המשלוח המלא המעודכן.")
         if issues:
             # שליחה אוטומטית נחסמה: במקום לעצור בידיים ריקות, נוצרת
             # טיוטה ב-Outlook כך שלאברהם יש מה לבדוק ולשלוח ידנית.
