@@ -112,7 +112,7 @@ export function ChangePassword({ onChanged }: { onChanged?: () => void }) {
         }
       }
 
-      const res = await updatePassword(next);
+      const res = await updatePassword(next, current);
       if (res.error) {
         setError(/aal2/i.test(res.error) ? W.needMfa : res.error);
         return;
