@@ -48,13 +48,32 @@ Status of each fact is marked. Nothing here is legal advice.
   send, far more than drafting needs, an unjustified exposure for a mailbox that holds client correspondence). The
   owner sent it manually instead, 16 October 2026, 09:29 Israel time, to `mokedmh@shaam.gov.il` (a general Tax
   Authority service address found by web search, not an address this project independently verified as the correct
-  one for software-house questions specifically). Awaiting a reply.
-  Separately blocked on the client side: this working environment cannot reach gov.il at all (outbound network
+  one for software-house questions specifically).
+- 19 October 2026: the owner also sent a more detailed version of the same question, from a personal Gmail account
+  (`lalomavi@gmail.com`, not the firm's own Outlook), to `APISupport@taxes.gov.il` and `lakohot-bt@taxes.gov.il`.
+  These are the verified correct addresses for this team: a reply came back the same day from `APISupport@taxes.gov.il`
+  (signed "מלכה"). The reply answers part of the question, not all of it:
+  - Registering as a software house (needed for the production environment) is not handled by this team; call the
+    Tax Authority's general line, `*4954`, for that track.
+  - The sandbox/test environment is different: any user can register there directly, no software-house registration
+    needed. Registration is self-serve at `https://openapi-portal.taxes.gov.il/sandbox` (CREATE ACCOUNT & SIGN IN),
+    with a reply expected within 5 business days. This is very likely why the registration screen the owner found
+    showed no software-house-specific fields with sensible self-use answers: that screen was probably the sandbox
+    flow, which does not carry the "number of users" question. The production software-house registration (where
+    that field most likely lives) is a separate, later step, consistent with the plan to hold that off until just
+    before the 2027-01-01 switch.
+  - The other five questions in the owner's email (software registration number field, the correct host for test vs.
+    production, access/refresh token lifetimes, whether a registered intermediary service may be used, expected
+    turnaround and cost) were not answered in this reply and remain open.
+  - The owner completed sandbox registration at the link above on 20 October 2026, via a separate browser session
+    (not blocked by this environment's network policy, which still cannot reach any `gov.il` host). Awaiting the
+    Tax Authority's response, up to 5 business days per their own reply.
+  Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
   `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
-  actual client code is not started. Next: once a reply arrives, or gov.il is opened to this environment's allowed
-  domains, or the two PDFs are shared directly, a session can read the real spec instead of building against
-  secondhand summaries.
+  actual client code is not started. Next: once the sandbox registration is approved, or gov.il is opened to this
+  environment's allowed domains, or the two PDFs are shared directly, a session can read the real spec and start
+  building against it instead of secondhand summaries.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
