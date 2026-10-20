@@ -48,7 +48,7 @@ A warm ivory ground, near black ink, one muted sage accent, hairline borders. Ed
 - Display, all languages except Arabic: Lalum Serif, a merged cut of Frank Ruhl Libre (Hebrew) and Newsreader (Latin), self-hosted, with real 400, 500 and 700 faces and a 400 italic. Headlines sit on 500. See `brand/fonts/README.md`. Never set the LALUM name in it as a logo.
 - Body, Latin: Hanken Grotesk. Body, Hebrew (`html[lang="he"]`): Assistant, with Heebo as fallback. Hebrew gets slightly more line height so descenders never clip.
 - Arabic keeps Markazi Text and Cairo. Do not add families.
-- One exception, by the owner (20.10.2026): the home page headline ("AI שאפשר להגן עליו.") is set in Gveret Levin, a handwritten face used as a signature, self-hosted as `public/fonts/gveret-levin.woff2`. It is used for that headline only, in Hebrew and English; Arabic keeps its own face.
+- One exception, by the owner (20.10.2026): the home page headline ("AI שאפשר להגן עליו.") is set in Amatic SC Bold, a condensed handwritten face used as a signature, self-hosted as `public/fonts/amatic-sc-700.woff2`. It is used for that headline only, in Hebrew and English; Arabic keeps its own face.
 - Mono (JetBrains Mono) is for data and code only.
 
 ## Layout
