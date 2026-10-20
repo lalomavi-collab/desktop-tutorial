@@ -39,11 +39,6 @@ export function HomeFilm() {
           </span>
         </button>
       )}
-      <figcaption style={{ marginTop: 12, fontSize: 15 }}>
-        <a href="https://youtu.be/pdsk7SX3-d4" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          {h.filmLong}
-        </a>
-      </figcaption>
     </figure>
   );
 }
