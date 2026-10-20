@@ -16,6 +16,7 @@ import { toBlocks, parseInline } from "../lib/articleBlocks";
 import { articleFaqs } from "../lib/articleFaqs";
 import { faqPageNode } from "../lib/schema";
 import { coverFor } from "../lib/covers";
+import { FwdArrow } from "../components/FwdArrow";
 
 // One module per article body, so a page loads its own and nothing else. The
 // whole corpus used to arrive as one chunk on every content page, including the
@@ -248,7 +249,7 @@ export function Article() {
                   <span style={{ fontSize: 16, lineHeight: 1.5 }}>
                     <strong>{r.citation}</strong>{r.caption ? ` ${r.caption}` : ""} · {r.court}, {r.dateLabel}
                   </span>
-                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true"><FwdArrow /></span>
                 </Link>
               ))}
             </div>
@@ -268,7 +269,7 @@ export function Article() {
                   style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12, padding: "16px 20px", color: "var(--ink)", textDecoration: "none" }}
                 >
                   <span className="serif" style={{ fontSize: 17, lineHeight: 1.4 }}>{r.title}</span>
-                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true"><FwdArrow /></span>
                 </Link>
               ))}
             </div>

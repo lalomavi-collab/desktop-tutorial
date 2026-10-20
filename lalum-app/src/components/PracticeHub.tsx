@@ -4,12 +4,13 @@ import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
 import { useDialogA11y } from "../lib/useDialogA11y";
+import { FwdArrow } from "./FwdArrow";
 
 // Filterable grid of representative (illustrative) scenarios, with a modal for
 // the full detail. Deliberately framed as approach, not specific client cases,
 // so it stays within legal-advertising ethics.
 export function PracticeHub() {
-  const { t, dir } = useLang();
+  const { t } = useLang();
   const h = t.practice.hub;
   const [filter, setFilter] = useState("all");
   const [active, setActive] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function PracticeHub() {
               </div>
               <h3 className="hub-card-title">{it.title}</h3>
               <p className="hub-card-summary">{it.summary}</p>
-              <span className="hub-card-more">{h.more} <span aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span></span>
+              <span className="hub-card-more">{h.more} <span aria-hidden="true"><FwdArrow /></span></span>
             </button>
           ))}
         </div>

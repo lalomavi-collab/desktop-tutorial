@@ -5,6 +5,7 @@ import { ContactCTA } from "../components/ContactCTA";
 import { useLang } from "../context/LangContext";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { articlesByTopic, topicBySlug, topicPath } from "../lib/topics";
+import { FwdArrow } from "../components/FwdArrow";
 
 // One subject's writing, on its own page. The list is every article in the
 // topic, titles only: the title is the anchor text, and the standfirst is a
@@ -50,7 +51,7 @@ export function Topic() {
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12, padding: "15px 20px", color: "var(--ink)", textDecoration: "none" }}
               >
                 <span className="serif" style={{ fontSize: 17, lineHeight: 1.4 }}>{a.title}</span>
-                <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">&larr;</span>
+                <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true"><FwdArrow /></span>
               </Link>
             </li>
           ))}

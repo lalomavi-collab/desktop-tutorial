@@ -5,6 +5,7 @@ import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import { SectorAudit } from "./SectorAudit";
 import { MATERIAL_LABEL, SECTORS_UI, sectorCases, type Sector } from "../lib/sectors";
 import { articlesOf } from "../lib/rulings";
+import { FwdArrow } from "./FwdArrow";
 
 // One rendering for every sector rubric. Everything shown comes from the
 // Sector it is handed, so the copy stays in sectors.ts, where the SEO
@@ -102,7 +103,7 @@ export function SectorView({ S }: { S: Sector }) {
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", fontSize: 14.5 }}>
                 <Link to={`/rulings?q=${encodeURIComponent(ruling.citation)}`} style={{ color: "var(--clay)", fontWeight: 600 }}>
-                  {SECTORS_UI.rulingsLabel} &rarr;
+                  {SECTORS_UI.rulingsLabel} <FwdArrow />
                 </Link>
                 {articlesOf(ruling).map((a) => (
                   <Link key={a.slug} to={`/insights/${a.slug}`} style={{ color: "var(--clay)", fontWeight: 600 }}>{a.title}</Link>
@@ -135,7 +136,7 @@ export function SectorView({ S }: { S: Sector }) {
                 ))}
               </ul>
               <a href={d.sourceHref} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14.5, color: "var(--clay)", fontWeight: 600 }}>
-                {d.sourceLabel} &rarr;
+                {d.sourceLabel} <FwdArrow />
               </a>
             </article>
           ))}
