@@ -696,6 +696,10 @@ export const he: Dict = {
     heroH1b: "להגן עליו.",
     heroLede: "Legal AI הוא ציר המשרד: ייעוץ, ליווי שוטף והדרכה לארגונים שמטמיעים בינה מלאכותית, ממדיניות שימוש ועד ביקורת ותיעוד.",
     heroCtaAi: "לבחינת התאמת Legal AI לארגון",
+    securityLead: "אבטחת מידע שאפשר לבדוק.",
+    securityBody: "מה נבנה, מה נבדק ב-{date} ומה אינו מובטח.",
+    securityBooklet: "לחוברת האבטחה (PDF)",
+    securityPage: "לעמוד האבטחה",
     quickInsightsTitle: "מאמרים ותובנות",
     audienceTitle: `הכניסה לפי הצורך, לא לפי מבנה המשרד`,
     audiences: [
