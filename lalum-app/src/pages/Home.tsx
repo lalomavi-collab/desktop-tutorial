@@ -87,16 +87,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* One line under the hero that points at /security and says no more than the page does: what was built,
-          what was checked, what is not promised. No claim about a standard or a certification. */}
-      <div className="wrap" style={{ padding: "0 32px" }}>
-        <p style={{ margin: 0, padding: "16px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", fontSize: 15, lineHeight: 1.7, color: "var(--slate)" }}>
-          <b style={{ color: "var(--ink)" }}>{h.securityLead}</b>{" "}
-          {h.securityBody}{" "}
-          <a href="/security/" style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityPage}</a>
-        </p>
-      </div>
-
       {/* The page speaks about Legal AI from the hero down to the engine. The
           second area (real estate and urban renewal) and the entry-by-role
           matrix follow lower, after the engine and the academy. */}
