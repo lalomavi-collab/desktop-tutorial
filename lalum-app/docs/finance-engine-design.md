@@ -76,18 +76,51 @@ Status of each fact is marked. Nothing here is legal advice.
     the general allocation-number call is a different product, `invoices_approval`, whose listed services are
     `Invoices v2` and `Multi-invoices v2` (also `invoice-information v1`, `InvoiceDecisionApi v1`,
     `MultiInvoiceInformationApi v1`); a separate product plainly named `Invoices` appears to be query/information
-    only. This is a name-based inference, not yet verified: nobody has opened `Invoices v2`'s own API definition to
-    confirm it is in fact the allocation-number call, read its request/response shape, or ruled out that a
-    similar-sounding service does something else. The portal's own Name search is unreliable (searching "Invoice"
-    returned no results although matching products exist) so filtering by name should not be trusted; browsing the
-    full catalog (21 products, one page at 75 items per page) is.
+    only. The portal's own Name search is unreliable (searching "Invoice" returned no results although matching
+    products exist) so filtering by name should not be trusted; browsing the full catalog (21 products, one page
+    at 75 items per page) is.
+  - Still on 20 October 2026, the same browser session opened `Invoices v2`'s own OpenAPI 3.0.1 definition on the
+    product page (`https://openapi-portal.taxes.gov.il/sandbox/product/28607/api/18168`) and read it directly, in
+    page memory, no file saved. This confirms the candidate above: the service is titled "Allocation Number
+    Retrieval Service for Invoices (Supplier Side)".
+    - Call: `POST /Invoices/v2/Approval`. Sandbox host: `https://openapi.taxes.gov.il/shaam/tsandbox/Invoices/v2/Approval`
+      (the same path also exists under `t-ita-api.taxes.gov.il` and `ita-api.taxes.gov.il`). The same service also
+      exposes `GET /Invoices/v2/health` and `GET /Invoices/v2/alive`.
+    - Request body (`InvoiceRequest`), 13 required fields: `invoice_id` (string, up to 50 chars, internal/temporary
+      bookkeeping reference), `invoice_type` (one of the fixed codes 300, 305, 310, 320, 330, 332, 340, 345, 348),
+      `vat_number`, `invoice_reference_number` (string, up to 20 chars, the mandatory reference number noted
+      above), `customer_vat_number`, `invoice_date`, `invoice_issuance_date` (`YYYY-MM-DD`),
+      `accounting_software_number` (int32, matches this design's own field of the same name), `amount_before_discount`,
+      `discount`, `payment_amount`, `vat_amount`, `payment_amount_including_vat` (amounts as doubles). Optional
+      fields include `action` (0, 3 or 4), customer/company identifiers, delivery/transport fields, up to three
+      `additional_information*` fields reserved for future use, and an `items[]` array of invoice lines
+      (`InvoiceItem`: index, catalog id, category, description, unit, quantity, unit price, discount, total,
+      VAT rate, VAT amount).
+    - Response (`ResponseApproval`): `status`, `message`, `confirmation_number` (string; this is the allocation
+      number), `approved` (boolean). Documented response codes: 200, 400, 406, 500; a 400 example shows code 434,
+      "Invoice date is too old for approval", with `confirmation_number` `"0"`.
+    - Sandbox test VAT numbers documented on the page: `777777715` allocates; `777777723` simulates a delayed
+      invoice; `777777731` an invoice found with no instruction on how to proceed; `777777749` an invoice found
+      where the next step was already chosen.
+    - Auth: OAuth2, authorization-code flow, provider `longtimetoken`
+      (`.../longtimetoken/oauth2/authorize` and `.../oauth2/token`, same three hosts as above), scope `scope` or
+      `invoices_scope` ("Security Option 1" / "Security Option 2" on the page), `Authorization: Bearer` header,
+      JSON content type. Not confirmed from the definition itself: whether a registered app also needs a
+      `client_id`/`client_secret` pair (plausible for this kind of API gateway, but the page's own definition does
+      not say so; flagged as inference, not fact).
+    - Not yet checked: `Multi-invoices v2` and `InvoiceDecisionApi` (the latter likely handles the "delayed
+      invoice" case above). No PDF version of this definition was found on the page, only "Download as
+      JSON/YAML" links that generate a temporary in-browser file, not a stable URL.
+    - Still blocked: testing the call itself needs a registered application ("Get access" / Try it both say so),
+      which creates real access credentials, so the owner does this step personally rather than a session doing
+      it on his behalf.
   Separately still blocked on the client side: this working environment cannot reach gov.il at all (outbound network
   policy), so the two official API specification PDFs (`vat_software-houses-180724.pdf` edition 2.0 and
-  `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet; the
-  actual client code is not started. Next: open `Invoices v2`'s own definition in the sandbox portal (via the same
-  separate browser session) to read the real endpoint, method, request/response schema and auth requirements before
-  building anything, and once the sandbox registration is approved, or gov.il is opened to this environment's
-  allowed domains, or the two PDFs are shared directly, a session can also read the official spec directly.
+  `IncomeTax_software-houses-050623.pdf` edition 1.0, both under `gov.il/BlobFolder`) have not been read yet, and
+  the live OAuth/HTTP call cannot be exercised from here either way until gov.il is reachable or credentials exist.
+  The request/response shape above is specific enough to start the typed client code (request builder, response
+  parser, the fixed `invoice_type` codes) without a live call; next: draft that, then wire the live call once the
+  owner has registered an application and credentials exist.
 - Business address for the A000 record's `businessStreet`/`businessHouseNum`/`businessCity` (11 October 2026): האיריסים
   8, נתניה. `src/lib/cockpit/shaamExport.ts`, `LALUM_BUSINESS_ADDRESS`. Internal to the compliance file only, on the
   owner's explicit instruction: this does not go on the public site (footer, structured data, contact pages), which
