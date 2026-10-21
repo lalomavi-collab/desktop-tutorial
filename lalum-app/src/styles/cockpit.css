@@ -272,14 +272,23 @@
 .ck-fin .ck-field { font-size: 13.5px; font-weight: 600; }
 .ck-fin .ck-input, .ck-fin .ck-select { font-size: 15px; }
 
-/* Tabs: a solid pill row for the two top sections, an underline row for the sections inside. */
-.fin-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.fin-tabs .ck-btn { font-size: 15px; font-weight: 600; min-height: 42px; padding: 8px 20px; }
-.fin-subtabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line-strong); }
-.fin-subtab { font: inherit; font-size: 15px; font-weight: 600; color: var(--slate); background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 16px; margin-bottom: -1px; cursor: pointer; }
-.fin-subtab:hover { color: var(--ink); }
-.fin-subtab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--clay); }
-.fin-subtab:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 6px; }
+/* Tabs, three levels: two sections (a segmented control), four rubrics inside the books (cards in one row, two by two
+   on a phone), and under the chosen rubric a single scrolling row of its sections, so nothing wraps onto a third line. */
+.fin-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border: 1px solid var(--line-strong); border-radius: 14px; background: color-mix(in srgb, var(--paper) 70%, transparent); }
+.fin-tabs .ck-btn { font-size: 15px; font-weight: 700; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 10px; background: transparent; justify-content: center; box-shadow: none; }
+.ck-root[data-ck-theme] .fin-tabs .ck-btn { text-align: center; background: transparent; border: 0; box-shadow: none; }
+.fin-tabs .ck-btn.primary, .ck-root[data-ck-theme] .fin-tabs .ck-btn.primary { background: var(--clay); color: #fff; }
+.fin-rubrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.fin-rubric { font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); background: var(--card, #fff); border: 1px solid var(--line-strong); border-radius: 12px; padding: 12px 10px; min-height: 52px; cursor: pointer; line-height: 1.25; text-align: center; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.fin-rubric:hover { background: var(--clay-tint); }
+.fin-rubric[aria-selected="true"] { background: var(--clay-tint); border-color: var(--clay); color: var(--clay); box-shadow: inset 0 -3px 0 var(--clay); }
+.fin-rubric:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.fin-subtabs { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 2px 0 4px; }
+.fin-subtabs::-webkit-scrollbar { display: none; }
+.fin-subtab { flex: none; scroll-snap-align: start; font: inherit; font-size: 15px; font-weight: 600; color: var(--slate); background: transparent; border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px; min-height: 40px; cursor: pointer; white-space: nowrap; }
+.fin-subtab:hover { color: var(--ink); border-color: var(--ink); }
+.fin-subtab[aria-selected="true"] { color: #fff; background: var(--clay); border-color: var(--clay); }
+.fin-subtab:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* Tables: roomier rows, bold headers, text columns wrap or truncate, numbers and dates never break. */
 .ck-fin .ck-table { font-size: 14.5px; }
@@ -321,7 +330,7 @@
 
 @media (max-width: 720px) {
   .ck-fin { font-size: 15px; }
-  .fin-subtab { padding: 9px 12px; }
+  .fin-rubrics { grid-template-columns: 1fr 1fr; }
   .ck-fin .ck-table td.fin-text { min-width: 150px; }
   .fin-actions { flex-wrap: wrap; }
   /* The table scrolls sideways on a phone; keep the row actions in view. */

@@ -101,7 +101,7 @@ function BillingTabs({ member }: { member: Membership }) {
     <div className="ck-stack ck-fin">
       <div className="fin-tabs" role="tablist" aria-label="חיוב והגדרות">
         <button role="tab" aria-selected={tab === "books"} className={`ck-btn${tab === "books" ? " primary" : ""}`} onClick={() => setTab("books")}>הנהלת חשבונות</button>
-        <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי הפירמה והגדרות</button>
+        <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי והגדרות</button>
       </div>
       {tab === "books" ? <FinanceHome firmId={member.firm_id} firmName={member.lalum_firms.firm_name} /> : <Panel member={member} />}
     </div>
