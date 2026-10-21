@@ -101,3 +101,13 @@
   .db-spark { width: 100%; height: 30px; }
   .db-tbl td, .db-tbl th { white-space: nowrap; }
 }
+
+/* Trend card: figure, change chip and live readout on one row, then the bars, the second series and the computed sentence. */
+.db-trend-top { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.db-trend-top .db-kval { margin-bottom: 0; }
+.db-trend-read { margin-inline-start: auto; font-size: 16px; color: var(--slate); }
+.db-trend-read b { color: var(--ink); font-family: var(--serif); font-size: 20px; font-weight: 500; }
+.db-trend-svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.db-trend-second { display: flex; flex-direction: column; gap: 4px; }
+.db-trend-second svg { width: 100%; height: auto; display: block; }
+.db-trend-note { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink); max-width: 64ch; }
