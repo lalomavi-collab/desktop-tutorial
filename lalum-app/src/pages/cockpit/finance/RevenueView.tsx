@@ -56,11 +56,31 @@ export function RevenueView({ rows }: { rows: IncomeRow[] }) {
         })}
       </svg>
       <div className="fin-note">{HINT[grain]}{s.hasRunning && " העמודה הדהויה היא התקופה הנוכחית, שעוד לא הסתיימה: היא נכללת בסה\"כ אבל לא בממוצע ולא בהשוואה."} זיכויים מופחתים.</div>
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>{UNIT[grain]}</th><th className="fin-num">מסמכים</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">כולל מע"מ</th></tr></thead><tbody>
+      <div className="ck-table-wrap rev-table"><table className="ck-table"><thead><tr><th>{UNIT[grain]}</th><th className="fin-num">מסמכים</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">כולל מע"מ</th></tr></thead><tbody>
         {s.buckets.filter((b) => !b.future).map((b) => (
           <tr key={b.key}><td><bdi>{grain === "week" ? `${b.label} עד ${b.to.slice(8, 10)}.${b.to.slice(5, 7)}` : b.label}</bdi></td><td className="fin-ltr">{b.count}</td><td className="fin-ltr">{money(b.net)}</td><td className="fin-ltr">{money(b.vat)}</td><td className="fin-ltr">{money(b.total)}</td></tr>))}
         <tr><td><b>סה"כ</b></td><td className="fin-ltr">{s.count}</td><td className="fin-ltr"><b>{money(s.net)}</b></td><td className="fin-ltr">{money(s.vat)}</td><td className="fin-ltr">{money(s.total)}</td></tr>
       </tbody></table></div>
+      {/* On a phone the five columns do not fit: each period becomes a small card, the three amounts side by side with their labels. */}
+      <ul className="rev-rows" aria-label={`הכנסות לפי ${UNIT[grain]}`}>
+        {s.buckets.filter((b) => !b.future).map((b) => (
+          <li key={b.key} className={`rev-row${b.count === 0 ? " rev-empty" : ""}`}>
+            <div className="rev-head"><b><bdi>{grain === "week" ? `${b.label} עד ${b.to.slice(8, 10)}.${b.to.slice(5, 7)}` : b.label}</bdi></b><span>{b.count === 0 ? "אין מסמכים" : `${b.count} מסמכים`}</span></div>
+            {b.count > 0 && <dl className="rev-amts">
+              <div><dt>לפני מע"מ</dt><dd><bdi dir="ltr">{money(b.net)}</bdi></dd></div>
+              <div><dt>מע"מ</dt><dd><bdi dir="ltr">{money(b.vat)}</bdi></dd></div>
+              <div className="rev-total"><dt>כולל מע"מ</dt><dd><bdi dir="ltr">{money(b.total)}</bdi></dd></div>
+            </dl>}
+          </li>))}
+        <li className="rev-row rev-sum">
+          <div className="rev-head"><b>סה"כ</b><span>{s.count} מסמכים</span></div>
+          <dl className="rev-amts">
+            <div><dt>לפני מע"מ</dt><dd><bdi dir="ltr">{money(s.net)}</bdi></dd></div>
+            <div><dt>מע"מ</dt><dd><bdi dir="ltr">{money(s.vat)}</bdi></dd></div>
+            <div className="rev-total"><dt>כולל מע"מ</dt><dd><bdi dir="ltr">{money(s.total)}</bdi></dd></div>
+          </dl>
+        </li>
+      </ul>
     </div>
   );
 }
