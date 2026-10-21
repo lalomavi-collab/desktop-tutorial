@@ -18,14 +18,14 @@ const sha256Bytes = async (b: Uint8Array): Promise<string> => {
 };
 
 const originalsPort = (firmId: string): OriginalsPort => ({
-  list: async () => {
+  list: async (after) => {
     const { data } = await supabase!.auth.getSession();
     const token = data.session?.access_token;
     if (!token) return null;
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-export-originals`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${token}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
-      body: JSON.stringify({ firm_id: firmId }),
+      body: JSON.stringify({ firm_id: firmId, after }),
     });
     return res.ok ? await res.json() : null;
   },

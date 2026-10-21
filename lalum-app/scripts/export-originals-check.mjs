@@ -10,7 +10,7 @@ const src = readFileSync(new URL("../supabase/functions/lalum-export-originals/h
 const dir = mkdtempSync(join(tmpdir(), "export-originals-"));
 const file = join(dir, "handler.mjs");
 writeFileSync(file, ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
-const { handle, SIGNED_SECONDS, MAX_ORIGINALS } = await import(pathToFileURL(file).href);
+const { handle, SIGNED_SECONDS, DEFAULT_PAGE, MAX_PAGE } = await import(pathToFileURL(file).href);
 
 const FIRM = "11111111-2222-3333-4444-555555555555";
 const item = (n) => ({ document: `d${n}`, matter: `m${n}`, path: `firm/m${n}/d${n}/original.pdf`, sha256: "ab".repeat(32), size: 100 + n, mime: "application/pdf", file_name: `שם ${n}.pdf` });
@@ -19,7 +19,7 @@ const mk = (over = {}) => {
   const items = over.items ?? [item(1), item(2), item(3)];
   const ports = {
     allowedOrigins: ["https://app.example"],
-    list: async (auth, firm) => { calls.push(["list", auth, firm]); return over.listed ?? { ok: true, items }; },
+    list: async (auth, firm, after, limit) => { calls.push(["list", auth, firm, after, limit]); return over.listed ?? { ok: true, items, nextAfter: over.nextAfter ?? null, total: over.total ?? items.length }; },
     signMany: async (paths, secs) => { calls.push(["sign", paths, secs]); return over.signed === undefined ? Object.fromEntries(paths.map((p) => [p, `https://signed.example/${p}`])) : over.signed; },
     ...over.ports,
   };
@@ -30,11 +30,11 @@ const req = (over = {}) => ({ method: "POST", authorization: "Bearer jwt", origi
 // success: the database is asked first with the caller's own token, then exactly the paths it returned are signed once for 15 minutes
 { const { ports, calls } = mk(); const r = await handle(req(), ports);
   assert.equal(r.status, 200); assert.equal(r.body.ok, true); assert.equal(r.body.expires_in, 900); assert.equal(SIGNED_SECONDS, 900);
-  assert.deepEqual(calls[0], ["list", "Bearer jwt", FIRM]);
+  assert.deepEqual(calls[0], ["list", "Bearer jwt", FIRM, null, DEFAULT_PAGE], "first page: no cursor, default size");
   assert.equal(calls[1][0], "sign"); assert.deepEqual(calls[1][1], ["firm/m1/d1/original.pdf", "firm/m2/d2/original.pdf", "firm/m3/d3/original.pdf"]); assert.equal(calls[1][2], 900);
   assert.equal(calls.length, 2, "one list and one batch sign, never one call per file");
   assert.equal(r.body.items.length, 3); assert.equal(r.body.items[0].url, "https://signed.example/firm/m1/d1/original.pdf");
-  assert.equal(r.headers["cache-control"], "no-store"); }
+  assert.equal(r.headers["cache-control"], "no-store"); assert.equal(r.body.next_after, null); assert.equal(r.body.total, 3); }
 // the storage path never leaves the server
 { const r = await handle(req(), mk().ports); assert.ok(r.body.items.every((i) => !("path" in i)), "no path in the response");
   assert.deepEqual(Object.keys(r.body.items[0]).sort(), ["document", "file_name", "matter", "mime", "sha256", "size", "url"]); }
@@ -47,10 +47,24 @@ const req = (over = {}) => ({ method: "POST", authorization: "Bearer jwt", origi
 { const { ports, calls } = mk({ ports: { list: async () => { throw new Error("db"); } } }); const r = await handle(req(), ports); assert.equal(r.status, 500); assert.equal(calls.length, 0); }
 // no originals: 200 with an empty list and nothing to sign
 { const { ports, calls } = mk({ items: [] }); const r = await handle(req(), ports); assert.equal(r.status, 200); assert.deepEqual(r.body.items, []); assert.ok(!calls.some((c) => c[0] === "sign")); }
-// too many for one call: 413 with the count, nothing signed
-{ const many = Array.from({ length: MAX_ORIGINALS + 1 }, (_, i) => item(i)); const { ports, calls } = mk({ items: many }); const r = await handle(req(), ports);
-  assert.equal(r.status, 413); assert.equal(r.body.code, "TOO_MANY"); assert.equal(r.body.count, MAX_ORIGINALS + 1); assert.ok(!calls.some((c) => c[0] === "sign"));
-  const exact = Array.from({ length: MAX_ORIGINALS }, (_, i) => item(i)); assert.equal((await handle(req(), mk({ items: exact }).ports)).status, 200, "exactly the limit is allowed"); }
+// paging: the cursor and the size reach the database, the answer carries the next cursor and the total
+{ const AFTER = "99999999-2222-3333-4444-555555555555"; const { ports, calls } = mk({ nextAfter: "aaaaaaaa-2222-3333-4444-555555555555", total: 7 });
+  const r = await handle(req({ body: { firm_id: FIRM, after: AFTER, limit: 3 } }), ports);
+  assert.deepEqual(calls[0], ["list", "Bearer jwt", FIRM, AFTER, 3]); assert.equal(r.body.next_after, "aaaaaaaa-2222-3333-4444-555555555555"); assert.equal(r.body.total, 7);
+  assert.equal(calls.filter((c) => c[0] === "sign").length, 1, "one batch sign per page"); }
+// the size is clamped to the ceiling, never above it
+{ const { ports, calls } = mk(); await handle(req({ body: { firm_id: FIRM, limit: 100000 } }), ports); assert.equal(calls[0][4], MAX_PAGE); }
+// there is no ceiling on the firm's total: a page of exactly the ceiling is fine, and a reply larger than asked is refused unsigned
+{ const full = Array.from({ length: MAX_PAGE }, (_, i) => item(i)); const r = await handle(req({ body: { firm_id: FIRM, limit: MAX_PAGE } }), mk({ items: full, nextAfter: "aaaaaaaa-2222-3333-4444-555555555555", total: 5000 }).ports);
+  assert.equal(r.status, 200); assert.equal(r.body.items.length, MAX_PAGE); assert.equal(r.body.total, 5000);
+  const over = Array.from({ length: 4 }, (_, i) => item(i)); const m = mk({ items: over }); const r2 = await handle(req({ body: { firm_id: FIRM, limit: 3 } }), m.ports);
+  assert.equal(r2.status, 500); assert.ok(!m.calls.some((c) => c[0] === "sign"), "an oversized reply is never signed"); }
+// an empty last page still carries the cursor and the total
+{ const r = await handle(req({ body: { firm_id: FIRM, after: "99999999-2222-3333-4444-555555555555" } }), mk({ items: [], total: 7 }).ports); assert.equal(r.status, 200); assert.equal(r.body.next_after, null); assert.equal(r.body.total, 7); }
+// a bad cursor or size is a 400 and reaches nothing
+for (const bad of [{ after: "nope" }, { after: 5 }, { after: FIRM + "x" }, { limit: 0 }, { limit: -1 }, { limit: 1.5 }, { limit: "3" }]) {
+  const { ports, calls } = mk(); const r = await handle(req({ body: { firm_id: FIRM, ...bad } }), ports); assert.equal(r.status, 400, JSON.stringify(bad)); assert.equal(calls.length, 0);
+}
 // signing fails or throws: 500, no urls
 { const r = await handle(req(), mk({ signed: null }).ports); assert.equal(r.status, 500); assert.equal(r.body.items, undefined); }
 { const r = await handle(req(), mk({ ports: { signMany: async () => { throw new Error("x"); } } }).ports); assert.equal(r.status, 500); }

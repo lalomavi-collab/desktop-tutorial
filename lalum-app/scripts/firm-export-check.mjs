@@ -1,7 +1,7 @@
 // Checks the firm wide handover package builder (src/lib/cockpit/firmExportCore.ts) against a fake database. Run with: npm run firm-export-check
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, ExportError } from "../src/lib/cockpit/firmExportCore.ts";
+import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, ExportError, MAX_ORIGINALS_BYTES } from "../src/lib/cockpit/firmExportCore.ts";
 
 const t = async (name, fn) => { await fn(); console.log(`[PASS] ${name}`); };
 const sha = (s) => createHash("sha256").update(s, "utf8").digest("hex");
@@ -137,13 +137,21 @@ function withOriginals(docs, over = {}) {
   const manifest = { originals: { count: docs.length, bytes: docs.reduce((a, d) => a + d.body.length, 0), without_sha256: 0 }, ...over.manifest };
   const f = fake(tables, { manifest });
   const store = Object.fromEntries(docs.map((d) => [`https://signed/${d.id}`, d.body]));
-  const fetches = [];
+  const fetches = [], lists = [];
   f.ports.originals = {
-    list: async () => over.list ? over.list() : ({ ok: true, items: docs.map((d) => ({ document: D(d.id), matter: D(90 + d.id), sha256: "sha" in d ? d.sha : sha(d.body), size: d.size ?? Buffer.byteLength(d.body), mime: d.mime ?? "application/pdf", file_name: d.name ?? `שם לקוח ${d.id}.pdf`, url: d.nourl ? null : `https://signed/${d.id}` })) }),
+    list: async (after) => {
+      if (over.list) return over.list(after);
+      lists.push(after);
+      const all = docs.map((d) => ({ document: D(d.id), matter: D(90 + d.id), sha256: "sha" in d ? d.sha : sha(d.body), size: d.size ?? Buffer.byteLength(d.body), mime: d.mime ?? "application/pdf", file_name: d.name ?? `שם לקוח ${d.id}.pdf`, url: d.nourl ? null : `https://signed/${d.id}` })).sort((a, b) => a.document.localeCompare(b.document));
+      const rest = after ? all.filter((x) => x.document > after) : all;
+      const size = over.pageSize ?? all.length + 1;
+      const items = rest.slice(0, size);
+      return { ok: true, items, next_after: rest.length > size ? items[items.length - 1].document : null, total: over.total ?? all.length };
+    },
     fetchBytes: async (url) => { fetches.push(url); if (over.fetch) return over.fetch(url, store, fetches); return bytesOf(store[url]); },
     digestBytes: async (b) => createHash("sha256").update(b).digest("hex"),
   };
-  return { ...f, fetches };
+  return { ...f, fetches, lists };
 }
 const pkgOf = (b) => JSON.parse(b.files.find((x) => x.path === "PACKAGE.json").content);
 
@@ -218,12 +226,52 @@ await t("without the originals port nothing is fetched and the package states it
   assert.equal(b.originals, null);
 });
 await t("a firm with no stored originals never calls the originals port", async () => {
-  let called = 0; const f = fake(tables); f.ports.originals = { list: async () => { called += 1; return null; }, fetchBytes: async () => new Uint8Array(), digestBytes: async () => "" };
+  let called = 0; const f = fake(tables); f.ports.originals = { list: async (_a) => { called += 1; return null; }, fetchBytes: async () => new Uint8Array(), digestBytes: async () => "" };
   const b = await buildPackage(f.ports); assert.equal(called, 0); assert.equal(b.handoverComplete, true);
+});
+await t("originals come page by page, each page fetched before the next is asked for, and the cursor follows the server", async () => {
+  const docs = Array.from({ length: 7 }, (_, i) => ({ id: i + 1, body: `b${i + 1}` }));
+  const order = [];
+  const w = withOriginals(docs, { pageSize: 3, fetch: async (url, store) => { order.push(url.split("/").pop()); return bytesOf(store[url]); } });
+  const orig = w.ports.originals.list; w.ports.originals.list = async (a) => { order.push(`list:${a ? Number(a.slice(0, 8)) : "first"}`); return orig(a); };
+  const b = await buildPackage(w.ports);
+  assert.equal(b.handoverComplete, true); assert.equal(pkgOf(b).originals.files_in_zip, 7); assert.equal(pkgOf(b).originals.verified, 7);
+  assert.deepEqual(w.lists, [null, D(3), D(6)], "three pages, each from the last id of the one before");
+  assert.deepEqual(order.filter((x) => x.startsWith("list:")), ["list:first", "list:3", "list:6"]);
+  assert.ok(order.indexOf("list:3") > order.indexOf("3") && order.indexOf("list:6") > order.indexOf("6"), "a page is fully downloaded before the next page is requested");
+});
+await t("a page repeated by the server is not added twice", async () => {
+  const docs = [{ id: 1, body: "a" }, { id: 2, body: "b" }];
+  const w = withOriginals(docs, { list: (after) => (after === null ? { ok: true, items: [1, 2].map((n) => ({ document: D(n), matter: D(90 + n), sha256: sha(docs[n - 1].body), size: 1, mime: "application/pdf", file_name: null, url: `https://signed/${n}` })), next_after: D(2), total: 2 } : { ok: true, items: [1, 2].map((n) => ({ document: D(n), matter: D(90 + n), sha256: sha(docs[n - 1].body), size: 1, mime: "application/pdf", file_name: null, url: `https://signed/${n}` })), next_after: D(2), total: 2 }) });
+  const b = await buildPackage(w.ports);
+  assert.equal(pkgOf(b).originals.files_in_zip, 2, "no duplicates"); assert.equal(pkgOf(b).originals.list_error, "LIST", "a cursor that does not move is a failure, not an endless walk"); assert.equal(b.handoverComplete, false);
+});
+await t("a server that never ends the paging is stopped by the count the manifest announced", async () => {
+  let n = 0;
+  const w = withOriginals([{ id: 1, body: "a" }], { list: () => { n += 1; return { ok: true, items: [{ document: D(100 + n), matter: D(1), sha256: sha("a"), size: 1, mime: "application/pdf", file_name: null, url: "https://signed/1" }], next_after: D(100 + n), total: 1 }; } });
+  const b = await buildPackage(w.ports);
+  assert.ok(n <= 4, `asked ${n} times`); assert.equal(pkgOf(b).originals.list_error, "LIST"); assert.equal(b.handoverComplete, false);
+});
+await t("a total that changes during the walk makes the package incomplete and says so", async () => {
+  const w = withOriginals([{ id: 1, body: "a" }, { id: 2, body: "b" }], { pageSize: 1, total: 3 });
+  const b = await buildPackage(w.ports);
+  assert.equal(b.handoverComplete, false); assert.equal(pkgOf(b).originals.list_error, "COUNT_CHANGED");
+  assert.match(b.files.find((f) => f.path === "README.txt").content, /השתנה בזמן הייצוא/);
+});
+await t("originals above the size ceiling are left out with a stated reason, and nothing is downloaded", async () => {
+  const w = withOriginals([{ id: 1, body: "a" }], { manifest: { originals: { count: 1, bytes: MAX_ORIGINALS_BYTES + 1, without_sha256: 0 } } });
+  const b = await buildPackage(w.ports);
+  assert.equal(b.handoverComplete, false); assert.equal(pkgOf(b).originals.list_error, "TOO_LARGE"); assert.equal(pkgOf(b).originals.included, false);
+  assert.equal(w.fetches.length, 0); assert.equal(w.lists.length, 0); assert.ok(!b.files.some((f) => f.path.startsWith("originals/")));
+  assert.match(b.files.find((f) => f.path === "README.txt").content, /גדול מדי/);
+  const ok = withOriginals([{ id: 1, body: "a" }], { manifest: { originals: { count: 1, bytes: MAX_ORIGINALS_BYTES, without_sha256: 0 } } });
+  assert.equal((await buildPackage(ok.ports)).handoverComplete, true, "exactly the ceiling is allowed");
 });
 await t("parseOriginals refuses the wrong shape", async () => {
   assert.equal(parseOriginals(null), null); assert.equal(parseOriginals({ ok: false }), null); assert.equal(parseOriginals({ ok: true, items: [{ nope: 1 }] }), null);
-  assert.deepEqual(parseOriginals({ ok: true, items: [] }), []);
+  assert.deepEqual(parseOriginals({ ok: true, items: [] }), { items: [], nextAfter: null, total: null });
+  assert.equal(parseOriginals({ ok: true, items: [], next_after: "../x" }), null, "a cursor that is not a uuid is refused");
+  assert.equal(parseOriginals({ ok: true, items: [], next_after: D(5), total: "7" }).total, 7);
 });
 await t("PACKAGE.json holds no row data, only file names, counts and hashes", async () => {
   const b = await buildPackage(fake(tables).ports);
