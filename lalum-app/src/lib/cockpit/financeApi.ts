@@ -194,3 +194,45 @@ export async function scanReceipt(firmId: string, file: File): Promise<ScanRecei
     clearTimeout(timer);
   }
 }
+
+export interface SendDocumentReply { ok?: boolean; code?: string; count?: number; attached?: boolean; warning?: string; detail?: string }
+const DOC_SEND_ERRORS: Record<string, string> = {
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה לשליחת מסמכים. נדרשת רמת הנפקה.",
+  not_found: "המסמך לא נמצא.", not_issued: "אפשר לשלוח רק מסמך שהופק.", no_pdf: "אין קובץ PDF למסמך הזה, ולכן אי אפשר לשלוח אותו.",
+  customer_not_found: "הלקוח לא נמצא.", no_email: "אין ללקוח כתובת דוא\"ל בכרטיס. הזינו כתובת בכרטיס הלקוח או הוסיפו כתובת ידנית.",
+  no_own_email: "לא נמצאה כתובת דוא\"ל להתחברות שלכם.", no_recipient: "לא נבחר נמען.", bad_address: "אחת הכתובות אינה תקינה.",
+  too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
+  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
+  send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
+};
+export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
+
+/** Sends one issued document by e-mail on a partner's click. The customer's address comes from the customer record on the server. */
+export async function sendDocument(body: { document_id: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string }): Promise<SendDocumentReply> {
+  if (!supabase) return { ok: false, code: "fetch_failed" };
+  const { data } = await supabase.auth.getSession();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 45000);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-doc-send`, {
+      method: "POST", signal: ctl.signal,
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
+      body: JSON.stringify(body),
+    });
+    try { return (await res.json()) as SendDocumentReply; } catch { return { ok: false, code: "fetch_failed" }; }
+  } catch {
+    // A timeout is not proof that nothing was sent: the server reserved the record before sending.
+    return { ok: false, code: "fetch_failed" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Records that the partner opened WhatsApp with the document message prepared. There is no delivery receipt on this path. */
+export async function logWhatsappSend(documentId: string, recipient: string, text: string): Promise<boolean> {
+  if (!supabase) return false;
+  const { data: id, error } = await supabase.rpc("lalum_fin_doc_send_reserve", { p_document: documentId, p_channel: "WHATSAPP", p_recipient: recipient || "לא צוין נייד", p_subject: null, p_body: text });
+  if (error || !id) return false;
+  const { error: fe } = await supabase.rpc("lalum_fin_doc_send_finish", { p_id: id, p_ok: true, p_ref: null, p_error: null });
+  return !fe;
+}
