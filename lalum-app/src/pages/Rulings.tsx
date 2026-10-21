@@ -87,6 +87,7 @@ function RulingCard({ r }: { r: Ruling }) {
         </blockquote>
       )}
       {r.implications && <Section label={c.implications}>{r.implications}</Section>}
+      {r.partial && <p className="muted" style={{ fontSize: 13.5, lineHeight: 1.7, margin: "14px 0 0" }}>{r.partial}</p>}
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 18 }}>
         {r.article && (
