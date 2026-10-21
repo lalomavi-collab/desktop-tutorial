@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { Icon } from "../../components/Icon";
 import { Wordmark } from "../../components/Wordmark";
-import { AreaChart, BarsH, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
+import { BarsH, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
 import { FolderArt, ImportArt, InboxArt, ShieldArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
 import { delta, loadDashboard, series } from "../../lib/cockpit/dashboard";
 import type { DashData } from "../../lib/cockpit/dashboard";
 import { dur } from "../../lib/cockpit/work";
+import { TrendCard } from "../../components/cockpit/TrendCard";
 import { DashFinance } from "../../components/cockpit/DashFinance";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import "../../styles/cockpit-dashboard.css";
@@ -58,9 +59,10 @@ function RankRow({ label, value, total, color }: { label: string; value: number;
 }
 
 /** preload skips the fetch (previews and tests feed it synthetic data). */
+const mode = "weekly" as const;
+
 export function DashView({ name, firmName, role, firmId, preload }: { name: string; firmName: string; role: string; firmId?: string; preload?: DashData }) {
   const [data, setData] = useState<DashData | null>(preload ?? null);
-  const [mode, setMode] = useState<"weekly" | "monthly">("weekly");
   const [q, setQ] = useState("");
   useEffect(() => { if (!preload) void loadDashboard().then(setData); }, [preload]);
 
@@ -76,7 +78,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
     const open = data.tasks.filter((t) => t.status === "OPEN").length;
     const closed = data.tasks.filter((t) => t.status === "DONE").length;
     return { matters, inq, done, awaiting, overdue, open, closed };
-  }, [data, mode]);
+  }, [data]);
 
   const median = useMemo(() => {
     const ms = (data?.score?.people ?? []).map((p) => p.median_minutes).filter((x): x is number => x != null);
@@ -127,16 +129,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
           </div>
 
           <div className="db-grid">
-            <div className="ck-card db-card">
-              <div className="db-head"><h3>תיקים חדשים</h3>
-                <div className="db-toggle" role="group" aria-label="טווח זמן">
-                  <button type="button" aria-pressed={mode === "monthly"} onClick={() => setMode("monthly")}>חודשי</button>
-                  <button type="button" aria-pressed={mode === "weekly"} onClick={() => setMode("weekly")}>שבועי</button>
-                </div>
-              </div>
-              <AreaChart id="db-matters" values={view.matters.values} labels={view.matters.labels} unit="תיקים חדשים" />
-              <div className="db-note">תיקים חדשים לפי {mode === "weekly" ? "שבוע" : "חודש"}</div>
-            </div>
+            <TrendCard title="תיקים חדשים" unit="תיקים חדשים" dates={data.matters.map((x) => x.dispatched_at)} secondDates={data.inquiries.map((i) => i.received_at)} secondLabel="פניות לקוחות באותו טווח" to="/workspace" toLabel="לכל התיקים" />
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>פילוח פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
               <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "var(--chart-warn, #d0901e)" }, { label: "נראו", value: byStatus("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: byStatus("HANDLED"), color: "var(--chart-ok, #216f33)" }]} />
