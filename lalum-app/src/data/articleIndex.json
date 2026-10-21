@@ -63,12 +63,20 @@
    "explainability"
   ]
  },
+ "ai-international-risk-management": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-international-contracts-translation-risk",
+   "ai-cross-border-due-diligence",
+   "legal-ai-contract-review-playbook"
+  ]
+ },
  "ai-international-contracts-translation-risk": {
   "topic": "contracts",
   "related": [
+   "ai-international-risk-management",
    "ai-cross-border-due-diligence",
-   "ai-international-transactions-overview",
-   "suing-foreign-company-jurisdiction-service-enforcement"
+   "ai-international-transactions-overview"
   ]
  },
  "ai-cross-border-due-diligence": {
@@ -76,7 +84,7 @@
   "related": [
    "ai-international-transactions-overview",
    "ai-international-contracts-translation-risk",
-   "ai-real-estate-urban-renewal-legal-exposure"
+   "ai-international-risk-management"
   ]
  },
  "human-in-the-loop-lawyer-judgment-ai": {
@@ -196,7 +204,7 @@
   "related": [
    "ai-saas-enterprise-contract-legal-ops-playbook",
    "legal-ai-pricing-client-disclosure",
-   "legal-ai-tool-selection-test"
+   "ai-international-risk-management"
   ]
  },
  "ai-legal-support-local-council-three-tracks": {
@@ -452,7 +460,7 @@
   "related": [
    "algorithmic-fiduciary-duty-ai",
    "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-cross-border-due-diligence"
+   "ai-international-risk-management"
   ]
  },
  "algorithmic-fiduciary-duty-ai": {
@@ -931,8 +939,8 @@
   "topic": "ai-governance",
   "related": [
    "saas-eu-compliance-israeli-companies",
-   "ai-due-diligence-tech-acquisition",
-   "ai-resident-data-privacy-local-authority"
+   "ai-resident-data-privacy-local-authority",
+   "ai-due-diligence-tech-acquisition"
   ]
  },
  "overseas-property-due-diligence": {
@@ -1642,8 +1650,8 @@
  "למה-לעו-ד-בהתחדשות-עירונית-חייב-להיות-הסכם-שכ-ט-כתוב-עם-סעיף-גישור": {
   "topic": "real-estate",
   "related": [
-   "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "בוררות-מואצת-גישור-מכוון-הכרעה-מצריך-לפעמים-הכרעה-משפטית-מהירה-ויעילה",
+   "מה-עושים-כשאין-מנגנון-מוסכם-מראש",
    "legal-mediation-benefits"
   ]
  },
