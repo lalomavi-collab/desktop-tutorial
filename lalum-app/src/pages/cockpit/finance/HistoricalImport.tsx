@@ -114,7 +114,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
         השכירות, וזיכויי invoice4u/הרצליה (142864, אגרת UCO, חיים פרידריך 30151, Wix/Google Ads) חסרי סכום מאומת, הושארו גם הם בצד.
       </div>
       <div className="ck-table-wrap">
-        <table className="ck-table">
+        <table className="ck-table" data-cards="off">
           <thead><tr><th></th><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th>תיאור</th><th className="fin-num">סכום</th><th className="fin-num">מע"מ</th><th>מקור</th></tr></thead>
           <tbody>
             {rows.map((r, i) => (

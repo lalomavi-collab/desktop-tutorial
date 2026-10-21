@@ -108,6 +108,7 @@
 .db-trend-read { margin-inline-start: auto; font-size: 16px; color: var(--slate); }
 .db-trend-read b { color: var(--ink); font-family: var(--serif); font-size: 20px; font-weight: 500; }
 .db-trend-svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.db-trend-svg:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
 .db-trend-second { display: flex; flex-direction: column; gap: 4px; }
 .db-trend-second svg { width: 100%; height: auto; display: block; }
 .db-trend-note { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink); max-width: 64ch; }
