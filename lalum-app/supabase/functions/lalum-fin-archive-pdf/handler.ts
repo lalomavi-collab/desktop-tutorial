@@ -30,9 +30,11 @@ export function requestBodies(row: ArchiveRow, token: string): Array<[string, st
   if (typeof row.i4uDocId !== "string" || !row.i4uDocId.trim() || /^(NaN|null|undefined)$/i.test(row.i4uDocId.trim()) || !Number.isFinite(row.docType) || !Number.isFinite(row.docNumber)) return null;
   const id = row.i4uDocId;
   const candidates: Array<[string, Record<string, unknown>]> = [
-    ["GetDocument", { doc: { ID: id } }],
-    ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
-    ["GetDocumentByNumber", { docNumber: row.docNumber, docType: row.docType }],
+    // The provider's WSDL (read 2026-10-21): GetDocument(docId: string, token) and GetDocumentByNumber(docNumber: int, documentType: int, token),
+    // both returning a Document with PrintOriginalPDFLink and PrintCertifiedCopyPDFLink. Earlier shapes named parameters the service does not have,
+    // so it ignored them and answered {"d":null}.
+    ["GetDocument", { docId: id }],
+    ["GetDocumentByNumber", { docNumber: row.docNumber, documentType: row.docType }],
   ];
   return candidates.map(([op, payload]) => [op, JSON.stringify({ ...payload, token })]);
 }
