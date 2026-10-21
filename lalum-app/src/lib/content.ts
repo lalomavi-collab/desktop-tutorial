@@ -163,9 +163,9 @@ export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/dr-avraham-lalum-ab833929/",
   facebook: "https://www.facebook.com/profile.php?id=61573518832531&locale=he_IL",
   instagram: "https://www.instagram.com/",
-  website: "https://www.lalum.co",
+  website: "https://lalumapp.com",
 };
-export const websiteDisplay = "www.lalum.co";
+export const websiteDisplay = "lalumapp.com";
 export const appUrl = "https://lalumapp.com";
 
 // External pages on the firm website.
