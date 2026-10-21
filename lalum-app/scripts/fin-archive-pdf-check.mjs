@@ -10,7 +10,7 @@ const src = readFileSync(new URL("../supabase/functions/lalum-fin-archive-pdf/ha
 const dir = mkdtempSync(join(tmpdir(), "fin-archive-pdf-"));
 const file = join(dir, "handler.mjs");
 writeFileSync(file, ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
-const { handle, safeLink, requestBodies } = await import(pathToFileURL(file).href);
+const { handle, safeLink, requestBodies, tokenCandidates } = await import(pathToFileURL(file).href);
 
 const ID = "11111111-2222-3333-4444-555555555555";
 const mk = (over = {}) => {
@@ -83,5 +83,15 @@ assert.equal((await handle(req({ origin: "https://evil.example" }), mk().ports))
   assert.equal(requestBodies({ i4uDocId: GUID, docType: NaN, docNumber: 7 }, "tok"), null);
   assert.equal(requestBodies({ i4uDocId: GUID, docType: 3, docNumber: Infinity }, "tok"), null);
   assert.equal(requestBodies({ i4uDocId: undefined, docType: 3, docNumber: 7 }, "tok"), null);
+}
+// Session token candidates from the undocumented VerifyLoginApiKey answer: a string Response, or token/session named string fields; never the API key, at most two.
+{
+  const KEY = "k".repeat(16);
+  assert.deepEqual(tokenCandidates({ Response: "s".repeat(20) }, KEY), ["s".repeat(20)]);
+  assert.deepEqual(tokenCandidates({ Response: { Token: "t".repeat(12), Name: "not a token", SessionId: "u".repeat(12), Other: "x".repeat(12) } }, KEY), ["t".repeat(12), "u".repeat(12)]);
+  assert.deepEqual(tokenCandidates({ Response: { Token: KEY } }, KEY), []);
+  assert.deepEqual(tokenCandidates({ Response: { Token: "short" } }, KEY), []);
+  assert.deepEqual(tokenCandidates(null, KEY), []);
+  assert.equal(tokenCandidates({ Response: { A_token: "1".repeat(9), B_token: "2".repeat(9), C_token: "3".repeat(9) } }, KEY).length, 2);
 }
 console.log("fin-archive-pdf-check: ok");
