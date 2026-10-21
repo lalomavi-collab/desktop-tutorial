@@ -78,6 +78,10 @@ export interface MatterDoc {
   doc_date?: string | null;
   risk_excluded?: boolean;
   risk_excluded_reason?: string | null;
+  /** What the database recorded about the stored original file (never its path). original_size is null when no original is stored. */
+  original_size?: number | string | null;
+  original_sha256?: string | null;
+  original_mime?: string | null;
 }
 export interface Membership {
   firm_id: string;

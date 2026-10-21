@@ -96,7 +96,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       const [mr, rr, dr] = await Promise.all([
         supabase.from("lalum_cockpit_matters").select("*").eq("id", matterId).maybeSingle(),
         supabase.from("lalum_intake_routings").select("*").eq("matter_id", matterId).maybeSingle(),
-        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date, risk_excluded, risk_excluded_reason").eq("matter_id", matterId).order("created_at"),
+        supabase.from("lalum_matter_documents").select("id, file_name, baseline_content, editor_content, entity_counts, analysis, created_at, doc_type, doc_origin, doc_date, risk_excluded, risk_excluded_reason, original_size, original_sha256, original_mime").eq("matter_id", matterId).order("created_at"),
       ]);
       if (!live) return;
       const m = mr.data as Matter | null;
