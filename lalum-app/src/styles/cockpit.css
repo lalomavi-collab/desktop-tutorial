@@ -189,7 +189,7 @@
 .ck-hero-title { font-size: clamp(20px, 2.4vw, 26px); line-height: 1.25; }
 .ck-doc h2 { font-size: 21px; }
 .ck-title { font-size: 16px; line-height: 1.35; }
-.ck-meta { font-size: 15px; line-height: 1.7; }
+.ck-meta { font-size: 13.5px; line-height: 1.7; }
 .ck-table td, .ck-table th, .ck-badge, .ck-chip { font-variant-numeric: tabular-nums; }
 .ck-label { font-size: 12.5px; letter-spacing: .04em; }
 .ck-card { box-shadow: 0 1px 0 rgba(26, 24, 21, .03); transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
@@ -267,7 +267,7 @@
 .ck-fin { font-size: 15px; line-height: 1.55; letter-spacing: 0; }
 .ck-fin .ck-label { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 6px; }
 .ck-fin .ck-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
-.ck-fin .ck-meta { font-size: 15px; line-height: 1.6; color: var(--slate); }
+.ck-fin .ck-meta { font-size: 13.5px; line-height: 1.6; color: var(--slate); }
 .ck-fin .ck-ok, .ck-fin .ck-warn, .ck-fin .ck-err { font-size: 14.5px; line-height: 1.6; padding: 12px 14px; }
 .ck-fin .ck-field { font-size: 13.5px; font-weight: 600; }
 .ck-fin .ck-input, .ck-fin .ck-select { font-size: 15px; }

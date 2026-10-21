@@ -10,6 +10,19 @@ const OK = "var(--chart-ok, #216f33)", OK_L = "var(--chart-ok-l, #5a9c62)", WARN
 const TRACK = "var(--chart-track, rgba(83,112,86,.12))", GRID = "var(--chart-grid, rgba(83,112,86,.14))";
 const nf = (v: number) => v.toLocaleString("he-IL");
 
+/** Smooth path through points (Catmull-Rom to cubic Bezier). */
+function smooth(pts: Array<[number, number]>): string {
+  if (pts.length < 2) return "";
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] ?? p2;
+    const c1: [number, number] = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2: [number, number] = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+
 /** Hover bubble, positioned in the chart's own local pixel space. Never the only way to read a value (see aria-label). */
 function Tip({ x, y, children, flip }: { x: number; y: number; children: ReactNode; flip?: boolean }) {
   return (
@@ -61,6 +74,8 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
     const x = ((e.clientX - rect.left) / rect.width) * W;
     setHover(Math.max(0, Math.min(n - 1, Math.round((x - L) / step))));
   };
+  const line = smooth(pts);
+  const area = pts.length > 1 ? `${line} L${pts[n - 1][0]},${H - B} L${pts[0][0]},${H - B} Z` : "";
   const labelEvery = Math.ceil(n / Math.max(2, Math.floor((W - L - R) / 62)));
   const hp = hover != null ? pts[hover] : null;
   return (
@@ -81,6 +96,10 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`}
         style={{ direction: "ltr", display: "block" }} onPointerMove={onMove} onPointerLeave={() => setHover(null)}>
         {[0, 1, 2, 3].map((i) => <line key={i} x1={L} x2={W - R} y1={T + (plotH * i) / 3} y2={T + (plotH * i) / 3} stroke={GRID} strokeDasharray={i === 3 ? undefined : "2 5"} />)}
+        <defs><clipPath id={`${id}-c`}><rect x="0" y="0" width={W} height={H - B} /></clipPath><linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={OK_L} stopOpacity=".28" /><stop offset="1" stopColor={OK_L} stopOpacity="0" /></linearGradient></defs>
+        {/* A soft ribbon over the stems: the shape of the weeks at a glance, quiet enough not to compete with the readings. */}
+        {area && <path className="ck-st-ribbon" clipPath={`url(#${id}-c)`} d={area} fill={`url(#${id}-f)`} aria-hidden="true" />}
+        {line && <path className="ck-st-ribbon" clipPath={`url(#${id}-c)`} d={line} fill="none" stroke={OK_L} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".55" aria-hidden="true" />}
         {pts.map((p, i) => {
           const isCur = i === n - 1, isHot = hover === i, v = values[i];
           return (
@@ -97,6 +116,7 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
             </g>
           );
         })}
+        {n > 0 && cur > 0 && <circle className="ck-live-pulse" cx={pts[n - 1][0]} cy={pts[n - 1][1]} r="11" fill={OK} aria-hidden="true" />}
         {/* The current value pinned above its dot, and the peak when it is a different week. */}
         {n > 0 && cur > 0 && <text x={pts[n - 1][0]} y={pts[n - 1][1] - 13} textAnchor="middle" fontSize="13" fontWeight="800" fill={OK} aria-hidden="true">{nf(cur)}</text>}
         {peak > 0 && values.indexOf(peak) !== n - 1 && (() => { const pi = values.indexOf(peak); return <text x={pts[pi][0]} y={pts[pi][1] - 11} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--slate)" aria-hidden="true">{nf(peak)}</text>; })()}
