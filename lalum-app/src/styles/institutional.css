@@ -306,7 +306,9 @@ html[lang="en"] .header-groups, html[lang="ar"] .header-groups, html[lang="es"] 
 
 /* The tag sits beside the wordmark inside the menu panel; the top bar keeps its
    room for the groups and the tools. */
-.hm-brand { display: inline-flex; align-items: center; gap: 12px; }
+.hm-brand { display: inline-flex; flex-direction: column; align-items: stretch; gap: 7px; }
+/* The mark and its tag are one lockup: stacked, the same width, tag centred under the wordmark. */
+.hm-brand .hdr-badge { text-align: center; }
 
 /* ---------- the phone menu fits one screen ----------
    The full-screen menu used to scroll: the language switch, the contact row

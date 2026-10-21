@@ -140,10 +140,12 @@ export function Header() {
                     /os has no translated build, and <Link> would carry the
                     language basename onto a path with no prerendered file. */}
                 <div className="hm-top">
-                  {/* The diagnostics session is the practice's one call to action
-                      and sat in the desktop bar only (hide-mobile), so a phone
-                      visitor never met it. It leads the menu here. */}
-                  <Link to="/book" role="menuitem" className="hm-tile hm-tile-wide hm-tile-cta" onClick={() => setMoreOpen(false)}>
+                  {/* The diagnostics session: the visitor answers the readiness
+                      questions and gets a reading, on the spot. It is not a
+                      booking (that is /book). It sat in the desktop bar only
+                      (hide-mobile), so a phone visitor never met it; it leads
+                      the menu here. */}
+                  <Link to="/risk" role="menuitem" className="hm-tile hm-tile-wide hm-tile-cta" onClick={() => setMoreOpen(false)}>
                     {hg.cta}
                   </Link>
                   <a href="/os/" role="menuitem" className="hm-tile hm-tile-os" onClick={() => setMoreOpen(false)}>
@@ -301,7 +303,7 @@ export function Header() {
           <Link to={user ? "/portal" : "/login"} className="header-login hide-mobile" aria-label={user ? t.ui.clientPortal : t.ui.clientLogin} title={user ? t.ui.clientPortal : t.ui.clientLogin}>
             <Icon name="user" size={16} /> <span className="header-cta-label">{user ? t.ui.clientPortal : t.ui.clientLogin}</span>
           </Link>
-          <Link to="/book" className="hdr-cta hide-mobile">{hg.cta}</Link>
+          <Link to="/risk" className="hdr-cta hide-mobile">{hg.cta}</Link>
         </div>
       </div>
     </header>
