@@ -3,7 +3,7 @@
 // project's own SUPABASE_URL and SUPABASE_ANON_KEY. FIN_IMPORT_ENV ("prod" default, or "qa") picks the provider host, as in lalum-fin-import.
 // ALLOWED_ORIGINS (comma separated, optional) lists the origins that may call it from a browser (default: the production site).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { handle, requestBodies, type Allowed, type Attempt, type Fetched, type LinkField, type Ports } from "./handler.ts";
+import { handle, requestBodies, tokenCandidates, type Allowed, type Attempt, type Fetched, type LinkField, type Ports } from "./handler.ts";
 
 const DEFAULT_ORIGINS = "https://lalumapp.com,https://www.lalumapp.com";
 const env = (k: string) => { const v = Deno.env.get(k); if (!v) throw new Error(`missing secret ${k}`); return v; };
@@ -35,31 +35,59 @@ const ports = (): Ports => ({
     const apiKey = env("INVOICE4U_API_KEY").trim();
     const prod = !(Deno.env.get("FIN_IMPORT_ENV") ?? "prod").toLowerCase().startsWith("qa");
     const base = prod ? "https://api.invoice4u.co.il/Services/ApiService.svc" : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
-    const redact = (s: string) => s.split(apiKey).join("[REDACTED]").slice(0, 200);
+    const secrets = [apiKey];
+    const redact = (s: string) => secrets.reduce((acc, x) => acc.split(x).join("[REDACTED]"), s).slice(0, 200);
+    const tried: Attempt[] = [];
+    let original: string | null = null, certified: string | null = null;
+    const parseAnswer = (op: string, text: string) => {
+      let parsed: Obj | null = null;
+      try { parsed = JSON.parse(text); } catch { /* not json */ }
+      // WCF sometimes wraps the payload in {"d": "<json string>"}; open it before looking for Response.
+      let inner: unknown = parsed ? (parsed.d ?? parsed[`${op}Result`] ?? parsed) : null;
+      if (typeof inner === "string") { try { inner = JSON.parse(inner); } catch { /* keep as is */ } }
+      return { parsed, inner };
+    };
+    // Run one list of [operation, JSON body]; stops at the first answer that carries a print link. label tells which token was used, in the diagnostics only.
+    async function run(bodies: Array<[string, string]>, label: string): Promise<void> {
+      for (const [op, reqBody] of bodies) {
+        if (original || certified) return;
+        try {
+          const res = await fetch(`${base}/${op}`, { method: "POST", headers: { "content-type": "application/json" }, body: reqBody });
+          const { parsed, inner } = parseAnswer(op, await res.text());
+          const d = (inner && typeof inner === "object" ? inner as Obj : null) ?? {};
+          const r = (Array.isArray(d.Response) ? (d.Response as Obj[])[0] : d.Response) as Obj | undefined;
+          const errors = Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [];
+          const o = r && typeof r.PrintOriginalPDFLink === "string" && r.PrintOriginalPDFLink ? r.PrintOriginalPDFLink : null;
+          const c = r && typeof r.PrintCertifiedCopyPDFLink === "string" && r.PrintCertifiedCopyPDFLink ? r.PrintCertifiedCopyPDFLink : null;
+          const envelope = parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d";
+          const shape = r === undefined ? (parsed ? `no Response in answer (${envelope})` : "answer is not JSON") : Array.isArray(d.Response) ? "Response is a list" : typeof r;
+          tried.push({ op: `${op}${label}`, http: res.status, errors, filled: !!(o || c), keys: r && typeof r === "object" ? Object.keys(r) : Object.keys(d), linkFields: linkFields(r ?? d), shape });
+          if (o || c) { original = o; certified = c; }
+        } catch (e) { tried.push({ op: `${op}${label}`, http: null, errors: [redact(String(e))], filled: false }); }
+      }
+    }
     // Candidate retrieval operations, tried in order until a link comes back. The request bodies are built in handler.ts (requestBodies), where a check pins them.
     const bodies = requestBodies(row, apiKey);
     if (!bodies) return { original: null, certified: null, tried: [{ op: "(none)", http: null, errors: ["the archive row has no usable document ID or number; nothing was sent"], filled: false }] };
-    const tried: Attempt[] = [];
-    let original: string | null = null, certified: string | null = null;
-    for (const [op, reqBody] of bodies) {
+    await run(bodies, "");
+    // GetDocument and GetDocumentByNumber answered {"d":null} for every document with the API key as token, while GetDocuments accepts it. The WSDL also has
+    // VerifyLoginApiKey(apiKey), so a session token is tried next. Its answer is read by name only, and the token is used in memory and never returned.
+    if (!original && !certified) {
       try {
-        const res = await fetch(`${base}/${op}`, { method: "POST", headers: { "content-type": "application/json" }, body: reqBody });
-        const text = await res.text();
-        let parsed: Obj | null = null;
-        try { parsed = JSON.parse(text); } catch { /* not json */ }
-        // WCF sometimes wraps the payload in {"d": "<json string>"}; open it before looking for Response.
-        let inner: unknown = parsed ? (parsed.d ?? parsed[`${op}Result`] ?? parsed) : null;
-        if (typeof inner === "string") { try { inner = JSON.parse(inner); } catch { /* keep as is */ } }
+        const res = await fetch(`${base}/VerifyLoginApiKey`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ apiKey }) });
+        const { parsed, inner } = parseAnswer("VerifyLoginApiKey", await res.text());
         const d = (inner && typeof inner === "object" ? inner as Obj : null) ?? {};
-        const r = (Array.isArray(d.Response) ? (d.Response as Obj[])[0] : d.Response) as Obj | undefined;
-        const errors = Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [];
-        const o = r && typeof r.PrintOriginalPDFLink === "string" && r.PrintOriginalPDFLink ? r.PrintOriginalPDFLink : null;
-        const c = r && typeof r.PrintCertifiedCopyPDFLink === "string" && r.PrintCertifiedCopyPDFLink ? r.PrintCertifiedCopyPDFLink : null;
-        const envelope = parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d";
-        const shape = r === undefined ? (parsed ? `no Response in answer (${envelope})` : "answer is not JSON") : Array.isArray(d.Response) ? "Response is a list" : typeof r;
-        tried.push({ op, http: res.status, errors, filled: !!(o || c), keys: r && typeof r === "object" ? Object.keys(r) : Object.keys(d), linkFields: linkFields(r ?? d), shape });
-        if (o || c) { original = o; certified = c; break; }
-      } catch (e) { tried.push({ op, http: null, errors: [redact(String(e))], filled: false }); }
+        const r = (Array.isArray(d.Response) ? (d.Response as Obj[])[0] : d.Response) as unknown;
+        const rObj = r !== null && typeof r === "object" ? r as Obj : null;
+        const toks = tokenCandidates(d, apiKey);
+        for (const x of toks) secrets.push(x);
+        tried.push({ op: "VerifyLoginApiKey", http: res.status, errors: Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [], filled: false,
+          keys: rObj ? Object.keys(rObj) : Object.keys(d), shape: `${rObj ? "Response is an object" : typeof r} (${parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d"}); ${toks.length} token candidate(s)` });
+        for (const [i, x] of toks.entries()) {
+          const withSession = requestBodies(row, x);
+          if (withSession) await run(withSession, ` (session ${i + 1})`);
+        }
+      } catch (e) { tried.push({ op: "VerifyLoginApiKey", http: null, errors: [redact(String(e))], filled: false }); }
     }
     return { original, certified, tried };
   },

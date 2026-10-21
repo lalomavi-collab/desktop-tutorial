@@ -39,6 +39,18 @@ export function requestBodies(row: ArchiveRow, token: string): Array<[string, st
   return candidates.map(([op, payload]) => [op, JSON.stringify({ ...payload, token })]);
 }
 
+/** Session token candidates from the answer of the provider's VerifyLoginApiKey, whose shape is not documented: the answer itself when it is a string, else the top level
+ *  string fields of its Response whose name says token or session. At most two, never the API key itself. Pure, so the picking can be checked. Values never leave the function. */
+export function tokenCandidates(answer: unknown, apiKey: string): string[] {
+  const out: string[] = [];
+  const add = (v: unknown) => { if (typeof v === "string" && v.length >= 8 && v !== apiKey && !out.includes(v)) out.push(v); };
+  const a = answer !== null && typeof answer === "object" ? (answer as Record<string, unknown>) : null;
+  const r = a ? (Array.isArray(a.Response) ? a.Response[0] : a.Response) : answer;
+  add(r);
+  if (r !== null && typeof r === "object") for (const [k, v] of Object.entries(r as Record<string, unknown>)) if (/token|session/i.test(k)) add(v);
+  return out.slice(0, 2);
+}
+
 /** A link is usable only when it is https on the provider's domain. */
 export function safeLink(v: string | null): string | null {
   if (!v) return null;
