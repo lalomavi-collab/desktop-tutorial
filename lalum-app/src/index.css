@@ -406,6 +406,24 @@ article p {
   hyphens: manual;
 }
 
+/* Phones (owner request, 21.10.2026: the text read like a Word document, not like set type).
+   At a phone measure (about 30 characters a line) justification opens wide, uneven gaps between
+   words and the page looks typed rather than typeset, as the home page cards showed. So below
+   760px running text flows from the start edge with balanced line ends (text-wrap: pretty) and
+   headings are balanced; from 761px up the justified columns of the 20.10.2026 decision stay.
+   Revert by deleting this block. Centred blocks keep their alignment (same exclusions as the
+   rule above). */
+@media (max-width: 760px) {
+  html main :is(p, li, dd, blockquote):not(.eyebrow):not(.label):not(.sr-only):not([style*="text-align: center"] *, [style*="text-align:center"] *, .panel-dark *, .founder-card *, .course-dark *),
+  html main .section .card p:not(.label),
+  html main article p {
+    text-align: start;
+    text-align-last: auto;
+    text-wrap: pretty;
+  }
+  html main :is(h1, h2, h3) { text-wrap: balance; }
+}
+
 /* ── Core practice-area cards ─────────────────────────────────────────── */
 .practice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 16px; }
 .practice-card {
