@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import { reasonLabel } from "../../../lib/cockpit/clientNames";
 import "../../../styles/cockpit-audit-log.css";
 
 // Hebrew labels for the actions this app actually writes (lalum_audit_write callers across the
@@ -11,7 +12,18 @@ const ACTION_LABELS: Record<string, string> = {
   FIN_EXPORT: "ייצוא קובץ",
   CORRECTED: "תיקון יתרת פתיחה",
   VIEWED_FINANCIALS: "צפייה בדוחות כספיים",
+  CLIENT_NAMES_REVEALED: "הצגת שמות לקוחות",
+  CLIENT_NAMES_HIDDEN: "הסתרת שמות לקוחות",
 };
+const HIDE_HOW: Record<string, string> = { USER: "בלחיצה", IDLE: "אחרי חמש דקות בלי פעילות", AWAY: "ביציאה מהמסך" };
+
+/** What a row says in the details column. Name reveals read as a sentence, with the reason the person gave; any other row shows its payload as it is. */
+function detailText(r: { action: string; payload: Record<string, unknown> | null }): string {
+  const p = r.payload ?? {};
+  if (r.action === "CLIENT_NAMES_REVEALED") return `סיבה: ${reasonLabel(String(p.reason ?? "")) || "לא נרשמה"}${p.note ? `, ${String(p.note)}` : ""}`;
+  if (r.action === "CLIENT_NAMES_HIDDEN") return `הוסתרו ${HIDE_HOW[String(p.how ?? "")] ?? ""}`.trim();
+  return Object.keys(p).length ? JSON.stringify(p) : "";
+}
 
 function actionLabel(action: string): string {
   if (ACTION_LABELS[action]) return ACTION_LABELS[action];
@@ -76,7 +88,7 @@ export function AuditLogTab() {
                 <td className="fin-text" data-label="מי">{r.actor_id ? names[r.actor_id] ?? r.actor_id : "מערכת"}</td>
                 <td data-label="פעולה">{actionLabel(r.action)}</td>
                 <td className="fin-text" data-label="ישות" style={{ overflowWrap: "anywhere" }}>{r.entity}{r.entity_id ? ` · ${r.entity_id}` : ""}</td>
-                <td className="fin-text" data-label="פרטים" style={{ overflowWrap: "anywhere" }}>{Object.keys(r.payload ?? {}).length ? JSON.stringify(r.payload) : ""}</td>
+                <td className="fin-text" data-label="פרטים" style={{ overflowWrap: "anywhere" }}>{detailText(r)}</td>
               </tr>
             ))}
             {loaded && !filtered.length && <tr><td colSpan={5}>אין רשומות להצגה</td></tr>}

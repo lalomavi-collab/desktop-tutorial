@@ -1,5 +1,6 @@
 import { allocationShort } from "../../../lib/cockpit/financeAllocation";
 import { useMemo, useState } from "react";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
@@ -27,6 +28,7 @@ const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "
 export function DocumentsTab({ level, firmId, customers, docs, payments, archiveCount, onOpenArchive, onChange }: {
   level: number; firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
 }) {
+  const cn = useClientNames();
   const [ed, setEd] = useState<Editor | null>(null);
   const [note, setNote] = useState<Note>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -118,7 +120,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
   }
   async function onIssue() {
     if (!ed) return;
-    const cust = byId.get(ed.customer_id)?.name ?? "";
+    const cust = cn.customer(byId.get(ed.customer_id) ?? { id: ed.customer_id });
     if (!window.confirm(`להפיק ${DOC_TYPE[ed.doc_type]} ללקוח ${cust} על סך ${money(totals?.total)}?\nהפקה היא סופית: המסמך מקבל מספר רץ ואינו ניתן לעריכה או למחיקה. לביטול יופק מסמך זיכוי.`)) return;
     setBusy("issue");
     const id = await saveDraft();
@@ -190,7 +192,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
           <div className="ck-title">{ed.id ? "עריכת טיוטה" : "מסמך חדש"}</div>
           <div className="ck-grid2">
             <label className="ck-field">סוג מסמך<select className="ck-select" value={ed.doc_type} onChange={(e) => setType(e.target.value as DocType)}>{Object.entries(DOC_TYPE).filter(([k]) => !casual || CASUAL_TYPES.includes(k as DocType)).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => pickCustomer(e.target.value)}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{splitName(c.name).name}{c.is_casual ? " (מזדמן)" : ""}</option>)}</select></label>
+            <label className="ck-field">לקוח<select className="ck-select" value={ed.customer_id} onChange={(e) => pickCustomer(e.target.value)}><option value="">בחירה</option>{customers.filter((c) => !c.archived || c.id === ed.customer_id).map((c) => <option key={c.id} value={c.id}>{cn.revealed ? splitName(c.name).name : cn.customer(c)}{c.is_casual ? " (מזדמן)" : ""}</option>)}</select></label>
             <label className="ck-field">תאריך המסמך<input className="ck-input" type="date" value={ed.issue_date} onChange={(e) => setEd({ ...ed, issue_date: e.target.value })} /></label>
             <label className="ck-field">לתשלום עד<input className="ck-input" type="date" value={ed.due_date} onChange={(e) => setEd({ ...ed, due_date: e.target.value })} /></label>
           </div>
@@ -259,7 +261,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
             <tr key={d.id}>
               <td>{d.doc_number ?? ""}</td>
               <td>{DOC_TYPE[d.doc_type]}{src ? <div className="ck-meta">מול {src.doc_number}</div> : null}</td>
-              <td>{byId.get(d.customer_id)?.name ?? ""}</td><td>{d.issue_date}</td>
+              <td>{cn.customer(byId.get(d.customer_id) ?? { id: d.customer_id })}</td><td>{d.issue_date}</td>
               <td className="fin-num">{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
               <td className="fin-num">{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
               <td>

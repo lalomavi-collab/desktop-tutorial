@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { rpcError, sendReminder, sendReminderError } from "../../../lib/cockpit/financeApi";
@@ -28,6 +29,8 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
   const [draftFor, setDraftFor] = useState<string | null>(null);
   const [edited, setEdited] = useState<Record<string, string>>({});
   const byId = useMemo(() => new Map(customers.map((c) => [c.id, c])), [customers]);
+  const cn = useClientNames();
+  const who = (id: string): string => cn.customer(byId.get(id) ?? { id });
   const [channel, setChannel] = useState("EMAIL");
   const [busy, setBusy] = useState(false);
 
@@ -66,7 +69,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
     const card = byId.get(row.customerId);
     const dest = test ? "הכתובת שלכם (בדיקה)" : channel === "EMAIL" ? card?.email : card?.phone;
     if (!dest) return setMsg({ ok: false, text: sendReminderError({ code: channel === "EMAIL" ? "no_email" : "no_mobile" }) });
-    if (!window.confirm(test ? "לשלוח הודעת בדיקה אליכם? היא לא תיספר כתזכורת ללקוח." : `לשלוח ${TIER_LABEL[tier]} ל${row.name} (${dest})? לא ניתן לבטל שליחה.`)) return;
+    if (!window.confirm(test ? "לשלוח הודעת בדיקה אליכם? היא לא תיספר כתזכורת ללקוח." : `לשלוח ${TIER_LABEL[tier]} ל${cn.revealed ? row.name : who(row.customerId)} (${cn.revealed ? dest : "הכתובת שבכרטיס הלקוח"})? לא ניתן לבטל שליחה.`)) return;
     setBusy(true);
     const r = await sendReminder({ customer_id: row.customerId, tier, channel, test, body: text, name: row.name, amount: row.total, days: Math.max(0, row.oldestDaysPastDue) });
     setBusy(false);
@@ -127,10 +130,10 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
           const tier = tierFor(c.oldestDaysPastDue);
           const blocked = reminderBlock(c.oldestDaysPastDue, last, today);
           const d = dso.get(c.customerId);
-          const open = draftFor === c.customerId;
+          const open = draftFor === c.customerId && cn.revealed;
           return (
             <tr key={c.customerId}>
-              <td className="fin-text"><span className="fin-name">{c.name}</span><span className="fin-sub">הישן ביותר: {Math.max(0, c.oldestDaysPastDue)} ימים אחרי המועד</span></td>
+              <td className="fin-text"><span className="fin-name">{who(c.customerId)}</span><span className="fin-sub">הישן ביותר: {Math.max(0, c.oldestDaysPastDue)} ימים אחרי המועד</span></td>
               {BUCKETS.map((b) => <td key={b} className="fin-num">{c.buckets[b] ? money(c.buckets[b]) : ""}</td>)}
               <td className="fin-num"><b>{money(c.total)}</b></td>
               <td className="fin-num">{d && d.sample >= DSO_MIN_SAMPLE ? `${d.days} ימים (${d.sample})` : d && d.sample > 0 ? `${d.days} ימים, מדגם קטן (${d.sample})` : "אין נתונים"}</td>
@@ -144,7 +147,7 @@ export function ArAgingTab({ customers, docs, payments, dunning, canOverride, on
               <td className="fin-actions-cell"><div className="fin-actions">
                 <button className="ck-btn sm" disabled={busy} onClick={() => toggleLock(c.customerId, !c.locked)}>{c.locked ? "שחרור חסימה" : "חסימת חיוב"}</button>
                 {c.locked && canOverride && <button className="ck-btn sm" disabled={busy} onClick={() => override(c.customerId, !!c.overrideUntil)}>{c.overrideUntil ? "ביטול חריג" : "אישור חריג"}</button>}
-                <button className="ck-btn sm" disabled={!tier} onClick={() => setDraftFor(open ? null : c.customerId)}>טיוטת תזכורת</button>
+                <button className="ck-btn sm" disabled={!tier || !cn.revealed} title={cn.revealed ? undefined : "הטיוטה כוללת את שם הלקוח: הציגו שמות כדי לערוך ולשלוח (נרשם ביומן)."} onClick={() => setDraftFor(open ? null : c.customerId)}>טיוטת תזכורת</button>
               </div>
               {open && tier && (
                 <div className="ck-stack" style={{ marginTop: 8 }}>

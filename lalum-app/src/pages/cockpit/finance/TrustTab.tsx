@@ -66,7 +66,7 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
   }
 
   const [since] = useState(() => new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10));
-  const cust = (id: string) => cn.text(customers.find((c) => c.id === id)?.name);
+  const cust = (id: string) => cn.customer(customers.find((c) => c.id === id) ?? { id });
   const matter = (id: string) => cn.name(matters.find((m) => m.id === id));
   const byCustomer = trustBreakdown(rows, "customer_id");
   const byMatter = trustBreakdown(rows, "matter_id");

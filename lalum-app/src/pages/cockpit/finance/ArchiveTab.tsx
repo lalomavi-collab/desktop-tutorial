@@ -1,5 +1,6 @@
 import { allocationShort } from "../../../lib/cockpit/financeAllocation";
 import { useRef, useState } from "react";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { money } from "../../../lib/cockpit/shared";
 import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
@@ -19,8 +20,9 @@ const monthsBetween = (from: string, to: string): Array<[string, string]> => {
 };
 
 export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; customers: FinCustomer[]; onChange: () => void }) {
+  const cn = useClientNames();
   const byI4u = new Map(customers.filter((c) => c.i4u_customer_id).map((c) => [Number(c.i4u_customer_id), c.name]));
-  const who = (d: ArchiveDoc): string => (d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || "לקוח מזדמן";
+  const who = (d: ArchiveDoc): string => cn.casual((d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || "");
   const [from, setFrom] = useState(`${new Date().getFullYear() - 1}-01-01`);
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10));
   const [busy, setBusy] = useState(false);
