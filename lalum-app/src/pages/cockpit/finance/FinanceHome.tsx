@@ -6,6 +6,7 @@ import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, Trus
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
 import { ExpensesTab } from "./ExpensesTab";
+import { OpenProformasTab } from "./OpenProformasTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
 import { TrustTab } from "./TrustTab";
@@ -23,11 +24,11 @@ import { ReportsTab } from "./ReportsTab";
 import { RevenueView } from "./RevenueView";
 import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
+import { ARCHIVE_COLS } from "../../../lib/cockpit/dashboardFinance";
 
-type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+type Tab = "overview" | "documents" | "proformas" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
-const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: string }) {
@@ -162,6 +163,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
         </>
       )}
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
+      {tab === "proformas" && loaded && <Gate level={level} need={2}><OpenProformasTab customers={customers} docs={docs} archive={archive} onOpenDocuments={() => setTab("documents")} onOpenArchive={() => setTab("archive")} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
