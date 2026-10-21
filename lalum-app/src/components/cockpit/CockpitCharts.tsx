@@ -10,19 +10,6 @@ const OK = "var(--chart-ok, #216f33)", OK_L = "var(--chart-ok-l, #5a9c62)", WARN
 const TRACK = "var(--chart-track, rgba(83,112,86,.12))", GRID = "var(--chart-grid, rgba(83,112,86,.14))";
 const nf = (v: number) => v.toLocaleString("he-IL");
 
-/** Smooth path through points (Catmull-Rom to cubic Bezier). */
-function smooth(pts: Array<[number, number]>): string {
-  if (pts.length < 2) return "";
-  let d = `M${pts[0][0]},${pts[0][1]}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] ?? p2;
-    const c1: [number, number] = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-    const c2: [number, number] = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    d += ` C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0]},${p2[1]}`;
-  }
-  return d;
-}
-
 /** Hover bubble, positioned in the chart's own local pixel space. Never the only way to read a value (see aria-label). */
 function Tip({ x, y, children, flip }: { x: number; y: number; children: ReactNode; flip?: boolean }) {
   return (
@@ -32,9 +19,11 @@ function Tip({ x, y, children, flip }: { x: number; y: number; children: ReactNo
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-/** Area chart, on its own dark instrument panel regardless of the cockpit's light/dark theme
- *  (the same register every reference terminal used: a chart widget carries its own dark surface).
- *  values and labels are in time order (oldest first). Hover shows a crosshair and the exact reading. */
+/** Weekly stem chart: one thin stem and a dot per bucket, the current bucket drawn in the brand green with its
+ *  value pinned above it. Sits on the page's own ivory surface (no dark panel), so it reads as part of the
+ *  same family as the cards around it. values and labels are in time order (oldest first). Hover darkens a
+ *  stem and shows the exact reading; the aria-label carries every number. Name kept (AreaChart) so callers
+ *  do not change. */
 export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[]; labels: string[]; unit: string; id?: string }) {
   // Drawn at the width the box really has (no scaling), so axis labels keep their size on a phone.
   const box = useRef<HTMLDivElement>(null);
@@ -50,89 +39,70 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const W = boxW, H = 210, L = 10, R = 54, T = 14, B = 28;
+  const W = boxW, H = 190, L = 18, R = 24, T = 30, B = 28;
   const max = Math.max(4, ...values);
   const nice = Math.ceil(max / 4) * 4;
-  const step = values.length > 1 ? (W - L - R) / (values.length - 1) : 0;
-  // Oldest value at the left edge, newest at the right (time reads left to right; the svg keeps dir=ltr inside the RTL page).
-  const p2: Array<[number, number]> = values.map((v, i) => [L + i * step, T + (H - T - B) * (1 - v / nice)]);
-  const line = smooth(p2);
-  const area = p2.length > 1 ? `${line} L${p2[p2.length - 1][0]},${H - B} L${p2[0][0]},${H - B} Z` : "";
-  const last = p2[p2.length - 1];
-  const cur = values[values.length - 1] ?? 0;
-  const peak = Math.max(...values);
-  const prev = values.length > 1 ? values[values.length - 2] : null;
+  const n = values.length;
+  const step = n > 1 ? (W - L - R) / (n - 1) : 0;
+  const plotH = H - T - B;
+  const pts: Array<[number, number]> = values.map((v, i) => [n > 1 ? L + i * step : W / 2, T + plotH * (1 - v / nice)]);
+  const cur = values[n - 1] ?? 0;
+  const peak = Math.max(0, ...values);
+  const prev = n > 1 ? values[n - 2] : null;
   // A trough at exactly 0 makes a percent change undefined, not "infinite": say "new" instead of a number.
   const changePct = prev != null && prev !== 0 ? Math.round(((cur - prev) / prev) * 100) : null;
   const changeWord = prev === 0 ? (cur > 0 ? "חדש" : "ללא שינוי") : null;
+  const up = prev != null && cur >= prev;
   const now = new Date();
   const updated = `${pad2(now.getDate())}/${pad2(now.getMonth() + 1)} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
   const onMove = (e: ReactPointerEvent<SVGSVGElement>) => {
     if (step <= 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * W;
-    setHover(Math.max(0, Math.min(values.length - 1, Math.round((x - L) / step))));
+    setHover(Math.max(0, Math.min(n - 1, Math.round((x - L) / step))));
   };
-  const hp = hover != null ? p2[hover] : null;
+  const labelEvery = Math.ceil(n / Math.max(2, Math.floor((W - L - R) / 62)));
+  const hp = hover != null ? pts[hover] : null;
   return (
-    <div ref={box} className="ck-nd-panel">
-      <div className="ck-nd-head">
+    <div ref={box} className="ck-st-panel" data-chart={id}>
+      <div className="ck-st-head">
         <div>
-          <div className="ck-nd-figure">{nf(cur)}</div>
-          <div className="ck-nd-unit">{unit}</div>
+          <div className="ck-st-figure">{nf(cur)}</div>
+          <div className="ck-st-unit">{unit}</div>
         </div>
-        <span className="ck-nd-live"><i className="ck-live-dot" aria-hidden="true" />נתונים עדכניים</span>
-      </div>
-      <div className="ck-nd-stats">
-        <span className="ck-nd-stat">שיא<b>{nf(peak)}</b></span>
-        <span className="ck-nd-stat accent">נוכחי<b>{nf(cur)}</b></span>
         {(changePct != null || changeWord) && (
-          <span className={`ck-nd-stat${cur >= (prev ?? 0) ? " accent" : ""}`}>
-            שינוי
-            {/* A signed number is an LTR token; without an isolate the minus sign floats to the
-                wrong end inside RTL text (e.g. "67%-" instead of "-67%"). */}
+          <span className={`ck-st-chip${up ? " up" : " down"}`}>
+            {/* A signed number is an LTR token; without an isolate the minus sign floats to the wrong end inside RTL text. */}
             <b>{changePct != null ? <bdi dir="ltr">{changePct >= 0 ? "+" : ""}{changePct}%</bdi> : changeWord}</b>
+            <small>מול הקודם</small>
           </span>
         )}
-        <span className="ck-nd-stat muted">עודכן<b>{updated}</b></span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`}
         style={{ direction: "ltr", display: "block" }} onPointerMove={onMove} onPointerLeave={() => setHover(null)}>
-        <defs>
-          <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--nd-accent)" stopOpacity=".5" /><stop offset="1" stopColor="var(--nd-accent)" stopOpacity="0" /></linearGradient>
-          <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4.5" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-        </defs>
-        {[0, 1, 2, 3].map((i) => <line key={i} x1={L} x2={W - R} y1={T + ((H - T - B) * i) / 3} y2={T + ((H - T - B) * i) / 3} stroke="var(--nd-grid)" />)}
-        {area && <path className="ck-area-fill" d={area} fill={`url(#${id}-f)`} />}
-        {line && <path className="ck-area-line" d={line} fill="none" stroke="var(--nd-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pathLength={100} filter={`url(#${id}-glow)`} />}
-        {/* A small light travels the line once every few seconds: the one honest "alive" cue for data that refreshes
-            on load, not a streaming tick (see the badge's own wording). Skipped entirely under reduced motion. */}
-        {line && <circle r="4" fill="var(--nd-accent)" className="ck-nd-travel" style={{ offsetPath: `path("${line}")` }} />}
-        {p2.map((p, i) => (i % Math.ceil(values.length / Math.max(2, Math.floor((W - L - R) / 62))) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="11.5" fill="var(--nd-sub)">{labels[i]}</text> : null)}
-        {hp && hover != null && (
-          <g aria-hidden="true">
-            {/* Trading-terminal crosshair: a full vertical + horizontal hairline, with the exact reading pinned to each axis. */}
-            <line x1={hp[0]} x2={hp[0]} y1={T} y2={H - B} stroke="rgba(255,255,255,.18)" strokeWidth="1" />
-            <line x1={L} x2={W - R} y1={hp[1]} y2={hp[1]} stroke="rgba(255,255,255,.18)" strokeWidth="1" />
-            <circle cx={hp[0]} cy={hp[1]} r="5" fill="var(--nd-bg2)" stroke="var(--nd-accent)" strokeWidth="2.5" />
-            <g>
-              <rect x={hp[0] - 24} y={H - B + 4} width="48" height="18" rx="5" fill="var(--nd-accent)" />
-              <text x={hp[0]} y={H - B + 17} textAnchor="middle" fontSize="11" fontWeight="700" fill="#06130d">{labels[hover]}</text>
+        {[0, 1, 2, 3].map((i) => <line key={i} x1={L} x2={W - R} y1={T + (plotH * i) / 3} y2={T + (plotH * i) / 3} stroke={GRID} strokeDasharray={i === 3 ? undefined : "2 5"} />)}
+        {pts.map((p, i) => {
+          const isCur = i === n - 1, isHot = hover === i, v = values[i];
+          return (
+            <g key={i} className="ck-st-stem" style={{ animationDelay: `${i * 35}ms` }}>
+              {v > 0 ? (
+                <>
+                  <line x1={p[0]} x2={p[0]} y1={H - B} y2={p[1]} stroke={isCur || isHot ? OK : OK_L} strokeWidth={isCur || isHot ? 2.5 : 1.5} strokeLinecap="round" opacity={isCur || isHot ? 1 : 0.7} />
+                  <circle cx={p[0]} cy={p[1]} r={isCur ? 6 : isHot ? 5.5 : 4} fill={isCur ? OK : "var(--paper, #fbf9f3)"} stroke={isCur || isHot ? OK : OK_L} strokeWidth="2" />
+                </>
+              ) : (
+                <line x1={p[0] - 4} x2={p[0] + 4} y1={H - B} y2={H - B} stroke={OK_L} strokeWidth="2" strokeLinecap="round" opacity=".55" />
+              )}
+              {i % labelEvery === 0 || isCur ? <text x={p[0]} y={H - 8} textAnchor="middle" fontSize="12" fill="var(--slate)" fontWeight={isCur ? 700 : 400}>{labels[i]}</text> : null}
             </g>
-          </g>
-        )}
-        {!hp && last && (
-          <g aria-hidden="true">
-            <circle className="ck-live-pulse" cx={last[0]} cy={last[1]} r="9" fill="var(--nd-accent)" />
-            <circle cx={last[0]} cy={last[1]} r="5" fill="var(--nd-bg2)" stroke="var(--nd-accent)" strokeWidth="2.5" />
-            <line x1={last[0]} x2={W - 50} y1={last[1]} y2={last[1]} stroke="var(--nd-accent)" strokeWidth="1" strokeDasharray="2 4" opacity=".6" />
-            {/* The always-on current-value tag a trading terminal pins to its right axis, not just a hover state. */}
-            <rect x={W - 48} y={last[1] - 10} width="44" height="20" rx="5" fill="var(--nd-accent)" />
-            <text x={W - 26} y={last[1] + 4} textAnchor="middle" fontSize="11" fontWeight="800" fill="#06130d">{nf(cur)}</text>
-          </g>
-        )}
+          );
+        })}
+        {/* The current value pinned above its dot, and the peak when it is a different week. */}
+        {n > 0 && cur > 0 && <text x={pts[n - 1][0]} y={pts[n - 1][1] - 13} textAnchor="middle" fontSize="13" fontWeight="800" fill={OK} aria-hidden="true">{nf(cur)}</text>}
+        {peak > 0 && values.indexOf(peak) !== n - 1 && (() => { const pi = values.indexOf(peak); return <text x={pts[pi][0]} y={pts[pi][1] - 11} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--slate)" aria-hidden="true">{nf(peak)}</text>; })()}
       </svg>
       {hp && hover != null && <Tip x={hp[0]} y={hp[1] - 14} flip={hp[0] > W - 90}><b>{nf(values[hover])}</b><span>{unit} · {labels[hover]}</span></Tip>}
+      <div className="ck-st-foot"><span>שיא <b>{nf(peak)}</b></span><span className="muted">עודכן {updated}</span></div>
     </div>
   );
 }
