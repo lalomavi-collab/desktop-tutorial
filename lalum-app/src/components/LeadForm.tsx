@@ -82,7 +82,7 @@ export function LeadForm({ onOpenChange, startOpen = false, source = "chat" }: {
       {/* Honeypot: hidden from people, filled by bots. */}
       <input tabIndex={-1} autoComplete="off" aria-hidden="true" value={f.website} onChange={set("website")} style={{ position: "absolute", insetInlineStart: -9999, width: 1, height: 1, opacity: 0 }} />
       <label style={{ display: "flex", gap: 9, alignItems: "flex-start", fontSize: 12.5, lineHeight: 1.55, color: "var(--ink)", cursor: "pointer" }}>
-        <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 3, width: 16, height: 16, flex: "none", accentColor: "var(--clay)" }} />
+        <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 0, width: 24, height: 24, flex: "none", accentColor: "var(--clay)" }} />
         <span>{L.consentBefore}<Link to="/legal#privacy" style={{ color: "var(--clay)", textDecoration: "underline" }}>{L.consentLink}</Link>{L.consentAfter}</span>
       </label>
       {err && <div role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>{err}</div>}

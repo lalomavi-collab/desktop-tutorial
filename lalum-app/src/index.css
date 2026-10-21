@@ -4063,6 +4063,9 @@ html.a11y-reduce-motion *::after {
     background: none;
     border: 0;
     font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     cursor: pointer;
     color: var(--danger);
   }
@@ -5574,15 +5577,18 @@ html:not([lang="ar"]) .hero-home .hero-h1 .italic-clay {
   min-inline-size: 24px;
 }
 .voice-seek { block-size: 24px; }
-.site-header .brand { padding-block: 6px; }
+.site-header .brand { display: inline-flex; align-items: center; min-block-size: 44px; }
 @media (max-width: 900px), (pointer: coarse) {
   :root { --ctrl-h: 44px; }
   .footer-col a,
   .footer-legal a,
-  .footer-legal-btn { min-block-size: 36px; }
+  .footer-legal-btn { min-block-size: 44px; min-inline-size: 44px; }
   .footer-social-link { width: 44px; height: 44px; }
   .voice-btn { inline-size: 44px; block-size: 44px; }
-  .lead-card .field { min-block-size: 44px; }
+  .voice-seek { block-size: 44px; }
+  .lead-card .field,
+  .lead-card input:not([type="checkbox"], [aria-hidden="true"]),
+  .lead-card select { min-block-size: 44px; }
 }
 
 /* The drawn forward arrow (FwdArrow) sits on the text line like a glyph would. */
