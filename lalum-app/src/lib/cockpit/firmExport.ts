@@ -2,7 +2,7 @@
 // All the rules live in firmExportCore.ts; this file only connects it to Supabase and the browser.
 import { supabase } from "../supabase";
 import { buildPackage, ExportError, zipName } from "./firmExportCore.ts";
-import type { Built, OriginalsPort, Ports } from "./firmExportCore.ts";
+import type { Built, OriginalsPort, PackageFile, Ports } from "./firmExportCore.ts";
 
 const sha256 = async (s: string): Promise<string> => {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -53,23 +53,38 @@ const ports = (firmId: string): Ports => ({
   now: () => new Date(),
 });
 
-/** Builds the package and downloads it as a ZIP. Throws ExportError on any integrity failure and downloads nothing. */
-export async function exportFirmPackage(firmId: string, onProgress?: (done: number, total: number, table: string) => void, onOriginals?: (done: number, total: number) => void): Promise<Built> {
-  if (!supabase) throw new ExportError("MANIFEST", "no connection");
-  const built = await buildPackage(ports(firmId), { onProgress, onOriginals });
+const pause = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
+
+/** Zips one volume and hands it to the browser as a download. Originals are already compressed (PDF, DOCX), so they are stored as they are; the JSON files are deflated. */
+async function saveZip(files: PackageFile[], name: string): Promise<void> {
   const JSZip = (await import("jszip")).default;
   const zip = new JSZip();
   // A byte order mark on the text files so Hebrew opens correctly in Windows tools; the data files stay byte exact because the hashes cover them.
-  // Originals are already compressed (PDF, DOCX), so they are stored as they are; the JSON files are deflated.
-  for (const f of built.files) {
+  for (const f of files) {
     if (f.binary) zip.file(f.path, f.content as Uint8Array, { binary: true, compression: "STORE" });
     else zip.file(f.path, f.path === "README.txt" ? "﻿" + f.content : (f.content as string));
   }
   const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = zipName(firmId, new Date());
+  a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
-  window.setTimeout(() => URL.revokeObjectURL(a.href), 60_000);
-  return built;
+  window.setTimeout(() => URL.revokeObjectURL(a.href), 15_000);
+}
+
+/** Builds the package and downloads it: one ZIP for a firm that fits in a volume, else several (part-01, part-02 ...), the last holding the tables, PACKAGE.json and README.txt.
+ *  Throws ExportError on any integrity failure; tables are verified before any ZIP is written, and each volume leaves memory as soon as it is handed to the browser. */
+export async function exportFirmPackage(firmId: string, onProgress?: (done: number, total: number, table: string) => void, onOriginals?: (done: number, total: number) => void, onVolume?: (index: number, last: boolean) => void): Promise<Built> {
+  if (!supabase) throw new ExportError("MANIFEST", "no connection");
+  const base = zipName(firmId, new Date());
+  const part = (n: number) => base.replace(/\.zip$/, `-part-${String(n).padStart(2, "0")}.zip`);
+  return buildPackage(ports(firmId), {
+    onProgress, onOriginals,
+    emit: async (v) => {
+      await saveZip(v.files, v.last && v.index === 1 ? base : part(v.index));
+      onVolume?.(v.index, v.last);
+      // a pause between downloads: browsers ask before allowing several, and a freed volume is not yet collected
+      if (!v.last) await pause(1500);
+    },
+  });
 }
