@@ -79,7 +79,7 @@ begin
   -- the page and originals calls are gated like the manifest
   perform t.as_user(att, aal2);
   perform t.fails(format('select public.lalum_firm_export_page(%L,%L)', f1, 'lalum_cockpit_matters'), 'FORBIDDEN', 'an attorney cannot read a page');
-  perform t.fails(format('select public.lalum_firm_export_originals(%L)', f1), 'FORBIDDEN', 'an attorney cannot list the originals');
+  perform t.fails(format('select public.lalum_firm_export_originals_page(%L)', f1), 'FORBIDDEN', 'an attorney cannot list the originals');
   perform t.as_user(p2, aal2);
   perform t.fails(format('select public.lalum_firm_export_page(%L,%L)', f1, 'lalum_cockpit_matters'), 'FORBIDDEN', 'a partner of another firm cannot read a page');
 
@@ -127,11 +127,11 @@ begin
   perform t.fails(format('select public.lalum_firm_export_page(%L,%L)', f1, null), 'TABLE_NOT_EXPORTED', 'a null table is refused');
 
   -- the originals list
-  r := public.lalum_firm_export_originals(f1);
+  r := public.lalum_firm_export_originals_page(f1);
   perform t.eq(jsonb_array_length(r -> 'originals'), 2, 'the originals list has the two stored originals of live matters');
   perform t.eq((select count(*) from jsonb_array_elements(r -> 'originals') e where e ->> 'path' = 'f1/d'), 0::bigint, 'and not the one of the purged matter');
   reset role;
-  perform t.eq((select meta from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_ORIGINALS'), jsonb_build_object('originals', 2), 'the originals call wrote one chain row with the count');
+  perform t.eq((select meta from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_ORIGINALS'), jsonb_build_object('originals', 2), 'the originals page call wrote one chain row with the count');
 
   -- drift guard: a table added later and not classified shows up
   create table public.lalum_zz_new_table (firm_id uuid);

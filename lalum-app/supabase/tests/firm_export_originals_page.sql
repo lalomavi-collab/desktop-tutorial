@@ -1,4 +1,4 @@
--- Tests for migration 0068 (the originals of the firm export, one page at a time). Run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063, 0066 and 0068:
+-- Tests for migration 0068 (the originals of the firm export, one page at a time). Run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063, 0066, 0068 and 0069:
 --   psql -v ON_ERROR_STOP=1 -f firm_export_originals_page.sql
 -- Stand ins for the tables no repository migration builds are created below when absent. Every assertion raises on failure. Fixtures roll back.
 create schema if not exists t;
@@ -144,7 +144,7 @@ begin
   reset role;
   perform t.eq(has_function_privilege('anon', 'public.lalum_firm_export_originals_page(uuid,uuid,integer)', 'execute'), false, 'anon cannot execute it');
   perform t.eq(has_function_privilege('authenticated', 'public.lalum_firm_export_originals_page(uuid,uuid,integer)', 'execute'), true, 'authenticated can');
-  perform t.eq(jsonb_array_length(public.lalum_firm_export_originals(f1) -> 'originals') > 0, true, 'the old function still answers');
+  perform t.eq(to_regprocedure('public.lalum_firm_export_originals(uuid)') is null, true, 'the old unpaged function is gone (0069)');
 
   raise exception 'ALL_PASSED_ROLLBACK';
 exception when others then
