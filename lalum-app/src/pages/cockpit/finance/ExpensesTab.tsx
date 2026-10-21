@@ -1,17 +1,47 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "../../../lib/supabase";
+import { Icon } from "../../../components/Icon";
 import { money } from "../../../lib/cockpit/shared";
 import { EXPENSE_CATEGORY, PAY_METHOD, recoverableVat } from "../../../lib/cockpit/finance";
 import type { FinExpense, PayMethod } from "../../../lib/cockpit/finance";
+import { scanReceipt, scanReceiptError } from "../../../lib/cockpit/financeApi";
 
 const today = () => new Date().toISOString().slice(0, 10);
 type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string };
 const blank = (): Draft => ({ spent_on: today(), supplier: "", category: "OTHER", description: "", total: "", vat_amount: "", pct: "100", ref: "", method: "" });
+// Hebrew labels for the fields a scan can flag as unclear, so the review note below the form reads
+// like the rest of the screen rather than echoing the API's own field names.
+const FIELD_LABEL: Record<string, string> = {
+  spent_on: "תאריך", supplier: "ספק", category: "קטגוריה", description: "תיאור",
+  total: "סכום כולל", vat_amount: "מע\"מ", supplier_doc_ref: "מספר חשבונית הספק",
+};
 
 export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; expenses: FinExpense[]; onChange: () => void }) {
   const [f, setF] = useState<Draft | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [lowConfidence, setLowConfidence] = useState<string[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
+
+  async function onScanFile(e: { target: { files: FileList | null; value: string } }) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setScanning(true); setMsg(null); setLowConfidence([]);
+    const r = await scanReceipt(firmId, file);
+    setScanning(false);
+    if (!r.ok || !r.draft) { setMsg({ ok: false, text: scanReceiptError(r) }); return; }
+    const d = r.draft;
+    setF({
+      spent_on: d.spent_on ?? today(), supplier: d.supplier ?? "", category: d.category ?? "OTHER",
+      description: d.description ?? "", total: d.total != null ? String(d.total) : "",
+      vat_amount: d.vat_amount != null ? String(d.vat_amount) : "", pct: "100",
+      ref: d.supplier_doc_ref ?? "", method: "",
+    });
+    setLowConfidence(r.low_confidence_fields ?? []);
+    setMsg({ ok: true, text: "הטיוטה מולאה מהחשבונית. בדקו את הסכומים לפני השמירה." });
+  }
 
   async function save() {
     if (!supabase || !f) return;
@@ -25,7 +55,7 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
       total, vat_amount: vat, vat_recoverable_pct: pct, supplier_doc_ref: f.ref.trim() || null, payment_method: f.method || null,
     });
     if (error) return setMsg({ ok: false, text: error.message });
-    setF(null); setMsg(null); onChange();
+    setF(null); setMsg(null); setLowConfidence([]); onChange();
   }
   async function remove(id: string) {
     if (!supabase || !window.confirm("למחוק את ההוצאה?")) return;
@@ -37,11 +67,24 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
-        <button className="ck-btn primary" onClick={() => { setF(blank()); setMsg(null); }}>הוצאה חדשה</button>
+        <div className="ck-row">
+          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment" style={{ display: "none" }} onChange={(e) => void onScanFile(e)} />
+          <button className="ck-btn" disabled={scanning} onClick={() => fileRef.current?.click()}>
+            <Icon name="file" size={16} /> {scanning ? "קוראים את החשבונית…" : "סריקת חשבונית"}
+          </button>
+          <button className="ck-btn primary" onClick={() => { setF(blank()); setMsg(null); setLowConfidence([]); }}>
+            <Icon name="plus" size={16} /> הוצאה חדשה
+          </button>
+        </div>
       </div>
       {f && (
         <div className="ck-card ck-stack">
           <div className="ck-title">הוצאה חדשה</div>
+          {lowConfidence.length > 0 && (
+            <div className="ck-warn" role="status">
+              השדות הבאים לא היו ברורים מהתמונה, בדקו אותם לפני השמירה: {lowConfidence.map((k) => FIELD_LABEL[k] ?? k).join(", ")}
+            </div>
+          )}
           <div className="ck-grid2">
             <label className="ck-field">תאריך<input className="ck-input" type="date" value={f.spent_on} onChange={set("spent_on")} /></label>
             <label className="ck-field">ספק<input className="ck-input" value={f.supplier} onChange={set("supplier")} /></label>
@@ -54,7 +97,7 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
           </div>
           <label className="ck-field">תיאור<input className="ck-input" value={f.description} onChange={set("description")} /></label>
           {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
-          <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setF(null)}>ביטול</button></div>
+          <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { setF(null); setLowConfidence([]); }}>ביטול</button></div>
         </div>
       )}
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th></th></tr></thead><tbody>
