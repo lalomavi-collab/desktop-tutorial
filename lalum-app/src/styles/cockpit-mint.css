@@ -380,3 +380,40 @@
   padding-inline-start: 14px; border-inline-start: 4px solid var(--clay); border-radius: 1px;
 }
 @media (max-width: 640px) { .ck-root[data-ck-theme="mint"] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
+
+/* Rail, second pass: larger buttons, the six everyday screens first with "עוד" for the rest, and the theme switch at the top of the rail. */
+.ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore {
+  display: flex; align-items: center; justify-content: center; gap: 3px; border: 0; cursor: pointer; font: inherit; color: var(--slate); background: transparent; border-radius: 12px;
+}
+.ck-sidebar-brand button.ck-theme { padding: 6px; }
+.ck-sidebar-brand button.ck-theme:hover, .ck-sidebar-nav button.ck-railmore:hover { background: color-mix(in srgb, var(--clay) 12%, transparent); }
+.ck-sidebar-brand button.ck-theme:focus-visible, .ck-sidebar-nav button.ck-railmore:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+@media (min-width: 861px) {
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar { width: 108px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand { flex-direction: column; align-items: center; gap: 8px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand button.ck-theme { width: 52px; height: 44px; background: color-mix(in srgb, var(--clay) 10%, transparent); }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav { gap: 4px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot a,
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-foot button.ck-logout { font-size: 13px; padding: 8px 3px 7px; gap: 4px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav button.ck-railmore { flex-direction: column; width: 100%; padding: 8px 3px 7px; font-size: 13px; font-weight: 600; margin-top: 4px; border-top: 1px solid var(--line); border-radius: 10px; }
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav .ck-navbadge { inset-inline-end: 18px; }
+}
+/* Phone row: the wordmark is hidden there, but the theme switch must stay reachable. */
+@media (max-width: 860px) {
+  .ck-sidebar-brand { display: flex; padding: 0; border: 0; flex-shrink: 0; }
+  .ck-sidebar-brand svg:not(.ck-railicon) { display: none; }
+  .ck-sidebar-nav button.ck-railmore { flex-shrink: 0; padding: 12px; }
+  .ck-sidebar-nav button.ck-railmore span { display: none; }
+}
+
+/* Billing and firm settings: the display serif of the home page for card titles, section labels and the big figures,
+   so this screen reads like the rest of the cockpit. Layout is untouched (the wrapper adds no box). */
+.ck-billing { display: contents; }
+.ck-billing .ck-title, .ck-billing .ck-label, .ck-billing .fin-figure, .ck-billing .fin-kpi, .ck-billing .fin-rubric, .ck-billing .fin-tabs .ck-btn {
+  font-family: "Lalum Serif", "David Libre", Georgia, serif; letter-spacing: -.005em;
+}
+.ck-billing .ck-title { font-size: 19px; font-weight: 500; }
+.ck-billing .ck-label { font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--ink); margin: 10px 0 -2px; }
+.ck-billing .fin-figure { font-weight: 500; font-size: 30px; }
+.ck-billing .fin-kpi { font-weight: 500; font-size: 24px; }

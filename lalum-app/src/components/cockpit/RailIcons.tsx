@@ -61,6 +61,9 @@ const ICONS: Record<string, ReactNode> = {
   "/workspace/guide": <><path d="M2.5 7c5-1.8 9.5-1.2 13.5 2v19c-4-3-8.5-3.6-13.5-1.8z" fill={B} /><path d="M29.5 7c-5-1.8-9.5-1.2-13.5 2v19c4-3 8.5-3.6 13.5-1.8z" fill={D} /><path d="M6 12.5c2.5-.6 5-.4 7 .8M6 17c2.5-.6 5-.4 7 .8" {...stroke(W, 1.6)} /><path d="M21 3h4.5v10l-2.25-1.9L21 13z" fill={S} /></>,
   // footer actions
   theme: <><circle cx="16" cy="16" r="6.4" fill={S} /><g {...stroke("#c9a94f", 2.6)}><path d="M16 3v3M16 26v3M3 16h3M26 16h3M6.8 6.8l2.1 2.1M23.1 23.1l2.1 2.1M25.2 6.8l-2.1 2.1M8.9 23.1l-2.1 2.1" /></g></>,
+  moon: <><path transform="translate(1.5 1.5) scale(1.2)" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill={D} /><circle cx="25" cy="8" r="1.5" fill="#c9a94f" /><circle cx="28" cy="13.5" r="1" fill="#c9a94f" /></>,
+  more: <><rect x="3" y="3" width="26" height="26" rx="8" fill={B} /><circle cx="10" cy="16" r="2.2" fill={W} /><circle cx="16" cy="16" r="2.2" fill={W} /><circle cx="22" cy="16" r="2.2" fill={W} /></>,
+  less: <><rect x="3" y="3" width="26" height="26" rx="8" fill={B} /><path d="M10 19l6-6 6 6" {...stroke(W, 2.8)} /></>,
   user: <><circle cx="16" cy="16" r="13.5" fill={B} /><circle cx="16" cy="12.5" r="4.6" fill={W} /><path d="M7 25a9 9 0 0 1 18 0 13 13 0 0 1-18 0z" fill={W} /></>,
   site: <><circle cx="16" cy="16" r="13.5" fill={B} /><g {...stroke(W, 1.7)}><ellipse cx="16" cy="16" rx="5.6" ry="13.5" /><path d="M2.5 16h27M5 9h22M5 23h22" /></g></>,
   logout: <><path d="M5 4h13a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H5z" fill={B} /><circle cx="15" cy="16" r="1.4" fill={W} /><path d="M17 16h12m-5-5 5 5-5 5" {...stroke("#e5604d", 3)} /></>,
