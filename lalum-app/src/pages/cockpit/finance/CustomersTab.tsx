@@ -3,6 +3,7 @@ import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { CONSENT_BASIS, customerGaps, customerProblems, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
 import { rpcError } from "../../../lib/cockpit/financeApi";
+import { CustomersImport } from "./CustomersImport";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
 type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean; ret: boolean; retDesc: string; retAmt: string };
@@ -72,6 +73,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
         {archivedCount > 0 && <label className="ck-meta" style={{ display: "flex", alignItems: "center", gap: 6 }}><input type="checkbox" checked={withArchived} onChange={(e) => setWithArchived(e.target.checked)} />הצגת לקוחות בארכיון (<bdi>{archivedCount}</bdi>)</label>}
         <button className="ck-btn primary" onClick={() => open()}>לקוח חדש</button>
       </div>
+      <CustomersImport firmId={firmId} existing={customers} revealed={cn.revealed} onManual={() => open()} onChange={onChange} />
       {editing && cn.revealed && (
         <div className="ck-card ck-stack">
           <div className="ck-title">{isNew ? "לקוח חדש" : "עריכת לקוח"}</div>

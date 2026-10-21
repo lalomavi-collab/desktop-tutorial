@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
 
+import { parseDelimited, mapCustomers } from "../src/lib/cockpit/customerImport.ts";
 import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
 
@@ -16,6 +17,26 @@ const doc = (o) => ({
 });
 const exp = (o) => ({ id: "e1", spent_on: "2026-10-03", supplier: "x", category: "OTHER", description: null, total: 118, vat_amount: 18, vat_recoverable_pct: 100, supplier_doc_ref: null, payment_method: null, ...o });
 
+t("a pasted customer list: tabs from Excel, quoted commas, a header row, duplicates and bad rows marked", () => {
+  const pasted = "שם\tת.ז. / ח.פ.\tדוא\"ל\tטלפון\nדנה כהן\t123-456-789\tdana@example.com\t501234567\n\"כהן, לוי בע\"\"מ\"\t514000000\t\t\nדנה כהן\t123456789\t\t\nאבי\t12\tnot-an-email\t";
+  const r = mapCustomers(parseDelimited(pasted), [{ name: "קיים", tax_id: "514000000" }]);
+  assert.equal(r.usedHeader, true);
+  assert.deepEqual(r.rows.map((x) => x.status), ["new", "duplicate", "duplicate", "invalid"]);
+  assert.equal(r.rows[0].tax_id, "123456789");
+  assert.equal(r.rows[0].phone, "0501234567");
+  assert.equal(r.rows[1].name, "כהן, לוי בע\"מ");
+  assert.deepEqual(r.rows[0].gaps, []);
+  assert.ok(r.rows[3].problems.length >= 2);
+});
+t("a list without a header is read as name, tax id, email, phone, address, city; commas and semicolons both work", () => {
+  const a = mapCustomers(parseDelimited("רונית, 300000001, ronit@example.com, 052-1111111, הרצל 5, חיפה"), []);
+  assert.equal(a.usedHeader, false);
+  assert.deepEqual([a.rows[0].name, a.rows[0].city, a.rows[0].status], ["רונית", "חיפה", "new"]);
+  const b = mapCustomers(parseDelimited("משה;300000002;moshe@example.com"), []);
+  assert.equal(b.rows[0].email, "moshe@example.com");
+  assert.deepEqual(b.rows[0].gaps, []);
+  assert.deepEqual(mapCustomers(parseDelimited(""), []).rows, []);
+});
 t("tax excluded: vat on top", () => {
   assert.deepEqual(computeTotals([{ name: "a", qty: 1, price: 1000 }], 18, false), { subtotal: 1000, vat: 180, total: 1180 });
 });
