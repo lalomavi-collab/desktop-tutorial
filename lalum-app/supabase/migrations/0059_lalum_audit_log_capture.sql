@@ -2,8 +2,10 @@
 --
 -- Until now the audit log (SEC-16) existed only in the live project: no migration in this repository creates
 -- public.lalum_matter_audit_log, lalum_audit_hash, lalum_append_audit, lalum_verify_audit_chain, lalum_audit_immutable
--- or the trigger lalum_audit_no_update. This file captures them exactly as read from the live project on
--- 2026-10-20 (pg_get_functiondef, pg_constraint, pg_indexes, pg_policies).
+-- or the trigger lalum_audit_no_update. This file captures them as read from the live project on 2026-10-20
+-- (pg_get_functiondef, pg_constraint, pg_indexes, pg_policies), BEFORE 0061 was applied. It is numbered ahead of
+-- 0061 on purpose: on a fresh database 0059 builds that earlier state and 0061 then moves it to today's (the matter
+-- reference becomes RESTRICT, lalum_append_audit refuses personal data in the meta). The live project already runs 0061.
 --
 -- It must not change the live project, so the whole file is one guarded block that does nothing when the table
 -- already exists (the live case), and also does nothing, with a notice, when what the table depends on is absent.
