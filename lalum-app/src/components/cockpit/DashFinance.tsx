@@ -1,12 +1,12 @@
 // Bookkeeping section of the dashboard. Shown only to members with finance level 1 or more (the loader returns null otherwise).
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarsH, Donut, PillBars } from "./CockpitCharts";
+import { BarsH, Donut, GroupedBars } from "./CockpitCharts";
 import { money } from "../../lib/cockpit/shared";
 import { loadFinanceDash } from "../../lib/cockpit/dashboardFinance";
 import type { FinanceDash } from "../../lib/cockpit/dashboardFinance";
 
-const MIX_COLORS = ["#537056", "#9bbb9f", "#b3402f"];
+const MIX_COLORS = ["var(--chart-ok, #216f33)", "var(--chart-ok-l, #5a9c62)", "var(--chart-bad, #b3402f)"];
 
 export function DashFinance({ firmId, preload }: { firmId: string; preload?: FinanceDash }) {
   const [f, setF] = useState<FinanceDash | null | undefined>(preload);
@@ -17,7 +17,7 @@ export function DashFinance({ firmId, preload }: { firmId: string; preload?: Fin
       <div className="db-grid">
         <div className="ck-card db-card">
           <div className="db-head"><h3>הכנסות והוצאות, 6 חודשים</h3><Link className="ck-link" to="/settings/billing">להנהלת חשבונות</Link></div>
-          <PillBars items={f.months.flatMap((m, i) => [{ label: `${m} הכנסות`, value: f.revenue[i], color: "#537056" }, { label: `${m} הוצאות`, value: f.expenses[i], color: "#b3402f" }])} />
+          <GroupedBars buckets={f.months} series={[{ label: "הכנסות", color: "var(--chart-ok, #216f33)", values: f.revenue }, { label: "הוצאות", color: "var(--chart-bad, #b3402f)", values: f.expenses }]} />
           <div className="db-note">לפני מע"מ, לפי תאריך המסמך. הכנסות בירוק, הוצאות באדום.</div>
         </div>
         <div className="ck-card db-card db-center">
@@ -28,7 +28,7 @@ export function DashFinance({ firmId, preload }: { firmId: string; preload?: Fin
       <div className="db-grid b">
         <div className="ck-card db-card">
           <div className="db-head"><h3>חובות פתוחים לפי גיל</h3><span className="ck-badge green">{money(f.receivable)}</span></div>
-          <BarsH items={f.aging.map((a) => ({ label: a.label, value: a.value, color: a.label === "טרם הגיע המועד" ? undefined : "#b3402f" }))} />
+          <BarsH items={f.aging.map((a) => ({ label: a.label, value: a.value, color: a.label === "טרם הגיע המועד" ? undefined : "var(--chart-bad, #b3402f)" }))} />
         </div>
         <div className="ck-card db-card">
           <div className="db-head"><h3>חשבונות עסקה פתוחים</h3></div>

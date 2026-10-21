@@ -7,6 +7,7 @@
   --ivory: #f5f1e8;
   --paper: #fbf9f3;
   --card: rgba(255, 255, 255, .8);
+  --card-solid: #ffffff;
   --ink: #1a1815;
   --slate: #55514a;
   --line: #e3dccd;
@@ -24,6 +25,21 @@
   --sun: #f5c431;
   --sun-soft: #ffe58a;
   --glass-shadow: 0 10px 28px rgba(70, 95, 73, .12), inset 0 1px 0 rgba(255, 255, 255, .95);
+  /* Chart palette, run through the data-viz colour checks (OKLCH lightness band, chroma
+     floor, CVD delta-E, contrast) against this surface: scripts/validate_palette.js
+     (dataviz skill). Status (good/warn/bad) is a fixed, reserved scale; --chart-cat-2/3
+     extend it for the one true multi-identity chart (practice-area mix), ordered so
+     every adjacent pair clears the checks. --chart-ok-l is a lighter step of the same
+     green hue, for a three-step ordinal read (e.g. new -> seen -> handled). */
+  --chart-track: rgba(83, 112, 86, .12);
+  --chart-grid: rgba(83, 112, 86, .14);
+  --chart-ok: #216f33;
+  --chart-ok-l: #5a9c62;
+  --chart-warn: #d0901e;
+  --chart-bad: #b3402f;
+  --chart-cat-2: #2a75ba;
+  --chart-cat-3: #984588;
+  --chart-neutral: #9a968c;
   font-family: "Heebo", "Assistant", var(--sans);
   background:
     radial-gradient(900px 520px at 85% -5%, rgba(255, 255, 255, .85) 0%, transparent 60%),
@@ -217,15 +233,22 @@
   --ivory: #08090d;       /* canvas */
   --paper: #0e1117;       /* panel */
   --card: #0e1117;        /* cards, tables, inputs */
+  --card-solid: #151922;
   --clay-tint: #151922;   /* surface: hover rows, table headers, active tiles */
   --line: rgba(255, 255, 255, .07);
   --line-strong: rgba(255, 255, 255, .14);
   --chart-track: rgba(255, 255, 255, .16);
   --chart-grid: rgba(255, 255, 255, .14);
-  --chart-ok: #8fd19b;
-  --chart-ok-l: #5f9d6d;
-  --chart-warn: #f2b84a;
-  --chart-bad: #ff8a78;
+  /* Same validation as the mint block above, re-stepped for this dark surface (checked
+     separately: the band, the chroma floor and especially the CVD delta-E all shift
+     against a dark surface, so the light steps are never reused as-is). */
+  --chart-ok: #00792f;
+  --chart-ok-l: #4fa866;
+  --chart-warn: #ca8100;
+  --chart-bad: #c33d53;
+  --chart-cat-2: #3690e3;
+  --chart-cat-3: #9e59b3;
+  --chart-neutral: #6b6f78;
   --ck-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 .ck-root[data-ck-theme="dark"] .ck-card,

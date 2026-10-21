@@ -22,7 +22,7 @@ export function OpenProformasTab({ customers, docs, archive, onOpenDocuments, on
   const overdue = rows.filter((r) => r.overdue);
   const overdueTotal = overdue.reduce((t, r) => t + r.d.total, 0);
   const oldest = rows.length ? Math.max(...rows.map((r) => daysBetween(r.d.issue_date, today))) : 0;
-  const perBucket = BUCKETS.map((b) => ({ label: BUCKET_LABEL[b], value: rows.filter((r) => r.bucket === b).length, color: b === "CURRENT" ? undefined : "var(--ck-warn, #b45309)" }));
+  const perBucket = BUCKETS.map((b) => ({ label: BUCKET_LABEL[b], value: rows.filter((r) => r.bucket === b).length, color: b === "CURRENT" ? undefined : "var(--chart-warn, #d0901e)" }));
   const hist = useMemo(() => archive.filter((a) => a.i4u_doc_type === 5).sort((a, b) => (a.issue_date < b.issue_date ? 1 : -1)), [archive]);
 
   return (
