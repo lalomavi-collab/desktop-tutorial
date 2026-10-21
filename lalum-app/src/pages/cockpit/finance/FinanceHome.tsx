@@ -25,7 +25,7 @@ import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATI
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 
 type Tab = "overview" | "documents" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון Invoice4U"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
 const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
@@ -85,7 +85,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
     }
     setArchive(arch);
     const err = c.error ?? d.error ?? p.error ?? e.error ?? (archErr ? { message: "archive" } : null);
-    setError(err ? "הנתונים לא נטענו. ודאו שהתחברתם עם אימות דו שלבי כשותף במשרד." : "");
+    setError(err ? "הנתונים לא נטענו. ודאו שהתחברתם עם אימות דו שלבי כשותף בפירמה." : "");
     setCustomers((c.data as FinCustomer[] | null) ?? []);
     setDocs((d.data as FinDocument[] | null) ?? []);
     setPayments((p.data as FinPayment[] | null) ?? []);
@@ -118,7 +118,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
         ))}
       </div>
       {error && <div className="ck-err" aria-live="polite">{error}</div>}
-      {hasTest && <div className="ck-warn">במערכת יש מסמכי בדיקה מסביבת הניסוי של Invoice4U. הם מסומנים ואינם נספרים בדוחות.</div>}
+      {hasTest && <div className="ck-warn">במערכת יש מסמכי בדיקה מסביבת הניסוי של מערכת ההנפקה. הם מסומנים ואינם נספרים בדוחות.</div>}
       {!loaded && !error && <div className="ck-meta">טוען...</div>}
 
       {tab === "overview" && loaded && (
@@ -132,26 +132,26 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
             </div>
           </div>
           <div className="fin-grid3">
-            <div className="ck-card fin-stat fin-inflow"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מהארכיון של Invoice4U: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
+            <div className="ck-card fin-stat fin-inflow"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-figure">{money(s.revenueNet)}</div><div className="fin-note">חשבוניות מס וחשבוניות מס קבלה, בניכוי זיכויים, לפי תאריך המסמך.{s.archiveNet !== 0 && <> מתוכם מארכיון ההיסטוריה: <bdi>{money(s.archiveNet)}</bdi>.</>}</div></div>
             <div className="ck-card fin-stat fin-outflow"><div className="ck-meta">הוצאות לפני מע"מ</div><div className="fin-figure">{money(s.expenses)}</div>{s.expenses === 0 && <div className="fin-note">לא הוזנו הוצאות בתקופה הזאת.</div>}</div>
             <div className="ck-card fin-stat"><div className="ck-meta">הכנסות פחות הוצאות</div><div className="fin-figure">{money(s.profit)}</div><div className="fin-note">{s.expenses === 0 ? "כל עוד לא הוזנו הוצאות, הסכום הזה שווה להכנסות." : "לפני מס הכנסה ולפני הוצאות שלא הוזנו."}</div></div>
           </div>
           <div className="ck-grid2">
-            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.{s.archiveVat !== 0 && <> מתוך העסקאות, מהארכיון של Invoice4U: <bdi>{money(s.archiveVat)}</bdi>.</>}</div></div>
-            <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מהארכיון של Invoice4U אינם נכללים.</div>
+            <div className="ck-card fin-stat"><div className="ck-meta">מע"מ לתשלום (עסקאות פחות תשומות)</div><div className="fin-figure">{money(s.vatPayable)}</div><div className="fin-note">עסקאות <bdi>{money(s.vatOut)}</bdi>, תשומות לניכוי <bdi>{money(s.vatIn)}</bdi>.{s.archiveVat !== 0 && <> מתוך העסקאות, מארכיון ההיסטוריה: <bdi>{money(s.archiveVat)}</bdi>.</>}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">חובות פתוחים של לקוחות</div><div className="fin-figure">{money(s.outstanding)}</div><div className="fin-note">חשבונות עסקה שהופקו במערכת הזאת ועוד לא שולמו. חשבונית מס וחשבונית מס קבלה מעידות על קבלת הכסף ולכן אינן חוב. חשבונות עסקה מארכיון ההיסטוריה אינם נכללים.</div>
               {overdue.length > 0 && <div className="ck-warn">{overdue.length} חשבונות עסקה עברו את מועד התשלום. ראו בלשונית "מסמכים".</div>}</div>
           </div>
           {allocAuth.warn && (
             <div className="ck-warn" role="alert">
               {allocAuth.daysLeft >= 0
-                ? <><b>ההרשאה למספרי הקצאה ב-Invoice4U פוקעת בעוד {allocAuth.daysLeft} ימים ({ALLOCATION_AUTH_EXPIRES}).</b> חדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>
-                : <><b>ההרשאה למספרי הקצאה ב-Invoice4U פגה ({ALLOCATION_AUTH_EXPIRES}).</b> חשבוניות מעל הסף יוצאות בלי מספר עד שתחדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>}
+                ? <><b>ההרשאה למספרי הקצאה במערכת ההנפקה פוקעת בעוד {allocAuth.daysLeft} ימים ({ALLOCATION_AUTH_EXPIRES}).</b> חדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>
+                : <><b>ההרשאה למספרי הקצאה במערכת ההנפקה פגה ({ALLOCATION_AUTH_EXPIRES}).</b> חשבוניות מעל הסף יוצאות בלי מספר עד שתחדשו אותה בהגדרות החשבון, חשבוניות ישראל.</>}
               <div className="fin-note">אחרי החידוש עדכנו את ALLOCATION_AUTH_EXPIRES ב-financeAllocation.ts.</div>
             </div>
           )}
           {allocGaps.length > 0 && (
             <div className="ck-warn" role="alert">
-              <b>{allocGaps.length} חשבוניות מעל הסף ללא מספר הקצאה.</b> בדוק אם החיבור של Invoice4U לרשות המסים פעיל (נדרש חידוש בערך אחת לרבעון).
+              <b>{allocGaps.length} חשבוניות מעל הסף ללא מספר הקצאה.</b> בדוק אם החיבור של מערכת ההנפקה לרשות המסים פעיל (נדרש חידוש בערך אחת לרבעון).
               <ul style={{ margin: "6px 0 0", paddingInlineStart: 18 }}>
                 {allocGaps.slice(0, 5).map((g) => <li key={g.doc.id}>{DOC_TYPE[g.doc.doc_type]} {g.doc.doc_number ?? ""}, {g.doc.issue_date}, <bdi>{money(g.doc.subtotal)}</bdi> לפני מע"מ{g.customerHasTaxId ? "" : " (ללקוח אין ת.ז. או ח.פ. בכרטיס)"}</li>)}
               </ul>

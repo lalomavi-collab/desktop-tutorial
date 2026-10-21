@@ -31,7 +31,7 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/workspace/client-docs", "מסמכי לקוחות", false, "file"],
     ["/workspace/kyc", "הכר את הלקוח", false, "search"],
   ] },
-  { heading: "עבודת המשרד", items: [
+  { heading: "עבודת הפירמה", items: [
     ["/workspace/tasks", "משימות", false, "check"],
     ["/workspace/scheduling", "יומן ופגישות", false, "calendar"],
     ["/workspace/hours", "שעות עבודה", false, "calendar"],
@@ -48,10 +48,10 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/workspace/portal-preview", "תצוגת פורטל", false, "user"],
   ] },
   { heading: "הגדרות", items: [
-    ["/settings/members", "חברי המשרד", false, "user"],
+    ["/settings/members", "חברי הפירמה", false, "user"],
     ["/settings/billing", "חיוב והגדרות", false, "card"],
     ["/settings/security", "אבטחה", false, "shield"],
-    ["/workspace/export", "ייצוא נתוני המשרד", false, "file"],
+    ["/workspace/export", "ייצוא נתוני הפירמה", false, "file"],
   ] },
   { heading: "כללי", items: [
     ["/workspace/bin", "סל מיחזור", true, "trash"],
@@ -114,8 +114,8 @@ export function CockpitFrame({
   let body: ReactNode;
   if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
   else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
-  else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">החשבון אינו משויך למשרד</div><div className="ck-meta">כדי להשתמש בקוקפיט יש לצרף את החשבון למשרד. פנו למנהל המערכת של LALUM.</div></div>;
-  else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">אין משרד משויך לחשבון זה</div><div className="ck-meta">מסך זה פועל בתוך משרד. מסך הניהול זמין למנהל הפלטפורמה.</div></div>;
+  else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">החשבון אינו משויך לפירמה</div><div className="ck-meta">כדי להשתמש בקוקפיט יש לצרף את החשבון לפירמה. פנו למנהל המערכת של LALUM.</div></div>;
+  else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">אין פירמה משויכת לחשבון זה</div><div className="ck-meta">מסך זה פועל בתוך פירמה. מסך הניהול זמין למנהל הפלטפורמה.</div></div>;
   else {
     const inner = children({ member: access.member, platformAdmin: access.platformAdmin });
     const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");

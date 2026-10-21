@@ -127,7 +127,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     setBusy(null); onChange();
     if (r.ok) {
       setEd(null);
-      setNote({ ok: true, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${allocationShort(r.allocation_number)}` : ""}.${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות." : ""}${r.total_mismatch ? " שימו לב: הסכום ב-Invoice4U שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
+      setNote({ ok: true, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${allocationShort(r.allocation_number)}` : ""}.${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות." : ""}${r.total_mismatch ? " שימו לב: הסכום במערכת ההנפקה שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
     } else {
       setEd(null);
       setNote({ ok: false, text: r.code === "invoice4u_rejected" ? `${issueError(r)} ${(r.errors ?? []).map((x) => x.error).filter(Boolean).join(", ")}` : issueError(r) });
@@ -137,7 +137,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
     setBusy(d.id);
     const r = await issueDocument(d.id, "reconcile");
     setBusy(null); onChange();
-    setNote(r.ok ? { ok: true, text: `נמצא ב-Invoice4U: מסמך מספר ${r.doc_number}. הסטטוס עודכן.` } : { ok: false, text: issueError(r) });
+    setNote(r.ok ? { ok: true, text: `נמצא במערכת ההנפקה: מסמך מספר ${r.doc_number}. הסטטוס עודכן.` } : { ok: false, text: issueError(r) });
   }
   async function retainerDrafts() {
     if (!supabase) return;
@@ -182,7 +182,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
       {archiveCount > 0 && (
-        <div className="ck-meta">מסמכים שהופקו ב-Invoice4U (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון Invoice4U" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
+        <div className="ck-meta">מסמכים שהופקו במערכת ההיסטוריה (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון היסטוריה" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
       )}
 
       {ed && totals && (
@@ -272,7 +272,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, archive
               </td>
               <td className="fin-actions-cell"><div className="fin-actions" style={{ flexWrap: "wrap" }}>
                 {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
-                {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול Invoice4U</button>}
+                {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול מערכת ההנפקה</button>}
                 {d.status === "ISSUED" && d.pdf_url && <a className="ck-btn sm" href={d.pdf_url} target="_blank" rel="noopener noreferrer">PDF</a>}
                 {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
                 {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>

@@ -14,11 +14,11 @@ const ROLE_ORDER = ["ADMIN", "FIRM_PARTNER", "ATTORNEY", "COMPLIANCE_OFFICER"] a
 
 // Turn an RPC error into Hebrew the firm can act on.
 function errText(message: string): string {
-  if (message.includes("last administrator")) return "לא ניתן להסיר את המנהל האחרון של המשרד.";
+  if (message.includes("last administrator")) return "לא ניתן להסיר את המנהל האחרון של הפירמה.";
   if (message.includes("not allowed")) return "אין לך הרשאה לפעולה זו.";
   if (message.includes("invalid role")) return "תפקיד לא חוקי.";
   if (message.includes("no e-mail")) return "לחשבון הזה אין כתובת דוא\"ל.";
-  if (message.includes("not a firm member")) return "המשתמש אינו חבר במשרד.";
+  if (message.includes("not a firm member")) return "המשתמש אינו חבר בפירמה.";
   return "הפעולה נכשלה. נסו שוב.";
 }
 
@@ -72,10 +72,10 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
     <div className="ck-stack" style={{ gap: 14 }}>
       <div className="ck-meta">
         מי רואה מה: אדמין רואה את כל התיקים וכל ההרשאות (כולל מחיקה), שותף רואה את תיקי המחלקה שלו, ועורך דין רואה רק תיקים שהוא משויך אליהם.
-        {canAdmin ? " כאן נקבעים תפקיד ומחלקה לכל חבר משרד, וכל שינוי נרשם ביומן עם זמנו המדויק." : " תפקידים נקבעים על ידי מנהל המשרד; כאן ניתן לעדכן מחלקות."}
+        {canAdmin ? " כאן נקבעים תפקיד ומחלקה לכל חבר פירמה, וכל שינוי נרשם ביומן עם זמנו המדויק." : " תפקידים נקבעים על ידי מנהל הפירמה; כאן ניתן לעדכן מחלקות."}
       </div>
 
-      {people.length === 0 ? <div className="ck-card"><div className="ck-meta">אין חברי משרד להצגה.</div></div> : people.map((p) => (
+      {people.length === 0 ? <div className="ck-card"><div className="ck-meta">אין חברי פירמה להצגה.</div></div> : people.map((p) => (
         <div key={p.user_id} className="ck-card ck-stack" style={{ gap: 10 }}>
           <div className="ck-row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <span className="ck-title" style={{ fontSize: 16 }}>{p.name}</span>
@@ -107,7 +107,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
       ))}
 
       {msg && <span className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite" style={{ padding: "6px 12px" }}>{msg.text}</span>}
-      <div className="ck-meta">הוספת אדם חדש למשרד נעשית על ידי LALUM. לאחר שהחשבון נוצר ושויך למשרד, הוא יופיע כאן לקביעת תפקיד ומחלקה.</div>
+      <div className="ck-meta">הוספת אדם חדש לפירמה נעשית על ידי LALUM. לאחר שהחשבון נוצר ושויך לפירמה, הוא יופיע כאן לקביעת תפקיד ומחלקה.</div>
     </div>
   );
 }
@@ -115,7 +115,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
 /** Firm roster screen: view members, set roles (admin) and departments (admin or partner). */
 export function Members() {
   return (
-    <CockpitFrame title="חברי המשרד" description="צוות המשרד, התפקידים וההרשאות: מי רואה אילו תיקים, לפי שיוך ומחלקה." path="/settings/members">
+    <CockpitFrame title="חברי הפירמה" description="צוות הפירמה, התפקידים וההרשאות: מי רואה אילו תיקים, לפי שיוך ומחלקה." path="/settings/members">
       {({ member, platformAdmin }) => {
         const role = member?.role ?? "";
         const canAdmin = platformAdmin || role === "ADMIN";

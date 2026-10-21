@@ -173,7 +173,7 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
 
 export function DashboardPage() {
   return (
-    <CockpitFrame title="לוח בקרה" description="תמונת מצב של התיקים, הפניות והמשימות במשרד." path="/workspace/dashboard">
+    <CockpitFrame title="לוח בקרה" description="תמונת מצב של התיקים, הפניות והמשימות בפירמה." path="/workspace/dashboard">
       {({ member }) => member && <DashView name={member.name} firmName={member.lalum_firms.firm_name} role={({ FIRM_PARTNER: "שותף", ATTORNEY: "עורך דין", ADMIN: "מנהל" } as Record<string, string>)[member.role] ?? member.role} />}
     </CockpitFrame>
   );

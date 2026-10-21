@@ -42,7 +42,7 @@ function InquiriesView() {
   return (
     <div className="ck-stack">
       <div className="ck-warn">כאן נרשם שהלקוח קיבל מענה ומתי. תוכן המענה אינו נשמר במערכת. זמן המענה הראשון נמדד משעת קבלת הפנייה עד לרישום הראשון, והוא מזין את מדד התגובה. הפתיחה של הטקסט המקורי נרשמת ביומן הביקורת.</div>
-      {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של המשרד</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <bdi dir="ltr" className="ck-addr">{addr}</bdi>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
+      {addr && <div className="ck-card ck-stack"><div className="ck-title">כתובת הקליטה של הפירמה</div><div className="ck-meta">מייל שנשלח לכתובת הזו (או שהלקוח מעביר אליה) נקלט כפנייה: <bdi dir="ltr" className="ck-addr">{addr}</bdi>. קבצים מצורפים אינם נשמרים עד שתופעל סריקת וירוסים. אל תפרסמו את הכתובת ברבים.</div></div>}
       <InquiryInsights inquiries={data.inquiries} replies={data.replies} targetMinutes={target} />
       <div className="ck-row">
         <select className="ck-select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value as "open" | "all")}><option value="open">פניות פתוחות</option><option value="all">כל הפניות</option></select>
@@ -145,7 +145,7 @@ function ScoreView() {
       <div className="ck-grid2">
         <div className="ck-card"><div className="ck-title">{sc.firm.inquiries}</div><div className="ck-meta">פניות בתקופה</div></div>
         <div className="ck-card"><div className="ck-title">{sc.firm.unanswered}</div><div className="ck-meta">פניות ללא מענה{sc.firm.unanswered_over_target ? `, מתוכן ${sc.firm.unanswered_over_target} מעבר ליעד` : ""}</div></div>
-        <div className="ck-card"><div className="ck-title">{sc.firm.tasks_open}</div><div className="ck-meta">משימות פתוחות במשרד</div></div>
+        <div className="ck-card"><div className="ck-title">{sc.firm.tasks_open}</div><div className="ck-meta">משימות פתוחות בפירמה</div></div>
         <div className="ck-card"><div className="ck-title">{sc.firm.tasks_overdue}</div><div className="ck-meta">משימות באיחור</div></div>
       </div>
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>מענים שנרשמו</th><th>בתוך היעד</th><th>זמן מענה חציוני</th><th>משימות פתוחות</th><th>באיחור</th><th>הושלמו בזמן</th><th>ציון</th></tr></thead><tbody>
@@ -160,7 +160,7 @@ function ScoreView() {
         <div className="ck-title">איך הציון מחושב</div>
         <div className="ck-meta">מענה בתוך היעד: מענה ראשון שנרשם תוך {dur(sc.target_minutes)} משעת קבלת הפנייה (זמן קלנדרי, כולל לילות וסופי שבוע). נקודות מענה = אחוז הפניות שנענו בתוך היעד, מבין הפניות שהאדם ענה להן ראשון.</div>
         <div className="ck-meta">נקודות משימות = אחוז המשימות עם מועד יעד שהושלמו עד המועד, מבין משימות שהושלמו או שפתוחות ועבר מועדן.</div>
-        <div className="ck-meta">ציון = 60% נקודות מענה + 40% נקודות משימות. רכיב ללא נתונים מושמט והשאר מקבל משקל מלא. פנייה שלא נענתה כלל אינה נזקפת לאדם מסוים אלא מוצגת במשרד כולו.</div>
+        <div className="ck-meta">ציון = 60% נקודות מענה + 40% נקודות משימות. רכיב ללא נתונים מושמט והשאר מקבל משקל מלא. פנייה שלא נענתה כלל אינה נזקפת לאדם מסוים אלא מוצגת בפירמה כולה.</div>
       </div>
     </div>
   );

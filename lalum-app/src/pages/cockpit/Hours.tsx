@@ -109,7 +109,7 @@ function MyWork({ firmId, userId }: { firmId: string; userId: string }) {
             <button className="ck-btn primary" disabled={!matter} onClick={() => void api.timerStart(matter, text).then((e) => { setText(""); done(e, "הטיימר התחיל."); })}>התחלת טיימר</button>
           </div>
         )}
-        <div className="ck-meta">השעון מודד נוכחות במשרד. הזמן שמחויב נמדד כאן, לפי תיק. שעה בלי תיק נשארת פער ולא נזקפת לאף לקוח.</div>
+        <div className="ck-meta">השעון מודד נוכחות בפירמה. הזמן שמחויב נמדד כאן, לפי תיק. שעה בלי תיק נשארת פער ולא נזקפת לאף לקוח.</div>
       </div>
       <div className="ck-card">
         <div className="ck-title">רישום ידני</div>

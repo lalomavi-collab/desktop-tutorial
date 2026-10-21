@@ -132,7 +132,7 @@ function MessageInboxInner({ canView }: { canView: boolean }) {
     );
   }
 
-  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">תיבת הודעות הלקוחות פתוחה למנהל המשרד.</div></div>;
+  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">תיבת הודעות הלקוחות פתוחה למנהל הפירמה.</div></div>;
   if (inbox === null) return <div className="ck-meta">טוען...</div>;
 
   return (

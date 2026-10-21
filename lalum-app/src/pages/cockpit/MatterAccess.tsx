@@ -69,7 +69,7 @@ export function MatterAccess({ matterId, department, canManage, onChange }: {
         </div>
 
         <div className="ck-label">צוות הטיפול בתיק</div>
-        {people.length === 0 ? <div className="ck-meta">אין חברי משרד להצגה.</div> : people.map((p) => (
+        {people.length === 0 ? <div className="ck-meta">אין חברי פירמה להצגה.</div> : people.map((p) => (
           <div key={p.user_id} className="ck-card ck-stack" style={{ gap: 6 }}>
             <label className="ck-row" style={{ gap: 8, alignItems: "center" }}>
               <input type="checkbox" checked={assigned.has(p.user_id)} onChange={(e) => void toggle(p.user_id, e.target.checked)} />

@@ -41,7 +41,7 @@ export const es: Dict = {
       secondaryCta: "Realizar el diagnóstico de riesgo gratuito",
     },
     botCall: { aria: "Llamar al asistente de IA" },
-    accounting: { aria: "Contabilidad (Invoice4U)" },
+    accounting: { aria: "Contabilidad" },
     consent: {
       pre: "Acepto recibir material de marketing y novedades de LALUM por WhatsApp, correo electrónico, SMS, teléfono y medios similares, y acepto los ",
       terms: "Términos",
@@ -365,7 +365,7 @@ export const es: Dict = {
         allTitle: "Todos los hitos",
         copyLink: "Copiar enlace de pago",
         copied: "Copiado",
-        dashboard: "Contabilidad e informes (Invoice4U)",
+        dashboard: "Contabilidad e informes",
       },
       transfer: {
         title: "Transferencia bancaria (preferida)",

@@ -13,7 +13,7 @@ function Body({ member }: { member: Membership }) {
   const [res, setRes] = useState<Result | null>(null);
 
   async function run() {
-    if (!window.confirm("לייצא את כל נתוני המשרד? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
+    if (!window.confirm("לייצא את כל נתוני הפירמה? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
     setBusy(true); setRes(null); setProgress("מכין...");
     try {
       const built = await exportFirmPackage(
@@ -35,20 +35,20 @@ function Body({ member }: { member: Membership }) {
       setRes({ ok: true, text: built.handoverComplete ? `${what}. כל קובץ בתוכם אומת מול החתימה שנרשמה במסד הנתונים.` : `${what}. קבצי הטבלאות אומתו מול החתימה שנרשמה במסד הנתונים. ראו את ההערה שלמטה.`, warn });
     } catch (e) {
       const denied = /FORBIDDEN|MANIFEST/.test(String((e as Error)?.message ?? ""));
-      setRes({ ok: false, text: denied ? "אין הרשאה לייצוא. נדרשים שותף או מנהל המשרד, אימות דו שלבי והרשאה פיננסית." : exportErrorText(e) });
+      setRes({ ok: false, text: denied ? "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה, אימות דו שלבי והרשאה פיננסית." : exportErrorText(e) });
     } finally { setBusy(false); setProgress(null); }
   }
 
-  if (!partner) return <div className="ck-card"><div className="ck-meta">הייצוא זמין לשותפים ולמנהלי המשרד בלבד.</div></div>;
+  if (!partner) return <div className="ck-card"><div className="ck-meta">הייצוא זמין לשותפים ולמנהלי הפירמה בלבד.</div></div>;
   return (
     <div className="ck-stack">
       <div className="ck-card">
-        <div className="ck-meta">חבילה אחת עם כל נתוני המשרד, לקראת מסירה בסגירת משרד או לגיבוי: תיקים, מסמכים, כספים, נאמנות, זמן, חתימות ויומן הביקורת. כל קובץ בחבילה מגיע עם חתימת SHA-256 שאפשר לאמת בלי לסמוך על הפלטפורמה.</div>
+        <div className="ck-meta">חבילה אחת עם כל נתוני הפירמה, לקראת מסירה בסגירת פירמה או לגיבוי: תיקים, מסמכים, כספים, נאמנות, זמן, חתימות ויומן הביקורת. כל קובץ בחבילה מגיע עם חתימת SHA-256 שאפשר לאמת בלי לסמוך על הפלטפורמה.</div>
         <div className="ck-meta">לא כלולים: אישורי גישה, חיבורי מס, תורי משלוח ורישומים פנימיים של הפלטפורמה. הרשימה המלאה, עם הסיבה, בקובץ README שבחבילה.</div>
         <div className="ck-meta">{exportOriginalsEnabled()
           ? "המסמכים המקוריים נכללים בקובץ, כל אחד מאומת מול החתימה והגודל שנרשמו. הייצוא עשוי לקחת כמה דקות. חבילה גדולה מ-256 MB מתחלקת למספר קבצי ZIP, כדי שהדפדפן לא יחזיק הכול בזיכרון."
           : "המסמכים המקוריים אינם כלולים עדיין. הקובץ יציין זאת במפורש."}</div>
-        <button className="ck-btn primary" disabled={busy} onClick={() => void run()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני המשרד (ZIP)"}</button>
+        <button className="ck-btn primary" disabled={busy} onClick={() => void run()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני הפירמה (ZIP)"}</button>
       </div>
       {res && (
         <div className="ck-card" aria-live="polite">
@@ -62,7 +62,7 @@ function Body({ member }: { member: Membership }) {
 
 export function FirmExport() {
   return (
-    <CockpitFrame title="ייצוא נתוני המשרד" description="חבילת מסירה מאומתת של כל נתוני המשרד." path="/workspace/export">
+    <CockpitFrame title="ייצוא נתוני הפירמה" description="חבילת מסירה מאומתת של כל נתוני הפירמה." path="/workspace/export">
       {({ member }) => (member ? <Body member={member} /> : null)}
     </CockpitFrame>
   );

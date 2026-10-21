@@ -331,7 +331,7 @@ function Importer({ firmId }: { firmId: string }) {
               <select className="ck-select" value={docOrigin} onChange={(e) => setDocOrigin(e.target.value)}><option value="">בחרו מקור</option>{Object.entries(DOC_ORIGIN).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
           </div>
           <label className="ck-row ck-meta"><input type="checkbox" checked={autoType} onChange={(e) => setAutoType(e.target.checked)} /> סיווג אוטומטי לפי שם הקובץ ותתי התיקיות (חוזה, התכתבות, כתב בית דין, חוות דעת וכדומה). קובץ בלי מילת מפתח מסווג לפי הבחירה למעלה. הסיווג המוצע מוצג בטבלה לפני הייבוא.</label>
-          <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד במשרד, וכל קובץ נשמר בתוכו.</div>
+          <div className="ck-meta">הסיווג חל על כל קובץ בייבוא הזה, וניתן לתקן אותו לכל מסמך בנפרד בתוך התיק. כל תיקייה הופכת לתיק אחד בפירמה, וכל קובץ נשמר בתוכו.</div>
           {needAck && (
             <div className="ck-warn" role="alert">
               <b>ייווצרו {newOnes.length} תיקים חדשים:</b> {newOnes.slice(0, 8).map((p) => p.title || p.folder).join(" | ")}{newOnes.length > 8 ? ` ועוד ${newOnes.length - 8}` : ""}.
@@ -370,7 +370,7 @@ function Importer({ firmId }: { firmId: string }) {
 
 export function ImportFolderPage() {
   return (
-    <CockpitFrame title="ייבוא תיקים מתיקייה" description="יצירת תיקים מתיקיית העבודה של המשרד." path="/workspace/import">
+    <CockpitFrame title="ייבוא תיקים מתיקייה" description="יצירת תיקים מתיקיית העבודה של הפירמה." path="/workspace/import">
       {({ member }) => member && <Importer firmId={member.firm_id} />}
     </CockpitFrame>
   );
