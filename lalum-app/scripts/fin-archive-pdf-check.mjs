@@ -45,6 +45,11 @@ for (const bad of ["http://api.invoice4u.co.il/a", "https://evil.example/a", "ht
 { const tried = [{ op: "GetDocument", http: 404, errors: ["a", "b", "c", "d"], filled: false }, { op: "GetDocumentByID", http: null, errors: ["x"], filled: false }];
   const r = await handle(req(), mk({ fetched: { original: null, certified: null, tried } }).ports);
   assert.equal(r.status, 200); assert.equal(r.body.ok, false); assert.equal(r.body.tried.length, 2); assert.equal(r.body.tried[0].errors.length, 3); }
+// the diagnostics carry names, lengths and hosts of link like fields, trimmed, and never a value
+{ const tried = [{ op: "GetDocument", http: 200, errors: [], filled: false, keys: Array.from({ length: 60 }, (_, i) => "k" + i), linkFields: [{ key: "Doc.PdfLink", length: 120, host: "files.example" }], shape: "object" }];
+  const r = await handle(req(), mk({ fetched: { original: null, certified: null, tried } }).ports);
+  assert.equal(r.body.tried[0].keys.length, 40); assert.deepEqual(r.body.tried[0].linkFields, [{ key: "Doc.PdfLink", length: 120, host: "files.example" }]); assert.equal(r.body.tried[0].shape, "object");
+  assert.ok(!JSON.stringify(r.body).includes("https://")); }
 // provider call throws: 502
 { const r = await handle(req(), mk({ ports: { fetchLinks: async () => { throw new Error("x"); } } }).ports); assert.equal(r.status, 502); }
 // request shape

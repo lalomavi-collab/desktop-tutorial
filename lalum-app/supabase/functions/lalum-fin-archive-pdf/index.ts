@@ -3,11 +3,23 @@
 // project's own SUPABASE_URL and SUPABASE_ANON_KEY. FIN_IMPORT_ENV ("prod" default, or "qa") picks the provider host, as in lalum-fin-import.
 // ALLOWED_ORIGINS (comma separated, optional) lists the origins that may call it from a browser (default: the production site).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { handle, type Allowed, type Attempt, type Fetched, type Ports } from "./handler.ts";
+import { handle, type Allowed, type Attempt, type Fetched, type LinkField, type Ports } from "./handler.ts";
 
 const DEFAULT_ORIGINS = "https://lalumapp.com,https://www.lalumapp.com";
 const env = (k: string) => { const v = Deno.env.get(k); if (!v) throw new Error(`missing secret ${k}`); return v; };
 type Obj = Record<string, unknown>;
+const LINKISH = /pdf|link|url|print|file|download|doc/i;
+const hostOf = (v: string): string | null => { try { return new URL(v).hostname; } catch { return null; } };
+/** Names of string fields that look like a link, up to two levels down, with length and host. Values are never kept. */
+function linkFields(o: unknown, prefix = "", depth = 0): LinkField[] {
+  if (!o || typeof o !== "object" || depth > 2) return [];
+  const out: LinkField[] = [];
+  for (const [k, v] of Object.entries(o as Obj)) {
+    if (typeof v === "string" && v && LINKISH.test(k)) out.push({ key: prefix + k, length: v.length, host: hostOf(v) });
+    else if (v && typeof v === "object") out.push(...linkFields(Array.isArray(v) ? v[0] : v, `${prefix}${k}.`, depth + 1));
+  }
+  return out;
+}
 
 const ports = (): Ports => ({
   allowedOrigins: (Deno.env.get("ALLOWED_ORIGINS") ?? DEFAULT_ORIGINS).split(",").map((s) => s.trim()).filter(Boolean),
@@ -46,7 +58,8 @@ const ports = (): Ports => ({
         const errors = Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [];
         const o = r && typeof r.PrintOriginalPDFLink === "string" && r.PrintOriginalPDFLink ? r.PrintOriginalPDFLink : null;
         const c = r && typeof r.PrintCertifiedCopyPDFLink === "string" && r.PrintCertifiedCopyPDFLink ? r.PrintCertifiedCopyPDFLink : null;
-        tried.push({ op, http: res.status, errors, filled: !!(o || c) });
+        const shape = r === undefined ? (parsed ? "no Response in answer" : "answer is not JSON") : Array.isArray(d.Response) ? "Response is a list" : typeof r;
+        tried.push({ op, http: res.status, errors, filled: !!(o || c), keys: r && typeof r === "object" ? Object.keys(r) : Object.keys(d), linkFields: linkFields(r ?? d), shape });
         if (o || c) { original = o; certified = c; break; }
       } catch (e) { tried.push({ op, http: null, errors: [redact(String(e))], filled: false }); }
     }
