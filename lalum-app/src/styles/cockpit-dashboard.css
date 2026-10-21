@@ -101,34 +101,3 @@
   .db-spark { width: 100%; height: 30px; }
   .db-tbl td, .db-tbl th { white-space: nowrap; }
 }
-
-/* Dashboard type scale. Lalum Serif carries the figures and headings, the body face carries everything else.
-   Nothing on this page is set below 15px; figures and card titles step up so the hierarchy reads at a glance. */
-.db-hello small { font-size: 16px; letter-spacing: .01em; }
-.db-hello strong { font-family: var(--serif); font-size: 38px; line-height: 1.1; font-weight: 500; letter-spacing: -.01em; }
-.db-firm, .db-user small, .db-note, .db-empty, .db-list small, .db-rank small, .db-delta, .db-kval small, .db-count, .db-tbl th, .db-toggle button, .db-bubble b { font-size: 15px; }
-.db-user strong, .db-search input { font-size: 16px; }
-/* The four action buttons keep the proportions they had before the type scale (14.5px title, 12px caption): at 17px and 15px they wrapped to three lines in two columns on a phone. */
-.db-act span { font-size: 14.5px; line-height: 1.25; }
-.db-act small { font-size: 12px; }
-.db-card h3 { font-family: var(--serif); font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -.005em; }
-.db-klabel { font-size: 16px; font-weight: 600; }
-.db-kval b { font-family: var(--serif); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -.02em; }
-.db-kval small { font-size: 16px; }
-.db-delta { font-weight: 700; }
-.db-list em, .db-rank > div, .db-tbl, .db-empty { font-size: 16px; }
-.db-tbl td { padding-block: 11px; }
-.db-card .ck-badge { font-size: 14.5px; }
-/* Chart text: axis and legend labels rise to the same floor, and the big centre figures use the serif. */
-.db svg text { font-size: 14px; }
-.db svg text[font-size="25"] { font-family: var(--serif); font-size: 30px; font-weight: 500; }
-.db svg text[font-size="11.5"] { font-size: 13px; }
-@media (max-width: 560px) {
-  .db-hello strong { font-size: 30px; }
-  .db-kval b { font-size: 40px; }
-  .db-card h3 { font-size: 21px; }
-}
-.db .ck-legend { font-size: 16px; gap: 10px; }
-.db .ck-legend small, .db .ck-pillval, .db .ck-pilllabel { font-size: 15px; }
-.db .ck-legend b { font-size: 17px; }
-.db-card [role="img"] > div { font-size: 15.5px; }
