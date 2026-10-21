@@ -93,7 +93,7 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
               ) : (
                 <line x1={p[0] - 4} x2={p[0] + 4} y1={H - B} y2={H - B} stroke={OK_L} strokeWidth="2" strokeLinecap="round" opacity=".55" />
               )}
-              {i % labelEvery === 0 || isCur ? <text x={p[0]} y={H - 8} textAnchor="middle" fontSize="11.5" fill="var(--slate)" fontWeight={isCur ? 700 : 400}>{labels[i]}</text> : null}
+              {i % labelEvery === 0 || isCur ? <text x={p[0]} y={H - 8} textAnchor="middle" fontSize="12" fill="var(--slate)" fontWeight={isCur ? 700 : 400}>{labels[i]}</text> : null}
             </g>
           );
         })}
