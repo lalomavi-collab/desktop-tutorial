@@ -15,12 +15,35 @@
   padding: 3px 8px;
   white-space: nowrap;
 }
+/* The five group labels used to sit in the bar and repeat what the menu opens with. They stay in the markup, so
+   every page still carries these internal links in its prerendered HTML (the menu panel renders only when open),
+   but they are out of sight: the bar keeps the wordmark, the menu button and the tools. A keyboard user who tabs
+   into the group links gets them back as a strip under the bar. */
 .header-groups {
-  flex: 1;
-  min-width: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
   display: flex;
   justify-content: center;
   gap: 4px;
+}
+.header-groups:focus-within {
+  inset-inline: 0;
+  top: 100%;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 4px 16px;
+  overflow: visible;
+  clip: auto;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line-strong);
+  z-index: 61;
 }
 .hg { position: relative; }
 .hg-label {
