@@ -1,6 +1,6 @@
 # Closing a firm (offboarding a tenant)
 
-Status: the checklist (0062), begin closing / cancel closing (0063), finish closing (0065) and the export package (0066, the ZIP builder and the batch signer for the originals) are built. The signer is **not deployed** until the owner approves, and the originals step stays off until `VITE_EXPORT_ORIGINALS=1`. The other steps below are manual today; what is not built is listed at the end.
+Status: the checklist (0062), begin closing / cancel closing (0063), revoke / restore access (0067), finish closing (0065) and the export package (0066, the ZIP builder and the batch signer for the originals) are built. The signer is **not deployed** until the owner approves, and the originals step stays off until `VITE_EXPORT_ORIGINALS=1`. The other steps below are manual today; what is not built is listed at the end.
 
 ## What it means
 
@@ -20,10 +20,10 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 | Step | What happens | Today |
 |---|---|---|
 | 0. Check | Run `select public.lalum_firm_closure_checklist(:firm)` as a partner of the firm (behind MFA) or as the platform admin (second factor session). It returns counts and amounts only. Blockers: client money held, a legal hold, a pending statutory deadline, a signature in flight, a tax document mid issuance. Do not begin while a blocker is non zero. | Built |
-| 1. Freeze | `lalum_firm_begin_closing` sets the status to `SUSPENDED` and clears the intake token (see below). Revoke the tax connections and their vault secrets by hand. Tell the clients. | Built, tax connections manual |
+| 1. Freeze | `lalum_firm_begin_closing` sets the status to `SUSPENDED` and clears the intake token (see below). Tell the clients. | Built |
 | 2. Hand over | Per matter archive export (the cockpit has one, see the gaps below). Firm wide: `lalum_firm_export_manifest`, `lalum_firm_export_page` and `lalum_firm_export_originals` (0066) give the database half. The ZIP builder is built (screen `/workspace/export`, "ייצוא נתוני המשרד"); the batch signer for the originals is not. | Partly |
 | 3. Retention clock | `lalum_purge_blocker` blocks a purge only when `handling_ended_at` is set. **On the live project it is set on none of the 22 matters, so no retention block works today.** `lalum_firm_begin_closing` sets it to the effective date on every unpurged matter that has none, and stores which ones, so cancelling undoes exactly those. | Built |
-| 4. Revoke access | Ban members' logins in Auth, except one custodian with read access. | Manual |
+| 4. Revoke access | `lalum_firm_revoke_access` bans the logins of every member except one optional custodian and revokes the tax connections (see below). `lalum_firm_restore_access` puts the logins back. | Built |
 | 5. Scrub | After retention, per matter, through the existing flow: bin, request purge (typed confirmation, legal hold and retention checks), remove originals from Storage, finish purge. The matter row stays, blanked, with `MATTER_PURGED` in the chain. | Existing flow |
 | 6. Tombstone | `lalum_firm_finish_closing` sets the status to `CANCELED` once every matter is purged, no tax connection and no intake token is left and the checklist has no blocker. The firm row, the closure record and the audit chain stay (the chain holds ids and counts only since 0061). | Built |
 
@@ -34,11 +34,23 @@ A firm leaves the platform as a sequence: **stop activity, hand over the files, 
 1. **Dry run first (the default).** It changes nothing and returns whether it would proceed, the blockers, how many matters would get a retention clock, how many of those are in the bin, whether the intake token would be cleared, and the manual steps.
 2. **A real run** (`dry_run := false`) needs the firm's exact name typed, a reason of at least 10 characters, an effective date from today to one year ahead (a past date would shorten retention), and zero blockers from the checklist. It then sets the status to `SUSPENDED`, starts the retention clock where there is none (a matter that already has a date keeps it), clears the intake token, writes the closure record (`lalum_firm_closures`, with the reason and the ids it clocked) and `CLOSURE_STARTED` to the audit chain (ids, counts and fixed words only; the reason text is not in the chain).
 3. **Read before a real run.** A matter in the bin also gets a retention clock, so it cannot be purged until the retention period after the effective date ends. The dry run counts them (`bin_matters_not_purgeable_until_retention_ends`).
-4. **Not done by it, listed in the result as manual steps:** the tax connections and their vault secrets, members' logins, the handover export.
+4. **Not done by it, listed in the result as manual steps:** the tax connections and their vault secrets and the members' logins (both are `lalum_firm_revoke_access`, a separate step), the handover export.
 
 `lalum_firm_cancel_closing(firm, reason)` takes it back: the previous status returns, the clocks it set are cleared (only those still equal to the effective date; one changed later is left alone), the closure record is marked cancelled, `CLOSURE_CANCELLED` goes to the chain. It refuses while a purge is in progress. It cannot restore the intake token: issue a new one.
 
 **Do not run a real closing on the live firm.** It is the only tenant and the owner's own: suspending it stops the intake pipeline (HTTP 402), and its 14 bin matters would become unpurgeable for the retention period. A dry run is safe and is the way to look.
+
+## Revoke access and restore access (0067)
+
+`lalum_firm_revoke_access(firm, typed_firm_name, custodian default null, dry_run default true)`. The access half of the closure, run after begin closing: the firm is `SUSPENDED` with an active closure (`NO_ACTIVE_CLOSURE` otherwise). Same gate as 0063 and 0065: only the platform admin in a second factor session, a dry run by default, the firm's exact name typed. One chain row, `ACCESS_REVOKED`, with counts and fixed words only (no user id, no name).
+
+- **Logins.** It bans the Auth login of every member except the custodian (an optional member who keeps read access for the handover) and deletes their sessions. The ban is `now() + 100 years`, never a delete, and the previous `banned_until` of each user is stored on the closure record, so restoring is exact. **It never touches a platform admin**, and never a user who is also a member of another firm that is not `CANCELED`: both are counted in the result (`logins_skipped_platform_admin`, `logins_skipped_other_firm`). Today `lalum_firm_members.user_id` is unique (one firm per login), so the second guard cannot trigger in production; it stays as a defence in case that ever changes. On the live firm the only member is also the platform admin, so even a mistaken real run would ban nobody.
+- **A token already issued works until it expires.** Auth cannot recall a signed JWT. The ban stops the next token and the refresh; the result says `tokens_already_issued_work_until_they_expire`.
+- **Tax connections.** It deletes the vault secrets (client secret and refresh token) of every tax connection of the firm, and the connection rows, so `lalum_firm_finish_closing` sees none left. **This is not reversible**: the firm must reconnect. It does not revoke the authorisation at the tax authority, which only the firm or the authority can do; that stays a listed manual step (`revoke_at_tax_authority`). The dry run says `tax_revocation_is_reversible: false`.
+- **Restore.** `lalum_firm_restore_access(firm, reason)` (reason of at least 10 characters, same gate) puts back each stored `banned_until`, but only for a login that still carries the hundred year ban: one an admin has since changed by hand is left alone. It writes `ACCESS_RESTORED`. It cannot bring the tax connections back (`tax_connections_need_reconnecting` in the result).
+- **Interplay.** `lalum_firm_cancel_closing` is replaced in 0067 and now refuses (`ACCESS_REVOKED`) while the logins are still banned: restore first, then cancel. A second revocation is refused (`ALREADY_REVOKED`) until a restore. The deletes run as dynamic SQL, the same habit as `lalum_finish_purge_matter`.
+- **Do not run a real revocation on the live firm** (it would also end the sessions of anyone who is not the owner and the platform admin, and destroy tax credentials where there are any; there are none today). A dry run is safe and is the way to look.
+- Test: `supabase/tests/firm_revoke_access.sql` (65 assertions), run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062, 0063, 0065 and 0067. It creates stand ins for Auth sessions, `banned_until` and the vault, and drops the unique constraint on `user_id` inside its rolled back transaction to exercise the other firm guard.
 
 ## Finish closing (0065)
 
@@ -86,6 +98,6 @@ No blockers and no warnings. Info: 8 live matters, 14 in the bin, 22 matters wit
 
 Built but waiting for the owner: deploying `lalum-export-originals` and setting `VITE_EXPORT_ORIGINALS=1`.
 
-Not built: blocking logins and revoking tax connections in one call; paging for more than 1000 originals; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
+Not built: paging for more than 1000 originals; a rehearsal of a real closing on a Supabase branch with a fake firm. Build these when a second tenant is close.
 
 Tests: `supabase/tests/firm_closure_checklist.sql` (40 assertions) and `supabase/tests/firm_begin_closing.sql` (58 assertions), run after the stubs, 0018, 0014, 0019, 0059, 0060, 0061, 0062 and 0063. They create stand ins for the tables no repository migration builds, and run in any order.
