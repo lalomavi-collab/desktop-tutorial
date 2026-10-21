@@ -87,6 +87,18 @@ export function Home() {
         </div>
       </section>
 
+      {/* The readiness check (the Decision Room, /risk): eight questions and a score. One band under the hero so a
+          visitor can reach it without opening the menu. */}
+      <div className="wrap" style={{ padding: "0 32px" }}>
+        <div className="home-risk-band">
+          <p>
+            <b>{h.riskBandLead}</b>{" "}
+            {h.riskBandBody}
+          </p>
+          <Link to="/risk" className="btn btn-clay">{h.riskBandCta}</Link>
+        </div>
+      </div>
+
       {/* The page speaks about Legal AI from the hero down to the engine. The
           second area (real estate and urban renewal) and the entry-by-role
           matrix follow lower, after the engine and the academy. */}

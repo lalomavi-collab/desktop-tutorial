@@ -5450,6 +5450,35 @@ html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .hero-ai {
   html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 { font-size: clamp(40px, 15vw, 64px); }
 }
 html:not(:is([lang="he"], [lang="en"])) .hero-home .hero-h1 { max-width: 14ch; }
+
+/* The signature headline on every page (owner request, 21.10.2026): the page title of each route is set
+   like the home headline, in Amatic SC, one ink colour, with a single size scale instead of the per page
+   sizes written inline (hence the !important on the size). Arabic, the home hero (own rule above), the
+   cockpit and the workspace keep what they have. */
+html:not([lang="ar"]) main h1:is(.serif, .h1, .ins-h1):not(.hero-h1, .los-zero-title, .ck-root *) {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7.2vw, 72px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+  max-width: none;
+}
+html:not([lang="ar"]) main h1:is(.serif, .h1, .ins-h1):not(.hero-h1, .los-zero-title, .ck-root *) .italic-clay {
+  color: inherit;
+  font-style: normal;
+  background: none;
+  padding-bottom: 0;
+}
+
+/* The readiness check band under the home hero. */
+.home-risk-band {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.home-risk-band p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--slate); flex: 1 1 320px; }
+.home-risk-band p b { color: var(--ink); }
+
 /* The whole sentence is one colour (the page ink) with no underline: a signature is not highlighted. */
 html:not([lang="ar"]) .hero-home .hero-h1 .italic-clay {
   color: inherit;
