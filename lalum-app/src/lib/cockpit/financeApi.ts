@@ -144,3 +144,53 @@ export async function sendReminder(body: { customer_id: string; tier: 1 | 2 | 3;
     clearTimeout(timer);
   }
 }
+
+export interface ReceiptDraft {
+  spent_on: string | null; supplier: string | null; category: string | null; description: string | null;
+  total: number | null; vat_amount: number | null; supplier_doc_ref: string | null;
+}
+export interface ScanReceiptReply { ok: boolean; draft?: ReceiptDraft; low_confidence_fields?: string[]; code?: string }
+const SCAN_ERRORS: Record<string, string> = {
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. סריקת חשבוניות דורשת שותף בפירמה עם אימות דו שלבי.",
+  bad_media_type: "סוג הקובץ אינו נתמך. אפשר לסרוק תמונה (JPEG, PNG, WEBP).",
+  image_too_small: "הקובץ קטן מדי. בחרו צילום ברור של החשבונית.", image_too_large: "הקובץ גדול מדי.",
+  too_many_requests: "יותר מדי סריקות בשעה האחרונה. נסו שוב מאוחר יותר.",
+  upstream_error: "קריאת החשבונית נכשלה. אפשר לנסות שוב, או למלא ידנית.", fetch_failed: "שגיאת תקשורת. אפשר לנסות שוב, או למלא ידנית.",
+  not_configured: "סריקת חשבוניות לא הוגדרה בשרת.",
+};
+export const scanReceiptError = (r: ScanReceiptReply): string => SCAN_ERRORS[r.code ?? ""] ?? "קריאת החשבונית נכשלה. אפשר למלא ידנית.";
+
+const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const s = String(reader.result ?? "");
+    resolve(s.slice(s.indexOf(",") + 1));
+  };
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(file);
+});
+
+/** Reads a photographed or scanned receipt and returns a draft for the Expenses form to pre-fill. Never writes
+ *  anything: the caller still reviews and saves through the ordinary form, same as a hand-typed entry. */
+export async function scanReceipt(firmId: string, file: File): Promise<ScanReceiptReply> {
+  if (!supabase) return { ok: false, code: "fetch_failed" };
+  let imageBase64: string;
+  try { imageBase64 = await fileToBase64(file); } catch { return { ok: false, code: "fetch_failed" }; }
+  const { data } = await supabase.auth.getSession();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 45000);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-receipt-scan`, {
+      method: "POST", signal: ctl.signal,
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
+      body: JSON.stringify({ firm_id: firmId, image_base64: imageBase64, media_type: file.type }),
+    });
+    const j = await res.json().catch(() => null);
+    if (!res.ok || !j?.draft) return { ok: false, code: j?.code ?? "fetch_failed" };
+    return { ok: true, draft: j.draft as ReceiptDraft, low_confidence_fields: Array.isArray(j.low_confidence_fields) ? j.low_confidence_fields : [] };
+  } catch {
+    return { ok: false, code: "fetch_failed" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
