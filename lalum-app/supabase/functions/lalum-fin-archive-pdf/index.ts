@@ -79,10 +79,11 @@ const ports = (): Ports => ({
         const d = (inner && typeof inner === "object" ? inner as Obj : null) ?? {};
         const r = (Array.isArray(d.Response) ? (d.Response as Obj[])[0] : d.Response) as unknown;
         const rObj = r !== null && typeof r === "object" ? r as Obj : null;
-        const toks = tokenCandidates(d, apiKey);
+        // The first real answer was {"d":"<string>"} with no JSON inside: the string itself is the candidate, so pass what was opened, not the empty object.
+        const toks = tokenCandidates(inner, apiKey);
         for (const x of toks) secrets.push(x);
         tried.push({ op: "VerifyLoginApiKey", http: res.status, errors: Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [], filled: false,
-          keys: rObj ? Object.keys(rObj) : Object.keys(d), shape: `${rObj ? "Response is an object" : typeof r} (${parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d"}); ${toks.length} token candidate(s)` });
+          keys: rObj ? Object.keys(rObj) : Object.keys(d), shape: `${rObj ? "Response is an object" : typeof inner === "string" ? `answer is a string of ${inner.length} characters` : typeof r} (${parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d"}); ${toks.length} token candidate(s)` });
         for (const [i, x] of toks.entries()) {
           const withSession = requestBodies(row, x);
           if (withSession) await run(withSession, ` (session ${i + 1})`);
