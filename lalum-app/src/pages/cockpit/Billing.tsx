@@ -111,7 +111,7 @@ function BillingTabs({ member }: { member: Membership }) {
 export function Billing() {
   return (
     <CockpitFrame title="חיוב והגדרות פירמה" description="ניהול הכספים של הפירמה: מסמכי מס, לקוחות, הוצאות ודוחות. בלשונית השנייה: מנוי הפירמה, מושבי המשתמשים וחיבור הקליטה האוטומטית." path="/settings/billing">
-      {({ member }) => (member ? <BillingTabs member={member} /> : null)}
+      {({ member }) => (member ? <div className="ck-billing"><BillingTabs member={member} /></div> : null)}
     </CockpitFrame>
   );
 }

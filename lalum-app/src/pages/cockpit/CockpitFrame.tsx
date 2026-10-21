@@ -80,6 +80,15 @@ function useCkTheme(): [CkTheme, () => void] {
   return [theme, flip];
 }
 
+// The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
+const PRIMARY = new Set(["/workspace/dashboard", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
+function useRailOpen(): [boolean, () => void] {
+  const [open, setOpen] = useState(false);
+  useEffect(() => { try { if (localStorage.getItem("ck-rail-open") === "1") setOpen(true); } catch { /* storage blocked */ } }, []);
+  const flip = () => setOpen((o) => { try { localStorage.setItem("ck-rail-open", o ? "0" : "1"); } catch { /* storage blocked */ } return !o; });
+  return [open, flip];
+}
+
 // The external bookkeeper sees the bookkeeping system and nothing else; the database refuses the rest (0073), this keeps the interface honest.
 const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"]];
 const BOOKKEEPER_PATHS = ["/settings/billing", "/workspace/guide"];
@@ -105,6 +114,7 @@ export function CockpitFrame({
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   const [theme, flipTheme] = useCkTheme();
+  const [railOpen, flipRail] = useRailOpen();
   const mainRef = useRef<HTMLElement>(null);
   useCardTables(mainRef);
   // Number of unanswered inquiries, shown on the nav item (counts only; the rows themselves load on the inquiries screen).
@@ -132,27 +142,35 @@ export function CockpitFrame({
     body = mfa && partnerLike ? <MfaGate required={access.platformAdmin || access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
   }
 
+  // Collapsed: the primary screens, plus the current screen when it is not one of them so the rail never hides where you are.
+  const allItems = NAV_SECTIONS.flatMap((x) => x.items);
+  const shown = allItems.filter(([to]) => PRIMARY.has(to) || to === path);
+  const moreCount = allItems.length - shown.length;
+  const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? NAV_SECTIONS : [{ heading: null, items: shown }];
   return (
     <ClientNamesProvider>
     <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
         <RailDefs />
-        <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
+        <div className="ck-sidebar-brand">
+          <Wordmark height={26} style={{ color: "var(--ink)" }} />
+          <button type="button" className="ck-theme" onClick={flipTheme} aria-label={theme === "mint" ? "מעבר למצב כהה" : "מעבר למצב בהיר"} title={theme === "mint" ? "מצב כהה" : "מצב בהיר"}><RailIcon id={theme === "mint" ? "moon" : "theme"} size={30} /></button>
+        </div>
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
-          {(bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : NAV_SECTIONS).map((sec) => (
+          {sections.map((sec) => (
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
-              {sec.heading && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
+              {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
               {sec.items.map(([to, label, end]) => (
                 <NavLink key={to} to={to} end={end || to === "/workspace"}>
-                  <RailIcon id={to} size={32} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
+                  <RailIcon id={to} size={38} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
                 </NavLink>
               ))}
             </div>
           ))}
+          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? "פחות" : `עוד ${moreCount}`}</span></button>}
         </nav>
         <div className="ck-sidebar-foot">
-          <button type="button" className="ck-theme" onClick={flipTheme}><RailIcon id="theme" size={26} /><span>{theme === "mint" ? "מצב כהה" : "מצב בהיר"}</span></button>
           <Link to="/portal"><RailIcon id="user" size={26} /><span>אזור אישי</span></Link>
           <Link to="/"><RailIcon id="site" size={26} /><span>לאתר</span></Link>
           {user && (
