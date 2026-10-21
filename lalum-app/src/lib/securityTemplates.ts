@@ -105,11 +105,11 @@ export const SECURITY_TEMPLATES: SecurityTemplate[] = [
     title: `מאגר קבצים פרטי עם מדיניות בעלות`,
     status: "pattern",
     statusLabel: `תבנית לביצוע`,
-    intro: `תבנית למאגר שבו כל משתמש רואה רק את התיקייה שלו, עם מגבלת גודל וסוגים. ארבעת מאגרי הקבצים של LALUM פרטיים, ומדיניות הגישה אליהם נבנתה על אותו עיקרון: ב-client-files לפי בעלות, וב-matter-originals לפי משרד, תפקיד ואימות דו-שלבי.`,
+    intro: `תבנית למאגר שבו כל משתמש רואה רק את התיקייה שלו, עם מגבלת גודל וסוגים. ארבעת מאגרי הקבצים של LALUM פרטיים, ומדיניות הגישה אליהם נבנתה על אותו עיקרון: ב-client-files לפי בעלות, וב-matter-originals לפי פירמה, תפקיד ואימות דו-שלבי.`,
     code: { lang: "sql", text: PRIVATE_BUCKET_SQL },
     points: [
       `הגישה לקובץ נעשית בקישור חתום קצר מועד (createSignedUrl), לא בכתובת ציבורית. אצלנו הקישורים בפורטל תקפים שישים שניות.`,
-      `בגישה לפי משרד ולא לפי משתמש בודד, משווים את התיקייה הראשונה לפונקציית השיוך שלכם, בטקסט: (storage.foldername(name))[1] = (select public.my_firm_id())::text. כך עובד matter-originals אצלנו.`,
+      `בגישה לפי פירמה ולא לפי משתמש בודד, משווים את התיקייה הראשונה לפונקציית השיוך שלכם, בטקסט: (storage.foldername(name))[1] = (select public.my_firm_id())::text. כך עובד matter-originals אצלנו.`,
       `אצלנו ב-client-files יש מגבלת גודל של 25MB, ורשימת סוגים מותרים מוגדרת ב-matter-originals בלבד.`,
     ],
     corrections: [

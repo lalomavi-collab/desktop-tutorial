@@ -27,7 +27,7 @@ const he: LeadCopy = {
   interests: { "real-estate": "נדל״ן והתחדשות עירונית", "ai-governance": "AI וממשל", other: "אחר" },
   note: "במה נוכל לעזור? (לא חובה)",
   noteHint: "בקצרה, ובלי פרטי התיק או שמות הצד שכנגד. את הפרטים נשמע בשיחה.",
-  consentBefore: `אני מסכים/ה שהמשרד ישמור את הפרטים האלה כדי לחזור אליי, וימחק אותם בתוך ${RETENTION_MONTHS} חודשים. פירוט בנוגע לזכויותיי ב`,
+  consentBefore: `אני מסכים/ה שהפירמה תשמור את הפרטים האלה כדי לחזור אליי, וימחק אותם בתוך ${RETENTION_MONTHS} חודשים. פירוט בנוגע לזכויותיי ב`,
   consentLink: "הודעת הפרטיות", consentAfter: ".",
   submit: "שליחה", sending: "שולח…", back: "חזרה",
   thanksTitle: "תודה, קיבלנו",
