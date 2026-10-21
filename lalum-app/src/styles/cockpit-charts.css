@@ -1,0 +1,92 @@
+/* Chart primitives shared by every cockpit screen (CockpitCharts.tsx). Layout, hover and
+   motion only; colour comes entirely from the theme tokens in cockpit-mint.css. */
+
+.ck-chart-wrap { position: relative; }
+
+/* Draw-in: the line and area fade/draw in once on mount, never replayed on hover. */
+.ck-area-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: ck-draw .9s ease forwards; }
+.ck-area-fill { opacity: 0; animation: ck-fade .7s ease .3s forwards; }
+@keyframes ck-draw { to { stroke-dashoffset: 0; } }
+@keyframes ck-fade { to { opacity: 1; } }
+
+/* The latest point breathes gently, the one honest "live" cue for data that refreshes on
+   load rather than streaming (never faster than a slow breath, so it reads as "current",
+   not as motion demanding attention). */
+.ck-live-pulse { opacity: .22; animation: ck-pulse 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes ck-pulse { 0%, 100% { transform: scale(1); opacity: .22; } 50% { transform: scale(1.7); opacity: 0; } }
+
+/* Hover tooltip: a small solid bubble positioned in the chart's own pixel space, never the only way to read a value. */
+.ck-tip {
+  position: absolute; transform: translate(-50%, calc(-100% - 10px)); z-index: 5; pointer-events: none;
+  background: var(--card-solid, #fff); border: 1px solid var(--line-strong); border-radius: 10px;
+  padding: 6px 10px; box-shadow: 0 10px 22px rgba(20, 30, 20, .18); font-size: 12.5px; line-height: 1.5;
+  white-space: nowrap; display: flex; flex-direction: column; gap: 1px; color: var(--ink);
+}
+.ck-tip.flip { transform: translate(calc(-100% + 18px), calc(-100% - 10px)); }
+.ck-tip b { font-size: 14px; font-weight: 800; }
+.ck-tip span { color: var(--slate); display: flex; align-items: center; gap: 6px; }
+.ck-tip-key { display: inline-block; width: 8px; height: 8px; border-radius: 3px; flex-shrink: 0; }
+
+/* Donut: hover lifts the hovered wedge and dims the rest; a surface gap already separates wedges (see GAP in the component). */
+.ck-donut-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ck-donut-arc { transform-origin: 70px 70px; transition: stroke-dasharray .5s ease, transform .18s ease, opacity .18s ease; cursor: pointer; }
+.ck-donut-arc.hot { transform: scale(1.045); filter: drop-shadow(0 3px 6px rgba(20, 30, 20, .22)); }
+.ck-donut-arc.dim { opacity: .45; }
+
+/* Legend: swatch, label, value and share. Always present for 2+ series (the donut always has >=2). */
+.ck-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; font-size: 13px; min-width: 0; }
+.ck-legend li { display: flex; align-items: center; gap: 8px; min-width: 0; transition: opacity .15s ease; border-radius: 6px; padding: 2px 4px; margin: -2px -4px; cursor: default; }
+.ck-legend li.dim { opacity: .45; }
+.ck-legend-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.ck-legend b { font-variant-numeric: tabular-nums; }
+.ck-legend small { color: var(--slate); min-width: 34px; text-align: end; font-variant-numeric: tabular-nums; }
+.ck-legend-row { flex-direction: row; flex-wrap: wrap; gap: 14px; margin-top: 6px; }
+.ck-swatch { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
+
+/* Vertical pill columns (status breakdown). */
+.ck-pillbars { display: flex; align-items: flex-end; justify-content: space-around; gap: 18px; height: 190px; padding: 8px 8px 0; }
+.ck-pillcol { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; max-width: 70px; }
+.ck-pillval { font-size: 13px; font-weight: 700; color: var(--slate); font-variant-numeric: tabular-nums; }
+.ck-pill { width: 34px; border-radius: 18px 18px 6px 6px; box-shadow: inset 0 2px 0 rgba(255, 255, 255, .4); transition: height .5s ease, transform .15s ease; transform-origin: bottom; animation: ck-grow-y .5s ease backwards; }
+.ck-pillcol:hover .ck-pill, .ck-pillcol:focus-visible .ck-pill { transform: scaleY(1.03); }
+.ck-pilllabel { font-size: 12.5px; font-weight: 600; color: var(--clay); text-align: center; }
+.ck-pillcol:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; border-radius: 8px; }
+@keyframes ck-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* Horizontal bars with a value at the tip. */
+.ck-barsh { display: flex; flex-direction: column; gap: 10px; }
+.ck-barsh-row { display: grid; grid-template-columns: minmax(80px, 150px) 1fr 54px; align-items: center; gap: 10px; font-size: 13px; border-radius: 8px; }
+.ck-barsh-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.ck-barsh-track { height: 13px; border-radius: 7px; background: var(--chart-track, rgba(83, 112, 86, .12)); overflow: hidden; }
+.ck-barsh-fill { height: 100%; border-radius: 7px; transform-origin: inline-start; animation: ck-grow-x .6s ease backwards; transition: filter .15s ease; }
+.ck-barsh-row.hot .ck-barsh-fill { filter: brightness(1.08); }
+.ck-barsh-val { text-align: end; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 700; }
+.ck-barsh-row:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+@keyframes ck-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Mini column strip. */
+.ck-minibars { display: flex; align-items: flex-end; gap: 6px; height: 96px; }
+.ck-minibar-col { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.ck-minibar { width: 100%; max-width: 26px; border-radius: 8px 8px 3px 3px; transform-origin: bottom; animation: ck-grow-y .5s ease backwards; transition: transform .15s ease; }
+.ck-minibar-col:hover .ck-minibar, .ck-minibar-col:focus-visible .ck-minibar { transform: scaleY(1.04); }
+.ck-minibar-label { font-size: 12px; color: var(--slate); }
+.ck-minibar-col:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
+
+/* Gauge. */
+.ck-gauge { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ck-gauge-arc { transition: stroke-dasharray .6s ease; filter: drop-shadow(0 2px 4px rgba(20, 30, 20, .18)); }
+.ck-gauge-label { font-size: 13.5px; }
+.ck-gauge-sub { font-size: 12px; color: var(--slate); }
+
+/* Status bar. */
+.ck-statusbar-track { height: 10px; border-radius: 6px; background: var(--chart-track, rgba(83, 112, 86, .12)); overflow: hidden; min-width: 90px; }
+.ck-statusbar-fill { height: 100%; border-radius: 6px; transition: width .4s ease; }
+
+/* Grouped columns (paired series per bucket). */
+.ck-group-bar { transition: height .5s ease, y .5s ease, opacity .15s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-area-line, .ck-area-fill, .ck-pill, .ck-barsh-fill, .ck-minibar { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; transform: none !important; }
+  .ck-donut-arc, .ck-gauge-arc, .ck-group-bar, .ck-statusbar-fill { transition: none !important; }
+  .ck-live-pulse { animation: none !important; opacity: 0 !important; }
+}

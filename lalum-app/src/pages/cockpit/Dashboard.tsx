@@ -139,7 +139,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             </div>
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>פילוח פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
-              <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "#f5c431" }, { label: "נראו", value: byStatus("SEEN"), color: "#9bbb9f" }, { label: "טופלו", value: byStatus("HANDLED"), color: "#537056" }]} />
+              <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "var(--chart-warn, #d0901e)" }, { label: "נראו", value: byStatus("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: byStatus("HANDLED"), color: "var(--chart-ok, #216f33)" }]} />
             </div>
           </div>
 
@@ -150,7 +150,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             </div>
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>תיקים לפי רמת סיכון</h3></div>
-              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "#b3402f" }, { label: "זהירות", value: byRisk("CAUTION"), color: "#f5c431" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "#537056" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "#9bbb9f" }]} />
+              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }, { label: "זהירות", value: byRisk("CAUTION"), color: "var(--chart-warn, #d0901e)" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "var(--chart-ok, #216f33)" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "var(--chart-neutral, #9a968c)" }]} />
             </div>
           </div>
 
@@ -160,14 +160,14 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             <div className="ck-card db-card">
               <div className="db-head"><h3>משימות לפי מצב</h3><Link className="ck-link" to="/workspace/tasks">לכל המשימות</Link></div>
               <ul className="db-ranks">
-                <RankRow label="פתוחות" value={Math.max(0, view.open - view.overdue)} total={data.tasks.length} color="#9bbb9f" />
-                <RankRow label="באיחור" value={view.overdue} total={data.tasks.length} color="#b3402f" />
-                <RankRow label="הושלמו" value={view.closed} total={data.tasks.length} color="#537056" />
+                <RankRow label="פתוחות" value={Math.max(0, view.open - view.overdue)} total={data.tasks.length} color="var(--chart-ok-l, #5a9c62)" />
+                <RankRow label="באיחור" value={view.overdue} total={data.tasks.length} color="var(--chart-bad, #b3402f)" />
+                <RankRow label="הושלמו" value={view.closed} total={data.tasks.length} color="var(--chart-ok, #216f33)" />
               </ul>
               <div className="db-head" style={{ marginTop: 6 }}><h3>שירות לקוחות</h3>{median != null && <span className="ck-badge green">זמן מענה חציוני {dur(median)}</span>}</div>
               {recentInq.length === 0 ? <div className="db-empty">אין פניות עדיין. פניות שיגיעו לכתובת הקליטה יופיעו כאן.</div> : (
                 <ul className="db-list">{recentInq.map((i, k) => (
-                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "#f5c431" : i.status === "SEEN" ? "#9bbb9f" : "#537056" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
+                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "var(--chart-warn, #d0901e)" : i.status === "SEEN" ? "var(--chart-ok-l, #5a9c62)" : "var(--chart-ok, #216f33)" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
                 ))}</ul>
               )}
             </div>
