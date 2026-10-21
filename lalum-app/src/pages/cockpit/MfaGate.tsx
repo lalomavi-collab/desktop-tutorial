@@ -31,21 +31,24 @@ export function MfaGate({ required, children }: { required: boolean; children: R
   }
   if (mfa.state === "loading") return <div className="ck-meta">טוען...</div>;
   if (mfa.state === "challenge" && lost) return (
-    <form className="ck-card" style={{ maxWidth: 420, margin: "40px auto" }} onSubmit={(e) => void useRecovery(e)}>
+    <form className="ck-card mfa-box" onSubmit={(e) => void useRecovery(e)}>
       <div className="ck-title">כניסה עם קוד שחזור</div>
-      <div className="ck-meta">הזינו אחד מקודי השחזור שקיבלתם בהפעלת האימות. הקוד נוצל פעם אחת, והאפליקציה הישנה תוסר כדי שתוכלו לחבר אפליקציה חדשה.</div>
-      <input className="field" autoComplete="off" autoCapitalize="characters" maxLength={11} dir="ltr" aria-label="קוד שחזור" placeholder="XXXXX-XXXXX" value={recovery} onChange={(e) => setRecovery(e.target.value)} />
+      <div className="ck-meta">זו כניסה למי שאין לו גישה לאפליקציית האימות. אם האפליקציה בידיכם, לחצו "חזרה" והזינו את הקוד בן 6 הספרות ממנה.</div>
+      <div className="ck-meta"><b>איפה הקוד?</b> קודי השחזור הוצגו לכם פעם אחת, ברגע שהפעלתם אימות דו-שלבי. כל קוד הוא 10 תווים בצורה XXXXX-XXXXX. חפשו אותם במנהל הסיסמאות או בהדפסה ששמרתם. המערכת לא שומרת אותם ולא יכולה להציג אותם שוב.</div>
+      <div className="ck-meta">הקוד תקף לשימוש אחד, ואחרי הכניסה האפליקציה הישנה תוסר כדי שתוכלו לחבר אפליקציה חדשה.</div>
+      <label className="mfa-label" htmlFor="mfa-recovery">קוד שחזור</label>
+      <input id="mfa-recovery" className="field" autoComplete="off" autoCapitalize="characters" maxLength={11} dir="ltr" aria-label="קוד שחזור" placeholder="XXXXX-XXXXX" value={recovery} onChange={(e) => setRecovery(e.target.value)} />
       {err && <div className="ck-err" aria-live="polite">{err}</div>}
       <div className="ck-row">
         <button className="ck-btn primary" disabled={busy || recovery.replace(/[^A-Za-z0-9]/g, "").length !== 10}>{busy ? "בודק..." : "אימות"}</button>
-        <button type="button" className="ck-btn" onClick={() => { setLost(false); setErr(null); }}>חזרה</button>
+        <button type="button" className="ck-btn" onClick={() => { setLost(false); setErr(null); }}>חזרה לקוד מהאפליקציה</button>
       </div>
     </form>
   );
   if (mfa.state === "challenge") {
     const active = factorId ?? mfa.factorId;
     return (
-      <form className="ck-card" style={{ maxWidth: 420, margin: "40px auto" }} onSubmit={(e) => void submit(e, active)}>
+      <form className="ck-card mfa-box" onSubmit={(e) => void submit(e, active)}>
         <div className="ck-title">אימות דו-שלבי</div>
         <div className="ck-meta">הזינו את הקוד בן 6 הספרות מאפליקציית האימות.</div>
         {mfa.factors.length > 1 && (
@@ -60,13 +63,14 @@ export function MfaGate({ required, children }: { required: boolean; children: R
             </div>
           </>
         )}
-        <input className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+        <label className="mfa-label" htmlFor="mfa-code">קוד בן 6 ספרות</label>
+        <input id="mfa-code" className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
         {err && <div className="ck-err" aria-live="polite">{err}</div>}
         <button className="ck-btn primary" disabled={busy || code.length !== 6}>{busy ? "מאמת..." : "אימות"}</button>
         {mfa.factors.length > 1 && (
           <div className="ck-meta">גורם ישן שכבר לא בשימוש? אפשר להסיר אותו מ<Link to="/settings/security">אבטחת חשבון</Link> אחרי הכניסה, כדי שלא יבחר שוב בטעות.</div>
         )}
-        <button type="button" className="ck-btn" onClick={() => { setLost(true); setErr(null); }}>אין לי גישה לאפליקציה</button>
+        <button type="button" className="mfa-lost" onClick={() => { setLost(true); setErr(null); }}>אין לי גישה לאפליקציה (כניסה עם קוד שחזור)</button>
       </form>
     );
   }

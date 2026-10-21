@@ -51,7 +51,7 @@ export function TotpEnroll({ onDone, onCancel }: { onDone: () => void; onCancel?
 
   if (codes) {
     return (
-      <div className="ck-card" style={{ maxWidth: 480, margin: "24px auto" }}>
+      <div className="ck-card mfa-box">
         <div className="ck-title">שמרו את קודי השחזור</div>
         <div className="ck-meta">כל קוד טוב לשימוש אחד, ומחליף את האפליקציה אם הטלפון אבד. הם מוצגים רק עכשיו. שמרו אותם במנהל סיסמאות או בהדפסה, לא באותו טלפון.</div>
         <div dir="ltr" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontFamily: "monospace", fontSize: 16 }}>
@@ -67,7 +67,7 @@ export function TotpEnroll({ onDone, onCancel }: { onDone: () => void; onCancel?
 
   if (!pending) {
     return (
-      <div className="ck-card" style={{ maxWidth: 480, margin: "24px auto" }}>
+      <div className="ck-card mfa-box">
         <div className="ck-title">הפעלת אימות דו-שלבי</div>
         <div className="ck-meta">תצטרכו אפליקציית אימות (Google Authenticator, Microsoft Authenticator, 1Password או סיסמאות של אפל). בסיום תקבלו קודי שחזור למקרה שהטלפון יאבד.</div>
         {err && <div className="ck-err" aria-live="polite">{err}</div>}
@@ -80,7 +80,7 @@ export function TotpEnroll({ onDone, onCancel }: { onDone: () => void; onCancel?
   }
 
   return (
-    <div className="ck-card" style={{ maxWidth: 480, margin: "24px auto" }}>
+    <div className="ck-card mfa-box">
       <div className="ck-title">שלב 1: חיבור האפליקציה</div>
       <div className="ck-meta">בטלפון: לחצו על הכפתור, האפליקציה תיפתח ותוסיף את החשבון. במחשב: סרקו את הברקוד.</div>
       <a className="ck-btn primary" href={pending.uri}>פתיחה באפליקציית האימות</a>
