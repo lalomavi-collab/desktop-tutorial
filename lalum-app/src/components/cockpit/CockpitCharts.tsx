@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import "../../styles/cockpit-charts.css";
 
-const OK = "var(--chart-ok, #216f33)", OK_L = "var(--chart-ok-l, #5a9c62)", WARN = "var(--chart-warn, #d0901e)", BAD = "var(--chart-bad, #b3402f)";
+const OK = "var(--chart-ok, #216f33)", OK_L = "var(--chart-ok-l, #5a9c62)", WARN = "var(--chart-warn, #b8780a)", BAD = "var(--chart-bad, #b3402f)";
 const TRACK = "var(--chart-track, rgba(83,112,86,.12))", GRID = "var(--chart-grid, rgba(83,112,86,.14))";
 const nf = (v: number) => v.toLocaleString("he-IL");
 

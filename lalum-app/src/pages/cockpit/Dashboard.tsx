@@ -133,7 +133,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             <TrendCard title="תיקים חדשים" unit="תיקים חדשים" dates={data.matters.map((x) => x.dispatched_at)} secondDates={data.inquiries.map((i) => i.received_at)} secondLabel="פניות לקוחות באותו טווח" to="/workspace" toLabel="לכל התיקים" />
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>פילוח פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
-              <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "var(--chart-warn, #d0901e)" }, { label: "נראו", value: byStatus("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: byStatus("HANDLED"), color: "var(--chart-ok, #216f33)" }]} />
+              <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "var(--chart-warn, #b8780a)" }, { label: "נראו", value: byStatus("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: byStatus("HANDLED"), color: "var(--chart-ok, #216f33)" }]} />
               <div className="db-note"><Trend d={inqDelta.pct} /> <span>{inqDelta.cur} ב-30 הימים האחרונים, {inqDelta.prev} ב-30 שלפניהם</span></div>
             </div>
           </div>
@@ -145,7 +145,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             </div>
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>תיקים לפי רמת סיכון</h3></div>
-              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }, { label: "זהירות", value: byRisk("CAUTION"), color: "var(--chart-warn, #d0901e)" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "var(--chart-ok, #216f33)" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "var(--chart-neutral, #9a968c)" }]} />
+              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }, { label: "זהירות", value: byRisk("CAUTION"), color: "var(--chart-warn, #b8780a)" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "var(--chart-ok, #216f33)" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "var(--chart-neutral, #9a968c)" }]} />
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
               <div className="db-head" style={{ marginTop: 6 }}><h3>שירות לקוחות</h3>{median != null && <span className="ck-badge green">זמן מענה חציוני {dur(median)}</span>}</div>
               {recentInq.length === 0 ? <div className="db-empty">אין פניות עדיין. פניות שיגיעו לכתובת הקליטה יופיעו כאן.</div> : (
                 <ul className="db-list">{recentInq.map((i, k) => (
-                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "var(--chart-warn, #d0901e)" : i.status === "SEEN" ? "var(--chart-ok-l, #5a9c62)" : "var(--chart-ok, #216f33)" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
+                  <li key={k}><Link to="/workspace/inquiries"><span className="db-dot" style={{ background: i.status === "NEW" ? "var(--chart-warn, #b8780a)" : i.status === "SEEN" ? "var(--chart-ok-l, #5a9c62)" : "var(--chart-ok, #216f33)" }} /><em>{i.status === "NEW" ? "פנייה חדשה" : i.status === "SEEN" ? "פנייה שנצפתה" : "פנייה שטופלה"}</em><small dir="ltr">{fmt(i.received_at)}</small></Link></li>
                 ))}</ul>
               )}
             </div>
