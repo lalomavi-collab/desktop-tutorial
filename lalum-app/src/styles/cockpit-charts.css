@@ -5,15 +5,28 @@
 
 /* Draw-in: the line and area fade/draw in once on mount, never replayed on hover. */
 .ck-area-line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: ck-draw .9s ease forwards; }
+.ck-area-glow { stroke-dasharray: 100; stroke-dashoffset: 100; animation: ck-draw .9s ease forwards, ck-breathe 3.4s ease-in-out 1s infinite; }
 .ck-area-fill { opacity: 0; animation: ck-fade .7s ease .3s forwards; }
 @keyframes ck-draw { to { stroke-dashoffset: 0; } }
 @keyframes ck-fade { to { opacity: 1; } }
+@keyframes ck-breathe { 0%, 100% { opacity: .35; } 50% { opacity: .6; } }
 
 /* The latest point breathes gently, the one honest "live" cue for data that refreshes on
    load rather than streaming (never faster than a slow breath, so it reads as "current",
    not as motion demanding attention). */
 .ck-live-pulse { opacity: .22; animation: ck-pulse 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
 @keyframes ck-pulse { 0%, 100% { transform: scale(1); opacity: .22; } 50% { transform: scale(1.7); opacity: 0; } }
+
+/* A small "current data" tag over the chart, honest about what it claims: the figures are
+   current as of this load, not a streaming tick. The dot breathes with the same rhythm as
+   the chart's own last-point pulse, so the two read as one system. */
+.ck-live-badge {
+  position: absolute; top: 2px; inset-inline-end: 4px; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 700; color: var(--slate); background: var(--card-solid, #fff);
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px 3px 8px;
+}
+.ck-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--chart-ok, #216f33); flex-shrink: 0; animation: ck-pulse-dot 2.6s ease-in-out infinite; }
+@keyframes ck-pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--chart-ok, #216f33) 55%, transparent); } 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--chart-ok, #216f33) 0%, transparent); } }
 
 /* Hover tooltip: a small solid bubble positioned in the chart's own pixel space, never the only way to read a value. */
 .ck-tip {
@@ -87,6 +100,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ck-area-line, .ck-area-fill, .ck-pill, .ck-barsh-fill, .ck-minibar { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; transform: none !important; }
+  .ck-area-glow { animation: none !important; stroke-dashoffset: 0 !important; opacity: .35 !important; }
   .ck-donut-arc, .ck-gauge-arc, .ck-group-bar, .ck-statusbar-fill { transition: none !important; }
-  .ck-live-pulse { animation: none !important; opacity: 0 !important; }
+  .ck-live-pulse, .ck-live-dot { animation: none !important; }
+  .ck-live-pulse { opacity: 0 !important; }
 }

@@ -65,14 +65,21 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
   const hp = hover != null ? p2[hover] : null;
   return (
     <div ref={box} className="ck-chart-wrap" style={{ width: "100%" }}>
+      <span className="ck-live-badge"><i className="ck-live-dot" aria-hidden="true" />נתונים עדכניים</span>
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`${values.map((v, i) => `${labels[i]}: ${v}`).join(", ")} ${unit}`}
         style={{ direction: "ltr", display: "block" }} onPointerMove={onMove} onPointerLeave={() => setHover(null)}>
         <defs>
-          <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={WARN} stopOpacity=".32" /><stop offset=".65" stopColor={WARN} stopOpacity=".07" /><stop offset="1" stopColor={WARN} stopOpacity="0" /></linearGradient>
+          <linearGradient id={`${id}-f`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={WARN} stopOpacity=".4" /><stop offset=".65" stopColor={WARN} stopOpacity=".09" /><stop offset="1" stopColor={WARN} stopOpacity="0" /></linearGradient>
         </defs>
         {ticks.map((t) => (<g key={t.y}><line x1={L} x2={W - R} y1={t.y} y2={t.y} stroke={GRID} /><text x={L - 8} y={t.y + 4} textAnchor="end" fontSize="12.5" fill="var(--slate)">{nf(t.v)}</text></g>))}
         {area && <path className="ck-area-fill" d={area} fill={`url(#${id}-f)`} />}
+        {/* A soft blurred under-stroke (a cheap, broadly-supported stand-in for an SVG glow filter) gives the line the
+            lit, instrument-panel look of the reference terminals, under the crisp line the reader actually reads. */}
+        {line && <path className="ck-area-glow" d={line} fill="none" stroke={WARN} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" opacity=".35" />}
         {line && <path className="ck-area-line" d={line} fill="none" stroke={WARN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pathLength={100} />}
+        {last && (
+          <line x1={last[0]} x2={W - 4} y1={last[1]} y2={last[1]} stroke={OK} strokeWidth="1.5" strokeDasharray="2 4" opacity={hp ? 0 : ".7"} aria-hidden="true" />
+        )}
         {p2.map((p, i) => (i % Math.ceil(values.length / Math.max(2, Math.floor((W - L - R) / 62))) === 0 || i === values.length - 1) ? <text key={i} x={p[0]} y={H - 8} textAnchor="middle" fontSize="12.5" fill="var(--slate)">{labels[i]}</text> : null)}
         {hp && hover != null && (
           <g aria-hidden="true">
@@ -91,7 +98,18 @@ export function AreaChart({ values, labels, unit, id = "ac" }: { values: number[
             </g>
           </g>
         )}
-        {!hp && last && <g aria-hidden="true"><circle className="ck-live-pulse" cx={last[0]} cy={last[1]} r="9" fill={OK} /><circle cx={last[0]} cy={last[1]} r="5" fill="var(--card-solid, #fff)" stroke={OK} strokeWidth="3" /></g>}
+        {!hp && last && (
+          <g aria-hidden="true">
+            <circle className="ck-live-pulse" cx={last[0]} cy={last[1]} r="9" fill={OK} />
+            <circle cx={last[0]} cy={last[1]} r="5" fill="var(--card-solid, #fff)" stroke={OK} strokeWidth="3" />
+            {/* The always-on current-value tag a trading terminal pins to its right axis, not just a hover state;
+                it overlaps the plot's right edge the same way the reference terminals' price tags do. */}
+            <g>
+              <rect x={W - 50} y={last[1] - 10} width="46" height="20" rx="5" fill={OK} />
+              <text x={W - 27} y={last[1] + 4} textAnchor="middle" fontSize="11" fontWeight="700" fill="#fff">{nf(values[values.length - 1])}</text>
+            </g>
+          </g>
+        )}
       </svg>
       {hp && hover != null && <Tip x={hp[0]} y={hp[1] - 14} flip={hp[0] > W - 90}><b>{nf(values[hover])}</b><span>{unit} · {labels[hover]}</span></Tip>}
     </div>
