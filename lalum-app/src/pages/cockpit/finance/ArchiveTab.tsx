@@ -5,6 +5,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
+import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
 
 const monthsBetween = (from: string, to: string): Array<[string, string]> => {
   const out: Array<[string, string]> = [];
@@ -29,6 +30,14 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
   const [log, setLog] = useState<Array<{ ok: boolean; text: string }>>([]);
   const [q, setQ] = useState("");
   const stop = useRef(false);
+  const [pdfBusy, setPdfBusy] = useState<string | null>(null);
+  const [pdfMsg, setPdfMsg] = useState("");
+  async function download(d: ArchiveDoc) {
+    setPdfBusy(d.id); setPdfMsg("");
+    const r = await archivePdfLink(d.id);
+    setPdfBusy(null);
+    if (r.ok) window.open(r.url, "_blank", "noopener"); else setPdfMsg(`מסמך ${d.doc_number}: ${r.text}`);
+  }
 
   async function importCustomers() {
     setBusy(true);
@@ -101,8 +110,9 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
 
           <div className="ck-label">מסמכים אחרונים</div>
           <input className="ck-input" aria-label="חיפוש לפי מספר מסמך" placeholder="חיפוש לפי מספר מסמך" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 260 }} />
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th></tr></thead><tbody>
-            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{allocationShort(d.allocation_number) ?? ""}</td></tr>)}
+          {pdfMsg && <div className="ck-err" aria-live="polite">{pdfMsg}</div>}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th><th>מסמך</th></tr></thead><tbody>
+            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{allocationShort(d.allocation_number) ?? ""}</td><td><button className="ck-btn" disabled={pdfBusy === d.id} aria-label={`הורדת מסמך ${d.doc_number}`} onClick={() => void download(d)}>{pdfBusy === d.id ? "מכין..." : "הורדה"}</button></td></tr>)}
           </tbody></table></div>
         </>
       )}
