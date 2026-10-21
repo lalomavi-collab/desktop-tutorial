@@ -7,6 +7,7 @@ import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
 import type { PillarPage } from "../lib/pillars";
 import { DiscussionsTrigger, type DiscussionTopic } from "./DiscussionsPanel";
 import { PillarArt, type PillarArtTheme } from "./PillarArt";
+import { FwdArrow } from "./FwdArrow";
 
 // The mediation pillar gets no illustration: per the two-focus-areas rule,
 // mediation is not a growth area and gets nothing new, PillarArt included.
@@ -140,18 +141,18 @@ export function PillarView({ P }: { P: PillarPage }) {
               <Link key={s.path} to={`/${s.path}`} className="card pillar-sector-card" style={{ display: "block" }}>
                 <h3 className="h3" style={{ fontSize: 20, margin: "0 0 10px", lineHeight: 1.35 }}>{s.title}</h3>
                 <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{s.body}</p>
-                <span className="card-go">{P.sectorsUi!.go} &rarr;</span>
+                <span className="card-go">{P.sectorsUi!.go} <FwdArrow /></span>
               </Link>
             ))}
           </div>
           <p style={{ marginTop: 22 }}>
             <Link to={P.sectorsUi.toolsHref} style={{ color: "var(--clay)", fontWeight: 600, fontSize: 15.5 }}>
-              {P.sectorsUi.toolsLabel} &rarr;
+              {P.sectorsUi.toolsLabel} <FwdArrow />
             </Link>
           </p>
           <p style={{ marginTop: 10 }}>
             <Link to={P.sectorsUi.oversightHref} style={{ color: "var(--clay)", fontWeight: 600, fontSize: 15.5 }}>
-              {P.sectorsUi.oversightLabel} &rarr;
+              {P.sectorsUi.oversightLabel} <FwdArrow />
             </Link>
           </p>
         </section>
@@ -170,7 +171,7 @@ export function PillarView({ P }: { P: PillarPage }) {
               {/* The corpus is Hebrew and these pages are not, so the title
                   states its own script rather than inheriting the page's. */}
               <h3 className="h3" style={{ fontSize: 18, margin: "10px 0 0", lineHeight: 1.35 }} {...scriptDir(r.title)}>{r.title}</h3>
-              <span className="card-go">{P.ui.read} &rarr;</span>
+              <span className="card-go">{P.ui.read} <FwdArrow /></span>
             </Link>
           ))}
         </div>

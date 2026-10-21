@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { CONSENT_BASIS, customerGaps, customerProblems, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
 import { rpcError } from "../../../lib/cockpit/financeApi";
@@ -12,6 +13,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
   const [f, setF] = useState<Draft>(blank);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [q, setQ] = useState("");
+  const cn = useClientNames();
   const [withArchived, setWithArchived] = useState(false);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
   const isNew = editing === "new";
@@ -61,22 +63,22 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
     onChange();
   }
   const archivedCount = customers.filter((c) => c.archived).length;
-  const shown = customers.filter((c) => (withArchived || !c.archived) && (!q.trim() || c.name.includes(q.trim()) || (c.tax_id ?? "").includes(q.trim())));
+  const shown = customers.filter((c) => (withArchived || !c.archived) && (!q.trim() || (cn.revealed && c.name.includes(q.trim())) || cn.customer(c).includes(q.trim()) || (c.tax_id ?? "").includes(q.trim())));
 
   return (
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
-        <input className="ck-input" aria-label="חיפוש לקוח" placeholder="חיפוש לפי שם או ת.ז." value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
+        <input className="ck-input" aria-label="חיפוש לקוח" placeholder={cn.revealed ? "חיפוש לפי שם או ת.ז." : "חיפוש לפי מספר לקוח או ת.ז. (השמות מוסתרים)"} value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
         {archivedCount > 0 && <label className="ck-meta" style={{ display: "flex", alignItems: "center", gap: 6 }}><input type="checkbox" checked={withArchived} onChange={(e) => setWithArchived(e.target.checked)} />הצגת לקוחות בארכיון (<bdi>{archivedCount}</bdi>)</label>}
         <button className="ck-btn primary" onClick={() => open()}>לקוח חדש</button>
       </div>
-      {editing && (
+      {editing && cn.revealed && (
         <div className="ck-card ck-stack">
           <div className="ck-title">{isNew ? "לקוח חדש" : "עריכת לקוח"}</div>
           {isNew && (
             <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <input type="checkbox" checked={f.casual} onChange={(e) => setF({ ...f, casual: e.target.checked })} />
-              לקוח מזדמן (בלי כרטיס ב-Invoice4U, שם בלבד)
+              לקוח מזדמן (בלי כרטיס במערכת ההנפקה, שם בלבד)
             </label>
           )}
           {f.casual && <div className="ck-meta">לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי. לכל מסמך אחר פתחו לקוח רגיל.</div>}
@@ -87,7 +89,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
             <label className="ck-field">טלפון<input className="ck-input" dir="ltr" inputMode="tel" value={f.phone} onChange={set("phone")} /></label>
             <label className="ck-field">כתובת<input className="ck-input" value={f.address} onChange={set("address")} /></label>
             <label className="ck-field">עיר<input className="ck-input" value={f.city} onChange={set("city")} /></label>
-            {!f.casual && <label className="ck-field">מספר לקוח ב-Invoice4U (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
+            {!f.casual && <label className="ck-field">מספר לקוח במערכת ההנפקה (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
             <label className="ck-field">הערות<input className="ck-input" value={f.notes} onChange={set("notes")} /></label>
           </div>
           {!f.casual && (
@@ -122,19 +124,19 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th className="fin-num">ת.ז. / ח.פ.</th><th className="fin-num">דוא"ל</th><th className="fin-num">טלפון</th><th>Invoice4U</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th className="fin-num">ת.ז. / ח.פ.</th><th className="fin-num">דוא"ל</th><th className="fin-num">טלפון</th><th>מערכת ההנפקה</th><th></th></tr></thead><tbody>
         {shown.length ? shown.map((c) => {
           const n = splitName(c.name), addr = n.address ?? c.address, gaps = customerGaps(c);
           return (
             <tr key={c.id} style={c.archived ? { opacity: 0.55 } : undefined}>
               <td className="fin-text">
-                <span className="fin-name" title={c.name}>{n.name}</span>{addr && <span className="fin-sub" title={addr}>{addr}</span>}
+                <span className="fin-name" title={cn.revealed ? c.name : undefined}>{cn.revealed ? n.name : cn.customer(c)}</span>{cn.revealed && addr && <span className="fin-sub" title={addr}>{addr}</span>}
                 {c.is_casual && <span className="ck-badge yellow">מזדמן</span>}
                 {gaps.length > 0 && <span className="fin-sub">חסר: {gaps.join(", ")}</span>}
               </td>
               <td className="fin-ltr">{c.tax_id ?? ""}</td><td className="fin-ltr">{c.email ?? ""}</td><td className="fin-ltr">{c.phone ?? ""}</td>
               <td>{c.is_casual ? "מזדמן, ללא כרטיס" : c.i4u_customer_id ? "מקושר" : "יפתח בהפקה ראשונה"}</td>
-              <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm" onClick={() => open(c)}>עריכה</button><button className="ck-btn sm" onClick={() => void archive(c)}>{c.archived ? "שחזור" : "לארכיון"}</button></div></td>
+              <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm" disabled={!cn.revealed} title={cn.revealed ? undefined : "עריכת כרטיס לקוח מציגה את שמו: הציגו שמות כדי לערוך (נרשם ביומן)."} onClick={() => open(c)}>עריכה</button><button className="ck-btn sm" onClick={() => void archive(c)}>{c.archived ? "שחזור" : "לארכיון"}</button></div></td>
             </tr>);
         }) : <tr><td colSpan={6}>אין לקוחות עדיין</td></tr>}
       </tbody></table></div>

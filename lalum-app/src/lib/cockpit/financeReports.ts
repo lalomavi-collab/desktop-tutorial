@@ -17,7 +17,8 @@ export interface IncomeRow {
 
 /** Issued, real income documents in the period: invoices and invoice-receipts add, credits subtract. A document held in both
  *  places is counted once, from the ledger. */
-export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers: FinCustomer[], p: Period): IncomeRow[] {
+/** `label` replaces the customer's name in each row (the screens pass one while names are hidden); the row key is unchanged, so grouping by customer still works. */
+export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers: FinCustomer[], p: Period, label?: (c: FinCustomer | undefined, name: string, key: string) => string): IncomeRow[] {
   const byId = new Map(customers.map((c) => [c.id, c]));
   const byI4u = new Map(customers.filter((c) => c.i4u_customer_id != null).map((c) => [c.i4u_customer_id as number, c]));
   const rows: IncomeRow[] = [];
@@ -30,7 +31,7 @@ export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers
     const sign = d.doc_type === "CREDIT" ? -1 : 1;
     const c = byId.get(d.customer_id);
     rows.push({
-      date: d.issue_date, kind: d.doc_type, number: d.doc_number, customer: c ? splitName(c.name).name : "לקוח לא ידוע",
+      date: d.issue_date, kind: d.doc_type, number: d.doc_number, customer: label ? label(c, c ? splitName(c.name).name : "לקוח לא ידוע", c?.id ?? "unknown") : c ? splitName(c.name).name : "לקוח לא ידוע",
       customerKey: c?.id ?? "unknown", net: r2(sign * d.subtotal), vat: r2(sign * d.vat_amount), total: r2(sign * d.total), source: "ledger",
     });
   }
@@ -41,7 +42,7 @@ export function incomeRows(docs: FinDocument[], archive: ArchiveDoc[], customers
     const c = a.i4u_client_id != null ? byI4u.get(a.i4u_client_id) : undefined;
     const name = c ? splitName(c.name).name : a.gname?.trim() || "לקוח לא ידוע";
     rows.push({
-      date: a.issue_date, kind, number: a.doc_number, customer: name, customerKey: c?.id ?? `casual:${name}`,
+      date: a.issue_date, kind, number: a.doc_number, customer: label ? label(c, name, c?.id ?? `casual:${name}`) : name, customerKey: c?.id ?? `casual:${name}`,
       net: e.net, vat: e.vat, total: isShekel(a.currency) && Number.isFinite(a.total) ? r2((kind === "CREDIT" ? -1 : 1) * Math.abs(a.total)) : r2(e.net + e.vat), source: "archive",
     });
   }
@@ -121,7 +122,9 @@ export interface Bucket { key: string; label: string; from: string; to: string; 
 export interface Series {
   grain: Grain; buckets: Bucket[]; net: number; vat: number; total: number; count: number;
   /** Mean of the periods that have ended, counted from the first period with income. The running period never enters it. */
-  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
+  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null; delta: number } | null;
+  /** Monthly grain only: the mean over every completed month from January (months with no income count as zero), and the last completed month against it. */
+  sinceJanuary: { months: number; first: Bucket; lastDone: Bucket; average: number; pct: number | null; delta: number } | null;
 }
 
 const toDate = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
@@ -170,6 +173,10 @@ export function revenueBuckets(rows: IncomeRow[], grain: Grain, year: number, to
     average: avgBuckets.length ? r2(avgBuckets.reduce((a, b) => a + b.net, 0) / avgBuckets.length) : 0,
     averageOver: avgBuckets.length, hasRunning: live.some((b) => b.to >= today),
     best: withData.length ? withData.reduce((a, b) => (b.net > a.net ? b : a)) : null,
-    lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null } : null,
+    lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null, delta: r2(last.net - prev.net) } : null,
+    sinceJanuary: grain === "month" && done.length ? (() => {
+      const average = r2(done.reduce((a, b) => a + b.net, 0) / done.length);
+      return { months: done.length, first: done[0], lastDone: last, average, pct: average !== 0 ? Math.round(((last.net - average) / Math.abs(average)) * 1000) / 10 : null, delta: r2(last.net - average) };
+    })() : null,
   };
 }

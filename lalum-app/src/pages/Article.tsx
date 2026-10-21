@@ -16,6 +16,7 @@ import { toBlocks, parseInline } from "../lib/articleBlocks";
 import { articleFaqs } from "../lib/articleFaqs";
 import { faqPageNode } from "../lib/schema";
 import { coverFor } from "../lib/covers";
+import { FwdArrow } from "../components/FwdArrow";
 
 // One module per article body, so a page loads its own and nothing else. The
 // whole corpus used to arrive as one chunk on every content page, including the
@@ -40,7 +41,7 @@ function inline(text: string) {
 function Block({ block }: { block: ArticleBlock }) {
   switch (block.type) {
     case "p":
-      return <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--ink)", margin: "0 0 24px", maxWidth: "66ch" }}>{inline(block.text)}</p>;
+      return <p style={{ fontSize: 18, lineHeight: 1.75, color: "var(--ink)", margin: "0 0 24px" }}>{inline(block.text)}</p>;
     case "h2":
       return <h2 className="serif" style={{ fontSize: 28, fontWeight: 500, lineHeight: 1.25, margin: "44px 0 18px" }}>{inline(block.text)}</h2>;
     case "quote":
@@ -51,7 +52,7 @@ function Block({ block }: { block: ArticleBlock }) {
       );
     case "list":
       return (
-        <ul style={{ margin: "0 0 24px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 14, maxWidth: "64ch" }}>
+        <ul style={{ margin: "0 0 24px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 14 }}>
           {block.items.map((it) => (
             <li key={it} style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: 17, lineHeight: 1.65, color: "var(--ink)" }}>
               <span style={{ flex: "none", color: "var(--clay)", marginTop: 3 }}><Icon name="check" size={18} /></span>
@@ -180,7 +181,7 @@ export function Article() {
         </Link>
         <div style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--clay)", fontWeight: 600 }}>{view.category}</div>
         <h1 className="serif" style={{ fontSize: 46, lineHeight: 1.12, letterSpacing: "-0.01em", margin: "14px 0 20px" }}>{view.title}</h1>
-        <p style={{ fontSize: 20, lineHeight: 1.55, color: "var(--slate)", fontFamily: "var(--serif)", margin: "0 0 24px" }}>{view.dek}</p>
+        <p style={{ fontSize: 20, lineHeight: 1.55, color: "var(--slate)", margin: "0 0 24px" }}>{view.dek}</p>
         <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "var(--slate)", paddingBottom: 28, borderBottom: "1px solid var(--line)" }}>
           <span>{t.ui.article.by}</span><span style={{ color: "var(--clay)" }}>·</span>
           <span>{view.date}</span>{view.read ? <><span style={{ color: "var(--clay)" }}>·</span><span>{view.read}</span></> : null}
@@ -204,7 +205,7 @@ export function Article() {
             {faqs.map((f) => (
               <div key={f.q}>
                 <h3 style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.4, margin: "0 0 8px", color: "var(--ink)" }}>{f.q}</h3>
-                <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--ink)", margin: 0, maxWidth: "66ch" }}>{f.a}</p>
+                <p style={{ fontSize: 17, lineHeight: 1.7, color: "var(--ink)", margin: 0 }}>{f.a}</p>
               </div>
             ))}
           </div>
@@ -248,7 +249,7 @@ export function Article() {
                   <span style={{ fontSize: 16, lineHeight: 1.5 }}>
                     <strong>{r.citation}</strong>{r.caption ? ` ${r.caption}` : ""} · {r.court}, {r.dateLabel}
                   </span>
-                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true"><FwdArrow /></span>
                 </Link>
               ))}
             </div>
@@ -268,7 +269,7 @@ export function Article() {
                   style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 12, padding: "16px 20px", color: "var(--ink)", textDecoration: "none" }}
                 >
                   <span className="serif" style={{ fontSize: 17, lineHeight: 1.4 }}>{r.title}</span>
-                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true">{dir === "rtl" ? "←" : "→"}</span>
+                  <span style={{ flex: "none", color: "var(--clay)" }} aria-hidden="true"><FwdArrow /></span>
                 </Link>
               ))}
             </div>

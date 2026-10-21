@@ -3,6 +3,7 @@ import { useLang } from "../context/LangContext";
 import { Icon } from "./Icon";
 import { ZoomMark, TeamsMark, MeetMark, WhatsAppMark, TelegramMark, GPayMark, LeumiMark } from "./BrandMarks";
 import { whatsappNumber, officePhone } from "../lib/content";
+import { FwdArrow } from "./FwdArrow";
 
 // A colourful capabilities band: one glance shows everything the app does, which
 // makes it read as full and alive. Icons pair by position with the localized
@@ -51,7 +52,7 @@ export function Capabilities() {
                 <Icon name={ICONS[i % ICONS.length]} size={24} />
               </span>
               <span className="caps-label">{label}</span>
-              <span className="caps-go" aria-hidden="true">{t.ui.capsGo} &rarr;</span>
+              <span className="caps-go" aria-hidden="true">{t.ui.capsGo} <FwdArrow /></span>
             </>
           );
           if (target.to) {

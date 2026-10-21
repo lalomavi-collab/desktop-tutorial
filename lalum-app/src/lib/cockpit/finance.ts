@@ -277,7 +277,7 @@ export function customerProblems(f: { name: string; email: string; tax_id: strin
   if (f.email.trim() && !EMAIL_RE.test(f.email.trim())) out.push('כתובת הדוא"ל אינה תקינה');
   if (!f.casual) {
     if (f.isNew && !f.email.trim()) out.push('לקוח חדש דורש כתובת דוא"ל');
-    if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח ב-Invoice4U הוא ספרות בלבד");
+    if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח במערכת ההנפקה הוא ספרות בלבד");
   }
   return out;
 }
@@ -314,7 +314,7 @@ export interface TrustTx {
 }
 export interface TrustAccount { id: string; bank_name: string; branch: string; account_number: string; closed_on: string | null; opened_on?: string | null }
 export const TRUST_TX: Record<TrustTxType, string> = {
-  DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה למשרד",
+  DEPOSIT: "הפקדה", DISBURSEMENT_TO_THIRD_PARTY: "תשלום לצד שלישי", EARNED_FEE_TRANSFER: "העברת שכר טרחה לפירמה",
   REFUND_TO_CLIENT: "החזר ללקוח", REVERSAL: "תיקון (ביטול תנועה)",
 };
 
@@ -549,7 +549,7 @@ export function trustFlowCoverage(rows: TrustTx[], accounts: TrustAccount[], sta
     { id: "account", label: "הוגדר חשבון נאמנות", done: accounts.length > 0 },
     { id: "deposit", label: "נרשמה הפקדה", done: has((t) => t.tx_type === "DEPOSIT") },
     { id: "withdrawal", label: "נרשמה משיכה (תשלום לצד שלישי או החזר ללקוח)", done: has((t) => t.tx_type === "DISBURSEMENT_TO_THIRD_PARTY" || t.tx_type === "REFUND_TO_CLIENT") },
-    { id: "fee", label: "הועבר שכר טרחה למשרד כנגד חשבונית", done: has((t) => t.tx_type === "EARNED_FEE_TRANSFER") },
+    { id: "fee", label: "הועבר שכר טרחה לפירמה כנגד חשבונית", done: has((t) => t.tx_type === "EARNED_FEE_TRANSFER") },
     { id: "reversal", label: "בוצע תיקון בתנועת ביטול", done: has((t) => t.tx_type === "REVERSAL") },
     { id: "statement", label: "הוזן דף בנק", done: statementAccounts.length > 0 },
   ];

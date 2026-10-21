@@ -23,7 +23,7 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wip, 
         <small>יתרת עו״ש זמינה</small>
         <b>{bankBalance == null ? "לא הוזנה" : money(bankBalance)}</b>
         {weeks != null && <span className={`ck-badge ${runwayTone}`}>{weeks} שבועות נזילות</span>}
-        <small>יתרה: הזנה ידנית (Invoice4U אינו מחזיק יתרת בנק). תקבולים ב-30 ימים: {money(collected30)} (Invoice4U)</small>
+        <small>יתרה: הזנה ידנית (מערכת ההנפקה אינה מחזיקה יתרת בנק). תקבולים ב-30 ימים: {money(collected30)} (מערכת ההנפקה)</small>
       </article>
       {wip != null && (
         <article className="ck-card crm-kpi">
@@ -33,7 +33,7 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wip, 
           {wip.awaiting > 0 && <small>{wip.awaiting} רישומים ממתינים לאישור שותף</small>}
           {wip.withoutRate > 0 && <small style={{ color: "var(--danger)" }}>{wip.withoutRate} רישומים ללא תעריף אינם נכללים בסכום</small>}
           {wip.nonHourlyHours > 0 && <small>בנוסף {wip.nonHourlyHours} שעות בתיקים שאינם לפי שעה (מחיר קבוע, ריטיינר, הצלחה)</small>}
-          <small>מקור: רישום זמנים בתיקים, מתומחר בכרטיסי התעריפים של המשרד</small>
+          <small>מקור: רישום זמנים בתיקים, מתומחר בכרטיסי התעריפים של הפירמה</small>
         </article>
       )}
       <article className="ck-card crm-kpi">
@@ -42,13 +42,13 @@ export function ExecutiveKpiCards({ bankBalance, monthlyBurn, collected30, wip, 
         <div className="crm-split">
           {BUCKETS.map((k) => <span key={k}>{BUCKET_LABEL[k]}<b style={{ fontSize: 13, color: k === "D90_PLUS" && aging.buckets[k] > 0 ? "var(--danger)" : undefined }}>{money(aging.buckets[k])}</b></span>)}
         </div>
-        <small>מקור: חשבונות עסקה פתוחים בספר Invoice4U (בסיס מזומן). מתוכן טרם הגיע מועד התשלום: {money(aging.notYetDue)}</small>
+        <small>מקור: חשבונות עסקה פתוחים בספר החשבונות (בסיס מזומן). מתוכן טרם הגיע מועד התשלום: {money(aging.notYetDue)}</small>
       </article>
       {trust != null && (
         <article className="ck-card crm-kpi trust">
           <small>כספי לקוחות בנאמנות</small>
           <b>{money(trust)}</b>
-          <small>מקור: פנקס הנאמנות של המערכת. אינו נספר בהכנסות ואינו מופיע בתזרים המשרד</small>
+          <small>מקור: פנקס הנאמנות של המערכת. אינו נספר בהכנסות ואינו מופיע בתזרים הפירמה</small>
         </article>
       )}
     </section>

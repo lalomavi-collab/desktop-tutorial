@@ -5,8 +5,10 @@ import { OPEN_COOKIE_EVENT } from "./CookieConsent";
 import { Wordmark } from "./Wordmark";
 import { AppInstall } from "./AppInstall";
 import { byLang } from "../lib/byLang";
+import { FwdArrow } from "./FwdArrow";
 
-const DIAG = { he: "לתיאום סשן אבחון טק-משפטי", en: "Schedule Tech-Legal Diagnostics", ar: "لتنسيق جلسة تشخيص تقني قانوني", es: "Programar un diagnóstico Tech-Legal", fr: "Planifier un diagnostic Tech-Legal" };
+// Opens the readiness questions (/risk), the same destination as the header's diagnostics session. Not a booking: /book is the page for that.
+const DIAG = { he: "לסשן אבחון טק-משפטי", en: "Tech-Legal Diagnostics session", ar: "إلى جلسة التشخيص التقني القانوني", es: "Sesión de diagnóstico Tech-Legal", fr: "Session de diagnostic Tech-Legal" };
 
 function LinkedInIcon() {
   return (
@@ -119,7 +121,7 @@ export function Footer() {
           <address className="footer-address">
             {addr.map((line, i) => <span key={i}>{line}</span>)}
           </address>
-          <Link to="/book" className="footer-diag">{byLang(DIAG, lang)} &rarr;</Link>
+          <Link to="/risk" className="footer-diag">{byLang(DIAG, lang)} <FwdArrow /></Link>
         </div>
       </div>
 

@@ -43,6 +43,8 @@ export type Ruling = {
   implications?: string;
   quote?: string;
   sources: RulingSource[];
+  /** Set only when verification is incomplete: says what was read and what is still missing. */
+  partial?: string;
   /** Slug of the LALUM article this record was written from. */
   article?: string;
   /** Slugs of other LALUM articles that cover the same subject. A link in both

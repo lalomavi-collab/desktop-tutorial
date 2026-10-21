@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
 import { Icon } from "../../components/Icon";
 import { Wordmark } from "../../components/Wordmark";
-import { AreaChart, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
+import { AreaChart, BarsH, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
 import { FolderArt, ImportArt, InboxArt, ShieldArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
 import { delta, loadDashboard, series } from "../../lib/cockpit/dashboard";
 import type { DashData } from "../../lib/cockpit/dashboard";
 import { dur } from "../../lib/cockpit/work";
+import { DashFinance } from "../../components/cockpit/DashFinance";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import "../../styles/cockpit-dashboard.css";
 
@@ -57,7 +58,7 @@ function RankRow({ label, value, total, color }: { label: string; value: number;
 }
 
 /** preload skips the fetch (previews and tests feed it synthetic data). */
-export function DashView({ name, firmName, role, preload }: { name: string; firmName: string; role: string; preload?: DashData }) {
+export function DashView({ name, firmName, role, firmId, preload }: { name: string; firmName: string; role: string; firmId?: string; preload?: DashData }) {
   const [data, setData] = useState<DashData | null>(preload ?? null);
   const [mode, setMode] = useState<"weekly" | "monthly">("weekly");
   const [q, setQ] = useState("");
@@ -85,6 +86,12 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
   const cn = useClientNames();
   const rows = useMemo(() => (data?.matters ?? []).filter((m) => cn.match(m, q)).slice(0, 6), [data, q, cn]);
   const recentInq = (data?.inquiries ?? []).slice().sort((a, b) => b.received_at.localeCompare(a.received_at)).slice(0, 4);
+  const byArea = useMemo(() => {
+    const n = new Map<string, number>();
+    for (const m of data?.matters ?? []) n.set(m.practice_area, (n.get(m.practice_area) ?? 0) + 1);
+    return [...n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => ({ label: PRACTICE[k] ?? k, value: v }));
+  }, [data]);
+  const byRisk = (r: string) => (data?.matters ?? []).filter((m) => (m.risk_level ?? "NOT_ASSESSED") === r).length;
   const byStatus = (s: string) => (data?.inquiries ?? []).filter((i) => i.status === s).length;
 
   return (
@@ -138,6 +145,19 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
 
           <div className="db-grid b">
             <div className="ck-card db-card">
+              <div className="db-head"><h3>תיקים לפי תחום</h3></div>
+              {byArea.length === 0 ? <div className="db-empty">אין תיקים עדיין.</div> : <BarsH items={byArea} />}
+            </div>
+            <div className="ck-card db-card db-center">
+              <div className="db-head"><h3>תיקים לפי רמת סיכון</h3></div>
+              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "#b3402f" }, { label: "זהירות", value: byRisk("CAUTION"), color: "#f5c431" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "#537056" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "#9bbb9f" }]} />
+            </div>
+          </div>
+
+          {firmId && <DashFinance firmId={firmId} />}
+
+          <div className="db-grid b">
+            <div className="ck-card db-card">
               <div className="db-head"><h3>משימות לפי מצב</h3><Link className="ck-link" to="/workspace/tasks">לכל המשימות</Link></div>
               <ul className="db-ranks">
                 <RankRow label="פתוחות" value={Math.max(0, view.open - view.overdue)} total={data.tasks.length} color="#9bbb9f" />
@@ -173,8 +193,8 @@ export function DashView({ name, firmName, role, preload }: { name: string; firm
 
 export function DashboardPage() {
   return (
-    <CockpitFrame title="לוח בקרה" description="תמונת מצב של התיקים, הפניות והמשימות במשרד." path="/workspace/dashboard">
-      {({ member }) => member && <DashView name={member.name} firmName={member.lalum_firms.firm_name} role={({ FIRM_PARTNER: "שותף", ATTORNEY: "עורך דין", ADMIN: "מנהל" } as Record<string, string>)[member.role] ?? member.role} />}
+    <CockpitFrame title="לוח בקרה" description="תמונת מצב של התיקים, הפניות והמשימות בפירמה." path="/workspace/dashboard">
+      {({ member }) => member && <DashView firmId={member.firm_id} name={member.name} firmName={member.lalum_firms.firm_name} role={({ FIRM_PARTNER: "שותף", ATTORNEY: "עורך דין", ADMIN: "מנהל" } as Record<string, string>)[member.role] ?? member.role} />}
     </CockpitFrame>
   );
 }

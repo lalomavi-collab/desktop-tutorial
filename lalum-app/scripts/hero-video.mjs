@@ -15,6 +15,11 @@
 // illustration and says so on screen; nothing here asserts a legal position.
 //
 //   PLAYWRIGHT_MODULE=$(npm root -g)/playwright node scripts/hero-video.mjs
+//   HERO_LANG=en PLAYWRIGHT_MODULE=$(npm root -g)/playwright node scripts/hero-video.mjs
+//
+// HERO_LANG picks the copy and the direction: he (default, writes lalum-hero.mp4 and .jpg) or
+// en (writes lalum-hero.en.mp4 and .en.jpg, left to right). The site shows the English clip to
+// every visitor whose language is not Hebrew.
 //
 // Needs ffmpeg on PATH. Playwright is a dev tool here, not an app dependency.
 import { readFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
@@ -23,27 +28,60 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
+const pw = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
+const chromium = pw.chromium ?? pw.default.chromium;
 
 const W = 720;
 const H = 900;
 const FPS = 30;
 const DUR = 16;
 const out = path.join(root, "public/media");
-const frames = path.join(process.env.TMPDIR || "/tmp", "lalum-hero-frames");
-if (existsSync(frames)) rmSync(frames, { recursive: true });
-mkdirSync(frames, { recursive: true });
 
 const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf8").replace(/<svg /, '<svg class="wm" ');
 
-// Hebrew copy. No dashes as punctuation (CLAUDE.md).
-const SCENES = [
-  { a: 2.4, b: 6.4, h: "AI קורא את החוזה", p: "ומסמן סעיפים שכדאי לעצור עליהם" },
-  { a: 6.6, b: 10.2, h: "ומדרג כל סיכון", p: "ציות, ביטוח, תיעוד ורגולציה, במבט אחד" },
-  { a: 10.4, b: 13.8, h: "המכונה מסמנת. האדם מכריע.", p: "ייעוץ משפטי בעידן הבינה המלאכותית" },
-];
+// Copy per language. No dashes as punctuation (CLAUDE.md).
+const LANG = process.env.HERO_LANG === "en" ? "en" : "he";
+const COPY = {
+  he: {
+    dir: "rtl", align: "right", suffix: "", pch: 26,
+    scenes: [
+      { a: 2.4, b: 6.4, h: "AI קורא את החוזה", p: "ומסמן סעיפים שכדאי לעצור עליהם" },
+      { a: 6.6, b: 10.2, h: "ומדרג כל סיכון", p: "ציות, ביטוח, תיעוד ורגולציה, במבט אחד" },
+      { a: 10.4, b: 13.8, h: "המכונה מסמנת. האדם מכריע.", p: "ייעוץ משפטי בעידן הבינה המלאכותית" },
+    ],
+    note: "סעיף לדוגמה, להמחשה בלבד",
+    label: "הסכם שירות, סעיף לדוגמה",
+    clause: ["הספק לא יישא באחריות ", "לכל נזק, ישיר או עקיף,", " מכל סיבה שהיא, ", "ובכל סכום."],
+    chips: ["סיכון גבוה", "נקודה לבדיקה"],
+    tiers: ["מינימלי", "מוגבל", "גבוה"],
+    stamp: "אושר על ידי עורך דין",
+    labels: { 2: "ציות", 3: "ביטוח", 4: "תיעוד", 5: "רגולטור" },
+    endLine: "AI שאפשר להגן עליו.", endName: "ד״ר עו״ד אברהם ללום", endSub: "ייעוץ משפטי בעידן הבינה המלאכותית",
+  },
+  en: {
+    dir: "ltr", align: "left", suffix: ".en", pch: 34,
+    scenes: [
+      { a: 2.4, b: 6.4, h: "AI reads the contract", p: "and flags the clauses worth a pause" },
+      { a: 6.6, b: 10.2, h: "Then rates every risk", p: "Compliance, insurance, documentation and regulation, at a glance" },
+      { a: 10.4, b: 13.8, h: "The machine flags. The human decides.", p: "Legal advice in the age of AI" },
+    ],
+    note: "Sample clause, for illustration only",
+    label: "Services agreement, sample clause",
+    clause: ["The Supplier shall not be liable for ", "any damage, direct or indirect,", " from any cause whatsoever, ", "in any amount."],
+    chips: ["High risk", "Check this point"],
+    tiers: ["Minimal", "Limited", "High"],
+    stamp: "Approved by a lawyer",
+    labels: { 2: "Compliance", 3: "Insurance", 4: "Documentation", 5: "Regulator" },
+    endLine: "AI you can defend.", endName: "Dr. Avraham Lalum, Adv.", endSub: "Legal advice in the age of AI",
+  },
+}[LANG];
+const SCENES = COPY.scenes;
 
-const html = `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><style>
+const frames = path.join(process.env.TMPDIR || "/tmp", "lalum-hero-frames-" + LANG);
+if (existsSync(frames)) rmSync(frames, { recursive: true });
+mkdirSync(frames, { recursive: true });
+
+const html = `<!doctype html><html lang="${LANG}" dir="${COPY.dir}"><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}
 html,body{width:${W}px;height:${H}px;overflow:hidden;background:#101712}
 body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f1e8}
@@ -64,9 +102,9 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 #stamp{position:absolute;left:50%;top:330px;margin-left:-190px;width:380px;text-align:center;font-size:34px;font-weight:700;color:#7be09a;border:5px solid #7be09a;border-radius:16px;padding:12px 8px;background:rgba(16,48,26,.9);opacity:0;transform:rotate(-7deg)}
 #note{position:absolute;left:0;right:0;top:132px;text-align:center;font-size:14px;color:#b8c7b3;opacity:.0}
 svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
-.txt{position:absolute;left:56px;right:56px;top:640px;text-align:right}
-.txt h2{font-size:50px;line-height:1.12;font-weight:700;letter-spacing:-.5px}
-.txt p{margin-top:18px;font-size:25px;line-height:1.4;color:#cfd9cb;max-width:26ch}
+.txt{position:absolute;left:56px;right:56px;top:640px;text-align:${COPY.align}}
+.txt h2{font-size:50px;line-height:1.12;font-weight:700;letter-spacing:-.5px;text-wrap:balance}
+.txt p{margin-top:18px;font-size:25px;line-height:1.4;color:#cfd9cb;max-width:${COPY.pch}ch}
 .rule{display:block;width:64px;height:3px;background:#769d79;margin-bottom:22px}
 .name{position:absolute;left:0;right:0;text-align:center}
 .name b{display:block;font-size:40px;font-weight:700}
@@ -75,15 +113,15 @@ svg#art{position:absolute;left:0;top:130px;width:${W}px;height:470px}
 </style><body>
 <div class="bg"></div><div class="grid"></div>
 <div id="wmTop" class="wm" style="top:70px">${logo}</div>
-<div id="note">סעיף לדוגמה, להמחשה בלבד</div>
-<div id="doc"><div class="lbl">הסכם שירות, סעיף לדוגמה</div>
-<div class="cl">הספק לא יישא באחריות <span class="fl" id="f1">לכל נזק, ישיר או עקיף,</span> מכל סיבה שהיא, <span class="fl" id="f2">ובכל סכום.</span></div><div id="beam"></div></div>
-<div id="chips"><span class="chip hi" id="c1">סיכון גבוה</span><span class="chip" id="c2">נקודה לבדיקה</span></div>
-<div id="tiers"><span class="tier g">מינימלי</span><span class="tier a">מוגבל</span><span class="tier r">גבוה</span></div>
-<div id="stamp">אושר על ידי עורך דין</div>
+<div id="note">${COPY.note}</div>
+<div id="doc"><div class="lbl">${COPY.label}</div>
+<div class="cl">${COPY.clause[0]}<span class="fl" id="f1">${COPY.clause[1]}</span>${COPY.clause[2]}<span class="fl" id="f2">${COPY.clause[3]}</span></div><div id="beam"></div></div>
+<div id="chips"><span class="chip hi" id="c1">${COPY.chips[0]}</span><span class="chip" id="c2">${COPY.chips[1]}</span></div>
+<div id="tiers"><span class="tier g">${COPY.tiers[0]}</span><span class="tier a">${COPY.tiers[1]}</span><span class="tier r">${COPY.tiers[2]}</span></div>
+<div id="stamp">${COPY.stamp}</div>
 <svg id="art" viewBox="0 0 ${W} 470" fill="none" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div class="txt" id="txt"></div>
-<div class="name" id="end" style="top:400px"><i>AI שאפשר להגן עליו.</i><b>ד״ר עו״ד אברהם ללום</b><span>ייעוץ משפטי בעידן הבינה המלאכותית</span></div>
+<div class="name" id="end" style="top:400px"><i>${COPY.endLine}</i><b>${COPY.endName}</b><span>${COPY.endSub}</span></div>
 <script>
 const SCENES=${JSON.stringify(SCENES)};
 const ART=document.getElementById("art"),TXT=document.getElementById("txt"),END=document.getElementById("end"),WM=document.getElementById("wmTop");
@@ -99,7 +137,7 @@ const io=(t,a,b,fi=.5,fo=.5)=>Math.min(ease((t-a)/fi),ease((b-t)/fo));
 
 // Network layout (stage 2) and scales-of-justice layout (stage 3), same 14 nodes.
 const A=[[250,200],[420,230],[360,60],[160,120],[560,120],[110,260],[600,270],[250,380],[470,380],[360,300],[360,170],[200,320],[530,200],[300,110]];
-const LBL={2:"ציות",3:"ביטוח",4:"תיעוד",5:"רגולטור"};
+const LBL=${JSON.stringify(COPY.labels)};
 const E1=[[0,10],[1,10],[10,2],[10,13],[13,3],[2,4],[0,11],[11,5],[11,7],[1,12],[12,6],[12,4],[1,9],[0,9],[9,7],[9,8],[8,6],[3,0],[13,2],[4,1]];
 // scale: pole 0-? we map: 0 beam-left,1 beam-right,2 pole-top,3 pan L outer,4 pan R outer,5 pan L inner... see edges
 const B=[[200,110],[520,110],[360,50],[130,250],[290,250],[430,250],[590,250],[360,400],[270,420],[450,420],[360,230],[210,300],[510,300],[360,110]];
@@ -191,6 +229,6 @@ await browser.close();
 
 execFileSync("ffmpeg", ["-v", "error", "-y", "-framerate", String(FPS), "-i", path.join(frames, "f%04d.png"),
   "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-preset", "slow", "-movflags", "+faststart", "-an",
-  path.join(out, "lalum-hero.mp4")], { stdio: "inherit" });
-execFileSync("ffmpeg", ["-v", "error", "-y", "-i", path.join(frames, "poster.png"), "-q:v", "4", path.join(out, "lalum-hero.jpg")], { stdio: "inherit" });
-console.log("wrote public/media/lalum-hero.mp4 and lalum-hero.jpg");
+  path.join(out, `lalum-hero${COPY.suffix}.mp4`)], { stdio: "inherit" });
+execFileSync("ffmpeg", ["-v", "error", "-y", "-i", path.join(frames, "poster.png"), "-q:v", "4", path.join(out, `lalum-hero${COPY.suffix}.jpg`)], { stdio: "inherit" });
+console.log(`wrote public/media/lalum-hero${COPY.suffix}.mp4 and lalum-hero${COPY.suffix}.jpg`);

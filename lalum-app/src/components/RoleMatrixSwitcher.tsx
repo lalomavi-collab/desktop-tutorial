@@ -2,6 +2,7 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
 import { byLang } from "../lib/byLang";
+import { FwdArrow } from "./FwdArrow";
 
 // Entry by who you are, in four institutional tabs instead of one flat list of
 // keywords. Every link and every sentence comes from copy the site already has
@@ -87,7 +88,7 @@ export function RoleMatrixSwitcher() {
             <Link key={c.label + c.to} to={c.to} className="bento-cell rms-cell">
               <strong>{c.label}</strong>
               {c.body !== cur.lede && <span>{c.body}</span>}
-              <em aria-hidden="true">&rarr;</em>
+              <em aria-hidden="true"><FwdArrow /></em>
             </Link>
           ))}
         </div>

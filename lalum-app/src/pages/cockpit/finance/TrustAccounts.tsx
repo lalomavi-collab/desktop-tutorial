@@ -61,7 +61,7 @@ export function TrustAccounts({ firmId, accounts, rows, statementAccounts, onCha
       </div>
       {f && (
         <div className="ck-card ck-stack">
-          <div className="ck-meta">{editId ? "עריכת פרטי החשבון. סגירה וקביעת תאריך פתיחה אינן חלק מהעריכה." : "חשבון בנק ייעודי לכספי לקוחות, נפרד מחשבון המשרד. מספר החשבון נשמר מלא ומוצג בהסתרה."}</div>
+          <div className="ck-meta">{editId ? "עריכת פרטי החשבון. סגירה וקביעת תאריך פתיחה אינן חלק מהעריכה." : "חשבון בנק ייעודי לכספי לקוחות, נפרד מחשבון הפירמה. מספר החשבון נשמר מלא ומוצג בהסתרה."}</div>
           <div className="ck-grid2">
             <label className="ck-field">בנק<input className="ck-input" value={f.bank_name} onChange={set("bank_name")} /></label>
             <label className="ck-field">סניף<input className="ck-input" dir="ltr" inputMode="numeric" value={f.branch} onChange={set("branch")} /></label>

@@ -4,6 +4,7 @@ import { PageMeta } from "../components/PageMeta";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
 import { Link } from "../components/AppLink";
+import { FwdArrow } from "../components/FwdArrow";
 
 export function Legal() {
   const { t, lang } = useLang();
@@ -41,7 +42,7 @@ export function Legal() {
           ))}
           {s.id === "security" && lang === "he" && (
             <p style={{ fontSize: 16, margin: "0 0 14px" }}>
-              <Link to="/security" style={{ color: "var(--clay)", fontWeight: 600 }}>לפירוט הבקרות שנבדקו, החוברת וסקריפט הביקורת &rarr;</Link>
+              <Link to="/security" style={{ color: "var(--clay)", fontWeight: 600 }}>לפירוט הבקרות שנבדקו, החוברת וסקריפט הביקורת <FwdArrow /></Link>
             </p>
           )}
         </div>

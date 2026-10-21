@@ -85,14 +85,17 @@
 }
 .hdr-cta:hover { background: #d9c29f; color: #07080b; }
 /* The top bar keeps one row: groups first to go on narrower desktops. */
-@media (max-width: 1120px) { .header-groups { display: none; } }
+/* The four groups need about 625px beside the brand, the menu and the tools.
+   Below 1171px even the Hebrew labels overlap the neighbours, so the groups
+   step aside there and the menu button gets its label back. */
+@media (max-width: 1170px) { .header-groups { display: none; } }
 .header-more-wrap + .header-groups { margin-inline: 8px; }
 .header-login { border-radius: 2px; background: transparent; }
 .header-login .header-cta-label { display: none; }
 .header-login { padding: 0 12px; }
 /* With the groups on screen the menu button is the icon alone; its label
    returns when the groups step aside. */
-@media (min-width: 1121px) { .header-menu-btn span { display: none; } .header-menu-btn { padding-inline: 12px; } }
+@media (min-width: 1171px) { .header-menu-btn span { display: none; } .header-menu-btn { padding-inline: 12px; } }
 
 /* ---------- direct counsel (was SOS): one hairline of gold, no red ---------- */
 .tb-btn.tb-sos {
@@ -176,7 +179,7 @@
 }
 .ccd-head span:last-child { color: var(--slate); font-size: 10px; }
 .ccd-title { font-size: 22px; line-height: 1.3; margin: 0 0 12px; }
-.ccd-body { font-size: 15px; line-height: 1.7; color: var(--slate); margin: 0; text-align: start; }
+.ccd-body { font-size: 15px; line-height: 1.7; color: var(--slate); margin: 0; text-align: justify; text-justify: inter-word; text-align-last: start; text-wrap: pretty; }
 .ccd-art { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
 .ccd-art li { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 10.5px; letter-spacing: 0.1em; color: var(--slate); }
 .ccd-tiers li[data-on="true"] { color: var(--ink); }
@@ -255,7 +258,7 @@
 .hm-tile svg, .hm-tile .header-more-pay-symbol { color: var(--clay); flex: none; }
 .hm-tile:hover, .hm-tile:focus-visible { background: var(--clay-tint); }
 .hm-tile-os { border-color: var(--clay-soft); background: var(--clay-tint); }
-.hm-tile:nth-child(3) { grid-column: 1 / -1; }
+.hm-tile-wide { grid-column: 1 / -1; }
 .hm-group { padding: 12px 2px 4px; border-top: 1px solid var(--line); margin-top: 8px; }
 .hm-gh { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); margin: 0 4px 8px; }
 .hm-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -287,12 +290,14 @@
   .header-more-menu .hm-link { font-size: 15px; }
 }
 @media (max-width: 360px) { .hm-links { grid-template-columns: 1fr; } }
-/* Arabic, Spanish and French labels are longer than the bar can hold beside
-   the tools, so in those languages the four groups live in the menu (where
-   they are the same four groups) and the menu button keeps its label. */
-html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
-@media (min-width: 1121px) {
-  html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
+/* English, Arabic, Spanish and French labels are longer than the bar can hold
+   beside the tools (English measures about 620px for the groups against 360px
+   free, at every width, because the page column stops at 1180px), so in those
+   languages the four groups live in the menu (where they are the same four
+   groups) and the menu button keeps its label. */
+html[lang="en"] .header-groups, html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] .header-groups { display: none; }
+@media (min-width: 1171px) {
+  html[lang="en"] .header-menu-btn span, html[lang="ar"] .header-menu-btn span, html[lang="es"] .header-menu-btn span, html[lang="fr"] .header-menu-btn span { display: inline; }
 }
 
 /* ---------- light / dark button (sun, as in the partners system) ---------- */
@@ -301,4 +306,76 @@ html[lang="ar"] .header-groups, html[lang="es"] .header-groups, html[lang="fr"] 
 
 /* The tag sits beside the wordmark inside the menu panel; the top bar keeps its
    room for the groups and the tools. */
-.hm-brand { display: inline-flex; align-items: center; gap: 12px; }
+.hm-brand { display: inline-flex; flex-direction: column; align-items: stretch; gap: 7px; }
+/* The mark and its tag are one lockup: stacked, the same width, tag centred under the wordmark. */
+.hm-brand .hdr-badge { text-align: center; }
+
+/* ---------- the phone menu fits one screen ----------
+   The full-screen menu used to scroll: the language switch, the contact row
+   and the utilities sat below the fold. On phones the group headings are
+   dropped visually (each group is two self-explanatory links and keeps its
+   aria-label), the language switch moves under the panel header, and every
+   row scales with the viewport height so the whole panel lands in one frame
+   from 568px tall phones up. Taller screens keep the full 44px rows. */
+@media (max-width: 900px) {
+  .header-more-menu {
+    --hm-row: clamp(32px, 5.7dvh, 44px);
+    display: flex; flex-direction: column;
+    padding-block-start: 4px;
+    padding-block-end: calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .header-more-menu .header-more-head { padding-block: 2px 6px; margin-bottom: 0; }
+  .header-more-menu .hm-top { gap: 6px; margin: 4px 0 6px; }
+  .header-more-menu .header-more-close { block-size: 36px; inline-size: 36px; }
+  .header-more-menu .hm-tile { min-height: var(--hm-row); padding-block: 0; font-size: 14px; }
+  .header-more-menu .hm-group { padding: 0; margin: 0 0 6px; border-top: 0; }
+  .header-more-menu .hm-gh {
+    position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+  .header-more-menu .hm-links { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .header-more-menu .hm-link { min-height: var(--hm-row); padding-block: 0; font-size: 14.5px; }
+  .header-more-menu .hm-link:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .header-more-menu .hm-ch { flex-direction: row; gap: 7px; min-height: var(--hm-row); padding-block: 0; font-size: 12.5px; }
+  .header-more-menu .hm-utils { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; padding: 6px 2px 0; margin-top: 0; }
+  .header-more-menu .hm-util { min-height: calc(var(--hm-row) - 4px); font-size: 12.5px; }
+}
+
+/* ---------- header language menu ---------- */
+.lang-menu { display: inline-flex; }
+.lang-menu-list {
+  position: absolute; top: calc(100% + 6px); inset-inline-end: 12px; z-index: 60;
+  min-inline-size: 170px; padding: 6px;
+  background: var(--card); border: 1px solid var(--line-strong); border-radius: 12px;
+  box-shadow: 0 20px 40px -20px rgba(26, 24, 21, 0.45);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.lang-menu-item {
+  min-block-size: 44px; padding-inline: 14px; text-align: start;
+  background: transparent; border: 0; border-radius: 8px; color: var(--ink);
+  font-family: var(--sans); font-size: 15px; font-weight: 500; cursor: pointer;
+}
+.lang-menu-item:hover, .lang-menu-item:focus-visible { background: var(--clay-tint); }
+.lang-menu-item.on { background: var(--clay-tint); font-weight: 700; }
+/* While the list is open the header lifts above the floating cookie banner and
+   docks, the same way it does for the full menu, so the list is never covered. */
+.site-header:has(.lang-menu-list) { z-index: 160; }
+
+/* ---------- menu: every row is a button ---------- */
+.hm-tile-cta { background: #c5a880; border-color: #c5a880; color: #07080b; justify-content: center; letter-spacing: 0.04em; }
+.hm-tile-cta:hover, .hm-tile-cta:focus-visible { background: #d9c29f; color: #07080b; }
+.hm-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 8px; }
+.hm-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 38px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: 2px; background: transparent;
+  color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; text-decoration: none; cursor: pointer;
+}
+.hm-btn svg, .hm-btn .header-more-pay-symbol { color: var(--clay); flex: none; }
+.hm-btn:hover, .hm-btn:focus-visible { background: var(--clay-tint); border-color: var(--clay-soft); }
+.hm-btn-wide { grid-column: 1 / -1; }
+.hm-mini .hm-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .header-more-menu .hm-mini { gap: 6px; margin: 0 0 6px; }
+  .header-more-menu .hm-btn { min-height: calc(var(--hm-row) - 6px); font-size: 12px; gap: 5px; padding: 0 6px; }
+}

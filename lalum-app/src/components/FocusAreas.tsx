@@ -1,6 +1,7 @@
 import { Link } from "./AppLink";
 import { Icon } from "./Icon";
 import { useLang } from "../context/LangContext";
+import { FwdArrow } from "./FwdArrow";
 
 // The two areas the practice leads with, as a pair of cards.
 //
@@ -43,7 +44,7 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
               intelligence are each their own line of work inside AI & Law,
               not one blurred offering. */}
           <ul className="chip-row">{h.advisoryAiTags.split(" · ").map((x) => <li key={x}>{x}</li>)}</ul>
-          <span className="card-go">{h.advisoryMore} &rarr;</span>
+          <span className="card-go">{h.advisoryMore} <FwdArrow /></span>
         </Link>
         <Link to="/real-estate-legal-advisory" className="card" aria-label={h.advisoryReTitle}>
           <span className="icon-badge"><Icon name="scale" size={23} /></span>
@@ -51,7 +52,7 @@ export function FocusAreas({ withHeading = true }: { withHeading?: boolean }) {
           <h3 className="h3" style={{ fontSize: 22, margin: "6px 0 10px", lineHeight: 1.25 }}>{h.advisoryReTitle}</h3>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--slate)", margin: 0 }}>{h.advisoryReBody}</p>
           <ul className="chip-row">{h.advisoryReTags.split(" · ").map((x) => <li key={x}>{x}</li>)}</ul>
-          <span className="card-go">{h.advisoryMore} &rarr;</span>
+          <span className="card-go">{h.advisoryMore} <FwdArrow /></span>
         </Link>
       </div>
       <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--slate)", margin: "26px 0 0" }}>

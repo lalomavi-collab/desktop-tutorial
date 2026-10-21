@@ -3,6 +3,19 @@
    Ported from the Home-en / Training Claude Design sources.
    ============================================================ */
 
+/* ---------- Lalum Serif, the display family ----------
+   Hebrew from Frank Ruhl Libre, Latin from Newsreader at its display optical
+   size, merged into one file per style (SIL OFL, see /fonts/OFL.txt and
+   brand/fonts/README.md). Real 400, 500 and 700 faces and one italic, so no
+   weight is ever synthesised. Self-hosted: no third party request for the
+   headings. */
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/lalum-serif-400.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/lalum-serif-500.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/lalum-serif-700.woff2") format("woff2"); }
+@font-face { font-family: "Lalum Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/lalum-serif-400-italic.woff2") format("woff2"); }
+/* Signature face for the home page headline only (owner choice, 20.10.2026): Amatic SC Regular (SIL OFL), a 24 KB subset, Hebrew and basic Latin. */
+@font-face { font-family: "Amatic SC"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/amatic-sc-400.woff2") format("woff2"); }
+
 :root {
   --ivory: #f5f1e8;
   --paper: #fbf9f3;
@@ -44,26 +57,23 @@
   --warning: #b8842a;
 
   --sans: "Hanken Grotesk", system-ui, sans-serif;
-  --serif: "Newsreader", Georgia, serif;
+  --serif: "Lalum Serif", "Newsreader", Georgia, serif;
   --sec: 108px;
   --maxw: 1180px;
 }
 
 /* Hebrew swaps to complex-script fonts while keeping the clay/ivory look.
-   Assistant is a modern, crisp Hebrew sans for body; Suez One is a modern Hebrew
-   editorial slab-serif for headings, giving the display type real weight and a
-   premium, authoritative voice. David/Georgia serif faces are fallbacks. Slightly
-   more line-height so Hebrew descenders never clip. */
+   Assistant is a modern, crisp Hebrew sans for body; Lalum Serif (Frank Ruhl
+   Libre letters, the Hebrew classic of legal and editorial print) carries the
+   headings. David/Georgia serif faces are fallbacks. Slightly more line-height
+   so Hebrew descenders never clip. */
 html[lang="he"] {
   --sans: "Assistant", "Heebo", "Segoe UI", "Arial Hebrew", Tahoma, sans-serif;
-  --serif: "Suez One", "David Libre", Georgia, serif;
+  --serif: "Lalum Serif", "David Libre", Georgia, serif;
 }
-/* Suez One ships a single (already heavy) weight. Various heading classes across
-   the app request 500/700, which the browser would fake as a smeared bold on a
-   display face. Disabling weight synthesis makes every Hebrew heading render
-   Suez One's true weight, so the display type is uniform on every page. Body
-   text is unaffected: Assistant carries real 400-800 faces, so nothing there is
-   ever synthesised. Hierarchy comes from size, as it should for a display face. */
+/* Lalum Serif has real 400, 500 and 700 faces, so nothing is synthesised. The
+   Hebrew body face, Assistant, has real 400 to 800. Synthesis stays off so a
+   weight a face does not carry is never smeared into a faux bold. */
 html[lang="he"] {
   font-synthesis-weight: none;
 }
@@ -78,31 +88,30 @@ html[lang="he"] .btn {
 html[lang="he"] .eyebrow {
   letter-spacing: 0.04em;
 }
-/* Hebrew display type. Suez One is a single-weight editorial slab, already heavy
-   and confident, so the headings use its natural weight (400) rather than a faux
-   bold, which would smear a display face. Latin negative tracking is neutralised
-   (it thins Hebrew letterforms), and the accent line uses colour instead of
-   italic, which Hebrew has no genuine form of. */
+/* Hebrew display type. Headings sit on the 500 face of Lalum Serif. Latin
+   negative tracking is neutralised (it thins Hebrew letterforms), and the
+   accent line uses colour instead of italic, which Hebrew has no genuine form
+   of. */
 html[lang="he"] .h1,
 html[lang="he"] h1.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.15;
 }
 html[lang="he"] .h2,
 html[lang="he"] h2.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.2;
 }
 html[lang="he"] .h3,
 html[lang="he"] h3.serif {
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
 }
 html[lang="he"] .italic-clay {
   font-style: normal;
-  font-weight: 400;
+  font-weight: inherit;
 }
 
 /* Arabic swaps to complex-script fonts for the same reason as Hebrew: the
@@ -351,28 +360,92 @@ article p {
   hyphens: auto;
   overflow-wrap: break-word;
 }
-/* Card bodies sit inside `.section`, so the rule above would justify them too.
-   At a card's short measure justify opens ugly gaps, so force them back to
-   clean start alignment (matching specificity, declared later to win). */
+/* Card bodies and, on phones, section copy are justified too (owner decision, 20.10.2026):
+   both margins stay straight. Earlier these fell back to start alignment because justify opens
+   gaps at a short measure; that is limited here by keeping the last line at the start edge,
+   balancing line ends (text-wrap: pretty) and never hyphenating Hebrew. Revert by restoring
+   `text-align: start` on these two rules. */
 .section .card p:not(.label),
 .card p:not(.label) {
-  text-align: start;
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: start;
+  text-wrap: pretty;
   -webkit-hyphens: manual;
   hyphens: manual;
 }
-/* On phones the wide reading column shrinks to the viewport width. At that short
-   measure justify stretches the inter-word spaces into ragged gaps (worst on
-   lines that carry a long Latin term inside Hebrew). Below the mobile breakpoint
-   fall back to clean start alignment, so Hebrew and English get identical, tidy
-   margins instead of stretched lines. */
 @media (max-width: 760px) {
-  .lede,
   .section p:not(.eyebrow):not(.label),
   article p {
+    text-align: justify;
+    text-justify: inter-word;
+    text-align-last: start;
+    text-wrap: pretty;
+    -webkit-hyphens: manual;
+    hyphens: manual;
+  }
+  /* The home hero lede is a short statement, not running text: it keeps start alignment. */
+  .hero-copy .lede {
     text-align: start;
     -webkit-hyphens: manual;
     hyphens: manual;
   }
+}
+
+/* Every public page (owner request, 20.10.2026: "all pages justified"): running text in
+   paragraphs and list items is justified on every route, phone and desktop. Zero specificity
+   (:where), so any component that sets its own alignment (centred bands, tables, buttons,
+   nav, the cockpit) keeps it. Eyebrows, labels, screen reader text and anything inside a
+   centred block (inline text-align: center, .panel-dark, .founder-card, .course-dark) are excluded. */
+:where(main) :where(p, li, dd, blockquote):not(.eyebrow, .label, .sr-only, [style*="text-align: center"] *, [style*="text-align:center"] *, .panel-dark *, .founder-card *, .course-dark *) {
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: start;
+  text-wrap: pretty;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
+/* Phones (owner request, 21.10.2026: the text read like a Word document, not like set type).
+   At a phone measure (about 30 characters a line) justification opens wide, uneven gaps between
+   words and the page looks typed rather than typeset, as the home page cards showed. So below
+   760px running text flows from the start edge with balanced line ends (text-wrap: pretty) and
+   headings are balanced; from 761px up the justified columns of the 20.10.2026 decision stay.
+   Revert by deleting this block. Centred blocks keep their alignment (same exclusions as the
+   rule above). */
+@media (max-width: 760px) {
+  html main :is(p, li, dd, blockquote):not(.eyebrow):not(.label):not(.sr-only):not([style*="text-align: center"] *, [style*="text-align:center"] *, .panel-dark *, .founder-card *, .course-dark *),
+  html main .section .card p:not(.label),
+  html main article p {
+    text-align: start;
+    text-align-last: auto;
+    text-wrap: pretty;
+  }
+  html main :is(h1, h2, h3) { text-wrap: balance; }
+}
+
+/* The home page signs every section headline and card title in the hero's hand (owner request,
+   21.10.2026: "the whole home page, the inner text of the sections too"). Amatic SC runs small
+   and narrow for its size, so headlines are set about 1.7 times larger than the serif and card
+   titles about 1.5 times; it is used for display sizes only, body copy stays in the text face.
+   Scoped to the home page (:has(.hero-home)); Arabic has no glyphs in it and keeps the serif.
+   Some of these headings carry their own inline font size, hence !important on the three size
+   properties. Revert by deleting this block. */
+:root:not([lang="ar"]):has(.hero-home) :is(h2.h2, h2.serif):not(.home-academy-title),
+:root:not([lang="ar"]):has(.hero-home) :is(h3.h3, h3.pillar-title, h3.article-card-title) {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  text-wrap: balance;
+}
+:root:not([lang="ar"]):has(.hero-home) :is(h2.h2, h2.serif):not(.home-academy-title) {
+  font-size: clamp(46px, 7vw, 64px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+}
+:root:not([lang="ar"]):has(.hero-home) :is(h3.h3, h3.pillar-title, h3.article-card-title) {
+  font-size: clamp(30px, 8vw, 38px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
 }
 
 /* ── Core practice-area cards ─────────────────────────────────────────── */
@@ -1098,6 +1171,19 @@ a.card:hover .card-go {
   letter-spacing: -0.015em;
   color: var(--paper);
   margin: 14px 0 16px;
+}
+/* The academy headline is signed in the same hand as the home page sentence (Amatic SC,
+   regular weight, no tracking, one ink colour). The face runs small and narrow for its size,
+   so it is set about 1.7 times larger than the serif it replaces and balanced over its lines.
+   Arabic has no glyphs in it and keeps the serif. */
+html:not([lang="ar"]) .home-academy-title {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(46px, 7vw, 64px);
+  line-height: 1.08;
+  text-wrap: balance;
+  margin: 10px 0 14px;
 }
 .home-academy-body {
   font-size: 17px;
@@ -2975,11 +3061,17 @@ html.a11y-reduce-motion *::after {
    text above the actions gives each its own full-width row, which is what
    "compact" actually looks like at this width. */
 @media (max-width: 900px) {
+  /* The hero's two buttons sit right above the tab bar on a phone, exactly where
+     a banner docked to the bottom lands, so a first visit could not see or tap
+     them until it chose. On phones the banner now docks under the sticky header
+     (77px), over the hero's decorative clip instead of over the actions, and its
+     three buttons share one row of equal width so it is one short block. */
   .cookie-banner {
-    bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+    top: 78px;
+    bottom: auto;
     inset-inline: 8px;
-    padding: 10px 12px;
-    gap: 10px;
+    padding: 8px 10px;
+    gap: 8px;
     border-radius: 12px;
     flex-direction: column;
     align-items: stretch;
@@ -2992,10 +3084,16 @@ html.a11y-reduce-motion *::after {
   }
   .cookie-banner-actions {
     gap: 6px;
-    justify-content: flex-end;
+    flex-wrap: nowrap;
   }
   .cookie-banner-actions .btn {
-    padding: 0 12px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 6px;
+    font-size: 12.5px;
+    white-space: normal;
+    line-height: 1.2;
+    min-block-size: 40px;
   }
 }
 /* Anonymous engagement-scenario card (sector, challenge, what we did, outcome). */
@@ -3407,12 +3505,9 @@ html.a11y-reduce-motion *::after {
   .header-tools {
     display: none;
   }
-  /* On a narrow (app) width, justified copy opens whitespace rivers and reads
-     like a dense website. Let text flow naturally from the start edge instead,
-     so the app feels lighter. Desktop keeps its clean justified columns. */
-  .lede,
-  .section p:not(.eyebrow):not(.label),
-  article p {
+  /* Section copy and card bodies stay justified on phones (owner decision, see the rules near
+     "Card bodies"); only the home hero lede, a short statement, flows from the start edge. */
+  .hero-copy .lede {
     text-align: start;
     -webkit-hyphens: manual;
     hyphens: manual;
@@ -4010,6 +4105,9 @@ html.a11y-reduce-motion *::after {
     background: none;
     border: 0;
     font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     cursor: pointer;
     color: var(--danger);
   }
@@ -4143,16 +4241,16 @@ html.a11y-reduce-motion *::after {
   .header-tools { gap: 6px; }
   .header-tools .tb-btn,
   .header-tools .share-btn {
-    width: 34px;
-    height: 34px;
+    width: var(--ctrl-h, 34px);
+    height: var(--ctrl-h, 34px);
   }
 }
 @media (max-width: 360px) {
   .header-tools { gap: 5px; }
   .header-tools .tb-btn,
   .header-tools .share-btn {
-    width: 31px;
-    height: 31px;
+    width: calc(var(--ctrl-h, 35px) - 4px);
+    height: calc(var(--ctrl-h, 35px) - 4px);
   }
 }
 
@@ -4287,28 +4385,6 @@ html.a11y-reduce-motion *::after {
   height: 1px;
   background: var(--line);
   margin: 6px 4px;
-}
-.header-more-langs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 4px 2px;
-}
-.header-more-lang {
-  padding: 7px 13px;
-  border-radius: 9999px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.header-more-lang.active {
-  background: var(--clay-tint);
-  border-color: var(--clay-soft);
-  font-weight: 700;
 }
 
 .guide-overlay {
@@ -5335,6 +5411,80 @@ html.a11y-reduce-motion *::after {
 /* Hero: a larger headline and a soft clay glow behind the clip, so the first
    screen has a focal point instead of a flat field. */
 .hero-home .hero-h1 { font-size: clamp(42px, 6vw, 76px); line-height: 1.04; }
+/* The page sentence is set like a signature: one condensed handwritten face, regular weight, one ink colour, no tracking.
+   Amatic SC runs small and narrow for its size, so it is set larger than the serif it replaces
+   (display ceiling 6rem) and balanced over two lines. Arabic has no glyphs in it and keeps its
+   own display face. */
+html:not([lang="ar"]) .hero-home .hero-h1 {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(60px, 7.6vw, 96px);
+  line-height: 1.04;
+  text-wrap: balance;
+}
+@media (max-width: 760px) {
+  html:not([lang="ar"]) .hero-home .hero-h1 { font-size: clamp(56px, 15vw, 72px); }
+}
+/* Hebrew and English are short enough to be signed on one line, the way a signature is written.
+   The line is sized so it fits the column at every width from 320px up (Amatic SC is about
+   5 em wide for "AI שאפשר להגן עליו."). Spanish and French are longer and keep two balanced lines. */
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 {
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(60px, 6.8vw, 92px);
+  line-height: 1.1;
+}
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .italic-clay { margin-inline-start: 0.12em; font-style: normal; }
+/* One line means the word AI sits inline at the sentence size here, not as the large mark above
+   the headline (that arrangement stays for Spanish, French and Arabic). */
+html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 .hero-ai {
+  display: inline;
+  font-size: 1em;
+  line-height: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  html:is([lang="he"], [lang="en"]) .hero-home .hero-h1 { font-size: clamp(40px, 15vw, 64px); }
+}
+html:not(:is([lang="he"], [lang="en"])) .hero-home .hero-h1 { max-width: 14ch; }
+
+/* The signature headline on every page (owner request, 21.10.2026): the page title of each route is set
+   like the home headline, in Amatic SC, one ink colour, with a single size scale instead of the per page
+   sizes written inline (hence the !important on the size). Arabic, the home hero (own rule above), the
+   cockpit and the workspace keep what they have. */
+html:not([lang="ar"]) main h1:is(.serif, .h1, .ins-h1):not(.hero-h1, .los-zero-title, .ck-root *) {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7.2vw, 72px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+  max-width: none;
+}
+html:not([lang="ar"]) main h1:is(.serif, .h1, .ins-h1):not(.hero-h1, .los-zero-title, .ck-root *) .italic-clay {
+  color: inherit;
+  font-style: normal;
+  background: none;
+  padding-bottom: 0;
+}
+
+/* The readiness check band under the home hero. */
+.home-risk-band {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.home-risk-band p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--slate); flex: 1 1 320px; }
+.home-risk-band p b { color: var(--ink); }
+
+/* The whole sentence is one colour (the page ink) with no underline: a signature is not highlighted. */
+html:not([lang="ar"]) .hero-home .hero-h1 .italic-clay {
+  color: inherit;
+  background: none;
+  padding-bottom: 0;
+}
 .hero-home::after {
   content: "";
   position: absolute;
@@ -5380,10 +5530,55 @@ html.a11y-reduce-motion *::after {
 }
 @media (max-width: 900px) {
   /* Above the fold on a phone: the clip first, then the line and the button. */
-  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: 330px; margin-inline: auto; }
+  /* On a short phone the 4:5 clip alone is 412px tall and pushes the headline and the
+     button under the bottom tab bar. It is capped by the screen height (width is 0.8 of
+     its height), so the headline and the first action stay in view; on a tall phone the
+     330px cap still wins and nothing changes. */
+  .hero-home .hero-grid > .hero-video { order: -1; max-inline-size: min(330px, calc(44vh * 0.8)); margin-inline: auto; }
+  @supports (height: 1svh) {
+    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44svh * 0.8)); }
+  }
   .hero-home .hero-h1 { font-size: clamp(34px, 9vw, 46px); max-inline-size: none; }
   .hero-home .hero-copy { text-align: center; }
   .hero-home .hero-actions { justify-content: center; }
+}
+/* The word "AI" as a mark: one large block above the sentence, in the same face, not a
+   second typeface and not an effect. It steps down with the screen; the clip is capped to
+   44 percent of the screen height so the clip, the headline and both actions end above the
+   tab bar on every phone that has room for the second line. */
+.hero-home .hero-h1 .hero-ai {
+  display: block;
+  font-size: 2.7em;
+  line-height: 0.8;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  margin: 0 0 0.08em;
+}
+@media (max-width: 900px) {
+  .hero-home .hero-h1 .hero-ai { font-size: 1.85em; margin-bottom: 0.04em; }
+}
+@media (max-width: 900px) and (max-height: 760px) {
+  .hero-home .hero-h1 .hero-ai { font-size: 1.5em; margin-bottom: 0.03em; }
+}
+/* On a screen about 700px high or less there is no room for a second line in the headline
+   above the tab bar, so the word goes back inline at the sentence size. */
+@media (max-width: 900px) and (max-height: 700px) {
+  .hero-home .hero-h1 .hero-ai { display: inline; font-size: 1em; line-height: inherit; letter-spacing: inherit; margin: 0; }
+}
+
+/* A short phone (a 667px screen is 600 usable pixels after the tab bar) cannot hold the
+   clip, the headline and both actions at the default spacing, and the second action
+   ended up under the tab bar. Here the clip follows the screen a little closer and the
+   gaps tighten, which brings the whole stack above the bar. Taller phones are unchanged. */
+@media (max-width: 900px) and (max-height: 760px) {
+  .hero-home .hero-grid { padding-top: 20px !important; gap: 16px !important; }
+  .hero-home .hero-actions { margin-top: 18px !important; gap: 10px; }
+  .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44vh * 0.8)); }
+}
+@supports (height: 1svh) {
+  @media (max-width: 900px) and (max-height: 760px) {
+    .hero-home .hero-grid > .hero-video { max-inline-size: min(330px, calc(44svh * 0.8)); }
+  }
 }
 
 /* ---------- header: one sharp command bar ----------
@@ -5422,3 +5617,50 @@ html.a11y-reduce-motion *::after {
   .site-header .header-more-wrap { margin-inline-start: auto; }
   .site-header .header-tools { margin-inline-start: -1px; gap: 0; }
 }
+
+/* Social quick sign-in buttons on the login screen. */
+.oauth-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.btn-oauth {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  inline-size: 100%; padding: 12px 16px;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--card); color: var(--ink);
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease;
+}
+.btn-oauth:hover { border-color: var(--clay-soft); box-shadow: 0 10px 26px -20px rgba(60, 45, 30, .5); }
+.btn-oauth:disabled { opacity: .6; cursor: default; box-shadow: none; }
+.btn-oauth svg { flex: none; }
+.oauth-divider { display: flex; align-items: center; text-align: center; color: var(--slate); font-size: 13px; margin: 2px 0 20px; }
+.oauth-divider::before, .oauth-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.oauth-divider span { padding: 0 14px; }
+
+/* ---------- touch targets ----------
+   WCAG 2.2 AA asks for 24 by 24 CSS px at minimum; the primary controls go to
+   44 on touch and narrow screens. Text links in the footer keep their look and
+   gain a taller hit area. */
+.footer-col a,
+.footer-legal a,
+.footer-legal-btn {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 24px;
+  min-inline-size: 24px;
+}
+.voice-seek { block-size: 24px; }
+.site-header .brand { display: inline-flex; align-items: center; min-block-size: 44px; }
+@media (max-width: 900px), (pointer: coarse) {
+  :root { --ctrl-h: 44px; }
+  .footer-col a,
+  .footer-legal a,
+  .footer-legal-btn { min-block-size: 44px; min-inline-size: 44px; }
+  .footer-social-link { width: 44px; height: 44px; }
+  .voice-btn { inline-size: 44px; block-size: 44px; }
+  .voice-seek { block-size: 44px; }
+  .lead-card .field,
+  .lead-card input:not([type="checkbox"], [aria-hidden="true"]),
+  .lead-card select { min-block-size: 44px; }
+}
+
+/* The drawn forward arrow (FwdArrow) sits on the text line like a glyph would. */
+.fwd-arrow { display: inline-block; vertical-align: -0.125em; flex: none; }

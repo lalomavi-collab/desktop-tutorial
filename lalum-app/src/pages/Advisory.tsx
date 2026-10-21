@@ -12,6 +12,7 @@ import { FocusAreas } from "../components/FocusAreas";
 import { PracticeFaq } from "../components/PracticeFaq";
 import { ScenarioCard } from "../components/ScenarioCard";
 import { PillarArt } from "../components/PillarArt";
+import { RoleMatrixSwitcher } from "../components/RoleMatrixSwitcher";
 import { faqPageNode, pageJsonLd } from "../lib/schema";
 import { coreFaqsForPath } from "../lib/pageFaqsCore";
 import { howToForPath } from "../lib/pageHowTos";
@@ -188,6 +189,17 @@ export function Advisory() {
               <Icon name="calendar" size={17} /> {t.home.advisoryCta}
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ENTRY BY ROLE. Moved here from the home page: four tabs and a list of
+          links are navigation, and this is the hub the nav points at. */}
+      <section id="roles" className="section-line">
+        <div className="wrap section">
+          <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
+            <h2 className="h2">{t.home.audienceTitle}</h2>
+          </div>
+          <RoleMatrixSwitcher />
         </div>
       </section>
 

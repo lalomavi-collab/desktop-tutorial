@@ -3,6 +3,8 @@ import { money } from "../../../lib/cockpit/shared";
 import { monthPeriod, summarize } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment } from "../../../lib/cockpit/finance";
 import { supabase } from "../../../lib/supabase";
+import { useClientNames } from "../../../components/cockpit/ClientNames";
+import { casualLabel, customerLabel } from "../../../lib/cockpit/clientNames";
 import { INCOME_KIND_LABEL, incomeByKind, incomeHtml, incomeRows, revenueByCustomer, toCsv } from "../../../lib/cockpit/financeReports";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
@@ -22,7 +24,9 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
   const period = month === 0 ? { from: `${year}-01-01`, to: `${year}-12-31` }
     : month > 100 ? { from: monthPeriod(year, (month - 100) * 2 - 1).from, to: monthPeriod(year, (month - 100) * 2).to }
     : monthPeriod(year, month);
-  const rows = incomeRows(docs, archive, customers, period);
+  const cn = useClientNames();
+  // While names are hidden every row carries a label (the invoicing number, or a hash for a casual customer); the screens and the exports read the same rows.
+  const rows = incomeRows(docs, archive, customers, period, cn.revealed ? undefined : (c, name, key) => (c ? customerLabel(false, c) : key === "unknown" ? name : casualLabel(false, name)));
   const income = incomeByKind(rows);
   const byCustomer = revenueByCustomer(rows);
   const title = month === 0 ? `${year}` : month > 100 ? `${MONTHS[(month - 100) * 2 - 2]} עד ${MONTHS[(month - 100) * 2 - 1]} ${year}` : `${MONTHS[month - 1]} ${year}`;
@@ -48,7 +52,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
   }
   const incomeCsv = () => download(`income-${period.from}-${period.to}.csv`, toCsv(
     ["סוג", "תאריך", "מספר מסמך", "לקוח", "לפני מע\"מ", "מע\"מ", "כולל מע\"מ", "מקור"],
-    rows.map((r) => [INCOME_KIND_LABEL[r.kind], r.date, r.number != null ? String(r.number) : "", r.customer, r.net, r.vat, r.total, r.source === "ledger" ? "מערכת" : "ארכיון Invoice4U"]),
+    rows.map((r) => [INCOME_KIND_LABEL[r.kind], r.date, r.number != null ? String(r.number) : "", r.customer, r.net, r.vat, r.total, r.source === "ledger" ? "מערכת" : "ארכיון היסטוריה"]),
   ));
   const customerCsv = () => download(`revenue-by-customer-${period.from}-${period.to}.csv`, toCsv(
     ["לקוח", "מסמכים", "לפני מע\"מ", "מע\"מ", "כולל מע\"מ"], byCustomer.map((c) => [c.customer, String(c.documents), c.net, c.vat, c.total]),
@@ -56,6 +60,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
 
   return (
     <div className="ck-stack">
+      {!cn.revealed && <div className="fin-note">שמות הלקוחות מוסתרים: הדוחות, קובצי ה-CSV והדוא"ל מציגים תווית לקוח במקום שם. להצגת שמות, השתמשו בכפתור בראש המסך (נרשם ביומן עם הסיבה).</div>}
       <div className="ck-row">
         <select className="ck-select" aria-label="חודש" value={month} onChange={(e) => setMonth(Number(e.target.value))} style={{ maxWidth: 160 }}>
           <option value={0}>כל השנה</option>{MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}{[1, 2, 3, 4, 5, 6].map((k) => <option key={k} value={100 + k}>{MONTHS[k * 2 - 2]} עד {MONTHS[k * 2 - 1]}</option>)}
@@ -92,7 +97,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
           <tr><td>מע"מ תשומות לניכוי</td><td className="fin-ltr">{money(vat.vatIn)}</td></tr>
           <tr><td><b>מע"מ לתשלום (או להחזר)</b></td><td className="fin-ltr"><b>{money(vat.vatPayable)}</b></td></tr>
         </tbody></table></div>
-        <div className="ck-meta">נתוני עזר לרואה החשבון, לא דיווח. התשומות לפי ההוצאות שהוזנו ידנית ושיעור הניכוי שנקבע בכל הוצאה. כוללים את הארכיון של Invoice4U. קובץ PCN874 עדיין לא מופק, והוא ייבנה רק אחרי שהרו"ח תאשר את המבנה.</div>
+        <div className="ck-meta">נתוני עזר לרואה החשבון, לא דיווח. התשומות לפי ההוצאות שהוזנו ידנית ושיעור הניכוי שנקבע בכל הוצאה. כוללים את ארכיון ההיסטוריה. קובץ PCN874 עדיין לא מופק, והוא ייבנה רק אחרי שהרו"ח תאשר את המבנה.</div>
       </div>
 
       <div className="ck-card ck-stack">

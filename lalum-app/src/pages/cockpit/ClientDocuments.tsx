@@ -66,7 +66,7 @@ function ClientDocumentsInner({ canView }: { canView: boolean }) {
     }
   }
 
-  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">צפייה במסמכי הלקוחות של המשרד פתוחה למנהל המשרד.</div></div>;
+  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">צפייה במסמכי הלקוחות של הפירמה פתוחה למנהל הפירמה.</div></div>;
 
   return (
     <div className="card" style={{ padding: 34, marginBottom: 28 }}>

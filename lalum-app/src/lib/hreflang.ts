@@ -138,7 +138,7 @@ export function normPath(path: string): string {
 // rubric 99, all of it flowing away from the margin it should start at. The
 // chrome stays in the reader's language; the page itself reads the way its
 // script reads.
-const HEBREW_CONTENT_ROOTS = ["/faq", "/insights", "/rulings", "/risk", "/training", "/courses"];
+const HEBREW_CONTENT_ROOTS = ["/faq", "/insights", "/rulings", "/ethics", "/updates", "/risk", "/training", "/courses"];
 
 export function hasHebrewOnlyContent(path: string): boolean {
   const p = normPath(path);

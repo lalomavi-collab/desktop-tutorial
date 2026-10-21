@@ -6,6 +6,7 @@ import { ExecutiveKpiCards } from "../../components/partner/ExecutiveKpiCards";
 import { RollingCashFlow13Weeks } from "../../components/partner/RollingCashFlow13Weeks";
 import { ExceptionActionQueue } from "../../components/partner/ExceptionActionQueue";
 import { CockpitFrame } from "./CockpitFrame";
+import { useClientNames } from "../../components/cockpit/ClientNames";
 import { useTrustSummary } from "../../lib/cockpit/crmTrust";
 import { usePartnerFinance } from "../../lib/cockpit/crmFinance";
 import { usePartnerOverview } from "../../lib/cockpit/billingWip";
@@ -16,10 +17,11 @@ export function PartnerView() {
   const fin = usePartnerFinance();
   const trust = useTrustSummary();
   const ov = usePartnerOverview();
+  const cn = useClientNames();
   if (fin.state === "loading") return <div className="ck-meta">טוען...</div>;
   if (fin.state === "denied") return <div className="ck-card ck-empty">אין הרשאה לנתוני הכספים, או שהנתונים אינם זמינים כעת.</div>;
   const d = fin.data;
-  const customerName = (id: string) => d.aging.customers.find((c) => c.customerId === id)?.name ?? "";
+  const customerName = (id: string) => cn.customer({ id, name: d.aging.customers.find((c) => c.customerId === id)?.name });
   return (
     <>
       {d.balanceAsOf && <div className="ck-meta" style={{ marginBottom: 8 }}>יתרת הפתיחה הוזנה ידנית בתאריך {fmtDay(d.balanceAsOf)}.</div>}

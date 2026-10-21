@@ -70,7 +70,7 @@ export function ShaamExportTab({ docs, customers, firmName, firmId }: { docs: Fi
     <div className="ck-stack">
       <div className="ck-ok">
         קובץ מבנה אחיד (שע"ם) לתקופה הנבחרת, ממסמכים שהופקו ונחתמו כבר במערכת זו (SEALED) בלבד. כל עוד ההפקה
-        בפועל עוברת ב-Invoice4U, הרשימה כאן תהיה ריקה בכוונה: Invoice4U מגיש כבר קובץ מבנה אחיד משלו לתקופה הזו,
+        בפועל עוברת במערכת ההנפקה, הרשימה כאן תהיה ריקה בכוונה: מערכת ההנפקה מגישה כבר קובץ מבנה אחיד משלו לתקופה הזו,
         ואין לדווח פעמיים על אותם מסמכים.
       </div>
       <div className="ck-card ck-stack">

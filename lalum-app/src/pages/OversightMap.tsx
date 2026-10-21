@@ -4,6 +4,7 @@ import { Link } from "../components/AppLink";
 import { LoopVideo } from "../components/LoopVideo";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES, type OversightSource } from "../lib/oversightMap";
+import { FwdArrow } from "../components/FwdArrow";
 
 // The oversight map: where two frameworks name a human being, quoted from the
 // instruments. A picker on one side, the selected point's wording and source on
@@ -102,7 +103,7 @@ export function OversightMap() {
             <blockquote dir="ltr" lang="en" className="oversight-quote">{picked.quote}</blockquote>
             <p style={{ margin: "16px 0 0" }}>
               <a href={picked.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--clay)", fontWeight: 600 }}>
-                {OVERSIGHT_PAGE.sourceLabel} &rarr;
+                {OVERSIGHT_PAGE.sourceLabel} <FwdArrow />
               </a>
             </p>
             <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--slate)", margin: "18px 0 0", paddingTop: 14, borderTop: "1px solid var(--line)" }}>
@@ -115,7 +116,7 @@ export function OversightMap() {
       <section className="wrap section" style={{ maxWidth: 760, textAlign: "center" }}>
         <p style={{ fontSize: 15.5, margin: "0 0 18px" }}>
           <b>{OVERSIGHT_PAGE.moreLabel}: </b>
-          <Link to={OVERSIGHT_PAGE.moreHref} style={{ color: "var(--clay)", fontWeight: 600 }}>{OVERSIGHT_PAGE.moreTitle} &rarr;</Link>
+          <Link to={OVERSIGHT_PAGE.moreHref} style={{ color: "var(--clay)", fontWeight: 600 }}>{OVERSIGHT_PAGE.moreTitle} <FwdArrow /></Link>
         </p>
         <p style={{ fontSize: 14, color: "var(--slate)", margin: "0 0 10px" }}>{OVERSIGHT_PAGE.checked}</p>
         <p style={{ fontSize: 13, color: "var(--slate)", margin: 0 }}>{OVERSIGHT_PAGE.disclaimer}</p>

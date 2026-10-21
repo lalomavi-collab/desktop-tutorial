@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Link } from "./AppLink";
 import { useLang } from "../context/LangContext";
+import { stripLangPrefix } from "../lib/hreflang";
 import { useDialogA11y } from "../lib/useDialogA11y";
 import { cookieConsentResolved, COOKIE_RESOLVED_EVENT } from "./CookieConsent";
 
@@ -47,8 +49,15 @@ export function PrivacyUpdateNotice() {
   const [checked, setChecked] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // The home page is a first look at the practice, and the cookie banner clears
+  // itself after a few seconds, which is exactly when this modal used to land
+  // on the headline. The notice waits for the next page instead; nothing about
+  // when it is owed or how it is recorded changes.
+  const { pathname } = useLocation();
+  const onHome = stripLangPrefix(pathname) === "/";
+
   useEffect(() => {
-    if (acknowledged() || snoozed()) return;
+    if (onHome || acknowledged() || snoozed()) return;
     // Do not stack on top of the first-visit cookie banner: wait until the
     // visitor has resolved cookies, then show. If cookies are already resolved,
     // show immediately.
@@ -61,7 +70,7 @@ export function PrivacyUpdateNotice() {
     };
     window.addEventListener(COOKIE_RESOLVED_EVENT, onResolved);
     return () => window.removeEventListener(COOKIE_RESOLVED_EVENT, onResolved);
-  }, []);
+  }, [onHome]);
 
   // Escape / focus-trap / scroll-lock. Escape behaves like "Later" (snooze).
   useDialogA11y(open, () => later(), modalRef);

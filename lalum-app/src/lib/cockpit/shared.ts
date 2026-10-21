@@ -30,10 +30,11 @@ export const MATTER_STATUS: Record<string, string> = {
   ARCHIVED: "בארכיון",
 };
 export const ROLE: Record<string, string> = {
-  FIRM_PARTNER: "שותף במשרד",
+  FIRM_PARTNER: "שותף בפירמה",
   ATTORNEY: "עורך דין",
   COMPLIANCE_OFFICER: "ממונה ציות",
-  ADMIN: "מנהל משרד",
+  ADMIN: "מנהל פירמה",
+  BOOKKEEPER: "הנהלת חשבונות",
 };
 export const KIND_HE: Record<string, string> = {
   ID_NUMBER: "ת.ז. / דרכון",
@@ -78,6 +79,10 @@ export interface MatterDoc {
   doc_date?: string | null;
   risk_excluded?: boolean;
   risk_excluded_reason?: string | null;
+  /** What the database recorded about the stored original file (never its path). original_size is null when no original is stored. */
+  original_size?: number | string | null;
+  original_sha256?: string | null;
+  original_mime?: string | null;
 }
 export interface Membership {
   firm_id: string;
@@ -108,7 +113,7 @@ export const money = (n: number | null | undefined): string =>
 
 const ERRORS: Record<string, string> = {
   PII_LEAK_BLOCKED: "הטקסט נחסם: זוהה מידע מזהה שלא ניתן היה להסתיר. הסירו אותו ונסו שוב.",
-  FIRM_INACTIVE: "מנוי המשרד אינו פעיל.",
+  FIRM_INACTIVE: "מנוי הפירמה אינו פעיל.",
   TOO_LARGE: "הטקסט גדול מדי.",
   EMPTY_INPUT: "לא הוזן טקסט.",
   UNAUTHENTICATED: "פג תוקף ההתחברות. התחברו מחדש.",

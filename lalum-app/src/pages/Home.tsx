@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "../components/AppLink";
 import { Icon } from "../components/Icon";
-import { ContactCTA } from "../components/ContactCTA";
 import { PageMeta } from "../components/PageMeta";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { HomeAcademy } from "../components/HomeAcademy";
@@ -18,13 +17,12 @@ import { coverThumb } from "../lib/covers";
 import { PillarArt } from "../components/PillarArt";
 import { HeroVideo } from "../components/HeroVideo";
 import { HomeFilm } from "../components/HomeFilm";
-import { CHECKED_ON } from "../lib/securityPage";
 import { EngineVideo } from "../components/EngineVideo";
 import { LeadForm } from "../components/LeadForm";
 import { ArchitecturalSection } from "../components/ArchitecturalSection";
 import { DecisionRoomPreview } from "../components/DecisionRoomPreview";
 import { ClassifyCertifyDefendGrid } from "../components/ClassifyCertifyDefendGrid";
-import { RoleMatrixSwitcher } from "../components/RoleMatrixSwitcher";
+import { FwdArrow } from "../components/FwdArrow";
 
 // One accent for the four cards: the site's own green. Four different edge
 // colours on four cards read as four different products.
@@ -37,6 +35,10 @@ const INSIGHTS_PALETTE = [{ accent: "var(--clay)", tint: "var(--clay-tint)" }];
 export function Home() {
   const { t, lang } = useLang();
   const h = t.home;
+  // The word "AI" is the point of the headline: it is set as a large mark above the rest of the
+  // sentence (hero-ai in index.css). Only where the sentence opens with it; the text is unchanged.
+  const [heroFirst, ...heroRest] = h.heroH1a.split(" ");
+  const bigAi = heroFirst === "AI" || heroFirst === "IA";
   const [faqOpen, setFaqOpen] = useState<number>(-1);
   const [faqShown, setFaqShown] = useState(false);
 
@@ -63,8 +65,8 @@ export function Home() {
                 sight (the lede stays in the DOM for search engines and screen
                 readers): the clip beside it now carries the explanation. */}
             <span className="sr-only">{h.heroPill}</span>
-            <h1 className="h1 hero-h1" style={{ margin: 0, maxWidth: "14ch" }}>
-              {h.heroH1a}
+            <h1 className="h1 hero-h1" style={{ margin: 0 }}>
+              {bigAi ? <><span className="hero-ai">{heroFirst}</span>{" "}{heroRest.join(" ")}</> : h.heroH1a}
               {" "}
               <span className="italic-clay">{h.heroH1b}</span>
             </h1>
@@ -85,17 +87,16 @@ export function Home() {
         </div>
       </section>
 
-      {/* One line under the hero that points at the security booklet and page and says no more than
-          they do: what was built, what was checked and on which date, and what is not promised. The
-          booklet and /security are the only statement; this line never summarises them more strongly. */}
+      {/* The readiness check (the Decision Room, /risk): eight questions and a score. One band under the hero so a
+          visitor can reach it without opening the menu. */}
       <div className="wrap" style={{ padding: "0 32px" }}>
-        <p style={{ margin: 0, padding: "16px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", fontSize: 15, lineHeight: 1.7, color: "var(--slate)" }}>
-          <b style={{ color: "var(--ink)" }}>{h.securityLead}</b>{" "}
-          {h.securityBody.replace("{date}", CHECKED_ON)}{" "}
-          <a href="/downloads/lalum-avtachat-meida.pdf" download style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityBooklet}</a>
-          {" \u00B7 "}
-          <a href="/security/" style={{ color: "var(--clay)", fontWeight: 600 }}>{h.securityPage}</a>
-        </p>
+        <div className="home-risk-band">
+          <p>
+            <b>{h.riskBandLead}</b>{" "}
+            {h.riskBandBody}
+          </p>
+          <Link to="/risk" className="btn btn-clay">{h.riskBandCta}</Link>
+        </div>
       </div>
 
       {/* The page speaks about Legal AI from the hero down to the engine. The
@@ -145,7 +146,7 @@ export function Home() {
                 </span>
                 <p className="pillar-body">{p.body}</p>
               </span>
-              <span className="pillar-go" aria-hidden="true">&rarr;</span>
+              <span className="pillar-go" aria-hidden="true"><FwdArrow /></span>
             </Link>
           ))}
         </div>
@@ -201,7 +202,7 @@ export function Home() {
                   <p className="article-card-dek">{a.dek}</p>
                   <div className="article-card-meta">
                     <span>{a.date}</span><span style={{ color: p.accent }}>·</span><span>{a.read}</span>
-                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} &rarr;</span>
+                    <span className="article-card-go" style={{ color: p.accent }}>{t.ui.article.read} <FwdArrow /></span>
                   </div>
                 </div>
               </Link>
@@ -248,15 +249,11 @@ export function Home() {
       {/* The second area and the entry-by-role matrix, lower on the page. */}
       <FocusAreas />
 
-      <ArchitecturalSection id="roles" index="05" code="ENTRY // BY ROLE">
-        <div style={{ maxWidth: "58ch", margin: "0 0 40px" }}>
-          <h2 className="h2">{h.audienceTitle}</h2>
-        </div>
-        <RoleMatrixSwitcher />
-      </ArchitecturalSection>
+      {/* Entry by role (four tabs and a list of links) is navigation, not proof:
+          it lives on /advisory, the hub the nav already points at. */}
 
       {/* FOUNDER */}
-      <ArchitecturalSection index="06" code="PROFILE // FOUNDER">
+      <ArchitecturalSection index="05" code="PROFILE // FOUNDER">
         <div className="founder-grid" style={{ display: "grid", gridTemplateColumns: ".82fr 1.18fr", gap: 56, alignItems: "start" }}>
           <div className="founder-card" style={{ background: "var(--clay-tint)", border: "1px solid var(--clay-soft)", borderRadius: 20, padding: 40, textAlign: "center", position: "sticky", top: 96 }}>
             {/* Firm logo (wordmark, tinted to the brand ink so it blends in) */}
@@ -351,7 +348,9 @@ export function Home() {
         )}
       </section>
 
-      <ContactCTA title={h.ctaTitle} body={h.ctaBody} primaryLabel={t.ui.initiateRisk} />
+      {/* No closing band: the open lead form above and the founder band in the
+          footer already carry the contact actions, and a third ask under a
+          different name only competed with them. */}
     </>
   );
 }
