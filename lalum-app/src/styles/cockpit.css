@@ -478,3 +478,22 @@ label.ck-btn { cursor: pointer; }
   .rev-table { display: none; }
   .rev-rows { display: grid; }
 }
+
+/* Cards on a phone for every books table (the markup is annotated by useCardTables). The first cell is the card's heading;
+   cells that hold their own layout (names with a sub line, action buttons, LTR values) are reset so the label and value line up. */
+@media (max-width: 640px) {
+  .ck-fin .ck-cards-table td.fin-text, .ck-fin .ck-cards-table td { min-width: 0; max-width: none; }
+  .ck-fin .ck-cards-table td.fin-ltr, .ck-fin .ck-cards-table td.fin-num { direction: rtl; text-align: start; unicode-bidi: isolate; }
+  .ck-fin .ck-cards-table td.fin-actions-cell { position: static; box-shadow: none; width: auto; background: transparent; }
+  .ck-fin .ck-cards-table td.fin-actions-cell .fin-actions { flex-wrap: wrap; justify-content: flex-start; }
+  .ck-cards-table td:not([data-label]) { justify-content: flex-start; }
+  .ck-cards-table td:first-child { font-weight: 700; font-size: 15.5px; background: var(--clay-tint); border-radius: 11px 11px 0 0; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; }
+  .ck-cards-table td:first-child[data-label]::before { display: none; }
+  .ck-cards-table td:empty { display: none; }
+  .ck-table-wrap:has(.ck-cards-table) { box-shadow: none; }
+  .ck-cards-table td .fin-name, .ck-cards-table td .fin-sub { max-width: 100%; white-space: normal; }
+  .ck-cards-table td:has(input[type="checkbox"]) { justify-content: flex-start; }
+  .ck-table-wrap:has(.ck-cards-table) { background: transparent; border: none; border-radius: 0; overflow: visible; }
+  .ck-cards-table tr:hover td { background: transparent; }
+  .ck-cards-table tr:hover td:first-child { background: var(--clay-tint); }
+}
