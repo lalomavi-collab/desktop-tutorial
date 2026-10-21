@@ -457,3 +457,24 @@ label.ck-btn { cursor: pointer; }
 .cust-pmeta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; color: var(--slate); margin-top: 3px; }
 .cust-pnote { font-size: 13.5px; color: var(--slate); margin-top: 3px; }
 .cust-pnote.err { color: var(--chart-bad, #b3402f); }
+
+/* Revenue by period: the table on a wide screen, cards on a phone (the five columns do not fit and the last ones were cut off). */
+.rev-rows { display: none; list-style: none; margin: 0; padding: 0; gap: 8px; }
+.rev-row { padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card, #fff); }
+.rev-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.rev-head b { font-size: 16px; }
+.rev-head span { font-size: 13.5px; color: var(--slate); }
+.rev-amts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.rev-amts > div { min-inline-size: 0; }
+.rev-amts dt { font-size: 12.5px; color: var(--slate); margin-bottom: 2px; }
+.rev-amts dd { margin: 0; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rev-total { grid-column: 1 / -1; order: -1; padding-bottom: 8px; margin-bottom: 2px; border-bottom: 1px solid var(--line); }
+.rev-total dd { font-size: 20px; font-weight: 800; color: var(--ink); }
+.rev-empty { padding-block: 9px; background: transparent; }
+.rev-empty .rev-head { margin-bottom: 0; }
+.rev-empty .rev-head b { font-size: 15px; font-weight: 600; color: var(--slate); }
+.rev-sum { background: var(--clay-tint); border-color: var(--clay); }
+@media (max-width: 720px) {
+  .rev-table { display: none; }
+  .rev-rows { display: grid; }
+}
