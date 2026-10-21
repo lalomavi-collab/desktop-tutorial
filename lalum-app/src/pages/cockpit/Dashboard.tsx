@@ -7,7 +7,7 @@ import { Wordmark } from "../../components/Wordmark";
 import { BarsH, Donut, StatusBar } from "../../components/cockpit/CockpitCharts";
 import { FolderArt, ImportArt, InboxArt, ShieldArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { CONFLICT, fmt, PRACTICE } from "../../lib/cockpit/shared";
-import { delta, loadDashboard, series } from "../../lib/cockpit/dashboard";
+import { delta, loadDashboard, periodDelta, series } from "../../lib/cockpit/dashboard";
 import type { DashData } from "../../lib/cockpit/dashboard";
 import { dur } from "../../lib/cockpit/work";
 import { TrendCard } from "../../components/cockpit/TrendCard";
@@ -95,6 +95,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
   }, [data]);
   const byRisk = (r: string) => (data?.matters ?? []).filter((m) => (m.risk_level ?? "NOT_ASSESSED") === r).length;
   const byStatus = (s: string) => (data?.inquiries ?? []).filter((i) => i.status === s).length;
+  const inqDelta = periodDelta((data?.inquiries ?? []).map((i) => i.received_at), 30);
 
   return (
     <div className="db">
@@ -133,6 +134,7 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>פילוח פניות</h3><Link className="ck-link" to="/workspace/inquiries">לכל הפניות</Link></div>
               <Donut centre={data.inquiries.length} sub="פניות" segments={[{ label: "חדשות", value: byStatus("NEW"), color: "var(--chart-warn, #d0901e)" }, { label: "נראו", value: byStatus("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: byStatus("HANDLED"), color: "var(--chart-ok, #216f33)" }]} />
+              <div className="db-note"><Trend d={inqDelta.pct} /> <span>{inqDelta.cur} ב-30 הימים האחרונים, {inqDelta.prev} ב-30 שלפניהם</span></div>
             </div>
           </div>
 
