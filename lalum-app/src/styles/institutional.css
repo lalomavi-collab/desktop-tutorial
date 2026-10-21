@@ -258,7 +258,7 @@
 .hm-tile svg, .hm-tile .header-more-pay-symbol { color: var(--clay); flex: none; }
 .hm-tile:hover, .hm-tile:focus-visible { background: var(--clay-tint); }
 .hm-tile-os { border-color: var(--clay-soft); background: var(--clay-tint); }
-.hm-tile:nth-child(3) { grid-column: 1 / -1; }
+.hm-tile-wide { grid-column: 1 / -1; }
 .hm-group { padding: 12px 2px 4px; border-top: 1px solid var(--line); margin-top: 8px; }
 .hm-gh { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); margin: 0 4px 8px; }
 .hm-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }

@@ -63,6 +63,14 @@
    "explainability"
   ]
  },
+ "ai-cross-border-due-diligence": {
+  "topic": "ai-governance",
+  "related": [
+   "ai-international-transactions-overview",
+   "ai-real-estate-urban-renewal-legal-exposure",
+   "legal-ai-pricing-client-disclosure"
+  ]
+ },
  "human-in-the-loop-lawyer-judgment-ai": {
   "topic": "mediation",
   "related": [
@@ -91,8 +99,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-shadow-ai-local-authority-staff",
-   "ai-legal-support-local-council-three-tracks",
-   "ai-inventory-risk-tiering-local-authority-guide"
+   "ai-inventory-risk-tiering-local-authority-guide",
+   "ai-legal-support-local-council-three-tracks"
   ]
  },
  "ai-urban-renewal-resident-agreements-comparison": {
@@ -436,7 +444,7 @@
   "related": [
    "algorithmic-fiduciary-duty-ai",
    "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-cross-border-due-diligence"
   ]
  },
  "algorithmic-fiduciary-duty-ai": {
@@ -459,8 +467,8 @@
   "topic": "real-estate",
   "related": [
    "ai-real-estate-due-diligence-acceleration",
-   "ai-real-estate-valuation-reliance",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-cross-border-due-diligence",
+   "ai-real-estate-valuation-reliance"
   ]
  },
  "israel-land-authority-lease-capitalization-transfer": {
@@ -642,9 +650,9 @@
  "ai-international-transactions-overview": {
   "topic": "ai-governance",
   "related": [
+   "ai-cross-border-due-diligence",
    "ai-hr-overview-legal-exposure",
-   "ai-real-estate-urban-renewal-legal-exposure",
-   "ai-planning-permits-local-authority-discretion"
+   "ai-real-estate-urban-renewal-legal-exposure"
   ]
  },
  "urban-renewal-principles-vs-detailed-agreement": {
@@ -1091,8 +1099,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-automated-decision-right-gdpr-article-22-israel-gap",
-   "ai-hallucinations-citations",
-   "decision-oriented-ai-law"
+   "ai-cross-border-due-diligence",
+   "ai-hallucinations-citations"
   ]
  },
  "urban-renewal-risk": {
@@ -1123,8 +1131,8 @@
   "topic": "ai-governance",
   "related": [
    "administrative-accountability-ai-ramat-gan-ruling",
-   "california-sb574-ai-adjudication-ban",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "california-sb574-ai-adjudication-ban"
   ]
  },
  "international-trade-guide-2026": {
@@ -1987,8 +1995,8 @@
   "topic": "mediation",
   "related": [
    "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה",
-   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה",
-   "legal-mediation-benefits"
+   "legal-mediation-benefits",
+   "האם-ניתן-לערער-על-הכרעה-בגישור-מכוון-הכרעה-ההבדלים-בין-גישור-רגיל-לגישור-עסקי-מכוון-תוצאה"
   ]
  },
  "האם-כל-מגשר-מוסמך-יכול-לנהל-הליך-גישור-מכוון-הכרעה": {
@@ -2083,8 +2091,8 @@
   "topic": "ai-governance",
   "related": [
    "ai-use-policy-local-authority",
-   "ai-planning-permits-local-authority-discretion",
-   "effective-human-oversight-ai-systems"
+   "effective-human-oversight-ai-systems",
+   "ai-planning-permits-local-authority-discretion"
   ]
  }
 }

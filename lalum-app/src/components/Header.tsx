@@ -17,7 +17,7 @@ import { byLang } from "../lib/byLang";
 import { useScrollLock } from "../lib/useScrollLock";
 
 const HG = {
-  he: { ethics: "אתיקה ועדכונים", ethicsLink: "כללי האתיקה ו-AI", updatesLink: "חדשנו", engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
+  he: { ethics: "אתיקה ועדכונים", ethicsLink: "כללי האתיקה ו-AI", updatesLink: "מה חדש", engine: "המנוע וחדר ההחלטות", practice: "תחומי עיסוק", clinic: "קליניקה ואקדמיה", insights: "תובנות ופרופיל", profile: "פרופיל וקורות חיים", cta: "סשן אבחון", group: "ניווט ראשי", contact: "יצירת קשר", call: "שיחה" },
   en: { ethics: "Ethics & Updates", ethicsLink: "AI ethics rules", updatesLink: "What's new", engine: "Engine & Decision Room", practice: "Practice Areas", clinic: "Clinic & Academy", insights: "Insights & Profile", profile: "Profile & CV", cta: "Diagnostics Session", group: "Primary navigation", contact: "Contact", call: "Call" },
   ar: { ethics: "الأخلاقيات والمستجدات", ethicsLink: "قواعد أخلاقيات الذكاء الاصطناعي", updatesLink: "المستجدات", engine: "المحرّك وغرفة القرار", practice: "مجالات العمل", clinic: "العيادة والأكاديمية", insights: "رؤى وملف شخصي", profile: "الملف الشخصي والسيرة الذاتية", cta: "جلسة تشخيص", group: "التنقل الرئيسي", contact: "التواصل", call: "اتصال" },
   es: { ethics: "Ética y novedades", ethicsLink: "Reglas éticas sobre IA", updatesLink: "Novedades", engine: "Motor y Decisión", practice: "Áreas", clinic: "Clínica y Academia", insights: "Análisis y perfil", profile: "Perfil y CV", cta: "Sesión de diagnóstico", group: "Navegación principal", contact: "Contacto", call: "Llamar" },
@@ -147,10 +147,15 @@ export function Header() {
                     <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
                   </Link>
                   {paymentsEnabled && (
-                    <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile" onClick={() => setMoreOpen(false)}>
+                    <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile hm-tile-wide" onClick={() => setMoreOpen(false)}>
                       <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
                     </Link>
                   )}
+                  {/* Plain anchor: /partners is Hebrew-only and has no file at
+                      "/en/partners" for <Link>'s basename-prefixed href. */}
+                  <a href="/partners/" role="menuitem" className="hm-tile hm-tile-wide" onClick={() => setMoreOpen(false)}>
+                    <Icon name="scale" size={18} /> {t.ui.partnerLogin}
+                  </a>
                 </div>
                 {groups.map((g) => (
                   <div key={g.label} role="group" aria-label={g.label} className="hm-group">
@@ -194,11 +199,6 @@ export function Header() {
                       <DownloadIcon size={16} /> {t.ui.footer.installApp}
                     </button>
                   )}
-                  {/* Plain anchor: /partners is Hebrew-only and has no file at
-                      "/en/partners" for <Link>'s basename-prefixed href. */}
-                  <a href="/partners/" role="menuitem" className="hm-util" onClick={() => setMoreOpen(false)}>
-                    <Icon name="scale" size={16} /> {t.ui.partnerLogin}
-                  </a>
                 </div>
               </div>
             </>
