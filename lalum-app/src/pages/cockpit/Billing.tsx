@@ -14,6 +14,8 @@ function Panel({ member }: { member: Membership }) {
   const { user } = useAuth();
   const firm = member.lalum_firms;
   const canManage = ["FIRM_PARTNER", "ADMIN"].includes(member.role);
+  const bookkeeper = member.role === "BOOKKEEPER";
+  const canInvoices = canManage || bookkeeper;
   const [plans, setPlans] = useState<Plan[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -25,11 +27,11 @@ function Panel({ member }: { member: Membership }) {
       const [p, m, i] = await Promise.all([
         supabase.from("lalum_subscription_plans").select("*").order("sort_order"),
         supabase.from("lalum_firm_members").select("name, email, role").eq("firm_id", member.firm_id),
-        canManage ? supabase.from("lalum_invoices").select("*").eq("firm_id", member.firm_id).order("issued_at", { ascending: false }) : Promise.resolve({ data: [] }),
+        canInvoices ? supabase.from("lalum_invoices").select("*").eq("firm_id", member.firm_id).order("issued_at", { ascending: false }) : Promise.resolve({ data: [] }),
       ]);
       setPlans((p.data as Plan[] | null) ?? []); setMembers((m.data as Member[] | null) ?? []); setInvoices((i.data as Invoice[] | null) ?? []);
     })();
-  }, [member.firm_id, canManage]);
+  }, [member.firm_id, canInvoices]);
   async function request(tier: string) {
     if (!supabase || !user || !window.confirm("לשלוח בקשת מעבר מסלול? הבקשה תטופל מול LALUM ואינה משנה את החיוב מיד.")) return;
     const { error } = await supabase.from("lalum_tier_change_requests").insert({ firm_id: member.firm_id, requested_by: user.id, from_tier: firm.subscription_tier, to_tier: tier });
@@ -61,25 +63,27 @@ function Panel({ member }: { member: Membership }) {
       <div className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><div><div className="ck-title">{firm.firm_name}</div><div className="ck-meta">מסלול נוכחי: <b>{firm.subscription_tier}</b> · {firm.status === "ACTIVE" ? "פעיל" : firm.status}</div></div>
         <div style={{ textAlign: "end" }}><div className="ck-title">{money(firm.monthly_fee)} לחודש</div><div className="ck-meta">דמי מנוי קבועים, ללא חלוקת שכר טרחה</div></div></div></div>
       <div className="ck-ok">LALUM גובה דמי מנוי קבועים בלבד. אין חלוקת שכר טרחה, אחוזים או שיתוף הכנסות, והלקוח מתקשר ישירות עם הפירמה המטפלת.</div>
-      <div className="ck-label">התראות לשותף</div>
+      {!bookkeeper && <><div className="ck-label">התראות לשותף</div>
       <div className="ck-card"><div className="ck-meta">על כל תיק חדש נשלח דוא"ל עם תחום, רמת סיכון וקישור בלבד, ללא פרטים מזהים. להתראה גם ב-WhatsApp הזינו מספר נייד (דורש הפעלה של LALUM).</div>
         <div className="ck-row"><input className="field" dir="ltr" inputMode="tel" aria-label="טלפון נייד" placeholder="05X-XXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} style={{ maxWidth: 260 }} /><button className="ck-btn" onClick={() => void savePhone()}>שמירה</button></div>
-        {phoneMsg && <div className={phoneMsg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{phoneMsg.text}</div>}</div>
+        {phoneMsg && <div className={phoneMsg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{phoneMsg.text}</div>}</div></>}
       <div className="ck-label">מסלולי מנוי</div>
       <div className="ck-grid2">{plans.map((p) => (
         <div key={p.tier} className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><span className="ck-title">{p.display_name}</span>{p.tier === firm.subscription_tier && <span className="ck-badge green">המסלול שלכם</span>}</div>
           <div className="ck-meta">{p.description}</div><div className="ck-meta">מחיר: {money(p.monthly_fee_ils)}{p.seat_limit ? ` · עד ${p.seat_limit} מושבים` : ""}</div>
           {canManage && p.tier !== firm.subscription_tier && <button className="ck-btn" onClick={() => void request(p.tier)}>בקשת מעבר למסלול</button>}</div>))}</div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
-      <div className="ck-label">מושבים</div>
+      {!bookkeeper && <><div className="ck-label">מושבים</div>
       <div className="ck-card"><div className="ck-meta">{used} מתוך {firm.seat_limit} מושבים בשימוש</div><div className="ck-bar"><div style={{ width: `${Math.min(100, (used / firm.seat_limit) * 100)}%` }} /></div>
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>דוא"ל</th><th>תפקיד</th></tr></thead><tbody>{members.map((x) => <tr key={x.email}><td>{x.name}</td><td>{x.email}</td><td>{ROLE[x.role] ?? x.role}</td></tr>)}</tbody></table></div>
-        {canManage && <div className="ck-meta">הוספת משתמשים והגדלת מושבים מתבצעות מול LALUM, וכל שינוי מופיע בחשבונית הבאה.</div>}</div>
-      {canManage && <>
+        {canManage && <div className="ck-meta">הוספת משתמשים והגדלת מושבים מתבצעות מול LALUM, וכל שינוי מופיע בחשבונית הבאה.</div>}</div></>}
+      {canInvoices && <>
         <div className="ck-label">יומן חשבוניות</div>
         <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>תקופה</th><th>סכום</th><th>מע"מ</th><th>סטטוס</th></tr></thead><tbody>
           {invoices.length ? invoices.map((i) => <tr key={i.id}><td>{i.invoice_no}</td><td>{i.kind === "SUBSCRIPTION" ? "מנוי" : "מושבים נוספים"}</td><td>{i.period_start} עד {i.period_end}</td><td>{money(i.net_amount)}</td><td>{money(i.vat_amount)}</td><td>{({ ISSUED: "הופקה", PAID: "שולמה", VOID: "מבוטלת" } as Record<string, string>)[i.status] ?? i.status}</td></tr>) : <tr><td colSpan={6}>אין חשבוניות עדיין</td></tr>}
         </tbody></table></div>
+      </>}
+      {canManage && <>
         <div className="ck-label">חיבור קליטה אוטומטית (Webhook)</div>
         <div className="ck-card"><div className="ck-meta">כתובת: <code dir="ltr">{url}</code><br />כותרות: <code dir="ltr">Authorization: Bearer &lt;token&gt;</code> ו-<code dir="ltr">x-lalum-firm: {member.firm_id}</code><br />גוף: JSON עם <code dir="ltr">text</code>, ואופציונלית <code dir="ltr">parties</code>.</div>
           <div className="ck-row"><button className="ck-btn" onClick={() => void rotate()}>יצירת טוקן חדש (מבטל את הקודם)</button></div>
@@ -90,9 +94,9 @@ function Panel({ member }: { member: Membership }) {
 }
 
 function BillingTabs({ member }: { member: Membership }) {
-  const canManage = ["FIRM_PARTNER", "ADMIN"].includes(member.role);
-  const [tab, setTab] = useState<"books" | "plan">(canManage ? "books" : "plan");
-  if (!canManage) return <Panel member={member} />;
+  const showBooks = ["FIRM_PARTNER", "ADMIN", "BOOKKEEPER"].includes(member.role);
+  const [tab, setTab] = useState<"books" | "plan">(showBooks ? "books" : "plan");
+  if (!showBooks) return <Panel member={member} />;
   return (
     <div className="ck-stack ck-fin">
       <div className="fin-tabs" role="tablist" aria-label="חיוב והגדרות">
