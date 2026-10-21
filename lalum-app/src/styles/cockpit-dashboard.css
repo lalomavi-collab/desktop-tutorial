@@ -111,3 +111,11 @@
 .db-trend-second { display: flex; flex-direction: column; gap: 4px; }
 .db-trend-second svg { width: 100%; height: auto; display: block; }
 .db-trend-note { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink); max-width: 64ch; }
+
+/* Waterfall: drawing in SVG, labels in HTML. */
+.db-wf { display: flex; flex-direction: column; gap: 6px; direction: ltr; }
+.db-wf-plot { position: relative; }
+.db-wf-plot svg { display: block; }
+.db-wf-val { position: absolute; transform: translateX(-50%); font-family: var(--serif); font-size: 22px; font-weight: 500; white-space: nowrap; color: var(--ink); }
+.db-wf-names { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; font-size: 16px; color: var(--slate); }
+@media (max-width: 560px) { .db-wf-val { font-size: 17px; } }
