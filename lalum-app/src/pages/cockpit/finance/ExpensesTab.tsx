@@ -5,6 +5,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { EXPENSE_CATEGORY, PAY_METHOD, recoverableVat } from "../../../lib/cockpit/finance";
 import type { FinExpense, PayMethod } from "../../../lib/cockpit/finance";
 import { scanReceipt, scanReceiptError } from "../../../lib/cockpit/financeApi";
+import { HistoricalImport } from "./HistoricalImport";
 
 const today = () => new Date().toISOString().slice(0, 10);
 type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string };
@@ -65,6 +66,7 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
 
   return (
     <div className="ck-stack">
+      <HistoricalImport firmId={firmId} onImported={onChange} />
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
         <div className="ck-row">
