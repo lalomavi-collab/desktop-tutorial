@@ -145,7 +145,8 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             </div>
             <div className="ck-card db-card db-center">
               <div className="db-head"><h3>תיקים לפי רמת סיכון</h3></div>
-              <Donut centre={data.matters.length} sub="תיקים" segments={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }, { label: "זהירות", value: byRisk("CAUTION"), color: "var(--chart-warn, #b8780a)" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "var(--chart-ok, #216f33)" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "var(--chart-neutral, #9a968c)" }]} />
+              <BarsH items={[{ label: "סיכון גבוה", value: byRisk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }, { label: "זהירות", value: byRisk("CAUTION"), color: "var(--chart-warn, #b8780a)" }, { label: "תקין", value: data.matters.length - byRisk("HIGH_RISK") - byRisk("CAUTION") - byRisk("NOT_ASSESSED"), color: "var(--chart-ok, #216f33)" }, { label: "לא נבדק", value: byRisk("NOT_ASSESSED"), color: "var(--chart-neutral, #9a968c)" }]} />
+              <div className="db-note">{data.matters.length} תיקים בסך הכול</div>
             </div>
           </div>
 

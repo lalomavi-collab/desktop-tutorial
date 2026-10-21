@@ -1,7 +1,7 @@
 // Bookkeeping section of the dashboard. Shown only to members with finance level 1 or more (the loader returns null otherwise).
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarsH, Donut, GroupedBars } from "./CockpitCharts";
+import { BarsH, GroupedBars } from "./CockpitCharts";
 import { money } from "../../lib/cockpit/shared";
 import { loadFinanceDash } from "../../lib/cockpit/dashboardFinance";
 import type { FinanceDash } from "../../lib/cockpit/dashboardFinance";
@@ -44,8 +44,6 @@ function Waterfall({ income, expenses, label }: { income: number; expenses: numb
   );
 }
 
-const MIX_COLORS = ["var(--chart-ok, #216f33)", "var(--chart-ok-l, #5a9c62)", "var(--chart-bad, #b3402f)"];
-
 export function DashFinance({ firmId, preload }: { firmId: string; preload?: FinanceDash }) {
   const [f, setF] = useState<FinanceDash | null | undefined>(preload);
   useEffect(() => { if (!preload) void loadFinanceDash(firmId).then(setF); }, [firmId, preload]);
@@ -60,7 +58,8 @@ export function DashFinance({ firmId, preload }: { firmId: string; preload?: Fin
         </div>
         <div className="ck-card db-card db-center">
           <div className="db-head"><h3>סוגי מסמכים, 12 חודשים</h3></div>
-          <Donut centre={f.mixTotal} sub="מסמכים" segments={f.mix.map((x, i) => ({ ...x, color: MIX_COLORS[i % MIX_COLORS.length] }))} />
+          <BarsH items={f.mix.map((x) => ({ label: x.label, value: x.value }))} />
+          <div className="db-note">{f.mixTotal} מסמכים בסך הכול</div>
         </div>
       </div>
       <div className="db-grid b">
