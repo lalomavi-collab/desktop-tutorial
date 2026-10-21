@@ -358,3 +358,22 @@ html[lang="en"] .header-groups, html[lang="ar"] .header-groups, html[lang="es"] 
 /* While the list is open the header lifts above the floating cookie banner and
    docks, the same way it does for the full menu, so the list is never covered. */
 .site-header:has(.lang-menu-list) { z-index: 160; }
+
+/* ---------- menu: every row is a button ---------- */
+.hm-tile-cta { background: #c5a880; border-color: #c5a880; color: #07080b; justify-content: center; letter-spacing: 0.04em; }
+.hm-tile-cta:hover, .hm-tile-cta:focus-visible { background: #d9c29f; color: #07080b; }
+.hm-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 8px; }
+.hm-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 38px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: 2px; background: transparent;
+  color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; text-decoration: none; cursor: pointer;
+}
+.hm-btn svg, .hm-btn .header-more-pay-symbol { color: var(--clay); flex: none; }
+.hm-btn:hover, .hm-btn:focus-visible { background: var(--clay-tint); border-color: var(--clay-soft); }
+.hm-btn-wide { grid-column: 1 / -1; }
+.hm-mini .hm-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .header-more-menu .hm-mini { gap: 6px; margin: 0 0 6px; }
+  .header-more-menu .hm-btn { min-height: calc(var(--hm-row) - 6px); font-size: 12px; gap: 5px; padding: 0 6px; }
+}
