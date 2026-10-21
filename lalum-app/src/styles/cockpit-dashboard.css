@@ -65,7 +65,7 @@
 .ck-insights { display: flex; flex-wrap: wrap; gap: 16px; }
 .ck-insights > .ck-card { flex: 1 1 260px; min-width: 0; }
 .ck-insights > .ck-card.ck-wide { flex: 2 1 540px; }
-@media (max-width: 700px) { .ck-band { padding: 8px 12px; } .ck-band-art svg { width: 64px; height: 64px; } }
+@media (max-width: 700px) { .ck-band { padding: 8px 12px; gap: 12px; } .ck-band-art svg { width: 52px; height: 52px; } .ck-band p { font-size: 14px; line-height: 1.55; font-weight: 500; } }
 
 .ck-navbadge { margin-inline-start: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: #f5c431; color: #4b3500; font-size: 12px; font-weight: 800; display: inline-grid; place-items: center; }
 

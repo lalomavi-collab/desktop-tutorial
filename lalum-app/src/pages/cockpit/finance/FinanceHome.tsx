@@ -29,6 +29,13 @@ import { ARCHIVE_COLS } from "../../../lib/cockpit/dashboardFinance";
 type Tab = "overview" | "documents" | "proformas" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
 const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
+// The thirteen sections are grouped into four rubrics: one row of rubrics, and under the chosen one a short row of its sections.
+const GROUPS: Array<{ key: string; label: string; tabs: Tab[] }> = [
+  { key: "overview", label: "סקירה ודוחות", tabs: ["overview", "reports", "cashflow"] },
+  { key: "income", label: "הכנסות ולקוחות", tabs: ["documents", "proformas", "customers", "aging"] },
+  { key: "outgo", label: "הוצאות ונאמנות", tabs: ["expenses", "trust"] },
+  { key: "control", label: "ארכיון ובקרה", tabs: ["archive", "shaam", "permissions", "audit"] },
+];
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: string }) {
@@ -113,11 +120,28 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
 
   return (
     <div className="ck-stack ck-fin">
-      <div className="fin-subtabs" role="tablist" aria-label="הנהלת חשבונות">
-        {TABS.filter(([k]) => !ADMIN_ONLY_TABS.includes(k) || level >= 4).map(([k, label]) => (
-          <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label}</button>
-        ))}
-      </div>
+      {(() => {
+        const label = new Map(TABS);
+        const visible = (k: Tab) => !ADMIN_ONLY_TABS.includes(k) || level >= 4;
+        const groups = GROUPS.map((g) => ({ ...g, tabs: g.tabs.filter(visible) })).filter((g) => g.tabs.length > 0);
+        const cur = groups.find((g) => g.tabs.includes(tab)) ?? groups[0];
+        return (
+          <>
+            <div className="fin-rubrics" role="tablist" aria-label="תחומי הנהלת חשבונות">
+              {groups.map((g) => (
+                <button key={g.key} role="tab" aria-selected={cur === g} className="fin-rubric" onClick={() => { if (cur !== g) setTab(g.tabs[0]); }}>{g.label}</button>
+              ))}
+            </div>
+            {cur.tabs.length > 1 && (
+              <div className="fin-subtabs" role="tablist" aria-label={cur.label}>
+                {cur.tabs.map((k) => (
+                  <button key={k} role="tab" aria-selected={tab === k} className="fin-subtab" onClick={() => setTab(k)}>{label.get(k)}</button>
+                ))}
+              </div>
+            )}
+          </>
+        );
+      })()}
       {error && <div className="ck-err" aria-live="polite">{error}</div>}
       {hasTest && <div className="ck-warn">במערכת יש מסמכי בדיקה מסביבת הניסוי של מערכת ההנפקה. הם מסומנים ואינם נספרים בדוחות.</div>}
       {!loaded && !error && <div className="ck-meta">טוען...</div>}
