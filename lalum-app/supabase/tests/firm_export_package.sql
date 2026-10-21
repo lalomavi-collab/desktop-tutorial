@@ -103,7 +103,13 @@ begin
   perform t.eq((r ->> 'complete')::boolean, jsonb_array_length(base) = 0, 'complete is true exactly when nothing is unclassified');
   reset role;
   perform t.eq((select count(*) from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_MANIFEST'), 1::bigint, 'the manifest wrote one chain row');
-  perform t.eq((select array_agg(k order by k) from jsonb_object_keys((select meta from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_MANIFEST')) k), array['chain_ok','originals','rows','tables'], 'with counts only');
+  perform t.eq((select array_agg(k order by k) from jsonb_object_keys((select meta from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_MANIFEST')) k), array['chain_ok','originals','tables'], 'with counts only (no row total: it is only known after the audit tables are counted)');
+  -- the audit tables are part of the package, so the manifest must count its own row: a page read after the manifest agrees with it
+  select e into sect from jsonb_array_elements(r -> 'sections') e where e ->> 'table' = 'lalum_matter_audit_log';
+  perform t.eq((select count(*) from public.lalum_matter_audit_log where firm_id = f1), (sect ->> 'rows')::bigint, 'the matter audit section counts the manifest row itself');
+  select e into sect from jsonb_array_elements(r -> 'sections') e where e ->> 'table' = 'lalum_audit_log';
+  perform t.eq((select count(*) from public.lalum_audit_log where firm_id = f1), (sect ->> 'rows')::bigint, 'and so does the audit log section');
+  perform t.eq((r -> 'audit_chain' ->> 'head_seq')::bigint, (select max(seq) from public.lalum_matter_audit_log where firm_id = f1), 'the reported head of the chain is the last row the package contains');
 
   -- the page: the rows joined with newlines hash to the manifest value
   perform t.as_user(p1, aal2);
