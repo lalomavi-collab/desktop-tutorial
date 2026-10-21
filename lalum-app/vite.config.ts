@@ -775,6 +775,7 @@ function rulingsBodyHtml(title: string, desc: string): string {
     if (r.issue) out.push(`        <p>${esc(`השאלה המשפטית: ${r.issue}`)}</p>`);
     out.push(`        <p>${esc(`ההלכה למעשה: ${r.holding}`)}</p>`);
     if (r.implications) out.push(`        <p>${esc(`השלכות מעשיות: ${r.implications}`)}</p>`);
+    if (r.partial) out.push(`        <p>${esc(r.partial)}</p>`);
     out.push(`        <p>${esc(`תחומים: ${r.areas.map(areaLabel).join(", ")}`)}</p>`);
     if (r.article) out.push(`        <p><a href="/insights/${esc(encodeURI(r.article))}/">${esc("להרחבה במאמר של המשרד")}</a></p>`);
   }

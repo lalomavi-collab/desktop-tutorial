@@ -31,6 +31,7 @@ const slim = rulings.map((r) => ({
   issue: r.issue,
   holding: r.holding,
   implications: r.implications,
+  partial: r.partial,
   article: r.article ? `https://lalumapp.com/insights/${r.article}/` : undefined,
 }));
 
