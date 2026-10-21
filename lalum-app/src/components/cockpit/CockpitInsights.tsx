@@ -22,7 +22,7 @@ export function InquiryInsights({ inquiries, replies, targetMinutes }: { inquiri
     <Strip>
       <Card title="פניות לפי שבוע" wide><AreaChart id="in-w" values={weekly.values} labels={weekly.labels} unit="פניות" /></Card>
       <Card title="עמידה ביעד המענה"><Gauge pct={answered.length ? Math.round((100 * inTarget) / answered.length) : 0} label="נענו בתוך היעד" sub={`${answered.length} מתוך ${inquiries.length} נענו`} /></Card>
-      <Card title="לפי סטטוס"><PillBars items={[{ label: "חדשות", value: by("NEW"), color: "var(--chart-warn, #d0901e)" }, { label: "נראו", value: by("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: by("HANDLED"), color: "var(--chart-ok, #216f33)" }]} /></Card>
+      <Card title="לפי סטטוס"><PillBars items={[{ label: "חדשות", value: by("NEW"), color: "var(--chart-warn, #b8780a)" }, { label: "נראו", value: by("SEEN"), color: "var(--chart-ok-l, #5a9c62)" }, { label: "טופלו", value: by("HANDLED"), color: "var(--chart-ok, #216f33)" }]} /></Card>
     </Strip>
   );
 }
@@ -55,7 +55,7 @@ export function ScoreInsights({ sc, nameOf }: { sc: Scorecard; nameOf: (id: stri
     <Strip>
       <Card title="עמידה ביעד המענה"><Gauge pct={replies ? Math.round((100 * inT) / replies) : 0} label="מענים בתוך היעד" sub={replies === 1 ? "מענה אחד נרשם" : `${replies} מענים נרשמו`} /></Card>
       <Card title="משימות בזמן"><Gauge pct={judged ? Math.round((100 * onT) / judged) : 0} label="הושלמו עד המועד" sub={`${judged} משימות נבדקו`} /></Card>
-      {scored.length > 0 && <Card title="ציון לפי איש צוות"><BarsH max={100} items={scored.map((p) => ({ label: nameOf(p.user_id), value: p.score ?? 0, color: (p.score ?? 0) >= 80 ? "var(--chart-ok, #216f33)" : (p.score ?? 0) >= 60 ? "var(--chart-warn, #d0901e)" : "var(--chart-bad, #b3402f)" }))} /></Card>}
+      {scored.length > 0 && <Card title="ציון לפי איש צוות"><BarsH max={100} items={scored.map((p) => ({ label: nameOf(p.user_id), value: p.score ?? 0, color: (p.score ?? 0) >= 80 ? "var(--chart-ok, #216f33)" : (p.score ?? 0) >= 60 ? "var(--chart-warn, #b8780a)" : "var(--chart-bad, #b3402f)" }))} /></Card>}
     </Strip>
   );
 }
@@ -69,7 +69,7 @@ export function MatterInsights({ rows }: { rows: Array<{ practice_area: string; 
   return (
     <Strip>
       <Card title="תיקים לפי תחום"><Donut centre={rows.length} sub="תיקים" segments={areas.map(([k, v], i) => ({ label: PRACTICE[k] ?? k, value: v, color: palette[i % palette.length] }))} /></Card>
-      <Card title="רמת סיכון"><BarsH items={[{ label: "תקין", value: risk("OK"), color: "var(--chart-ok, #216f33)" }, { label: "זהירות", value: risk("CAUTION"), color: "var(--chart-warn, #d0901e)" }, { label: "סיכון גבוה", value: risk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }]} /></Card>
+      <Card title="רמת סיכון"><BarsH items={[{ label: "תקין", value: risk("OK"), color: "var(--chart-ok, #216f33)" }, { label: "זהירות", value: risk("CAUTION"), color: "var(--chart-warn, #b8780a)" }, { label: "סיכון גבוה", value: risk("HIGH_RISK"), color: "var(--chart-bad, #b3402f)" }]} /></Card>
       <Card title="תיקים חדשים לפי שבוע"><MiniBars values={weekly.values} labels={weekly.labels.map((l) => l.split("/")[0])} /></Card>
     </Strip>
   );
