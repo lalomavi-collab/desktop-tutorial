@@ -58,3 +58,11 @@ export function delta(values: number[]): number | null {
   const a = values[values.length - 1] ?? 0, b = values[values.length - 2] ?? 0;
   return b < MIN_DELTA_BASE ? null : Math.round(((a - b) / b) * 100);
 }
+
+/** Items in the last `days` days against the `days` before them, as a percent change; null when the earlier window is too small to compare. */
+export function periodDelta(dates: string[], days: number): { cur: number; prev: number; pct: number | null } {
+  const now = Date.now(), win = days * DAY;
+  let cur = 0, prev = 0;
+  for (const d of dates) { const age = now - new Date(d).getTime(); if (age < 0) continue; if (age < win) cur++; else if (age < 2 * win) prev++; }
+  return { cur, prev, pct: prev < MIN_DELTA_BASE ? null : Math.round(((cur - prev) / prev) * 100) };
+}

@@ -39,6 +39,14 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
     ? `אין ${unit} ב${r.text}.`
     : `${nf(m.cur)} ${unit} ב${r.text}. ` + (m.pct == null ? `בתקופה הקודמת היו ${nf(m.prev)}, מעט מדי להשוואה באחוזים. ` : `${m.pct > 0 ? "עלייה" : m.pct < 0 ? "ירידה" : "ללא שינוי"}${m.pct !== 0 ? ` של ${Math.abs(m.pct)}%` : ""} לעומת התקופה הקודמת (${nf(m.prev)}). `) + `השיא: ${nf(values[peak])} ב${labels[peak]}.`;
   const shown = hover ?? values.length - 1;
+  // Keyboard reach for the readout: arrows step between bars (the drawing is LTR, so right is later), Home and End jump, Escape clears.
+  const onKey = (e: React.KeyboardEvent) => {
+    const last = values.length - 1, at = hover ?? last;
+    const to = e.key === "ArrowRight" ? Math.min(last, at + 1) : e.key === "ArrowLeft" ? Math.max(0, at - 1) : e.key === "Home" ? 0 : e.key === "End" ? last : e.key === "Escape" ? null : undefined;
+    if (to === undefined) return;
+    e.preventDefault();
+    setHover(to);
+  };
 
   return (
     <div className="ck-card db-card db-trend">
@@ -53,8 +61,8 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
         <span className={`db-delta ${cls}`}><span aria-hidden="true">{arrow}</span> {m.pct == null ? "אין בסיס להשוואה" : <bdi dir="ltr">{m.pct > 0 ? "+" : ""}{m.pct}%</bdi>}<span className="db-sr"> לעומת התקופה הקודמת</span></span>
         <span className="db-trend-read" aria-live="polite"><bdi>{labels[shown]}</bdi>: <b>{nf(values[shown])}</b></span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="db-trend-svg" role="img" aria-label={`${title}: ${labels.map((l, i) => `${l} ${values[i]}`).join(", ")}`} style={{ direction: "ltr" }}
-        onPointerLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="db-trend-svg" role="img" tabIndex={0} aria-label={`${title}: ${labels.map((l, i) => `${l} ${values[i]}`).join(", ")}. חצים מזיזים בין העמודות`} style={{ direction: "ltr" }}
+        onPointerLeave={() => setHover(null)} onKeyDown={onKey} onBlur={() => setHover(null)}>
         {[0, 0.5, 1].map((f) => <g key={f}><line x1={L} x2={W - R} y1={y(max * f)} y2={y(max * f)} stroke="var(--chart-grid, rgba(83,112,86,.14))" /><text x={L - 6} y={y(max * f) + 4} textAnchor="end" fill="var(--slate)">{nf(Math.round(max * f))}</text></g>)}
         {values.map((v, i) => (
           <g key={i} onPointerEnter={() => setHover(i)}>
