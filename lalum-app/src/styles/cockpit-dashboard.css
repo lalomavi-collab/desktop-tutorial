@@ -106,9 +106,11 @@
    Nothing on this page is set below 15px; figures and card titles step up so the hierarchy reads at a glance. */
 .db-hello small { font-size: 16px; letter-spacing: .01em; }
 .db-hello strong { font-family: var(--serif); font-size: 38px; line-height: 1.1; font-weight: 500; letter-spacing: -.01em; }
-.db-firm, .db-user small, .db-act small, .db-note, .db-empty, .db-list small, .db-rank small, .db-delta, .db-kval small, .db-count, .db-tbl th, .db-toggle button, .db-bubble b { font-size: 15px; }
+.db-firm, .db-user small, .db-note, .db-empty, .db-list small, .db-rank small, .db-delta, .db-kval small, .db-count, .db-tbl th, .db-toggle button, .db-bubble b { font-size: 15px; }
 .db-user strong, .db-search input { font-size: 16px; }
-.db-act span { font-size: 17px; line-height: 1.3; }
+/* The four action buttons keep the proportions they had before the type scale (14.5px title, 12px caption): at 17px and 15px they wrapped to three lines in two columns on a phone. */
+.db-act span { font-size: 14.5px; line-height: 1.25; }
+.db-act small { font-size: 12px; }
 .db-card h3 { font-family: var(--serif); font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -.005em; }
 .db-klabel { font-size: 16px; font-weight: 600; }
 .db-kval b { font-family: var(--serif); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -.02em; }
