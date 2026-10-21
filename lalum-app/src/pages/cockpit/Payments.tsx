@@ -88,7 +88,7 @@ function PaymentsInner({ canView }: { canView: boolean }) {
     }
   }
 
-  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">גביית לקוחות פתוחה למנהל המשרד.</div></div>;
+  if (!canView) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">גביית לקוחות פתוחה למנהל הפירמה.</div></div>;
   if (allBills === null) return <div className="ck-meta">טוען...</div>;
 
   return (

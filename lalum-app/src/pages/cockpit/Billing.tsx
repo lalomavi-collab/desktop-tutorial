@@ -60,7 +60,7 @@ function Panel({ member }: { member: Membership }) {
     <div className="ck-stack">
       <div className="ck-card"><div className="ck-row" style={{ justifyContent: "space-between" }}><div><div className="ck-title">{firm.firm_name}</div><div className="ck-meta">מסלול נוכחי: <b>{firm.subscription_tier}</b> · {firm.status === "ACTIVE" ? "פעיל" : firm.status}</div></div>
         <div style={{ textAlign: "end" }}><div className="ck-title">{money(firm.monthly_fee)} לחודש</div><div className="ck-meta">דמי מנוי קבועים, ללא חלוקת שכר טרחה</div></div></div></div>
-      <div className="ck-ok">LALUM גובה דמי מנוי קבועים בלבד. אין חלוקת שכר טרחה, אחוזים או שיתוף הכנסות, והלקוח מתקשר ישירות עם המשרד המטפל.</div>
+      <div className="ck-ok">LALUM גובה דמי מנוי קבועים בלבד. אין חלוקת שכר טרחה, אחוזים או שיתוף הכנסות, והלקוח מתקשר ישירות עם הפירמה המטפלת.</div>
       <div className="ck-label">התראות לשותף</div>
       <div className="ck-card"><div className="ck-meta">על כל תיק חדש נשלח דוא"ל עם תחום, רמת סיכון וקישור בלבד, ללא פרטים מזהים. להתראה גם ב-WhatsApp הזינו מספר נייד (דורש הפעלה של LALUM).</div>
         <div className="ck-row"><input className="field" dir="ltr" inputMode="tel" aria-label="טלפון נייד" placeholder="05X-XXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} style={{ maxWidth: 260 }} /><button className="ck-btn" onClick={() => void savePhone()}>שמירה</button></div>
@@ -97,7 +97,7 @@ function BillingTabs({ member }: { member: Membership }) {
     <div className="ck-stack ck-fin">
       <div className="fin-tabs" role="tablist" aria-label="חיוב והגדרות">
         <button role="tab" aria-selected={tab === "books"} className={`ck-btn${tab === "books" ? " primary" : ""}`} onClick={() => setTab("books")}>הנהלת חשבונות</button>
-        <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי המשרד והגדרות</button>
+        <button role="tab" aria-selected={tab === "plan"} className={`ck-btn${tab === "plan" ? " primary" : ""}`} onClick={() => setTab("plan")}>מנוי הפירמה והגדרות</button>
       </div>
       {tab === "books" ? <FinanceHome firmId={member.firm_id} firmName={member.lalum_firms.firm_name} /> : <Panel member={member} />}
     </div>
@@ -106,7 +106,7 @@ function BillingTabs({ member }: { member: Membership }) {
 
 export function Billing() {
   return (
-    <CockpitFrame title="חיוב והגדרות משרד" description="ניהול הכספים של המשרד: מסמכי מס, לקוחות, הוצאות ודוחות. בלשונית השנייה: מנוי המשרד, מושבי המשתמשים וחיבור הקליטה האוטומטית." path="/settings/billing">
+    <CockpitFrame title="חיוב והגדרות פירמה" description="ניהול הכספים של הפירמה: מסמכי מס, לקוחות, הוצאות ודוחות. בלשונית השנייה: מנוי הפירמה, מושבי המשתמשים וחיבור הקליטה האוטומטית." path="/settings/billing">
       {({ member }) => (member ? <BillingTabs member={member} /> : null)}
     </CockpitFrame>
   );

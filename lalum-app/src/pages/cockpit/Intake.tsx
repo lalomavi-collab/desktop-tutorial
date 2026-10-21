@@ -118,7 +118,7 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
         </label>
         <label className="ck-field">תאריך המסמך (אם ידוע)<input className="ck-input" type="date" name="doc_date" /></label>
       </div>
-      <div className="ck-meta">{matterId ? "המסמך ישויך לתיק שנבחר ויופיע בכספת שלו." : "המסמך יפתח תיק חדש במשרד ויישמר בו."} תיבות הבחירה הן סגורות בכוונה, כדי שלא יוזנו שמות או פרטים מזהים מחוץ למנגנון ההסתרה.</div>
+      <div className="ck-meta">{matterId ? "המסמך ישויך לתיק שנבחר ויופיע בכספת שלו." : "המסמך יפתח תיק חדש בפירמה ויישמר בו."} תיבות הבחירה הן סגורות בכוונה, כדי שלא יוזנו שמות או פרטים מזהים מחוץ למנגנון ההסתרה.</div>
       <label className="ck-field">קובץ (DOCX, PDF, TXT, MD, HTML)<input className="ck-input" type="file" ref={fileRef} accept=".docx,.pdf,.txt,.md,.html,.htm" /></label>
       <label className="ck-field">או הדביקו טקסט<textarea className="ck-textarea" name="text" placeholder="הדביקו כאן חוזה, פנייה או הודעה" /></label>
       <div className="ck-row"><button className="ck-btn primary" type="submit" disabled={busy}>קליטה וניתוח</button></div>

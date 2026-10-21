@@ -70,7 +70,7 @@ function DiscussionsInner({ canModerate }: { canModerate: boolean }) {
     }
   }
 
-  if (!canModerate) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">אישור דיונים ציבוריים פתוח למנהל המשרד.</div></div>;
+  if (!canModerate) return <div className="ck-card"><div className="ck-title">אין הרשאה</div><div className="ck-meta">אישור דיונים ציבוריים פתוח למנהל הפירמה.</div></div>;
   if (discussions === null) return <div className="ck-meta">טוען...</div>;
 
   const pending = discussions.filter((d) => d.status === "pending").length;

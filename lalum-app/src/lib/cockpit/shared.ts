@@ -30,10 +30,10 @@ export const MATTER_STATUS: Record<string, string> = {
   ARCHIVED: "בארכיון",
 };
 export const ROLE: Record<string, string> = {
-  FIRM_PARTNER: "שותף במשרד",
+  FIRM_PARTNER: "שותף בפירמה",
   ATTORNEY: "עורך דין",
   COMPLIANCE_OFFICER: "ממונה ציות",
-  ADMIN: "מנהל משרד",
+  ADMIN: "מנהל פירמה",
   BOOKKEEPER: "הנהלת חשבונות",
 };
 export const KIND_HE: Record<string, string> = {
@@ -113,7 +113,7 @@ export const money = (n: number | null | undefined): string =>
 
 const ERRORS: Record<string, string> = {
   PII_LEAK_BLOCKED: "הטקסט נחסם: זוהה מידע מזהה שלא ניתן היה להסתיר. הסירו אותו ונסו שוב.",
-  FIRM_INACTIVE: "מנוי המשרד אינו פעיל.",
+  FIRM_INACTIVE: "מנוי הפירמה אינו פעיל.",
   TOO_LARGE: "הטקסט גדול מדי.",
   EMPTY_INPUT: "לא הוזן טקסט.",
   UNAUTHENTICATED: "פג תוקף ההתחברות. התחברו מחדש.",

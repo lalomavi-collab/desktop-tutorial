@@ -45,7 +45,7 @@ export const en = {
       secondaryCta: "Run the free risk assessment",
     },
     botCall: { aria: "Call the AI assistant" },
-    accounting: { aria: "Accounting (Invoice4U)" },
+    accounting: { aria: "Accounting" },
     consent: {
       pre: "I agree to receive marketing material and updates from LALUM by WhatsApp, email, SMS, phone, and similar, and I accept the ",
       terms: "Terms",
@@ -369,7 +369,7 @@ export const en = {
         allTitle: "All milestones",
         copyLink: "Copy pay link",
         copied: "Copied",
-        dashboard: "Accounting & reports (Invoice4U)",
+        dashboard: "Accounting & reports",
       },
       transfer: {
         title: "Bank transfer (preferred)",

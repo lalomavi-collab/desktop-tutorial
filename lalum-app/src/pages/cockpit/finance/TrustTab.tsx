@@ -83,11 +83,11 @@ export function TrustTab({ firmId, customers, statementAccounts, matters, accoun
           <span aria-hidden="true">{net30 > 0 ? "▲" : net30 < 0 ? "▼" : "■"}</span>{" "}
           {net30 === 0 ? "ללא שינוי ב-30 הימים האחרונים" : `${net30 > 0 ? "עלייה" : "ירידה"} של ${money(Math.abs(net30))} ב-30 הימים האחרונים`}
         </div>
-        <div className="fin-note">כספי לקוחות. אינם הכנסת המשרד ואינם נכללים בסקירה, בדוח ההכנסות ובמע"מ. הרישום רק מוסיף שורות: טעות מתוקנת בתנועת תיקון.</div>
+        <div className="fin-note">כספי לקוחות. אינם הכנסת הפירמה ואינם נכללים בסקירה, בדוח ההכנסות ובמע"מ. הרישום רק מוסיף שורות: טעות מתוקנת בתנועת תיקון.</div>
       </div>
 
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
-        <div className="ck-meta">הרישום סופי. העברת שכר טרחה למשרד אפשרית רק כנגד חשבונית מס שהופקה, וההכנסה מוכרת בחשבונית. המערכת דוחה תנועה שמורידה יתרה מתחת לאפס.</div>
+        <div className="ck-meta">הרישום סופי. העברת שכר טרחה לפירמה אפשרית רק כנגד חשבונית מס שהופקה, וההכנסה מוכרת בחשבונית. המערכת דוחה תנועה שמורידה יתרה מתחת לאפס.</div>
         <button className="ck-btn primary" disabled={!openAccounts.length || !billable.length} onClick={() => { setF(blank(openAccounts[0]?.id ?? "")); setMsg(""); }}>תנועה חדשה</button>
       </div>
       {!openAccounts.length && <div className="ck-warn">לא הוגדר חשבון נאמנות פעיל. אי אפשר לרשום תנועה לפני שמגדירים חשבון.</div>}

@@ -52,7 +52,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
   }
   const incomeCsv = () => download(`income-${period.from}-${period.to}.csv`, toCsv(
     ["סוג", "תאריך", "מספר מסמך", "לקוח", "לפני מע\"מ", "מע\"מ", "כולל מע\"מ", "מקור"],
-    rows.map((r) => [INCOME_KIND_LABEL[r.kind], r.date, r.number != null ? String(r.number) : "", r.customer, r.net, r.vat, r.total, r.source === "ledger" ? "מערכת" : "ארכיון Invoice4U"]),
+    rows.map((r) => [INCOME_KIND_LABEL[r.kind], r.date, r.number != null ? String(r.number) : "", r.customer, r.net, r.vat, r.total, r.source === "ledger" ? "מערכת" : "ארכיון היסטוריה"]),
   ));
   const customerCsv = () => download(`revenue-by-customer-${period.from}-${period.to}.csv`, toCsv(
     ["לקוח", "מסמכים", "לפני מע\"מ", "מע\"מ", "כולל מע\"מ"], byCustomer.map((c) => [c.customer, String(c.documents), c.net, c.vat, c.total]),
@@ -97,7 +97,7 @@ export function ReportsTab({ docs, archive, customers, payments, expenses }: { d
           <tr><td>מע"מ תשומות לניכוי</td><td className="fin-ltr">{money(vat.vatIn)}</td></tr>
           <tr><td><b>מע"מ לתשלום (או להחזר)</b></td><td className="fin-ltr"><b>{money(vat.vatPayable)}</b></td></tr>
         </tbody></table></div>
-        <div className="ck-meta">נתוני עזר לרואה החשבון, לא דיווח. התשומות לפי ההוצאות שהוזנו ידנית ושיעור הניכוי שנקבע בכל הוצאה. כוללים את הארכיון של Invoice4U. קובץ PCN874 עדיין לא מופק, והוא ייבנה רק אחרי שהרו"ח תאשר את המבנה.</div>
+        <div className="ck-meta">נתוני עזר לרואה החשבון, לא דיווח. התשומות לפי ההוצאות שהוזנו ידנית ושיעור הניכוי שנקבע בכל הוצאה. כוללים את ארכיון ההיסטוריה. קובץ PCN874 עדיין לא מופק, והוא ייבנה רק אחרי שהרו"ח תאשר את המבנה.</div>
       </div>
 
       <div className="ck-card ck-stack">

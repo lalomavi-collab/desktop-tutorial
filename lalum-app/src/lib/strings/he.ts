@@ -41,7 +41,7 @@ export const he: Dict = {
       secondaryCta: "הרצת מבדק חשיפת סיכונים (בחינם)",
     },
     botCall: { aria: "שיחה עם העוזר הדיגיטלי" },
-    accounting: { aria: "הנהלת חשבונות (Invoice4U)" },
+    accounting: { aria: "הנהלת חשבונות" },
     consent: {
       pre: "אני מאשר/ת קבלת חומר שיווקי ומידע מ-LALUM בווטסאפ, בדוא״ל, ב-SMS, טלפונית וכיוצ״ב, ומסכים/ה ל",
       terms: "תקנון",
@@ -365,7 +365,7 @@ export const he: Dict = {
         allTitle: "כל אבני הדרך",
         copyLink: "העתקת קישור תשלום",
         copied: "הועתק",
-        dashboard: "הנהלת חשבונות ודוחות (Invoice4U)",
+        dashboard: "הנהלת חשבונות ודוחות",
       },
       transfer: {
         title: "העברה בנקאית (מועדף)",

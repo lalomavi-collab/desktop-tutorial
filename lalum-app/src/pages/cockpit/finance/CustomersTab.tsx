@@ -78,7 +78,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
           {isNew && (
             <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <input type="checkbox" checked={f.casual} onChange={(e) => setF({ ...f, casual: e.target.checked })} />
-              לקוח מזדמן (בלי כרטיס ב-Invoice4U, שם בלבד)
+              לקוח מזדמן (בלי כרטיס במערכת ההנפקה, שם בלבד)
             </label>
           )}
           {f.casual && <div className="ck-meta">לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי. לכל מסמך אחר פתחו לקוח רגיל.</div>}
@@ -89,7 +89,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
             <label className="ck-field">טלפון<input className="ck-input" dir="ltr" inputMode="tel" value={f.phone} onChange={set("phone")} /></label>
             <label className="ck-field">כתובת<input className="ck-input" value={f.address} onChange={set("address")} /></label>
             <label className="ck-field">עיר<input className="ck-input" value={f.city} onChange={set("city")} /></label>
-            {!f.casual && <label className="ck-field">מספר לקוח ב-Invoice4U (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
+            {!f.casual && <label className="ck-field">מספר לקוח במערכת ההנפקה (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
             <label className="ck-field">הערות<input className="ck-input" value={f.notes} onChange={set("notes")} /></label>
           </div>
           {!f.casual && (
@@ -124,7 +124,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => setEditing(null)}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th className="fin-num">ת.ז. / ח.פ.</th><th className="fin-num">דוא"ל</th><th className="fin-num">טלפון</th><th>Invoice4U</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th className="fin-num">ת.ז. / ח.פ.</th><th className="fin-num">דוא"ל</th><th className="fin-num">טלפון</th><th>מערכת ההנפקה</th><th></th></tr></thead><tbody>
         {shown.length ? shown.map((c) => {
           const n = splitName(c.name), addr = n.address ?? c.address, gaps = customerGaps(c);
           return (

@@ -73,8 +73,8 @@ export async function pullMatterOriginals(docs: DocOriginal[], port: OriginalsPo
 
 /** The README sentences about the originals, in one place so the screen and the file cannot disagree. */
 export function originalsReadme(r: OriginalsResult | null): string[] {
-  if (!r) return ["מה לא כלול: קובץ המקור כפי שהועלה (PDF, DOCX וכדומה), גם כשהוא שמור בכספת של הפלטפורמה. המשרד מוסר אותו בנפרד."];
-  if (r.skipped === "TOO_LARGE") return ["מה לא כלול: קבצי המקור, כי מספרם או נפחם גדולים מדי לייצוא אחד. המשרד מוסר אותם בנפרד."];
+  if (!r) return ["מה לא כלול: קובץ המקור כפי שהועלה (PDF, DOCX וכדומה), גם כשהוא שמור בכספת של הפלטפורמה. הפירמה מוסרת אותו בנפרד."];
+  if (r.skipped === "TOO_LARGE") return ["מה לא כלול: קבצי המקור, כי מספרם או נפחם גדולים מדי לייצוא אחד. הפירמה מוסרת אותם בנפרד."];
   const L: string[] = [];
   if (r.requested === 0) L.push("קבצי מקור: לא נמצאו קבצי מקור שמורים למסמכי התיק.");
   else {
@@ -83,7 +83,7 @@ export function originalsReadme(r: OriginalsResult | null): string[] {
     if (bad.length > 0) {
       const by: Record<string, number> = {};
       for (const b of bad) by[b.reason ?? "?"] = (by[b.reason ?? "?"] ?? 0) + 1;
-      L.push(`${bad.length} קבצים לא נכללו או לא אומתו: ${Object.entries(by).sort(([a], [b]) => a.localeCompare(b)).map(([k, n]) => `${k} ${n}`).join(", ")}. המשרד מוסר אותם בנפרד.`);
+      L.push(`${bad.length} קבצים לא נכללו או לא אומתו: ${Object.entries(by).sort(([a], [b]) => a.localeCompare(b)).map(([k, n]) => `${k} ${n}`).join(", ")}. הפירמה מוסרת אותם בנפרד.`);
     }
   }
   if (r.without > 0) L.push(`${r.without} מסמכים נקלטו בלי קובץ מקור שמור.`);

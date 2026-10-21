@@ -88,19 +88,19 @@ export function Partners() {
 
   return (
     <div className="ck-root partners-root" dir="rtl" lang="he">
-      <PageMeta title="כניסה לשותפים" description="כניסה למשרדים שותפים ולמנהלי LALUM." path="/partners" noindex />
+      <PageMeta title="כניסה לשותפים" description="כניסה לפירמות שותפות ולמנהלי LALUM." path="/partners" noindex />
       <div className="ck-shell partners-shell" style={{ maxWidth: 1040 }}>
         <header className="ck-top"><h1 className="serif">כניסה לשותפים</h1><nav className="ck-nav"><Link to="/">לאתר</Link><Link to="/workspace/guide">מה זה הקוקפיט?</Link></nav></header>
         <div className="partners-layout">
           <main className="ck-stack">
             <div className="ck-card partners-intro-card">
-              <div className="ck-title partners-intro-title">אזור המשרדים השותפים</div>
-              <div className="ck-meta partners-intro-meta">קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה למשרדים ולמנהלי LALUM בלבד, ללא הרשמה עצמית.</div>
+              <div className="ck-title partners-intro-title">אזור הפירמות השותפות</div>
+              <div className="ck-meta partners-intro-meta">קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה לפירמות ולמנהלי LALUM בלבד, ללא הרשמה עצמית.</div>
             </div>
             {loading || (user && access.state === "loading") ? <div className="ck-meta">טוען...</div>
               : user && access.state === "none" ? (
-                <div className="ck-card"><div className="ck-title">החשבון אינו משויך למשרד</div>
-                  <div className="ck-meta">{user.email} מחובר, אך אינו חבר במשרד. פנו אל LALUM לצירוף החשבון.</div>
+                <div className="ck-card"><div className="ck-title">החשבון אינו משויך לפירמה</div>
+                  <div className="ck-meta">{user.email} מחובר, אך אינו חבר בפירמה. פנו אל LALUM לצירוף החשבון.</div>
                   <div className="ck-row"><button className="ck-btn" onClick={() => void signOut()}>התנתקות</button><Link className="ck-btn" to="/portal">לאזור האישי</Link></div></div>
               ) : !user ? (
                 <form className="ck-card" onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>

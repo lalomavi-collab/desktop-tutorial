@@ -96,10 +96,10 @@ async function pullTable(ports: Ports, s: Section, pageSize: number): Promise<st
 
 export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o: OriginalsReport | null = null, volumes = 1): string {
   const L: string[] = [];
-  L.push("חבילת מסירה של נתוני המשרד", "");
+  L.push("חבילת מסירה של נתוני הפירמה", "");
   if (volumes > 1) L.push(`החבילה מחולקת ל-${volumes} קבצי ZIP, כדי שאפשר יהיה לפתוח כל אחד בנפרד. קובץ ה-ZIP האחרון (part-${String(volumes).padStart(2, "0")}) מכיל את הטבלאות, את PACKAGE.json ואת הקובץ הזה, וכל קובץ ZIP מכיל VOLUME-NN.json עם החתימות של הקבצים שבו. יש לשמור את כל הקבצים יחד: חבילה שחסר בה קובץ ZIP אינה שלמה.`, "");
-  L.push(`נוצרה ב: ${now.toLocaleDateString("he-IL")}`, `סטטוס המשרד בעת הייצוא: ${m.firmStatus}`, "");
-  L.push("מה כלול", `כל טבלה של המשרד בקובץ נפרד בתיקיית data, בפורמט JSON Lines: שורה אחת לכל רשומה. סך הכול ${m.sections.length} קבצים ו-${m.rowsTotal} רשומות.`, "");
+  L.push(`נוצרה ב: ${now.toLocaleDateString("he-IL")}`, `סטטוס הפירמה בעת הייצוא: ${m.firmStatus}`, "");
+  L.push("מה כלול", `כל טבלה של הפירמה בקובץ נפרד בתיקיית data, בפורמט JSON Lines: שורה אחת לכל רשומה. סך הכול ${m.sections.length} קבצים ו-${m.rowsTotal} רשומות.`, "");
   L.push("איך מאמתים", "לכל קובץ רשומים ב-PACKAGE.json מספר הרשומות וחתימת SHA-256. החתימה היא של תוכן הקובץ בקידוד UTF-8, בלי שורה ריקה בסוף. קובץ שחתימתו שונה אינו הקובץ שנמסר.", "");
   L.push("יומן הביקורת");
   L.push(m.chain.verified
@@ -110,9 +110,9 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
   L.push("");
   L.push("המסמכים המקוריים");
   if (m.originals.count === 0) L.push("לא נמצאו מסמכים מקוריים שמורים.", "");
-  else if (!o) L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB) בארכיון הקבצים של הפלטפורמה. הם אינם כלולים בארכיון הזה.`, "עד שהמקוריים נמסרו, החבילה אינה שלמה למסירה.", "");
+  else if (!o) L.push(`הפירמה מחזיקה ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB) בארכיון הקבצים של הפלטפורמה. הם אינם כלולים בארכיון הזה.`, "עד שהמקוריים נמסרו, החבילה אינה שלמה למסירה.", "");
   else {
-    L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB). בתיקיית originals נכללו ${o.filesInZip}, ומהם אומתו ${o.verified} מול חתימת ה-SHA-256 והגודל שנרשמו. הקובץ originals/index.jsonl ממפה כל קובץ למסמך, לתיק, לשם המקורי ולחתימה.`);
+    L.push(`הפירמה מחזיקה ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB). בתיקיית originals נכללו ${o.filesInZip}, ומהם אומתו ${o.verified} מול חתימת ה-SHA-256 והגודל שנרשמו. הקובץ originals/index.jsonl ממפה כל קובץ למסמך, לתיק, לשם המקורי ולחתימה.`);
     if (o.listed !== m.originals.count) L.push(`רשימת המקוריים שהתקבלה (${o.listed}) שונה ממספרם בכרטיס (${m.originals.count}). יש לייצא שוב.`);
     if (o.listError === "TOO_LARGE") L.push("נפח המקוריים גדול מדי לייצוא מהדפדפן, ולכן הם אינם כלולים. יש לבקש מסירה של המקוריים בנפרד.");
     else if (o.listError === "COUNT_CHANGED") L.push("מספר המקוריים השתנה בזמן הייצוא. יש לייצא שוב.");
@@ -125,7 +125,7 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
     L.push(handoverComplete ? "כל המקוריים כלולים ואומתו." : "עד שכל המקוריים כלולים ואומתו, החבילה אינה שלמה למסירה.", "");
   }
   L.push("שמות ופרטים מזהים", "המסמכים השמורים בטבלאות מחליפים שמות באסימונים כמו [CLIENT_NAME_1]. את השמות האמיתיים אפשר לקרוא רק במסמכים המקוריים. שמות הקבצים המקוריים נמצאים ב-originals/index.jsonl ולא בשמות הקבצים בארכיון.", "");
-  L.push("העתק זה אינו חוות דעת משפטית ואינו מחליף את תיק המשרד.");
+  L.push("העתק זה אינו חוות דעת משפטית ואינו מחליף את תיק הפירמה.");
   return L.join("\n");
 }
 

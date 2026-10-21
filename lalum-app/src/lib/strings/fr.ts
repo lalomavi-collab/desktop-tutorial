@@ -41,7 +41,7 @@ export const fr: Dict = {
       secondaryCta: "Lancer le diagnostic de risque gratuit",
     },
     botCall: { aria: "Appeler l'assistant IA" },
-    accounting: { aria: "Comptabilité (Invoice4U)" },
+    accounting: { aria: "Comptabilité" },
     consent: {
       pre: "J'accepte de recevoir des documents marketing et des actualités de LALUM par WhatsApp, e-mail, SMS, téléphone et moyens similaires, et j'accepte les ",
       terms: "Conditions générales",
@@ -365,7 +365,7 @@ export const fr: Dict = {
         allTitle: "Toutes les échéances",
         copyLink: "Copier le lien de paiement",
         copied: "Copié",
-        dashboard: "Comptabilité et rapports (Invoice4U)",
+        dashboard: "Comptabilité et rapports",
       },
       transfer: {
         title: "Virement bancaire (méthode privilégiée)",

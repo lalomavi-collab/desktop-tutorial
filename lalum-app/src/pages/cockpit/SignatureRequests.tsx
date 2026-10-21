@@ -122,7 +122,7 @@ export function SignatureRequests({ matterId, firmId, documentId, canManage }: {
     <details>
       <summary className="ck-btn" style={{ display: "inline-flex" }}>החתמת לקוח{rows.length ? ` (${rows.length})` : ""}</summary>
       <div className="ck-stack" style={{ marginTop: 10 }}>
-        <div className="ck-meta">הכנת מסמך לחתימת לקוח דרך הפורטל. הלקוח נכנס לאזור האישי, קורא את הנוסח וחותם בשמו ובאישור מפורש. התוכן כאן הוא הנוסח הסופי שהלקוח יראה, והוא באחריות המשרד (אינו נשלף מהמסמך המוסתר).</div>
+        <div className="ck-meta">הכנת מסמך לחתימת לקוח דרך הפורטל. הלקוח נכנס לאזור האישי, קורא את הנוסח וחותם בשמו ובאישור מפורש. התוכן כאן הוא הנוסח הסופי שהלקוח יראה, והוא באחריות הפירמה (אינו נשלף מהמסמך המוסתר).</div>
 
         {rows.map((r) => {
           const st = STATUS[r.status] ?? ["", r.status];
@@ -171,7 +171,7 @@ export function SignatureRequests({ matterId, firmId, documentId, canManage }: {
             {msg && <span className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite" style={{ padding: "6px 12px" }}>{msg.text}</span>}
           </div>
         )}
-        <div className="ck-meta">זוהי חתימה אלקטרונית רגילה: רישום של שם, אישור ומועד. אין בה כדי לקבוע את מעמדה המשפטי של החתימה בכל הקשר, והתאמת אופן החתימה לדרישות הדין היא באחריות המשרד.</div>
+        <div className="ck-meta">זוהי חתימה אלקטרונית רגילה: רישום של שם, אישור ומועד. אין בה כדי לקבוע את מעמדה המשפטי של החתימה בכל הקשר, והתאמת אופן החתימה לדרישות הדין היא באחריות הפירמה.</div>
       </div>
     </details>
   );

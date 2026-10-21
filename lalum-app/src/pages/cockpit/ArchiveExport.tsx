@@ -70,9 +70,9 @@ export function ArchiveExport({ matter, docs, canRestore, restore }: Props) {
         "",
         "מה כלול: כל מסמך שנשמר בפלטפורמה, בשני נוסחים (עדכני וכפי שנקלט)" + (orig && !orig.skipped ? ", וקבצי המקור שהועלו" : "") + ", וקובץ manifest.json עם חתימות SHA-256 לאימות שלמות.",
         ...originalsReadme(orig),
-        orig && orig.complete ? "שמות ופרטים מזהים: בקבצים שבהם שחזור השמות לא היה זמין, פרטים מזהים מופיעים כאסימונים כמו [CLIENT_NAME_1]. את השמות האמיתיים אפשר לקרוא בקבצי המקור שבתיקיית originals." : "שמות ופרטים מזהים: בקבצים שבהם שחזור השמות לא היה זמין, פרטים מזהים מופיעים כאסימונים כמו [CLIENT_NAME_1]. את הנוסח עם השמות יש להשלים מקובץ המקור, שהמשרד מוסר בנפרד.",
+        orig && orig.complete ? "שמות ופרטים מזהים: בקבצים שבהם שחזור השמות לא היה זמין, פרטים מזהים מופיעים כאסימונים כמו [CLIENT_NAME_1]. את השמות האמיתיים אפשר לקרוא בקבצי המקור שבתיקיית originals." : "שמות ופרטים מזהים: בקבצים שבהם שחזור השמות לא היה זמין, פרטים מזהים מופיעים כאסימונים כמו [CLIENT_NAME_1]. את הנוסח עם השמות יש להשלים מקובץ המקור, שהפירמה מוסרת בנפרד.",
         "",
-        "העתק זה אינו מחליף את תיק המשרד ואינו חוות דעת משפטית.",
+        "העתק זה אינו מחליף את תיק הפירמה ואינו חוות דעת משפטית.",
       ].join("\n"));
       const blob = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
@@ -81,7 +81,7 @@ export function ArchiveExport({ matter, docs, canRestore, restore }: Props) {
       document.body.appendChild(a); a.click(); a.remove();
       const { error } = await supabase.rpc("lalum_log_archive_export", { p_matter: matter.id, p_docs: docs.length });
       const origNote = orig === null ? "" : orig.skipped ? " קבצי המקור לא נכללו (מספרם או נפחם גדולים מדי) ויש למסור אותם בנפרד." : !orig.complete ? ` ${orig.requested - orig.verified} מקבצי המקור לא נכללו או לא אומתו, והפירוט ב-manifest.json.` : "";
-      setMsg(error ? "הקובץ ירד, אך רישום הייצוא ביומן הביקורת נכשל. הפעולה זמינה לשותף בלבד." + origNote : unrestored > 0 ? `הקובץ ירד. ב-${unrestored} מסמכים נשארו אסימונים במקום שמות, ויש להשלים אותם מתיק המשרד.` + origNote : "הקובץ ירד, והייצוא נרשם ביומן הביקורת." + origNote);
+      setMsg(error ? "הקובץ ירד, אך רישום הייצוא ביומן הביקורת נכשל. הפעולה זמינה לשותף בלבד." + origNote : unrestored > 0 ? `הקובץ ירד. ב-${unrestored} מסמכים נשארו אסימונים במקום שמות, ויש להשלים אותם מתיק הפירמה.` + origNote : "הקובץ ירד, והייצוא נרשם ביומן הביקורת." + origNote);
     } catch {
       setMsg("הייצוא נכשל.");
     } finally { setBusy(false); }

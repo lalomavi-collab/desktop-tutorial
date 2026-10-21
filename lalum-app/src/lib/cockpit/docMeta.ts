@@ -14,6 +14,6 @@ export const DOC_ORIGIN: Record<string, string> = {
   ADVERSE: "הצד שכנגד",
   COURT: "בית משפט או בורר",
   AUTHORITY: "רשות או גוף ציבורי",
-  INTERNAL: "המשרד",
+  INTERNAL: "הפירמה",
   THIRD_PARTY: "צד שלישי",
 };

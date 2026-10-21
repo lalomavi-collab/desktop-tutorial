@@ -52,7 +52,7 @@ export function ConflictReview({ matterId, conflictStatus, canDecide, onChange }
         <div className="ck-row" style={{ gap: 8, alignItems: "center" }}>
           <span className="ck-meta">סטטוס נוכחי:</span><span className={`ck-badge ${cur[0]}`}>{cur[1]}</span>
         </div>
-        <div className="ck-meta">הבדיקה משווה את הצדדים בתיק לצדדים בשאר תיקי המשרד לפי מפתח מוצפן, בלי לחשוף שמות. המערכת מסמנת תיקים שחולקים צד, וההכרעה אם קיים ניגוד ומה דינו היא של שותף במשרד.</div>
+        <div className="ck-meta">הבדיקה משווה את הצדדים בתיק לצדדים בשאר תיקי הפירמה לפי מפתח מוצפן, בלי לחשוף שמות. המערכת מסמנת תיקים שחולקים צד, וההכרעה אם קיים ניגוד ומה דינו היא של שותף בפירמה.</div>
 
         {!loaded ? <div className="ck-meta">טוען...</div>
           : rows.length === 0 ? <div className="ck-ok">לא נמצאו תיקים נוספים החולקים צד עם תיק זה.</div>
@@ -82,7 +82,7 @@ export function ConflictReview({ matterId, conflictStatus, canDecide, onChange }
               {msg && <span className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite" style={{ padding: "6px 12px" }}>{msg.text}</span>}
             </div>
           </div>
-        ) : <div className="ck-meta">רישום החלטת ניגוד עניינים שמור לשותף במשרד.</div>}
+        ) : <div className="ck-meta">רישום החלטת ניגוד עניינים שמור לשותף בפירמה.</div>}
       </div>
     </details>
   );

@@ -5,7 +5,7 @@ const LEVELS: Array<[string, string]> = [
   ["", "לפי התפקיד (שותף ומנהל: מלאה, הנהלת חשבונות: אין גישה)"], ["0", "0 אין גישה"], ["1", "1 צפייה"], ["2", "2 טיוטות ולקוחות"], ["3", "3 הפקה, תשלומים והוצאות"], ["4", "4 ניהול מלא"],
 ];
 const ERRORS: Record<string, string> = {
-  LAST_ADMIN: "אי אפשר להוריד את מנהל הכספים האחרון.", FORBIDDEN: "אין הרשאה.", NOT_A_MEMBER: "המשתמש אינו חבר במשרד.", BAD_LEVEL: "רמה לא תקינה.",
+  LAST_ADMIN: "אי אפשר להוריד את מנהל הכספים האחרון.", FORBIDDEN: "אין הרשאה.", NOT_A_MEMBER: "המשתמש אינו חבר בפירמה.", BAD_LEVEL: "רמה לא תקינה.",
 };
 interface Member { user_id: string; name: string; role: string }
 

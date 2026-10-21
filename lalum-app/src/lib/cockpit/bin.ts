@@ -19,7 +19,7 @@ export function binError(message: string | undefined): string {
   for (const [k, v] of Object.entries(BLOCKERS)) if (m.includes(k)) return v;
   if (m.includes("reason required")) return "יש לציין סיבה (לפחות 3 תווים).";
   if (m.includes("confirmation")) return `יש להקליד בדיוק: ${CONFIRM_TEXT}`;
-  if (m.includes("not allowed")) return "הפעולה מותרת לשותף במשרד עם אימות דו-שלבי בלבד.";
+  if (m.includes("not allowed")) return "הפעולה מותרת לשותף בפירמה עם אימות דו-שלבי בלבד.";
   if (m.includes("objects remain")) return "חלק מהקבצים המקוריים לא נמחקו מהאחסון. נסו שוב.";
   if (m.includes("cannot restore")) return "לא ניתן לשחזר: המחיקה הסופית כבר החלה.";
   return "הפעולה נכשלה.";

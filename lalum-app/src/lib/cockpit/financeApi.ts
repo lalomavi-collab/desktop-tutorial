@@ -13,15 +13,15 @@ const ISSUE_ERRORS: Record<string, string> = {
   already_issued: "המסמך כבר הופק.",
   bad_related_document: "מסמך המקור חייב להיות מסמך שהופק לאותו לקוח, מהסוג המתאים ובאותה סביבה.",
   customer_not_found: "הלקוח לא נמצא.",
-  customer_sync_failed: "פתיחת הלקוח ב-Invoice4U נכשלה. אם הלקוח כבר קיים שם, הזינו את מספר הלקוח שלו בכרטיס הלקוח.",
-  invoice4u_rejected: "Invoice4U דחה את המסמך. הפרטים מופיעים בשורת המסמך.",
-  invoice4u_not_configured: "החיבור ל-Invoice4U לא הוגדר בשרת.",
+  customer_sync_failed: "פתיחת הלקוח במערכת ההנפקה נכשלה. אם הלקוח כבר קיים שם, הזינו את מספר הלקוח שלו בכרטיס הלקוח.",
+  invoice4u_rejected: "מערכת ההנפקה דחתה את המסמך. הפרטים מופיעים בשורת המסמך.",
+  invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.",
   casual_not_allowed: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.",
-  qa_key_missing: "לא הוגדר מפתח לסביבת הניסוי של Invoice4U (FIN_INVOICE4U_QA_KEY). הפקה בניסוי דורשת מפתח נפרד מהמפתח האמיתי.",
-  outcome_uncertain: "לא התקבלה תשובה סופית. אל תפיקו שוב. לחצו על בדיקת סטטוס מול Invoice4U.",
-  not_found_at_provider: "Invoice4U לא מכיר מסמך עם המזהה הזה. אפשר להפיק מחדש.",
+  qa_key_missing: "לא הוגדר מפתח לסביבת הניסוי של מערכת ההנפקה (FIN_INVOICE4U_QA_KEY). הפקה בניסוי דורשת מפתח נפרד מהמפתח האמיתי.",
+  outcome_uncertain: "לא התקבלה תשובה סופית. אל תפיקו שוב. לחצו על בדיקת סטטוס מול מערכת ההנפקה.",
+  not_found_at_provider: "מערכת ההנפקה לא מכירה מסמך עם המזהה הזה. אפשר להפיק מחדש.",
   never_attempted: "לא בוצע ניסיון הפקה למסמך הזה.",
-  fetch_failed: "שגיאת תקשורת. אל תפיקו שוב לפני בדיקת סטטוס מול Invoice4U.",
+  fetch_failed: "שגיאת תקשורת. אל תפיקו שוב לפני בדיקת סטטוס מול מערכת ההנפקה.",
   network: "שגיאת רשת. אם ההפקה כבר נשלחה, בדקו סטטוס לפני ניסיון חוזר.",
 };
 export const issueError = (r: IssueReply): string => ISSUE_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
@@ -65,10 +65,10 @@ export interface ImportReply {
   doc_type?: number; errors?: string[]; per_type?: Record<string, number>;
 }
 const IMPORT_ERRORS: Record<string, string> = {
-  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. נדרש שותף במשרד עם אימות דו שלבי.",
-  invoice4u_not_configured: "החיבור ל-Invoice4U לא הוגדר בשרת.", invoice4u_rejected: "Invoice4U דחה את הבקשה. בדקו שמפתח ה-API תקף לסביבה שנבחרה.",
-  archive_conflict: "Invoice4U מדווח סכומים שונים ממה שכבר נשמר לאחד המספרים. הייבוא נעצר ודורש בדיקה ידנית.",
-  bad_range: "טווח תאריכים לא תקין.", db_error: "שמירה למסד הנתונים נכשלה.", fetch_failed: "שגיאת תקשורת מול Invoice4U.",
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. נדרש שותף בפירמה עם אימות דו שלבי.",
+  invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.", invoice4u_rejected: "מערכת ההנפקה דחתה את הבקשה. בדקו שמפתח ה-API תקף לסביבה שנבחרה.",
+  archive_conflict: "מערכת ההיסטוריה מדווחת סכומים שונים ממה שכבר נשמר לאחד המספרים. הייבוא נעצר ודורש בדיקה ידנית.",
+  bad_range: "טווח תאריכים לא תקין.", db_error: "שמירה למסד הנתונים נכשלה.", fetch_failed: "שגיאת תקשורת מול מערכת ההיסטוריה.",
 };
 export const importError = (r: ImportReply): string => `${IMPORT_ERRORS[r.code ?? ""] ?? "הייבוא נכשל."}${r.doc_type ? ` (סוג מסמך ${r.doc_type})` : ""}`;
 
