@@ -2,7 +2,7 @@
 // The database gives a manifest (a row count and a sha256 per table) and the rows as the exact JSON text those hashes were computed over.
 // This module pulls every page, rebuilds each file, and refuses to produce a package whose files do not hash to the manifest.
 // It has no browser or Supabase imports, so the same code runs in the check script. The originals in Storage are fetched through the optional
-// `originals` port (the lalum-export-originals Edge Function signs them in one batch); every file is checked against the sha256 and size the
+// `originals` port (the lalum-export-originals Edge Function signs them one page at a time); every file is checked against the sha256 and size the
 // database recorded. Without the port, or with any original missing or unverified, the package says so in plain words (handover_complete: false).
 
 export interface Section { table: string; rows: number; sha256: string; file: string }
@@ -18,8 +18,8 @@ export interface Manifest {
   originals: { count: number; bytes: number; withoutSha256: number };
 }
 export interface OriginalsPort {
-  /** The batch call: the list of originals with a temporary link each, or null on failure. */
-  list: () => Promise<unknown>;
+  /** One page of originals with a temporary link each, after the given cursor (null for the first page), or null on failure. */
+  list: (after: string | null) => Promise<unknown>;
   fetchBytes: (url: string) => Promise<Uint8Array>;
   digestBytes: (bytes: Uint8Array) => Promise<string>;
 }
@@ -110,7 +110,9 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
   else {
     L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB). בתיקיית originals נכללו ${o.filesInZip}, ומהם אומתו ${o.verified} מול חתימת ה-SHA-256 והגודל שנרשמו. הקובץ originals/index.jsonl ממפה כל קובץ למסמך, לתיק, לשם המקורי ולחתימה.`);
     if (o.listed !== m.originals.count) L.push(`רשימת המקוריים שהתקבלה (${o.listed}) שונה ממספרם בכרטיס (${m.originals.count}). יש לייצא שוב.`);
-    if (o.listError) L.push("קבלת רשימת המקוריים נכשלה, ולכן הם אינם כלולים.");
+    if (o.listError === "TOO_LARGE") L.push("נפח המקוריים גדול מדי לייצוא בדפדפן בקובץ אחד, ולכן הם אינם כלולים. יש לבקש מסירה של המקוריים בנפרד.");
+    else if (o.listError === "COUNT_CHANGED") L.push("מספר המקוריים השתנה בזמן הייצוא. יש לייצא שוב.");
+    else if (o.listError) L.push("קבלת רשימת המקוריים נכשלה או נקטעה, ולכן ייתכן שהם אינם כלולים במלואם.");
     if (o.failed.length > 0) {
       const by: Record<string, number> = {};
       for (const f of o.failed) by[f.reason] = (by[f.reason] ?? 0) + 1;
@@ -123,19 +125,24 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
   return L.join("\n");
 }
 
+/** The browser holds every original in memory until the ZIP is written; above this many bytes the originals are left out and the package says so (no streaming yet). */
+export const MAX_ORIGINALS_BYTES = 1024 * 1024 * 1024;
 const DOC_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MIME_EXT: Record<string, string> = { "application/pdf": "pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx", "text/plain": "txt", "text/markdown": "md", "text/html": "html" };
 interface OriginalItem { document: string; matter: string; sha256: string | null; size: number | null; mime: string | null; fileName: string | null; url: string | null }
 
-/** Reads the batch answer of lalum-export-originals; null when it is not the shape the package depends on. */
-export function parseOriginals(j: unknown): OriginalItem[] | null {
+interface OriginalsPage { items: OriginalItem[]; nextAfter: string | null; total: number | null }
+
+/** Reads one page answer of lalum-export-originals; null when it is not the shape the package depends on. */
+export function parseOriginals(j: unknown): OriginalsPage | null {
   if (!isObj(j) || j.ok !== true || !Array.isArray(j.items)) return null;
+  if (j.next_after !== null && j.next_after !== undefined && (typeof j.next_after !== "string" || !DOC_ID.test(j.next_after))) return null;
   const out: OriginalItem[] = [];
   for (const x of j.items) {
     if (!isObj(x) || typeof x.document !== "string" || typeof x.matter !== "string") return null;
     out.push({ document: x.document, matter: x.matter, sha256: typeof x.sha256 === "string" ? x.sha256 : null, size: num(x.size), mime: typeof x.mime === "string" ? x.mime : null, fileName: typeof x.file_name === "string" ? x.file_name : null, url: typeof x.url === "string" ? x.url : null });
   }
-  return out;
+  return { items: out, nextAfter: typeof j.next_after === "string" ? j.next_after : null, total: num(j.total) };
 }
 
 /** The extension comes from the original file name when it is plain, else from the mime type: the archive name itself is the document id, never a client name. */
@@ -146,16 +153,12 @@ const extOf = (i: OriginalItem): string => {
 
 const CONCURRENCY = 4;
 
-async function pullOriginals(port: OriginalsPort, onProgress?: (done: number, total: number) => void): Promise<{ files: PackageFile[]; report: OriginalsReport }> {
-  const empty = (listError: string): { files: PackageFile[]; report: OriginalsReport } => ({ files: [], report: { listed: 0, filesInZip: 0, verified: 0, failed: [], listError } });
-  let listed: OriginalItem[] | null;
-  try { listed = parseOriginals(await port.list()); } catch { return empty("LIST"); }
-  if (!listed) return empty("LIST");
-  const items = [...listed].sort((a, b) => a.document.localeCompare(b.document));
+async function pullOriginals(port: OriginalsPort, expected: number, onProgress?: (done: number, total: number) => void): Promise<{ files: PackageFile[]; report: OriginalsReport }> {
   const files: PackageFile[] = [];
   const failed: OriginalsReport["failed"] = [];
   const index: Array<Record<string, unknown>> = [];
-  let verified = 0, done = 0, next = 0;
+  const seen = new Set<string>();
+  let verified = 0, done = 0, listError: string | null = null;
   async function one(i: OriginalItem): Promise<void> {
     const row: Record<string, unknown> = { document: i.document, matter: i.matter, original_name: i.fileName, mime: i.mime, size: i.size, sha256: i.sha256 };
     if (!DOC_ID.test(i.document)) { failed.push({ document: i.document, reason: "BAD_ID" }); return; }
@@ -172,16 +175,33 @@ async function pullOriginals(port: OriginalsPort, onProgress?: (done: number, to
     if (reason) failed.push({ document: i.document, reason }); else verified += 1;
     index.push({ ...row, file: path, verified: reason === null, reason });
   }
-  async function worker(): Promise<void> {
-    while (next < items.length) { const i = items[next++]; await one(i); done += 1; onProgress?.(done, items.length); }
+  // A page is downloaded as soon as it is signed: the links last 15 minutes, so signing everything first would let the early ones expire.
+  // Every page is bounded: it must hold something new, the cursor must move, and the walk is capped by the count the manifest announced.
+  let after: string | null = null;
+  const maxPages = expected + 2;
+  for (let page = 0; page < maxPages; page++) {
+    let got: OriginalsPage | null;
+    try { got = parseOriginals(await port.list(after)); } catch { got = null; }
+    if (!got) { listError = "LIST"; break; }
+    const fresh = got.items.filter((i) => !seen.has(i.document));
+    for (const i of got.items) seen.add(i.document);
+    if (got.total !== null && got.total !== expected) { listError = "COUNT_CHANGED"; }
+    let next = 0;
+    const worker = async (): Promise<void> => {
+      while (next < fresh.length) { const i = fresh[next++]; await one(i); done += 1; onProgress?.(done, expected); }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, fresh.length) }, worker));
+    if (got.nextAfter === null) break;
+    if (got.items.length === 0 || got.nextAfter === after || fresh.length === 0) { listError = "LIST"; break; }
+    after = got.nextAfter;
+    if (page === maxPages - 1) listError = "LIST";
   }
-  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, items.length) }, worker));
   failed.sort((a, b) => a.document.localeCompare(b.document));
   files.sort((a, b) => a.path.localeCompare(b.path));
   index.sort((a, b) => String(a.document).localeCompare(String(b.document)));
   files.push({ path: "originals/index.jsonl", content: index.map((r) => JSON.stringify(r)).join("\n") });
   const filesInZip = files.filter((f) => f.binary).length;
-  return { files, report: { listed: listed.length, filesInZip, verified, failed, listError: null } };
+  return { files, report: { listed: seen.size, filesInZip, verified, failed, listError } };
 }
 
 /** Pulls every table, checks every file against the manifest, and returns the files of the package. Throws ExportError and produces nothing otherwise. */
@@ -201,8 +221,10 @@ export async function buildPackage(ports: Ports, opts: { pageSize?: number; onPr
   }
   opts.onProgress?.(done, m.sections.length, "");
   let orig: OriginalsReport | null = null;
-  if (ports.originals && m.originals.count > 0) {
-    const got = await pullOriginals(ports.originals, opts.onOriginals);
+  if (ports.originals && m.originals.count > 0 && m.originals.bytes > MAX_ORIGINALS_BYTES) {
+    orig = { listed: 0, filesInZip: 0, verified: 0, failed: [], listError: "TOO_LARGE" };
+  } else if (ports.originals && m.originals.count > 0) {
+    const got = await pullOriginals(ports.originals, m.originals.count, opts.onOriginals);
     files.push(...got.files);
     orig = got.report;
   }
