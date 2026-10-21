@@ -1130,6 +1130,19 @@ a.card:hover .card-go {
   color: var(--paper);
   margin: 14px 0 16px;
 }
+/* The academy headline is signed in the same hand as the home page sentence (Amatic SC,
+   regular weight, no tracking, one ink colour). The face runs small and narrow for its size,
+   so it is set about 1.7 times larger than the serif it replaces and balanced over its lines.
+   Arabic has no glyphs in it and keeps the serif. */
+html:not([lang="ar"]) .home-academy-title {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(46px, 7vw, 64px);
+  line-height: 1.08;
+  text-wrap: balance;
+  margin: 10px 0 14px;
+}
 .home-academy-body {
   font-size: 17px;
   line-height: 1.7;
