@@ -424,6 +424,30 @@ article p {
   html main :is(h1, h2, h3) { text-wrap: balance; }
 }
 
+/* The home page signs every section headline and card title in the hero's hand (owner request,
+   21.10.2026: "the whole home page, the inner text of the sections too"). Amatic SC runs small
+   and narrow for its size, so headlines are set about 1.7 times larger than the serif and card
+   titles about 1.5 times; it is used for display sizes only, body copy stays in the text face.
+   Scoped to the home page (:has(.hero-home)); Arabic has no glyphs in it and keeps the serif.
+   Some of these headings carry their own inline font size, hence !important on the three size
+   properties. Revert by deleting this block. */
+:root:not([lang="ar"]):has(.hero-home) :is(h2.h2, h2.serif):not(.home-academy-title),
+:root:not([lang="ar"]):has(.hero-home) :is(h3.h3, h3.pillar-title, h3.article-card-title) {
+  font-family: "Amatic SC", var(--serif);
+  font-weight: 400;
+  text-wrap: balance;
+}
+:root:not([lang="ar"]):has(.hero-home) :is(h2.h2, h2.serif):not(.home-academy-title) {
+  font-size: clamp(46px, 7vw, 64px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+}
+:root:not([lang="ar"]):has(.hero-home) :is(h3.h3, h3.pillar-title, h3.article-card-title) {
+  font-size: clamp(30px, 8vw, 38px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
+}
+
 /* ── Core practice-area cards ─────────────────────────────────────────── */
 .practice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 16px; }
 .practice-card {
