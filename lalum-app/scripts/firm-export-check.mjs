@@ -267,6 +267,65 @@ await t("originals above the size ceiling are left out with a stated reason, and
   const ok = withOriginals([{ id: 1, body: "a" }], { manifest: { originals: { count: 1, bytes: MAX_ORIGINALS_BYTES, without_sha256: 0 } } });
   assert.equal((await buildPackage(ok.ports)).handoverComplete, true, "exactly the ceiling is allowed");
 });
+const mkDocs = (n, size = 5) => Array.from({ length: n }, (_, i) => ({ id: i + 1, body: String(i + 1).padStart(size, "0") }));
+const collect = () => { const vols = []; return { vols, emit: async (v) => { vols.push(v); } }; };
+await t("originals are cut into volumes; each volume lists its own files, and the last one carries the tables, PACKAGE.json and the README", async () => {
+  const docs = mkDocs(7); const { vols, emit } = collect();
+  const { ports } = withOriginals(docs, { pageSize: 3 });
+  const b = await buildPackage(ports, { volumeBytes: 10, emit });
+  assert.equal(b.handoverComplete, true); assert.deepEqual(b.files, [], "with emit the package is not kept in memory");
+  assert.equal(b.volumes, vols.length); assert.ok(vols.length >= 3, `volumes ${vols.length}`);
+  assert.deepEqual(vols.map((v) => v.index), vols.map((_, i) => i + 1)); assert.deepEqual(vols.map((v) => v.last), vols.map((_, i) => i === vols.length - 1));
+  const seen = new Set();
+  for (const v of vols) {
+    const orig = v.files.filter((f) => f.binary); for (const f of orig) { assert.ok(!seen.has(f.path), "no original in two volumes"); seen.add(f.path); }
+    const vm = v.files.find((f) => f.path === `VOLUME-${String(v.index).padStart(2, "0")}.json`); assert.ok(vm, `volume ${v.index} has its own manifest`);
+    assert.deepEqual(JSON.parse(vm.content).files.map((x) => x.path).sort(), orig.map((f) => f.path).sort(), "the manifest names exactly the files of its volume");
+    assert.equal(v.files.some((f) => f.path === "PACKAGE.json"), v.last); assert.equal(v.files.some((f) => f.path === "README.txt"), v.last);
+    assert.equal(v.files.some((f) => f.path.startsWith("data/")), v.last);
+  }
+  assert.equal(seen.size, 7, "every original is in exactly one volume");
+  const last = vols[vols.length - 1]; const pkg = JSON.parse(last.files.find((f) => f.path === "PACKAGE.json").content);
+  assert.equal(pkg.volumes, vols.length); assert.equal(pkg.originals.files_in_zip, 7);
+  const idx = last.files.find((f) => f.path === "originals/index.jsonl").content.split("\n").map((l) => JSON.parse(l));
+  assert.equal(idx.length, 7); for (const r of idx) { const v = vols[r.volume - 1]; assert.ok(v && v.files.some((f) => f.path === r.file), "the index points at the right volume"); }
+  assert.match(last.files.find((f) => f.path === "README.txt").content, new RegExp(`מחולקת ל-${vols.length} קבצי ZIP`));
+});
+await t("the browser never holds much more than one volume of originals", async () => {
+  const docs = mkDocs(40); let held = 0, peak = 0; const { ports } = withOriginals(docs, { pageSize: 5, fetch: async (url, store) => { const b = bytesOf(store[url]); held += b.length; peak = Math.max(peak, held); await new Promise((r) => setTimeout(r, 1)); return b; } });
+  const b = await buildPackage(ports, { volumeBytes: 30, emit: async (v) => { held -= v.files.filter((f) => f.binary).reduce((a, f) => a + f.content.length, 0); await new Promise((r) => setTimeout(r, 2)); } });
+  assert.equal(b.handoverComplete, true); assert.ok(b.volumes > 5);
+  assert.ok(peak <= 30 + 4 * 5 + 5, `peak ${peak}`);
+});
+await t("without an emit callback the volumes are kept and joined; one volume gives the single ZIP as before", async () => {
+  const { ports } = withOriginals(mkDocs(7), { pageSize: 3 });
+  const b = await buildPackage(ports, { volumeBytes: 10 });
+  assert.equal(b.files.filter((f) => f.binary).length, 7); assert.equal(new Set(b.files.map((f) => f.path)).size, b.files.length, "paths stay unique when joined");
+  const one = await buildPackage(withOriginals(mkDocs(3)).ports);
+  assert.equal(one.volumes, 1); assert.ok(!one.files.some((f) => /^VOLUME-/.test(f.path)), "a single volume has no volume manifest");
+  assert.ok(JSON.parse(one.files.find((f) => f.path === "originals/index.jsonl").content.split("\n")[0]).volume === 1);
+  assert.ok(!/מחולקת/.test(one.files.find((f) => f.path === "README.txt").content));
+});
+await t("when the originals end exactly on a volume boundary the last volume holds only the tables and the package files", async () => {
+  const { vols, emit } = collect(); const { ports } = withOriginals(mkDocs(4)); // 4 files of 5 bytes, cap 10: two full volumes
+  const b = await buildPackage(ports, { volumeBytes: 10, emit });
+  assert.equal(b.volumes, 3); assert.equal(vols.length, 3); assert.equal(vols[2].files.filter((f) => f.binary).length, 0); assert.ok(vols[2].files.some((f) => f.path === "VOLUME-03.json"), "even a volume without originals has its manifest, as the README says");
+  assert.ok(vols[2].files.some((f) => f.path === "PACKAGE.json") && vols[2].files.some((f) => f.path === "originals/index.jsonl"));
+  assert.equal(JSON.parse(vols[2].files.find((f) => f.path === "PACKAGE.json").content).originals.files_in_zip, 4);
+});
+await t("one file larger than the cap gets a volume of its own", async () => {
+  const docs = [{ id: 1, body: "x".repeat(50) }, { id: 2, body: "yy" }]; const { vols, emit } = collect();
+  const b = await buildPackage(withOriginals(docs).ports, { volumeBytes: 10, emit });
+  assert.equal(b.handoverComplete, true); assert.equal(vols.flatMap((v) => v.files.filter((f) => f.binary)).length, 2);
+  assert.ok(vols.some((v) => v.files.filter((f) => f.binary).length === 1 && v.files.find((f) => f.binary).content.length === 50));
+});
+await t("a volume that cannot be written stops the export with a clear error and fetches nothing more", async () => {
+  const w = withOriginals(mkDocs(12), { pageSize: 3 }); let calls = 0;
+  await assert.rejects(buildPackage(w.ports, { volumeBytes: 10, emit: async () => { calls += 1; if (calls === 2) throw new Error("disk full"); } }), (e) => e instanceof ExportError && e.code === "VOLUME");
+  assert.ok(w.fetches.length < 12, `fetched ${w.fetches.length}`);
+  assert.match(exportErrorText(new ExportError("VOLUME", "2")), /החבילה אינה שלמה/);
+  const w2 = withOriginals(mkDocs(3)); await assert.rejects(buildPackage(w2.ports, { emit: async (v) => { if (v.last) throw new Error("x"); } }), (e) => e instanceof ExportError && e.code === "VOLUME");
+});
 await t("parseOriginals refuses the wrong shape", async () => {
   assert.equal(parseOriginals(null), null); assert.equal(parseOriginals({ ok: false }), null); assert.equal(parseOriginals({ ok: true, items: [{ nope: 1 }] }), null);
   assert.deepEqual(parseOriginals({ ok: true, items: [] }), { items: [], nextAfter: null, total: null });

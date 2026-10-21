@@ -33,8 +33,11 @@ export interface Ports {
 export interface PackageFile { path: string; content: string | Uint8Array; binary?: boolean }
 export type OriginalFailure = "NO_URL" | "FETCH" | "BAD_ID" | "SIZE" | "SHA256" | "NO_HASH";
 export interface OriginalsReport { listed: number; filesInZip: number; verified: number; failed: Array<{ document: string; reason: OriginalFailure }>; listError: string | null }
-export interface Built { files: PackageFile[]; manifest: Manifest; handoverComplete: boolean; originals: OriginalsReport | null }
-export type ExportErrorCode = "MANIFEST" | "INCOMPLETE" | "PAGE" | "COUNT_CHANGED" | "HASH_MISMATCH";
+/** One ZIP of the package. The originals are split into volumes so the browser never holds more than about one volume of them; the LAST volume
+ *  also carries the tables, PACKAGE.json and README.txt, because only then is everything known. A firm that fits in one volume gets one ZIP. */
+export interface Volume { index: number; files: PackageFile[]; last: boolean }
+export interface Built { files: PackageFile[]; manifest: Manifest; handoverComplete: boolean; originals: OriginalsReport | null; volumes: number }
+export type ExportErrorCode = "MANIFEST" | "INCOMPLETE" | "PAGE" | "COUNT_CHANGED" | "HASH_MISMATCH" | "VOLUME";
 export class ExportError extends Error {
   code: ExportErrorCode;
   detail: string;
@@ -91,9 +94,10 @@ async function pullTable(ports: Ports, s: Section, pageSize: number): Promise<st
   return rows.join("\n");
 }
 
-export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o: OriginalsReport | null = null): string {
+export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o: OriginalsReport | null = null, volumes = 1): string {
   const L: string[] = [];
   L.push("חבילת מסירה של נתוני המשרד", "");
+  if (volumes > 1) L.push(`החבילה מחולקת ל-${volumes} קבצי ZIP, כדי שאפשר יהיה לפתוח כל אחד בנפרד. קובץ ה-ZIP האחרון (part-${String(volumes).padStart(2, "0")}) מכיל את הטבלאות, את PACKAGE.json ואת הקובץ הזה, וכל קובץ ZIP מכיל VOLUME-NN.json עם החתימות של הקבצים שבו. יש לשמור את כל הקבצים יחד: חבילה שחסר בה קובץ ZIP אינה שלמה.`, "");
   L.push(`נוצרה ב: ${now.toLocaleDateString("he-IL")}`, `סטטוס המשרד בעת הייצוא: ${m.firmStatus}`, "");
   L.push("מה כלול", `כל טבלה של המשרד בקובץ נפרד בתיקיית data, בפורמט JSON Lines: שורה אחת לכל רשומה. סך הכול ${m.sections.length} קבצים ו-${m.rowsTotal} רשומות.`, "");
   L.push("איך מאמתים", "לכל קובץ רשומים ב-PACKAGE.json מספר הרשומות וחתימת SHA-256. החתימה היא של תוכן הקובץ בקידוד UTF-8, בלי שורה ריקה בסוף. קובץ שחתימתו שונה אינו הקובץ שנמסר.", "");
@@ -110,7 +114,7 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
   else {
     L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB). בתיקיית originals נכללו ${o.filesInZip}, ומהם אומתו ${o.verified} מול חתימת ה-SHA-256 והגודל שנרשמו. הקובץ originals/index.jsonl ממפה כל קובץ למסמך, לתיק, לשם המקורי ולחתימה.`);
     if (o.listed !== m.originals.count) L.push(`רשימת המקוריים שהתקבלה (${o.listed}) שונה ממספרם בכרטיס (${m.originals.count}). יש לייצא שוב.`);
-    if (o.listError === "TOO_LARGE") L.push("נפח המקוריים גדול מדי לייצוא בדפדפן בקובץ אחד, ולכן הם אינם כלולים. יש לבקש מסירה של המקוריים בנפרד.");
+    if (o.listError === "TOO_LARGE") L.push("נפח המקוריים גדול מדי לייצוא מהדפדפן, ולכן הם אינם כלולים. יש לבקש מסירה של המקוריים בנפרד.");
     else if (o.listError === "COUNT_CHANGED") L.push("מספר המקוריים השתנה בזמן הייצוא. יש לייצא שוב.");
     else if (o.listError) L.push("קבלת רשימת המקוריים נכשלה או נקטעה, ולכן ייתכן שהם אינם כלולים במלואם.");
     if (o.failed.length > 0) {
@@ -125,8 +129,10 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o:
   return L.join("\n");
 }
 
-/** The browser holds every original in memory until the ZIP is written; above this many bytes the originals are left out and the package says so (no streaming yet). */
-export const MAX_ORIGINALS_BYTES = 1024 * 1024 * 1024;
+/** The ZIPs of the originals are cut at about this many bytes, so the browser holds at most one volume of originals at a time (a single larger file gets a volume of its own). */
+export const VOLUME_BYTES = 256 * 1024 * 1024;
+/** Above this many bytes of originals the export leaves them out and says so: that many volumes is not a download anyone should be asked to babysit. */
+export const MAX_ORIGINALS_BYTES = 20 * 1024 * 1024 * 1024;
 const DOC_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MIME_EXT: Record<string, string> = { "application/pdf": "pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx", "text/plain": "txt", "text/markdown": "md", "text/html": "html" };
 interface OriginalItem { document: string; matter: string; sha256: string | null; size: number | null; mime: string | null; fileName: string | null; url: string | null }
@@ -153,59 +159,88 @@ const extOf = (i: OriginalItem): string => {
 
 const CONCURRENCY = 4;
 
-async function pullOriginals(port: OriginalsPort, expected: number, onProgress?: (done: number, total: number) => void): Promise<{ files: PackageFile[]; report: OriginalsReport }> {
-  const files: PackageFile[] = [];
+interface VolumeSink { cap: number; flush: (files: PackageFile[], index: number) => Promise<void> }
+interface Pulled { rest: PackageFile[]; restRows: Array<Record<string, unknown>>; sealed: number; index: Array<Record<string, unknown>>; report: OriginalsReport }
+
+const volumeName = (n: number) => `VOLUME-${String(n).padStart(2, "0")}.json`;
+const volumeManifest = (n: number, rows: Array<Record<string, unknown>>): PackageFile => ({
+  path: volumeName(n),
+  content: JSON.stringify({ volume: n, files: rows.map((r) => ({ path: r.file, size: r.size, sha256: r.sha256, verified: r.verified, reason: r.reason })) }, null, 2),
+});
+
+async function pullOriginals(port: OriginalsPort, expected: number, onProgress: ((done: number, total: number) => void) | undefined, vol: VolumeSink): Promise<Pulled> {
   const failed: OriginalsReport["failed"] = [];
   const index: Array<Record<string, unknown>> = [];
   const seen = new Set<string>();
+  let current: PackageFile[] = [];
+  let currentRows: Array<Record<string, unknown>> = [];
+  let currentBytes = 0, sealed = 0, filesInZip = 0;
+  let pending: Promise<void> = Promise.resolve();
   let verified = 0, done = 0, listError: string | null = null;
+  // Cutting a volume hands it to the sink and frees it; the next fetch waits for the sink, so memory stays near one volume.
+  function seal(): void {
+    const no = ++sealed;
+    for (const r of currentRows) r.volume = no;
+    const files = [...current].sort((a, b) => a.path.localeCompare(b.path));
+    files.push(volumeManifest(no, currentRows));
+    current = []; currentRows = []; currentBytes = 0;
+    pending = pending.then(() => vol.flush(files, no));
+  }
   async function one(i: OriginalItem): Promise<void> {
     const row: Record<string, unknown> = { document: i.document, matter: i.matter, original_name: i.fileName, mime: i.mime, size: i.size, sha256: i.sha256 };
     if (!DOC_ID.test(i.document)) { failed.push({ document: i.document, reason: "BAD_ID" }); return; }
-    if (!i.url) { failed.push({ document: i.document, reason: "NO_URL" }); index.push({ ...row, file: null, verified: false, reason: "NO_URL" }); return; }
+    if (!i.url) { failed.push({ document: i.document, reason: "NO_URL" }); index.push({ ...row, file: null, volume: null, verified: false, reason: "NO_URL" }); return; }
+    await pending;
     let bytes: Uint8Array | null = null;
     for (let attempt = 0; attempt < 2 && !bytes; attempt++) { try { bytes = await port.fetchBytes(i.url); } catch { bytes = null; } }
-    if (!bytes) { failed.push({ document: i.document, reason: "FETCH" }); index.push({ ...row, file: null, verified: false, reason: "FETCH" }); return; }
+    if (!bytes) { failed.push({ document: i.document, reason: "FETCH" }); index.push({ ...row, file: null, volume: null, verified: false, reason: "FETCH" }); return; }
     const path = `originals/${i.document}.${extOf(i)}`;
     let reason: OriginalFailure | null = null;
     if (i.size !== null && bytes.length !== i.size) reason = "SIZE";
     else if (i.sha256 === null) reason = "NO_HASH";
     else if ((await port.digestBytes(bytes)) !== i.sha256) reason = "SHA256";
-    files.push({ path, content: bytes, binary: true });
+    const full = { ...row, file: path, volume: null as number | null, verified: reason === null, reason };
+    current.push({ path, content: bytes, binary: true });
+    currentRows.push(full); index.push(full);
+    currentBytes += bytes.length; filesInZip += 1;
     if (reason) failed.push({ document: i.document, reason }); else verified += 1;
-    index.push({ ...row, file: path, verified: reason === null, reason });
+    if (currentBytes >= vol.cap) seal();
   }
   // A page is downloaded as soon as it is signed: the links last 15 minutes, so signing everything first would let the early ones expire.
   // Every page is bounded: it must hold something new, the cursor must move, and the walk is capped by the count the manifest announced.
   let after: string | null = null;
   const maxPages = expected + 2;
-  for (let page = 0; page < maxPages; page++) {
-    let got: OriginalsPage | null;
-    try { got = parseOriginals(await port.list(after)); } catch { got = null; }
-    if (!got) { listError = "LIST"; break; }
-    const fresh = got.items.filter((i) => !seen.has(i.document));
-    for (const i of got.items) seen.add(i.document);
-    if (got.total !== null && got.total !== expected) { listError = "COUNT_CHANGED"; }
-    let next = 0;
-    const worker = async (): Promise<void> => {
-      while (next < fresh.length) { const i = fresh[next++]; await one(i); done += 1; onProgress?.(done, expected); }
-    };
-    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, fresh.length) }, worker));
-    if (got.nextAfter === null) break;
-    if (got.items.length === 0 || got.nextAfter === after || fresh.length === 0) { listError = "LIST"; break; }
-    after = got.nextAfter;
-    if (page === maxPages - 1) listError = "LIST";
+  try {
+    for (let page = 0; page < maxPages; page++) {
+      let got: OriginalsPage | null;
+      try { got = parseOriginals(await port.list(after)); } catch { got = null; }
+      if (!got) { listError = "LIST"; break; }
+      const fresh = got.items.filter((i) => !seen.has(i.document));
+      for (const i of got.items) seen.add(i.document);
+      if (got.total !== null && got.total !== expected) { listError = "COUNT_CHANGED"; }
+      let next = 0;
+      const worker = async (): Promise<void> => {
+        while (next < fresh.length) { const i = fresh[next++]; await one(i); done += 1; onProgress?.(done, expected); }
+      };
+      await Promise.all(Array.from({ length: Math.min(CONCURRENCY, fresh.length) }, worker));
+      if (got.nextAfter === null) break;
+      if (got.items.length === 0 || got.nextAfter === after || fresh.length === 0) { listError = "LIST"; break; }
+      after = got.nextAfter;
+      if (page === maxPages - 1) listError = "LIST";
+    }
+    await pending;
+  } catch (e) {
+    if (e instanceof ExportError) throw e;
+    throw new ExportError("VOLUME", String(sealed));
   }
   failed.sort((a, b) => a.document.localeCompare(b.document));
-  files.sort((a, b) => a.path.localeCompare(b.path));
   index.sort((a, b) => String(a.document).localeCompare(String(b.document)));
-  files.push({ path: "originals/index.jsonl", content: index.map((r) => JSON.stringify(r)).join("\n") });
-  const filesInZip = files.filter((f) => f.binary).length;
-  return { files, report: { listed: seen.size, filesInZip, verified, failed, listError } };
+  const rest = [...current].sort((a, b) => a.path.localeCompare(b.path));
+  return { rest, restRows: currentRows, sealed, index, report: { listed: seen.size, filesInZip, verified, failed, listError } };
 }
 
 /** Pulls every table, checks every file against the manifest, and returns the files of the package. Throws ExportError and produces nothing otherwise. */
-export async function buildPackage(ports: Ports, opts: { pageSize?: number; onProgress?: (done: number, total: number, table: string) => void; onOriginals?: (done: number, total: number) => void } = {}): Promise<Built> {
+export async function buildPackage(ports: Ports, opts: { pageSize?: number; volumeBytes?: number; emit?: (v: Volume) => Promise<void>; onProgress?: (done: number, total: number, table: string) => void; onOriginals?: (done: number, total: number) => void } = {}): Promise<Built> {
   const m = parseManifest(await ports.manifest());
   if (!m) throw new ExportError("MANIFEST", "shape");
   if (!m.complete || m.unclassified.length > 0) throw new ExportError("INCOMPLETE", m.unclassified.join(","));
@@ -221,27 +256,47 @@ export async function buildPackage(ports: Ports, opts: { pageSize?: number; onPr
   }
   opts.onProgress?.(done, m.sections.length, "");
   let orig: OriginalsReport | null = null;
+  // With an emit callback the earlier volumes leave memory as soon as they are cut; without one (the check scripts) they are kept and joined.
+  const held: PackageFile[] = [];
+  let tail: PackageFile[] = [];
+  let tailRows: Array<Record<string, unknown>> = [];
+  let sealed = 0;
+  let indexRows: Array<Record<string, unknown>> = [];
   if (ports.originals && m.originals.count > 0 && m.originals.bytes > MAX_ORIGINALS_BYTES) {
     orig = { listed: 0, filesInZip: 0, verified: 0, failed: [], listError: "TOO_LARGE" };
   } else if (ports.originals && m.originals.count > 0) {
-    const got = await pullOriginals(ports.originals, m.originals.count, opts.onOriginals);
-    files.push(...got.files);
+    const sink: VolumeSink = {
+      cap: Math.max(opts.volumeBytes ?? VOLUME_BYTES, 1),
+      flush: async (vf, n) => { if (opts.emit) await opts.emit({ index: n, files: vf, last: false }); else held.push(...vf); },
+    };
+    const got = await pullOriginals(ports.originals, m.originals.count, opts.onOriginals, sink);
+    tail = got.rest; tailRows = got.restRows; sealed = got.sealed; indexRows = got.index;
     orig = got.report;
   }
+  const volumes = sealed + 1;
+  for (const r of tailRows) r.volume = volumes;
+  if (volumes > 1) tail.push(volumeManifest(volumes, tailRows));
+  if (indexRows.length > 0) tail.push({ path: "originals/index.jsonl", content: indexRows.map((r) => JSON.stringify(r)).join("\n") });
   const now = ports.now();
   const handoverComplete = m.originals.count === 0 || (orig !== null && orig.listError === null && orig.listed === m.originals.count && orig.filesInZip === m.originals.count && orig.failed.length === 0);
   const pkg = {
     generated_at: m.generatedAt, packaged_at: now.toISOString(), firm_status: m.firmStatus,
     format: "JSON Lines, one JSON object per line, rows ordered by their JSON text, joined by a newline, no trailing newline",
     files: m.sections.map((s) => ({ path: `data/${s.table}.jsonl`, rows: s.rows, sha256: s.sha256, verified: true })),
+    volumes,
     audit_chain: { verified: m.chain.verified, first_broken_seq: m.chain.firstBrokenSeq, head_seq: m.chain.headSeq, head_hash: m.chain.headHash },
     excluded: m.excluded,
     originals: { count: m.originals.count, bytes: m.originals.bytes, without_sha256: m.originals.withoutSha256, included: m.originals.count === 0 || handoverComplete, files_in_zip: orig?.filesInZip ?? 0, verified: orig?.verified ?? 0, failed: orig?.failed ?? [], list_error: orig?.listError ?? null },
     handover_complete: handoverComplete,
   };
   files.push({ path: "PACKAGE.json", content: JSON.stringify(pkg, null, 2) });
-  files.push({ path: "README.txt", content: readmeText(m, handoverComplete, now, orig) });
-  return { files, manifest: m, handoverComplete, originals: orig };
+  files.push({ path: "README.txt", content: readmeText(m, handoverComplete, now, orig, volumes) });
+  const lastFiles = [...tail, ...files];
+  if (opts.emit) {
+    try { await opts.emit({ index: volumes, files: lastFiles, last: true }); } catch { throw new ExportError("VOLUME", String(volumes)); }
+    return { files: [], manifest: m, handoverComplete, originals: orig, volumes };
+  }
+  return { files: [...held, ...lastFiles], manifest: m, handoverComplete, originals: orig, volumes };
 }
 
 /** A Hebrew message for the screen. The detail names a table, never a row. */
@@ -252,6 +307,7 @@ export function exportErrorText(e: unknown): string {
     case "COUNT_CHANGED": return "הנתונים השתנו בזמן הייצוא. לא נוצר קובץ. כדאי לנסות שוב.";
     case "HASH_MISMATCH": return "אימות חתימה נכשל באחד הקבצים. לא נוצר קובץ.";
     case "PAGE": return "קריאת נתונים נכשלה. לא נוצר קובץ.";
+    case "VOLUME": return "יצירת אחד מקובצי ה-ZIP נכשלה. חלק מהקבצים ייתכן שכבר ירדו והחבילה אינה שלמה. יש לייצא שוב ולהשליך את הקבצים החלקיים.";
     default: return "הייצוא נכשל.";
   }
 }

@@ -13,22 +13,26 @@ function Body({ member }: { member: Membership }) {
   const [res, setRes] = useState<Result | null>(null);
 
   async function run() {
-    if (!window.confirm("לייצא את כל נתוני המשרד לקובץ אחד? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
+    if (!window.confirm("לייצא את כל נתוני המשרד? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
     setBusy(true); setRes(null); setProgress("מכין...");
     try {
       const built = await exportFirmPackage(
         member.firm_id,
         (done, total, table) => setProgress(table ? `קורא טבלה ${done + 1} מתוך ${total}` : "מאמת"),
-        (done, total) => setProgress(`מוריד מקורי ${done} מתוך ${total}`));
+        (done, total) => setProgress(`מוריד מקורי ${done} מתוך ${total}`),
+        (index, last) => { if (!last) setProgress(`קובץ ZIP ${index} ירד, ממשיך`); });
       const warn: string[] = [];
       if (!built.manifest.chain.verified) warn.push("שרשרת יומן הביקורת נמצאה שבורה בעת הייצוא. יש לבדוק לפני כל הסתמכות עליה.");
       const o = built.originals;
       if (!built.handoverComplete) {
         if (!o) warn.push(`המסמכים המקוריים (${built.manifest.originals.count}) אינם כלולים בקובץ. עד שיימסרו, החבילה אינה שלמה למסירה.`);
+        else if (o.listError === "TOO_LARGE") warn.push(`נפח המסמכים המקוריים (${Math.round(built.manifest.originals.bytes / 1024 / 1024 / 1024)} GB) גדול מדי לייצוא מהדפדפן, והם אינם כלולים. יש לבקש מסירה של המקוריים בנפרד. החבילה אינה שלמה למסירה.`);
         else if (o.listError) warn.push(`קבלת המסמכים המקוריים (${built.manifest.originals.count}) נכשלה, והם אינם כלולים בקובץ. כדאי לנסות שוב. החבילה אינה שלמה למסירה.`);
         else warn.push(`נכללו ${o.filesInZip} מתוך ${built.manifest.originals.count} מסמכים מקוריים, ומהם אומתו ${o.verified}. הפירוט ב-PACKAGE.json. החבילה אינה שלמה למסירה.`);
       }
-      setRes({ ok: true, text: built.handoverComplete ? "הקובץ ירד. כל קובץ בתוכו אומת מול החתימה שנרשמה במסד הנתונים." : "הקובץ ירד. קבצי הטבלאות שבו אומתו מול החתימה שנרשמה במסד הנתונים. ראו את ההערה שלמטה.", warn });
+      if (built.volumes > 1) warn.push(`החבילה ירדה כ-${built.volumes} קבצי ZIP (part-01 עד part-${String(built.volumes).padStart(2, "0")}). הטבלאות, PACKAGE.json וה-README נמצאים בקובץ האחרון. יש לשמור את כולם יחד: חבילה שחסר בה קובץ אינה שלמה. אם הדפדפן ביקש אישור להורדות מרובות, יש לאשר.`);
+      const what = built.volumes > 1 ? "הקבצים ירדו" : "הקובץ ירד";
+      setRes({ ok: true, text: built.handoverComplete ? `${what}. כל קובץ בתוכם אומת מול החתימה שנרשמה במסד הנתונים.` : `${what}. קבצי הטבלאות אומתו מול החתימה שנרשמה במסד הנתונים. ראו את ההערה שלמטה.`, warn });
     } catch (e) {
       const denied = /FORBIDDEN|MANIFEST/.test(String((e as Error)?.message ?? ""));
       setRes({ ok: false, text: denied ? "אין הרשאה לייצוא. נדרשים שותף או מנהל המשרד, אימות דו שלבי והרשאה פיננסית." : exportErrorText(e) });
@@ -42,7 +46,7 @@ function Body({ member }: { member: Membership }) {
         <div className="ck-meta">חבילה אחת עם כל נתוני המשרד, לקראת מסירה בסגירת משרד או לגיבוי: תיקים, מסמכים, כספים, נאמנות, זמן, חתימות ויומן הביקורת. כל קובץ בחבילה מגיע עם חתימת SHA-256 שאפשר לאמת בלי לסמוך על הפלטפורמה.</div>
         <div className="ck-meta">לא כלולים: אישורי גישה, חיבורי מס, תורי משלוח ורישומים פנימיים של הפלטפורמה. הרשימה המלאה, עם הסיבה, בקובץ README שבחבילה.</div>
         <div className="ck-meta">{exportOriginalsEnabled()
-          ? "המסמכים המקוריים נכללים בקובץ, כל אחד מאומת מול החתימה והגודל שנרשמו. הייצוא עשוי לקחת כמה דקות ולהגיע לעשרות מגה בייט."
+          ? "המסמכים המקוריים נכללים בקובץ, כל אחד מאומת מול החתימה והגודל שנרשמו. הייצוא עשוי לקחת כמה דקות. חבילה גדולה מ-256 MB מתחלקת למספר קבצי ZIP, כדי שהדפדפן לא יחזיק הכול בזיכרון."
           : "המסמכים המקוריים אינם כלולים עדיין. הקובץ יציין זאת במפורש."}</div>
         <button className="ck-btn primary" disabled={busy} onClick={() => void run()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני המשרד (ZIP)"}</button>
       </div>
