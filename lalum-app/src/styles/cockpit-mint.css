@@ -344,7 +344,7 @@
    weight and size; chips and badges read as labelled tags (surface, border, ink text) instead of grey on beige; every
    button, chip and tag may wrap and never exceeds its column. Colours come from the theme tokens only.
    ------------------------------------------------------------------ */
-.ck-root[data-ck-theme] .ck-meta { font-size: 14px; line-height: 1.65; color: color-mix(in srgb, var(--ink) 84%, var(--paper)); }
+.ck-root[data-ck-theme] .ck-meta { font-size: 15px; line-height: 1.65; color: color-mix(in srgb, var(--ink) 84%, var(--paper)); }
 .ck-root[data-ck-theme] .ck-label { color: var(--ink); font-weight: 700; }
 .ck-root[data-ck-theme] .ck-btn { max-width: 100%; min-width: 0; height: auto; white-space: normal; overflow-wrap: anywhere; text-align: start; line-height: 1.35; padding-block: 8px; }
 .ck-root[data-ck-theme] .ck-chip {
