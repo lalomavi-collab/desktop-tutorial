@@ -3,7 +3,7 @@
 // project's own SUPABASE_URL and SUPABASE_ANON_KEY. FIN_IMPORT_ENV ("prod" default, or "qa") picks the provider host, as in lalum-fin-import.
 // ALLOWED_ORIGINS (comma separated, optional) lists the origins that may call it from a browser (default: the production site).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { handle, type Allowed, type Attempt, type Fetched, type LinkField, type Ports } from "./handler.ts";
+import { handle, requestBodies, type Allowed, type Attempt, type Fetched, type LinkField, type Ports } from "./handler.ts";
 
 const DEFAULT_ORIGINS = "https://lalumapp.com,https://www.lalumapp.com";
 const env = (k: string) => { const v = Deno.env.get(k); if (!v) throw new Error(`missing secret ${k}`); return v; };
@@ -36,20 +36,14 @@ const ports = (): Ports => ({
     const prod = !(Deno.env.get("FIN_IMPORT_ENV") ?? "prod").toLowerCase().startsWith("qa");
     const base = prod ? "https://api.invoice4u.co.il/Services/ApiService.svc" : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
     const redact = (s: string) => s.split(apiKey).join("[REDACTED]").slice(0, 200);
-    // The provider's document ID is a GUID string (it is stored as such in lalum_fin_archive.i4u_doc_id). It was turned into a Number before, which is NaN,
-    // and JSON.stringify writes NaN as null, so every GetDocument asked for a document with ID null and the provider answered {"d":null} (first real use, 2026-10-21).
-    const id = row.i4uDocId;
-    // Candidate retrieval operations, tried in order until a link comes back. GetDocumentByNumber stays as the fallback with the numeric fields.
-    const candidates: Array<[string, Obj]> = [
-      ["GetDocument", { doc: { ID: id } }],
-      ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
-      ["GetDocumentByNumber", { docNumber: row.docNumber, docType: row.docType }],
-    ];
+    // Candidate retrieval operations, tried in order until a link comes back. The request bodies are built in handler.ts (requestBodies), where a check pins them.
+    const bodies = requestBodies(row, apiKey);
+    if (!bodies) return { original: null, certified: null, tried: [{ op: "(none)", http: null, errors: ["the archive row has no usable document ID or number; nothing was sent"], filled: false }] };
     const tried: Attempt[] = [];
     let original: string | null = null, certified: string | null = null;
-    for (const [op, payload] of candidates) {
+    for (const [op, reqBody] of bodies) {
       try {
-        const res = await fetch(`${base}/${op}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...payload, token: apiKey }) });
+        const res = await fetch(`${base}/${op}`, { method: "POST", headers: { "content-type": "application/json" }, body: reqBody });
         const text = await res.text();
         let parsed: Obj | null = null;
         try { parsed = JSON.parse(text); } catch { /* not json */ }

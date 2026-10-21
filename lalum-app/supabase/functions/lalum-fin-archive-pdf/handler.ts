@@ -23,6 +23,20 @@ export interface Ports {
 export interface Req { method: string; authorization: string | null; origin: string | null; body: unknown }
 export interface Res { status: number; body: Record<string, unknown>; headers: Record<string, string> }
 
+/** The provider operations tried for one document, in order, each with its JSON request body. Pure, so the body can be checked without calling the provider.
+ *  The document ID is a GUID string and stays one. It was once turned into a Number (NaN), JSON wrote NaN as null, and every call asked for a document
+ *  with ID null. Returns null when the row cannot make a valid request (empty ID, an ID that is the text of a lost value, or a number that is not finite), so nothing is sent at all. */
+export function requestBodies(row: ArchiveRow, token: string): Array<[string, string]> | null {
+  if (typeof row.i4uDocId !== "string" || !row.i4uDocId.trim() || /^(NaN|null|undefined)$/i.test(row.i4uDocId.trim()) || !Number.isFinite(row.docType) || !Number.isFinite(row.docNumber)) return null;
+  const id = row.i4uDocId;
+  const candidates: Array<[string, Record<string, unknown>]> = [
+    ["GetDocument", { doc: { ID: id } }],
+    ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
+    ["GetDocumentByNumber", { docNumber: row.docNumber, docType: row.docType }],
+  ];
+  return candidates.map(([op, payload]) => [op, JSON.stringify({ ...payload, token })]);
+}
+
 /** A link is usable only when it is https on the provider's domain. */
 export function safeLink(v: string | null): string | null {
   if (!v) return null;
