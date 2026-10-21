@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Membership } from "../../lib/cockpit/shared";
 import { exportErrorText } from "../../lib/cockpit/firmExportCore.ts";
-import { exportFirmPackage } from "../../lib/cockpit/firmExport";
+import { exportFirmPackage, exportOriginalsEnabled } from "../../lib/cockpit/firmExport";
 import { CockpitFrame } from "./CockpitFrame";
 
 type Result = { ok: boolean; text: string; warn?: string[] };
@@ -16,11 +16,19 @@ function Body({ member }: { member: Membership }) {
     if (!window.confirm("לייצא את כל נתוני המשרד לקובץ אחד? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
     setBusy(true); setRes(null); setProgress("מכין...");
     try {
-      const built = await exportFirmPackage(member.firm_id, (done, total, table) => setProgress(table ? `קורא ${done + 1} מתוך ${total}` : "מאמת וארוז"));
+      const built = await exportFirmPackage(
+        member.firm_id,
+        (done, total, table) => setProgress(table ? `קורא טבלה ${done + 1} מתוך ${total}` : "מאמת"),
+        (done, total) => setProgress(`מוריד מקורי ${done} מתוך ${total}`));
       const warn: string[] = [];
       if (!built.manifest.chain.verified) warn.push("שרשרת יומן הביקורת נמצאה שבורה בעת הייצוא. יש לבדוק לפני כל הסתמכות עליה.");
-      if (!built.handoverComplete) warn.push(`המסמכים המקוריים (${built.manifest.originals.count}) אינם כלולים בקובץ. עד שיימסרו, החבילה אינה שלמה למסירה.`);
-      setRes({ ok: true, text: "הקובץ ירד. כל קובץ בתוכו אומת מול החתימה שנרשמה במסד הנתונים.", warn });
+      const o = built.originals;
+      if (!built.handoverComplete) {
+        if (!o) warn.push(`המסמכים המקוריים (${built.manifest.originals.count}) אינם כלולים בקובץ. עד שיימסרו, החבילה אינה שלמה למסירה.`);
+        else if (o.listError) warn.push(`קבלת המסמכים המקוריים (${built.manifest.originals.count}) נכשלה, והם אינם כלולים בקובץ. כדאי לנסות שוב. החבילה אינה שלמה למסירה.`);
+        else warn.push(`נכללו ${o.filesInZip} מתוך ${built.manifest.originals.count} מסמכים מקוריים, ומהם אומתו ${o.verified}. הפירוט ב-PACKAGE.json. החבילה אינה שלמה למסירה.`);
+      }
+      setRes({ ok: true, text: built.handoverComplete ? "הקובץ ירד. כל קובץ בתוכו אומת מול החתימה שנרשמה במסד הנתונים." : "הקובץ ירד. קבצי הטבלאות שבו אומתו מול החתימה שנרשמה במסד הנתונים. ראו את ההערה שלמטה.", warn });
     } catch (e) {
       const denied = /FORBIDDEN|MANIFEST/.test(String((e as Error)?.message ?? ""));
       setRes({ ok: false, text: denied ? "אין הרשאה לייצוא. נדרשים שותף או מנהל המשרד, אימות דו שלבי והרשאה פיננסית." : exportErrorText(e) });
@@ -33,7 +41,9 @@ function Body({ member }: { member: Membership }) {
       <div className="ck-card">
         <div className="ck-meta">חבילה אחת עם כל נתוני המשרד, לקראת מסירה בסגירת משרד או לגיבוי: תיקים, מסמכים, כספים, נאמנות, זמן, חתימות ויומן הביקורת. כל קובץ בחבילה מגיע עם חתימת SHA-256 שאפשר לאמת בלי לסמוך על הפלטפורמה.</div>
         <div className="ck-meta">לא כלולים: אישורי גישה, חיבורי מס, תורי משלוח ורישומים פנימיים של הפלטפורמה. הרשימה המלאה, עם הסיבה, בקובץ README שבחבילה.</div>
-        <div className="ck-meta">המסמכים המקוריים אינם כלולים עדיין. הקובץ יציין זאת במפורש.</div>
+        <div className="ck-meta">{exportOriginalsEnabled()
+          ? "המסמכים המקוריים נכללים בקובץ, כל אחד מאומת מול החתימה והגודל שנרשמו. הייצוא עשוי לקחת כמה דקות ולהגיע לעשרות מגה בייט."
+          : "המסמכים המקוריים אינם כלולים עדיין. הקובץ יציין זאת במפורש."}</div>
         <button className="ck-btn primary" disabled={busy} onClick={() => void run()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני המשרד (ZIP)"}</button>
       </div>
       {res && (
