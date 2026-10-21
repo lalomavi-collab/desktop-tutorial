@@ -17,32 +17,21 @@
 .ck-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--chart-ok, #216f33); flex-shrink: 0; animation: ck-pulse-dot 2.6s ease-in-out infinite; }
 @keyframes ck-pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--chart-ok, #216f33) 55%, transparent); } 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--chart-ok, #216f33) 0%, transparent); } }
 
-/* The area chart's own dark instrument panel (deliberately the same register in the light and
-   dark cockpit theme, like a dedicated chart widget in a trading app). Every colour below is a
-   local custom property, not a cockpit theme token: this panel does not change with the theme. */
-.ck-nd-panel {
-  position: relative; border-radius: 18px; padding: 16px 18px; box-shadow: 0 14px 34px rgba(0, 0, 0, .28);
-  background: linear-gradient(160deg, var(--nd-bg1), var(--nd-bg2));
-  --nd-bg1: #0b1410; --nd-bg2: #0a1a14; --nd-accent: #29e6a0;
-  --nd-ink: #ffffff; --nd-sub: #9fb8ad; --nd-grid: rgba(255, 255, 255, .07); --nd-divider: rgba(255, 255, 255, .08);
-}
-.ck-nd-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-.ck-nd-figure { color: var(--nd-ink); font-size: 32px; font-weight: 800; line-height: 1; text-shadow: 0 0 22px color-mix(in srgb, var(--nd-accent) 55%, transparent); }
-.ck-nd-unit { color: var(--nd-sub); font-size: 12.5px; font-weight: 600; margin-top: 4px; }
-.ck-nd-live {
-  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 5px 10px;
-  color: var(--nd-accent); background: color-mix(in srgb, var(--nd-accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--nd-accent) 35%, transparent);
-}
-.ck-nd-live .ck-live-dot { background: var(--nd-accent); }
-.ck-nd-stats { display: flex; flex-wrap: wrap; gap: 20px; padding: 10px 0 12px; margin: 10px 0; border-top: 1px solid var(--nd-divider); border-bottom: 1px solid var(--nd-divider); }
-.ck-nd-stat { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 600; color: var(--nd-sub); }
-.ck-nd-stat b { font-size: 14px; font-weight: 800; color: var(--nd-ink); font-variant-numeric: tabular-nums; }
-.ck-nd-stat.accent b { color: var(--nd-accent); }
-.ck-nd-stat.muted b { font-size: 13px; color: var(--nd-sub); }
-/* The one small light that travels the line, a few seconds per lap, then fades back in at the
-   start: the honest "alive" cue for data refreshed on load rather than streamed in real time. */
-.ck-nd-travel { filter: drop-shadow(0 0 6px var(--nd-accent)); animation: ck-nd-travel 3.6s linear 1s infinite; }
-@keyframes ck-nd-travel { 0% { offset-distance: 0%; opacity: 0; } 6% { opacity: 1; } 94% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+/* The weekly stem chart: no panel of its own, it sits on the card around it (ivory and sage, the page's own
+   palette). Stems rise in turn once on load; reduced motion shows them at once (see the end of this file). */
+.ck-st-panel { position: relative; }
+.ck-st-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+.ck-st-figure { font-family: var(--serif); font-size: 44px; font-weight: 500; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ck-st-unit { color: var(--slate); font-size: 13px; margin-top: 6px; }
+.ck-st-chip { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 12px; border-radius: 12px; background: var(--clay-tint, #e7ede4); color: var(--chart-ok, #216f33); }
+.ck-st-chip b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ck-st-chip small { font-size: 11px; color: var(--slate); }
+.ck-st-chip.down { background: color-mix(in srgb, var(--chart-warn, #d0901e) 14%, transparent); color: color-mix(in srgb, var(--chart-warn, #d0901e) 70%, var(--ink)); }
+.ck-st-stem { transform-origin: bottom; transform-box: fill-box; animation: ck-st-rise .5s ease backwards; }
+@keyframes ck-st-rise { from { opacity: 0; transform: scaleY(.2); } to { opacity: 1; transform: none; } }
+.ck-st-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--slate); }
+.ck-st-foot b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.ck-st-foot .muted { opacity: .8; }
 
 /* Hover tooltip: a small solid bubble positioned in the chart's own pixel space, never the only way to read a value. */
 .ck-tip {
@@ -117,6 +106,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ck-area-line, .ck-area-fill, .ck-pill, .ck-barsh-fill, .ck-minibar { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; transform: none !important; }
   .ck-donut-arc, .ck-gauge-arc, .ck-group-bar, .ck-statusbar-fill { transition: none !important; }
-  .ck-live-pulse, .ck-live-dot, .ck-nd-travel { animation: none !important; }
-  .ck-live-pulse, .ck-nd-travel { opacity: 0 !important; }
+  .ck-live-pulse, .ck-live-dot, .ck-st-stem { animation: none !important; }
+  .ck-live-pulse { opacity: 0 !important; }
 }
