@@ -400,3 +400,60 @@ textarea.ck-editor { resize: vertical; min-height: 420px; }
 .mfa-label { font-size: 16.5px; font-weight: 700; }
 .mfa-lost { align-self: flex-start; background: none; border: 0; padding: 4px 0; font: inherit; font-size: 16px; color: var(--slate); text-decoration: underline; cursor: pointer; }
 
+/* One size for every button in the books: the same height and type on every screen and in every row, a touch target
+   of 44px, and a hover tint only where hover exists (on a phone a tapped button otherwise stays tinted). */
+.ck-fin .ck-btn:not(.sm) { min-height: 44px; font-size: 15px; font-weight: 600; padding: 8px 18px; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+.ck-fin .ck-btn.is-disabled { opacity: .5; pointer-events: none; }
+.fin-rubric { font-size: 15px; font-weight: 700; min-height: 52px; }
+.fin-subtab { font-size: 15px; font-weight: 600; min-height: 40px; }
+.fin-tabs .ck-btn { font-size: 15px; font-weight: 700; min-height: 44px; }
+@media (hover: none) {
+  .fin-rubric:hover { background: var(--card, #fff); }
+  .fin-rubric[aria-selected="true"]:hover { background: var(--clay-tint); }
+  .fin-subtab:hover { color: var(--slate); border-color: var(--line-strong); }
+  .fin-subtab[aria-selected="true"]:hover { color: #fff; border-color: var(--clay); }
+}
+
+/* Adding customers: four ways in, as equal cards. */
+.cust-methods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cust-method { font: inherit; text-align: start; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--card, #fff); color: var(--ink); cursor: pointer; min-height: 76px; }
+.cust-method b { font-size: 15px; font-weight: 700; }
+.cust-method span { font-size: 13px; color: var(--slate); line-height: 1.4; }
+.cust-method[aria-pressed="true"] { background: var(--clay-tint); border-color: var(--clay); box-shadow: inset 0 -3px 0 var(--clay); }
+.cust-method[aria-pressed="true"] b { color: var(--clay); }
+.cust-method:focus-visible, .cust-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cust-link { font: inherit; background: none; border: 0; padding: 0; color: var(--clay); text-decoration: underline; cursor: pointer; }
+.cust-file { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; overflow: hidden; }
+.cust-file:focus-visible + label { outline: 2px solid var(--ink); outline-offset: 2px; }
+label.ck-btn { cursor: pointer; }
+
+/* Permissions: what each level opens, then one card per user. */
+.perm-levels { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.perm-levels li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
+.perm-n { flex: none; inline-size: 30px; block-size: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 15px; background: var(--clay-tint); color: var(--clay); font-variant-numeric: tabular-nums; }
+.perm-levels b { display: block; font-size: 15px; }
+.perm-levels span:not(.perm-n) { display: block; font-size: 14px; color: var(--slate); line-height: 1.55; }
+.perm-rules { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; font-size: 14px; line-height: 1.6; color: var(--slate); }
+.perm-rules b { color: var(--ink); }
+.perm-members { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.perm-member { display: grid; grid-template-columns: 1fr 1.2fr; gap: 14px; align-items: end; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card, #fff); }
+.perm-who b { display: block; font-size: 16px; }
+.perm-who span { font-size: 14px; color: var(--slate); }
+.perm-pick { display: grid; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--slate); }
+.perm-pick .ck-select { inline-size: 100%; min-height: 44px; }
+
+@media (max-width: 720px) {
+  .cust-methods { grid-template-columns: 1fr 1fr; }
+  .perm-member { grid-template-columns: 1fr; align-items: stretch; }
+}
+
+.cust-preview { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 420px; overflow-y: auto; }
+.cust-prow { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card, #fff); }
+.cust-prow.duplicate, .cust-prow.invalid { opacity: .65; }
+.cust-pname { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.cust-pname b { font-size: 15px; }
+.cust-pstatus { font-size: 13px; color: var(--slate); white-space: nowrap; }
+.cust-prow.new .cust-pstatus { color: var(--clay); font-weight: 700; }
+.cust-pmeta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; color: var(--slate); margin-top: 3px; }
+.cust-pnote { font-size: 13.5px; color: var(--slate); margin-top: 3px; }
+.cust-pnote.err { color: var(--chart-bad, #b3402f); }
