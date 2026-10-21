@@ -1,7 +1,8 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ClientNamesProvider, ClientNamesToggle } from "../../components/cockpit/ClientNames";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useCardTables } from "../../lib/cockpit/useCardTables";
 import { PageMeta } from "../../components/PageMeta";
 import { RailDefs, RailIcon } from "../../components/cockpit/RailIcons";
 import { Wordmark } from "../../components/Wordmark";
@@ -104,6 +105,8 @@ export function CockpitFrame({
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   const [theme, flipTheme] = useCkTheme();
+  const mainRef = useRef<HTMLElement>(null);
+  useCardTables(mainRef);
   // Number of unanswered inquiries, shown on the nav item (counts only; the rows themselves load on the inquiries screen).
   const [newInq, setNewInq] = useState(0);
   const hasMember = access.state !== "loading" && access.state !== "none" && !!access.member;
@@ -165,7 +168,7 @@ export function CockpitFrame({
           {hasMember && <ClientNamesToggle />}
         </header>
         {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
-        <main>{body}</main>
+        <main ref={mainRef}>{body}</main>
       </div>
     </div>
     </ClientNamesProvider>
