@@ -19,6 +19,7 @@ function errText(message: string): string {
   if (message.includes("invalid role")) return "תפקיד לא חוקי.";
   if (message.includes("no e-mail")) return "לחשבון הזה אין כתובת דוא\"ל.";
   if (message.includes("not a firm member")) return "המשתמש אינו חבר בפירמה.";
+  if (message.includes("role cannot be granted")) return "ניתן לאפשר חשיפת שמות רק לשותף או לעורך דין.";
   if (message.includes("no sign in")) return "אין חשבון עם הכתובת הזו. יש להזמין אותה קודם להתחברות, ואז להוסיף כאן.";
   if (message.includes("already a member")) return "הכתובת הזו כבר משויכת לפירמה.";
   if (message.includes("bad email")) return "כתובת דוא\"ל לא תקינה.";
@@ -30,6 +31,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
   const [people, setPeople] = useState<Person[] | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [rev, setRev] = useState(0);
+  const [reveal, setReveal] = useState<Set<string>>(new Set());
   const [bkEmail, setBkEmail] = useState("");
   const [bkName, setBkName] = useState("");
 
@@ -39,6 +41,9 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
     const rows = ((data as Person[] | null) ?? []).slice();
     rows.sort((a, b) => ROLE_ORDER.indexOf(a.role as typeof ROLE_ORDER[number]) - ROLE_ORDER.indexOf(b.role as typeof ROLE_ORDER[number]) || a.name.localeCompare(b.name, "he"));
     setPeople(rows);
+    // Who may reveal client names: the administrator sets it per partner or attorney (readable only to administrators and to the person).
+    const g = await supabase.from("lalum_name_reveal_grants").select("user_id");
+    setReveal(new Set(((g.data as Array<{ user_id: string }> | null) ?? []).map((x) => x.user_id)));
   }, []);
 
   useEffect(() => { void load(); }, [load, rev]);
@@ -59,7 +64,15 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
     const { error } = await supabase.rpc("lalum_add_bookkeeper", { p_email: bkEmail, p_name: bkName });
     if (error) { setMsg({ ok: false, text: errText(error.message) }); return; }
     setBkEmail(""); setBkName("");
-    setMsg({ ok: true, text: "הוספה בתפקיד הנהלת חשבונות. כדי שתראה נתונים יש לקבוע לה רמת גישה בלשונית ההרשאות של הנהלת החשבונות." });
+    setMsg({ ok: true, text: "הוספה בתפקיד הנהלת חשבונות, עם צפייה והורדה של חומרים בלבד." });
+    setRev((n) => n + 1);
+  }
+
+  async function setNameReveal(userId: string, allowed: boolean) {
+    if (!supabase) return;
+    const { error } = await supabase.rpc("lalum_set_name_reveal", { p_user: userId, p_allowed: allowed });
+    if (error) { setMsg({ ok: false, text: errText(error.message) }); return; }
+    setMsg({ ok: true, text: allowed ? "ההרשאה לחשוף שמות נשמרה ונרשמה ביומן." : "ההרשאה לחשוף שמות הוסרה ונרשמה ביומן." });
     setRev((n) => n + 1);
   }
 
@@ -89,7 +102,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
   return (
     <div className="ck-stack" style={{ gap: 14 }}>
       <div className="ck-meta">
-        מי רואה מה: אדמין רואה את כל התיקים וכל ההרשאות (כולל מחיקה), שותף רואה את תיקי המחלקה שלו, ועורך דין רואה רק תיקים שהוא משויך אליהם. הנהלת חשבונות (חיצונית) רואה את מערכת הנהלת החשבונות בלבד, לפי הרמה שנקבעה לה, ואינה רואה תיקים, מסמכים או חברי פירמה.
+        מי רואה מה: אדמין רואה את כל התיקים וכל ההרשאות (כולל מחיקה), שותף רואה את תיקי המחלקה שלו, ועורך דין רואה רק תיקים שהוא משויך אליהם. הנהלת חשבונות (חיצונית) רואה את מערכת הנהלת החשבונות בלבד, לפי הרמה שנקבעה לה, ואינה רואה תיקים, מסמכים או חברי פירמה. חשיפת שמות לקוחות מותרת למנהל הפירמה בלבד, והוא יכול לאפשר אותה לשותף או לעורך דין מסוים.
         {canAdmin ? " כאן נקבעים תפקיד ומחלקה לכל חבר פירמה, וכל שינוי נרשם ביומן עם זמנו המדויק." : " תפקידים נקבעים על ידי מנהל הפירמה; כאן ניתן לעדכן מחלקות."}
       </div>
 
@@ -120,6 +133,14 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
           {canAdmin && (
             <div><button type="button" className="ck-btn" onClick={() => void sendReset(p)}>שליחת מייל לאיפוס סיסמה</button></div>
           )}
+          {canAdmin && (p.role === "FIRM_PARTNER" || p.role === "ATTORNEY") && (
+            <label className="ck-row" style={{ gap: 8, alignItems: "center" }}>
+              <input type="checkbox" checked={reveal.has(p.user_id)} onChange={(e) => void setNameReveal(p.user_id, e.target.checked)} />
+              <span>מותר לחשוף שמות לקוחות (בסיבה שנרשמת ביומן)</span>
+            </label>
+          )}
+          {p.role === "ADMIN" && <div className="ck-meta">מנהל הפירמה רשאי לחשוף שמות לקוחות מתוקף תפקידו.</div>}
+          {p.role === "BOOKKEEPER" && <div className="ck-meta">צפייה והורדה של חומרי הנהלת החשבונות בלבד. אינה רשאית לחשוף שמות לקוחות.</div>}
           {p.role === "FIRM_PARTNER" && <div className="ck-meta">מחלקת השותף קובעת אילו תיקים הוא רואה אוטומטית.</div>}
         </div>
       ))}
@@ -129,7 +150,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
         <div className="ck-card ck-stack" style={{ gap: 10 }}>
           <div className="ck-title" style={{ fontSize: 16 }}>הוספת הנהלת חשבונות</div>
           <div className="ck-meta">
-            קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה תדרוש אימות דו שלבי תמיד. לאחר ההוספה יש לקבוע לה רמת גישה בלשונית ההרשאות (מומלץ רמה 3).
+            קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה תדרוש אימות דו שלבי תמיד. ההרשאה שלה קבועה: צפייה והורדה של חומרים בלבד (רמה 1), ובלשונית ההרשאות אפשר רק להוריד אותה לרמה 0.
           </div>
           <div className="ck-row" style={{ gap: 8, flexWrap: "wrap" }}>
             <input className="ck-input" value={bkName} onChange={(e) => setBkName(e.target.value)} placeholder="שם מלא" style={{ maxWidth: 220 }} />

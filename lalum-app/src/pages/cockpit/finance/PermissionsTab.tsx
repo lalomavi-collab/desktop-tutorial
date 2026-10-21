@@ -3,7 +3,7 @@ import { supabase } from "../../../lib/supabase";
 import { ROLE } from "../../../lib/cockpit/shared";
 
 const LEVELS: Array<[string, string]> = [
-  ["", "לפי התפקיד (שותף ומנהל: מלאה, הנהלת חשבונות: אין גישה)"], ["0", "0 אין גישה"], ["1", "1 צפייה"], ["2", "2 טיוטות ולקוחות"], ["3", "3 הפקה, תשלומים והוצאות"], ["4", "4 ניהול מלא"],
+  ["", "לפי התפקיד (שותף ומנהל: מלאה, הנהלת חשבונות: צפייה והורדה)"], ["0", "0 אין גישה"], ["1", "1 צפייה"], ["2", "2 טיוטות ולקוחות"], ["3", "3 הפקה, תשלומים והוצאות"], ["4", "4 ניהול מלא"],
 ];
 const LEVEL_INFO: Array<{ n: number; title: string; text: string }> = [
   { n: 0, title: "אין גישה", text: "אין צפייה בנתוני הכספים." },
@@ -50,7 +50,7 @@ export function PermissionsTab() {
         </ol>
         <ul className="perm-rules">
           <li><b>אימות דו שלבי:</b> רמה 3 ומעלה דורשת אימות דו שלבי בכל כניסה.</li>
-          <li><b>ברירת מחדל לפי תפקיד:</b> שותף ומנהל מקבלים רמה 4. הנהלת חשבונות חיצונית (תפקיד הנהלת חשבונות) מתחילה ברמה 0 עד שתקבע לה רמה: מומלץ 3, ורמה 4 רק אם עליה לנהל הגדרות, הרשאות, נאמנות ויומן ביקורת. לקוח אינו מקבל גישה כאן.</li>
+          <li><b>ברירת מחדל לפי תפקיד:</b> שותף ומנהל מקבלים רמה 4. הנהלת חשבונות חיצונית (תפקיד הנהלת חשבונות) מוגבלת לרמה 1: צפייה והורדה של חומרים בלבד, ואי אפשר לתת לה יותר. ניתן להוריד אותה לרמה 0. לקוח אינו מקבל גישה כאן.</li>
           <li><b>יומן ביקורת:</b> כל שינוי בהרשאה נרשם ביומן שאי אפשר לערוך, עם מי ומתי.</li>
           <li><b>מנהל אחרון:</b> אי אפשר להוריד את מנהל הכספים האחרון.</li>
         </ul>
@@ -63,7 +63,7 @@ export function PermissionsTab() {
             <div className="perm-who"><b>{m.name}</b><span>{ROLE[m.role] ?? m.role}</span></div>
             <label className="perm-pick"><span>רמת גישה לכספים</span>
               <select className="ck-select" aria-label={`רמה עבור ${m.name}`} value={explicit[m.user_id] === undefined ? "" : String(explicit[m.user_id])} onChange={(e) => void change(m.user_id, e.target.value)}>
-                {LEVELS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+                {LEVELS.filter(([v]) => m.role !== "BOOKKEEPER" || v === "" || Number(v) <= 1).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
             </label>
           </li>))}
         {!members.length && <li className="ck-meta">אין משתמשים להצגה</li>}
