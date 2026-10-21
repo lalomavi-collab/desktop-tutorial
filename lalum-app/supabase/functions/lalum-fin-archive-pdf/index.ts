@@ -36,18 +36,14 @@ const ports = (): Ports => ({
     const prod = !(Deno.env.get("FIN_IMPORT_ENV") ?? "prod").toLowerCase().startsWith("qa");
     const base = prod ? "https://api.invoice4u.co.il/Services/ApiService.svc" : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
     const redact = (s: string) => s.split(apiKey).join("[REDACTED]").slice(0, 200);
-    const id = Number(row.i4uDocId);
-    // Candidate retrieval operations, tried in order until a link comes back. The names follow the provider's other operations.
-    // The first real use showed GetDocument and GetDocumentByNumber answer 200 with {"d":null} (the provider found nothing for that request shape),
-    // and the other three operations do not exist (404). So only the two live operations stay, each with more request shapes. The working list
-    // call GetDocuments takes {dr:{DocumentType,...}}, which suggests the typed field names below.
+    // The provider's document ID is a GUID string (it is stored as such in lalum_fin_archive.i4u_doc_id). It was turned into a Number before, which is NaN,
+    // and JSON.stringify writes NaN as null, so every GetDocument asked for a document with ID null and the provider answered {"d":null} (first real use, 2026-10-21).
+    const id = row.i4uDocId;
+    // Candidate retrieval operations, tried in order until a link comes back. GetDocumentByNumber stays as the fallback with the numeric fields.
     const candidates: Array<[string, Obj]> = [
-      ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
-      ["GetDocument", { doc: { ID: id, DocumentNumber: row.docNumber, DocumentType: row.docType } }],
       ["GetDocument", { doc: { ID: id } }],
+      ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
       ["GetDocumentByNumber", { docNumber: row.docNumber, docType: row.docType }],
-      ["GetDocumentByNumber", { doc: { DocumentNumber: row.docNumber, DocumentType: row.docType } }],
-      ["GetDocumentByNumber", { documentNumber: row.docNumber, documentType: row.docType }],
     ];
     const tried: Attempt[] = [];
     let original: string | null = null, certified: string | null = null;
