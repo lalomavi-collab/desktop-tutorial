@@ -67,7 +67,7 @@ function Panel({ member }: { member: Membership }) {
     <div className="ck-stack">
       <div className="ck-card">
         <div className="ck-meta">
-          מבט רוחבי על תיעוד הכרת הלקוח בכל תיקי המשרד. זו רשומת בקרה בלבד, ללא פרטים מזהים: פרטי הזיהוי עצמם נשמרים בתיק המשרד. מילוי ועדכון הצ׳קליסט לכל צד מתבצעים בתוך התיק.
+          מבט רוחבי על תיעוד הכרת הלקוח בכל תיקי הפירמה. זו רשומת בקרה בלבד, ללא פרטים מזהים: פרטי הזיהוי עצמם נשמרים בתיק הפירמה. מילוי ועדכון הצ׳קליסט לכל צד מתבצעים בתוך התיק.
         </div>
         {pendingBusiness > 0 && (
           <div className="ck-warn">
@@ -119,7 +119,7 @@ function Panel({ member }: { member: Membership }) {
       {matters.length === 0 && <div className="ck-card"><div className="ck-meta">אין תיקים עדיין.</div></div>}
 
       <div className="ck-meta">
-        תיעוד הכרת הלקוח משקף נוהל פנימי של המשרד. חובות הדין החלות על תיק מסוים נקבעות על ידי עורך הדין האחראי. אין באמור ייעוץ משפטי.
+        תיעוד הכרת הלקוח משקף נוהל פנימי של הפירמה. חובות הדין החלות על תיק מסוים נקבעות על ידי עורך הדין האחראי. אין באמור ייעוץ משפטי.
       </div>
     </div>
   );
@@ -127,7 +127,7 @@ function Panel({ member }: { member: Membership }) {
 
 export function Kyc() {
   return (
-    <CockpitFrame title="הכר את הלקוח" description="מבט רוחבי על סטטוס תיעוד הכרת הלקוח בכל תיקי המשרד. רשומת בקרה בלבד, ללא פרטים מזהים." path="/workspace/kyc">
+    <CockpitFrame title="הכר את הלקוח" description="מבט רוחבי על סטטוס תיעוד הכרת הלקוח בכל תיקי הפירמה. רשומת בקרה בלבד, ללא פרטים מזהים." path="/workspace/kyc">
       {({ member }) => (member ? <Panel member={member} /> : null)}
     </CockpitFrame>
   );

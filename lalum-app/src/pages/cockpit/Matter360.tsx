@@ -69,7 +69,7 @@ function Billing({ d, showTrust }: { d: Matter360Data; showTrust: boolean }) {
         {wip.state === "unavailable" && <div className="ck-meta">תמחור השעות אינו זמין עדיין: פונקציית החיוב (מיגרציה 0021) טרם הופעלה במסד הנתונים. השעות עצמן מוצגות למטה.</div>}
         {wip.state === "ready" && (
           <>
-            <div className="ck-meta">שעות שאושרו ועדיין לא חויבו, לפי כרטיסי התעריפים של המשרד (קודם כרטיס התיק, אחר כך כרטיס המשרד, לפי תפקיד).</div>
+            <div className="ck-meta">שעות שאושרו ועדיין לא חויבו, לפי כרטיסי התעריפים של הפירמה (קודם כרטיס התיק, אחר כך כרטיס הפירמה, לפי תפקיד).</div>
             {wip.data.entriesWithoutRate > 0 && <div className="crm-banner red" role="alert">{wip.data.entriesWithoutRate} רישומים ללא תעריף אינם נכללים בסכום. הגדירו כרטיס תעריפים לתפקיד.</div>}
             {wip.data.awaitingApproval > 0 && <div className="crm-banner yellow" role="note">{wip.data.awaitingApproval} רישומים ממתינים לאישור ואינם נכללים בסכום.</div>}
             {wip.data.entries.length > 0 && (

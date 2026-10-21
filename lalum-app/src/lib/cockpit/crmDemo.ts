@@ -5,7 +5,7 @@ import type { FinCustomer, FinDocument, FinPayment } from "./finance.ts";
 import { addDays, iso } from "./crm.ts";
 import type { Obligation, TimeEntry, TrustEntry } from "./crm.ts";
 
-export const DEMO_NOTE = "נתוני הדגמה בדויים. החיבור לנתוני Invoice4U האמיתיים נעשה במקור הנתונים בלבד, בלי שינוי ברכיבים.";
+export const DEMO_NOTE = "נתוני הדגמה בדויים. החיבור לנתוני האמת נעשה במקור הנתונים בלבד, בלי שינוי ברכיבים.";
 
 const ago = (t: Date, n: number) => iso(addDays(t, -n));
 

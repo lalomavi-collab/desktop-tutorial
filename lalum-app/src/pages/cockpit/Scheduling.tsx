@@ -9,7 +9,7 @@ import { SchedulingConsole } from "../../components/SchedulingConsole";
 /** Firm scheduling console, framed for the cockpit. */
 export function Scheduling() {
   return (
-    <CockpitFrame title="יומן ופגישות" description="תכנון שבוע העבודה של המשרד: אירועים, זמנים פנויים ושיבוץ משימות." path="/workspace/scheduling">
+    <CockpitFrame title="יומן ופגישות" description="תכנון שבוע העבודה של הפירמה: אירועים, זמנים פנויים ושיבוץ משימות." path="/workspace/scheduling">
       {() => <SchedulingConsole />}
     </CockpitFrame>
   );

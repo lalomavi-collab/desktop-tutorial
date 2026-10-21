@@ -41,7 +41,7 @@ export const ar: Dict = {
       secondaryCta: "إجراء فحص المخاطر مجانًا",
     },
     botCall: { aria: "الاتصال بالمساعد الذكي" },
-    accounting: { aria: "المحاسبة (Invoice4U)" },
+    accounting: { aria: "المحاسبة" },
     consent: {
       pre: "أوافق على تلقي المواد التسويقية والتحديثات من LALUM عبر واتساب والبريد الإلكتروني والرسائل النصية القصيرة والهاتف وما شابه، وأوافق على ",
       terms: "الشروط",
@@ -365,7 +365,7 @@ export const ar: Dict = {
         allTitle: "جميع مراحل الدفع",
         copyLink: "نسخ رابط الدفع",
         copied: "تم النسخ",
-        dashboard: "المحاسبة والتقارير (Invoice4U)",
+        dashboard: "المحاسبة والتقارير",
       },
       transfer: {
         title: "تحويل بنكي (مفضّل)",

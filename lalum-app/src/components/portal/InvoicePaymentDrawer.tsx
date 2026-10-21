@@ -25,7 +25,7 @@ export function InvoicePaymentDrawer({ docs, pays, customerId, trust }: { docs: 
             <tr><th>מע״מ</th><td>{money(cur.vat_amount)}</td></tr>
             <tr><th>סה״כ לתשלום</th><td><b>{money(receivable(cur, docs, pays))}</b></td></tr>
           </tbody></table>
-          <button type="button" className="ck-btn primary" disabled title="קישור התשלום יופעל עם החיבור ל-Invoice4U">לתשלום מהיר</button>
+          <button type="button" className="ck-btn primary" disabled title="קישור התשלום יופעל עם החיבור למערכת ההנפקה">לתשלום מהיר</button>
         </aside>
       )}
     </section>

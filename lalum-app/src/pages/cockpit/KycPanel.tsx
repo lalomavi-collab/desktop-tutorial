@@ -70,7 +70,7 @@ export function KycPanel({ matterId, role, onPending }: { matterId: string; role
     <details>
       <summary className="ck-btn" style={{ display: "inline-flex" }}>הכרת לקוח (KYC){records.length ? `: ${records.every((r) => r.status === "COMPLETE") ? "הושלם" : "טיוטה"}` : ""}</summary>
       <div className="ck-stack" style={{ marginTop: 10 }}>
-        <div className="ck-warn">רשומת בקרה בלבד. אין להזין כאן שמות, מספרי זיהוי או טקסט חופשי: פרטי הזיהוי נשמרים בתיק המשרד. הרשימה משקפת נוהל פנימי, וחובות הדין החלות על התיק נקבעות על ידי עורך הדין האחראי.</div>
+        <div className="ck-warn">רשומת בקרה בלבד. אין להזין כאן שמות, מספרי זיהוי או טקסט חופשי: פרטי הזיהוי נשמרים בתיק הפירמה. הרשימה משקפת נוהל פנימי, וחובות הדין החלות על התיק נקבעות על ידי עורך הדין האחראי.</div>
         <div className="ck-row">
           {parties.map((n) => <button key={n} className={`ck-btn${n === partyNo ? " primary" : ""}`} onClick={() => setPartyNo(n)}>צד {n}{statusOf(n) === "COMPLETE" ? " ✓" : ""}</button>)}
           {parties.length < 20 && <button className="ck-btn" onClick={() => setPartyNo(Math.max(...parties) + 1)}>הוספת צד</button>}

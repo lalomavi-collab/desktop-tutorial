@@ -118,7 +118,7 @@ const CLOCK_ERRORS: Record<string, string> = {
   BAD_TIMES: "שעת היציאה חייבת להיות אחרי שעת הכניסה.",
   SESSION_TOO_LONG: "החתמה אחת לא יכולה לעבור 24 שעות.",
   FUTURE_TIME: "אי אפשר להחתים זמן עתידי.",
-  NOT_A_MEMBER: "האדם אינו חבר במשרד.",
+  NOT_A_MEMBER: "האדם אינו חבר בפירמה.",
   TIMER_ALREADY_RUNNING: "טיימר כבר רץ. עצרו אותו קודם.",
   NO_RUNNING_TIMER: "אין טיימר רץ.",
   BACKDATE_NEEDS_PARTNER: "רישום מעבר ל-7 ימים אחורה דורש שותף.",
@@ -131,7 +131,7 @@ export function clockError(message: unknown): string {
   return "הפעולה נכשלה.";
 }
 
-export const HOURS_DEMO_NOTE = "נתוני הדגמה בדויים. כל השמות, הדקות והסכומים כאן מומצאים ואינם נתוני המשרד. שום דבר לא נשמר במסד הנתונים.";
+export const HOURS_DEMO_NOTE = "נתוני הדגמה בדויים. כל השמות, הדקות והסכומים כאן מומצאים ואינם נתוני הפירמה. שום דבר לא נשמר במסד הנתונים.";
 
 /**
  * SYNTHETIC data for the partner report preview. Every name, code, minute and rate is invented. Nothing here touches the database.

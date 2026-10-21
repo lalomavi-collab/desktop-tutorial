@@ -88,7 +88,7 @@ await t("extension: from the stored name when plain, else the mime type, else bi
   assert.equal(extFor(doc(1, "x", { fileName: "../../evil.pdf\u0000.exe", mime: null })), "exe");
 });
 await t("without a pull the README states the original is not included, and no generated sentence uses a dash as punctuation", async () => {
-  assert.match(originalsReadme(null)[0], /המשרד מוסר אותו בנפרד/);
+  assert.match(originalsReadme(null)[0], /הפירמה מוסרת אותו בנפרד/);
   const all = [originalsReadme(null), originalsReadme({ files: [], rows: [{ document: "d", file: null, size: 1, sha256: "x", verified: false, reason: "OPEN" }], requested: 1, without: 1, verified: 0, skipped: null, complete: false })].flat().join("\n");
   assert.ok(!/[—–]/.test(all) && !/ - /.test(all));
 });

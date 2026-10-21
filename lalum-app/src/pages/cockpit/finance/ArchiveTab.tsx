@@ -36,7 +36,7 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
     setLog((l) => [...l, r.ok ? { ok: true, text: `לקוחות: נמצאו ${r.fetched}, נוספו ${r.inserted}, קושרו ללקוחות קיימים לפי ת.ז. ${r.linked}, דולגו ${r.skipped}.` } : { ok: false, text: importError(r) }]);
   }
   async function importDocuments() {
-    if (!window.confirm(`לייבא מסמכים מ-Invoice4U בין ${from} ל-${to}? הפעולה לקריאה בלבד ואינה משנה דבר ב-Invoice4U.`)) return;
+    if (!window.confirm(`לייבא מסמכים ממערכת ההיסטוריה בין ${from} ל-${to}? הפעולה לקריאה בלבד ואינה משנה דבר במערכת ההיסטוריה.`)) return;
     stop.current = false; setBusy(true); setLog([]);
     let total = 0;
     for (const [a, b] of monthsBetween(from, to)) {
@@ -56,12 +56,12 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
 
   return (
     <div className="ck-stack">
-      <div className="ck-ok">ארכיון קריאה בלבד של מסמכים שהופקו ב-Invoice4U. הוא משמש להיסטוריה, להתאמת דוחות ולבדיקת רציפות המספור, ואינו מקור למסמך חדש.</div>
+      <div className="ck-ok">ארכיון קריאה בלבד של מסמכים שהופקו במערכת ההיסטוריה. הוא משמש להיסטוריה, להתאמת דוחות ולבדיקת רציפות המספור, ואינו מקור למסמך חדש.</div>
       <div className="ck-card ck-stack">
-        <div className="ck-title">ייבוא מ-Invoice4U</div>
+        <div className="ck-title">ייבוא ממערכת ההיסטוריה</div>
         <div className="ck-row">
           <button className="ck-btn" disabled={busy} onClick={() => void importCustomers()}>ייבוא לקוחות</button>
-          <span className="ck-meta">מקשר לקוחות קיימים לפי ת.ז. ומוסיף את החדשים. אחרי זה הפקה חדשה לא תיצור לקוח כפול ב-Invoice4U.</span>
+          <span className="ck-meta">מקשר לקוחות קיימים לפי ת.ז. ומוסיף את החדשים. אחרי זה הפקה חדשה לא תיצור לקוח כפול במערכת ההנפקה.</span>
         </div>
         <div className="ck-grid2">
           <label className="ck-field">מתאריך<input className="ck-input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
@@ -76,11 +76,11 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
 
       {(
         <>
-          <div className="ck-label">התאמה לדוחות Invoice4U</div>
+          <div className="ck-label">התאמה לדוחות מערכת ההיסטוריה</div>
           <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שנה</th><th>סוג</th><th className="fin-num">כמות</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">מע"מ</th><th className="fin-num">סה"כ</th></tr></thead><tbody>
             {summary.length ? summary.map((r) => <tr key={`${r.year}${r.type}`}><td>{r.year}</td><td>{I4U_TYPE[r.type] ?? r.type}</td><td className="fin-num">{r.count}</td><td className="fin-num">{r.type === 2 ? "ללא מע\"מ" : money(r.subtotal)}</td><td className="fin-num">{r.type === 2 ? "ללא מע\"מ" : money(r.vat)}</td><td className="fin-num">{money(r.total)}</td></tr>) : <tr><td colSpan={6}>עדיין לא יובאו מסמכים</td></tr>}
           </tbody></table></div>
-          <div className="ck-meta">השוו שורות אלה לדוח ההכנסות של Invoice4U לאותה שנה. פער פירושו שחסר מסמך בייבוא או שהטווח לא מלא. קבלה אינה הכנסה בדוח, ולכן אין לה פירוט מע"מ. בכמה מסמכים הסה"כ מעוגל לשקל שלם ולכן שונה בעשרות אגורות מסכום לפני מע"מ ועוד מע"מ. זה העיגול של Invoice4U.</div>
+          <div className="ck-meta">השוו שורות אלה לדוח ההכנסות של מערכת ההיסטוריה לאותה שנה. פער פירושו שחסר מסמך בייבוא או שהטווח לא מלא. קבלה אינה הכנסה בדוח, ולכן אין לה פירוט מע"מ. בכמה מסמכים הסה"כ מעוגל לשקל שלם ולכן שונה בעשרות אגורות מסכום לפני מע"מ ועוד מע"מ. זה העיגול של מערכת ההיסטוריה.</div>
 
           <div className="ck-label">רציפות מספור</div>
           <div className="ck-card ck-stack">
@@ -94,7 +94,7 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
                   {gaps.length ? <span className="ck-badge yellow">חסרים: <bdi>{formatRanges(gaps)}</bdi></span> : <span className="ck-badge green">רציף בטווח שיובא</span>}
                 </div>);
             }) : <div className="ck-meta">אין נתונים</div>}
-            <div className="ck-meta">חוסר יכול לנבוע מטווח ייבוא חלקי. אם הטווח מלא, מספר חסר דורש הסבר מ-Invoice4U או מרואה החשבון, כי המספור צריך להיות רציף.</div>
+            <div className="ck-meta">חוסר יכול לנבוע מטווח ייבוא חלקי. אם הטווח מלא, מספר חסר דורש הסבר ממערכת ההיסטוריה או מרואה החשבון, כי המספור צריך להיות רציף.</div>
           </div>
 
           <div className="ck-label">מסמכים אחרונים</div>

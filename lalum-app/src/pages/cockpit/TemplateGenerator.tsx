@@ -54,7 +54,7 @@ export function TemplateGenerator({ matterId, practiceArea, onDone }: { matterId
   }
 
   if (templates == null) return <div className="ck-meta">טוען תבניות...</div>;
-  if (!templates.length) return <div className="ck-meta">אין תבניות פעילות במשרד.</div>;
+  if (!templates.length) return <div className="ck-meta">אין תבניות פעילות בפירמה.</div>;
 
   return (
     <form className="ck-stack" onSubmit={submit}>
