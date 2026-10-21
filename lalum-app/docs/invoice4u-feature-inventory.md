@@ -116,6 +116,8 @@ Bulk: close marked, reopen marked, send to my email, send to customer email, pri
 document, cannot reopen an open one. LALUM has none of these beyond list and PDF link. P2: email to customer with sent and
 opened status, bulk close.
 
+**Status 21 October 2026:** per document view, send by e-mail (customer, extra addresses, own copy as bcc, editable subject and text, PDF attached with the link in the body), WhatsApp with the message prepared (click to chat, logged as opened, no delivery receipt), copy link, print, a send log per document, a "sent" line in the list, and bulk send to customers or to the owner. Migration 0077 and the function `lalum-fin-doc-send`. Still open: opened status (needs a Resend webhook), lock and bulk close, SMS, send from the history archive (waits for the archive print link).
+
 ### 4.9 Email, SMS and signature (C only, not seen live)
 Email dialog after creation: recipient list with extra addresses, free text for the email body, optional SMS to a phone
 number. Warnings when the customer has no email. Default recipient is the user, plus the customer if an email exists. The
