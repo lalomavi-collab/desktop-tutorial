@@ -37,6 +37,7 @@
     "updates-check": "node scripts/updates-check.mjs",
     "reanalyze-check": "node scripts/reanalyze-check.mjs",
     "open-original-check": "node scripts/open-original-check.mjs",
+    "export-originals-check": "node scripts/export-originals-check.mjs",
     "mail-route-check": "node scripts/mail-route-check.mjs",
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",

@@ -1,8 +1,9 @@
 // The firm wide handover package, assembled on the client from the database functions of migration 0066.
 // The database gives a manifest (a row count and a sha256 per table) and the rows as the exact JSON text those hashes were computed over.
 // This module pulls every page, rebuilds each file, and refuses to produce a package whose files do not hash to the manifest.
-// It has no browser or Supabase imports, so the same code runs in the check script. The originals in Storage are NOT fetched here:
-// they need a batch signer that does not exist yet, and the package says so in plain words (handover_complete: false).
+// It has no browser or Supabase imports, so the same code runs in the check script. The originals in Storage are fetched through the optional
+// `originals` port (the lalum-export-originals Edge Function signs them in one batch); every file is checked against the sha256 and size the
+// database recorded. Without the port, or with any original missing or unverified, the package says so in plain words (handover_complete: false).
 
 export interface Section { table: string; rows: number; sha256: string; file: string }
 export interface Manifest {
@@ -16,14 +17,23 @@ export interface Manifest {
   chain: { verified: boolean; firstBrokenSeq: number | null; headSeq: number | null; headHash: string | null };
   originals: { count: number; bytes: number; withoutSha256: number };
 }
+export interface OriginalsPort {
+  /** The batch call: the list of originals with a temporary link each, or null on failure. */
+  list: () => Promise<unknown>;
+  fetchBytes: (url: string) => Promise<Uint8Array>;
+  digestBytes: (bytes: Uint8Array) => Promise<string>;
+}
 export interface Ports {
+  originals?: OriginalsPort;
   manifest: () => Promise<unknown>;
   page: (table: string, offset: number, limit: number) => Promise<unknown>;
   digest: (text: string) => Promise<string>;
   now: () => Date;
 }
-export interface PackageFile { path: string; content: string }
-export interface Built { files: PackageFile[]; manifest: Manifest; handoverComplete: boolean }
+export interface PackageFile { path: string; content: string | Uint8Array; binary?: boolean }
+export type OriginalFailure = "NO_URL" | "FETCH" | "BAD_ID" | "SIZE" | "SHA256" | "NO_HASH";
+export interface OriginalsReport { listed: number; filesInZip: number; verified: number; failed: Array<{ document: string; reason: OriginalFailure }>; listError: string | null }
+export interface Built { files: PackageFile[]; manifest: Manifest; handoverComplete: boolean; originals: OriginalsReport | null }
 export type ExportErrorCode = "MANIFEST" | "INCOMPLETE" | "PAGE" | "COUNT_CHANGED" | "HASH_MISMATCH";
 export class ExportError extends Error {
   code: ExportErrorCode;
@@ -81,7 +91,7 @@ async function pullTable(ports: Ports, s: Section, pageSize: number): Promise<st
   return rows.join("\n");
 }
 
-export function readmeText(m: Manifest, handoverComplete: boolean, now: Date): string {
+export function readmeText(m: Manifest, handoverComplete: boolean, now: Date, o: OriginalsReport | null = null): string {
   const L: string[] = [];
   L.push("חבילת מסירה של נתוני המשרד", "");
   L.push(`נוצרה ב: ${now.toLocaleDateString("he-IL")}`, `סטטוס המשרד בעת הייצוא: ${m.firmStatus}`, "");
@@ -96,14 +106,86 @@ export function readmeText(m: Manifest, handoverComplete: boolean, now: Date): s
   L.push("");
   L.push("המסמכים המקוריים");
   if (m.originals.count === 0) L.push("לא נמצאו מסמכים מקוריים שמורים.", "");
-  else L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB) בארכיון הקבצים של הפלטפורמה. הם אינם כלולים בארכיון הזה.`, handoverComplete ? "" : "עד שהמקוריים נמסרו, החבילה אינה שלמה למסירה.", "");
-  L.push("שמות ופרטים מזהים", "המסמכים השמורים בטבלאות מחליפים שמות באסימונים כמו [CLIENT_NAME_1]. את השמות האמיתיים אפשר לקרוא רק במסמכים המקוריים.", "");
+  else if (!o) L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB) בארכיון הקבצים של הפלטפורמה. הם אינם כלולים בארכיון הזה.`, "עד שהמקוריים נמסרו, החבילה אינה שלמה למסירה.", "");
+  else {
+    L.push(`המשרד מחזיק ${m.originals.count} מסמכים מקוריים (${Math.round(m.originals.bytes / 1024 / 1024)} MB). בתיקיית originals נכללו ${o.filesInZip}, ומהם אומתו ${o.verified} מול חתימת ה-SHA-256 והגודל שנרשמו. הקובץ originals/index.jsonl ממפה כל קובץ למסמך, לתיק, לשם המקורי ולחתימה.`);
+    if (o.listed !== m.originals.count) L.push(`רשימת המקוריים שהתקבלה (${o.listed}) שונה ממספרם בכרטיס (${m.originals.count}). יש לייצא שוב.`);
+    if (o.listError) L.push("קבלת רשימת המקוריים נכשלה, ולכן הם אינם כלולים.");
+    if (o.failed.length > 0) {
+      const by: Record<string, number> = {};
+      for (const f of o.failed) by[f.reason] = (by[f.reason] ?? 0) + 1;
+      L.push(`${o.failed.length} מסמכים לא כלולים או לא אומתו: ${Object.entries(by).sort(([a], [b]) => a.localeCompare(b)).map(([r, n]) => `${r} ${n}`).join(", ")}. הפירוט ב-PACKAGE.json.`);
+    }
+    L.push(handoverComplete ? "כל המקוריים כלולים ואומתו." : "עד שכל המקוריים כלולים ואומתו, החבילה אינה שלמה למסירה.", "");
+  }
+  L.push("שמות ופרטים מזהים", "המסמכים השמורים בטבלאות מחליפים שמות באסימונים כמו [CLIENT_NAME_1]. את השמות האמיתיים אפשר לקרוא רק במסמכים המקוריים. שמות הקבצים המקוריים נמצאים ב-originals/index.jsonl ולא בשמות הקבצים בארכיון.", "");
   L.push("העתק זה אינו חוות דעת משפטית ואינו מחליף את תיק המשרד.");
   return L.join("\n");
 }
 
+const DOC_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MIME_EXT: Record<string, string> = { "application/pdf": "pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx", "text/plain": "txt", "text/markdown": "md", "text/html": "html" };
+interface OriginalItem { document: string; matter: string; sha256: string | null; size: number | null; mime: string | null; fileName: string | null; url: string | null }
+
+/** Reads the batch answer of lalum-export-originals; null when it is not the shape the package depends on. */
+export function parseOriginals(j: unknown): OriginalItem[] | null {
+  if (!isObj(j) || j.ok !== true || !Array.isArray(j.items)) return null;
+  const out: OriginalItem[] = [];
+  for (const x of j.items) {
+    if (!isObj(x) || typeof x.document !== "string" || typeof x.matter !== "string") return null;
+    out.push({ document: x.document, matter: x.matter, sha256: typeof x.sha256 === "string" ? x.sha256 : null, size: num(x.size), mime: typeof x.mime === "string" ? x.mime : null, fileName: typeof x.file_name === "string" ? x.file_name : null, url: typeof x.url === "string" ? x.url : null });
+  }
+  return out;
+}
+
+/** The extension comes from the original file name when it is plain, else from the mime type: the archive name itself is the document id, never a client name. */
+const extOf = (i: OriginalItem): string => {
+  const e = i.fileName?.match(/\.([A-Za-z0-9]{1,8})$/)?.[1]?.toLowerCase();
+  return e ?? (i.mime && MIME_EXT[i.mime]) ?? "bin";
+};
+
+const CONCURRENCY = 4;
+
+async function pullOriginals(port: OriginalsPort, onProgress?: (done: number, total: number) => void): Promise<{ files: PackageFile[]; report: OriginalsReport }> {
+  const empty = (listError: string): { files: PackageFile[]; report: OriginalsReport } => ({ files: [], report: { listed: 0, filesInZip: 0, verified: 0, failed: [], listError } });
+  let listed: OriginalItem[] | null;
+  try { listed = parseOriginals(await port.list()); } catch { return empty("LIST"); }
+  if (!listed) return empty("LIST");
+  const items = [...listed].sort((a, b) => a.document.localeCompare(b.document));
+  const files: PackageFile[] = [];
+  const failed: OriginalsReport["failed"] = [];
+  const index: Array<Record<string, unknown>> = [];
+  let verified = 0, done = 0, next = 0;
+  async function one(i: OriginalItem): Promise<void> {
+    const row: Record<string, unknown> = { document: i.document, matter: i.matter, original_name: i.fileName, mime: i.mime, size: i.size, sha256: i.sha256 };
+    if (!DOC_ID.test(i.document)) { failed.push({ document: i.document, reason: "BAD_ID" }); return; }
+    if (!i.url) { failed.push({ document: i.document, reason: "NO_URL" }); index.push({ ...row, file: null, verified: false, reason: "NO_URL" }); return; }
+    let bytes: Uint8Array | null = null;
+    for (let attempt = 0; attempt < 2 && !bytes; attempt++) { try { bytes = await port.fetchBytes(i.url); } catch { bytes = null; } }
+    if (!bytes) { failed.push({ document: i.document, reason: "FETCH" }); index.push({ ...row, file: null, verified: false, reason: "FETCH" }); return; }
+    const path = `originals/${i.document}.${extOf(i)}`;
+    let reason: OriginalFailure | null = null;
+    if (i.size !== null && bytes.length !== i.size) reason = "SIZE";
+    else if (i.sha256 === null) reason = "NO_HASH";
+    else if ((await port.digestBytes(bytes)) !== i.sha256) reason = "SHA256";
+    files.push({ path, content: bytes, binary: true });
+    if (reason) failed.push({ document: i.document, reason }); else verified += 1;
+    index.push({ ...row, file: path, verified: reason === null, reason });
+  }
+  async function worker(): Promise<void> {
+    while (next < items.length) { const i = items[next++]; await one(i); done += 1; onProgress?.(done, items.length); }
+  }
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, items.length) }, worker));
+  failed.sort((a, b) => a.document.localeCompare(b.document));
+  files.sort((a, b) => a.path.localeCompare(b.path));
+  index.sort((a, b) => String(a.document).localeCompare(String(b.document)));
+  files.push({ path: "originals/index.jsonl", content: index.map((r) => JSON.stringify(r)).join("\n") });
+  const filesInZip = files.filter((f) => f.binary).length;
+  return { files, report: { listed: listed.length, filesInZip, verified, failed, listError: null } };
+}
+
 /** Pulls every table, checks every file against the manifest, and returns the files of the package. Throws ExportError and produces nothing otherwise. */
-export async function buildPackage(ports: Ports, opts: { pageSize?: number; onProgress?: (done: number, total: number, table: string) => void } = {}): Promise<Built> {
+export async function buildPackage(ports: Ports, opts: { pageSize?: number; onProgress?: (done: number, total: number, table: string) => void; onOriginals?: (done: number, total: number) => void } = {}): Promise<Built> {
   const m = parseManifest(await ports.manifest());
   if (!m) throw new ExportError("MANIFEST", "shape");
   if (!m.complete || m.unclassified.length > 0) throw new ExportError("INCOMPLETE", m.unclassified.join(","));
@@ -118,20 +200,26 @@ export async function buildPackage(ports: Ports, opts: { pageSize?: number; onPr
     done += 1;
   }
   opts.onProgress?.(done, m.sections.length, "");
+  let orig: OriginalsReport | null = null;
+  if (ports.originals && m.originals.count > 0) {
+    const got = await pullOriginals(ports.originals, opts.onOriginals);
+    files.push(...got.files);
+    orig = got.report;
+  }
   const now = ports.now();
-  const handoverComplete = m.originals.count === 0;
+  const handoverComplete = m.originals.count === 0 || (orig !== null && orig.listError === null && orig.listed === m.originals.count && orig.filesInZip === m.originals.count && orig.failed.length === 0);
   const pkg = {
     generated_at: m.generatedAt, packaged_at: now.toISOString(), firm_status: m.firmStatus,
     format: "JSON Lines, one JSON object per line, rows ordered by their JSON text, joined by a newline, no trailing newline",
     files: m.sections.map((s) => ({ path: `data/${s.table}.jsonl`, rows: s.rows, sha256: s.sha256, verified: true })),
     audit_chain: { verified: m.chain.verified, first_broken_seq: m.chain.firstBrokenSeq, head_seq: m.chain.headSeq, head_hash: m.chain.headHash },
     excluded: m.excluded,
-    originals: { count: m.originals.count, bytes: m.originals.bytes, without_sha256: m.originals.withoutSha256, included: false },
+    originals: { count: m.originals.count, bytes: m.originals.bytes, without_sha256: m.originals.withoutSha256, included: m.originals.count === 0 || handoverComplete, files_in_zip: orig?.filesInZip ?? 0, verified: orig?.verified ?? 0, failed: orig?.failed ?? [], list_error: orig?.listError ?? null },
     handover_complete: handoverComplete,
   };
   files.push({ path: "PACKAGE.json", content: JSON.stringify(pkg, null, 2) });
-  files.push({ path: "README.txt", content: readmeText(m, handoverComplete, now) });
-  return { files, manifest: m, handoverComplete };
+  files.push({ path: "README.txt", content: readmeText(m, handoverComplete, now, orig) });
+  return { files, manifest: m, handoverComplete, originals: orig };
 }
 
 /** A Hebrew message for the screen. The detail names a table, never a row. */

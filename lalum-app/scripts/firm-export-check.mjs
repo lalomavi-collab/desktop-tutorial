@@ -1,7 +1,7 @@
 // Checks the firm wide handover package builder (src/lib/cockpit/firmExportCore.ts) against a fake database. Run with: npm run firm-export-check
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildPackage, parseManifest, readmeText, zipName, exportErrorText, ExportError } from "../src/lib/cockpit/firmExportCore.ts";
+import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, ExportError } from "../src/lib/cockpit/firmExportCore.ts";
 
 const t = async (name, fn) => { await fn(); console.log(`[PASS] ${name}`); };
 const sha = (s) => createHash("sha256").update(s, "utf8").digest("hex");
@@ -128,6 +128,102 @@ await t("the README lists what was left out with the reason, and the generated t
     assert.ok(!/[—–]/.test(text), "no em or en dash");
     assert.ok(!/ - /.test(text), "no spaced hyphen");
   }
+});
+
+// ---- originals (the batch signed files of lalum-export-originals) ----
+const bytesOf = (s) => new Uint8Array(Buffer.from(s, "utf8"));
+const D = (n) => `${String(n).padStart(8, "0")}-0000-4000-8000-000000000000`;
+function withOriginals(docs, over = {}) {
+  const manifest = { originals: { count: docs.length, bytes: docs.reduce((a, d) => a + d.body.length, 0), without_sha256: 0 }, ...over.manifest };
+  const f = fake(tables, { manifest });
+  const store = Object.fromEntries(docs.map((d) => [`https://signed/${d.id}`, d.body]));
+  const fetches = [];
+  f.ports.originals = {
+    list: async () => over.list ? over.list() : ({ ok: true, items: docs.map((d) => ({ document: D(d.id), matter: D(90 + d.id), sha256: "sha" in d ? d.sha : sha(d.body), size: d.size ?? Buffer.byteLength(d.body), mime: d.mime ?? "application/pdf", file_name: d.name ?? `שם לקוח ${d.id}.pdf`, url: d.nourl ? null : `https://signed/${d.id}` })) }),
+    fetchBytes: async (url) => { fetches.push(url); if (over.fetch) return over.fetch(url, store, fetches); return bytesOf(store[url]); },
+    digestBytes: async (b) => createHash("sha256").update(b).digest("hex"),
+  };
+  return { ...f, fetches };
+}
+const pkgOf = (b) => JSON.parse(b.files.find((x) => x.path === "PACKAGE.json").content);
+
+await t("originals are fetched, verified against the recorded hash and size, and named by document id", async () => {
+  const { ports } = withOriginals([{ id: 1, body: "pdf one" }, { id: 2, body: "docx two", mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", name: "contract.docx" }]);
+  const b = await buildPackage(ports);
+  assert.equal(b.handoverComplete, true);
+  assert.deepEqual(b.files.filter((f) => f.path.startsWith("originals/")).map((f) => f.path), [`originals/${D(1)}.pdf`, `originals/${D(2)}.docx`, "originals/index.jsonl"]);
+  const f1 = b.files.find((f) => f.path === `originals/${D(1)}.pdf`);
+  assert.ok(f1.binary && f1.content instanceof Uint8Array); assert.equal(Buffer.from(f1.content).toString("utf8"), "pdf one");
+  const pkg = pkgOf(b);
+  assert.equal(pkg.handover_complete, true); assert.equal(pkg.originals.included, true); assert.equal(pkg.originals.files_in_zip, 2); assert.equal(pkg.originals.verified, 2); assert.deepEqual(pkg.originals.failed, []);
+  assert.match(b.files.find((f) => f.path === "README.txt").content, /כל המקוריים כלולים ואומתו/);
+});
+await t("no archive path carries an original file name, which can identify a client; the index does", async () => {
+  const { ports } = withOriginals([{ id: 1, body: "x" }]);
+  const b = await buildPackage(ports);
+  assert.ok(b.files.every((f) => !f.path.includes("שם לקוח")), "no client name in any path");
+  const idx = b.files.find((f) => f.path === "originals/index.jsonl").content;
+  const row = JSON.parse(idx.split("\n")[0]);
+  assert.equal(row.original_name, "שם לקוח 1.pdf"); assert.equal(row.verified, true); assert.equal(row.file, `originals/${D(1)}.pdf`);
+});
+await t("a hostile file name cannot change the archive path", async () => {
+  const { ports } = withOriginals([{ id: 1, body: "x", name: "../../evil.pdf\u0000.exe", mime: "application/pdf" }, { id: 2, body: "y", name: "a.b/c", mime: null }]);
+  const b = await buildPackage(ports);
+  assert.ok(b.files.filter((f) => f.binary).every((f) => /^originals\/[0-9a-f-]{36}\.[a-z0-9]{1,8}$/.test(f.path)), b.files.map((f) => f.path).join(","));
+  const bad = withOriginals([{ id: 3, body: "z" }], { list: () => ({ ok: true, items: [{ document: "../x", matter: "m", sha256: sha("z"), size: 1, mime: null, file_name: null, url: "https://signed/3" }] }) });
+  const r = await buildPackage(bad.ports); assert.deepEqual(pkgOf(r).originals.failed, [{ document: "../x", reason: "BAD_ID" }]); assert.equal(r.handoverComplete, false);
+});
+await t("a wrong hash, a wrong size or no recorded hash keeps the file, flags it and makes the handover incomplete", async () => {
+  const { ports } = withOriginals([{ id: 1, body: "ok" }, { id: 2, body: "tampered", sha: sha("original") }, { id: 3, body: "short", size: 99 }, { id: 4, body: "nohash", sha: null }]);
+  const b = await buildPackage(ports);
+  assert.equal(b.handoverComplete, false);
+  const pkg = pkgOf(b);
+  assert.deepEqual(pkg.originals.failed.map((f) => f.reason).sort(), ["NO_HASH", "SHA256", "SIZE"]);
+  assert.equal(pkg.originals.verified, 1); assert.equal(pkg.originals.files_in_zip, 4);
+  const readme = b.files.find((f) => f.path === "README.txt").content;
+  assert.match(readme, /3 מסמכים לא כלולים או לא אומתו/); assert.match(readme, /אינה שלמה למסירה/);
+  assert.ok(!/[—–]/.test(readme) && !/ - /.test(readme));
+});
+await t("a fetch that fails once is retried; one that fails twice is recorded and the export goes on", async () => {
+  let n = 0;
+  const { ports, fetches } = withOriginals([{ id: 1, body: "flaky" }, { id: 2, body: "gone" }], { fetch: async (url, store) => { if (url.endsWith("/1")) { n += 1; if (n === 1) throw new Error("net"); return bytesOf(store[url]); } throw new Error("down"); } });
+  const b = await buildPackage(ports);
+  assert.equal(pkgOf(b).originals.verified, 1); assert.deepEqual(pkgOf(b).originals.failed, [{ document: D(2), reason: "FETCH" }]);
+  assert.equal(fetches.filter((u) => u.endsWith("/2")).length, 2, "two attempts, no more"); assert.equal(b.handoverComplete, false);
+  assert.equal(b.files.find((f) => f.path === "originals/index.jsonl").content.split("\n").length, 2, "both are in the index");
+});
+await t("a missing link is recorded, a failed or malformed list is not fatal, and the tables still come out", async () => {
+  const a = withOriginals([{ id: 1, body: "x", nourl: true }]); const ra = await buildPackage(a.ports);
+  assert.deepEqual(pkgOf(ra).originals.failed, [{ document: D(1), reason: "NO_URL" }]);
+  for (const list of [() => { throw new Error("401"); }, () => null, () => ({ ok: false }), () => ({ ok: true, items: "x" })]) {
+    const c = withOriginals([{ id: 1, body: "x" }], { list }); const rc = await buildPackage(c.ports);
+    assert.equal(rc.handoverComplete, false); assert.equal(pkgOf(rc).originals.list_error, "LIST"); assert.ok(rc.files.some((f) => f.path === "data/lalum_cockpit_matters.jsonl"), "the verified tables are still delivered");
+    assert.match(rc.files.find((f) => f.path === "README.txt").content, /קבלת רשימת המקוריים נכשלה/);
+  }
+});
+await t("a list that disagrees with the manifest count makes the package incomplete even if every file verifies", async () => {
+  const { ports } = withOriginals([{ id: 1, body: "a" }, { id: 2, body: "b" }], { manifest: { originals: { count: 3, bytes: 2, without_sha256: 0 } } });
+  const b = await buildPackage(ports);
+  assert.equal(b.handoverComplete, false); assert.match(b.files.find((f) => f.path === "README.txt").content, /שונה ממספרם בכרטיס/);
+});
+await t("originals are fetched at most four at a time", async () => {
+  let live = 0, peak = 0;
+  const docs = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, body: `b${i}` }));
+  const { ports } = withOriginals(docs, { fetch: async (url, store) => { live += 1; peak = Math.max(peak, live); await new Promise((r) => setTimeout(r, 5)); live -= 1; return bytesOf(store[url]); } });
+  const b = await buildPackage(ports); assert.equal(b.handoverComplete, true); assert.ok(peak <= 4 && peak > 1, `peak ${peak}`);
+});
+await t("without the originals port nothing is fetched and the package states it, as before", async () => {
+  const f = fake(tables, { manifest: { originals: { count: 5, bytes: 10, without_sha256: 0 } } });
+  const b = await buildPackage(f.ports); assert.equal(b.handoverComplete, false); assert.equal(pkgOf(b).originals.included, false); assert.equal(pkgOf(b).originals.files_in_zip, 0);
+  assert.equal(b.originals, null);
+});
+await t("a firm with no stored originals never calls the originals port", async () => {
+  let called = 0; const f = fake(tables); f.ports.originals = { list: async () => { called += 1; return null; }, fetchBytes: async () => new Uint8Array(), digestBytes: async () => "" };
+  const b = await buildPackage(f.ports); assert.equal(called, 0); assert.equal(b.handoverComplete, true);
+});
+await t("parseOriginals refuses the wrong shape", async () => {
+  assert.equal(parseOriginals(null), null); assert.equal(parseOriginals({ ok: false }), null); assert.equal(parseOriginals({ ok: true, items: [{ nope: 1 }] }), null);
+  assert.deepEqual(parseOriginals({ ok: true, items: [] }), []);
 });
 await t("PACKAGE.json holds no row data, only file names, counts and hashes", async () => {
   const b = await buildPackage(fake(tables).ports);
