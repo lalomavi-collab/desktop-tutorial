@@ -174,7 +174,7 @@
 
 - V (עוגן) בינה מלאכותית בעסקאות בינלאומיות: היכן מזרזת והיכן הסיכון המשפטי (ai-international-transactions-overview)
 - V בדיקת נאותות חוצת-גבולות בעזרת AI: מה אפשר לזרז ומה חובה לאמת (ai-cross-border-due-diligence)
-- חוזים בינלאומיים שנוסחו או תורגמו ב-AI: סיכוני שפה, דין ושיפוט (ai-international-contracts-translation-risk)
+- V חוזים בינלאומיים שנוסחו או תורגמו ב-AI: סיכוני שפה, דין ושיפוט (ai-international-contracts-translation-risk)
 - ציות ורגולציה בעסקה בינלאומית עם AI: סנקציות, הלבנת הון והעברת מידע חוצת-גבולות (ai-international-compliance-sanctions-data)
 - ניהול סיכונים בעסקה בינלאומית בעזרת AI: מה הכלי מסמן ומה דורש שיקול דעת אנושי (ai-international-risk-management)
 
