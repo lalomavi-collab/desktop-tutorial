@@ -1,9 +1,9 @@
 // Browser side of lalum-fin-archive-pdf: asks for the provider's print link of one history archive document.
-// Nothing is stored. On failure the text names what happened and, when the provider answered without a link, which operations were tried,
-// so the first real use also shows which retrieval works.
+// Nothing is stored. On failure the text says in one line what happened; when the provider answered without a link, the technical account of the
+// operations tried (names only) travels separately in `detail`, for the screen to keep behind a collapsed "technical details".
 import { supabase } from "../supabase";
 
-export type PdfResult = { ok: true; url: string } | { ok: false; text: string };
+export type PdfResult = { ok: true; url: string } | { ok: false; text: string; detail?: string };
 
 export async function archivePdfLink(archiveId: string): Promise<PdfResult> {
   if (!supabase) return { ok: false, text: "אין חיבור למערכת." };
@@ -27,7 +27,7 @@ export async function archivePdfLink(archiveId: string): Promise<PdfResult> {
       const links = (t.linkFields ?? []).map((l) => `${l.key}=${l.length} תווים${l.host ? ` ב-${l.host}` : ""}`).join(", ");
       return `${t.op} (${t.http ?? "ללא מענה"}${t.errors.length ? `: ${t.errors.join(", ")}` : ""}${t.http === 200 ? `; מבנה: ${t.shape ?? "?"}; שדות: ${(t.keys ?? []).join(", ") || "אין"}; שדות קישור: ${links || "אין"}` : ""})`;
     }).join("; ");
-    return { ok: false, text: `מערכת ההיסטוריה לא החזירה קישור להורדה למסמך הזה. נוסו: ${tried || "ללא פרטים"}.` };
+    return { ok: false, text: "ההורדה של המסמך מהארכיון אינה זמינה כרגע. אפשר להוריד אותו ישירות ממערכת ההיסטוריה.", detail: `מערכת ההיסטוריה לא החזירה קישור להורדה למסמך הזה. נוסו: ${tried || "ללא פרטים"}.` };
   }
   return { ok: false, text: "ההורדה נכשלה. נסו שוב בעוד רגע." };
 }
