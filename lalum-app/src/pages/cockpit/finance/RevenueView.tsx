@@ -36,7 +36,11 @@ export function RevenueView({ rows }: { rows: IncomeRow[] }) {
         <div><div className="ck-meta">{UNIT[grain] === "שבוע" ? "השבוע החזק" : UNIT[grain] === "חודש" ? "החודש החזק" : "השנה החזקה"}</div><div className="fin-kpi">{s.best ? money(s.best.net) : "אין"}</div>{s.best && <div className="fin-note"><bdi>{s.best.label}</bdi></div>}</div>
         <div><div className="ck-meta">שינוי מול {UNIT[grain] === "שבוע" ? "השבוע הקודם" : UNIT[grain] === "חודש" ? "החודש הקודם" : "השנה הקודמת"}</div>
           <div className="fin-kpi">{cmp && cmp.pct !== null ? <bdi>{cmp.pct > 0 ? "+" : ""}{cmp.pct}%</bdi> : "אין נתון"}</div>
-          {cmp && <div className="fin-note"><bdi>{cmp.last.label}</bdi> מול <bdi>{cmp.previous.label}</bdi></div>}</div>
+          {cmp && <div className="fin-note"><bdi>{cmp.last.label}</bdi> {money(cmp.last.net)} מול <bdi>{cmp.previous.label}</bdi> {money(cmp.previous.net)}<br />הפרש <bdi>{cmp.delta > 0 ? "+" : ""}{money(cmp.delta)}</bdi></div>}</div>
+        {s.sinceJanuary && (
+          <div><div className="ck-meta">מול הממוצע מתחילת השנה</div>
+            <div className="fin-kpi">{s.sinceJanuary.pct !== null ? <bdi>{s.sinceJanuary.pct > 0 ? "+" : ""}{s.sinceJanuary.pct}%</bdi> : "אין נתון"}</div>
+            <div className="fin-note"><bdi>{s.sinceJanuary.lastDone.label}</bdi> {money(s.sinceJanuary.lastDone.net)} מול ממוצע חודשי {money(s.sinceJanuary.average)}<br />על פני <bdi>{s.sinceJanuary.months}</bdi> חודשים שהסתיימו, מ<bdi>{s.sinceJanuary.first.label}</bdi> עד <bdi>{s.sinceJanuary.lastDone.label}</bdi>, חודש ללא הכנסה נספר כאפס.</div></div>)}
       </div>
       <svg viewBox={`0 0 ${W} ${H + 26}`} role="img" aria-label={`הכנסות לפי ${UNIT[grain]}`} className="fin-chart" direction="ltr">
         <line x1={pad} x2={W - pad} y1={H} y2={H} stroke="var(--line-strong)" />

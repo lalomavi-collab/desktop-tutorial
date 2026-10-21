@@ -214,7 +214,12 @@ t("csv opens in Excel with Hebrew: byte order mark, quoted text, plain numbers",
   assert.equal(m.buckets[9].future, false); assert.equal(m.buckets[10].future, true);
   assert.equal(m.net, 25000);
   assert.equal(m.average, 10000); assert.equal(m.averageOver, 2); assert.equal(m.hasRunning, true); // Aug and Sep only: not January to July, not the running October
-  assert.equal(m.lastVsPrevious.last.label, "ספט׳"); assert.equal(m.lastVsPrevious.pct, 0);
+  assert.equal(m.lastVsPrevious.last.label, "ספט׳"); assert.equal(m.lastVsPrevious.pct, 0); assert.equal(m.lastVsPrevious.delta, 0);
+  // since January: every completed month counts, an empty month as zero (Jan to Sep = 9 months, 20000 in total), the running October stays out
+  assert.equal(m.sinceJanuary.months, 9); assert.equal(m.sinceJanuary.first.label, "ינו׳"); assert.equal(m.sinceJanuary.lastDone.label, "ספט׳");
+  assert.equal(m.sinceJanuary.average, 2222.22); assert.equal(m.sinceJanuary.delta, 7777.78); assert.equal(m.sinceJanuary.pct, 350);
+  assert.equal(revenueBuckets(rows, "week", 2026, "2026-10-12").sinceJanuary, null); assert.equal(revenueBuckets(rows, "year", 2026, "2026-10-12").sinceJanuary, null);
+  assert.equal(revenueBuckets([], "month", 2026, "2026-10-12").sinceJanuary.pct, null); // no income at all: no percentage, no division by zero
   const y = revenueBuckets(rows, "year", 2026, "2026-10-12");
   assert.equal(y.buckets.length, 5); assert.equal(y.buckets[4].net, 25000);
   assert.equal(y.averageOver, 0); assert.equal(y.average, 0); // 2026 is still running and earlier years have no income

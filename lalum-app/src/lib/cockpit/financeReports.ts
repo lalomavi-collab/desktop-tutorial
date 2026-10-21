@@ -121,7 +121,9 @@ export interface Bucket { key: string; label: string; from: string; to: string; 
 export interface Series {
   grain: Grain; buckets: Bucket[]; net: number; vat: number; total: number; count: number;
   /** Mean of the periods that have ended, counted from the first period with income. The running period never enters it. */
-  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null } | null;
+  average: number; averageOver: number; hasRunning: boolean; best: Bucket | null; lastVsPrevious: { last: Bucket; previous: Bucket; pct: number | null; delta: number } | null;
+  /** Monthly grain only: the mean over every completed month from January (months with no income count as zero), and the last completed month against it. */
+  sinceJanuary: { months: number; first: Bucket; lastDone: Bucket; average: number; pct: number | null; delta: number } | null;
 }
 
 const toDate = (isoDate: string): Date => new Date(`${isoDate}T00:00:00Z`);
@@ -170,6 +172,10 @@ export function revenueBuckets(rows: IncomeRow[], grain: Grain, year: number, to
     average: avgBuckets.length ? r2(avgBuckets.reduce((a, b) => a + b.net, 0) / avgBuckets.length) : 0,
     averageOver: avgBuckets.length, hasRunning: live.some((b) => b.to >= today),
     best: withData.length ? withData.reduce((a, b) => (b.net > a.net ? b : a)) : null,
-    lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null } : null,
+    lastVsPrevious: last && prev ? { last, previous: prev, pct: prev.net !== 0 ? Math.round(((last.net - prev.net) / Math.abs(prev.net)) * 1000) / 10 : null, delta: r2(last.net - prev.net) } : null,
+    sinceJanuary: grain === "month" && done.length ? (() => {
+      const average = r2(done.reduce((a, b) => a + b.net, 0) / done.length);
+      return { months: done.length, first: done[0], lastDone: last, average, pct: average !== 0 ? Math.round(((last.net - average) / Math.abs(average)) * 1000) / 10 : null, delta: r2(last.net - average) };
+    })() : null,
   };
 }
