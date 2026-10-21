@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
 const LEVELS: Array<[string, string]> = [
-  ["", "לפי התפקיד (שותף ומנהל: מלאה)"], ["0", "0 אין גישה"], ["1", "1 צפייה"], ["2", "2 טיוטות ולקוחות"], ["3", "3 הפקה, תשלומים והוצאות"], ["4", "4 ניהול מלא"],
+  ["", "לפי התפקיד (שותף ומנהל: מלאה, הנהלת חשבונות: אין גישה)"], ["0", "0 אין גישה"], ["1", "1 צפייה"], ["2", "2 טיוטות ולקוחות"], ["3", "3 הפקה, תשלומים והוצאות"], ["4", "4 ניהול מלא"],
 ];
 const ERRORS: Record<string, string> = {
   LAST_ADMIN: "אי אפשר להוריד את מנהל הכספים האחרון.", FORBIDDEN: "אין הרשאה.", NOT_A_MEMBER: "המשתמש אינו חבר בפירמה.", BAD_LEVEL: "רמה לא תקינה.",
@@ -33,7 +33,7 @@ export function PermissionsTab() {
 
   return (
     <div className="ck-stack">
-      <div className="ck-meta">רמה 3 ומעלה דורשת אימות דו שלבי. כל שינוי נרשם ביומן ביקורת שאי אפשר לערוך. לקוח או רואה חשבון חיצוני לא מקבלים גישה כאן.</div>
+      <div className="ck-meta">רמה 3 ומעלה דורשת אימות דו שלבי. כל שינוי נרשם ביומן ביקורת שאי אפשר לערוך. הנהלת חשבונות חיצונית (תפקיד הנהלת חשבונות) מקבלת גישה רק כאן, מרמה 0 עד שתקבע לה רמה: מומלץ 3 (הפקה, תשלומים והוצאות), ורמה 4 רק אם עליה לנהל הגדרות, הרשאות, נאמנות ויומן ביקורת. כניסתה דורשת אימות דו שלבי תמיד. לקוח אינו מקבל גישה כאן.</div>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>שם</th><th>תפקיד</th><th>רמת גישה לכספים</th></tr></thead><tbody>
         {members.map((m) => (

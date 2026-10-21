@@ -10,7 +10,7 @@ import { ROLE } from "../../lib/cockpit/shared";
 
 interface Person { user_id: string; name: string; role: string; department: string | null }
 
-const ROLE_ORDER = ["ADMIN", "FIRM_PARTNER", "ATTORNEY", "COMPLIANCE_OFFICER"] as const;
+const ROLE_ORDER = ["ADMIN", "FIRM_PARTNER", "ATTORNEY", "COMPLIANCE_OFFICER", "BOOKKEEPER"] as const;
 
 // Turn an RPC error into Hebrew the firm can act on.
 function errText(message: string): string {
@@ -19,6 +19,10 @@ function errText(message: string): string {
   if (message.includes("invalid role")) return "תפקיד לא חוקי.";
   if (message.includes("no e-mail")) return "לחשבון הזה אין כתובת דוא\"ל.";
   if (message.includes("not a firm member")) return "המשתמש אינו חבר בפירמה.";
+  if (message.includes("no sign in")) return "אין חשבון עם הכתובת הזו. יש להזמין אותה קודם להתחברות, ואז להוסיף כאן.";
+  if (message.includes("already a member")) return "הכתובת הזו כבר משויכת לפירמה.";
+  if (message.includes("bad email")) return "כתובת דוא\"ל לא תקינה.";
+  if (message.includes("name required")) return "יש להזין שם.";
   return "הפעולה נכשלה. נסו שוב.";
 }
 
@@ -26,6 +30,8 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
   const [people, setPeople] = useState<Person[] | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [rev, setRev] = useState(0);
+  const [bkEmail, setBkEmail] = useState("");
+  const [bkName, setBkName] = useState("");
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -42,6 +48,18 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
     const { error } = await supabase.rpc("lalum_set_member_role", { p_user: userId, p_role: role });
     if (error) { setMsg({ ok: false, text: errText(error.message) }); return; }
     setMsg({ ok: true, text: "התפקיד נשמר." });
+    setRev((n) => n + 1);
+  }
+
+  // Attaches an existing sign in (invited first in Supabase Auth, ideally a personal address with a second factor) as the
+  // bookkeeping role. It creates no login and sets no password; her finance level stays 0 until set in the Permissions tab.
+  async function addBookkeeper() {
+    if (!supabase) return;
+    setMsg(null);
+    const { error } = await supabase.rpc("lalum_add_bookkeeper", { p_email: bkEmail, p_name: bkName });
+    if (error) { setMsg({ ok: false, text: errText(error.message) }); return; }
+    setBkEmail(""); setBkName("");
+    setMsg({ ok: true, text: "הוספה בתפקיד הנהלת חשבונות. כדי שתראה נתונים יש לקבוע לה רמת גישה בלשונית ההרשאות של הנהלת החשבונות." });
     setRev((n) => n + 1);
   }
 
@@ -71,7 +89,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
   return (
     <div className="ck-stack" style={{ gap: 14 }}>
       <div className="ck-meta">
-        מי רואה מה: אדמין רואה את כל התיקים וכל ההרשאות (כולל מחיקה), שותף רואה את תיקי המחלקה שלו, ועורך דין רואה רק תיקים שהוא משויך אליהם.
+        מי רואה מה: אדמין רואה את כל התיקים וכל ההרשאות (כולל מחיקה), שותף רואה את תיקי המחלקה שלו, ועורך דין רואה רק תיקים שהוא משויך אליהם. הנהלת חשבונות (חיצונית) רואה את מערכת הנהלת החשבונות בלבד, לפי הרמה שנקבעה לה, ואינה רואה תיקים, מסמכים או חברי פירמה.
         {canAdmin ? " כאן נקבעים תפקיד ומחלקה לכל חבר פירמה, וכל שינוי נרשם ביומן עם זמנו המדויק." : " תפקידים נקבעים על ידי מנהל הפירמה; כאן ניתן לעדכן מחלקות."}
       </div>
 
@@ -107,6 +125,19 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
       ))}
 
       {msg && <span className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite" style={{ padding: "6px 12px" }}>{msg.text}</span>}
+      {canAdmin && (
+        <div className="ck-card ck-stack" style={{ gap: 10 }}>
+          <div className="ck-title" style={{ fontSize: 16 }}>הוספת הנהלת חשבונות</div>
+          <div className="ck-meta">
+            קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה תדרוש אימות דו שלבי תמיד. לאחר ההוספה יש לקבוע לה רמת גישה בלשונית ההרשאות (מומלץ רמה 3).
+          </div>
+          <div className="ck-row" style={{ gap: 8, flexWrap: "wrap" }}>
+            <input className="ck-input" value={bkName} onChange={(e) => setBkName(e.target.value)} placeholder="שם מלא" style={{ maxWidth: 220 }} />
+            <input className="ck-input" dir="ltr" type="email" value={bkEmail} onChange={(e) => setBkEmail(e.target.value)} placeholder="name@example.com" style={{ maxWidth: 280 }} />
+            <button type="button" className="ck-btn primary" disabled={bkName.trim().length < 2 || !bkEmail.includes("@")} onClick={() => void addBookkeeper()}>הוספה</button>
+          </div>
+        </div>
+      )}
       <div className="ck-meta">הוספת אדם חדש לפירמה נעשית על ידי LALUM. לאחר שהחשבון נוצר ושויך לפירמה, הוא יופיע כאן לקביעת תפקיד ומחלקה.</div>
     </div>
   );

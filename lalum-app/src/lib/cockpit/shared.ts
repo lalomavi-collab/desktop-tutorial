@@ -34,6 +34,7 @@ export const ROLE: Record<string, string> = {
   ATTORNEY: "עורך דין",
   COMPLIANCE_OFFICER: "ממונה ציות",
   ADMIN: "מנהל פירמה",
+  BOOKKEEPER: "הנהלת חשבונות",
 };
 export const KIND_HE: Record<string, string> = {
   ID_NUMBER: "ת.ז. / דרכון",

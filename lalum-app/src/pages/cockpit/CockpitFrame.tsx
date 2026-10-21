@@ -79,6 +79,10 @@ function useCkTheme(): [CkTheme, () => void] {
   return [theme, flip];
 }
 
+// The external bookkeeper sees the bookkeeping system and nothing else; the database refuses the rest (0073), this keeps the interface honest.
+const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"]];
+const BOOKKEEPER_PATHS = ["/settings/billing", "/workspace/guide"];
+
 /** Standalone frame for the partner and admin area: Hebrew, RTL, gated by firm membership. */
 export function CockpitFrame({
   title,
@@ -103,22 +107,25 @@ export function CockpitFrame({
   // Number of unanswered inquiries, shown on the nav item (counts only; the rows themselves load on the inquiries screen).
   const [newInq, setNewInq] = useState(0);
   const hasMember = access.state !== "loading" && access.state !== "none" && !!access.member;
+  const bookkeeper = hasMember && !access.platformAdmin && access.member?.role === "BOOKKEEPER";
   useEffect(() => {
-    if (!hasMember || !supabase) return;
+    if (!hasMember || bookkeeper || !supabase) return;
     let live = true;
     const load = () => { void supabase!.from("lalum_matter_inquiries").select("id", { count: "exact", head: true }).eq("status", "NEW").then((r) => { if (live && r.count != null) setNewInq(r.count); }); };
     load();
     const t = setInterval(load, 60000);
     return () => { live = false; clearInterval(t); };
-  }, [hasMember]);
+  }, [hasMember, bookkeeper]);
   let body: ReactNode;
   if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
   else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
   else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">החשבון אינו משויך לפירמה</div><div className="ck-meta">כדי להשתמש בקוקפיט יש לצרף את החשבון לפירמה. פנו למנהל המערכת של LALUM.</div></div>;
   else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">אין פירמה משויכת לחשבון זה</div><div className="ck-meta">מסך זה פועל בתוך פירמה. מסך הניהול זמין למנהל הפלטפורמה.</div></div>;
   else {
-    const inner = children({ member: access.member, platformAdmin: access.platformAdmin });
-    const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");
+    const inner = bookkeeper && !BOOKKEEPER_PATHS.includes(path)
+      ? <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">מסך זה אינו חלק מהנהלת החשבונות</div><div className="ck-meta">לתפקיד הנהלת חשבונות יש גישה למערכת הנהלת החשבונות בלבד.</div><Link className="ck-btn primary" to="/settings/billing" style={{ alignSelf: "flex-start" }}>להנהלת חשבונות</Link></div>
+      : children({ member: access.member, platformAdmin: access.platformAdmin });
+    const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN", "BOOKKEEPER"].includes(access.member?.role ?? "");
     body = mfa && partnerLike ? <MfaGate required={access.platformAdmin || access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
   }
 
@@ -130,7 +137,7 @@ export function CockpitFrame({
         <RailDefs />
         <div className="ck-sidebar-brand"><Wordmark height={26} style={{ color: "var(--ink)" }} /></div>
         <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
-          {NAV_SECTIONS.map((sec) => (
+          {(bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : NAV_SECTIONS).map((sec) => (
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
               {sec.heading && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
               {sec.items.map(([to, label, end]) => (

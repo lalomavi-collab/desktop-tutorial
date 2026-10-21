@@ -10,7 +10,7 @@ const src = readFileSync(new URL("../src/lib/cockpit/clientNames.ts", import.met
 const dir = mkdtempSync(join(tmpdir(), "cn-"));
 const file = join(dir, "clientNames.mjs");
 writeFileSync(file, ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
-const { displayName, maskedText, matchesQuery, idleExpired, REVEAL_IDLE_MS } = await import(pathToFileURL(file).href);
+const { displayName, maskedText, matchesQuery, idleExpired, REVEAL_IDLE_MS, customerLabel, casualLabel, hashTail, reasonError, reasonLabel, REVEAL_REASONS } = await import(pathToFileURL(file).href);
 
 const m = { matter_code: "L-2026-0017", title: "שם לקוח לדוגמה" };
 // hidden: the code, and the title never appears
@@ -58,4 +58,30 @@ for (const f of walk(root)) {
   });
 }
 assert.deepEqual(bad, [], `matter titles printed directly, use useClientNames().name(): ${bad.join(", ")}`);
+
+// customers in bookkeeping: hidden shows a neutral label that still tells rows apart, never the name
+const cu = { id: "6f1c2a40-aaaa-bbbb-cccc-0123456789ab", name: "שם לקוח לדוגמה", i4u_customer_id: 4711 };
+assert.equal(customerLabel(true, cu), "שם לקוח לדוגמה");
+assert.equal(customerLabel(false, cu), "לקוח 4711", "the invoicing number when there is one");
+assert.ok(!customerLabel(false, cu).includes("לדוגמה"));
+assert.equal(customerLabel(false, { id: cu.id, name: cu.name }), "לקוח 89AB", "else the last four of a real id");
+assert.notEqual(customerLabel(false, { id: "x-0001" }), customerLabel(false, { id: "x-0002" }), "two customers never share a label");
+assert.ok(!customerLabel(false, { id: "casual:דוד כהן" }).includes("כהן") && !customerLabel(false, { id: "casual:abcdef" }).toLowerCase().includes("cdef"), "a key that is a typed name is hashed, never spelled");
+assert.equal(customerLabel(false, { id: "casual:אבג" }), customerLabel(false, { id: "casual:אבג" }), "stable");
+assert.equal(casualLabel(true, "דוד כהן"), "דוד כהן"); assert.ok(!casualLabel(false, "דוד כהן").includes("כהן")); assert.equal(casualLabel(false, ""), "לקוח מזדמן"); assert.equal(casualLabel(false, "דוד כהן"), casualLabel(false, " דוד כהן "));
+assert.equal(hashTail("").length, 0); assert.equal(hashTail("x").length, 4);
+assert.equal(customerLabel(true, { id: "a1", name: "  " }), "לקוח");
+assert.equal(customerLabel(false, null), "לקוח");
+assert.equal(customerLabel(true, undefined), "לקוח");
+// the reason a reveal needs: a listed code, and a note for OTHER
+assert.equal(reasonError("INVOICE", ""), null);
+assert.equal(reasonError("COLLECTION", null), null);
+assert.ok(reasonError("", "") && reasonError(null, "x") && reasonError("MADE_UP", "long enough note"), "no reason, or an unknown one, is refused");
+assert.ok(reasonError("OTHER", "") && reasonError("OTHER", "abc  "), "OTHER needs a real note");
+assert.equal(reasonError("OTHER", "בירור מול רשות המסים"), null);
+assert.ok(reasonError("INVOICE", "x".repeat(201)), "a note over 200 characters is refused");
+assert.equal(reasonLabel("COLLECTION"), "גבייה ותזכורת");
+assert.equal(reasonLabel("nope"), "");
+assert.equal(reasonLabel("OTHER"), "אחר", "the picker hint is not part of the phrase");
+assert.equal(REVEAL_REASONS.length, 6);
 console.log("client-names-check: ok");
