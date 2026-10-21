@@ -1,19 +1,20 @@
-# Post 016 | AI fails in court, episode 1: Five days | English
+# Post 016 | AI fails in court: 36 citations | English (reduced version)
 **Platform:** LinkedIn (English)
-**Date:** 2026-10-20 (proposed, to be set on approval)
-**Status:** Draft, awaiting approval.
-**Attached:** video `posts/ai-fails/episode-01-five-days.mp4` (60 seconds, vertical, silent; its on-screen text is Hebrew). Upload manually. Card image: `images/016_ai_fails_en.png`.
-**Note on quotations:** the judgments are in Hebrew. The quotations below are our translation of the official text. One Hebrew idiom in the closing paragraph of the second judgment is deliberately left out of the English text rather than translated by guesswork; the Hebrew post quotes it in the original.
+**Date:** to be set on approval
+**Status:** Reduced draft, awaiting explicit approval ("016 מאושר"). Not published.
+**Attached:** card image `images/016_ai_fails_en.png`.
+**Why reduced:** the earlier version stated details of HCJ 23602-01-25 (date, justice, outcome, costs, quotation) that were not verified against the judgment and are not in the verified rulings corpus. They were removed. Everything here rests on the verified record of HCJ 38379-12-24 (`lalum-app/src/data/rulings.json`, three sources).
+**Note on quotations:** the judgment is in Hebrew. The quotation below is our translation of the official text.
 
 ---
 
-Five days separated two Israeli Supreme Court judgments on the same question.
+36 citations to rulings. Five of them to rulings that do not exist.
 
-On 23 February 2025 the Court dismissed a petition built on 36 cited rulings. Among the references, five were to rulings that do not exist in the legal databases. Counsel explained she had relied on "a site recommended to her by colleagues". The Court assessed it was "highly likely" an AI based site, and took no action against her because this was "a first of its kind". It added: "this is not a right but a duty".
+On 23 February 2025 the Israeli Supreme Court received a petition built on 36 references to judgments. On checking, five of them point to rulings that do not exist in the legal databases. By her account, counsel had relied on "a site recommended to her by colleagues" and did not verify the information.
 
-On 28 February, a different petition. "The ink had not yet dried," Justice Solberg wrote. It was dismissed on the threshold for lack of clean hands, with costs of NIS 7,000. And the judgment ends with a message to the profession: "From now on [...] the judicial response [...] will change accordingly."
+The Court refrained from imposing a sanction, because this was the first case of its kind in the Supreme Court, and ruled that the judgment serves as a warning for the future. The possible sanctions were set out expressly: dismissal on the threshold, personal costs on the lawyer rather than the client, and disciplinary proceedings at the Bar Association.
 
-Note what was not said. The Court did not say AI must not be used. It said: "we must not throw the baby out with the bathwater", and that lawyers may not rely on these tools "blindly".
+In the words of the judgment (our translation): "The hallucinated output she received seemed to her so credible that she did not bother to check its truth."
 
 The gap is not the technology. It is the step where someone checks.
 
@@ -22,12 +23,13 @@ Three checks before filing (our suggestion, not the Court's):
 ✓ Does the quotation appear in it?
 ✓ Does it actually support the argument?
 
-The 60 second video is attached (Hebrew on-screen text). The full judgments are on the Supreme Court's decisions site: HCJ 38379-12-24 and HCJ 23602-01-25.
+The full judgment is on the Supreme Court's decisions site: HCJ 38379-12-24.
 
-This post describes two judgments and is not legal advice.
+This post describes one judgment and is not legal advice.
 
-▸ Where exactly the human enters (Hebrew): https://lalumapp.com/ai-legal-advisory/human-oversight/
+▸ Where exactly the human enters (Hebrew): https://lalumapp.com/insights/effective-human-oversight-ai-systems/
 
 Dr. Avraham Lalum, Adv. | LALUM, Tech-Legal advisory in AI and real estate
 
 #LegalAI #AIGovernance #LegalTech #LALUM
+First comment: Effective human oversight of AI systems (Hebrew): https://lalumapp.com/insights/effective-human-oversight-ai-systems/
