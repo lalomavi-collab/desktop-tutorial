@@ -68,6 +68,9 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   // resolve on a direct hit or a refresh. Application surfaces: kept out of the index.
   { path: "partners", title: "כניסה לשותפים | LALUM", desc: "כניסה למשרדים שותפים ולמנהלי LALUM.", noindex: true },
   { path: "workspace", title: "קוקפיט תיקים | LALUM", desc: "קוקפיט התיקים של LALUM.", noindex: true },
+  { path: "workspace/export", title: "ייצוא נתוני הפירמה | LALUM", desc: "חבילת מסירה מאומתת של כל נתוני הפירמה, לגיבוי או לסגירת פירמה.", noindex: true },
+  { path: "workspace/hours", title: "שעות עבודה | LALUM", desc: "החתמת נוכחות, טיימר לפי תיק ורישום זמן בפירמה.", noindex: true },
+  { path: "workspace/kyc", title: "הכר את הלקוח | LALUM", desc: "סטטוס תיעוד הכרת הלקוח בכל תיקי הפירמה, כרשומת בקרה בלבד.", noindex: true },
   { path: "workspace/import", title: "ייבוא תיקים מתיקייה | LALUM", desc: "יצירת תיקים מתיקיית העבודה של המשרד.", noindex: true },
   { path: "workspace/partner", title: "תמונת מצב לשותף | LALUM", desc: "יתרה, גיול חובות, תזרים וחריגות גבייה.", noindex: true },
   { path: "workspace/matter-360", title: "תיק 360 | LALUM", desc: "מרכז הפעילות סביב תיק: מסמכים, שעות ושכר טרחה.", noindex: true },

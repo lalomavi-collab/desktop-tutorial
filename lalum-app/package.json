@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/covers-check.mjs && node scripts/cockpit-text-check.mjs && node scripts/client-names-check.mjs && node scripts/updates-check.mjs && tsc -b && vite build",
+    "build": "node scripts/private-routes-check.mjs && node scripts/covers-check.mjs && node scripts/cockpit-text-check.mjs && node scripts/client-names-check.mjs && node scripts/updates-check.mjs && tsc -b && vite build",
     "lint": "eslint .",
     "seo-check": "node scripts/seo-check.mjs",
     "faq-check": "node scripts/faq-schema-check.mjs",
@@ -39,6 +39,7 @@
     "open-original-check": "node scripts/open-original-check.mjs",
     "export-originals-check": "node scripts/export-originals-check.mjs",
     "fin-archive-pdf-check": "node scripts/fin-archive-pdf-check.mjs",
+    "private-routes-check": "node scripts/private-routes-check.mjs",
     "matter-originals-check": "node scripts/matter-originals-check.mjs",
     "mail-route-check": "node scripts/mail-route-check.mjs",
     "popup-check": "node scripts/popup-check.mjs",
