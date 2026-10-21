@@ -38,12 +38,16 @@ const ports = (): Ports => ({
     const redact = (s: string) => s.split(apiKey).join("[REDACTED]").slice(0, 200);
     const id = Number(row.i4uDocId);
     // Candidate retrieval operations, tried in order until a link comes back. The names follow the provider's other operations.
+    // The first real use showed GetDocument and GetDocumentByNumber answer 200 with {"d":null} (the provider found nothing for that request shape),
+    // and the other three operations do not exist (404). So only the two live operations stay, each with more request shapes. The working list
+    // call GetDocuments takes {dr:{DocumentType,...}}, which suggests the typed field names below.
     const candidates: Array<[string, Obj]> = [
+      ["GetDocument", { doc: { ID: id, DocumentType: row.docType } }],
+      ["GetDocument", { doc: { ID: id, DocumentNumber: row.docNumber, DocumentType: row.docType } }],
       ["GetDocument", { doc: { ID: id } }],
-      ["GetDocumentByID", { docId: id }],
-      ["GetDocumentById", { documentId: id }],
       ["GetDocumentByNumber", { docNumber: row.docNumber, docType: row.docType }],
-      ["GetDocumentsByIds", { ids: [id] }],
+      ["GetDocumentByNumber", { doc: { DocumentNumber: row.docNumber, DocumentType: row.docType } }],
+      ["GetDocumentByNumber", { documentNumber: row.docNumber, documentType: row.docType }],
     ];
     const tried: Attempt[] = [];
     let original: string | null = null, certified: string | null = null;
@@ -53,12 +57,16 @@ const ports = (): Ports => ({
         const text = await res.text();
         let parsed: Obj | null = null;
         try { parsed = JSON.parse(text); } catch { /* not json */ }
-        const d = (parsed ? ((parsed.d ?? parsed[`${op}Result`] ?? parsed) as Obj | null) : null) ?? {};
+        // WCF sometimes wraps the payload in {"d": "<json string>"}; open it before looking for Response.
+        let inner: unknown = parsed ? (parsed.d ?? parsed[`${op}Result`] ?? parsed) : null;
+        if (typeof inner === "string") { try { inner = JSON.parse(inner); } catch { /* keep as is */ } }
+        const d = (inner && typeof inner === "object" ? inner as Obj : null) ?? {};
         const r = (Array.isArray(d.Response) ? (d.Response as Obj[])[0] : d.Response) as Obj | undefined;
         const errors = Array.isArray(d.Errors) ? (d.Errors as Array<{ Error?: string }>).map((e) => redact(String(e.Error ?? ""))) : [];
         const o = r && typeof r.PrintOriginalPDFLink === "string" && r.PrintOriginalPDFLink ? r.PrintOriginalPDFLink : null;
         const c = r && typeof r.PrintCertifiedCopyPDFLink === "string" && r.PrintCertifiedCopyPDFLink ? r.PrintCertifiedCopyPDFLink : null;
-        const shape = r === undefined ? (parsed ? "no Response in answer" : "answer is not JSON") : Array.isArray(d.Response) ? "Response is a list" : typeof r;
+        const envelope = parsed && "d" in parsed ? (parsed.d === null ? "d is null" : `d is ${typeof parsed.d}`) : "no d";
+        const shape = r === undefined ? (parsed ? `no Response in answer (${envelope})` : "answer is not JSON") : Array.isArray(d.Response) ? "Response is a list" : typeof r;
         tried.push({ op, http: res.status, errors, filled: !!(o || c), keys: r && typeof r === "object" ? Object.keys(r) : Object.keys(d), linkFields: linkFields(r ?? d), shape });
         if (o || c) { original = o; certified = c; break; }
       } catch (e) { tried.push({ op, http: null, errors: [redact(String(e))], filled: false }); }
