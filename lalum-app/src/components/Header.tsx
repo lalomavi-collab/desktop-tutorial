@@ -140,22 +140,40 @@ export function Header() {
                     /os has no translated build, and <Link> would carry the
                     language basename onto a path with no prerendered file. */}
                 <div className="hm-top">
+                  {/* The diagnostics session is the practice's one call to action
+                      and sat in the desktop bar only (hide-mobile), so a phone
+                      visitor never met it. It leads the menu here. */}
+                  <Link to="/book" role="menuitem" className="hm-tile hm-tile-wide hm-tile-cta" onClick={() => setMoreOpen(false)}>
+                    {hg.cta}
+                  </Link>
                   <a href="/os/" role="menuitem" className="hm-tile hm-tile-os" onClick={() => setMoreOpen(false)}>
                     <Icon name="spark" size={18} /> LALUM LEX
                   </a>
                   <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile" onClick={() => setMoreOpen(false)}>
                     <Icon name="user" size={18} /> {user ? t.ui.clientPortal : t.ui.clientLogin}
                   </Link>
+                </div>
+                {/* Four small buttons in one block: quick payment, partner and
+                    team login, share, and the guide. Share and the guide used to
+                    be plain text links at the foot of the menu, the only rows
+                    that did not look pressable. */}
+                <div className="hm-mini">
                   {paymentsEnabled && (
-                    <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-tile hm-tile-wide" onClick={() => setMoreOpen(false)}>
+                    <Link to={user ? "/portal" : "/login"} role="menuitem" className="hm-btn" onClick={() => setMoreOpen(false)}>
                       <span className="header-more-pay-symbol" aria-hidden="true">₪</span> {t.ui.bookPage.quickPayTitle}
                     </Link>
                   )}
                   {/* Plain anchor: /partners is Hebrew-only and has no file at
                       "/en/partners" for <Link>'s basename-prefixed href. */}
-                  <a href="/partners/" role="menuitem" className="hm-tile hm-tile-wide" onClick={() => setMoreOpen(false)}>
-                    <Icon name="scale" size={18} /> {t.ui.partnerLogin}
+                  <a href="/partners/" role="menuitem" className="hm-btn" onClick={() => setMoreOpen(false)}>
+                    <Icon name="scale" size={16} /> {t.ui.partnerLogin}
                   </a>
+                  <button type="button" role="menuitem" className="hm-btn" onClick={share}>
+                    <Icon name="share" size={16} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
+                  </button>
+                  <button type="button" role="menuitem" className="hm-btn" onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}>
+                    <Icon name="compass" size={16} /> {t.ui.guide.open}
+                  </button>
                 </div>
                 {groups.map((g) => (
                   <div key={g.label} role="group" aria-label={g.label} className="hm-group">
@@ -187,19 +205,13 @@ export function Header() {
                     </a>
                   </div>
                 </div>
-                <div className="hm-utils">
-                  <button type="button" role="menuitem" className="hm-util" onClick={() => { window.dispatchEvent(new Event(OPEN_GUIDE_EVENT)); setMoreOpen(false); }}>
-                    <Icon name="compass" size={16} /> {t.ui.guide.open}
-                  </button>
-                  <button type="button" role="menuitem" className="hm-util" onClick={share}>
-                    <Icon name="share" size={16} /> {shareCopied ? t.ui.share.copied : t.ui.share.aria}
-                  </button>
-                  {canInstall && !appInstalled && (
-                    <button type="button" role="menuitem" className="hm-util" onClick={() => { void promptInstall(); setMoreOpen(false); }}>
+                {canInstall && !appInstalled && (
+                  <div className="hm-mini">
+                    <button type="button" role="menuitem" className="hm-btn hm-btn-wide" onClick={() => { void promptInstall(); setMoreOpen(false); }}>
                       <DownloadIcon size={16} /> {t.ui.footer.installApp}
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </>
           )}
