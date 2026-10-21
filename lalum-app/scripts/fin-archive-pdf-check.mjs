@@ -10,7 +10,7 @@ const src = readFileSync(new URL("../supabase/functions/lalum-fin-archive-pdf/ha
 const dir = mkdtempSync(join(tmpdir(), "fin-archive-pdf-"));
 const file = join(dir, "handler.mjs");
 writeFileSync(file, ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
-const { handle, safeLink } = await import(pathToFileURL(file).href);
+const { handle, safeLink, requestBodies } = await import(pathToFileURL(file).href);
 
 const ID = "11111111-2222-3333-4444-555555555555";
 const mk = (over = {}) => {
@@ -62,4 +62,27 @@ assert.equal((await handle(req({ method: "GET" }), mk().ports)).status, 405);
 assert.equal((await handle(req(), mk().ports)).headers["access-control-allow-origin"], "https://app.example");
 assert.equal((await handle(req({ origin: "https://evil.example" }), mk().ports)).headers["access-control-allow-origin"], undefined);
 { const r = await handle(req({ method: "OPTIONS", authorization: null, body: null }), mk().ports); assert.equal(r.status, 204); }
+// Request bodies: the document ID must reach the provider as the GUID string it is, and no body may carry a null (the NaN bug of 2026-10-21).
+{
+  const GUID = "3f2504e0-4f89-11d3-9a0c-0305e82c3301";
+  const bodies = requestBodies({ i4uDocId: GUID, docType: 3, docNumber: 70146 }, "tok");
+  assert.deepEqual(bodies.map(([op]) => op), ["GetDocument", "GetDocument", "GetDocumentByNumber"]);
+  const has = (v, f) => v !== null && typeof v === "object" ? Object.values(v).some((x) => has(x, f)) : f(v);
+  for (const [op, text] of bodies) {
+    const b = JSON.parse(text);
+    assert.equal(has(b, (x) => x === null), false, `${op} body carries a null`);
+    assert.equal(b.token, "tok");
+  }
+  assert.equal(JSON.parse(bodies[0][1]).doc.ID, GUID);
+  assert.equal(typeof JSON.parse(bodies[1][1]).doc.ID, "string");
+  assert.equal(JSON.parse(bodies[1][1]).doc.DocumentType, 3);
+  assert.deepEqual(JSON.parse(bodies[2][1]), { docNumber: 70146, docType: 3, token: "tok" });
+  // The bug itself: an ID run through Number() is NaN, and such a row must send nothing.
+  for (const lost of ["NaN", "null", "undefined", " nan "]) assert.equal(requestBodies({ i4uDocId: lost, docType: 3, docNumber: 7 }, "tok"), null, lost);
+  assert.equal(requestBodies({ i4uDocId: "", docType: 3, docNumber: 7 }, "tok"), null);
+  assert.equal(requestBodies({ i4uDocId: "  ", docType: 3, docNumber: 7 }, "tok"), null);
+  assert.equal(requestBodies({ i4uDocId: GUID, docType: NaN, docNumber: 7 }, "tok"), null);
+  assert.equal(requestBodies({ i4uDocId: GUID, docType: 3, docNumber: Infinity }, "tok"), null);
+  assert.equal(requestBodies({ i4uDocId: undefined, docType: 3, docNumber: 7 }, "tok"), null);
+}
 console.log("fin-archive-pdf-check: ok");
