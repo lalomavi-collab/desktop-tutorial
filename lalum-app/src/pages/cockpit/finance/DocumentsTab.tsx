@@ -41,7 +41,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const sendsByDoc = useMemo(() => {
     const m = new Map<string, DocSend[]>();
-    for (const s of sends) m.set(s.document_id, [...(m.get(s.document_id) ?? []), s]);
+    for (const s of sends) if (s.document_id) m.set(s.document_id, [...(m.get(s.document_id) ?? []), s]);
     return m;
   }, [sends]);
   const byId = useMemo(() => new Map(customers.map((c) => [c.id, c])), [customers]);
@@ -267,7 +267,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
       )}
 
       {sendFor && docById.get(sendFor) && (
-        <DocSendPanel key={sendFor} doc={docById.get(sendFor)!} customer={byId.get(docById.get(sendFor)!.customer_id)} sends={sendsByDoc.get(sendFor) ?? []} level={level} onClose={() => setSendFor(null)} onChange={onChange} />
+        <DocSendPanel key={sendFor} target={{ kind: "document", id: sendFor, docType: docById.get(sendFor)!.doc_type, docNumber: docById.get(sendFor)!.doc_number, pdfUrl: docById.get(sendFor)!.pdf_url, isTest: docById.get(sendFor)!.is_test }}
+          customer={byId.get(docById.get(sendFor)!.customer_id)} sends={sendsByDoc.get(sendFor) ?? []} level={level} onClose={() => setSendFor(null)} onChange={onChange} />
       )}
 
       {picked.size > 0 && (
@@ -313,7 +314,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
                 {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {allocationShort(d.allocation_number)}</div>}
                 {d.doc_type === "PROFORMA" && d.status === "ISSUED" && !d.is_test && (closedBy(d, docs) ? <div className="ck-meta">נסגר ע"י מסמך <bdi>{closedBy(d, docs)?.doc_number}</bdi></div> : <span className="ck-badge yellow">פתוח</span>)}
                 {d.source_proforma_id && <div className="ck-meta">נוצר מחשבון עסקה</div>}
-                {sentOn.email && <div className="ck-meta">נשלח בדוא"ל <bdi>{sentOn.email}</bdi></div>}
+                {sentOn.email && <div className="ck-meta">נשלח בדוא"ל <bdi>{sentOn.email}</bdi>{sentOn.opened ? <> · נפתח <bdi>{sentOn.opened}</bdi></> : null}</div>}
+                {sentOn.bounced && <span className="ck-badge red">הודעה חזרה</span>}
                 {sentOn.whatsapp && <div className="ck-meta">נשלח ב-WhatsApp <bdi>{sentOn.whatsapp}</bdi></div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>

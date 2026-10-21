@@ -6,6 +6,9 @@ import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from
 import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
 import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
+import { ARCHIVE_DOC_TYPE } from "../../../lib/cockpit/financeSend";
+import type { DocSend } from "../../../lib/cockpit/financeSend";
+import { DocSendPanel } from "./DocSendPanel";
 
 const monthsBetween = (from: string, to: string): Array<[string, string]> => {
   const out: Array<[string, string]> = [];
@@ -20,9 +23,12 @@ const monthsBetween = (from: string, to: string): Array<[string, string]> => {
   return out;
 };
 
-export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; customers: FinCustomer[]; onChange: () => void }) {
+export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: ArchiveDoc[]; customers: FinCustomer[]; sends: DocSend[]; level: number; onChange: () => void }) {
   const cn = useClientNames();
   const byI4u = new Map(customers.filter((c) => c.i4u_customer_id).map((c) => [Number(c.i4u_customer_id), c.name]));
+  const custByI4u = new Map(customers.filter((c) => c.i4u_customer_id).map((c) => [Number(c.i4u_customer_id), c]));
+  const [sendFor, setSendFor] = useState<string | null>(null);
+  const sendDoc = sendFor ? docs.find((d) => d.id === sendFor) : undefined;
   const who = (d: ArchiveDoc): string => cn.casual((d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || "");
   const [from, setFrom] = useState(`${new Date().getFullYear() - 1}-01-01`);
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10));
@@ -112,8 +118,13 @@ export function ArchiveTab({ docs, customers, onChange }: { docs: ArchiveDoc[]; 
           <div className="ck-label">מסמכים אחרונים</div>
           <input className="ck-input" aria-label="חיפוש לפי מספר מסמך" placeholder="חיפוש לפי מספר מסמך" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 260 }} />
           {pdfMsg && <div className="ck-err" aria-live="polite">{pdfMsg}{pdfDetail && <details><summary>פרטים טכניים</summary><div className="fin-ltr">{pdfDetail}</div></details>}</div>}
-          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th><th>מסמך</th></tr></thead><tbody>
-            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{allocationShort(d.allocation_number) ?? ""}</td><td><button className="ck-btn" disabled={pdfBusy === d.id} aria-label={`הורדת מסמך ${d.doc_number}`} onClick={() => void download(d)}>{pdfBusy === d.id ? "מכין..." : "הורדה"}</button></td></tr>)}
+          {sendDoc && (
+            <DocSendPanel key={sendDoc.id} target={{ kind: "archive", id: sendDoc.id, docType: ARCHIVE_DOC_TYPE[sendDoc.i4u_doc_type] ?? null, docNumber: sendDoc.doc_number, pdfUrl: null, isTest: false }}
+              customer={sendDoc.i4u_client_id ? custByI4u.get(Number(sendDoc.i4u_client_id)) : undefined} casualName={sendDoc.gname ?? ""}
+              sends={sends.filter((s) => s.archive_id === sendDoc.id)} level={level} onClose={() => setSendFor(null)} onChange={onChange} />
+          )}
+          <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">הקצאה</th><th>מסמך</th><th>שליחה</th></tr></thead><tbody>
+            {shown.map((d) => <tr key={d.id}><td>{d.doc_number}</td><td>{I4U_TYPE[d.i4u_doc_type] ?? d.i4u_doc_type}</td><td className="fin-text"><span className="fin-name" title={who(d)}>{who(d)}</span></td><td>{d.issue_date}</td><td className="fin-num">{money(d.total)}</td><td className="fin-ltr">{allocationShort(d.allocation_number) ?? ""}</td><td><button className="ck-btn" disabled={pdfBusy === d.id} aria-label={`הורדת מסמך ${d.doc_number}`} onClick={() => void download(d)}>{pdfBusy === d.id ? "מכין..." : "הורדה"}</button></td><td><button className="ck-btn" aria-label={`שליחת מסמך ${d.doc_number}`} onClick={() => { setPdfMsg(""); setPdfDetail(""); setSendFor(d.id); window.scrollTo({ top: 0, behavior: "smooth" }); }}>שליחה</button></td></tr>)}
           </tbody></table></div>
         </>
       )}

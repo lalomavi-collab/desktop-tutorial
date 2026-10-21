@@ -202,13 +202,14 @@ const DOC_SEND_ERRORS: Record<string, string> = {
   customer_not_found: "הלקוח לא נמצא.", no_email: "אין ללקוח כתובת דוא\"ל בכרטיס. הזינו כתובת בכרטיס הלקוח או הוסיפו כתובת ידנית.",
   no_own_email: "לא נמצאה כתובת דוא\"ל להתחברות שלכם.", no_recipient: "לא נבחר נמען.", bad_address: "אחת הכתובות אינה תקינה.",
   too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
+  archive_link_unavailable: "מערכת ההיסטוריה לא החזירה קישור למסמך הזה, ולכן אי אפשר לשלוח אותו כרגע. אפשר לנסות שוב מאוחר יותר.",
   duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
   send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
 };
 export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
 
 /** Sends one issued document by e-mail on a partner's click. The customer's address comes from the customer record on the server. */
-export async function sendDocument(body: { document_id: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string }): Promise<SendDocumentReply> {
+export async function sendDocument(body: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string }): Promise<SendDocumentReply> {
   if (!supabase) return { ok: false, code: "fetch_failed" };
   const { data } = await supabase.auth.getSession();
   const ctl = new AbortController();
@@ -229,9 +230,12 @@ export async function sendDocument(body: { document_id: string; include_customer
 }
 
 /** Records that the partner opened WhatsApp with the document message prepared. There is no delivery receipt on this path. */
-export async function logWhatsappSend(documentId: string, recipient: string, text: string): Promise<boolean> {
+export async function logWhatsappSend(target: { kind: "document" | "archive"; id: string }, recipient: string, text: string): Promise<boolean> {
   if (!supabase) return false;
-  const { data: id, error } = await supabase.rpc("lalum_fin_doc_send_reserve", { p_document: documentId, p_channel: "WHATSAPP", p_recipient: recipient || "לא צוין נייד", p_subject: null, p_body: text });
+  const args = { p_channel: "WHATSAPP", p_recipient: recipient || "לא צוין נייד", p_subject: null, p_body: text };
+  const { data: id, error } = target.kind === "document"
+    ? await supabase.rpc("lalum_fin_doc_send_reserve", { p_document: target.id, ...args })
+    : await supabase.rpc("lalum_fin_doc_send_reserve_archive", { p_archive: target.id, ...args });
   if (error || !id) return false;
   const { error: fe } = await supabase.rpc("lalum_fin_doc_send_finish", { p_id: id, p_ok: true, p_ref: null, p_error: null });
   return !fe;

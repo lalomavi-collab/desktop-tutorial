@@ -5,6 +5,8 @@ import { escapeHtml, isEmail } from "./dunning.ts";
 export const DOC_LABEL: Record<string, string> = {
   PROFORMA: "חשבון עסקה", INVOICE: "חשבונית מס", RECEIPT: "קבלה", INVOICE_RECEIPT: "חשבונית מס קבלה", CREDIT: "חשבונית זיכוי",
 };
+/** The provider's DocumentType codes (the history archive keeps the number), as a ledger document type. */
+export const ARCHIVE_TYPE: Record<number, string> = { 1: "INVOICE", 2: "RECEIPT", 3: "INVOICE_RECEIPT", 4: "CREDIT", 5: "PROFORMA" };
 export const MAX_RECIPIENTS = 6;
 export const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
 

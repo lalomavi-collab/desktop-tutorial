@@ -5,6 +5,7 @@ import { DOC_TYPE, monthPeriod, receivable, summarize } from "../../../lib/cockp
 import type { ArchiveDoc, FinCustomer, FinDocument, FinExpense, FinPayment, TrustAccount, TrustTx } from "../../../lib/cockpit/finance";
 import { CustomersTab } from "./CustomersTab";
 import { DocumentsTab } from "./DocumentsTab";
+import { DOC_SEND_COLS } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { ExpensesTab } from "./ExpensesTab";
 import { OpenProformasTab } from "./OpenProformasTab";
@@ -79,7 +80,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       supabase.from("lalum_fin_dunning_log").select("id, customer_id, tier, channel, sent_on, note").order("sent_on", { ascending: false }),
       supabase.from("lalum_fin_cashflow_settings").select("opening_balance, balance_as_of, credit_facility, safety_reserve").maybeSingle(),
       supabase.from("lalum_cash_forecast_items").select("week_ending, category, projected_amount").gte("week_ending", new Date().toISOString().slice(0, 10)),
-      supabase.from("lalum_fin_doc_sends").select("id, document_id, channel, recipient, subject, status, error, created_at").order("created_at", { ascending: false }).limit(1000),
+      supabase.from("lalum_fin_doc_sends").select(DOC_SEND_COLS).order("created_at", { ascending: false }).limit(1000),
     ]);
     // The send log arrives with migration 0077; until it is applied it reads empty and the documents tab still renders.
     setDocSends((ds.data as DocSend[] | null) ?? []);
@@ -195,7 +196,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "proformas" && loaded && <Gate level={level} need={2}><OpenProformasTab customers={customers} docs={docs} archive={archive} onOpenDocuments={() => setTab("documents")} onOpenArchive={() => setTab("archive")} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
-      {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} onChange={() => void load()} />}
+      {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} sends={docSends} level={level} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
