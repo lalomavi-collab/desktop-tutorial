@@ -56,11 +56,11 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  *   bookkeeper's own document reference) were left out to avoid duplicating them: the January Azrieli
  *   rent and management-fee rows, the August Azrieli electricity, BF Bitachon, Link, and invoice4u
  *   attendance-clock rows, and the June and August Gett rides.
- * - One line (חיים פרידריך, 9.8.2026, ₪389.00, ref 90048) is already in this file from the original
- *   August verification, which read the underlying document as "חשבון עסקה" (not a tax invoice) and
- *   so recorded it with no recoverable VAT. The ledger itself books the same amount with 18% VAT
- *   claimed. That is a real conflict between the two sources, not a timing difference; the existing
- *   row is left as it was found and verified, and the ledger's duplicate of it is not re-imported.
+ * - One line (חיים פרידריך, 9.8.2026, ₪389.00, ref 90048) was originally entered from the August
+ *   document itself as a "חשבון עסקה" (not a tax invoice), with no recoverable VAT. The ledger books
+ *   the same amount with 18% VAT claimed; the user asked to follow the ledger's treatment, so the row
+ *   now carries vat_amount 59.34 at 100% recoverable, per the bookkeeper's own figures, and its own
+ *   description and source note the correction.
  * - The Azrieli water invoice (ref 489, ₪142.00) is excluded here too, for the same two reasons noted
  *   above: it is dated into February and it is under active dispute with Azrieli.
  * - The "999 - העברת מס תשומות" line (₪68.00) is a bookkeeping input-VAT transfer, not a purchase, and
@@ -125,8 +125,8 @@ const ROWS: Row[] = [
     total: 96.00, vat_amount: vatIncluded(96.00), vat_recoverable_pct: 100, ref: "SI260210002998", source: "חשבונית עזריאלי" },
   { spent_on: "2026-08-05", supplier: "ניהול חשבונות ישיר", category: "OFFICE", description: "שעון נוכחות",
     total: 53.00, vat_amount: vatIncluded(53.00), vat_recoverable_pct: 100, ref: "1094778", source: "חשבונית מס קבלה, invoice4u" },
-  { spent_on: "2026-08-09", supplier: "חיים פרידריך עו\"ד", category: "OFFICE", description: "חשבון עסקה (אינו חשבונית מס, אין לנכות תשומות)",
-    total: 389.00, vat_amount: 0, vat_recoverable_pct: 0, ref: "90048", source: "חשבון עסקה, ezcount" },
+  { spent_on: "2026-08-09", supplier: "חיים פרידריך עו\"ד", category: "OFFICE", description: "סלקום 7/2026 (תוקן לפי כרטסת 2026: מע\"מ 18% לפי רישום רונית, לא כפי שנקרא תחילה מהחשבון עסקה)",
+    total: 389.00, vat_amount: 59.34, vat_recoverable_pct: 100, ref: "90048", source: "כרטסת חשבונות 2026, רבגונית/ארדני, 22.10.2026" },
   { spent_on: "2026-08-14", supplier: "סלקום ישראל", category: "COMMUNICATION", description: "חיוב לתקופה 14.7–13.8",
     total: 216.77, vat_amount: vatIncluded(216.77), vat_recoverable_pct: 100, ref: "377532756", source: "הודעת חיוב סלקום, 20.8.2026" },
   { spent_on: "2026-08-17", supplier: "חיים פרידריך עו\"ד", category: "OFFICE", description: "סלקום 7/2026 + יתרת חוב",
@@ -448,8 +448,8 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
         בטבלה, ועדיף לא לייבא מאשר לנחש שער. שלוש חשבוניות עזריאלי/הרצליה שקוזזו באותו חודש בסיום השכירות, וזיכויי
         invoice4u/הרצליה (אגרת UCO, Wix/Google Ads) חסרי סכום מאומת, הושארו גם הם בצד. חשבונית הסלקום החודשית לינואר
         וחשבונית המים של עזריאלי (SI260210000489, מתוארכת 1.2.2026 ותחת מחלוקת של המשרד) הושארו בצד גם הן. כרטסת
-        החשבונות של רונית (129 שורות, ינואר עד ספטמבר) יובאה במלואה לבקשת המשתמש, למעט שורות שכבר קיימות כאן, שורה אחת
-        שסותרת אימות קודם (חיים פרידריך 90048, ראו הערת הקוד), ושורת "העברת מס תשומות" שאינה הוצאה אמיתית.
+        החשבונות של רונית (129 שורות, ינואר עד ספטמבר) יובאה במלואה לבקשת המשתמש, למעט שורות שכבר קיימות כאן ושורת
+        "העברת מס תשומות" שאינה הוצאה אמיתית. שורת חיים פרידריך (אסמ' 90048) תוקנה לפי הכרטסת, 18% מע"מ במקום אפס.
       </div>
       <div className="ck-table-wrap">
         <table className="ck-table" data-cards="off">
