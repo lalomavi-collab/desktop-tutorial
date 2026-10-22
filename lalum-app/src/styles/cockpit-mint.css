@@ -374,12 +374,12 @@
 
 /* Page titles (design lane): the display serif at a larger size, with a short sage rule at the start of the line, the
    way the public site sets a section opening. The same on every cockpit screen, so the dashboard title and the others read as one set. */
-.ck-root[data-ck-theme="mint"] .ck-top h1 {
+.ck-root[data-ck-theme] .ck-top h1 {
   font-family: "Lalum Serif", "David Libre", Georgia, serif; font-weight: 500; letter-spacing: -.012em;
   font-size: clamp(30px, 4.2vw, 40px); line-height: 1.12; color: var(--ink); margin: 0;
   padding-inline-start: 14px; border-inline-start: 4px solid var(--clay); border-radius: 1px;
 }
-@media (max-width: 640px) { .ck-root[data-ck-theme="mint"] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
+@media (max-width: 640px) { .ck-root[data-ck-theme] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
 
 /* Rail, second pass: larger buttons, the six everyday screens first with "עוד" for the rest, and the theme switch at the top of the rail. */
 .ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore {
