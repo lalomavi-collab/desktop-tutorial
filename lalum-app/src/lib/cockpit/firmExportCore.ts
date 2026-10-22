@@ -299,11 +299,24 @@ export async function buildPackage(ports: Ports, opts: { pageSize?: number; volu
   return { files: [...held, ...lastFiles], manifest: m, handoverComplete, originals: orig, volumes };
 }
 
+/** The manifest call can fail for very different reasons, and one message for all of them sent the owner to look for a missing permission when the session had expired
+ *  (2026-10-22: HTTP 401 shown as "no permission"). The detail is the database or network error text; it is matched, and a short unknown one is shown, never a row. */
+export function manifestErrorText(detail: string): string {
+  const d = String(detail ?? "");
+  if (/FORBIDDEN/.test(d)) return "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה, אימות דו שלבי והרשאה פיננסית. לא נוצר קובץ.";
+  if (/JWT|expired|PGRST30|401|not authenticated/i.test(d)) return "ההתחברות פגה. יש לרענן את הדף, להתחבר מחדש ולנסות שוב. לא נוצר קובץ.";
+  if (/timeout|57014|statement/i.test(d)) return "הבקשה לשרת ארכה יותר מדי ונקטעה. אפשר לנסות שוב; אם זה חוזר, יש לפנות לתמיכה. לא נוצר קובץ.";
+  if (/fetch|network|offline|aborted/i.test(d)) return "אין תקשורת עם השרת. יש לבדוק את החיבור ולנסות שוב. לא נוצר קובץ.";
+  const shown = d.replace(/\s+/g, " ").trim().slice(0, 140);
+  return `קריאת רשימת הטבלאות נכשלה${shown ? ` (${shown})` : ""}. לא נוצר קובץ.`;
+}
+
 /** A Hebrew message for the screen. The detail names a table, never a row. */
 export function exportErrorText(e: unknown): string {
   if (!(e instanceof ExportError)) return "הייצוא נכשל.";
   switch (e.code) {
-    case "INCOMPLETE": return "החבילה אינה שלמה: יש טבלה שטרם סווגה לייצוא. לא נוצר קובץ. יש לפנות לתמיכה.";
+    case "MANIFEST": return manifestErrorText(e.detail);
+    case "INCOMPLETE": return `החבילה אינה שלמה: יש טבלה שטרם סווגה לייצוא${e.detail ? ` (${e.detail.split(",").slice(0, 8).join(", ")})` : ""}. לא נוצר קובץ. יש לפנות לתמיכה.`;
     case "COUNT_CHANGED": return "הנתונים השתנו בזמן הייצוא. לא נוצר קובץ. כדאי לנסות שוב.";
     case "HASH_MISMATCH": return "אימות חתימה נכשל באחד הקבצים. לא נוצר קובץ.";
     case "PAGE": return "קריאת נתונים נכשלה. לא נוצר קובץ.";
