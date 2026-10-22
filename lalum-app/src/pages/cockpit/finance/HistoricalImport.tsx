@@ -5,17 +5,18 @@ import { EXPENSE_CATEGORY, r2 } from "../../../lib/cockpit/finance";
 const vatIncluded = (total: number) => r2((total * 18) / 118);
 
 /**
- * One-time pilot catch-up: expenses for March, June and August 2026 found in the three
+ * One-time pilot catch-up: expenses for January, March, June and August 2026 found in the three
  * bookkeeping mailboxes and independently cross-checked against the underlying receipts (not just
- * the monthly summary emails sent to the bookkeeper). January is left out: that month's email
- * claimed an attached report that does not actually exist, so its only figures are two unverifiable
- * aggregate totals.
+ * the monthly summary emails sent to the bookkeeper). January's own summary email claimed an
+ * attached report that does not actually exist, so every January row here was rebuilt from the
+ * primary notices (Meta, Apple, invoice4u, Azrieli) found directly in the mailboxes, not from that
+ * summary.
  *
  * What is NOT here, and why:
- * - The Anthropic and OpenRouter charges (USD) are left out. lalum_fin_expenses has no currency
- *   column, and the house rule for a foreign-currency document (see archiveRevenueEffect in
- *   finance.ts) is to convert at a rate actually on record, never a guessed one. No sourced NIS
- *   rate for these dates was reachable this round.
+ * - The Anthropic, OpenRouter, MainFunc/Genspark and Airalo charges (USD) are left out. lalum_fin_expenses
+ *   has no currency column, and the house rule for a foreign-currency document (see archiveRevenueEffect
+ *   in finance.ts) is to convert at a rate actually on record, never a guessed one. No sourced NIS rate
+ *   for these dates was reachable this round.
  * - The March "Link" invoice (142864) and the June UCO thesis fee, Haim Friedrich invoice 30151,
  *   and Google Ads/Wix charge: a real document exists for each, but no email gave a shekel amount.
  * - The August Azrieli rent (SI260200001644), Herzliya management fee (SI260210003176) and water
@@ -24,6 +25,11 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  *   be a positive number). They need the bookkeeper's own reconciliation, not an invented net figure.
  * - Cellcom Energy (377724412) and the Booking.com / Radisson Odesa charge: no invoice was found
  *   for either (the booking confirmation is not a tax invoice).
+ * - January's Cellcom mobile invoice (period 14.12.2025 to 13.1.2026): the notification email carries
+ *   only a binary PDF with no amount in the text, and no "charge notice" email with a figure was found
+ *   this round. The Fiverr charge (thesis proofreading, ₪832.77) is left out as personal, by the same
+ *   call made on the June UCO fee. The Azrieli water invoice (SI260210000489, ₪142.00) is dated 1.2.2026,
+ *   so it belongs to February, not January, and the office is disputing that water charge outright.
  */
 type Row = {
   spent_on: string; supplier: string; category: string; description: string;
@@ -31,6 +37,29 @@ type Row = {
 };
 
 const ROWS: Row[] = [
+  { spent_on: "2026-01-03", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-31.12.2025 עד 3.1.2026",
+    total: 482.00, vat_amount: 0, vat_recoverable_pct: 100, ref: "25694053963617651-25517579297931780", source: "הודעת תשלום Meta (לא חשבונית), 3.1.2026" },
+  { spent_on: "2026-01-04", supplier: "Apple (iCloud+)", category: "SOFTWARE", description: "iCloud+ 50GB",
+    total: 3.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "MMQGH86D9J", source: "קבלת Apple, 4.1.2026" },
+  { spent_on: "2026-01-04", supplier: "לינק ניהול תקשורת לעסקים", category: "COMMUNICATION", description: "",
+    total: 58.73, vat_amount: vatIncluded(58.73), vat_recoverable_pct: 100, ref: "140179", source: "חשבונית מס קבלה, invoice4u, 4.1.2026" },
+  { spent_on: "2026-01-06", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-2.1.2026 עד 6.1.2026",
+    total: 510.00, vat_amount: 0, vat_recoverable_pct: 100, ref: "25600440132979036-25719991074357273", source: "הודעת תשלום Meta (לא חשבונית), 6.1.2026" },
+  { spent_on: "2026-01-11", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-5.1.2026 עד 9.1.2026",
+    total: 543.69, vat_amount: 0, vat_recoverable_pct: 100, ref: "25792394397116936-25681479828208391", source: "הודעת תשלום Meta (לא חשבונית), 11.1.2026" },
+  { spent_on: "2026-01-13", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-11.1.2026 עד 13.1.2026",
+    total: 539.00, vat_amount: 0, vat_recoverable_pct: 100, ref: "25699344813088565-25652460671110306", source: "הודעת תשלום Meta (לא חשבונית), 13.1.2026" },
+  { spent_on: "2026-01-16", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-13.1.2026 עד 16.1.2026",
+    total: 570.00, vat_amount: 0, vat_recoverable_pct: 100, ref: "25680322278324145-25808059798883733", source: "הודעת תשלום Meta (לא חשבונית), 16.1.2026" },
+  { spent_on: "2026-01-21", supplier: "הרצליה ביזנס פארק תפעול", category: "OFFICE", description: "שכירות 2/2026",
+    total: 8530.00, vat_amount: 1301.19, vat_recoverable_pct: 100, ref: "SI260200000183", source: "חשבונית עזריאלי, 21.1.2026" },
+  { spent_on: "2026-01-21", supplier: "הרצליה ביזנס פארק תפעול", category: "OFFICE", description: "דמי ניהול 2/2026",
+    total: 2341.00, vat_amount: 357.10, vat_recoverable_pct: 100, ref: "SI260210000338", source: "חשבונית עזריאלי, 21.1.2026" },
+  { spent_on: "2026-01-30", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-15.1.2026 עד 30.1.2026",
+    total: 603.00, vat_amount: 0, vat_recoverable_pct: 100, ref: "25761424516880590-25868210446201994", source: "הודעת תשלום Meta (לא חשבונית), 30.1.2026" },
+  { spent_on: "2026-01-31", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-29.1.2026 עד 30.1.2026",
+    total: 9.47, vat_amount: 0, vat_recoverable_pct: 100, ref: "25950878987935146-25891815013841542", source: "הודעת תשלום Meta (לא חשבונית), 31.1.2026" },
+
   { spent_on: "2026-03-04", supplier: "Apple (iCloud+)", category: "SOFTWARE", description: "iCloud+ 50GB",
     total: 3.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "MMQGNH8X3H", source: "קבלת Apple, 4.3.2026" },
 
@@ -98,7 +127,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     return (
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div className="ck-meta">ייבוא הוצאות היסטוריות ממרץ, יוני ואוגוסט 2026 (פיילוט), אומת מול המיילים המקוריים.</div>
+          <div className="ck-meta">ייבוא הוצאות היסטוריות מינואר, מרץ, יוני ואוגוסט 2026 (פיילוט), אומת מול המיילים המקוריים.</div>
           <button className="ck-btn" onClick={() => setOpen(true)}>פתיחה לבדיקה</button>
         </div>
       </div>
@@ -109,9 +138,11 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     <div className="ck-card ck-stack">
       <div className="ck-title">ייבוא הוצאות היסטוריות (פיילוט)</div>
       <div className="ck-warn">
-        ינואר הושאר בצד (רק סכומים מצרפיים, ללא קובץ מצורף). הוצאות ב-דולר (Anthropic, OpenRouter) הושארו בצד: אין שדה מטבע
-        בטבלה ואין שער המרה מתועד, ועדיף לא לייבא מאשר לנחש שער. שלוש חשבוניות עזריאלי/הרצליה שקוזזו באותו חודש בסיום
-        השכירות, וזיכויי invoice4u/הרצליה (142864, אגרת UCO, חיים פרידריך 30151, Wix/Google Ads) חסרי סכום מאומת, הושארו גם הם בצד.
+        הוצאות ב-דולר (Anthropic, OpenRouter, MainFunc/Genspark, Airalo) הושארו בצד: אין שדה מטבע בטבלה ואין שער המרה
+        מתועד, ועדיף לא לייבא מאשר לנחש שער. שלוש חשבוניות עזריאלי/הרצליה שקוזזו באותו חודש בסיום השכירות, וזיכויי
+        invoice4u/הרצליה (142864, אגרת UCO, חיים פרידריך 30151, Wix/Google Ads) חסרי סכום מאומת, הושארו גם הם בצד. מינואר:
+        חשבונית הסלקום החודשית, שירות Fiverr לתיקון עבודת תזה (פרטי, לא עסקי) וחשבונית המים של עזריאלי (SI260210000489,
+        מתוארכת 1.2.2026 ותחת מחלוקת של המשרד) הושארו בצד גם הם.
       </div>
       <div className="ck-table-wrap">
         <table className="ck-table" data-cards="off">
