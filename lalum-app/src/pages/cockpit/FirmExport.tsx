@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Membership } from "../../lib/cockpit/shared";
-import { exportErrorText } from "../../lib/cockpit/firmExportCore.ts";
+import { ExportError, exportErrorText, manifestErrorText } from "../../lib/cockpit/firmExportCore.ts";
 import { exportFirmPackage, exportOriginalsEnabled } from "../../lib/cockpit/firmExport";
 import { CockpitFrame } from "./CockpitFrame";
 
@@ -34,8 +34,9 @@ function Body({ member }: { member: Membership }) {
       const what = built.volumes > 1 ? "הקבצים ירדו" : "הקובץ ירד";
       setRes({ ok: true, text: built.handoverComplete ? `${what}. כל קובץ בתוכם אומת מול החתימה שנרשמה במסד הנתונים.` : `${what}. קבצי הטבלאות אומתו מול החתימה שנרשמה במסד הנתונים. ראו את ההערה שלמטה.`, warn });
     } catch (e) {
-      const denied = /FORBIDDEN|MANIFEST/.test(String((e as Error)?.message ?? ""));
-      setRes({ ok: false, text: denied ? "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה, אימות דו שלבי והרשאה פיננסית." : exportErrorText(e) });
+      // A plain Error from outside the package builder (a network failure inside the browser) has no code; its text still says whether it was a permission.
+      const text = e instanceof Error && !(e instanceof ExportError) ? manifestErrorText(e.message) : exportErrorText(e);
+      setRes({ ok: false, text });
     } finally { setBusy(false); setProgress(null); }
   }
 

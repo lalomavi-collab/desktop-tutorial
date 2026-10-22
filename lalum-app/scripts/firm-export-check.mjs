@@ -1,7 +1,7 @@
 // Checks the firm wide handover package builder (src/lib/cockpit/firmExportCore.ts) against a fake database. Run with: npm run firm-export-check
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, ExportError, MAX_ORIGINALS_BYTES } from "../src/lib/cockpit/firmExportCore.ts";
+import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, manifestErrorText, ExportError, MAX_ORIGINALS_BYTES } from "../src/lib/cockpit/firmExportCore.ts";
 
 const t = async (name, fn) => { await fn(); console.log(`[PASS] ${name}`); };
 const sha = (s) => createHash("sha256").update(s, "utf8").digest("hex");
@@ -127,6 +127,23 @@ await t("the README lists what was left out with the reason, and the generated t
   for (const text of [readme, readmeText(fake(tables).manifest && parseManifest(fake(tables).manifest), true, new Date()), ...["INCOMPLETE", "COUNT_CHANGED", "HASH_MISMATCH", "PAGE", "MANIFEST"].map((c) => exportErrorText(new ExportError(c, "x"))), exportErrorText(new Error("x"))]) {
     assert.ok(!/[—–]/.test(text), "no em or en dash");
     assert.ok(!/ - /.test(text), "no spaced hyphen");
+  }
+});
+
+await t("a manifest failure says what it was: permission, expired session, timeout, network, or the unknown text (2026-10-22: a 401 was shown as no permission)", async () => {
+  assert.match(exportErrorText(new ExportError("MANIFEST", "FORBIDDEN")), /אין הרשאה לייצוא/);
+  assert.match(exportErrorText(new ExportError("MANIFEST", "JWT expired")), /ההתחברות פגה/);
+  assert.match(exportErrorText(new ExportError("MANIFEST", "Invalid JWT")), /ההתחברות פגה/);
+  assert.match(exportErrorText(new ExportError("MANIFEST", "canceling statement due to statement timeout")), /ארכה יותר מדי/);
+  assert.match(exportErrorText(new ExportError("MANIFEST", "TypeError: Failed to fetch")), /אין תקשורת עם השרת/);
+  assert.doesNotMatch(exportErrorText(new ExportError("MANIFEST", "JWT expired")), /אין הרשאה/, "an expired session is not a permission failure");
+  assert.match(exportErrorText(new ExportError("MANIFEST", "TABLE_HAS_NO_FIRM_ID: lalum_x")), /TABLE_HAS_NO_FIRM_ID: lalum_x/);
+  assert.match(manifestErrorText("x".repeat(500)), /^קריאת רשימת הטבלאות נכשלה \(x{140}\)/, "an unknown text is shown but cut");
+  assert.match(manifestErrorText(""), /^קריאת רשימת הטבלאות נכשלה\. /);
+  assert.match(exportErrorText(new ExportError("INCOMPLETE", "lalum_a,lalum_b")), /\(lalum_a, lalum_b\)/, "the unclassified tables are named");
+  for (const d of ["FORBIDDEN", "JWT expired", "statement timeout", "Failed to fetch", "other", ""]) {
+    const text = manifestErrorText(d);
+    assert.ok(!/[—–]/.test(text) && !/ - /.test(text), "no dash as punctuation");
   }
 });
 
