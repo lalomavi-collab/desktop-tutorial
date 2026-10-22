@@ -1,5 +1,6 @@
 // Data for the cockpit dashboard: counts and series computed in the browser from rows the signed-in member may already read (RLS applies).
 import { supabase } from "../supabase";
+import { runningTotal } from "./marketChart";
 import { scorecard } from "./work";
 import type { Scorecard } from "./work";
 
@@ -66,3 +67,14 @@ export function periodDelta(dates: string[], days: number): { cur: number; prev:
   for (const d of dates) { const age = now - new Date(d).getTime(); if (age < 0) continue; if (age < win) cur++; else if (age < 2 * win) prev++; }
   return { cur, prev, pct: prev < MIN_DELTA_BASE ? null : Math.round(((cur - prev) / prev) * 100) };
 }
+
+/** Running total at the end of each bucket (oldest first), the items older than the window counted in from the start, plus what each bucket added.
+ *  Same buckets and labels as `series`, so a cumulative curve and a per bucket bar chart line up. */
+export function cumulativeSeries(dates: string[], mode: "weekly" | "monthly", n: number): { values: number[]; added: number[]; labels: string[] } {
+  const { values: added, labels } = series(dates, mode, n);
+  const now = Date.now();
+  const total = dates.filter((d) => new Date(d).getTime() <= now).length;
+  const values = runningTotal(added, total - added.reduce((a, v) => a + v, 0));
+  return { values, added, labels };
+}
+

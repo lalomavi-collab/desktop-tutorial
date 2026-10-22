@@ -182,7 +182,7 @@ export function CockpitFrame({
         </div>
       </aside>
       <div className="ck-shell">
-        <header className="ck-top">
+        <header className="ck-top" data-page={path}>
           <h1 className="serif">{title}</h1>
           {hasMember && <ClientNamesToggle />}
         </header>

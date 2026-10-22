@@ -407,10 +407,10 @@
   .ck-sidebar-nav button.ck-railmore span { display: none; }
 }
 
-/* Billing and firm settings: card titles and section labels take the heading face (sizes below); the big figures and the tab
-   buttons stay in the Lalum Serif, because digits and button text are not headings. Layout is untouched (the wrapper adds no box). */
+/* Billing and firm settings: card titles and section labels take the heading face (sizes below); the big figures stay in the
+   Lalum Serif; buttons use the UI face like every other button (see the button type system at the end). Layout is untouched (the wrapper adds no box). */
 .ck-billing { display: contents; }
-.ck-billing .fin-figure, .ck-billing .fin-kpi, .ck-billing .fin-rubric, .ck-billing .fin-tabs .ck-btn { font-family: var(--ck-serif); letter-spacing: -.005em; }
+.ck-billing .fin-figure, .ck-billing .fin-kpi { font-family: var(--ck-serif); letter-spacing: -.005em; }
 .ck-billing .ck-label { font-size: 28px; font-weight: 400; letter-spacing: 0; line-height: 1.1; color: var(--ink); margin: 12px 0 -2px; }
 .ck-billing .fin-figure { font-weight: 500; font-size: 30px; }
 .ck-billing .fin-kpi { font-weight: 500; font-size: 24px; }
@@ -425,3 +425,23 @@
 .ck-root h3, .ck-root h4 { font-size: 32px; }
 .ck-root .ck-hero-title { font-size: clamp(34px, 4vw, 44px); }
 .ck-root .ck-title { font-size: 25px; line-height: 1.15; }
+
+/* ------------------------------------------------------------------
+   Type system for controls, one for every cockpit screen (bookkeeping included). Before this, the same kind of button was 13.5px outside the
+   finance screens and 15px inside them, tabs and rubrics were 700 and sub tabs 600, so neighbouring buttons did not match.
+     buttons, tabs, rubrics, sub tabs   UI face, 15px, weight 600, line 1.25, centred, balanced wrapping
+     table row actions (.sm)            14px, weight 600
+     chips (range toggles)              13.5px, weight 600
+     fields (input, select, textarea)   UI face, 15px, weight 400
+   Headings are the display face (--ck-display) and nothing else here is. Specificity matches the theme blocks so this wins without !important.
+   ------------------------------------------------------------------ */
+.ck-root[data-ck-theme] :is(.ck-btn, .ck-nav a, .fin-rubric, .fin-subtab, .fin-tabs .ck-btn) {
+  font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.25; letter-spacing: 0; text-align: center; text-wrap: balance;
+}
+.ck-root[data-ck-theme] :is(.ck-btn:not(.sm), .ck-nav a, .fin-tabs .ck-btn) { min-height: 44px; padding: 8px 18px; justify-content: center; }
+.ck-root[data-ck-theme] .ck-btn.sm, .ck-root[data-ck-theme] .ck-fin .ck-btn.sm { font-size: 14px; min-height: 36px; padding: 5px 14px; }
+.ck-root[data-ck-theme] .fin-rubric { min-height: 52px; }
+.ck-root[data-ck-theme] .fin-subtab { min-height: 40px; }
+.ck-root[data-ck-theme] .db-toggle button { font-family: inherit; font-size: 13.5px; font-weight: 600; letter-spacing: 0; }
+.ck-root[data-ck-theme] :is(.ck-input, .ck-select, .ck-textarea) { font-family: inherit; font-size: 15px; font-weight: 400; }
+.ck-root[data-ck-theme] .mfa-box .ck-btn { font-size: 16.5px; min-height: 46px; }

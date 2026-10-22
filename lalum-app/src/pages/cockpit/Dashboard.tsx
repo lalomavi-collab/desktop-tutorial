@@ -11,6 +11,7 @@ import { delta, loadDashboard, periodDelta, series } from "../../lib/cockpit/das
 import type { DashData } from "../../lib/cockpit/dashboard";
 import { dur } from "../../lib/cockpit/work";
 import { TrendCard } from "../../components/cockpit/TrendCard";
+import { MatterWave } from "../../components/cockpit/MatterWave";
 import { DashFinance } from "../../components/cockpit/DashFinance";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import "../../styles/cockpit-dashboard.css";
@@ -127,6 +128,10 @@ export function DashView({ name, firmName, role, firmId, preload }: { name: stri
             <Kpi icon="phone" label="פניות לקוחות (200 ימים)" value={data.inquiries.length} d={delta(view.inq.values)} values={view.inq.values} />
             <Kpi icon="check" label="משימות שהושלמו" value={view.closed} d={delta(view.done.values)} values={view.done.values} />
             <Kpi icon="file" label="מסמכים בכספת" value={data.docs} note={`${view.open} משימות פתוחות, ${view.overdue} באיחור`} />
+          </div>
+
+          <div className="db-grid one">
+            <MatterWave title="מגמת התיקים" noun="תיקים" dates={data.matters.map((x) => x.dispatched_at)} />
           </div>
 
           <div className="db-grid">
