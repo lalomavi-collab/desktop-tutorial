@@ -1,7 +1,11 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
+import { verifyCode } from "../../lib/cockpit/mfa";
 import type { Membership } from "../../lib/cockpit/shared";
 import { ExportError, exportErrorText, manifestErrorText } from "../../lib/cockpit/firmExportCore.ts";
-import { exportFirmPackage, exportOriginalsEnabled } from "../../lib/cockpit/firmExport";
+import { exportFirmPackage, exportOriginalsEnabled, exportStatus } from "../../lib/cockpit/firmExport";
 import { CockpitFrame } from "./CockpitFrame";
 
 type Result = { ok: boolean; text: string; warn?: string[] };
@@ -11,6 +15,37 @@ function Body({ member }: { member: Membership }) {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<string | null>(null);
   const [res, setRes] = useState<Result | null>(null);
+  const [stepUp, setStepUp] = useState<{ factors: { id: string; name: string }[] } | "enroll" | null>(null);
+  const [code, setCode] = useState("");
+  const [factorId, setFactorId] = useState<string | null>(null);
+  const [codeErr, setCodeErr] = useState<string | null>(null);
+
+  /** The export needs a second factor entered in the last 10 minutes (0080). Ask the server first; if a code is due, show the code box instead of starting. */
+  async function begin() {
+    setRes(null); setCodeErr(null);
+    const st = await exportStatus(member.firm_id);
+    if (!st) { setRes({ ok: false, text: "לא ניתן היה לבדוק את ההרשאה לייצוא. יש לרענן את הדף, להתחבר מחדש ולנסות שוב." }); return; }
+    if (!st.eligible) { setRes({ ok: false, text: "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה והרשאה פיננסית." }); return; }
+    if (st.fresh) { setStepUp(null); await run(); return; }
+    const f = await supabase!.auth.mfa.listFactors();
+    const verified = (f.data?.totp ?? []).filter((x) => x.status === "verified").sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
+    if (verified.length === 0) { setStepUp("enroll"); return; }
+    const factors = verified.map((x) => ({ id: x.id, name: x.friendly_name ?? "TOTP" }));
+    setFactorId(factors[0].id); setStepUp({ factors });
+  }
+  async function submitCode(e: FormEvent) {
+    e.preventDefault();
+    if (!factorId) return;
+    setBusy(true); setCodeErr(null);
+    const err = await verifyCode(factorId, code);
+    if (err) { setBusy(false); setCodeErr(err); return; }
+    setCode("");
+    const st = await exportStatus(member.firm_id);
+    setBusy(false);
+    if (!st?.fresh) { setCodeErr("הקוד אומת, אך השרת לא קלט אותו. יש לרענן את הדף ולנסות שוב."); return; }
+    setStepUp(null);
+    await run();
+  }
 
   async function run() {
     if (!window.confirm("לייצא את כל נתוני הפירמה? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
@@ -49,8 +84,32 @@ function Body({ member }: { member: Membership }) {
         <div className="ck-meta">{exportOriginalsEnabled()
           ? "המסמכים המקוריים נכללים בקובץ, כל אחד מאומת מול החתימה והגודל שנרשמו. הייצוא עשוי לקחת כמה דקות. חבילה גדולה מ-256 MB מתחלקת למספר קבצי ZIP, כדי שהדפדפן לא יחזיק הכול בזיכרון."
           : "המסמכים המקוריים אינם כלולים עדיין. הקובץ יציין זאת במפורש."}</div>
-        <button className="ck-btn primary" disabled={busy} onClick={() => void run()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני הפירמה (ZIP)"}</button>
+        <div className="ck-meta">הייצוא דורש קוד אימות דו שלבי בן 6 ספרות שהוזן בעשר הדקות שלפניו, גם אם אתם כבר מחוברים.</div>
+        <button className="ck-btn primary" disabled={busy} onClick={() => void begin()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני הפירמה (ZIP)"}</button>
       </div>
+      {stepUp === "enroll" && (
+        <div className="ck-card"><div className="ck-err">אין לחשבון אימות דו שלבי פעיל, ובלעדיו אי אפשר לייצא. יש להפעיל אותו ב<Link to="/settings/security">אבטחת חשבון</Link> ולחזור לכאן.</div></div>
+      )}
+      {stepUp && stepUp !== "enroll" && (
+        <form className="ck-card mfa-box" onSubmit={(e) => void submitCode(e)}>
+          <div className="ck-title">אימות לפני ייצוא</div>
+          <div className="ck-meta">הזינו את הקוד בן 6 הספרות מאפליקציית האימות. אחרי האימות הייצוא יתחיל, ויהיה תקף עשר דקות.</div>
+          {stepUp.factors.length > 1 && (
+            <div className="ck-row" style={{ flexWrap: "wrap" }}>
+              {stepUp.factors.map((f) => (
+                <button type="button" key={f.id} className={"ck-btn" + (f.id === factorId ? " primary" : "")} onClick={() => { setFactorId(f.id); setCodeErr(null); }}>{f.name}</button>
+              ))}
+            </div>
+          )}
+          <label className="mfa-label" htmlFor="export-code">קוד בן 6 ספרות</label>
+          <input id="export-code" className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+          {codeErr && <div className="ck-err" aria-live="polite">{codeErr}</div>}
+          <div className="ck-row">
+            <button className="ck-btn primary" disabled={busy || code.length !== 6}>{busy ? "מאמת..." : "אימות והתחלת ייצוא"}</button>
+            <button type="button" className="ck-btn" disabled={busy} onClick={() => { setStepUp(null); setCode(""); setCodeErr(null); }}>ביטול</button>
+          </div>
+        </form>
+      )}
       {res && (
         <div className="ck-card" aria-live="polite">
           <div className={res.ok ? "ck-ok" : "ck-err"}>{res.text}</div>

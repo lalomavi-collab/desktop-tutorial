@@ -1,7 +1,7 @@
 // Checks the firm wide handover package builder (src/lib/cockpit/firmExportCore.ts) against a fake database. Run with: npm run firm-export-check
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, manifestErrorText, ExportError, MAX_ORIGINALS_BYTES } from "../src/lib/cockpit/firmExportCore.ts";
+import { buildPackage, parseManifest, parseOriginals, readmeText, zipName, exportErrorText, manifestErrorText, parseExportStatus, ExportError, MAX_ORIGINALS_BYTES } from "../src/lib/cockpit/firmExportCore.ts";
 
 const t = async (name, fn) => { await fn(); console.log(`[PASS] ${name}`); };
 const sha = (s) => createHash("sha256").update(s, "utf8").digest("hex");
@@ -353,5 +353,13 @@ await t("PACKAGE.json holds no row data, only file names, counts and hashes", as
   const b = await buildPackage(fake(tables).ports);
   const pkg = b.files.find((f) => f.path === "PACKAGE.json").content;
   assert.ok(!pkg.includes("שורה"), "no row content leaks into the index");
+});
+await t("the export status answer is read strictly, and the refusal text names the ten minute code", async () => {
+  assert.deepEqual(parseExportStatus({ eligible: true, fresh: false, window_seconds: 600 }), { eligible: true, fresh: false, windowSeconds: 600 });
+  assert.deepEqual(parseExportStatus({ eligible: false, fresh: true }), { eligible: false, fresh: true, windowSeconds: 600 });
+  for (const bad of [null, undefined, "x", {}, { eligible: "yes", fresh: true }, { eligible: true }]) assert.equal(parseExportStatus(bad), null);
+  const text = manifestErrorText("FORBIDDEN");
+  assert.ok(text.includes("10 הדקות"), "it says how recent the code must be");
+  assert.ok(!/[—–]/.test(text) && !/ - /.test(text), "no dash as punctuation");
 });
 console.log("firm-export-check: all passed");

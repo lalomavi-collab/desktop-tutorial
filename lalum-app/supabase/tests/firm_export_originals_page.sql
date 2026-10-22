@@ -50,7 +50,7 @@ alter table public.lalum_matter_documents add column if not exists original_mime
 do $$
 declare
   f1 uuid := gen_random_uuid(); f2 uuid := gen_random_uuid(); p1 uuid := gen_random_uuid(); p2 uuid := gen_random_uuid(); att uuid := gen_random_uuid(); adm uuid := gen_random_uuid();
-  mA uuid := gen_random_uuid(); mP uuid := gen_random_uuid(); aal2 text := '{"aal":"aal2"}';
+  mA uuid := gen_random_uuid(); mP uuid := gen_random_uuid(); aal2 text := json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','password','timestamp',extract(epoch from now())::bigint - 3000),json_build_object('method','totp','timestamp',extract(epoch from now())::bigint)))::text;
   r jsonb; seen uuid[] := '{}'; cursor_ uuid; pages integer := 0; ids uuid[]; sorted uuid[]; n0 bigint;
 begin
   insert into auth.users (id, email) values (p1,'p1@x'),(p2,'p2@x'),(att,'att@x'),(adm,'admin@x');

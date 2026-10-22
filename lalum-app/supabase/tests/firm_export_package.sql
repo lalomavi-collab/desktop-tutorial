@@ -51,7 +51,7 @@ do $$
 declare
   f1 uuid := gen_random_uuid(); f2 uuid := gen_random_uuid(); p1 uuid := gen_random_uuid(); p2 uuid := gen_random_uuid(); att uuid := gen_random_uuid();
   adm uuid := gen_random_uuid(); mA uuid := gen_random_uuid(); mB uuid := gen_random_uuid(); mP uuid := gen_random_uuid();
-  aal2 text := '{"aal":"aal2"}'; r jsonb; base jsonb; pg jsonb; sect jsonb; joined text; n0 bigint;
+  aal2 text := json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','password','timestamp',extract(epoch from now())::bigint - 3000),json_build_object('method','totp','timestamp',extract(epoch from now())::bigint)))::text; r jsonb; base jsonb; pg jsonb; sect jsonb; joined text; n0 bigint;
 begin
   insert into auth.users (id, email) values (p1,'p1@x'),(p2,'p2@x'),(att,'att@x'),(adm,'admin@x');
   insert into public.lalum_profiles (id, is_admin) values (adm, true);
@@ -82,6 +82,40 @@ begin
   perform t.fails(format('select public.lalum_firm_export_originals_page(%L)', f1), 'FORBIDDEN', 'an attorney cannot list the originals');
   perform t.as_user(p2, aal2);
   perform t.fails(format('select public.lalum_firm_export_page(%L,%L)', f1, 'lalum_cockpit_matters'), 'FORBIDDEN', 'a partner of another firm cannot read a page');
+
+  -- a second factor entered in the last 10 minutes is part of the gate (0080); an aal2 session alone is not enough
+  perform t.as_user(p1, json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','totp','timestamp',extract(epoch from now())::bigint - 700)))::text);
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'a second factor older than 10 minutes is refused');
+  perform t.fails(format('select public.lalum_firm_export_page(%L,%L)', f1, 'lalum_cockpit_matters'), 'FORBIDDEN', 'the page call is gated the same way (no skipping the manifest)');
+  perform t.fails(format('select public.lalum_firm_export_originals_page(%L)', f1), 'FORBIDDEN', 'and so is the originals list');
+  perform t.as_user(p1, '{"aal":"aal2"}');
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'an aal2 session with no second factor entry is refused');
+  perform t.as_user(p1, json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','password','timestamp',extract(epoch from now())::bigint)))::text);
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'a fresh password entry is not a second factor');
+  perform t.as_user(p1, json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','totp','timestamp',extract(epoch from now())::bigint + 3600)))::text);
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'a second factor stamped in the future is refused');
+  perform t.as_user(p1, json_build_object('aal','aal1','amr',json_build_array(json_build_object('method','totp','timestamp',extract(epoch from now())::bigint)))::text);
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'a fresh entry without aal2 is refused');
+  perform t.as_user(adm, json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','totp','timestamp',extract(epoch from now())::bigint - 700)))::text);
+  perform t.fails(format('select public.lalum_firm_export_manifest(%L)', f1), 'FORBIDDEN', 'the platform admin needs the fresh factor too');
+  perform t.as_user(p1, json_build_object('aal','aal2','amr',json_build_array(json_build_object('method','totp','timestamp',extract(epoch from now())::bigint - 590)))::text);
+  perform t.eq(jsonb_typeof(public.lalum_firm_export_page(f1, 'lalum_cockpit_matters', 0, 1)), 'object', 'a second factor 590 seconds old still passes');
+  reset role;
+  perform t.eq((select count(*) from public.lalum_matter_audit_log where firm_id = f1 and action = 'FIRM_EXPORT_MANIFEST'), 0::bigint, 'and the refusals left no manifest row');
+  -- the status the screen asks before starting
+  perform t.as_user(p1, aal2);
+  perform t.eq(public.lalum_export_status(f1), jsonb_build_object('eligible', true, 'fresh', true, 'window_seconds', 600), 'status: eligible and fresh');
+  perform t.as_user(p1, '{"aal":"aal2"}');
+  perform t.eq(public.lalum_export_status(f1), jsonb_build_object('eligible', true, 'fresh', false, 'window_seconds', 600), 'status: eligible but a code is needed');
+  perform t.as_user(att, aal2);
+  perform t.eq((public.lalum_export_status(f1) ->> 'eligible')::boolean, false, 'status: an attorney is not eligible');
+  perform t.as_user(p2, aal2);
+  perform t.eq((public.lalum_export_status(f1) ->> 'eligible')::boolean, false, 'status: a partner of another firm is not eligible');
+  reset role;
+  perform t.eq(has_function_privilege('authenticated', 'public.lalum_export_status(uuid)', 'execute'), true, 'the status is callable by a signed in user');
+  perform t.eq(has_function_privilege('anon', 'public.lalum_export_status(uuid)', 'execute'), false, 'but not by anon');
+  perform t.eq(has_function_privilege('authenticated', 'public.lalum_mfa_age_seconds()', 'execute'), false, 'the age helper is internal');
+  perform t.eq(has_function_privilege('authenticated', 'public.lalum_export_role_ok(uuid)', 'execute'), false, 'so is the role check');
 
   -- the manifest (partner of the firm)
   perform t.as_user(p1, aal2);

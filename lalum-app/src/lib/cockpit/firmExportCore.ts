@@ -301,9 +301,18 @@ export async function buildPackage(ports: Ports, opts: { pageSize?: number; volu
 
 /** The manifest call can fail for very different reasons, and one message for all of them sent the owner to look for a missing permission when the session had expired
  *  (2026-10-22: HTTP 401 shown as "no permission"). The detail is the database or network error text; it is matched, and a short unknown one is shown, never a row. */
+/** What lalum_export_status (0080) answers: whether the caller may export at all, and whether a second factor was entered recently enough. */
+export type ExportStatus = { eligible: boolean; fresh: boolean; windowSeconds: number };
+export function parseExportStatus(raw: unknown): ExportStatus | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  if (typeof o.eligible !== "boolean" || typeof o.fresh !== "boolean") return null;
+  return { eligible: o.eligible, fresh: o.fresh, windowSeconds: typeof o.window_seconds === "number" ? o.window_seconds : 600 };
+}
+
 export function manifestErrorText(detail: string): string {
   const d = String(detail ?? "");
-  if (/FORBIDDEN/.test(d)) return "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה, אימות דו שלבי והרשאה פיננסית. לא נוצר קובץ.";
+  if (/FORBIDDEN/.test(d)) return "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה, הרשאה פיננסית וקוד אימות דו שלבי שהוזן ב-10 הדקות האחרונות. אם עבר זמן, יש ללחוץ שוב על הייצוא ולהזין קוד. לא נוצר קובץ.";
   if (/JWT|expired|PGRST30|401|not authenticated/i.test(d)) return "ההתחברות פגה. יש לרענן את הדף, להתחבר מחדש ולנסות שוב. לא נוצר קובץ.";
   if (/timeout|57014|statement/i.test(d)) return "הבקשה לשרת ארכה יותר מדי ונקטעה. אפשר לנסות שוב; אם זה חוזר, יש לפנות לתמיכה. לא נוצר קובץ.";
   if (/fetch|network|offline|aborted/i.test(d)) return "אין תקשורת עם השרת. יש לבדוק את החיבור ולנסות שוב. לא נוצר קובץ.";
