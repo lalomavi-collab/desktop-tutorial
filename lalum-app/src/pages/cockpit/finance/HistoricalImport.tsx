@@ -33,11 +33,20 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  *   ledger below books it as a business expense, and that later, more authoritative call is the one
  *   reflected in the data now.)
  *
- * One row added outside the four-month pilot batch: a Cellcom Energy electricity invoice supplied
- * directly by the user as a PDF (account 403733457, bill 380230665), billed to the home address
- * (האיריסים 8, נתניה) rather than the office. Confirmed by the user as a business expense to import
- * in full. This is a different Cellcom Energy account from the one already noted above as "no invoice
- * found" (377724412); that gap is still open.
+ * Rows added outside the four-month pilot batch: Cellcom Energy electricity invoices supplied directly
+ * by the user as a PDF (account 403733457, bill series 380230665), billed to the home address (האיריסים
+ * 8, נתניה) rather than the office. Confirmed by the user as a business expense to import in full. This
+ * is a different Cellcom Energy account from the one already noted above as "no invoice found"
+ * (377724412); that gap is still open.
+ * - The October row (₪791.02) comes from the full invoice PDF itself, with an exact date and VAT split.
+ * - The May through September rows (₪540, ₪562, ₪1331, ₪1163, ₪1404) come only from a payment-history
+ *   table printed on that same October invoice ("סכום לתשלום בחודשים מאי-26 אוקטובר 26"); there is no
+ *   individual invoice PDF for any of them. The user confirmed this table is good enough to import from.
+ *   Their exact issue dates are not known, so each is dated the 18th of its month to match the one
+ *   confirmed pattern (the October bill, issued 18.10, for September's consumption); this is a dated
+ *   approximation, not a confirmed fact, and each row's description and ref say so. Their VAT is
+ *   likewise not stated per bill, so it is computed with vatIncluded() at the standard 18% rate the
+ *   October invoice itself uses, not read off a document.
  *
  * Source convention from this point on (set by the user, October 2026): expense documents come from
  * the same two bookkeeping mailboxes already used for the pilot, plus a fixed local folder named
@@ -161,6 +170,16 @@ const ROWS: Row[] = [
 
   { spent_on: "2026-10-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, תקופה 9/2026, האיריסים 8 נתניה",
     total: 791.02, vat_amount: 120.66, vat_recoverable_pct: 100, ref: "380230665", source: "חשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-05-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
+    total: 540.00, vat_amount: vatIncluded(540.00), vat_recoverable_pct: 100, ref: "380230665-05", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-06-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
+    total: 562.00, vat_amount: vatIncluded(562.00), vat_recoverable_pct: 100, ref: "380230665-06", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-07-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
+    total: 1331.00, vat_amount: vatIncluded(1331.00), vat_recoverable_pct: 100, ref: "380230665-07", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-08-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
+    total: 1163.00, vat_amount: vatIncluded(1163.00), vat_recoverable_pct: 100, ref: "380230665-08", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-09-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
+    total: 1404.00, vat_amount: vatIncluded(1404.00), vat_recoverable_pct: 100, ref: "380230665-09", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
   { spent_on: "2026-10-04", supplier: "Apple (iCloud+)", category: "SOFTWARE", description: "iCloud+ 50GB",
     total: 3.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "MMQH8Y287S", source: "קבלת Apple, 4.10.2026" },
   { spent_on: "2026-10-03", supplier: "ניהול חשבונות ישיר", category: "SOFTWARE", description: "שעון נוכחות",
