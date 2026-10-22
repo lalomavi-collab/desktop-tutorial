@@ -375,11 +375,11 @@
 /* Page titles (design lane): the display serif at a larger size, with a short sage rule at the start of the line, the
    way the public site sets a section opening. The same on every cockpit screen, so the dashboard title and the others read as one set. */
 .ck-root[data-ck-theme] .ck-top h1 {
-  font-family: var(--ck-display); font-weight: 500; letter-spacing: -.012em;
-  font-size: clamp(30px, 4.2vw, 40px); line-height: 1.12; color: var(--ink); margin: 0;
+  font-family: var(--ck-display); font-weight: 400; letter-spacing: 0;
+  font-size: clamp(46px, 5.4vw, 62px); line-height: 1.04; color: var(--ink); margin: 0;
   padding-inline-start: 14px; border-inline-start: 4px solid var(--clay); border-radius: 1px;
 }
-@media (max-width: 640px) { .ck-root[data-ck-theme] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
+@media (max-width: 640px) { .ck-root[data-ck-theme] .ck-top h1 { font-size: 46px; padding-inline-start: 12px; } }
 
 /* Rail, second pass: larger buttons, the six everyday screens first with "עוד" for the rest, and the theme switch at the top of the rail. */
 .ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore {
@@ -407,18 +407,21 @@
   .ck-sidebar-nav button.ck-railmore span { display: none; }
 }
 
-/* Billing and firm settings: the display serif of the home page for card titles, section labels and the big figures,
-   so this screen reads like the rest of the cockpit. Layout is untouched (the wrapper adds no box). */
+/* Billing and firm settings: card titles and section labels take the heading face (sizes below); the big figures and the tab
+   buttons stay in the Lalum Serif, because digits and button text are not headings. Layout is untouched (the wrapper adds no box). */
 .ck-billing { display: contents; }
-.ck-billing .ck-title, .ck-billing .ck-label, .ck-billing .fin-figure, .ck-billing .fin-kpi, .ck-billing .fin-rubric, .ck-billing .fin-tabs .ck-btn {
-  font-family: var(--ck-display); letter-spacing: -.005em;
-}
-.ck-billing .ck-title { font-size: 19px; font-weight: 500; }
-.ck-billing .ck-label { font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--ink); margin: 10px 0 -2px; }
+.ck-billing .fin-figure, .ck-billing .fin-kpi, .ck-billing .fin-rubric, .ck-billing .fin-tabs .ck-btn { font-family: var(--ck-serif); letter-spacing: -.005em; }
+.ck-billing .ck-label { font-size: 28px; font-weight: 400; letter-spacing: 0; line-height: 1.1; color: var(--ink); margin: 12px 0 -2px; }
 .ck-billing .fin-figure { font-weight: 500; font-size: 30px; }
 .ck-billing .fin-kpi { font-weight: 500; font-size: 24px; }
 
-/* One heading face for the whole cockpit, the same stack the public site's --serif resolves to (sovereign.css), so a heading here and a heading
-   on the home page are the same typeface. Every screen: page titles, section and card titles, document headings. Weight 500 (real face). */
-.ck-root { --ck-display: "Lalum Serif", "Frank Ruhl Libre", "David Libre", Georgia, serif; }
-.ck-root :is(h1, h2, h3, h4), .ck-root .ck-title, .ck-root .ck-hero-title, .ck-root .ck-doc h2 { font-family: var(--ck-display); font-weight: 500; letter-spacing: 0; }
+/* One heading face for the whole cockpit: the signature hand of the home page headline "AI שאפשר להגן עליו" (Amatic SC, owner request,
+   22.10.2026), with the public site's serif stack as the fallback. Amatic runs small and narrow for its size, so sizes follow the public
+   site's scale (headlines about 1.7 times the serif, card titles about 1.5 times). Regular weight only; Arabic is not used in the cockpit.
+   --ck-serif is the serif itself, for figures and buttons. Revert by deleting this block and the matching one in cockpit-dashboard.css. */
+.ck-root { --ck-serif: "Lalum Serif", "Frank Ruhl Libre", "David Libre", Georgia, serif; --ck-display: "Amatic SC", var(--ck-serif); }
+.ck-root :is(h1, h2, h3, h4), .ck-root .ck-title, .ck-root .ck-hero-title, .ck-root .ck-doc h2 { font-family: var(--ck-display); font-weight: 400; letter-spacing: 0; line-height: 1.1; text-wrap: balance; }
+.ck-root h2, .ck-root .ck-doc h2 { font-size: 40px; }
+.ck-root h3, .ck-root h4 { font-size: 32px; }
+.ck-root .ck-hero-title { font-size: clamp(34px, 4vw, 44px); }
+.ck-root .ck-title { font-size: 25px; line-height: 1.15; }
