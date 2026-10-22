@@ -164,6 +164,10 @@ begin
   perform t.eq(has_function_privilege('anon', 'public.lalum_firm_export_manifest(uuid)', 'execute'), false, 'anon cannot execute the manifest');
   perform t.eq(has_function_privilege('authenticated', 'public.lalum_export_allowed(uuid)', 'execute'), false, 'the internal gate is not callable');
   perform t.eq(has_function_privilege('authenticated', 'public.lalum_export_classification()', 'execute'), false, 'nor the classification');
+  -- an unclassified firm table stops the real export with INCOMPLETE, as lalum_fin_doc_sends and lalum_name_reveal_grants did on 2026-10-22 (base is the unclassified list read above)
+  perform t.eq(base ? 'lalum_fin_doc_sends' or base ? 'lalum_name_reveal_grants', false, 'neither of them is reported as unclassified');
+  perform t.eq((public.lalum_export_classification() -> 'included') ? 'lalum_fin_doc_sends', true, 'the document send log is in the package');
+  perform t.eq((public.lalum_export_classification() -> 'included') ? 'lalum_name_reveal_grants', true, 'so are the name reveal grants');
 
   raise exception 'ALL_PASSED_ROLLBACK';
 exception when others then
