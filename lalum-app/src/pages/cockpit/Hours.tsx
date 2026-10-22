@@ -198,7 +198,7 @@ function SessionsPanel({ firmId, from, onChanged }: { firmId: string; from: stri
 }
 
 function Kpi({ title, value, sub }: { title: string; value: string; sub?: string }) {
-  return <div className="ck-card"><div className="ck-meta">{title}</div><div className="ck-title" style={{ fontSize: 24 }}>{value}</div>{sub && <div className="ck-meta">{sub}</div>}</div>;
+  return <div className="ck-card"><div className="ck-meta">{title}</div><div className="fin-kpi" style={{ fontSize: 24 }}>{value}</div>{sub && <div className="ck-meta">{sub}</div>}</div>;
 }
 
 /** Presence against logged against billable, per person and per matter. */

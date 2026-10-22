@@ -61,7 +61,7 @@ export function ConflictReview({ matterId, conflictStatus, canDecide, onChange }
               <div className="ck-label">תיקים החולקים צד</div>
               {rows.map((r, i) => (
                 <div key={`${r.matter_id}-${i}`} className="ck-card ck-row" style={{ justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                  <span className="ck-title" style={{ fontSize: 15 }}>{r.title}</span>
+                  <span className="ck-title">{r.title}</span>
                   <span className="ck-row" style={{ gap: 6 }}>
                     <span className="ck-chip">{ROLE_HE[r.role] ?? r.role}</span>
                     {r.kind && <span className="ck-chip">{KIND_HE[r.kind] ?? r.kind}</span>}

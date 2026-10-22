@@ -73,7 +73,7 @@ export function MatterAccess({ matterId, department, canManage, onChange }: {
           <div key={p.user_id} className="ck-card ck-stack" style={{ gap: 6 }}>
             <label className="ck-row" style={{ gap: 8, alignItems: "center" }}>
               <input type="checkbox" checked={assigned.has(p.user_id)} onChange={(e) => void toggle(p.user_id, e.target.checked)} />
-              <span className="ck-title" style={{ fontSize: 15 }}>{p.name}</span>
+              <span className="ck-title">{p.name}</span>
               <span className="ck-chip">{ROLE[p.role] ?? p.role}</span>
             </label>
             {p.role === "FIRM_PARTNER" && (
