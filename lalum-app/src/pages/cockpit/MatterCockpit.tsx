@@ -392,7 +392,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
 
       {drawer && (
         <aside className="ck-drawer" aria-label="בודק PII">
-          <div className="ck-row" style={{ justifyContent: "space-between" }}><h2 className="serif" style={{ margin: 0, fontSize: 17 }}>בודק PII</h2><button className="ck-btn" onClick={() => setDrawer(false)}>סגירה</button></div>
+          <div className="ck-row" style={{ justifyContent: "space-between" }}><h2 className="serif" style={{ margin: 0 }}>בודק PII</h2><button className="ck-btn" onClick={() => setDrawer(false)}>סגירה</button></div>
           <div className="ck-meta">{map ? "הבודק מציג אסימונים מול הטקסט המקורי מהדפדפן שבו הועלה המסמך ובסשן הנוכחי בלבד. הקובץ המקורי עצמו נשמר בכספת התיק." : "מיפוי הזהויות אינו נשמר בשרת ואינו זמין. ניתן לראות את ההשוואה לטקסט המקורי רק בסשן שבו הועלה המסמך. הקובץ המקורי נשמר בכספת התיק."}</div>
           <div className="ck-row"><button className={`ck-btn${showOrig ? "" : " primary"}`} onClick={() => setShowOrig(false)}>מוסתר</button><button className={`ck-btn${showOrig ? " primary" : ""}`} disabled={!map} onClick={() => setShowOrig(true)}>מקור</button></div>
           <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>אסימון</th><th>סוג</th><th>ערך</th></tr></thead><tbody>

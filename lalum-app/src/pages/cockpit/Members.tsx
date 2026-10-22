@@ -109,7 +109,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
       {people.length === 0 ? <div className="ck-card"><div className="ck-meta">אין חברי פירמה להצגה.</div></div> : people.map((p) => (
         <div key={p.user_id} className="ck-card ck-stack" style={{ gap: 10 }}>
           <div className="ck-row" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <span className="ck-title" style={{ fontSize: 16 }}>{p.name}</span>
+            <span className="ck-title">{p.name}</span>
             <span className="ck-chip">{ROLE[p.role] ?? p.role}</span>
           </div>
 
@@ -148,7 +148,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
       {msg && <span className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite" style={{ padding: "6px 12px" }}>{msg.text}</span>}
       {canAdmin && (
         <div className="ck-card ck-stack" style={{ gap: 10 }}>
-          <div className="ck-title" style={{ fontSize: 16 }}>הוספת הנהלת חשבונות</div>
+          <div className="ck-title">הוספת הנהלת חשבונות</div>
           <div className="ck-meta">
             קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה בסיסמה בלבד, בלי אימות דו שלבי (החלטת הבעלים). ההרשאה שלה קבועה: צפייה והורדה של חומרים בלבד (רמה 1), ובלשונית ההרשאות אפשר רק להוריד אותה לרמה 0.
           </div>
