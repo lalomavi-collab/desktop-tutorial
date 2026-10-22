@@ -1,11 +1,14 @@
 // lalum-fin-doc-send: sends one ISSUED finance document, or one history archive document, to the customer by e-mail, on a partner's explicit action.
 //
-// POST { document_id | archive_id, include_customer?: boolean, extra?: string | string[], copy_to_me?: boolean, subject?, body? }
+// POST { document_id | archive_id, include_customer?: boolean, extra?: string | string[], copy_to_me?: boolean, subject?, body?, pdf_base64? }
 //  * The customer's address is read from the customer record, never from the request. Extra addresses (up to 6 recipients in all) are
 //    typed by the partner and each one is validated. The partner's own copy goes as bcc.
 //  * An archive document (archive_id) has its customer found through the provider's client number, and its PDF link is asked of
 //    lalum-fin-archive-pdf with the caller's own token. When that function has no link the call fails with archive_link_unavailable
 //    and nothing is reserved or sent.
+//  * pdf_base64 (archive documents only, up to 4 MB, must start with the PDF signature) is a PDF the partner downloaded from the history
+//    system and attached by hand. It replaces the link lookup, so a history document can be sent while the provider returns no link. The
+//    mail then carries the file and no link. A file on a ledger document is refused.
 //  * The document must be ISSUED and have a PDF link. A TEST document (trial environment) can only be sent to the partner's own address.
 //  * The PDF is attached when it can be fetched (https, up to 8 MB, 10 seconds). When it cannot, the mail still goes out with the link
 //    and the reply says attached:false. The link is always in the body.
@@ -17,7 +20,7 @@
 // Env: RESEND_API_KEY, LALUM_FROM_EMAIL, LALUM_REPLY_TO. SUPABASE_URL and SUPABASE_ANON_KEY are injected.
 // Access: finance level 3 with MFA, decided by the database with the caller's own JWT.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { ARCHIVE_TYPE, cleanSubject, defaultSubject, docEmailHtml, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename } from "../_shared/docSend.ts";
+import { ARCHIVE_TYPE, cleanSubject, defaultSubject, docEmailHtml, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, validPdfBase64 } from "../_shared/docSend.ts";
 
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -66,15 +69,19 @@ Deno.serve(async (req) => {
   const { data: allowed } = firmId ? await asUser.rpc("lalum_fin_can", { p_firm: firmId, p_min: 3 }) : { data: false };
   if (!firmId || allowed !== true) return json(403, { code: "forbidden" });
 
-  let b: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string };
+  let b: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string };
   try { b = await req.json(); } catch { return json(400, { code: "bad_json" }); }
   if (!b.document_id === !b.archive_id) return json(400, { code: "bad_request" });
   const body = String(b.body ?? "").trim();
   if (body.length > 2000) return json(400, { code: "bad_content" });
+  // A hand attached PDF is only for archive documents, and only a real, small PDF.
+  const hasUpload = b.pdf_base64 !== undefined && b.pdf_base64 !== null && b.pdf_base64 !== "";
+  if (hasUpload && !b.archive_id) return json(400, { code: "bad_request" });
+  if (hasUpload && !validPdfBase64(b.pdf_base64)) return json(400, { code: "bad_pdf" });
   if (!env("RESEND_API_KEY")) return json(500, { code: "mail_not_configured" });
 
   // ---- the document: a ledger document, or an archive document with its link asked of the archive function ----
-  interface Target { id: string; docType: string; docNumber: number | null; pdfUrl: string; isTest: boolean; customerEmail: string | null }
+  interface Target { id: string; docType: string; docNumber: number | null; pdfUrl: string | null; isTest: boolean; customerEmail: string | null }
   let t: Target;
   if (b.document_id) {
     const { data: d } = await asUser.from("lalum_fin_documents").select("id, firm_id, customer_id, doc_type, status, doc_number, pdf_url, is_test").eq("id", b.document_id).maybeSingle();
@@ -94,7 +101,8 @@ Deno.serve(async (req) => {
       customerEmail = c?.email ?? null;
     }
     let link: string | null = null;
-    try {
+    // With a hand attached PDF the provider is not asked at all.
+    if (!hasUpload) try {
       const res = await fetch(`${url}/functions/v1/lalum-fin-archive-pdf`, {
         method: "POST", headers: { authorization: req.headers.get("Authorization") ?? "", apikey: anon, "content-type": "application/json" },
         body: JSON.stringify({ archive_id: a.id }),
@@ -102,7 +110,7 @@ Deno.serve(async (req) => {
       const j = await res.json().catch(() => ({})) as { ok?: boolean; url?: string };
       link = j.ok && typeof j.url === "string" ? j.url : null;
     } catch { link = null; }
-    if (!link) return json(409, { code: "archive_link_unavailable" });
+    if (!hasUpload && !link) return json(409, { code: "archive_link_unavailable" });
     t = { id: a.id, docType: ARCHIVE_TYPE[Number(a.i4u_doc_type)] ?? "", docNumber: a.doc_number ?? null, pdfUrl: link, isTest: false, customerEmail };
   }
 
@@ -126,14 +134,14 @@ Deno.serve(async (req) => {
   }
 
   // ---- send ----
-  const pdf = await fetchPdf(t.pdfUrl);
+  const pdf = hasUpload ? (b.pdf_base64 as string) : t.pdfUrl ? await fetchPdf(t.pdfUrl) : null;
   let ok = false, ref: string | null = null, err: string | null = null;
   try {
     const from = env("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>", replyTo = env("LALUM_REPLY_TO") ?? "avraham@lalum.co";
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST", headers: { Authorization: `Bearer ${env("RESEND_API_KEY")}`, "content-type": "application/json" },
       body: JSON.stringify({
-        from, reply_to: replyTo, to: r.to, ...(r.bcc.length ? { bcc: r.bcc } : {}), subject, html: docEmailHtml(body, t.pdfUrl, pdf !== null),
+        from, reply_to: replyTo, to: r.to, ...(r.bcc.length ? { bcc: r.bcc } : {}), subject, html: docEmailHtml(body, hasUpload ? null : t.pdfUrl, pdf !== null),
         ...(pdf ? { attachments: [{ filename: safeFilename(t.docType, t.docNumber), content: pdf }] } : {}),
       }),
     });

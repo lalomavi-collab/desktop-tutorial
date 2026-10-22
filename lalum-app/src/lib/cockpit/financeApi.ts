@@ -160,7 +160,7 @@ const SCAN_ERRORS: Record<string, string> = {
 };
 export const scanReceiptError = (r: ScanReceiptReply): string => SCAN_ERRORS[r.code ?? ""] ?? "קריאת החשבונית נכשלה. אפשר למלא ידנית.";
 
-const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+export const fileToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onload = () => {
     const s = String(reader.result ?? "");
@@ -203,13 +203,14 @@ const DOC_SEND_ERRORS: Record<string, string> = {
   no_own_email: "לא נמצאה כתובת דוא\"ל להתחברות שלכם.", no_recipient: "לא נבחר נמען.", bad_address: "אחת הכתובות אינה תקינה.",
   too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
   archive_link_unavailable: "מערכת ההיסטוריה לא החזירה קישור למסמך הזה, ולכן אי אפשר לשלוח אותו כרגע. אפשר לנסות שוב מאוחר יותר.",
+  bad_pdf: "הקובץ המצורף אינו PDF תקין, או שהוא גדול מדי (עד 4MB).",
   duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
   send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
 };
 export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
 
 /** Sends one issued document by e-mail on a partner's click. The customer's address comes from the customer record on the server. */
-export async function sendDocument(body: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string }): Promise<SendDocumentReply> {
+export async function sendDocument(body: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string }): Promise<SendDocumentReply> {
   if (!supabase) return { ok: false, code: "fetch_failed" };
   const { data } = await supabase.auth.getSession();
   const ctl = new AbortController();
