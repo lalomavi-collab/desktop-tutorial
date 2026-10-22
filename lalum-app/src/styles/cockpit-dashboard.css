@@ -121,10 +121,10 @@
 .db-wf-names { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; font-size: 16px; color: var(--slate); }
 @media (max-width: 560px) { .db-wf-val { font-size: 17px; } }
 
-/* Dashboard headings in the display serif of the home page: the greeting, every card title and the bookkeeping section's titles,
-   in the light and the dark theme. Weight 500 (Lalum Serif has real faces; 800 would be a synthetic bold) and a size that reads as a title. */
+/* Dashboard headings in the heading face of the cockpit (--ck-display, Amatic SC like the home headline): the greeting, every card title and
+   the bookkeeping section's titles, in the light and the dark theme. */
 .ck-root[data-ck-theme] .db-card h3, .ck-root[data-ck-theme] .db-head h3, .ck-root[data-ck-theme] .db-hello strong {
-  font-family: var(--ck-display); font-weight: 500; letter-spacing: -.005em; color: var(--ink);
+  font-family: var(--ck-display); font-weight: 400; letter-spacing: 0; color: var(--ink);
 }
-.ck-root[data-ck-theme] .db-card h3, .ck-root[data-ck-theme] .db-head h3 { font-size: 21px; line-height: 1.2; }
-.ck-root[data-ck-theme] .db-hello strong { font-size: 22px; line-height: 1.15; }
+.ck-root[data-ck-theme] .db-card h3, .ck-root[data-ck-theme] .db-head h3 { font-size: 34px; line-height: 1.05; }
+.ck-root[data-ck-theme] .db-hello strong { font-size: 30px; line-height: 1.05; }
