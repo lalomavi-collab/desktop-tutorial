@@ -2,8 +2,9 @@
 // Run with: npm run whatsapp-templates-check
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { templates, payload, EXAMPLE, meta } from "./whatsapp-dunning-templates.mjs";
+import { templates, payload, EXAMPLE, meta, documentTemplate, documentPayload, DOC_EXAMPLE } from "./whatsapp-dunning-templates.mjs";
 import { templateName, templateParams } from "../../supabase/functions/_shared/dunning.ts";
+import { documentTemplateName, documentTemplateParams } from "../../supabase/functions/_shared/docSend.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 
@@ -42,4 +43,28 @@ t("the examples do not break Meta's rule against newlines and long spaces inside
 t("no dash is used as punctuation in the template text", () => {
   const raw = readFileSync(new URL("./whatsapp-dunning-templates.json", import.meta.url), "utf8");
   assert.ok(!/[—–]| - /.test(raw));
+});
+
+t("the document template is named the way the sender looks it up and fills exactly three variables, in order: type, number, link", () => {
+  assert.equal(documentTemplateName((k) => (k === "WHATSAPP_DOCUMENT_TEMPLATE" ? documentTemplate.name : undefined)), documentTemplate.name);
+  assert.deepEqual([...documentTemplate.body.matchAll(/\{\{(\d+)\}\}/g)].map((m) => Number(m[1])), [1, 2, 3]);
+  assert.equal(DOC_EXAMPLE.length, 3);
+  assert.deepEqual(documentPayload().components[0].example.body_text[0], DOC_EXAMPLE);
+  assert.ok(!templates.some((x) => x.name === documentTemplate.name));
+});
+t("the document template follows Meta's body rules", () => {
+  const b = documentTemplate.body;
+  assert.ok(b.length <= 1024);
+  assert.ok(!/^\s*\{\{/.test(b) && !/\}\}\s*[.!?]?\s*$/.test(b) && !/\}\}\s*\{\{/.test(b));
+  assert.ok(!/\n\s*\n|\t| {4,}/.test(b));
+  assert.ok(b.split(/\s+/).length >= 20);
+  assert.equal(documentPayload().language, "he"); assert.equal(documentPayload().category, "UTILITY");
+  assert.ok(/^[a-z0-9_]+$/.test(documentTemplate.name));
+});
+t("the document template gets an https link and nothing else, and no dash is used as punctuation", () => {
+  assert.equal(documentTemplateParams("INVOICE", 5, "http://x.co/a.pdf"), null);
+  assert.equal(documentTemplateParams("INVOICE", 5, "https://x.co/a b.pdf"), null);
+  assert.equal(documentTemplateParams("INVOICE", 5, null), null);
+  assert.deepEqual(documentTemplateParams("INVOICE", 5, "https://x.co/a.pdf"), ["חשבונית מס", "5", "https://x.co/a.pdf"]);
+  assert.ok(!/[—–]| - /.test(documentTemplate.body));
 });

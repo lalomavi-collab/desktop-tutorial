@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
-import { CONSENT_BASIS, customerGaps, customerProblems, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
+import { CONSENT_BASIS, customerGaps, customerProblems, isMobile, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
 import { rpcError } from "../../../lib/cockpit/financeApi";
 import { CustomersImport } from "./CustomersImport";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
-type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean; ret: boolean; retDesc: string; retAmt: string };
-const blank: Draft = { name: "", tax_id: "", email: "", phone: "", address: "", city: "", notes: "", i4u: "", casual: false, ret: false, retDesc: "", retAmt: "" };
+type Draft = { name: string; tax_id: string; email: string; phone: string; address: string; city: string; notes: string; i4u: string; casual: boolean; ret: boolean; retDesc: string; retAmt: string; wa: boolean; waBasis: string };
+const blank: Draft = { name: "", tax_id: "", email: "", phone: "", address: "", city: "", notes: "", i4u: "", casual: false, ret: false, retDesc: "", retAmt: "", wa: false, waBasis: "FORM" };
 
 export function CustomersTab({ firmId, customers, onChange }: { firmId: string; customers: FinCustomer[]; onChange: () => void }) {
   const [editing, setEditing] = useState<string | null>(null);
@@ -21,7 +21,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
 
   function open(c?: FinCustomer) {
     setEditing(c?.id ?? "new"); setMsg(null);
-    setF(c ? { name: c.name, tax_id: c.tax_id ?? "", email: c.email ?? "", phone: c.phone ?? "", address: c.address ?? "", city: c.city ?? "", notes: c.notes ?? "", i4u: c.i4u_customer_id ? String(c.i4u_customer_id) : "", casual: c.is_casual, ret: c.retainer_active, retDesc: c.retainer_description ?? "", retAmt: c.retainer_amount != null ? String(c.retainer_amount) : "" } : blank);
+    setF(c ? { name: c.name, tax_id: c.tax_id ?? "", email: c.email ?? "", phone: c.phone ?? "", address: c.address ?? "", city: c.city ?? "", notes: c.notes ?? "", i4u: c.i4u_customer_id ? String(c.i4u_customer_id) : "", casual: c.is_casual, ret: c.retainer_active, retDesc: c.retainer_description ?? "", retAmt: c.retainer_amount != null ? String(c.retainer_amount) : "", wa: false, waBasis: "FORM" } : blank);
   }
   async function save() {
     if (!supabase) return;
@@ -34,10 +34,19 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
       i4u_customer_id: f.casual ? null : f.i4u ? Number(f.i4u) : null,
       retainer_active: f.casual ? false : f.ret, retainer_description: f.ret ? f.retDesc.trim() : null, retainer_amount: f.ret ? Number(f.retAmt) : null,
     };
-    const { error } = isNew
-      ? await supabase.from("lalum_fin_customers").insert({ ...row, firm_id: firmId, is_casual: f.casual })
-      : await supabase.from("lalum_fin_customers").update(row).eq("id", editing);
+    if (isNew && f.wa && !isMobile(f.phone)) { setMsg({ ok: false, text: "הסכמה ל-WhatsApp נרשמת רק עם מספר נייד תקין." }); return; }
+    let error: { message: string } | null;
+    let createdId: string | null = null;
+    if (isNew) {
+      const r = await supabase.from("lalum_fin_customers").insert({ ...row, firm_id: firmId, is_casual: f.casual }).select("id").single();
+      error = r.error; createdId = (r.data as { id: string } | null)?.id ?? null;
+    } else error = (await supabase.from("lalum_fin_customers").update(row).eq("id", editing)).error;
     if (error) { setMsg({ ok: false, text: error.message }); return; }
+    // The consent is recorded through the same function as the consent button, so the database keeps who gave it and on what basis.
+    if (createdId && f.wa) {
+      const { error: ce } = await supabase.rpc("lalum_fin_set_whatsapp_consent", { p_customer: createdId, p_given: true, p_basis: f.waBasis, p_note: null });
+      if (ce) { setEditing(null); onChange(); setMsg({ ok: false, text: `הלקוח נשמר, אך רישום ההסכמה נכשל: ${rpcError(ce.message)}` }); return; }
+    }
     setEditing(null); onChange();
   }
   /** Records or withdraws the customer's consent to WhatsApp messages. The database enforces it when a reminder is sent. */
@@ -83,12 +92,13 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
               לקוח מזדמן (בלי כרטיס במערכת ההנפקה, שם בלבד)
             </label>
           )}
+          <div className="ck-meta">כל מסמך שמופק ללקוח נשלח אליו אוטומטית בדוא"ל, ובנוסף ב-WhatsApp כשיש נייד תקין והסכמה רשומה.</div>
           {f.casual && <div className="ck-meta">לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי. לכל מסמך אחר פתחו לקוח רגיל.</div>}
           <div className="ck-grid2">
             <label className="ck-field">שם<input className="ck-input" value={f.name} onChange={set("name")} /></label>
             <label className="ck-field">ת.ז. / ח.פ.<input className="ck-input" dir="ltr" inputMode="numeric" value={f.tax_id} onChange={set("tax_id")} /></label>
-            <label className="ck-field">דוא"ל{isNew && !f.casual ? " (חובה)" : ""}<input className="ck-input" dir="ltr" type="email" value={f.email} onChange={set("email")} /></label>
-            <label className="ck-field">טלפון<input className="ck-input" dir="ltr" inputMode="tel" value={f.phone} onChange={set("phone")} /></label>
+            <label className="ck-field">דוא"ל (חובה)<input className="ck-input" dir="ltr" type="email" value={f.email} onChange={set("email")} /></label>
+            <label className="ck-field">נייד ל-WhatsApp (מומלץ)<input className="ck-input" dir="ltr" inputMode="tel" value={f.phone} onChange={set("phone")} /></label>
             <label className="ck-field">כתובת<input className="ck-input" value={f.address} onChange={set("address")} /></label>
             <label className="ck-field">עיר<input className="ck-input" value={f.city} onChange={set("city")} /></label>
             {!f.casual && <label className="ck-field">מספר לקוח במערכת ההנפקה (אם הלקוח כבר קיים שם)<input className="ck-input" dir="ltr" inputMode="numeric" value={f.i4u} onChange={set("i4u")} /></label>}
@@ -102,6 +112,20 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
                   <label className="ck-field">תיאור השורה<input className="ck-input" maxLength={500} value={f.retDesc} onChange={set("retDesc")} /></label>
                   <label className="ck-field">סכום לפני מע"מ<input className="ck-input" dir="ltr" inputMode="decimal" value={f.retAmt} onChange={set("retAmt")} /></label>
                 </div>
+              )}
+            </div>
+          )}
+          {isNew && (
+            <div className="ck-card ck-stack" data-testid="wa-consent-new">
+              <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <input type="checkbox" checked={f.wa} disabled={!isMobile(f.phone)} onChange={(e) => setF({ ...f, wa: e.target.checked })} />
+                הלקוח הסכים לקבל מסמכים והודעות ב-WhatsApp
+              </label>
+              {!isMobile(f.phone) && <div className="ck-meta">הזינו נייד תקין כדי לרשום הסכמה.</div>}
+              {f.wa && (
+                <label className="ck-field">על מה מבוססת ההסכמה
+                  <select className="ck-select" value={f.waBasis} onChange={set("waBasis")}>{Object.entries(CONSENT_BASIS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+                </label>
               )}
             </div>
           )}

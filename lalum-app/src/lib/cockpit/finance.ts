@@ -270,25 +270,37 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
  * accountant's report needs it); a casual customer needs a name only. Editing an existing customer does not demand an
  * e-mail, so customers imported without one can still be archived or corrected.
  */
-export function customerProblems(f: { name: string; email: string; tax_id: string; i4u: string; casual: boolean; isNew: boolean }): string[] {
+export function customerProblems(f: { name: string; email: string; tax_id: string; i4u: string; casual: boolean; isNew: boolean; requireEmail?: boolean }): string[] {
   const out: string[] = [];
   if (!f.name.trim()) out.push("שם הלקוח חובה");
   if (f.tax_id && !/^\d{5,9}$/.test(f.tax_id)) out.push("ת.ז. או ח.פ. הם ספרות בלבד (5 עד 9)");
   if (f.email.trim() && !EMAIL_RE.test(f.email.trim())) out.push('כתובת הדוא"ל אינה תקינה');
+  // Every document is sent to the customer by itself when it is issued, so no card is saved without an address, new or edited, casual or not.
+  if (f.requireEmail !== false && !f.email.trim()) out.push('כתובת דוא"ל חובה: כל מסמך נשלח ללקוח אוטומטית בעת ההפקה');
   if (!f.casual) {
-    if (f.isNew && !f.email.trim()) out.push('לקוח חדש דורש כתובת דוא"ל');
     if (f.i4u && !/^\d+$/.test(f.i4u)) out.push("מספר לקוח במערכת ההנפקה הוא ספרות בלבד");
   }
   return out;
 }
 
 /** Details a regular customer is still missing, shown as a prompt to complete the card. */
-export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casual">): string[] {
-  if (c.is_casual) return [];
+export function customerGaps(c: Pick<FinCustomer, "email" | "tax_id" | "is_casual"> & Partial<Pick<FinCustomer, "phone" | "whatsapp_consent_at" | "whatsapp_consent_revoked_at">>): string[] {
   const out: string[] = [];
   if (!c.email) out.push('דוא"ל');
+  if (c.is_casual) return out;
   if (!c.tax_id) out.push("ת.ז. או ח.פ.");
+  // WhatsApp is preferred, not required: a card without a mobile or a consent still gets every document by e-mail.
+  if (c.phone !== undefined && !isMobile(c.phone)) out.push("נייד ל-WhatsApp");
+  else if (c.phone !== undefined && !whatsappConsentActive(c as Pick<FinCustomer, "whatsapp_consent_at" | "whatsapp_consent_revoked_at">)) out.push("הסכמה ל-WhatsApp");
   return out;
+}
+
+/** An Israeli mobile number in any usual writing. Same rule as waNumber in financeSend and normalizeIsraeliPhone on the server. */
+export function isMobile(raw: string | null | undefined): boolean {
+  if (!raw) return false;
+  let d = raw.replace(/[^\d+]/g, "");
+  if (d.startsWith("+")) d = d.slice(1); else if (d.startsWith("00")) d = d.slice(2); else if (d.startsWith("0")) d = "972" + d.slice(1);
+  return /^9725\d{8}$/.test(d);
 }
 
 /** The issued document that closed a pro forma, if any. A draft pointing at it does not close it yet. */

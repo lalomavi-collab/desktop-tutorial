@@ -12,9 +12,17 @@
 //                       so live payments cannot switch the books to live. Documents issued in qa are stamped is_test and
 //                       never count in reports, so a rehearsal cannot pollute the books.
 //
+// Delivery: the moment a document is issued (or found issued by reconcile) it is sent to the customer by itself, by e-mail to the address on
+// the customer card and by WhatsApp when the card has a valid mobile and a recorded consent. The send goes through lalum-fin-doc-send with
+// the caller's own token (auto: true), which keeps the once-only rule and the send log. The reply carries `delivery` per channel; a failed
+// send never undoes the issue, which is final, and the document panel can resend. Invoice4U's own mail (AssociatedEmails) is never used, so
+// the customer does not receive two. A customer card without a valid e-mail address stops the issue before anything is created (customer_no_email).
+//
 // Access: the draft is read with the caller's own JWT, so the same row level security that guards
 // the ledger (firm partner or admin, MFA) decides who may issue. Writes use the service role.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { autoSendPlan, documentTemplateName } from "../_shared/docSend.ts";
+import { isEmail } from "../_shared/dunning.ts";
 
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -81,6 +89,36 @@ Deno.serve(async (req) => {
     return { d, errors: Array.isArray(d.Errors) ? (d.Errors as I4uError[]) : [] };
   }
 
+  type Channel = { status: "sent" | "skipped" | "failed" | "unknown"; code?: string };
+  /** Sends the issued document on every channel the customer card allows. Never throws: the document already exists whatever happens here. */
+  async function deliver(customerId: string, pdfUrl: string | null, isTest: boolean): Promise<Record<"email" | "whatsapp", Channel>> {
+    const out: Record<"email" | "whatsapp", Channel> = { email: { status: "skipped", code: "not_attempted" }, whatsapp: { status: "skipped", code: "not_attempted" } };
+    try {
+      const { data: c } = await asUser.from("lalum_fin_customers").select("email, phone, whatsapp_consent_at, whatsapp_consent_revoked_at").eq("id", customerId).maybeSingle();
+      const plan = autoSendPlan({
+        email: c?.email ?? null, phone: c?.phone ?? null, consent: !!c?.whatsapp_consent_at && !c?.whatsapp_consent_revoked_at,
+        templateConfigured: !!documentTemplateName((k) => Deno.env.get(k) ?? undefined), pdfUrl, isTest,
+      });
+      for (const s of plan.skipped) out[s.channel === "EMAIL" ? "email" : "whatsapp"] = { status: "skipped", code: s.reason };
+      await Promise.all(plan.send.map(async (ch) => {
+        const key = ch === "EMAIL" ? "email" : "whatsapp";
+        const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 25000);
+        try {
+          const res = await fetch(`${url}/functions/v1/lalum-fin-doc-send`, {
+            method: "POST", signal: ctl.signal, headers: { authorization: authHeader, apikey: anon, "content-type": "application/json" },
+            body: JSON.stringify({ document_id: docId, auto: true, channel: ch, include_customer: true, copy_to_me: ch === "EMAIL" }),
+          });
+          const j = await res.json().catch(() => ({})) as { ok?: boolean; code?: string };
+          out[key] = j.ok ? { status: "sent" } : j.code === "already_sent" ? { status: "skipped", code: "already_sent" } : { status: "failed", code: j.code ?? "send_failed" };
+        } catch {
+          // A timeout is not proof that nothing was sent: the send record was reserved before sending, so the log shows the truth.
+          out[key] = { status: "unknown", code: "fetch_failed" };
+        } finally { clearTimeout(timer); }
+      }));
+    } catch (e) { console.log("FIN_AUTOSEND_ERR " + String(e).slice(0, 120)); out.email = { status: "unknown", code: "fetch_failed" }; }
+    return out;
+  }
+
   async function store(fields: Obj) {
     await admin.from("lalum_fin_documents").update(fields).eq("id", docId);
   }
@@ -105,13 +143,16 @@ Deno.serve(async (req) => {
         ...fromDoc(d), status: "ISSUED", is_test: !prod, last_error: null,
         issued_at: doc.issued_at ?? new Date().toISOString(), issued_by: doc.issued_by ?? user.id,
       });
-      return json(200, { ok: true, doc_number: d.DocumentNumber, allocation_number: d.AllocationNumber ?? null });
+      const delivery = await deliver(String(doc.customer_id), d.PrintOriginalPDFLink ? String(d.PrintOriginalPDFLink) : null, !prod);
+      return json(200, { ok: true, doc_number: d.DocumentNumber, allocation_number: d.AllocationNumber ?? null, delivery });
     }
 
     if (doc.status !== "DRAFT") return json(409, { code: "already_issued" });
 
     const { data: cust } = await asUser.from("lalum_fin_customers").select("*").eq("id", doc.customer_id).maybeSingle();
     if (!cust) return json(404, { code: "customer_not_found" });
+    // Every document goes to the customer by itself, so the card must carry an address that can receive it.
+    if (!isEmail(cust.email)) return json(409, { code: "customer_no_email" });
 
     // The referenced document, for receipts and credit invoices.
     let related: Obj | null = null;
@@ -178,7 +219,7 @@ Deno.serve(async (req) => {
       invoiceDoc.Invoices = [{ ID: related.i4u_doc_id, ReceiptAmount: payAmount }];
       invoiceDoc.DocumentReffType = DOC_TYPE[String(related.doc_type)];
     }
-    if (doc.send_email && cust.email) invoiceDoc.AssociatedEmails = [{ Mail: cust.email, IsUserMail: false }];
+    // No AssociatedEmails: Invoice4U would mail the customer too. Delivery is ours (deliver below), once, with a log.
 
     // Persist the idempotency key BEFORE the call: if the response is lost, reconcile can still find it.
     await store({ api_identifier: `lalum-fin-${doc.id}`, last_error: null });
@@ -204,9 +245,10 @@ Deno.serve(async (req) => {
       ...fromDoc(d), status: "ISSUED", is_test: !prod, issued_at: new Date().toISOString(), issued_by: user.id,
       last_error: mismatch ? `TOTAL_MISMATCH ledger=${doc.total} invoice4u=${d.Total}` : null,
     });
+    const delivery = await deliver(String(doc.customer_id), d.PrintOriginalPDFLink ? String(d.PrintOriginalPDFLink) : null, !prod);
     return json(200, {
       ok: true, doc_number: d.DocumentNumber, allocation_number: d.AllocationNumber ?? null,
-      pdf_url: d.PrintOriginalPDFLink ?? null, is_test: !prod, total_mismatch: mismatch,
+      pdf_url: d.PrintOriginalPDFLink ?? null, is_test: !prod, total_mismatch: mismatch, delivery,
     });
   } catch (e) {
     console.log("FIN_ISSUE_ERR " + redact(String(e), apiKey));

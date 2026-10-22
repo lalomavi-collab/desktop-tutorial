@@ -1,6 +1,6 @@
 // Pure helpers for sending an issued finance document (lalum-fin-doc-send). No Deno or network APIs here, so
 // lalum-app/scripts/doc-send-check.mjs can run them under node.
-import { escapeHtml, isEmail } from "./dunning.ts";
+import { escapeHtml, isEmail, normalizeIsraeliPhone } from "./dunning.ts";
 
 export const DOC_LABEL: Record<string, string> = {
   PROFORMA: "חשבון עסקה", INVOICE: "חשבונית מס", RECEIPT: "קבלה", INVOICE_RECEIPT: "חשבונית מס קבלה", CREDIT: "חשבונית זיכוי",
@@ -79,3 +79,47 @@ export function docEmailHtml(body: string, pdfUrl: string | null, attached: bool
 const FILE_STEM: Record<string, string> = { PROFORMA: "proforma", INVOICE: "tax-invoice", RECEIPT: "receipt", INVOICE_RECEIPT: "tax-invoice-receipt", CREDIT: "credit" };
 /** ASCII only, so every mail client shows the attachment name correctly. */
 export const safeFilename = (type: string, docNumber: number | null): string => `${FILE_STEM[type] ?? "document"}-${docNumber ?? "draft"}.pdf`;
+
+// ---- automatic delivery at issue time ----
+
+/**
+ * Name of the approved WhatsApp template that carries an issued document (WHATSAPP_DOCUMENT_TEMPLATE), or null when none is configured.
+ * Meta delivers a business initiated message outside the 24 hour window only as an approved template, so free text is never sent.
+ */
+export function documentTemplateName(env: (k: string) => string | undefined): string | null {
+  const n = env("WHATSAPP_DOCUMENT_TEMPLATE");
+  return n && /^[a-z0-9_]{1,512}$/.test(n) ? n : null;
+}
+
+/** Template body parameters, in the order {{1}} document type, {{2}} document number, {{3}} link. Null when the link is not an https link. */
+export function documentTemplateParams(type: string, docNumber: number | null, url: string | null): string[] | null {
+  if (!url || !/^https:\/\//i.test(url) || /\s/.test(url) || url.length > 1000) return null;
+  return [DOC_LABEL[type] ?? "מסמך", docNumber ? String(docNumber) : "חדש", url];
+}
+
+export type AutoChannel = "EMAIL" | "WHATSAPP";
+export interface AutoPlanInput { email: string | null; phone: string | null; consent: boolean; templateConfigured: boolean; pdfUrl: string | null; isTest: boolean }
+export interface AutoPlan { send: AutoChannel[]; skipped: Array<{ channel: AutoChannel; reason: string }> }
+
+/**
+ * Which channels an issued document goes out on by itself. E-mail always, to the customer's address on the record. WhatsApp only to a valid
+ * Israeli mobile whose owner has a recorded consent, with an approved template configured and a link to send. A TEST document (trial
+ * environment) is never sent to a customer by WhatsApp. Every skipped channel carries the reason, so the screen can say why.
+ */
+export function autoSendPlan(i: AutoPlanInput): AutoPlan {
+  const send: AutoChannel[] = [], skipped: AutoPlan["skipped"] = [];
+  if (isEmail(i.email) || i.isTest) send.push("EMAIL"); else skipped.push({ channel: "EMAIL", reason: "no_email" });
+  if (i.isTest) skipped.push({ channel: "WHATSAPP", reason: "test_document" });
+  else if (!normalizeIsraeliPhone(i.phone)) skipped.push({ channel: "WHATSAPP", reason: "no_mobile" });
+  else if (!i.consent) skipped.push({ channel: "WHATSAPP", reason: "no_whatsapp_consent" });
+  else if (!i.templateConfigured) skipped.push({ channel: "WHATSAPP", reason: "template_not_configured" });
+  else if (!i.pdfUrl) skipped.push({ channel: "WHATSAPP", reason: "no_pdf" });
+  else send.push("WHATSAPP");
+  return { send, skipped };
+}
+
+/** The default text of an automatic mail: names the document, never the customer (names are hidden on screen by default). */
+export function autoBody(type: string, docNumber: number | null): string {
+  const label = DOC_LABEL[type] ?? "מסמך";
+  return `שלום,\n\nמצורף ${label}${docNumber ? ` מספר ${docNumber}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
+}

@@ -7,7 +7,7 @@ import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, co
 import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
 import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError } from "../../../lib/cockpit/financeApi";
-import { canSend, defaultBody, defaultSubject, sendSummary } from "../../../lib/cockpit/financeSend";
+import { canSend, defaultBody, defaultSubject, deliveryText, sendSummary } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { DocSendPanel } from "./DocSendPanel";
 
@@ -139,7 +139,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     setBusy(null); onChange();
     if (r.ok) {
       setEd(null);
-      setNote({ ok: true, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${allocationShort(r.allocation_number)}` : ""}.${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות." : ""}${r.total_mismatch ? " שימו לב: הסכום במערכת ההנפקה שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
+      const dv = deliveryText(r.delivery);
+      setNote({ ok: dv.ok, text: `${DOC_TYPE[ed.doc_type]} מספר ${r.doc_number} הופקה${r.allocation_number ? `. מספר הקצאה ${allocationShort(r.allocation_number)}` : ""}. ${dv.text}${dv.ok ? "" : " אפשר לשלוח שוב מהמסמך ברשימה."}${r.is_test ? " זהו מסמך בדיקה מסביבת הניסוי, והוא לא נספר בדוחות, ונשלח לכתובת שלכם בלבד." : ""}${r.total_mismatch ? " שימו לב: הסכום במערכת ההנפקה שונה מהסכום במערכת. ראו את שורת המסמך." : ""}` });
     } else {
       setEd(null);
       setNote({ ok: false, text: r.code === "invoice4u_rejected" ? `${issueError(r)} ${(r.errors ?? []).map((x) => x.error).filter(Boolean).join(", ")}` : issueError(r) });
@@ -149,7 +150,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     setBusy(d.id);
     const r = await issueDocument(d.id, "reconcile");
     setBusy(null); onChange();
-    setNote(r.ok ? { ok: true, text: `נמצא במערכת ההנפקה: מסמך מספר ${r.doc_number}. הסטטוס עודכן.` } : { ok: false, text: issueError(r) });
+    setNote(r.ok ? { ok: true, text: `נמצא במערכת ההנפקה: מסמך מספר ${r.doc_number}. הסטטוס עודכן. ${deliveryText(r.delivery).text}` } : { ok: false, text: issueError(r) });
   }
   async function retainerDrafts() {
     if (!supabase) return;
@@ -250,7 +251,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
           )}
           <label className="ck-field">הערה פנימית (לא מודפסת ולא נשלחת)<textarea className="ck-input" rows={2} maxLength={5000} value={ed.internal_note} onChange={(e) => setEd({ ...ed, internal_note: e.target.value })} /></label>
           <label className="ck-field">הפניה לתיק (אופציונלי, פנימי)<input className="ck-input" maxLength={100} value={ed.matter_ref} onChange={(e) => setEd({ ...ed, matter_ref: e.target.value })} /></label>
-          <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" checked={ed.send_email} onChange={(e) => setEd({ ...ed, send_email: e.target.checked })} />לשלוח את המסמך בדוא"ל ללקוח בעת ההפקה</label>
+          <div className="ck-meta" data-testid="auto-send-note">בעת ההפקה המסמך נשלח ללקוח אוטומטית בדוא"ל, וגם ב-WhatsApp כשבכרטיס יש נייד תקין והסכמה רשומה. אין צורך לסמן דבר.</div>
+          {edCustomer && !edCustomer.email && <div className="ck-warn">בכרטיס הלקוח אין כתובת דוא"ל, ולכן אי אפשר להפיק. הזינו כתובת בלשונית הלקוחות.</div>}
           <div className="ck-card">
             <div className="ck-row" style={{ justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{money(totals.subtotal)}</b></div>
             {!receiptMode && <div className="ck-row" style={{ justifyContent: "space-between" }}><span>מע"מ</span><b>{money(totals.vat)}</b></div>}
@@ -260,7 +262,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
           {ed.customer_id && !casual && !customers.find((c) => c.id === ed.customer_id)?.tax_id && <div className="ck-meta">ללקוח הזה אין ת.ז. או ח.פ. בכרטיס. אם הוא עוסק מורשה, מסמך מעל הסף ידרוש אותם לצורך מספר הקצאה.</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
-            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
+            <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3 || (!!edCustomer && !edCustomer.email)} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : edCustomer && !edCustomer.email ? 'אין בכרטיס הלקוח כתובת דוא"ל' : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
             <button className="ck-btn" onClick={() => setEd(null)}>סגירה</button>
           </div>
         </div>
