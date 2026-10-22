@@ -25,6 +25,7 @@ import { toBlocks, blocksToText, parseInline } from "./src/lib/articleBlocks";
 import { articleCorpus, relatedTo } from "./src/lib/related";
 import { TOPICS_IN_ORDER, articlesByTopic, topicOfArticle, topicPath, type Topic } from "./src/lib/topics";
 import { rulings, areaLabel, rulingTitle } from "./src/lib/rulings";
+import { privacyLaw, PRIVACY_TITLE, PRIVACY_DESC } from "./src/lib/privacyLaw";
 import { instruments, feed, KIND_LABEL, ETHICS_TITLE, ETHICS_DESC, UPDATES_TITLE, UPDATES_DESC } from "./src/lib/ethics";
 import type { ArticleBlock } from "./src/lib/content";
 import { courses, courseFramework, courseSlug } from "./src/lib/courses";
@@ -54,6 +55,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "rulings", title: "חיפוש פסקי דין: בינה מלאכותית, נדל״ן והתחדשות עירונית | LALUM", desc: "מאגר פסיקה בר חיפוש עם תמצית לכל פסק דין שהמשרד כתב עליו, בבינה מלאכותית ובחובות המקצוע, לצד שאילתות מוכנות למאגרים הרשמיים." },
   { path: "ethics", title: ETHICS_TITLE, desc: ETHICS_DESC },
   { path: "updates", title: UPDATES_TITLE, desc: UPDATES_DESC },
+  { path: "privacy-law", title: PRIVACY_TITLE, desc: PRIVACY_DESC },
   { path: "insights", title: "מאמרים על נדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "מאמרים מקצועיים על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, וממשל בינה מלאכותית, מאת ד״ר עו״ד אברהם ללום ומשרד LALUM." },
   { path: "faq", title: "שאלות ותשובות על נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "תשובות לשאלות נפוצות על נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור ויישוב סכסוכים, וממשל בינה מלאכותית, מבית LALUM." },
   { path: "book", title: "קביעת פגישת ייעוץ: נדל״ן, מיזוגים ורכישות ו-AI | LALUM", desc: "לתיאום ייעוץ בעסקאות נדל״ן, מיזוגים ורכישות, התחדשות עירונית, גישור, או ממשל בינה מלאכותית עם ד״ר עו״ד אברהם ללום, LALUM." },
@@ -804,6 +806,20 @@ function ethicsBodyHtml(title: string, desc: string): string {
   out.push(`        <p>${esc("התמצית נכתבה בידי המשרד ואינה תחליף לקריאת גילוי הדעת במקור. אין באמור ייעוץ משפטי.")}</p>`);
   return out.join("\n");
 }
+function privacyBodyHtml(title: string, desc: string): string {
+  const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
+  const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`, `        <p>${esc(privacyLaw.lead)}</p>`];
+  for (const b of privacyLaw.basics) out.push(`        <h2>${esc(`${b.title} (${b.section})`)}</h2>`, `        <p>${esc(b.text)}</p>`);
+  for (const g of privacyLaw.groups) {
+    out.push(`        <h2>${esc(g.title)}</h2>`);
+    for (const i of g.items) out.push(`        <h3>${esc(`${i.title} (${i.section})`)}</h3>`, `        <p>${esc(i.text)}</p>`);
+  }
+  out.push(`        <h2>${esc("הגנת הפרטיות ובינה מלאכותית")}</h2>`, `        <p>${esc(privacyLaw.ai.intro)}</p>`);
+  for (const i of privacyLaw.ai.items) out.push(`        <h3>${esc(`${i.title} (${i.section})`)}</h3>`, `        <p>${esc(i.text)}</p>`);
+  out.push(`        <h2>${esc("מה לא נקרא או לא אומת")}</h2>`, `        <ul>${privacyLaw.limits.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
+  out.push(`        <p>${esc(privacyLaw.disclaimer)}</p>`);
+  return out.join("\n");
+}
 function updatesBodyHtml(title: string, desc: string): string {
   const heading = title.replace(/\s*[·|]\s*LALUM\s*$/, "").trim();
   const out = [`        <h1>${esc(heading)}</h1>`, `        <p>${esc(desc)}</p>`];
@@ -829,6 +845,7 @@ function homeBodyHtml(dict = strings.he, lang: Lang = "he"): string {
     // The audience router, flattened. On screen it is four tabs over four
     // panels of rubrics; without this, the page a crawler reads never says who
     // the practice serves or where each of those readers is supposed to go.
+    ...(lang === "he" ? [`        <p><a href="/privacy-law/">${esc("חוק הגנת הפרטיות אחרי תיקון 13: מדריך, חוברת וסרטון")}</a></p>`] : []),
     `        <h2>${esc(h.audienceTitle)}</h2>`,
     ...h.audiences.flatMap((a) => [
       `        <h3>${esc(a.label)}</h3>`,
@@ -1064,6 +1081,7 @@ function seoPrerender(): Plugin {
             : r.path === "faq" ? faqBodyHtml()
             : r.path === "rulings" ? rulingsBodyHtml(r.title, r.desc)
             : r.path === "ethics" ? ethicsBodyHtml(r.title, r.desc)
+            : r.path === "privacy-law" ? privacyBodyHtml(r.title, r.desc)
             : r.path === "updates" ? updatesBodyHtml(r.title, r.desc)
             : r.path === "insights" ? insightsBodyHtml(r.title, r.desc)
             : pillar ? pillarBodyHtml(pillar)
