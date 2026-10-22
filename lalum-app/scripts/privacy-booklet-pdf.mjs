@@ -65,6 +65,13 @@ chapter("basics", "יסודות החוק", data.basics.map(item).join(""));
 data.groups.forEach((g) => chapter("g-" + g.id, g.title, g.items.map(item).join("")));
 chapter("ai", "בינה מלאכותית וחוק הגנת הפרטיות",
   `<p class="intro">${esc(data.ai.intro)}</p>` + data.ai.items.map(item).join(""));
+chapter("amend", "תיקוני החוק, כולל תיקון 11 ותיקון 13",
+  `<p class="intro">${esc(data.amendments.intro)}</p>` +
+  data.amendments.items.map((a) => `<article class="item"><div class="item-head">${tag("תיקון " + a.n)}<h3>${esc(a.year)}</h3></div><p class="txt">${esc(a.text)}</p></article>`).join(""));
+chapter("related", "חקיקה נלווית",
+  `<p class="intro">${esc(data.relatedLaws.intro)}</p>` +
+  data.relatedLaws.items.map((r) => `<article class="item"><h3>${esc(r.name)}</h3><p class="prac">${esc(r.readLevel)}</p>
+  <ul>${r.sections.map((x) => `<li>${tag(x.section)} ${esc(x.says)}</li>`).join("")}</ul></article>`).join(""));
 chapter("regs", "תקנות רלוונטיות",
   data.regulations.map((r) => `<article class="item"><h3>${esc(r.name)}</h3>
   <ul>${r.duties.map((d) => `<li>${esc(d)}</li>`).join("")}</ul></article>`).join(""));

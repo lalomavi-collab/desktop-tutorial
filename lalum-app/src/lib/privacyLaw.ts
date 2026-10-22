@@ -14,6 +14,8 @@ export const privacyLaw = data as {
   basics: LawItem[]; groups: LawGroup[];
   ai: { intro: string; items: LawItem[] };
   regulations: Regulation[]; checklist: string[]; limits: string[]; disclaimer: string;
+  amendments: { intro: string; items: { n: number; year: string; date: string; sections: string[]; text: string }[] };
+  relatedLaws: { intro: string; items: { name: string; readLevel: string; sections: { section: string; says: string }[] }[] };
 };
 
 export const PRIVACY_TITLE = "הגנת הפרטיות ותיקון 13: מדריך, חוברת וסרטון | LALUM";
@@ -21,3 +23,4 @@ export const PRIVACY_DESC = "מה קובע חוק הגנת הפרטיות אחר
 export const PRIVACY_BOOKLET = "/downloads/lalum-hagnat-hapratiyut-tikun-13.pdf";
 export const PRIVACY_VIDEO = "/media/lalum-privacy-law.mp4";
 export const PRIVACY_POSTER = "/media/lalum-privacy-law.jpg";
+export const PRIVACY_GUIDE = "/downloads/lalum-hamadrich-lehaganat-hapratiyut.pdf";

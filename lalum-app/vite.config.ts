@@ -816,6 +816,10 @@ function privacyBodyHtml(title: string, desc: string): string {
   }
   out.push(`        <h2>${esc("הגנת הפרטיות ובינה מלאכותית")}</h2>`, `        <p>${esc(privacyLaw.ai.intro)}</p>`);
   for (const i of privacyLaw.ai.items) out.push(`        <h3>${esc(`${i.title} (${i.section})`)}</h3>`, `        <p>${esc(i.text)}</p>`);
+  out.push(`        <h2>${esc("תיקוני החוק")}</h2>`, `        <p>${esc(privacyLaw.amendments.intro)}</p>`);
+  for (const a of privacyLaw.amendments.items) out.push(`        <h3>${esc(`תיקון ${a.n} (${a.year})`)}</h3>`, `        <p>${esc(a.text)}</p>`);
+  out.push(`        <h2>${esc("חקיקה נלווית")}</h2>`, `        <p>${esc(privacyLaw.relatedLaws.intro)}</p>`);
+  for (const r of privacyLaw.relatedLaws.items) out.push(`        <h3>${esc(r.name)}</h3>`, `        <ul>${r.sections.map((x) => `<li>${esc(`${x.section}: ${x.says}`)}</li>`).join("")}</ul>`);
   out.push(`        <h2>${esc("מה לא נקרא או לא אומת")}</h2>`, `        <ul>${privacyLaw.limits.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`);
   out.push(`        <p>${esc(privacyLaw.disclaimer)}</p>`);
   return out.join("\n");

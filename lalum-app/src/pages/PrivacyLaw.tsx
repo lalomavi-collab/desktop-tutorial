@@ -5,7 +5,7 @@ import { PageMeta } from "../components/PageMeta";
 import { PillarArt } from "../components/PillarArt";
 import { pageNode, pageJsonLd } from "../lib/schema";
 import { useLang } from "../context/LangContext";
-import { privacyLaw as L, PRIVACY_TITLE, PRIVACY_DESC, PRIVACY_BOOKLET, PRIVACY_VIDEO, PRIVACY_POSTER } from "../lib/privacyLaw";
+import { privacyLaw as L, PRIVACY_TITLE, PRIVACY_DESC, PRIVACY_BOOKLET, PRIVACY_GUIDE, PRIVACY_VIDEO, PRIVACY_POSTER } from "../lib/privacyLaw";
 
 // Privacy law and Amendment 13, Hebrew only, in Israeli law only. Reached from the home
 // page, not from the navigation. The video loads nothing but its poster until played.
@@ -73,10 +73,17 @@ export function PrivacyLaw() {
           </div>
 
           <div style={{ ...card, borderTop: "3px solid var(--clay)" }}>
-            <p style={label}>חוברת להורדה</p>
+            <p style={label}>חוברת לארגונים, להורדה</p>
             <h2 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: 0 }}>החוברת: החוק, התיקון והשאלות שהוא מעורר לגבי בינה מלאכותית</h2>
             <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "12px 0 0" }}>אותו תוכן כמו בעמוד, בקובץ PDF שאפשר להדפיס ולהעביר בארגון, עם רשימת בדיקה והסבר על מה שלא נקרא או לא אומת.</p>
             <p style={{ margin: "16px 0 0" }}><a href={PRIVACY_BOOKLET} className="btn btn-clay" download>הורדת החוברת (PDF)</a></p>
+          </div>
+
+          <div style={{ ...card, borderTop: "3px solid var(--clay)" }}>
+            <p style={label}>מדריך לכל אדם, להורדה</p>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: 0 }}>המדריך לאדם הפרטי: הפרטיות שלך בחוק</h2>
+            <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "12px 0 0" }}>מדריך בשפה פשוטה, לקריאה בלי ידע משפטי: מה החוק אוסר, מה הזכויות שלכם מול מי שמחזיק מידע עליכם, מה עושים כשפוגעים בפרטיות, תמונות וסרטונים, בינה מלאכותית, מילון ושאלות נפוצות.</p>
+            <p style={{ margin: "16px 0 0" }}><a href={PRIVACY_GUIDE} className="btn btn-clay" download>הורדת המדריך לאדם הפרטי (PDF)</a></p>
           </div>
 
           <div style={card}>
@@ -98,6 +105,35 @@ export function PrivacyLaw() {
             <h2 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: 0 }}>מה החוק אומר על עבודה עם כלי בינה מלאכותית</h2>
             <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "12px 0 0" }}>{L.ai.intro}</p>
             {L.ai.items.map((i) => <Item key={i.title + i.section} i={i} />)}
+          </div>
+
+          <div style={card}>
+            <p style={label}>ציר התיקונים</p>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: 0 }}>תיקוני החוק, כולל תיקון 11 ותיקון 13</h2>
+            <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "12px 0 0" }}>{L.amendments.intro}</p>
+            {L.amendments.items.map((a) => (
+              <details key={a.n} style={{ marginTop: 14, borderTop: "1px solid var(--line)", paddingTop: 12 }}>
+                <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 16 }}>
+                  תיקון {a.n} <span className="muted" style={{ fontWeight: 400, fontSize: 13.5 }}>({a.year})</span>
+                </summary>
+                <p style={{ fontSize: 15, lineHeight: 1.75, margin: "10px 0 0" }}>{a.text}</p>
+              </details>
+            ))}
+          </div>
+
+          <div style={card}>
+            <p style={label}>חקיקה נלווית</p>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 500, margin: 0 }}>חוקים ישראליים נוספים שנוגעים בפרטיות</h2>
+            <p style={{ fontSize: 15.5, lineHeight: 1.75, margin: "12px 0 0" }}>{L.relatedLaws.intro}</p>
+            {L.relatedLaws.items.map((r) => (
+              <details key={r.name} style={{ marginTop: 14, borderTop: "1px solid var(--line)", paddingTop: 12 }}>
+                <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 16 }}>{r.name}</summary>
+                <p className="muted" style={{ fontSize: 13.5, margin: "8px 0 0" }}>{r.readLevel}</p>
+                <ul style={{ margin: "10px 0 0", paddingInlineStart: 20, fontSize: 15, lineHeight: 1.75 }}>
+                  {r.sections.map((x) => <li key={x.section}><bdi>{x.section}</bdi>: {x.says}</li>)}
+                </ul>
+              </details>
+            ))}
           </div>
 
           <div style={card}>
