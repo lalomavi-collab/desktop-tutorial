@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useClientNames } from "../../../components/cockpit/ClientNames";
 import type { DocType, FinCustomer } from "../../../lib/cockpit/finance";
 import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
-import { logWhatsappSend, sendDocument, sendDocumentError } from "../../../lib/cockpit/financeApi";
-import { defaultBody, defaultSubject, deliveryState, waNumber, waText, whatsappUrl } from "../../../lib/cockpit/financeSend";
+import { fileToBase64, logWhatsappSend, sendDocument, sendDocumentError } from "../../../lib/cockpit/financeApi";
+import { defaultBody, defaultSubject, deliveryState, pdfFileProblem, waNumber, waText, whatsappUrl } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { DOC_TYPE } from "../../../lib/cockpit/finance";
 
@@ -29,6 +29,7 @@ export function DocSendPanel({ target, customer, casualName, sends, level, onClo
   const [body, setBody] = useState(defaultBody(subj));
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<Note>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const canSendNow = level >= 3;
   const hasEmail = !!customer?.email;
   const mobile = waNumber(customer?.phone);
@@ -48,11 +49,22 @@ export function DocSendPanel({ target, customer, casualName, sends, level, onClo
     const u = await link();
     if (u) window.open(u, "_blank", "noopener,noreferrer");
   }
+  function pickPdf(f: File | null) {
+    if (!f) { setPdfFile(null); return; }
+    const problem = pdfFileProblem(f);
+    if (problem) { setPdfFile(null); setNote({ ok: false, text: problem }); return; }
+    setNote(null); setPdfFile(f);
+  }
   async function sendMail() {
     setBusy("mail"); setNote(null);
-    const r = await sendDocument({ ...(target.kind === "document" ? { document_id: target.id } : { archive_id: target.id }), include_customer: includeCustomer, extra, copy_to_me: copyToMe, subject, body });
+    // A hand attached PDF (archive documents only) replaces the provider's link, which is not always available.
+    let pdf_base64: string | undefined;
+    if (pdfFile) {
+      try { pdf_base64 = await fileToBase64(pdfFile); } catch { setBusy(null); setNote({ ok: false, text: "קריאת הקובץ נכשלה. בחרו אותו שוב." }); return; }
+    }
+    const r = await sendDocument({ ...(target.kind === "document" ? { document_id: target.id } : { archive_id: target.id }), include_customer: includeCustomer, extra, copy_to_me: copyToMe, subject, body, ...(pdf_base64 ? { pdf_base64 } : {}) });
     setBusy(null); onChange();
-    if (r.ok) setNote({ ok: true, text: `${label} נשלח ל-${r.count} נמענים${r.attached ? " עם קובץ PDF מצורף" : ". הקובץ לא צורף (לא ניתן היה להוריד אותו), ההודעה כוללת קישור"}.${r.warning ? " יומן השליחות לא עודכן במלואו." : ""}${target.isTest ? " זהו מסמך בדיקה, ולכן נשלח לכתובת שלכם בלבד." : ""}` });
+    if (r.ok) { if (pdfFile) setPdfFile(null); setNote({ ok: true, text: `${label} נשלח ל-${r.count} נמענים${r.attached ? " עם קובץ PDF מצורף" : ". הקובץ לא צורף (לא ניתן היה להוריד אותו), ההודעה כוללת קישור"}.${r.warning ? " יומן השליחות לא עודכן במלואו." : ""}${target.isTest ? " זהו מסמך בדיקה, ולכן נשלח לכתובת שלכם בלבד." : ""}` }); }
     else setNote({ ok: false, text: sendDocumentError(r) });
   }
   async function openWhatsapp() {
@@ -82,7 +94,14 @@ export function DocSendPanel({ target, customer, casualName, sends, level, onClo
         </div>
       </div>
       {target.isTest && <div className="ck-warn">זהו מסמך בדיקה מסביבת הניסוי. אפשר לשלוח אותו רק לכתובת שלכם.</div>}
-      {target.kind === "archive" && <div className="ck-meta">מסמך מהארכיון נשלח עם קישור שמערכת ההיסטוריה מחזירה ברגע השליחה. אם היא לא מחזירה קישור, השליחה נעצרת ולא נרשמת.</div>}
+      {target.kind === "archive" && (
+        <div className="ck-card ck-stack">
+          <div className="ck-label">קובץ PDF של המסמך</div>
+          <div className="ck-meta">ברירת המחדל: הקישור שמערכת ההיסטוריה מחזירה ברגע השליחה. אם היא לא מחזירה קישור, הורידו את המסמך ישירות ממערכת ההיסטוריה (Invoice4U) וצרפו אותו כאן. הקובץ נשלח כצרופה, ללא קישור.</div>
+          <input className="ck-input" type="file" accept="application/pdf,.pdf" aria-label="צירוף קובץ PDF" onChange={(e) => pickPdf(e.target.files?.[0] ?? null)} />
+          {pdfFile && <div className="ck-meta">מצורף: <bdi>{pdfFile.name}</bdi> ({(pdfFile.size / 1048576).toFixed(2)}MB). <button className="ck-link" onClick={() => setPdfFile(null)}>הסרה</button></div>}
+        </div>
+      )}
       {!canSendNow && <div className="ck-warn">שליחה דורשת הרשאת הפקה. צפייה, הדפסה והעתקת קישור זמינות לכם.</div>}
 
       <label className="ck-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -99,7 +118,7 @@ export function DocSendPanel({ target, customer, casualName, sends, level, onClo
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
       <div className="ck-row">
         <button className="ck-btn primary" disabled={busy !== null || !canSendNow || (!includeCustomer && !extra.trim() && !copyToMe)} onClick={() => void sendMail()}>{busy === "mail" ? "שולח..." : "שליחה בדוא\"ל"}</button>
-        <button className="ck-btn" disabled={busy !== null || !canSendNow} title={mobile ? "פותח WhatsApp עם הודעה מוכנה ללקוח" : "אין נייד תקין בכרטיס: WhatsApp ייפתח לבחירת איש קשר"} onClick={() => void openWhatsapp()}>שליחה ב-WhatsApp</button>
+        <button className="ck-btn" disabled={busy !== null || !canSendNow || !!pdfFile} title={pdfFile ? "בקובץ שצורף ידנית אין קישור. הסירו אותו או שלחו את הקובץ בעצמכם ב-WhatsApp" : mobile ? "פותח WhatsApp עם הודעה מוכנה ללקוח" : "אין נייד תקין בכרטיס: WhatsApp ייפתח לבחירת איש קשר"} onClick={() => void openWhatsapp()}>שליחה ב-WhatsApp</button>
         <button className="ck-btn" onClick={onClose}>סגירה</button>
       </div>
 

@@ -1,4 +1,4 @@
-// Checks the helpers behind sending a finance document and tracking it (supabase/functions/_shared/docSend.ts, resendEvents.ts and src/lib/cockpit/financeSend.ts).
+// Checks the helpers behind sending a finance document, attaching a PDF by hand and tracking it (supabase/functions/_shared/docSend.ts, resendEvents.ts and src/lib/cockpit/financeSend.ts).
 // Run with: npm run doc-send-check
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { createHmac } from "node:crypto";
-import { resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE } from "../../supabase/functions/_shared/docSend.ts";
+import { resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
 import { verifySvix, mapEvent, TRACKED_EVENTS } from "../../supabase/functions/_shared/resendEvents.ts";
 import { normalizeIsraeliPhone } from "../../supabase/functions/_shared/dunning.ts";
 
@@ -170,4 +170,35 @@ await t("the archive's provider type codes mean the same on the server and on th
   assert.equal(c.defaultSubject({ doc_type: null, doc_number: 7 }), "מסמך מספר 7 מ-LALUM");
   assert.ok(c.defaultBody({ doc_type: null, doc_number: null }).includes("מצורף מסמך."));
   assert.ok(c.waText({ doc_type: "INVOICE", doc_number: 5 }, "https://x.co/a.pdf").endsWith("https://x.co/a.pdf"));
+});
+
+// ---- a PDF attached by hand to an archive document ----
+const pdfOf = (n) => { const b = Buffer.alloc(n, 0x20); b.write("%PDF-1.7\n", 0); return b.toString("base64"); };
+await t("a real small PDF passes, and the exact size limit passes while one byte more does not", () => {
+  assert.equal(validPdfBase64(pdfOf(2000)), true);
+  assert.equal(validPdfBase64(pdfOf(MAX_UPLOAD_BYTES)), true);
+  assert.equal(validPdfBase64(pdfOf(MAX_UPLOAD_BYTES + 1)), false);
+});
+await t("anything that is not a base64 PDF is refused: other formats, bad characters, bad length, empty, wrong type", () => {
+  assert.equal(validPdfBase64(Buffer.from("\x89PNG\r\n\x1a\n-----").toString("base64")), false);
+  assert.equal(validPdfBase64(Buffer.from("<html><script>alert(1)</script>").toString("base64")), false);
+  assert.equal(validPdfBase64(pdfOf(100).slice(0, -1)), false, "length not a multiple of 4");
+  assert.equal(validPdfBase64(pdfOf(100) + "!!"), false);
+  assert.equal(validPdfBase64("data:application/pdf;base64," + pdfOf(100)), false, "a data URL is not base64 alone");
+  assert.equal(validPdfBase64(pdfOf(100).replace(/./, " ")), false);
+  for (const bad of ["", "JVBERi0", null, undefined, 123, {}, ["JVBERi0xLjc="]]) assert.equal(validPdfBase64(bad), false, String(bad));
+});
+await t("an oversized string is rejected by length alone, without decoding it", () => {
+  const t0 = Date.now();
+  assert.equal(validPdfBase64("A".repeat(50_000_000)), false);
+  assert.ok(Date.now() - t0 < 200);
+});
+await t("the screen refuses a file before upload for the same reasons", () => {
+  assert.equal(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: 1000 }), null);
+  assert.equal(c.pdfFileProblem({ name: "x.PDF", type: "", size: 1000 }), null, "a PDF with no reported type");
+  assert.ok(c.pdfFileProblem({ name: "x.png", type: "image/png", size: 1000 }));
+  assert.ok(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: 0 }));
+  assert.ok(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: c.UPLOAD_MAX_BYTES + 1 }));
+  assert.equal(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: c.UPLOAD_MAX_BYTES }), null);
+  assert.equal(c.UPLOAD_MAX_BYTES, MAX_UPLOAD_BYTES, "the screen and the function use the same limit");
 });

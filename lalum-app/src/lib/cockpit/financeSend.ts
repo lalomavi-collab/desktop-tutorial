@@ -43,6 +43,18 @@ export function whatsappUrl(phone: string | null | undefined, text: string): str
 export const waText = (d: SendSubject, url: string): string =>
   `שלום, ${label(d.doc_type)}${d.doc_number ? ` מספר ${d.doc_number}` : ""} מ-LALUM:\n${url}`;
 
+/** The largest PDF that can be attached by hand to an archive document. The function checks the same limit (MAX_UPLOAD_BYTES in _shared/docSend.ts). */
+export const UPLOAD_MAX_BYTES = 4 * 1024 * 1024;
+
+/** Why a chosen file cannot be attached, or null when it can. The function checks the real content again; this only spares a useless upload. */
+export function pdfFileProblem(f: { name: string; type: string; size: number }): string | null {
+  const isPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+  if (!isPdf) return "הקובץ חייב להיות PDF.";
+  if (f.size <= 0) return "הקובץ ריק.";
+  if (f.size > UPLOAD_MAX_BYTES) return `הקובץ גדול מדי (${(f.size / 1048576).toFixed(1)}MB). המקסימום הוא ${UPLOAD_MAX_BYTES / 1048576}MB.`;
+  return null;
+}
+
 /** A document can be sent when it is issued and has a PDF link. */
 export const canSend = (d: Pick<FinDocument, "status" | "pdf_url">): boolean => d.status === "ISSUED" && !!d.pdf_url;
 

@@ -9,6 +9,20 @@ export const DOC_LABEL: Record<string, string> = {
 export const ARCHIVE_TYPE: Record<number, string> = { 1: "INVOICE", 2: "RECEIPT", 3: "INVOICE_RECEIPT", 4: "CREDIT", 5: "PROFORMA" };
 export const MAX_RECIPIENTS = 6;
 export const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
+/** The largest PDF a partner may attach by hand to an archive document. Kept well under the request size the function host accepts. */
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+
+/**
+ * Whether a base64 string is a PDF a partner attached by hand: only base64 characters, a decoded size within the limit, and the PDF magic
+ * bytes at the start. The content itself is not inspected further: it goes to the customer as an attachment and is never opened here.
+ */
+export function validPdfBase64(b64: unknown, maxBytes = MAX_UPLOAD_BYTES): b64 is string {
+  if (typeof b64 !== "string" || b64.length < 8 || b64.length > Math.ceil((maxBytes * 4) / 3) + 4) return false;
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(b64) || b64.length % 4 !== 0) return false;
+  const padding = b64.endsWith("==") ? 2 : b64.endsWith("=") ? 1 : 0;
+  if ((b64.length / 4) * 3 - padding > maxBytes) return false;
+  try { return atob(b64.slice(0, 8)).startsWith("%PDF"); } catch { return false; }
+}
 
 export interface RecipientInput { customerEmail: string | null; includeCustomer: boolean; extra: unknown; copyToMe: boolean; ownEmail: string | null; testOnly: boolean }
 export interface Recipients { to: string[]; bcc: string[] }
