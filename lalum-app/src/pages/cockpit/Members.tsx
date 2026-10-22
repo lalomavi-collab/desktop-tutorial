@@ -150,7 +150,7 @@ function MembersInner({ canAdmin, canManageDept }: { canAdmin: boolean; canManag
         <div className="ck-card ck-stack" style={{ gap: 10 }}>
           <div className="ck-title" style={{ fontSize: 16 }}>הוספת הנהלת חשבונות</div>
           <div className="ck-meta">
-            קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה תדרוש אימות דו שלבי תמיד. ההרשאה שלה קבועה: צפייה והורדה של חומרים בלבד (רמה 1), ובלשונית ההרשאות אפשר רק להוריד אותה לרמה 0.
+            קודם מזמינים את הכתובת להתחברות (הזמנת משתמש), עדיף כתובת אישית ולא תיבה משותפת, כדי שכל פעולה תיוחס לאדם אחד. הכניסה שלה בסיסמה בלבד, בלי אימות דו שלבי (החלטת הבעלים). ההרשאה שלה קבועה: צפייה והורדה של חומרים בלבד (רמה 1), ובלשונית ההרשאות אפשר רק להוריד אותה לרמה 0.
           </div>
           <div className="ck-row" style={{ gap: 8, flexWrap: "wrap" }}>
             <input className="ck-input" value={bkName} onChange={(e) => setBkName(e.target.value)} placeholder="שם מלא" style={{ maxWidth: 220 }} />
