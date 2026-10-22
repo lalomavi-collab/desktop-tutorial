@@ -69,7 +69,7 @@ export function PrivacyLaw() {
                 </span>
               </button>
             )}
-            <p className="muted" style={{ fontSize: 13.5, margin: "12px 0 0" }}>סרטון שקט, בטקסט על המסך. אורכו כדקה.</p>
+            <p className="muted" style={{ fontSize: 13.5, margin: "12px 0 0" }}>סרטון שקט, בטקסט על המסך. אורכו כדקה ורבע.</p>
           </div>
 
           <div style={{ ...card, borderTop: "3px solid var(--clay)" }}>

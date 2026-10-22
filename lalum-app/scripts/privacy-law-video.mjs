@@ -21,7 +21,7 @@ import path from "node:path";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pw = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
 const chromium = pw.chromium || pw.default.chromium;
-const W = 1280, H = 720, FPS = 30, DUR = 73;
+const W = 1280, H = 720, FPS = 30, DUR = 73.5;
 const out = path.join(root, "public/media");
 const frames = path.join(process.env.TMPDIR || "/tmp", "lalum-privacy-frames");
 if (existsSync(frames)) rmSync(frames, { recursive: true });
@@ -29,7 +29,7 @@ mkdirSync(frames, { recursive: true });
 const logo = readFileSync(path.join(root, "public/lalum-logo-inverse.svg"), "utf8").replace(/<svg /, '<svg class="wm" ');
 
 // Scenes: id, start, end (seconds). Items inside a scene carry data-t, their reveal time.
-const SCENES = [["A", 0.2, 5.0], ["B", 5.0, 18.2], ["C", 18.2, 33.0], ["D", 33.0, 46.5], ["E", 46.5, 59.0], ["F", 59.0, 67.3], ["G", 67.3, 73.0]];
+const SCENES = [["A", 0.2, 4.7], ["B", 4.7, 18.2], ["C", 18.2, 33.0], ["D", 33.0, 46.8], ["E", 46.8, 59.3], ["F", 59.3, 67.6], ["G", 67.6, 73.4]];
 
 const html = `<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}
@@ -50,14 +50,14 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .card{padding:20px 24px;border-radius:18px;border:2px solid #3a5a42;background:#16241b;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .card.am{border-color:#e7c27a}
-.rows{display:flex;flex-direction:column;gap:14px}
-.row{display:flex;gap:26px;align-items:flex-start;padding:16px 24px;border-radius:18px;border:2px solid #3a5a42;background:#16241b}
-.row .bd{flex:none;min-width:190px;text-align:center;margin-top:4px}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:24px;align-items:flex-start;padding:12px 24px;border-radius:18px;border:2px solid #3a5a42;background:#16241b}
+.row .bd{flex:none;min-width:175px;text-align:center;margin-top:4px}
 .row .b{flex:1;display:flex;flex-direction:column;gap:6px}
 .cols{display:flex;gap:22px;align-items:stretch}
 .col{display:flex;flex-direction:column;gap:14px}
 .amt{display:flex;gap:18px;align-items:baseline;padding:14px 22px;border-radius:16px;border:2px solid #e7c27a;background:#16241b}
-.amt b{font-size:44px;color:#e7c27a;white-space:nowrap}
+.amt b{font-size:40px;color:#e7c27a;white-space:nowrap}
 .amt span{font-size:28px;color:#cfd9cb;line-height:1.3}
 .note{font-size:28px;line-height:1.35;color:#9fc4a2;font-weight:700}
 .big{font-size:52px;line-height:1.2;font-weight:700}
@@ -90,7 +90,7 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
   <div class="tag r" data-t="0.4">החובות</div>
   <div class="rows">
     <div class="row r" data-t="1.1"><span class="bd">סעיף 8</span><div class="b"><div class="ct">עיבוד חוקי</div><div class="cx">רק למטרת המאגר ובהרשאת בעל השליטה</div></div></div>
-    <div class="row r" data-t="4.1"><span class="bd">סעיף 11</span><div class="b"><div class="ct">הודעה בעת איסוף</div><div class="cx">מציינים את בעל השליטה, זכויות העיון והתיקון, והאם המסירה חובה או בהסכמה</div></div></div>
+    <div class="row r" data-t="4.1"><span class="bd">סעיף 11</span><div class="b"><div class="ct">הודעה בעת איסוף</div><div class="cx">מציינים את בעל השליטה, זכויות עיון ותיקון, והאם המסירה חובה או בהסכמה</div></div></div>
     <div class="row r" data-t="7.7"><span class="bd">סעיף 8א</span><div class="b"><div class="ct">רישום או הודעה</div><div class="cx">רישום: מאגר למסירה לאחר כדרך עיסוק, מעל 10,000 בני אדם. הודעה תוך 30 ימים: מידע רגיש, מעל 100,000</div></div></div>
     <div class="row r" data-t="11.2"><span class="bd">סעיף 17ב1</span><div class="b"><div class="ct">ממונה על הגנת הפרטיות</div><div class="cx">חובה, בין השאר, בגוף ציבורי ובניטור שיטתי או מידע רגיש בהיקף ניכר</div></div></div>
   </div>
@@ -105,11 +105,11 @@ body{font-family:"Liberation Sans",Arial,sans-serif;position:relative;color:#f5f
       <div class="card r" data-t="9.8"><span class="bd">סעיפים 23נג עד 23נז</span><div class="cx"><b>עבירות</b>: עיבוד ממאגר בלא הרשאה, מאסר 3 שנים</div></div>
     </div>
     <div class="col" style="flex:1">
-      <div class="ct r" data-t="2.3"><span class="bd" style="margin-inline-end:12px">סעיפים 23כו עד 23לב</span>עיצומים כספיים</div>
+      <div class="r" data-t="2.3" style="display:flex;flex-direction:column;gap:8px;align-items:flex-start"><span class="bd">סעיפים 23כו עד 23לב</span><div class="ct">עיצומים כספיים</div></div>
       <div class="amt r" data-t="3.2"><b>153,540 ש״ח</b><span>רישום והודעה</span></div>
       <div class="amt r" data-t="4.8"><b>15,350 ש״ח</b><span>זכויות הפרט</span></div>
       <div class="amt r" data-t="6.0"><b>307,080 ש״ח</b><span>מסירת מסמך למפקח</span></div>
-      <div class="note r" data-t="7.9">סכומי בסיס, מתעדכנים ב-1 בינואר בכל שנה</div>
+      <div class="note r" data-t="7.9">סכומי בסיס<br>מתעדכנים ב-1 בינואר בכל שנה</div>
     </div>
   </div>
 </div>
@@ -182,7 +182,7 @@ if (process.env.PREVIEW) {
   process.exit(0);
 }
 
-for (let i = 0; i < DUR * FPS; i++) {
+for (let i = 0; i < Math.round(DUR * FPS); i++) {
   await page.evaluate((t) => window.render(t), i / FPS);
   await page.screenshot({ path: path.join(frames, `f${String(i).padStart(4, "0")}.png`) });
 }
