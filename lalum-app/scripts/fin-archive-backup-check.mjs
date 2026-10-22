@@ -26,7 +26,8 @@ const mk = (over = {}) => {
     listRows: async (a, o, l) => { calls.push(["list", o, l]); const all = over.rows ?? [row(1), row(2), row(3)]; return { rows: all.slice(o, o + l), total: all.length }; },
     exists: async (p) => store.has(p),
     download: async (u) => { calls.push(["dl", u]); return over.dl ?? { status: 200, bytes: PDF }; },
-    upload: async (p) => { if (over.upFail) return false; store.add(p); calls.push(["up", p]); return true; },
+    upload: async (p) => { if (over.upFail) return { ok: false, error: "boom" }; if (!over.ghost) store.add(p); calls.push(["up", p]); return { ok: true }; },
+    stored: async (p) => (store.has(p) ? PDF.length : null),
     ...over.ports,
   };
   return { ports, calls, store };
@@ -51,7 +52,10 @@ for (const [over, outcome] of [[{ dl: { status: 500, bytes: null } }, "download_
   const m = mk({ ...over, rows: [row(1)] }); const r = await handle(req(), m.ports); assert.equal(r.body.results[0].outcome, outcome); assert.equal(r.body.failed, 1); assert.equal(m.store.size, 0);
 }
 { const m = mk({ rows: [row(1, { cipher: null })] }); const r = await handle(req(), m.ports); assert.equal(r.body.results[0].outcome, "no_cipher"); assert.ok(!m.calls.some((c) => c[0] === "dl")); }
-{ const big = { status: 200, bytes: Object.assign(new Uint8Array(20 * 1024 * 1024 + 1), PDF) }; assert.equal(await backupOne(row(1), mk({ dl: big }).ports), "too_large"); }
+{ const big = { status: 200, bytes: Object.assign(new Uint8Array(20 * 1024 * 1024 + 1), PDF) }; assert.equal((await backupOne(row(1), mk({ dl: big }).ports)).outcome, "too_large"); }
+// an upload that returns no error but leaves nothing in the bucket is NOT saved (the 2026-10-22 report of 277 saved with an empty bucket)
+{ const m = mk({ ghost: true, rows: [row(1)] }); const r = await handle(req(), m.ports); assert.equal(r.body.results[0].outcome, "not_stored"); assert.equal(r.body.saved, 0); assert.equal(r.body.failed, 1); assert.match(r.body.results[0].detail, /found nothing/); }
+{ const m = mk({ upFail: true, rows: [row(1)] }); const r = await handle(req(), m.ports); assert.equal(r.body.results[0].detail, "boom"); }
 // a thrown download is a failure of that document, not of the batch
 { const m = mk({ ports: { download: async () => { throw new Error("net"); } } }); const r = await handle(req(), m.ports); assert.equal(r.status, 200); assert.equal(r.body.failed, 3); }
 // the answer never carries a cipher or a link

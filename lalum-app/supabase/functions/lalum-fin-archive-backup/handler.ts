@@ -19,7 +19,7 @@ export const backupPath = (r: Row): string => `${r.firmId}/${r.docType}-${r.docN
 
 export interface Row { id: string; firmId: string; docType: number; docNumber: number; cipher: string | null }
 export type Allowed = { ok: true } | { ok: false };
-export type Outcome = "saved" | "skipped" | "no_cipher" | "download_failed" | "not_pdf" | "too_large" | "upload_failed";
+export type Outcome = "saved" | "skipped" | "no_cipher" | "download_failed" | "not_pdf" | "too_large" | "upload_failed" | "not_stored";
 export interface Ports {
   allowedOrigins: string[];
   /** The caller's level on the firm that owns the archive, as the signed in user. */
@@ -28,21 +28,28 @@ export interface Ports {
   listRows(authorization: string, offset: number, limit: number): Promise<{ rows: Row[]; total: number }>;
   exists(path: string): Promise<boolean>;
   download(url: string): Promise<{ status: number; bytes: Uint8Array | null }>;
-  upload(path: string, bytes: Uint8Array): Promise<boolean>;
+  upload(path: string, bytes: Uint8Array): Promise<{ ok: boolean; error?: string }>;
+  /** The size of the stored object read back from the bucket, or null when it is not there. */
+  stored(path: string): Promise<number | null>;
 }
 export interface Req { method: string; authorization: string | null; origin: string | null; body: unknown }
 export interface Res { status: number; body: Record<string, unknown>; headers: Record<string, string> }
 
-export async function backupOne(r: Row, p: Ports): Promise<Outcome> {
+export interface Done { outcome: Outcome; detail?: string }
+/** "saved" is reported only after the object is read back from the bucket with the size that was sent: an upload call that returns no error proved nothing once. */
+export async function backupOne(r: Row, p: Ports): Promise<Done> {
   const url = pdfLinkFromCipher(r.cipher);
-  if (!url) return "no_cipher";
+  if (!url) return { outcome: "no_cipher" };
   const path = backupPath(r);
-  if (await p.exists(path)) return "skipped";
+  if (await p.exists(path)) return { outcome: "skipped" };
   const got = await p.download(url);
-  if (got.status !== 200 || !got.bytes) return "download_failed";
-  if (got.bytes.length > MAX_PDF_BYTES) return "too_large";
-  if (!isPdf(got.bytes)) return "not_pdf";
-  return (await p.upload(path, got.bytes)) ? "saved" : "upload_failed";
+  if (got.status !== 200 || !got.bytes) return { outcome: "download_failed", detail: `http ${got.status}` };
+  if (got.bytes.length > MAX_PDF_BYTES) return { outcome: "too_large" };
+  if (!isPdf(got.bytes)) return { outcome: "not_pdf" };
+  const up = await p.upload(path, got.bytes);
+  if (!up.ok) return { outcome: "upload_failed", detail: (up.error ?? "").slice(0, 120) };
+  const size = await p.stored(path);
+  return size === got.bytes.length ? { outcome: "saved" } : { outcome: "not_stored", detail: `sent ${got.bytes.length}, found ${size ?? "nothing"}` };
 }
 
 export async function handle(req: Req, p: Ports): Promise<Res> {
@@ -64,11 +71,11 @@ export async function handle(req: Req, p: Ports): Promise<Res> {
 
   let page: { rows: Row[]; total: number };
   try { page = await p.listRows(req.authorization, offset as number, limit as number); } catch { return out(500, { ok: false }); }
-  const results: Array<{ doc_number: number; doc_type: number; outcome: Outcome }> = [];
+  const results: Array<{ doc_number: number; doc_type: number; outcome: Outcome; detail?: string }> = [];
   for (const r of page.rows) {
-    let outcome: Outcome;
-    try { outcome = await backupOne(r, p); } catch { outcome = "download_failed"; }
-    results.push({ doc_number: r.docNumber, doc_type: r.docType, outcome });
+    let done: Done;
+    try { done = await backupOne(r, p); } catch (e) { done = { outcome: "download_failed", detail: String((e as Error)?.message ?? e).slice(0, 120) }; }
+    results.push({ doc_number: r.docNumber, doc_type: r.docType, ...done });
   }
   const count = (o: Outcome) => results.filter((x) => x.outcome === o).length;
   const next = (offset as number) + page.rows.length;
