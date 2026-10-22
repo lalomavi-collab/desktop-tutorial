@@ -40,6 +40,7 @@
     "open-original-check": "node scripts/open-original-check.mjs",
     "export-originals-check": "node scripts/export-originals-check.mjs",
     "fin-archive-pdf-check": "node scripts/fin-archive-pdf-check.mjs",
+    "fin-archive-backup-check": "node scripts/fin-archive-backup-check.mjs",
     "private-routes-check": "node scripts/private-routes-check.mjs",
     "matter-originals-check": "node scripts/matter-originals-check.mjs",
     "mail-route-check": "node scripts/mail-route-check.mjs",
