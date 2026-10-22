@@ -7,7 +7,8 @@
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const LINK_HOST = /(^|\.)invoice4u\.co\.il$/i;
 
-export interface ArchiveRow { i4uDocId: string; docType: number; docNumber: number }
+/** cipher: the provider's own CipherText field of the stored document (already percent encoded), or null when the row has none. */
+export interface ArchiveRow { i4uDocId: string; docType: number; docNumber: number; cipher?: string | null }
 export type Allowed = { ok: true; row: ArchiveRow } | { ok: false };
 /** What a provider answer looked like, by NAME only: the keys of the answer object and every string field whose name looks like a link, with its length and host. Never a value. */
 export interface LinkField { key: string; length: number; host: string | null }
@@ -51,6 +52,15 @@ export function tokenCandidates(answer: unknown, apiKey: string): string[] {
   return out.slice(0, 2);
 }
 
+export const PDF_VIEW = "https://newview.invoice4u.co.il/Views/PDF.aspx?cipher=";
+/** The provider's documented way to a document's PDF (support answer, 2026-10-22): the stored CipherText goes as the cipher parameter of the view page.
+ *  The stored value is already percent encoded, so it is appended as is. Only URL safe characters and valid %XX escapes pass: anything else yields null. */
+export function pdfLinkFromCipher(cipher: unknown): string | null {
+  if (typeof cipher !== "string" || cipher.length < 8 || cipher.length > 2000) return null;
+  if (!/^([A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+$/.test(cipher)) return null;
+  return safeLink(PDF_VIEW + cipher);
+}
+
 /** A link is usable only when it is https on the provider's domain. */
 export function safeLink(v: string | null): string | null {
   if (!v) return null;
@@ -72,6 +82,9 @@ export async function handle(req: Req, p: Ports): Promise<Res> {
   let allowed: Allowed;
   try { allowed = await p.allow(req.authorization, id); } catch { return out(500, { ok: false }); }
   if (!allowed.ok) return out(403, { ok: false });
+
+  const byCipher = pdfLinkFromCipher(allowed.row.cipher);
+  if (byCipher) return out(200, { ok: true, url: byCipher });
 
   let got: Fetched;
   try { got = await p.fetchLinks(allowed.row); } catch { return out(502, { ok: false, code: "provider_unreachable" }); }

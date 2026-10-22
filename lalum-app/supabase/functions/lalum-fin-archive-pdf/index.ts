@@ -25,11 +25,11 @@ const ports = (): Ports => ({
   allowedOrigins: (Deno.env.get("ALLOWED_ORIGINS") ?? DEFAULT_ORIGINS).split(",").map((s) => s.trim()).filter(Boolean),
   async allow(authorization, archiveId): Promise<Allowed> {
     const asUser = createClient(env("SUPABASE_URL"), env("SUPABASE_ANON_KEY"), { auth: { persistSession: false }, global: { headers: { Authorization: authorization } } });
-    const { data: row } = await asUser.from("lalum_fin_archive").select("firm_id, i4u_doc_id, i4u_doc_type, doc_number").eq("id", archiveId).maybeSingle();
+    const { data: row } = await asUser.from("lalum_fin_archive").select("firm_id, i4u_doc_id, i4u_doc_type, doc_number, cipher:raw->>CipherText").eq("id", archiveId).maybeSingle();
     if (!row) return { ok: false };
     const { data: level } = await asUser.rpc("lalum_fin_level", { p_firm: row.firm_id });
     if (typeof level !== "number" || level < 1) return { ok: false };
-    return { ok: true, row: { i4uDocId: String(row.i4u_doc_id), docType: Number(row.i4u_doc_type), docNumber: Number(row.doc_number) } };
+    return { ok: true, row: { i4uDocId: String(row.i4u_doc_id), docType: Number(row.i4u_doc_type), docNumber: Number(row.doc_number), cipher: typeof row.cipher === "string" ? row.cipher : null } };
   },
   async fetchLinks(row): Promise<Fetched> {
     const apiKey = env("INVOICE4U_API_KEY").trim();

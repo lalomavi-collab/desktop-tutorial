@@ -10,7 +10,7 @@ const src = readFileSync(new URL("../supabase/functions/lalum-fin-archive-pdf/ha
 const dir = mkdtempSync(join(tmpdir(), "fin-archive-pdf-"));
 const file = join(dir, "handler.mjs");
 writeFileSync(file, ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText);
-const { handle, safeLink, requestBodies, tokenCandidates } = await import(pathToFileURL(file).href);
+const { handle, safeLink, requestBodies, tokenCandidates, pdfLinkFromCipher } = await import(pathToFileURL(file).href);
 
 const ID = "11111111-2222-3333-4444-555555555555";
 const mk = (over = {}) => {
@@ -93,5 +93,17 @@ assert.equal((await handle(req({ origin: "https://evil.example" }), mk().ports))
   assert.deepEqual(tokenCandidates({ Response: { Token: "short" } }, KEY), []);
   assert.deepEqual(tokenCandidates(null, KEY), []);
   assert.equal(tokenCandidates({ Response: { A_token: "1".repeat(9), B_token: "2".repeat(9), C_token: "3".repeat(9) } }, KEY).length, 2);
+}
+// The provider's documented link: the stored CipherText as the cipher parameter, appended as is (already percent encoded); provider is not asked.
+{
+  const C = "AbC123%2BxYz%3D%3D-_.~";
+  assert.equal(pdfLinkFromCipher(C), "https://newview.invoice4u.co.il/Views/PDF.aspx?cipher=" + C);
+  for (const bad of [null, undefined, 5, "", "short", "has space12345", "a&b=c12345", "https://evil.example/x1", "%zz123456", "ab#cd12345", "a".repeat(2001)]) assert.equal(pdfLinkFromCipher(bad), null, String(bad));
+  const row = { i4uDocId: "42", docType: 3, docNumber: 7, cipher: C };
+  const { ports, calls } = mk({ allowed: { ok: true, row } }); const r = await handle(req(), ports);
+  assert.deepEqual(r.body, { ok: true, url: "https://newview.invoice4u.co.il/Views/PDF.aspx?cipher=" + C }); assert.ok(!calls.some((c) => c[0] === "fetch"));
+  // an unusable cipher falls back to asking the provider
+  const m = mk({ allowed: { ok: true, row: { ...row, cipher: "bad cipher!" } } }); const r2 = await handle(req(), m.ports);
+  assert.equal(r2.body.url, "https://api.invoice4u.co.il/pdf/abc"); assert.ok(m.calls.some((c) => c[0] === "fetch"));
 }
 console.log("fin-archive-pdf-check: ok");
