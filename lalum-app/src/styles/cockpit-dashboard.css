@@ -136,12 +136,6 @@
 .db-wf-val { font-size: 18px; }
 .db-trend-read b { font-size: 17px; }
 
-/* The dashboard title as a compact button shaped chip, not a display headline: the cards below carry the headings. */
-.ck-root[data-ck-theme] .ck-top[data-page="/workspace/dashboard"] h1 {
-  display: inline-block; font-size: 32px; line-height: 1.1; padding: 3px 22px 7px; border: 1px solid var(--line-strong); border-inline-start-width: 1px;
-  border-radius: 999px; background: var(--clay-tint);
-}
-
 /* Market style chart (MarketChart): readout line, plot, volume strip, key. */
 .mk { display: flex; flex-direction: column; gap: 8px; }
 .mk-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; min-height: 24px; font-size: 14px; color: var(--slate); }
@@ -164,3 +158,9 @@
 .mk-key .mk-dash { width: 14px; height: 0; border-top: 2px dashed var(--chart-warn, #b8780a); border-radius: 0; background: none; }
 .mk-key .mk-trend { width: 14px; height: 0; border-top: 2px solid var(--chart-cat-2, #2a75ba); border-radius: 0; background: none; }
 .mk-key b { color: var(--ink); font-weight: 700; }
+
+/* The dashboard button in the rail is the compact one: a smaller picture and label and less padding than the other screens, so it reads as a quick return
+   rather than a destination. The page title above the cards is the ordinary heading, the same as on every other screen. */
+@media (min-width: 861px) {
+  .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a.ck-nav-sm { font-size: 12px; padding: 4px 3px 3px; gap: 2px; }
+}

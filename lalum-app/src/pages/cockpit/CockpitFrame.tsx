@@ -163,8 +163,8 @@ export function CockpitFrame({
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
               {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
               {sec.items.map(([to, label, end]) => (
-                <NavLink key={to} to={to} end={end || to === "/workspace"}>
-                  <RailIcon id={to} size={38} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
+                <NavLink key={to} to={to} end={end || to === "/workspace"} className={to === "/workspace/dashboard" ? "ck-nav-sm" : undefined}>
+                  <RailIcon id={to} size={to === "/workspace/dashboard" ? 28 : 38} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
                 </NavLink>
               ))}
             </div>
@@ -182,7 +182,7 @@ export function CockpitFrame({
         </div>
       </aside>
       <div className="ck-shell">
-        <header className="ck-top" data-page={path}>
+        <header className="ck-top">
           <h1 className="serif">{title}</h1>
           {hasMember && <ClientNamesToggle />}
         </header>
