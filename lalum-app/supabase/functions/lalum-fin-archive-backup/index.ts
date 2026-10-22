@@ -38,7 +38,14 @@ const ports = (): Ports => ({
   },
   async upload(path, bytes) {
     const { error } = await admin().storage.from(BUCKET).upload(path, bytes, { contentType: "application/pdf", upsert: false });
-    return !error;
+    return { ok: !error, error: error ? String((error as { message?: string }).message ?? error) : undefined };
+  },
+  async stored(path) {
+    const i = path.lastIndexOf("/");
+    const { data } = await admin().storage.from(BUCKET).list(path.slice(0, i), { search: path.slice(i + 1), limit: 1 });
+    const f = data?.find((x) => x.name === path.slice(i + 1));
+    const size = (f?.metadata as { size?: number } | null | undefined)?.size;
+    return typeof size === "number" ? size : null;
   },
 });
 

@@ -60,7 +60,7 @@ export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: 
       const r = await backupArchiveBatch(offset);
       if (!r.ok) { setBk((b) => ({ ...b, running: false, text: r.text, failures })); return; }
       saved += r.saved; skipped += r.skipped;
-      for (const f of r.failures) failures.push(`מסמך ${f.doc_number}: ${BACKUP_OUTCOME[f.outcome] ?? f.outcome}`);
+      for (const f of r.failures) failures.push(`מסמך ${f.doc_number}: ${BACKUP_OUTCOME[f.outcome] ?? f.outcome}${f.detail ? ` (${f.detail})` : ""}`);
       const done = r.next ?? r.total;
       setBk({ running: r.next !== null, done, total: r.total, saved, skipped, text: r.next === null ? `הסתיים: נשמרו ${saved}, דולגו ${skipped} שכבר נשמרו, נכשלו ${failures.length}.` : "", failures: [...failures] });
       if (r.next === null) return;
