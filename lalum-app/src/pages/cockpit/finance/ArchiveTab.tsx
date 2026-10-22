@@ -6,6 +6,7 @@ import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from
 import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
 import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
+import { BACKUP_OUTCOME, backupArchiveBatch } from "../../../lib/cockpit/archiveBackup";
 import { ARCHIVE_DOC_TYPE } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { DocSendPanel } from "./DocSendPanel";
@@ -44,6 +45,27 @@ export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: 
     const r = await archivePdfLink(d.id);
     setPdfBusy(null);
     if (r.ok) window.open(r.url, "_blank", "noopener"); else { setPdfMsg(`מסמך ${d.doc_number}: ${r.text}`); setPdfDetail(r.detail ?? ""); }
+  }
+
+  const [bk, setBk] = useState<{ running: boolean; done: number; total: number; saved: number; skipped: number; text: string; failures: string[] }>({ running: false, done: 0, total: 0, saved: 0, skipped: 0, text: "", failures: [] });
+  const bkStop = useRef(false);
+  /** Copies every archive PDF into the private backup bucket, a small batch at a time. Safe to repeat: saved documents are skipped. */
+  async function runBackup() {
+    if (!window.confirm("לשמור עותק של כל קובצי ה-PDF של הארכיון בגיבוי הפרטי? הפעולה לקריאה בלבד מול מערכת ההיסטוריה, ואפשר להריץ אותה שוב.")) return;
+    bkStop.current = false;
+    let offset = 0, saved = 0, skipped = 0; const failures: string[] = [];
+    setBk({ running: true, done: 0, total: 0, saved: 0, skipped: 0, text: "", failures: [] });
+    for (;;) {
+      if (bkStop.current) { setBk((b) => ({ ...b, running: false, text: "הגיבוי נעצר. אפשר להמשיך מאותה נקודה בהרצה חוזרת." })); return; }
+      const r = await backupArchiveBatch(offset);
+      if (!r.ok) { setBk((b) => ({ ...b, running: false, text: r.text, failures })); return; }
+      saved += r.saved; skipped += r.skipped;
+      for (const f of r.failures) failures.push(`מסמך ${f.doc_number}: ${BACKUP_OUTCOME[f.outcome] ?? f.outcome}`);
+      const done = r.next ?? r.total;
+      setBk({ running: r.next !== null, done, total: r.total, saved, skipped, text: r.next === null ? `הסתיים: נשמרו ${saved}, דולגו ${skipped} שכבר נשמרו, נכשלו ${failures.length}.` : "", failures: [...failures] });
+      if (r.next === null) return;
+      offset = r.next;
+    }
   }
 
   async function importCustomers() {
@@ -91,6 +113,20 @@ export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: 
         </div>
         {log.map((l, i) => <div key={i} className={l.ok ? "ck-meta" : "ck-err"} aria-live="polite">{l.text}</div>)}
       </div>
+
+      {level >= 3 && (
+        <div className="ck-card ck-stack">
+          <div className="ck-title">גיבוי קובצי ה-PDF של הארכיון</div>
+          <div className="ck-meta">הגישה למערכת ההיסטוריה נסגרת ב-5 במרץ 2027. הכפתור שומר עותק של כל מסמך בגיבוי פרטי (finance-archive-backup ב-Supabase). אפשר לעצור ולהמשיך, ומסמכים שכבר נשמרו מדולגים.</div>
+          <div className="ck-row">
+            <button className="ck-btn primary" disabled={bk.running} onClick={() => void runBackup()}>{bk.running ? `מגבה... ${bk.done}/${bk.total}` : "גיבוי כל המסמכים"}</button>
+            {bk.running && <button className="ck-btn" onClick={() => { bkStop.current = true; }}>עצירה</button>}
+          </div>
+          {(bk.running || bk.done > 0) && <div className="ck-meta" aria-live="polite">עובדו {bk.done} מתוך {bk.total}. נשמרו {bk.saved}, דולגו {bk.skipped}.</div>}
+          {bk.text && <div className={bk.failures.length || bk.text.startsWith("אין") || bk.text.startsWith("הגיבוי") ? "ck-err" : "ck-ok"} aria-live="polite">{bk.text}</div>}
+          {bk.failures.slice(0, 20).map((f, i) => <div key={i} className="ck-err">{f}</div>)}
+        </div>
+      )}
 
       {(
         <>
