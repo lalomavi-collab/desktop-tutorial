@@ -1,7 +1,8 @@
 // Browser side of the firm wide handover package: the RPC calls of migration 0066, the SHA-256, the ZIP and the download.
 // All the rules live in firmExportCore.ts; this file only connects it to Supabase and the browser.
 import { supabase } from "../supabase";
-import { buildPackage, ExportError, zipName } from "./firmExportCore.ts";
+import { buildPackage, ExportError, parseExportStatus, zipName } from "./firmExportCore.ts";
+import type { ExportStatus } from "./firmExportCore.ts";
 import type { Built, OriginalsPort, PackageFile, Ports } from "./firmExportCore.ts";
 
 const sha256 = async (s: string): Promise<string> => {
@@ -52,6 +53,13 @@ const ports = (firmId: string): Ports => ({
   digest: sha256,
   now: () => new Date(),
 });
+
+/** Asked before the export starts, so a missing or stale second factor becomes a code prompt instead of a failure half way. Null when the answer could not be read. */
+export async function exportStatus(firmId: string): Promise<ExportStatus | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc("lalum_export_status", { p_firm: firmId });
+  return error ? null : parseExportStatus(data);
+}
 
 const pause = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
