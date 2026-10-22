@@ -46,7 +46,7 @@
     radial-gradient(800px 600px at -5% 105%, rgba(210, 222, 208, .7) 0%, transparent 60%),
     var(--ivory);
 }
-.ck-root[data-ck-theme="mint"] .ck-top h1, .ck-root[data-ck-theme="mint"] .ck-hero-title, .ck-root[data-ck-theme="mint"] .ck-doc h2 { font-family: "Heebo", var(--sans); font-weight: 700; }
+/* (Headings were Heebo bold here; every cockpit heading now takes --ck-display at the end of this file.) */
 .ck-root[data-ck-theme="mint"] .ck-top { background: color-mix(in srgb, var(--ivory) 80%, transparent); border-bottom: 0; }
 
 /* Glass cards */
@@ -374,12 +374,12 @@
 
 /* Page titles (design lane): the display serif at a larger size, with a short sage rule at the start of the line, the
    way the public site sets a section opening. The same on every cockpit screen, so the dashboard title and the others read as one set. */
-.ck-root[data-ck-theme="mint"] .ck-top h1 {
-  font-family: "Lalum Serif", "David Libre", Georgia, serif; font-weight: 500; letter-spacing: -.012em;
+.ck-root[data-ck-theme] .ck-top h1 {
+  font-family: var(--ck-display); font-weight: 500; letter-spacing: -.012em;
   font-size: clamp(30px, 4.2vw, 40px); line-height: 1.12; color: var(--ink); margin: 0;
   padding-inline-start: 14px; border-inline-start: 4px solid var(--clay); border-radius: 1px;
 }
-@media (max-width: 640px) { .ck-root[data-ck-theme="mint"] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
+@media (max-width: 640px) { .ck-root[data-ck-theme] .ck-top h1 { font-size: 30px; padding-inline-start: 12px; } }
 
 /* Rail, second pass: larger buttons, the six everyday screens first with "עוד" for the rest, and the theme switch at the top of the rail. */
 .ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore {
@@ -411,9 +411,14 @@
    so this screen reads like the rest of the cockpit. Layout is untouched (the wrapper adds no box). */
 .ck-billing { display: contents; }
 .ck-billing .ck-title, .ck-billing .ck-label, .ck-billing .fin-figure, .ck-billing .fin-kpi, .ck-billing .fin-rubric, .ck-billing .fin-tabs .ck-btn {
-  font-family: "Lalum Serif", "David Libre", Georgia, serif; letter-spacing: -.005em;
+  font-family: var(--ck-display); letter-spacing: -.005em;
 }
 .ck-billing .ck-title { font-size: 19px; font-weight: 500; }
 .ck-billing .ck-label { font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--ink); margin: 10px 0 -2px; }
 .ck-billing .fin-figure { font-weight: 500; font-size: 30px; }
 .ck-billing .fin-kpi { font-weight: 500; font-size: 24px; }
+
+/* One heading face for the whole cockpit, the same stack the public site's --serif resolves to (sovereign.css), so a heading here and a heading
+   on the home page are the same typeface. Every screen: page titles, section and card titles, document headings. Weight 500 (real face). */
+.ck-root { --ck-display: "Lalum Serif", "Frank Ruhl Libre", "David Libre", Georgia, serif; }
+.ck-root :is(h1, h2, h3, h4), .ck-root .ck-title, .ck-root .ck-hero-title, .ck-root .ck-doc h2 { font-family: var(--ck-display); font-weight: 500; letter-spacing: 0; }
