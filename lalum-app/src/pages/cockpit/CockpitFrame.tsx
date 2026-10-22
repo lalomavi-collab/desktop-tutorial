@@ -138,7 +138,8 @@ export function CockpitFrame({
     const inner = bookkeeper && !BOOKKEEPER_PATHS.includes(path)
       ? <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">מסך זה אינו חלק מהנהלת החשבונות</div><div className="ck-meta">לתפקיד הנהלת חשבונות יש גישה למערכת הנהלת החשבונות בלבד.</div><Link className="ck-btn primary" to="/settings/billing" style={{ alignSelf: "flex-start" }}>להנהלת חשבונות</Link></div>
       : children({ member: access.member, platformAdmin: access.platformAdmin });
-    const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN", "BOOKKEEPER"].includes(access.member?.role ?? "");
+    // The external bookkeeper signs in with a password only (owner's decision, 0079), so she gets no second factor screen.
+    const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");
     body = mfa && partnerLike ? <MfaGate required={access.platformAdmin || access.member?.lalum_firms.require_mfa === true}>{inner}</MfaGate> : inner;
   }
 
