@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BarsH, GroupedBars } from "./CockpitCharts";
+import { MarketChart } from "./MarketChart";
 import { money } from "../../lib/cockpit/shared";
 import { loadFinanceDash } from "../../lib/cockpit/dashboardFinance";
 import type { FinanceDash } from "../../lib/cockpit/dashboardFinance";
@@ -44,12 +45,51 @@ function Waterfall({ income, expenses, label }: { income: number; expenses: numb
   );
 }
 
+/** Income, expenses and the net between them over the months, drawn like a market page: two filled curves, the net as a dashed line, a three
+ *  month moving average on the income, a level crosshair and a live readout. Every number is the ledger's own; the sentence is computed. */
+function FinanceWave({ months, revenue, expenses }: { months: string[]; revenue: number[]; expenses: number[] }) {
+  const net = revenue.map((v, i) => v - (expenses[i] ?? 0));
+  const k = months.length - 1;
+  if (k < 1) return null;
+  const rev = revenue[k] ?? 0, prev = revenue[k - 1] ?? 0;
+  const pct = prev > 0 ? Math.round(((rev - prev) / prev) * 100) : null;
+  const best = net.indexOf(Math.max(...net));
+  const cls = pct == null || pct === 0 ? "flat" : pct > 0 ? "up" : "down";
+  const sentence = `הנטו ב${months[k]}: ${money(net[k])}. ` + (pct == null ? "אין הכנסות בחודש הקודם להשוואה. " : `ההכנסות ${pct > 0 ? "עלו" : pct < 0 ? "ירדו" : "נשארו ללא שינוי"}${pct !== 0 ? ` ב-${Math.abs(pct)}%` : ""} לעומת ${months[k - 1]}. `) + `החודש החזק ביותר: ${months[best]} (${money(net[best])}).`;
+  return (
+    <div className="ck-card db-card db-trend">
+      <div className="db-head"><h3>מגמת הכנסות והוצאות</h3><Link className="ck-link" to="/settings/billing">להנהלת חשבונות</Link></div>
+      <div className="db-trend-top">
+        <div className="db-kval"><b><bdi dir="ltr">{money(net[k])}</bdi></b><small>נטו ב{months[k]}</small></div>
+        <span className={`db-delta ${cls}`}>
+          <span aria-hidden="true">{pct == null || pct === 0 ? "■" : pct > 0 ? "▲" : "▼"}</span> {pct == null ? "אין בסיס להשוואה" : <bdi dir="ltr">{pct > 0 ? "+" : ""}{pct}%</bdi>}<span className="db-sr"> הכנסות לעומת החודש הקודם</span>
+        </span>
+      </div>
+      <MarketChart
+        title="הכנסות, הוצאות ונטו"
+        labels={months}
+        series={[
+          { key: "net", label: "נטו", color: "var(--slate)", values: net, kind: "dashed" },
+          { key: "rev", label: "הכנסות", color: "var(--chart-ok, #216f33)", values: revenue, kind: "area" },
+          { key: "exp", label: "הוצאות", color: "var(--chart-bad, #b3402f)", values: expenses, kind: "area" },
+        ]}
+        ma={3}
+        avg
+        trend
+        format={money}
+      />
+      <p className="db-trend-note">{sentence} לפני מע"מ, לפי תאריך המסמך.</p>
+    </div>
+  );
+}
+
 export function DashFinance({ firmId, preload }: { firmId: string; preload?: FinanceDash }) {
   const [f, setF] = useState<FinanceDash | null | undefined>(preload);
   useEffect(() => { if (!preload) void loadFinanceDash(firmId).then(setF); }, [firmId, preload]);
   if (!f) return null;
   return (
     <>
+      <div className="db-grid one"><FinanceWave months={f.months} revenue={f.revenue} expenses={f.expenses} /></div>
       <div className="db-grid">
         <div className="ck-card db-card">
           <div className="db-head"><h3>הכנסות והוצאות, 6 חודשים</h3><Link className="ck-link" to="/settings/billing">להנהלת חשבונות</Link></div>
