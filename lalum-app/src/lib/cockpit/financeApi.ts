@@ -4,8 +4,10 @@ import { supabase } from "../supabase";
 export interface IssueReply {
   ok?: boolean; code?: string; doc_number?: number; allocation_number?: string | null; pdf_url?: string | null;
   is_test?: boolean; total_mismatch?: boolean; hint?: string; detail?: string;
-  errors?: Array<{ id?: number; error?: string }>; status?: string;
+  errors?: Array<{ id?: number; error?: string }>; status?: string; delivery?: Partial<Record<"email" | "whatsapp", DeliveryOutcome>>;
 }
+/** What happened to one automatic delivery channel when a document was issued. */
+export interface DeliveryOutcome { status: "sent" | "skipped" | "failed" | "unknown"; code?: string }
 
 const ISSUE_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.",
@@ -17,6 +19,7 @@ const ISSUE_ERRORS: Record<string, string> = {
   invoice4u_rejected: "מערכת ההנפקה דחתה את המסמך. הפרטים מופיעים בשורת המסמך.",
   invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.",
   casual_not_allowed: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.",
+  customer_no_email: 'בכרטיס הלקוח אין כתובת דוא"ל תקינה. כל מסמך נשלח ללקוח אוטומטית בעת ההפקה, ולכן יש להזין כתובת בכרטיס הלקוח לפני ההפקה.',
   qa_key_missing: "לא הוגדר מפתח לסביבת הניסוי של מערכת ההנפקה (FIN_INVOICE4U_QA_KEY). הפקה בניסוי דורשת מפתח נפרד מהמפתח האמיתי.",
   outcome_uncertain: "לא התקבלה תשובה סופית. אל תפיקו שוב. לחצו על בדיקת סטטוס מול מערכת ההנפקה.",
   not_found_at_provider: "מערכת ההנפקה לא מכירה מסמך עם המזהה הזה. אפשר להפיק מחדש.",
@@ -204,7 +207,7 @@ const DOC_SEND_ERRORS: Record<string, string> = {
   too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
   archive_link_unavailable: "מערכת ההיסטוריה לא החזירה קישור למסמך הזה, ולכן אי אפשר לשלוח אותו כרגע. אפשר לנסות שוב מאוחר יותר.",
   bad_pdf: "הקובץ המצורף אינו PDF תקין, או שהוא גדול מדי (עד 4MB).",
-  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
+  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", already_sent: "המסמך כבר נשלח אוטומטית בערוץ הזה.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
   send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
 };
 export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";

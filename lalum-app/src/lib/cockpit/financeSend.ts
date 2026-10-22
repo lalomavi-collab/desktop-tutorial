@@ -89,3 +89,25 @@ export function deliveryState(s: DocSend): { text: string; tone: DeliveryTone } 
   if (s.delivered_at) return { text: "נמסר", tone: "green" };
   return { text: "נשלח", tone: "green" };
 }
+
+// ---- automatic delivery at issue time (lalum-fin-issue sends the document by itself; migration 0081) ----
+export interface AutoOutcome { status: "sent" | "skipped" | "failed" | "unknown"; code?: string }
+const AUTO_REASON: Record<string, string> = {
+  no_email: 'אין בכרטיס כתובת דוא"ל', no_mobile: "אין בכרטיס נייד תקין", no_whatsapp_consent: "לא נרשמה הסכמה להודעות WhatsApp",
+  template_not_configured: "תבנית ה-WhatsApp למסמכים לא הוגדרה בשרת", whatsapp_not_configured: "חיבור ה-WhatsApp לא הוגדר בשרת",
+  mail_not_configured: 'שליחת הדוא"ל לא הוגדרה בשרת', no_pdf: "אין קישור תקין למסמך", test_document: "זהו מסמך בדיקה",
+  already_sent: "כבר נשלח", send_failed: "הספק דחה את השליחה", fetch_failed: "לא התקבלה תשובה, בדקו ביומן השליחות", not_attempted: "לא נוסה",
+};
+const CHANNEL_NAME = { email: 'בדוא"ל', whatsapp: "ב-WhatsApp" } as const;
+/**
+ * One sentence for the screen about what the automatic delivery did. Green only when the e-mail went out; every channel that did not
+ * is named with its reason, so a missing WhatsApp is never silent. A document that was issued stays issued whatever this says.
+ */
+export function deliveryText(d: Partial<Record<"email" | "whatsapp", AutoOutcome>> | undefined): { ok: boolean; text: string } {
+  if (!d) return { ok: false, text: "לא התקבל דיווח על שליחת המסמך ללקוח. בדקו ביומן השליחות." };
+  const sent = (["email", "whatsapp"] as const).filter((k) => d[k]?.status === "sent");
+  const problems = (["email", "whatsapp"] as const).filter((k) => d[k] && d[k]!.status !== "sent" && !(d[k]!.status === "skipped" && d[k]!.code === "already_sent"))
+    .map((k) => `${CHANNEL_NAME[k]}: ${AUTO_REASON[d[k]!.code ?? ""] ?? "השליחה נכשלה"}`);
+  const head = sent.length ? `נשלח ללקוח ${sent.map((k) => CHANNEL_NAME[k]).join(" וגם ")}.` : "המסמך לא נשלח ללקוח.";
+  return { ok: d.email?.status === "sent" || d.email?.code === "already_sent", text: problems.length ? `${head} לא נשלח ${problems.join("; ")}.` : head };
+}

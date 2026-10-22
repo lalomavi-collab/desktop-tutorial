@@ -2,7 +2,7 @@
 // Run with: npm run finance-check
 import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
-import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
+import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, isMobile, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
 
 import { parseDelimited, mapCustomers } from "../src/lib/cockpit/customerImport.ts";
 import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
@@ -138,11 +138,13 @@ t("a customer name that carries its address is split, others are untouched", () 
 const cf = (o) => ({ name: "Acme", email: "a@b.co", tax_id: "", i4u: "", casual: false, isNew: true, ...o });
 t("a new regular customer needs a name and a valid e-mail; a casual one needs a name only", () => {
   assert.deepEqual(customerProblems(cf({})), []);
-  assert.ok(customerProblems(cf({ email: "" })).includes('לקוח חדש דורש כתובת דוא"ל'));
+  const NO_EMAIL = 'כתובת דוא"ל חובה: כל מסמך נשלח ללקוח אוטומטית בעת ההפקה';
   assert.ok(customerProblems(cf({ email: "not-an-email" })).includes('כתובת הדוא"ל אינה תקינה'));
-  assert.deepEqual(customerProblems(cf({ email: "", casual: true })), []);
+  assert.ok(customerProblems(cf({ email: "" })).includes(NO_EMAIL));
+  // Every document is sent to the customer by itself, so an address is required for a casual customer and for an edited card too.
+  assert.deepEqual(customerProblems(cf({ email: "", casual: true })), [NO_EMAIL]);
   assert.ok(customerProblems(cf({ name: " ", casual: true })).includes("שם הלקוח חובה"));
-  assert.deepEqual(customerProblems(cf({ email: "", isNew: false })), []);
+  assert.deepEqual(customerProblems(cf({ email: "", isNew: false })), [NO_EMAIL]);
   assert.ok(customerProblems(cf({ tax_id: "12" })).length === 1);
   assert.ok(customerProblems(cf({ i4u: "x1" })).length === 1);
 });
@@ -156,7 +158,17 @@ t("casual customers are limited to invoice-receipts and credits", () => {
 t("incomplete regular customers are flagged, casual ones are not", () => {
   assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: false }), ['דוא"ל', "ת.ז. או ח.פ."]);
   assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: "123456789", is_casual: false }), []);
-  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), []);
+  // A casual customer has no tax id to complete, but still needs an address to receive the document.
+  assert.deepEqual(customerGaps({ email: null, tax_id: null, is_casual: true }), ['דוא"ל']);
+  assert.deepEqual(customerGaps({ email: "a@b.co", tax_id: null, is_casual: true }), []);
+  // WhatsApp is preferred, never required: a missing mobile or consent is listed, only when the caller passes the phone fields.
+  const wa = { email: "a@b.co", tax_id: "123456789", is_casual: false };
+  assert.deepEqual(customerGaps({ ...wa, phone: null, whatsapp_consent_at: null, whatsapp_consent_revoked_at: null }), ["נייד ל-WhatsApp"]);
+  assert.deepEqual(customerGaps({ ...wa, phone: "03-1234567", whatsapp_consent_at: null, whatsapp_consent_revoked_at: null }), ["נייד ל-WhatsApp"]);
+  assert.deepEqual(customerGaps({ ...wa, phone: "052-1234567", whatsapp_consent_at: null, whatsapp_consent_revoked_at: null }), ["הסכמה ל-WhatsApp"]);
+  assert.deepEqual(customerGaps({ ...wa, phone: "052-1234567", whatsapp_consent_at: "2026-10-01T00:00:00Z", whatsapp_consent_revoked_at: "2026-10-02T00:00:00Z" }), ["הסכמה ל-WhatsApp"]);
+  assert.deepEqual(customerGaps({ ...wa, phone: "+972 52 123 4567", whatsapp_consent_at: "2026-10-01T00:00:00Z", whatsapp_consent_revoked_at: null }), []);
+  assert.ok(isMobile("0521234567") && isMobile("00972521234567") && !isMobile("031234567") && !isMobile(null));
 });t("a pro forma is open until an ISSUED document settles it; drafts and test documents do not count", () => {
   const pf = doc({ id: "p1", doc_type: "PROFORMA" });
   assert.equal(isOpenProforma(pf, [pf]), true);

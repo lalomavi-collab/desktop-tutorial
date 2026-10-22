@@ -70,7 +70,8 @@ export function mapCustomers(cells: string[][], existing: Array<{ name: string; 
     row.tax_id = taxClean(row.tax_id);
     // Excel stores a phone number as a number and drops the leading zero (50-1234567 becomes 501234567).
     if (/^5\d{8}$/.test(row.phone.replace(/[\s\-]/g, ""))) row.phone = "0" + row.phone.replace(/[\s\-]/g, "");
-    const problems = customerProblems({ name: row.name, email: row.email, tax_id: row.tax_id, i4u: "", casual: false, isNew: false });
+    const problems = customerProblems({ name: row.name, email: row.email, tax_id: row.tax_id, i4u: "", casual: false, isNew: false, requireEmail: false });
+    // A pasted list may lack addresses: the row is listed with a gap, and issuing to that customer stays blocked until the card has one.
     const gaps = [...(row.email ? [] : ['דוא"ל']), ...(row.tax_id ? [] : ["ת.ז. או ח.פ."])];
     let status: ImportStatus = "new";
     if (problems.length) status = "invalid";

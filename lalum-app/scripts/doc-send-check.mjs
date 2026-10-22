@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { createHmac } from "node:crypto";
-import { resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
+import { autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
 import { verifySvix, mapEvent, TRACKED_EVENTS } from "../../supabase/functions/_shared/resendEvents.ts";
 import { normalizeIsraeliPhone } from "../../supabase/functions/_shared/dunning.ts";
 
@@ -201,4 +201,73 @@ await t("the screen refuses a file before upload for the same reasons", () => {
   assert.ok(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: c.UPLOAD_MAX_BYTES + 1 }));
   assert.equal(c.pdfFileProblem({ name: "x.pdf", type: "application/pdf", size: c.UPLOAD_MAX_BYTES }), null);
   assert.equal(c.UPLOAD_MAX_BYTES, MAX_UPLOAD_BYTES, "the screen and the function use the same limit");
+});
+
+// ---- automatic delivery at issue time ----
+const plan0 = { email: "a@b.co", phone: "052-1234567", consent: true, templateConfigured: true, pdfUrl: "https://x.co/a.pdf", isTest: false };
+await t("a customer with an address, a mobile, a consent, a template and a link gets both channels", () => {
+  assert.deepEqual(autoSendPlan(plan0), { send: ["EMAIL", "WHATSAPP"], skipped: [] });
+});
+await t("each missing WhatsApp condition skips only WhatsApp, and names the reason", () => {
+  const why = (o) => autoSendPlan({ ...plan0, ...o });
+  assert.deepEqual(why({ phone: null }), { send: ["EMAIL"], skipped: [{ channel: "WHATSAPP", reason: "no_mobile" }] });
+  assert.deepEqual(why({ phone: "03-1234567" }).skipped, [{ channel: "WHATSAPP", reason: "no_mobile" }]);
+  assert.deepEqual(why({ consent: false }).skipped, [{ channel: "WHATSAPP", reason: "no_whatsapp_consent" }]);
+  assert.deepEqual(why({ templateConfigured: false }).skipped, [{ channel: "WHATSAPP", reason: "template_not_configured" }]);
+  assert.deepEqual(why({ pdfUrl: null }).skipped, [{ channel: "WHATSAPP", reason: "no_pdf" }]);
+});
+await t("without an address the e-mail is skipped with its reason, and WhatsApp still goes", () => {
+  assert.deepEqual(autoSendPlan({ ...plan0, email: null }), { send: ["WHATSAPP"], skipped: [{ channel: "EMAIL", reason: "no_email" }] });
+  assert.deepEqual(autoSendPlan({ ...plan0, email: "nope" }).skipped, [{ channel: "EMAIL", reason: "no_email" }]);
+});
+await t("a test document is sent by e-mail to the partner only and never by WhatsApp", () => {
+  assert.deepEqual(autoSendPlan({ ...plan0, isTest: true, email: null }), { send: ["EMAIL"], skipped: [{ channel: "WHATSAPP", reason: "test_document" }] });
+});
+await t("the document template is only a configured, well formed name", () => {
+  assert.equal(documentTemplateName(() => undefined), null);
+  assert.equal(documentTemplateName(() => "Bad Name!"), null);
+  assert.equal(documentTemplateName((k) => (k === "WHATSAPP_DOCUMENT_TEMPLATE" ? "lalum_document_sent" : undefined)), "lalum_document_sent");
+  assert.deepEqual(documentTemplateParams("INVOICE_RECEIPT", 70145, "https://x.co/a.pdf"), ["חשבונית מס קבלה", "70145", "https://x.co/a.pdf"]);
+});
+await t("the automatic text names the document and signs with the canonical name", () => {
+  const b = autoBody("INVOICE", 90094);
+  assert.ok(b.includes("חשבונית מס מספר 90094")); assert.ok(b.includes("ד״ר עו״ד אברהם ללום")); assert.ok(!/[—–]/.test(b));
+  assert.equal(b, c.defaultBody({ doc_type: "INVOICE", doc_number: 90094 }), "the screen and the server send the same default text");
+});
+await t("the screen says what the automatic delivery did, and never leaves a missing channel silent", () => {
+  const ok = c.deliveryText({ email: { status: "sent" }, whatsapp: { status: "sent" } });
+  assert.equal(ok.ok, true); assert.ok(ok.text.includes('בדוא"ל') && ok.text.includes("ב-WhatsApp"));
+  const mailOnly = c.deliveryText({ email: { status: "sent" }, whatsapp: { status: "skipped", code: "no_whatsapp_consent" } });
+  assert.equal(mailOnly.ok, true); assert.ok(mailOnly.text.includes("הסכמה")); assert.ok(!/[—–]/.test(mailOnly.text));
+  const failed = c.deliveryText({ email: { status: "failed", code: "send_failed" }, whatsapp: { status: "skipped", code: "no_mobile" } });
+  assert.equal(failed.ok, false); assert.ok(failed.text.startsWith("המסמך לא נשלח ללקוח"));
+  assert.equal(c.deliveryText(undefined).ok, false);
+  assert.equal(c.deliveryText({ email: { status: "skipped", code: "already_sent" } }).ok, true, "a repeat call that finds the mail already sent is not a failure");
+});
+
+// ---- the wiring, pinned at the source: these are the guarantees the customer feels ----
+const issueSrc = readFileSync(new URL("../../supabase/functions/lalum-fin-issue/index.ts", import.meta.url), "utf8");
+const sendSrc = readFileSync(new URL("../../supabase/functions/lalum-fin-doc-send/index.ts", import.meta.url), "utf8");
+const sql = readFileSync(new URL("../supabase/migrations/0081_lalum_finance_doc_auto_send.sql", import.meta.url), "utf8");
+await t("issuing never lets the provider mail the customer too, so the customer gets one mail, ours", () => {
+  assert.ok(!/invoiceDoc\.AssociatedEmails\s*=/.test(issueSrc));
+});
+await t("issuing stops before anything is created when the card has no valid address", () => {
+  const gate = issueSrc.indexOf("customer_no_email"), create = issueSrc.indexOf('call("CreateCustomer"');
+  assert.ok(gate > 0 && create > gate, "the gate comes before the first call to the provider");
+});
+await t("both the issue and the reconcile paths deliver, and delivery cannot fail the issue", () => {
+  assert.equal((issueSrc.match(/await deliver\(/g) ?? []).length, 2);
+  assert.ok(issueSrc.includes("Never throws"));
+  assert.ok(/auto: true/.test(issueSrc));
+});
+await t("the sender: WhatsApp through the API is automatic only, and an automatic send reserves through the once only function", () => {
+  assert.ok(sendSrc.includes('channel === "WHATSAPP" && !auto'));
+  assert.ok(sendSrc.includes("lalum_fin_doc_send_reserve_auto"));
+});
+await t("the database: once only, consent for WhatsApp, no WhatsApp for a test document, same access level as the manual path", () => {
+  assert.ok(sql.includes("raise exception 'ALREADY_SENT'") && sql.includes("status in ('SENT','PENDING')"));
+  assert.ok(sql.includes("raise exception 'NO_WHATSAPP_CONSENT'") && sql.includes("raise exception 'TEST_DOCUMENT'"));
+  assert.ok(sql.includes("lalum_fin_can(v_firm, 3)"));
+  assert.ok(!/[—–]| - /.test(sql.replace(/--.*$/gm, "")), "no dash used as punctuation");
 });
