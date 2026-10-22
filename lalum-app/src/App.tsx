@@ -28,6 +28,7 @@ const Insights = lazy(() => import("./pages/Insights").then((m) => ({ default: m
 const Knowledge = lazy(() => import("./pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const Rulings = lazy(() => import("./pages/Rulings").then((m) => ({ default: m.Rulings })));
 const Ethics = lazy(() => import("./pages/Ethics").then((m) => ({ default: m.Ethics })));
+const PrivacyLaw = lazy(() => import("./pages/PrivacyLaw").then((m) => ({ default: m.PrivacyLaw })));
 const Updates = lazy(() => import("./pages/Updates").then((m) => ({ default: m.Updates })));
 const SecurityTrust = lazy(() => import("./pages/SecurityTrust").then((m) => ({ default: m.SecurityTrust })));
 const Faq = lazy(() => import("./pages/Faq").then((m) => ({ default: m.Faq })));
@@ -166,6 +167,7 @@ export default function App() {
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="rulings" element={<Rulings />} />
             <Route path="ethics" element={<Ethics />} />
+            <Route path="privacy-law" element={<PrivacyLaw />} />
             <Route path="updates" element={<Updates />} />
             <Route path="security" element={<SecurityTrust />} />
             <Route path="faq" element={<Faq />} />

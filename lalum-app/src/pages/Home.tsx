@@ -125,6 +125,20 @@ export function Home() {
         </div>
       </section>
 
+      {/* Privacy law explainer (Hebrew only, a separate page): below the film, never in the hero. */}
+      {lang === "he" && (
+        <section id="privacy-law" className="section-line band-tint">
+          <div className="wrap section" style={{ display: "flex", flexWrap: "wrap", gap: 24, alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ maxWidth: "60ch" }}>
+              <p className="eyebrow">AI ומשפט</p>
+              <h2 className="h2">חוק הגנת הפרטיות אחרי תיקון 13</h2>
+              <p className="p" style={{ marginTop: 12 }}>מדריך מנוסח החוק הישראלי, חוברת להורדה וסרטון הסבר: מה השתנה, מה זה אומר על עבודה עם בינה מלאכותית, ומה כדאי לבדוק בארגון.</p>
+            </div>
+            <Link to="/privacy-law" className="btn btn-clay">למדריך, לחוברת ולסרטון</Link>
+          </div>
+        </section>
+      )}
+
       {/* Order: services (areas, then the AI layer), proof (clients, then the writing), then the engine. */}
       {/* PRACTICE (AI + risk-governance pillars) */}
       <ArchitecturalSection id="practice" index="02" code="PRACTICE // AI LAYER">
