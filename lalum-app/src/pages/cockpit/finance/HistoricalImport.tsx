@@ -30,6 +30,18 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  *   this round. The Fiverr charge (thesis proofreading, ₪832.77) is left out as personal, by the same
  *   call made on the June UCO fee. The Azrieli water invoice (SI260210000489, ₪142.00) is dated 1.2.2026,
  *   so it belongs to February, not January, and the office is disputing that water charge outright.
+ *
+ * One row added outside the four-month pilot batch: a Cellcom Energy electricity invoice supplied
+ * directly by the user as a PDF (account 403733457, bill 380230665), billed to the home address
+ * (האיריסים 8, נתניה) rather than the office. Confirmed by the user as a business expense to import
+ * in full. This is a different Cellcom Energy account from the one already noted above as "no invoice
+ * found" (377724412); that gap is still open.
+ *
+ * Source convention from this point on (set by the user, October 2026): expense documents come from
+ * the same two bookkeeping mailboxes already used for the pilot, plus a fixed local folder named
+ * "LALUM" on the user's desktop holding manual scans, organized by month. This session runs in the
+ * cloud with no access to that local folder, so its contents are supplied by the user uploading files
+ * into the chat.
  */
 type Row = {
   spent_on: string; supplier: string; category: string; description: string;
@@ -90,6 +102,9 @@ const ROWS: Row[] = [
     total: 1635.00, vat_amount: 0, vat_recoverable_pct: 0, ref: "20010", source: "קבלה, ezcount" },
   { spent_on: "2026-08-23", supplier: "BF ביטחון", category: "COMMUNICATION", description: "אינטרנט למשרד",
     total: 1672.00, vat_amount: vatIncluded(1672.00), vat_recoverable_pct: 100, ref: "50183", source: "חשבונית מס" },
+
+  { spent_on: "2026-10-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, תקופה 9/2026, האיריסים 8 נתניה",
+    total: 791.02, vat_amount: 120.66, vat_recoverable_pct: 100, ref: "380230665", source: "חשבונית מס, סלקום אנרג'י, 18.10.2026" },
 ];
 
 export function HistoricalImport({ firmId, onImported }: { firmId: string; onImported: () => void }) {
@@ -127,7 +142,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     return (
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div className="ck-meta">ייבוא הוצאות היסטוריות מינואר, מרץ, יוני ואוגוסט 2026 (פיילוט), אומת מול המיילים המקוריים.</div>
+          <div className="ck-meta">ייבוא הוצאות היסטוריות מינואר, מרץ, יוני ואוגוסט 2026 (פיילוט), ועוד חשבונית חשמל אחת מאוקטובר, אומת מול המיילים המקוריים ומסריקה שסופקה ישירות.</div>
           <button className="ck-btn" onClick={() => setOpen(true)}>פתיחה לבדיקה</button>
         </div>
       </div>
