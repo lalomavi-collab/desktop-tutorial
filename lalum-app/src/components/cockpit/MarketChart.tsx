@@ -13,7 +13,7 @@ export interface MarketSeries {
 }
 export interface MarketBars { label: string; values: number[]; color?: string }
 
-const L = 42, R = 18, T = 18;
+const L = 42, R = 18, T = 30;
 const nf = (v: number) => v.toLocaleString("he-IL");
 
 export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsAvg, format = nf, axis = shortNumber, height = 230 }: {
@@ -67,12 +67,19 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
   const hi = first ? Math.max(...first.values) : 0, lo = first ? Math.min(...first.values) : 0;
   const hiAt = first ? first.values.indexOf(hi) : 0, loAt = first ? first.values.lastIndexOf(lo) : 0;
   const shown = hover ?? n - 1;
-  const pvals = first?.values ?? [];
+  // The change shown is for the series the readout lists first, so the figure next to it is the figure it describes.
+  const lead = series[0];
+  const pvals = lead?.values ?? [];
+  // The currency formatter wraps its output in direction marks; inside a right to left page they pull the sign to the far end, so they are
+  // stripped and the whole change is one left to right string: sign, figure, percent.
+  const plain = (v: string) => v.replace(/[\u200e\u200f\u061c]/g, "");
   // Direction of the straight trend line: the rise over the whole window against the mean level; within 5% counts as steady.
   const rise = geo.slope * Math.max(0, n - 1), level = Math.max(1e-9, Math.abs(geo.avgV));
   const direction = Math.abs(rise) / level < 0.05 ? "יציבה" : rise > 0 ? "עולה" : "יורדת";
-  const delta = shown > 0 && first ? pvals[shown] - pvals[shown - 1] : null;
+  const delta = shown > 0 && lead ? pvals[shown] - pvals[shown - 1] : null;
+  const sign = (v: number) => (v > 0 ? "+" : v < 0 ? "-" : "");
   const deltaPct = delta != null && pvals[shown - 1] > 0 ? Math.round((delta / pvals[shown - 1]) * 100) : null;
+  const deltaText = delta == null ? "" : `${sign(delta)}${plain(format(Math.abs(delta)))}${deltaPct != null ? ` (${sign(delta)}${Math.abs(deltaPct)}%)` : ""}`;
   const barMax = bars ? Math.max(1, ...bars.values) : 1;
   const baseY = T + plotH;
 
@@ -99,7 +106,7 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
         {bars && <span className="mk-val"><i className="mk-sq" aria-hidden="true" />{bars.label} <b><bdi dir="ltr">{nf(bars.values[shown])}</bdi></b></span>}
         {delta != null && (
           <span className={`mk-delta ${delta > 0 ? "up" : delta < 0 ? "down" : "flat"}`}>
-            <span aria-hidden="true">{delta > 0 ? "▲" : delta < 0 ? "▼" : "■"}</span> <bdi dir="ltr">{delta > 0 ? "+" : delta < 0 ? "-" : ""}{format(Math.abs(delta))}{deltaPct != null && ` (${delta > 0 ? "+" : delta < 0 ? "-" : ""}${Math.abs(deltaPct)}%)`}</bdi> <span className="mk-vs">לעומת הקודם</span>
+            <span aria-hidden="true">{delta > 0 ? "▲" : delta < 0 ? "▼" : "■"}</span> <bdi dir="ltr">{deltaText}</bdi> <span className="mk-vs">לעומת הקודם</span>
           </span>
         )}
       </div>
@@ -128,11 +135,11 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
           {geo.maLine && <path d={geo.maLine} fill="none" stroke="var(--slate)" strokeWidth="1.3" strokeDasharray="2 4" strokeLinecap="round" opacity=".8" />}
           {geo.lines.filter((l) => l.s.kind !== "dashed").map((l) => <path key={`l-${l.s.key}`} d={l.d} fill="none" stroke={l.s.color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />)}
         </g>
-        {avg && <text x={W - R - 2} y={geo.avgY - 5} textAnchor="end" className="mk-t mk-avg" aria-hidden="true">{axis(geo.avgV)}</text>}
+        {avg && <text x={L + 6} y={geo.avgY - 5} textAnchor="start" className="mk-t mk-avg" aria-hidden="true">{axis(geo.avgV)}</text>}
         {first && hi !== lo && (
           <g className="mk-mark" aria-hidden="true">
             {hiAt !== n - 1 && hiAt !== 0 && <text x={geo.x(hiAt)} y={geo.y(hi) - 8} textAnchor="middle" className="mk-t mk-hi">{axis(hi)}</text>}
-            {loAt !== hiAt && loAt !== n - 1 && loAt !== 0 && <text x={geo.x(loAt)} y={Math.min(baseY - 4, geo.y(lo) + 17)} textAnchor="middle" className="mk-t">{axis(lo)}</text>}
+            {lo !== 0 && loAt !== hiAt && loAt !== n - 1 && loAt !== 0 && <text x={geo.x(loAt)} y={Math.min(baseY - 4, geo.y(lo) + 17)} textAnchor="middle" className="mk-t">{axis(lo)}</text>}
           </g>
         )}
         {bars && bars.values.map((v, i) => {
@@ -146,7 +153,7 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
         {labels.map((lb, i) => (n <= 12 || i % 2 === 0 || i === n - 1) && <text key={i} x={geo.x(i)} y={height - 7} textAnchor="middle" className={`mk-t${i === shown && hover != null ? " mk-on" : ""}`}>{lb}</text>)}
         {hover != null && (
           <g aria-hidden="true">
-            <line x1={geo.x(hover)} x2={geo.x(hover)} y1={T} y2={height - B + barsH + 6} stroke="var(--line-strong)" strokeDasharray="3 3" />
+            <line x1={geo.x(hover)} x2={geo.x(hover)} y1={T} y2={height - B + barsH + 6} stroke="var(--slate)" strokeOpacity=".55" strokeDasharray="3 3" />
             {geo.lines.map((l) => <circle key={l.s.key} cx={l.pts[hover][0]} cy={l.pts[hover][1]} r={4.5} fill="var(--card, #fff)" stroke={l.s.color} strokeWidth="2.2" />)}
           </g>
         )}

@@ -108,7 +108,7 @@
 .db-trend-top .db-kval { margin-bottom: 0; }
 .db-trend-read { margin-inline-start: auto; font-size: 16px; color: var(--slate); }
 .db-trend-read b { color: var(--ink); font-family: var(--serif); font-size: 20px; font-weight: 500; }
-.db-trend-svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.db-trend-svg { width: 100%; display: block; touch-action: pan-y; }
 .db-trend-svg:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
 .db-trend-second { display: flex; flex-direction: column; gap: 4px; }
 .db-trend-second svg { width: 100%; height: auto; display: block; }
@@ -151,7 +151,7 @@
 .mk-key { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--slate); }
 .mk-key span { display: inline-flex; align-items: center; gap: 6px; }
 .mk-key .mk-dot { width: 14px; height: 0; border-top: 2px dotted var(--slate); border-radius: 0; background: none; }
-.mk-avg { fill: var(--chart-warn, #b8780a); font-weight: 700; }
+.mk-avg { fill: color-mix(in srgb, var(--chart-warn, #b8780a) 62%, var(--ink)); font-weight: 700; }
 .mk-delta { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: var(--slate); }
 .mk-delta.up { color: var(--success); } .mk-delta.down { color: var(--warning); }
 .mk-vs { font-weight: 400; color: var(--slate); }
@@ -164,3 +164,4 @@
 @media (min-width: 861px) {
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a.ck-nav-sm { font-size: 12px; padding: 4px 3px 3px; gap: 2px; }
 }
+.ck-root[data-ck-theme] h3.ck-insight-title { margin: 0; font-size: 30px; line-height: 1.05; }

@@ -45,14 +45,14 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/workspace/discussions", "דיונים ציבוריים", false, "quote"],
   ] },
   { heading: "שותפים", items: [
-    ["/workspace/partner", "תמונת מצב לשותף", false, "scale"],
+    ["/workspace/partner", "תמונת שותף", false, "scale"],
     ["/workspace/portal-preview", "תצוגת פורטל", false, "user"],
   ] },
   { heading: "הגדרות", items: [
     ["/settings/members", "חברי הפירמה", false, "user"],
     ["/settings/billing", "חיוב והגדרות", false, "card"],
     ["/settings/security", "אבטחה", false, "shield"],
-    ["/workspace/export", "ייצוא נתוני הפירמה", false, "file"],
+    ["/workspace/export", "ייצוא נתונים", false, "file"],
   ] },
   { heading: "כללי", items: [
     ["/workspace/bin", "סל מיחזור", true, "trash"],
@@ -158,7 +158,7 @@ export function CockpitFrame({
           <Wordmark height={26} style={{ color: "var(--ink)" }} />
           <button type="button" className="ck-theme" onClick={flipTheme} aria-label={theme === "mint" ? "מעבר למצב כהה" : "מעבר למצב בהיר"} title={theme === "mint" ? "מצב כהה" : "מצב בהיר"}><RailIcon id={theme === "mint" ? "moon" : "theme"} size={30} /></button>
         </div>
-        <nav className="ck-sidebar-nav" aria-label="ניווט הקוקפיט">
+        <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label="ניווט הקוקפיט">
           {sections.map((sec) => (
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
               {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
@@ -169,7 +169,7 @@ export function CockpitFrame({
               ))}
             </div>
           ))}
-          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? "פחות" : `עוד ${moreCount}`}</span></button>}
+          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} aria-controls="ck-rail-nav" onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? "פחות" : `עוד ${moreCount}`}</span></button>}
         </nav>
         <div className="ck-sidebar-foot">
           <Link to="/portal"><RailIcon id="user" size={26} /><span>אזור אישי</span></Link>

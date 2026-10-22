@@ -39,6 +39,8 @@ const ICONS: Record<string, ReactNode> = {
   "/workspace/tasks": <><rect x="5" y="5" width="22" height="24" rx="4" fill={B} /><rect x="11" y="2" width="10" height="6" rx="2" fill={D} /><path d="M9.5 14l2 2 3.5-3.8" {...stroke(W, 2.2)} /><path d="M18 14h5" {...stroke(W, 2)} /><path d="M9.5 21l2 2 3.5-3.8" {...stroke("#efe2b4", 2.2)} /><path d="M18 21h5" {...stroke(W, 2)} /></>,
   // calendar: a month grid with today in gold
   "/workspace/scheduling": <><rect x="3" y="6" width="26" height="23" rx="5" fill={W} /><path d="M3 11a5 5 0 0 1 5-5h16a5 5 0 0 1 5 5v3H3z" fill={B} /><rect x="9" y="3" width="3" height="7" rx="1.5" fill={D} /><rect x="20" y="3" width="3" height="7" rx="1.5" fill={D} /><g fill={B}><circle cx="9.5" cy="19" r="1.7" /><circle cx="16" cy="19" r="1.7" /><circle cx="22.5" cy="19" r="1.7" /><circle cx="9.5" cy="24.2" r="1.7" /><circle cx="16" cy="24.2" r="1.7" /></g><circle cx="22.5" cy="24.2" r="2.3" fill={S} /></>,
+  // working hours: a clock face with the hands at a quarter past
+  "/workspace/hours": <><circle cx="16" cy="16" r="13" fill={B} /><circle cx="16" cy="16" r="9.6" fill={W} /><path d="M16 9.5V16l4.6 3" {...stroke("#3f5a43", 2.6)} /><circle cx="16" cy="16" r="1.6" fill={S} /></>,
   // service scorecard: a gauge with a needle
   "/workspace/scorecard": <><circle cx="16" cy="16" r="13" fill={B} /><path d="M7.5 21a9 9 0 0 1 17 0" {...stroke(W, 3)} /><path d="M16 21l5-9" {...stroke("#efe2b4", 3)} /><circle cx="16" cy="21" r="2.6" fill={S} /></>,
   // import: a document arrow dropping into a tray

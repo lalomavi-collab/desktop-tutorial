@@ -410,21 +410,21 @@
 /* Billing and firm settings: card titles and section labels take the heading face (sizes below); the big figures stay in the
    Lalum Serif; buttons use the UI face like every other button (see the button type system at the end). Layout is untouched (the wrapper adds no box). */
 .ck-billing { display: contents; }
-.ck-billing .fin-figure, .ck-billing .fin-kpi { font-family: var(--ck-serif); letter-spacing: -.005em; }
 .ck-billing .ck-label { font-size: 28px; font-weight: 400; letter-spacing: 0; line-height: 1.1; color: var(--ink); margin: 12px 0 -2px; }
-.ck-billing .fin-figure { font-weight: 500; font-size: 30px; }
-.ck-billing .fin-kpi { font-weight: 500; font-size: 24px; }
+.ck-billing .fin-figure { font-weight: 700; font-size: 28px; }
+.ck-billing .fin-kpi { font-weight: 700; font-size: 22px; }
 
 /* One heading face for the whole cockpit: the signature hand of the home page headline "AI שאפשר להגן עליו" (Amatic SC, owner request,
    22.10.2026), with the public site's serif stack as the fallback. Amatic runs small and narrow for its size, so sizes follow the public
    site's scale (headlines about 1.7 times the serif, card titles about 1.5 times). Regular weight only; Arabic is not used in the cockpit.
    --ck-serif is the serif itself, for figures and buttons. Revert by deleting this block and the matching one in cockpit-dashboard.css. */
 .ck-root { --ck-serif: "Lalum Serif", "Frank Ruhl Libre", "David Libre", Georgia, serif; --ck-display: "Amatic SC", var(--ck-serif); }
-.ck-root :is(h1, h2, h3, h4), .ck-root .ck-title, .ck-root .ck-hero-title, .ck-root .ck-doc h2 { font-family: var(--ck-display); font-weight: 400; letter-spacing: 0; line-height: 1.1; text-wrap: balance; }
-.ck-root h2, .ck-root .ck-doc h2 { font-size: 40px; }
-.ck-root h3, .ck-root h4 { font-size: 32px; }
-.ck-root .ck-hero-title { font-size: clamp(34px, 4vw, 44px); }
-.ck-root .ck-title { font-size: 25px; line-height: 1.15; }
+.ck-root[data-ck-theme] :is(h1, h2, h3, h4), .ck-root[data-ck-theme] .ck-title, .ck-root[data-ck-theme] .ck-hero-title, .ck-root[data-ck-theme] .ck-doc h2 { font-family: var(--ck-display); font-weight: 400; letter-spacing: 0; line-height: 1.1; text-wrap: balance; }
+.ck-root[data-ck-theme] h2, .ck-root[data-ck-theme] .ck-doc h2 { font-size: 40px; }
+.ck-root[data-ck-theme] h3, .ck-root[data-ck-theme] h4 { font-size: 32px; }
+.ck-root[data-ck-theme] .ck-hero-title { font-size: clamp(34px, 4vw, 44px); }
+.ck-root[data-ck-theme] .ck-title { font-size: 25px; line-height: 1.15; }
+.ck-root[data-ck-theme] .mfa-box .ck-title { font-size: 21px; }
 
 /* ------------------------------------------------------------------
    Type system for controls, one for every cockpit screen (bookkeeping included). Before this, the same kind of button was 13.5px outside the
@@ -445,3 +445,24 @@
 .ck-root[data-ck-theme] .db-toggle button { font-family: inherit; font-size: 13.5px; font-weight: 600; letter-spacing: 0; }
 .ck-root[data-ck-theme] :is(.ck-input, .ck-select, .ck-textarea) { font-family: inherit; font-size: 15px; font-weight: 400; }
 .ck-root[data-ck-theme] .mfa-box .ck-btn { font-size: 16.5px; min-height: 46px; }
+
+/* ------------------------------------------------------------------
+   Fixes from the owner's audit of 22.10.2026 (measured in the signed in cockpit, light and dark):
+   - The UI face was set only for the light theme, so every control and field fell to Assistant in the dark theme and input.field was Assistant in both.
+     One face for the whole cockpit now: Heebo, then Assistant, in both themes; controls inherit it.
+   - Figures: Heebo in the light theme, monospace in the dark theme and the serif in billing. One numeric face (the UI face, tabular figures) everywhere.
+   - Control heights: five different heights in the bookkeeping screens. Now three: 44px (tabs, rubrics, fields), 40px (sub tabs, chips), 36px (row actions).
+   - Selected states used a hard white text on the sage fill, 2.33:1 in the dark theme where the fill is light. They take --on-clay, which is set for both themes.
+   - Code blocks (the webhook address) no longer push the page wider than a phone; the phone nav row hides its scrollbar.
+   ------------------------------------------------------------------ */
+.ck-root[data-ck-theme] { font-family: "Heebo", "Assistant", var(--sans); }
+.ck-root[data-ck-theme] :is(input, select, textarea, button, .field) { font-family: inherit; }
+.ck-root[data-ck-theme] :is(.db-kval b, .fin-figure, .fin-stat .fin-figure, .fin-kpi, .rev-total dd) { font-family: inherit; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.ck-root[data-ck-theme] .fin-rubric { min-height: 44px; }
+.ck-root[data-ck-theme] :is(.ck-input:not([type="file"]), .ck-select, input.field, select.field) { min-height: 44px; font-size: 15px; font-weight: 400; padding-block: 9px; line-height: 1.4; }
+.ck-root[data-ck-theme] :is(.fin-subtab[aria-selected="true"], .fin-tabs .ck-btn.primary, .db-toggle button[aria-pressed="true"]) { color: var(--on-clay); }
+.ck-root[data-ck-theme] :is(.ck-meta, .ck-card) code { overflow-wrap: anywhere; word-break: break-word; white-space: normal; }
+@media (max-width: 860px) {
+  .ck-root[data-ck-theme] .ck-sidebar, .ck-root[data-ck-theme] .ck-sidebar-nav { scrollbar-width: none; }
+  .ck-root[data-ck-theme] .ck-sidebar::-webkit-scrollbar, .ck-root[data-ck-theme] .ck-sidebar-nav::-webkit-scrollbar { display: none; }
+}

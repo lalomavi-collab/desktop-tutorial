@@ -1,7 +1,7 @@
 // Dashboard trend card in the manner of a market chart page: a large figure with a change chip, range tabs, a bar chart for counts with
 // the current bucket marked, a second series under it, and one sentence computed from the same numbers (never written by a model).
 // Counts are drawn as bars on purpose: a smoothed line through values of 0 to 2 invents peaks that never happened.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MIN_DELTA_BASE, series } from "../../lib/cockpit/dashboard";
 
@@ -18,6 +18,19 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
 }) {
   const [rk, setRk] = useState("w12");
   const [hover, setHover] = useState<number | null>(null);
+  // As wide as its box, so an axis label is the same size in pixels on a phone as on a desktop (a fixed 640 wide drawing shrank them to about 7px).
+  const box = useRef<HTMLDivElement>(null);
+  const [W, setW] = useState(640);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const read = () => setW(Math.max(260, Math.round(el.getBoundingClientRect().width)));
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const r = RANGES.find((x) => x.k === rk) ?? RANGES[0];
   const m = useMemo(() => {
     const two = series(dates, r.mode, r.n * 2).values;
@@ -30,7 +43,7 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
 
   const { values, labels } = m.main;
   const max = Math.max(1, ...values), peak = values.indexOf(Math.max(...values));
-  const W = 640, H = 190, L = 34, R = 6, T = 14, B = 26, plotH = H - T - B, step = (W - L - R) / values.length, bw = Math.min(34, step * 0.62);
+  const H = 190, L = 34, R = 6, T = 14, B = 26, plotH = H - T - B, step = (W - L - R) / values.length, bw = Math.min(34, step * 0.62);
   const x = (i: number) => L + step * i + step / 2, y = (v: number) => T + plotH - (v / max) * plotH;
   const sMax = Math.max(1, ...(m.second ?? [1]));
   const arrow = m.pct == null ? "■" : m.pct > 0 ? "▲" : m.pct < 0 ? "▼" : "■";
@@ -49,7 +62,7 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
   };
 
   return (
-    <div className="ck-card db-card db-trend">
+    <div className="ck-card db-card db-trend" ref={box}>
       <div className="db-head">
         <h3>{title}</h3>
         <div className="db-toggle" role="group" aria-label="טווח זמן">
@@ -61,7 +74,7 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
         <span className={`db-delta ${cls}`}><span aria-hidden="true">{arrow}</span> {m.pct == null ? "אין בסיס להשוואה" : <bdi dir="ltr">{m.pct > 0 ? "+" : ""}{m.pct}%</bdi>}<span className="db-sr"> לעומת התקופה הקודמת</span></span>
         <span className="db-trend-read" aria-live="polite"><bdi>{labels[shown]}</bdi>: <b>{nf(values[shown])}</b></span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="db-trend-svg" role="img" tabIndex={0} aria-label={`${title}: ${labels.map((l, i) => `${l} ${values[i]}`).join(", ")}. חצים מזיזים בין העמודות`} style={{ direction: "ltr" }}
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} className="db-trend-svg" role="img" tabIndex={0} aria-label={`${title}: ${labels.map((l, i) => `${l} ${values[i]}`).join(", ")}. חצים מזיזים בין העמודות`} style={{ direction: "ltr" }}
         onPointerLeave={() => setHover(null)} onKeyDown={onKey} onBlur={() => setHover(null)}>
         {[0, 0.5, 1].map((f) => <g key={f}><line x1={L} x2={W - R} y1={y(max * f)} y2={y(max * f)} stroke="var(--chart-grid, rgba(83,112,86,.14))" /><text x={L - 6} y={y(max * f) + 4} textAnchor="end" fill="var(--slate)">{nf(Math.round(max * f))}</text></g>)}
         {values.map((v, i) => (
@@ -78,7 +91,7 @@ export function TrendCard({ title, unit, dates, secondDates, secondLabel, to, to
         <div className="db-trend-second">
           <span className="db-note">{secondLabel}</span>
           <svg viewBox={`0 0 ${W} 34`} role="img" aria-label={`${secondLabel}: ${m.second.join(", ")}`} style={{ direction: "ltr" }}>
-            {m.second.map((v, i) => <rect key={i} x={x(i) - bw / 2} y={34 - (v / sMax) * 30} width={bw} height={Math.max(v > 0 ? 2 : 0, (v / sMax) * 30)} rx={2} fill="var(--slate)" opacity={hover != null && hover !== i ? 0.25 : 0.5} />)}
+            {m.second.map((v, i) => <rect key={i} x={x(i) - Math.min(bw, 14) / 2} y={34 - (v / sMax) * 30} width={Math.min(bw, 14)} height={Math.max(v > 0 ? 2 : 0, (v / sMax) * 30)} rx={2} fill="var(--slate)" opacity={hover != null && hover !== i ? 0.25 : 0.5} />)}
           </svg>
         </div>
       )}
