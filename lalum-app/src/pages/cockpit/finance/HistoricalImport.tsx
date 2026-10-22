@@ -84,6 +84,29 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  * - Where a GL account name does not map cleanly onto EXPENSE_CATEGORY (e.g. "אולפן תאורה" under
  *   "אחזקה ותיקונים", or "IP TELECOM" under "פירסום"), the category follows the bookkeeper's own
  *   account rather than a guess from the vendor name.
+ *
+ * September 2026: the ledger above already reports through period 10/26, which covers September in
+ * full (its own six September lines sit among the 129 rows). The one open item, a reply from the
+ * bookkeeper confirming the figures by email, never arrived; the ledger itself is the more
+ * authoritative source per the user's own instruction to trust it, so September needs nothing more
+ * this round.
+ *
+ * October 2026 (22.10.2026): four recurring lines found directly in the two mailboxes and verified
+ * against their own attached document, not a summary, each one matching the same vendor's pattern
+ * from earlier months:
+ * - Apple (iCloud+), order MMQH8Y287S, 4.10.2026, ₪3.90, no VAT (Apple's own receipt email).
+ * - ניהול חשבונות ישיר (שעון נוכחות), חשבונית מס קבלה 1114577, 3.10.2026, ₪53.00, ₪8.08 VAT (PDF read
+ *   in full: שירות שעון נוכחות ₪44.92 plus 18% VAT, paid by card the same day).
+ * - לינק ניהול תקשורת לעסקים, חשבונית מס קבלה 152916, 4.10.2026, ₪79.79, ₪12.17 VAT (PDF read in full:
+ *   מנוי חודשי ₪45.00 plus שיחות ₪22.62, plus 18% VAT, paid by card 3.10.2026).
+ * - Google One / AI Pro, order SOP.3377-1494-8056-39954..5, 15.10.2026, ₪74.90, no VAT (Google Play's
+ *   own renewal receipt, same subscription as the row already in the August batch).
+ * What is NOT here yet, and why: the Cellcom mobile bill for the period from 14.9 to 13.10.2026 was found
+ * (email received 20.10.2026) but its attachment is a PDF the mail tools here could not open to read
+ * the actual figure, so no amount was available to verify against; the monthly Azrieli/הרצליה ביזנס
+ * פארק rent, management fee and office electricity for the next period were not found in either
+ * mailbox as of this writing, nor was a BF ביטחון internet bill or any Gett ride receipt for October;
+ * and no new November or December 2026 expense exists yet, since those months have not finished.
  */
 type Row = {
   spent_on: string; supplier: string; category: string; description: string;
@@ -157,6 +180,14 @@ const ROWS: Row[] = [
     total: 1163.00, vat_amount: vatIncluded(1163.00), vat_recoverable_pct: 100, ref: "380230665-08", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
   { spent_on: "2026-09-18", supplier: "סלקום אנרג'י", category: "OFFICE", description: "חשמל, האיריסים 8 נתניה (תאריך משוער, מתוך טבלת תשלומים בחשבונית 18.10.2026, אין חשבונית פרטנית)",
     total: 1404.00, vat_amount: vatIncluded(1404.00), vat_recoverable_pct: 100, ref: "380230665-09", source: "טבלת תשלומים בחשבונית מס, סלקום אנרג'י, 18.10.2026" },
+  { spent_on: "2026-10-04", supplier: "Apple (iCloud+)", category: "SOFTWARE", description: "iCloud+ 50GB",
+    total: 3.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "MMQH8Y287S", source: "קבלת Apple, 4.10.2026" },
+  { spent_on: "2026-10-03", supplier: "ניהול חשבונות ישיר", category: "SOFTWARE", description: "שעון נוכחות",
+    total: 53.00, vat_amount: 8.08, vat_recoverable_pct: 100, ref: "1114577", source: "חשבונית מס קבלה, invoice4u, 3.10.2026" },
+  { spent_on: "2026-10-04", supplier: "לינק ניהול תקשורת לעסקים", category: "COMMUNICATION", description: "",
+    total: 79.79, vat_amount: 12.17, vat_recoverable_pct: 100, ref: "152916", source: "חשבונית מס קבלה, invoice4u, 4.10.2026" },
+  { spent_on: "2026-10-15", supplier: "Google One / AI Pro", category: "SOFTWARE", description: "מינוי AI Pro 5TB",
+    total: 74.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "SOP.3377-1494-8056-39954..5", source: "קבלת Google Play, 15.10.2026" },
   { spent_on: "2026-01-04", supplier: "נורית שטיין", category: "EDUCATION", description: "הדרכה",
     total: 560.00, vat_amount: 85.42, vat_recoverable_pct: 100, ref: "10283", source: "כרטסת חשבונות 2026, רבגונית/ארדני, 22.10.2026" },
   { spent_on: "2026-09-04", supplier: "ניהול חשבונות ישיר", category: "SOFTWARE", description: "שעון נוכחות",
@@ -452,7 +483,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     return (
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, חשבונית חשמל מאוקטובר, וכרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר).</div>
+          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, כרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר), וארבע הוצאות חוזרות מאוקטובר שאומתו מול המסמך המקורי.</div>
           <button className="ck-btn" onClick={() => setOpen(true)}>פתיחה לבדיקה</button>
         </div>
       </div>
@@ -469,6 +500,10 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
         וחשבונית המים של עזריאלי (SI260210000489, מתוארכת 1.2.2026 ותחת מחלוקת של המשרד) הושארו בצד גם הן. כרטסת
         החשבונות של רונית (129 שורות, ינואר עד ספטמבר) יובאה במלואה לבקשת המשתמש, למעט שורות שכבר קיימות כאן ושורת
         "העברת מס תשומות" שאינה הוצאה אמיתית. שורת חיים פרידריך (אסמ' 90048) תוקנה לפי הכרטסת, 18% מע"מ במקום אפס.
+        ארבע שורות אוקטובר 2026 (Apple, שעון נוכחות, לינק תקשורת, Google One) אומתו מול המסמך המקורי שהתקבל בתיבה.
+        חשבון הסלקום הסלולרי לתקופה מ-14.9 עד 13.10 נמצא, אך צורף כ-PDF שלא ניתן לפתוח בכלים כאן, ולכן נשאר בחוץ; טרם
+        נמצאו חשבוניות שכירות, דמי ניהול או חשמל של עזריאלי/הרצליה ביזנס פארק לתקופה הבאה, וגם לא חשבונית BF ביטחון
+        או קבלת Gett לאוקטובר.
       </div>
       <div className="ck-table-wrap">
         <table className="ck-table" data-cards="off">
