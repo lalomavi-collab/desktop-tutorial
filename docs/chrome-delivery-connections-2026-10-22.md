@@ -205,7 +205,8 @@ node scripts/whatsapp-dunning-templates.mjs --status
 
 1. לחץ "שלחו לי דוא"ל בדיקה". אמורה להגיע אליך הודעה עם קובץ PDF לדוגמה מצורף. זה מוכיח את `RESEND_API_KEY`, את הדומיין ואת נתיב הצרופה.
 2. ל-WhatsApp: פתח כרטיס לקוח שהנייד שלו הוא שלך, עם הסכמה רשומה, ולחץ "הודעת WhatsApp בדיקה". זה שולח את תבנית המסמכים האמיתית עם ערכים לדוגמה, ולכן עובד רק אחרי אישור התבנית והגדרת `WHATSAPP_DOCUMENT_TEMPLATE`.
-3. קודי כשל: `mail_not_configured`, `no_own_email`, `whatsapp_not_configured`, `template_not_configured`, `no_whatsapp_consent`, `no_mobile`, או `send_failed` עם פירוט.
+3. סימולציית הפקה: בלשונית "מסמכים" צור טיוטה (חשבונית מס קבלה, שורה אחת, ₪1, אמצעי תשלום מזומן) ולחץ **"סימולציה אליי"**. המערכת שלנו מרנדרת את המסמך ושולחת אותו לכתובת שלך, מסומן "סימולציה בלבד", עם PDF לדוגמה. הטיוטה נשארת טיוטה: בלי מספר, בלי Invoice4U, בלי שורה ביומן השליחות. כשתסיים, לחץ "מחיקה" ליד הטיוטה ולא נשאר דבר.
+4. קודי כשל: `mail_not_configured`, `no_own_email`, `whatsapp_not_configured`, `template_not_configured`, `no_whatsapp_consent`, `no_mobile`, או `send_failed` עם פירוט.
 
 ## שלב 10: בדיקה מקצה לקצה עם הפקה (שלך, לא של Claude in Chrome)
 

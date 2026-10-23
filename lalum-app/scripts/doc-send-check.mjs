@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { createHmac } from "node:crypto";
-import { SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
+import { simulationEmail, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
 import { verifySvix, mapEvent, TRACKED_EVENTS } from "../../supabase/functions/_shared/resendEvents.ts";
 import { normalizeIsraeliPhone } from "../../supabase/functions/_shared/dunning.ts";
 
@@ -295,4 +295,28 @@ await t("the test branch comes before any reserve, never calls the ledger writer
   assert.ok(!/invoice4u/i.test(branch));
   assert.ok(branch.includes("user.email") && branch.includes('b.channel === "WHATSAPP"'));
   assert.ok(branch.includes("whatsapp_consent_at") && branch.includes("no_whatsapp_consent"), "WhatsApp needs the recorded consent");
+});
+
+// ---- simulation of issuing a draft ----
+const draft = { docType: "INVOICE_RECEIPT", issueDate: "2026-10-23", lines: [{ name: "בדיקת <b>שליחה</b>", qty: 2, price: 10.5 }], subtotal: 21, vat: 3.78, total: 24.78 };
+await t("the simulation says plainly that nothing was issued, and shows the amounts", () => {
+  const m = simulationEmail(draft);
+  assert.ok(m.html.includes("סימולציה בלבד") && m.html.includes("לא הופק מסמך") && m.html.includes("לא נשלח דבר ללקוח"));
+  assert.ok(m.html.includes("24.78") && m.html.includes("3.78") && m.html.includes("21.00") && m.html.includes("2026-10-23"));
+  assert.ok(m.subject.startsWith("[סימולציה]") && m.subject.includes("חשבונית מס קבלה") && m.subject.includes("לא הופק"));
+  assert.ok(m.html.includes('dir="rtl"') && !/[—–]/.test(m.html + m.subject));
+});
+await t("typed values are escaped, bad numbers read as zero, and the line count is capped", () => {
+  const m = simulationEmail({ ...draft, lines: [{ name: "<img src=x onerror=1>", qty: "x", price: null }] });
+  assert.ok(!m.html.includes("<img") && m.html.includes("&lt;img") && m.html.includes("0.00"));
+  const many = simulationEmail({ ...draft, lines: Array.from({ length: 200 }, () => ({ name: "a", qty: 1, price: 1 })) });
+  assert.equal((many.html.match(/<tr>/g) ?? []).length, 61, "60 lines and the header row");
+  assert.ok(!simulationEmail({ ...draft, issueDate: "javascript:1" }).html.includes("javascript"));
+});
+await t("the simulation reads only a draft, mails only the partner, and writes nothing", () => {
+  const start = sendSrc.indexOf("if (b.draft_id) {"), end = sendSrc.indexOf("const r = await postMail({", start);
+  assert.ok(start > 0 && end > start);
+  const branch = sendSrc.slice(start, end);
+  assert.ok(branch.includes('d.status !== "DRAFT"') && branch.includes("not_a_draft") && branch.includes("user.email"));
+  assert.ok(!/\.rpc\(|\.insert\(|\.update\(|\.delete\(/.test(branch) && !/invoice4u/i.test(branch));
 });

@@ -6,7 +6,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
 import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
-import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError } from "../../../lib/cockpit/financeApi";
+import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
 import { canSend, defaultBody, defaultSubject, deliveryText, sendSummary } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { DocSendPanel } from "./DocSendPanel";
@@ -127,6 +127,17 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     const id = await saveDraft();
     setBusy(null);
     if (id) { setEd(null); setNote({ ok: true, text: "הטיוטה נשמרה." }); onChange(); }
+  }
+  /** Saves the draft and mails a rendered simulation to the partner. Nothing is issued, numbered or logged; deleting the draft leaves nothing. */
+  async function onSimulate() {
+    setBusy("sim");
+    const id = await saveDraft();
+    if (!id) { setBusy(null); return; }
+    const r = await simulateIssue(id);
+    setBusy(null); onChange();
+    setNote(r.ok
+      ? { ok: true, text: 'נשלחה אליכם סימולציה בדוא"ל, עם קובץ PDF לדוגמה מצורף. לא הופק מסמך, לא הוקצה מספר ולא נשלח דבר ללקוח. הטיוטה נשמרה, ואפשר למחוק אותה מהרשימה.' }
+      : { ok: false, text: sendDocumentError(r) });
   }
   async function onIssue() {
     if (!ed) return;
@@ -262,6 +273,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
           {ed.customer_id && !casual && !customers.find((c) => c.id === ed.customer_id)?.tax_id && <div className="ck-meta">ללקוח הזה אין ת.ז. או ח.פ. בכרטיס. אם הוא עוסק מורשה, מסמך מעל הסף ידרוש אותם לצורך מספר הקצאה.</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
+            <button className="ck-btn" disabled={busy !== null || problems.length > 0 || level < 3} title="שומר טיוטה ושולח אליכם סימולציה בדוא&quot;ל. לא מפיק, לא ממספר ולא פונה למערכת ההנפקה." onClick={() => void onSimulate()}>{busy === "sim" ? "שולח..." : "סימולציה אליי"}</button>
             <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3 || (!!edCustomer && !edCustomer.email)} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : edCustomer && !edCustomer.email ? 'אין בכרטיס הלקוח כתובת דוא"ל' : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
             <button className="ck-btn" onClick={() => setEd(null)}>סגירה</button>
           </div>
