@@ -1,5 +1,5 @@
 -- Finance: tax classification of expenses, the tax profile per tax year, and the statutory parameters as data.
--- Not applied by this file being merged: apply as "lalum_finance_tax_engine" with the owner's approval.
+-- Applied to the live project on 2026-10-23 as "lalum_finance_tax_engine", with the owner's go ahead.
 --
 --  * lalum_fin_expenses keeps `vat_recoverable_pct` as the VAT recognition rate (already there, 0 to 100) and gains the
 --    income tax recognition rate and a tax category. Both are nullable: an older row falls back to the category's suggestion

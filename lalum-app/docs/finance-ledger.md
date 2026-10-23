@@ -55,7 +55,7 @@ the official validator); the own issuing engine and the Tax Authority allocation
 
 ## Tax engine and profit and loss before and after tax (October 2026)
 
-Tab "רווח והפסד ומס" under the overview rubric. Migration `0082_lalum_finance_tax_engine.sql` is NOT applied by merging: it needs the owner's approval.
+Tab "רווח והפסד ומס" under the overview rubric. Migration `0082_lalum_finance_tax_engine.sql` and the edge function `lalum-fin-tax-advisor` were applied and deployed to the live project on 23 October 2026.
 
 - `src/lib/cockpit/taxEngine.ts`: pure, deterministic. Expense normalization, VAT, accounting profit, the tax reconciliation, the tax liability, the vaults. `npm run tax-check` pins a realistic month to the agora.
 - `src/lib/cockpit/taxParams.ts`: every statutory figure, per year, with a status. The shipped 2026 row is a DRAFT: it was not read from the Tax Authority or the National Insurance Institute, and the keren hishtalmut and pension income ceilings are deliberately unset (the deduction is then not applied and a warning shows). No figure is called final until a row is VERIFIED, which the database table enforces with a date and two sources.
