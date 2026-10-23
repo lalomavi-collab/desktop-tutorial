@@ -19,14 +19,16 @@ function Body({ member }: { member: Membership }) {
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
   const [codeErr, setCodeErr] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   /** The export needs a second factor entered in the last 10 minutes (0080). Ask the server first; if a code is due, show the code box instead of starting. */
   async function begin() {
-    setRes(null); setCodeErr(null);
+    setRes(null); setCodeErr(null); setConfirming(false);
     const st = await exportStatus(member.firm_id);
     if (!st) { setRes({ ok: false, text: "לא ניתן היה לבדוק את ההרשאה לייצוא. יש לרענן את הדף, להתחבר מחדש ולנסות שוב." }); return; }
     if (!st.eligible) { setRes({ ok: false, text: "אין הרשאה לייצוא. נדרשים שותף או מנהל הפירמה והרשאה פיננסית." }); return; }
-    if (st.fresh) { setStepUp(null); await run(); return; }
+    // A fresh factor skips the code, so this click alone would start the export. Ask on the page: a native confirm() is invisible to browser automation, which accepts it silently (22.10).
+    if (st.fresh) { setStepUp(null); setConfirming(true); return; }
     const f = await supabase!.auth.mfa.listFactors();
     const verified = (f.data?.totp ?? []).filter((x) => x.status === "verified").sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""));
     if (verified.length === 0) { setStepUp("enroll"); return; }
@@ -48,7 +50,7 @@ function Body({ member }: { member: Membership }) {
   }
 
   async function run() {
-    if (!window.confirm("לייצא את כל נתוני הפירמה? הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.")) return;
+    setConfirming(false);
     setBusy(true); setRes(null); setProgress("מכין...");
     try {
       const built = await exportFirmPackage(
@@ -87,6 +89,16 @@ function Body({ member }: { member: Membership }) {
         <div className="ck-meta">הייצוא דורש קוד אימות דו שלבי בן 6 ספרות שהוזן בעשר הדקות שלפניו, גם אם אתם כבר מחוברים.</div>
         <button className="ck-btn primary" disabled={busy} onClick={() => void begin()}>{busy ? (progress ?? "מכין...") : "ייצוא כל נתוני הפירמה (ZIP)"}</button>
       </div>
+      {confirming && (
+        <div className="ck-card" role="alertdialog" aria-labelledby="export-confirm-title" aria-describedby="export-confirm-text">
+          <div className="ck-title" id="export-confirm-title">לייצא את כל נתוני הפירמה?</div>
+          <div className="ck-meta" id="export-confirm-text">הקובץ כולל נתונים פיננסיים ונתוני תיקים, והפעולה נרשמת ביומן הביקורת.</div>
+          <div className="ck-row">
+            <button type="button" className="ck-btn primary" disabled={busy} onClick={() => void run()}>כן, לייצא</button>
+            <button type="button" className="ck-btn" disabled={busy} autoFocus onClick={() => setConfirming(false)}>ביטול</button>
+          </div>
+        </div>
+      )}
       {stepUp === "enroll" && (
         <div className="ck-card"><div className="ck-err">אין לחשבון אימות דו שלבי פעיל, ובלעדיו אי אפשר לייצא. יש להפעיל אותו ב<Link to="/settings/security">אבטחת חשבון</Link> ולחזור לכאן.</div></div>
       )}
