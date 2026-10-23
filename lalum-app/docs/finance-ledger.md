@@ -52,3 +52,13 @@ overview shows income over time by week, month and year. The averages count only
 Not built, and why: receipt on account and cancellation receipt (API behaviour unverified, needs a rehearsal in the Invoice4U test environment);
 the accountant's scheduled report (needs the owner's approval of a test message and the accountant's answers); PCN874 (needs the accountant and
 the official validator); the own issuing engine and the Tax Authority allocation client.
+
+## Tax engine and profit and loss before and after tax (October 2026)
+
+Tab "רווח והפסד ומס" under the overview rubric. Migration `0082_lalum_finance_tax_engine.sql` is NOT applied by merging: it needs the owner's approval.
+
+- `src/lib/cockpit/taxEngine.ts`: pure, deterministic. Expense normalization, VAT, accounting profit, the tax reconciliation, the tax liability, the vaults. `npm run tax-check` pins a realistic month to the agora.
+- `src/lib/cockpit/taxParams.ts`: every statutory figure, per year, with a status. The shipped 2026 row is a DRAFT: it was not read from the Tax Authority or the National Insurance Institute, and the keren hishtalmut and pension income ceilings are deliberately unset (the deduction is then not applied and a warning shows). No figure is called final until a row is VERIFIED, which the database table enforces with a date and two sources.
+- Keeping the figures current: enter each new year as a row in `lalum_tax_params` (it overrides the file) or in `taxParams.ts`. `.github/workflows/tax-params-watch.yml` fails weekly while the current year is missing or a draft, and from November when next year's row is absent. Detecting is automatic; applying a figure is not, on purpose.
+- Design decisions that differ from a naive reading: advances already paid count as cash out (otherwise safe-to-spend is overstated by exactly that amount); a period shorter than a year is taxed by annualizing the income and scaling back; pension deposits are deducted first and only the remainder earns the credit, so a deposit is never both deducted and credited in full; recognized VAT, unrecognized VAT and the deductible amount are computed and not stored.
+- AI: `supabase/functions/lalum-fin-tax-advisor` classifies one expense (rates come from a fixed table, not from the model, except MIXED_CUSTOM) and writes a CFO audit from the engine's figures. It never computes tax and never saves anything.

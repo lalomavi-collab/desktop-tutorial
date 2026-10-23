@@ -5,11 +5,14 @@ import { money } from "../../../lib/cockpit/shared";
 import { EXPENSE_CATEGORY, PAY_METHOD, recoverableVat } from "../../../lib/cockpit/finance";
 import type { FinExpense, PayMethod } from "../../../lib/cockpit/finance";
 import { scanReceipt, scanReceiptError } from "../../../lib/cockpit/financeApi";
+import { TAX_CATEGORY } from "../../../lib/cockpit/taxEngine";
+import type { TaxCategory } from "../../../lib/cockpit/taxEngine";
+import { advisorError, classifyExpense } from "../../../lib/cockpit/taxAdvisorAgent";
 import { HistoricalImport } from "./HistoricalImport";
 
 const today = () => new Date().toISOString().slice(0, 10);
-type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string };
-const blank = (): Draft => ({ spent_on: today(), supplier: "", category: "OTHER", description: "", total: "", vat_amount: "", pct: "100", ref: "", method: "" });
+type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string; taxCat: TaxCategory; itPct: string };
+const blank = (): Draft => ({ spent_on: today(), supplier: "", category: "OTHER", description: "", total: "", vat_amount: "", pct: "100", ref: "", method: "", taxCat: "OPERATIONAL_100", itPct: "100" });
 // Hebrew labels for the fields a scan can flag as unclear, so the review note below the form reads
 // like the rest of the screen rather than echoing the API's own field names.
 const FIELD_LABEL: Record<string, string> = {
@@ -38,10 +41,29 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
       spent_on: d.spent_on ?? today(), supplier: d.supplier ?? "", category: d.category ?? "OTHER",
       description: d.description ?? "", total: d.total != null ? String(d.total) : "",
       vat_amount: d.vat_amount != null ? String(d.vat_amount) : "", pct: "100",
-      ref: d.supplier_doc_ref ?? "", method: "",
+      ref: d.supplier_doc_ref ?? "", method: "", taxCat: "OPERATIONAL_100", itPct: "100",
     });
     setLowConfidence(r.low_confidence_fields ?? []);
     setMsg({ ok: true, text: "הטיוטה מולאה מהחשבונית. בדקו את הסכומים לפני השמירה." });
+  }
+
+  // Choosing a category fills in its suggested rates; both stay editable and are what is saved.
+  function pickTaxCategory(c: TaxCategory) {
+    if (!f) return;
+    const r = TAX_CATEGORY[c];
+    setF({ ...f, taxCat: c, pct: String(r.vatPct), itPct: String(r.itPct) });
+  }
+  const [advising, setAdvising] = useState(false);
+  const [advice, setAdvice] = useState<string | null>(null);
+  async function suggest() {
+    if (!f) return;
+    setAdvising(true); setAdvice(null);
+    const r = await classifyExpense(firmId, { supplier: f.supplier, description: f.description, total: Number(f.total), vat_amount: Number(f.vat_amount || 0) });
+    setAdvising(false);
+    const c = r.ok ? r.data?.classification : null;
+    if (!c) return setAdvice(r.ok ? "היועץ לא הצליח לסווג. בחרו קטגוריה ידנית." : advisorError(r.code));
+    setF({ ...f, taxCat: c.expense_category, pct: String(c.vat_recognition_pct), itPct: String(c.income_tax_recognition_pct) });
+    setAdvice(`${c.legal_reasoning_hebrew}${c.needs_review ? " מומלץ לאשר מול רואה החשבון." : ""}`);
   }
 
   async function save() {
@@ -50,10 +72,12 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
     if (!f.supplier.trim()) return setMsg({ ok: false, text: "שם הספק חובה." });
     if (!(total > 0)) return setMsg({ ok: false, text: "הסכום הכולל חייב להיות גדול מאפס." });
     if (vat < 0 || vat > total) return setMsg({ ok: false, text: 'סכום המע"מ חייב להיות בין אפס לסכום הכולל.' });
+    const itPct = Number(f.itPct);
+    if (!(itPct >= 0 && itPct <= 100)) return setMsg({ ok: false, text: 'שיעור ההכרה למס הכנסה הוא בין 0 ל-100.' });
     if (!(pct >= 0 && pct <= 100)) return setMsg({ ok: false, text: 'שיעור המע"מ לניכוי הוא בין 0 ל-100.' });
     const { error } = await supabase.from("lalum_fin_expenses").insert({
       firm_id: firmId, spent_on: f.spent_on, supplier: f.supplier.trim(), category: f.category, description: f.description.trim() || null,
-      total, vat_amount: vat, vat_recoverable_pct: pct, supplier_doc_ref: f.ref.trim() || null, payment_method: f.method || null,
+      total, vat_amount: vat, vat_recoverable_pct: pct, tax_category: f.taxCat, income_tax_recognition_pct: itPct, supplier_doc_ref: f.ref.trim() || null, payment_method: f.method || null,
     });
     if (error) return setMsg({ ok: false, text: error.message });
     setF(null); setMsg(null); setLowConfidence([]); onChange();
@@ -95,9 +119,13 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
             <label className="ck-field">סכום כולל כולל מע"מ<input className="ck-input" dir="ltr" inputMode="decimal" value={f.total} onChange={set("total")} /></label>
             <label className="ck-field">מתוכו מע"מ<input className="ck-input" dir="ltr" inputMode="decimal" value={f.vat_amount} onChange={set("vat_amount")} /></label>
             <label className="ck-field">אחוז המע"מ שניתן לנכות<input className="ck-input" dir="ltr" inputMode="decimal" value={f.pct} onChange={set("pct")} /></label>
+            <label className="ck-field">סיווג למס<select className="ck-select" value={f.taxCat} onChange={(e) => pickTaxCategory(e.target.value as TaxCategory)}>{Object.entries(TAX_CATEGORY).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
+            <label className="ck-field">אחוז ההכרה למס הכנסה<input className="ck-input" dir="ltr" inputMode="decimal" value={f.itPct} onChange={set("itPct")} /></label>
             <label className="ck-field">מספר חשבונית הספק<input className="ck-input" dir="ltr" value={f.ref} onChange={set("ref")} /></label>
           </div>
           <label className="ck-field">תיאור<input className="ck-input" value={f.description} onChange={set("description")} /></label>
+          <div className="ck-row"><button className="ck-btn sm" disabled={advising || !f.supplier.trim()} onClick={() => void suggest()}>{advising ? "מסווגים…" : "הצעת סיווג מהיועץ"}</button>{TAX_CATEGORY[f.taxCat].review && <span className="ck-meta">הקטגוריה הזו דורשת אישור מול רואה החשבון.</span>}</div>
+          {advice && <div className="ck-meta" aria-live="polite">{advice}</div>}
           {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { setF(null); setLowConfidence([]); }}>ביטול</button></div>
         </div>
