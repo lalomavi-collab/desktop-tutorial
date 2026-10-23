@@ -25,12 +25,19 @@
 //    configured template, a valid Israeli mobile, a link, or the customer's consent, nothing is reserved and the reply says why.
 //  * A manual click on the screen still works as before, and a WhatsApp click is still the wa.me hand off.
 //
+// Delivery test (a partner proving the channels work, with Invoice4U and the ledger out of the picture):
+// POST { test: true, channel?: "EMAIL" | "WHATSAPP", customer_id? }
+//  * EMAIL goes to the signed in partner's own address only, marked [בדיקה], with a sample one page PDF attached.
+//  * WHATSAPP (needs customer_id) sends the approved document template with sample values to the mobile on that customer's card, and only
+//    with the customer's recorded consent. Point it at a card that carries your own mobile.
+//  * Nothing is issued, reserved or logged, and no document or customer is created or changed. Hence nothing to delete afterwards.
+//
 // Env: RESEND_API_KEY, LALUM_FROM_EMAIL, LALUM_REPLY_TO, and for automatic WhatsApp WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID,
 //      WHATSAPP_DOCUMENT_TEMPLATE, WHATSAPP_DOCUMENT_LANG (default "he"). SUPABASE_URL and SUPABASE_ANON_KEY are injected.
 // Access: finance level 3 with MFA, decided by the database with the caller's own JWT.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { ARCHIVE_TYPE, autoBody, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, validPdfBase64 } from "../_shared/docSend.ts";
-import { normalizeIsraeliPhone } from "../_shared/dunning.ts";
+import { ARCHIVE_TYPE, autoBody, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, validPdfBase64 } from "../_shared/docSend.ts";
+import { isEmail, normalizeIsraeliPhone } from "../_shared/dunning.ts";
 
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -40,6 +47,34 @@ const CORS: Record<string, string> = {
 const json = (status: number, data: unknown) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, "content-type": "application/json" } });
 const env = (k: string) => Deno.env.get(k) ?? undefined;
+
+interface Sent { ok: boolean; ref: string | null; err: string | null }
+/** One mail through Resend. The sender and reply address come from the environment, as for every mail from this function. */
+async function postMail(msg: { to: string[]; bcc?: string[]; subject: string; html: string; attachments?: Array<{ filename: string; content: string }> }): Promise<Sent> {
+  try {
+    const from = env("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>", replyTo = env("LALUM_REPLY_TO") ?? "avraham@lalum.co";
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST", headers: { Authorization: `Bearer ${env("RESEND_API_KEY")}`, "content-type": "application/json" },
+      body: JSON.stringify({ from, reply_to: replyTo, ...msg }),
+    });
+    const j = await res.json().catch(() => ({}));
+    return { ok: res.ok, ref: (j as { id?: string }).id ?? null, err: res.ok ? null : `resend ${res.status}` };
+  } catch (e) { return { ok: false, ref: null, err: `network ${(e as Error).name}` }; }
+}
+/** One approved template message through the WhatsApp Cloud API. */
+async function postTemplate(to: string, name: string, params: string[]): Promise<Sent> {
+  try {
+    const res = await fetch(`https://graph.facebook.com/v21.0/${env("WHATSAPP_PHONE_NUMBER_ID")}/messages`, {
+      method: "POST", headers: { Authorization: `Bearer ${env("WHATSAPP_TOKEN")}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        messaging_product: "whatsapp", to, type: "template",
+        template: { name, language: { code: env("WHATSAPP_DOCUMENT_LANG") ?? "he" }, components: [{ type: "body", parameters: params.map((p) => ({ type: "text", text: p })) }] },
+      }),
+    });
+    const j = await res.json().catch(() => ({})) as { messages?: Array<{ id?: string }>; error?: { code?: number } };
+    return { ok: res.ok, ref: j.messages?.[0]?.id ?? null, err: res.ok ? null : `whatsapp ${res.status} ${j.error?.code ?? ""}`.trim() };
+  } catch (e) { return { ok: false, ref: null, err: `network ${(e as Error).name}` }; }
+}
 
 function toBase64(buf: Uint8Array): string {
   let s = "";
@@ -79,8 +114,35 @@ Deno.serve(async (req) => {
   const { data: allowed } = firmId ? await asUser.rpc("lalum_fin_can", { p_firm: firmId, p_min: 3 }) : { data: false };
   if (!firmId || allowed !== true) return json(403, { code: "forbidden" });
 
-  let b: { auto?: boolean; channel?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string };
+  let b: { test?: boolean; customer_id?: string; auto?: boolean; channel?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string };
   try { b = await req.json(); } catch { return json(400, { code: "bad_json" }); }
+
+  // ---- delivery test: nothing is issued, reserved or logged ----
+  if (b.test === true) {
+    if (b.channel === "WHATSAPP") {
+      if (!b.customer_id) return json(400, { code: "bad_request" });
+      if (!env("WHATSAPP_TOKEN") || !env("WHATSAPP_PHONE_NUMBER_ID")) return json(500, { code: "whatsapp_not_configured" });
+      const { data: c } = await asUser.from("lalum_fin_customers").select("id, firm_id, phone, whatsapp_consent_at, whatsapp_consent_revoked_at").eq("id", b.customer_id).maybeSingle();
+      if (!c || c.firm_id !== firmId) return json(404, { code: "customer_not_found" });
+      if (!c.whatsapp_consent_at || c.whatsapp_consent_revoked_at) return json(422, { code: "no_whatsapp_consent" });
+      const phone = normalizeIsraeliPhone(c.phone);
+      if (!phone) return json(422, { code: "no_mobile" });
+      const tpl = documentTemplateName(env);
+      if (!tpl) return json(422, { code: "template_not_configured" });
+      const r = await postTemplate(phone, tpl, testTemplateParams());
+      if (!r.ok) { console.log("FIN_TEST_WA_ERR " + r.err); return json(502, { code: "send_failed", detail: r.err }); }
+      return json(200, { ok: true, channel: "WHATSAPP", test: true, count: 1 });
+    }
+    if (!env("RESEND_API_KEY")) return json(500, { code: "mail_not_configured" });
+    if (!isEmail(user.email)) return json(422, { code: "no_own_email" });
+    const r = await postMail({
+      to: [user.email.toLowerCase()], subject: "[בדיקה] בדיקת שליחה אוטומטית של מסמכים מ-LALUM",
+      html: docEmailHtml(testEmailBody(), null, true), attachments: [{ filename: "lalum-delivery-test.pdf", content: SAMPLE_PDF_BASE64 }],
+    });
+    if (!r.ok) { console.log("FIN_TEST_MAIL_ERR " + r.err); return json(502, { code: "send_failed", detail: r.err }); }
+    return json(200, { ok: true, channel: "EMAIL", test: true, count: 1, attached: true });
+  }
+
   if (!b.document_id === !b.archive_id) return json(400, { code: "bad_request" });
   const auto = b.auto === true;
   const channel = b.channel === "WHATSAPP" ? "WHATSAPP" : "EMAIL";
@@ -170,31 +232,13 @@ Deno.serve(async (req) => {
 
   // ---- send ----
   const pdf = channel !== "EMAIL" ? null : hasUpload ? (b.pdf_base64 as string) : t.pdfUrl ? await fetchPdf(t.pdfUrl) : null;
-  let ok = false, ref: string | null = null, err: string | null = null;
-  try {
-    if (channel === "EMAIL") {
-      const from = env("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>", replyTo = env("LALUM_REPLY_TO") ?? "avraham@lalum.co";
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST", headers: { Authorization: `Bearer ${env("RESEND_API_KEY")}`, "content-type": "application/json" },
-        body: JSON.stringify({
-          from, reply_to: replyTo, to, ...(bcc.length ? { bcc } : {}), subject, html: docEmailHtml(text, hasUpload ? null : t.pdfUrl, pdf !== null),
-          ...(pdf ? { attachments: [{ filename: safeFilename(t.docType, t.docNumber), content: pdf }] } : {}),
-        }),
-      });
-      const j = await res.json().catch(() => ({}));
-      ok = res.ok; ref = (j as { id?: string }).id ?? null; if (!ok) err = `resend ${res.status}`;
-    } else {
-      const res = await fetch(`https://graph.facebook.com/v21.0/${env("WHATSAPP_PHONE_NUMBER_ID")}/messages`, {
-        method: "POST", headers: { Authorization: `Bearer ${env("WHATSAPP_TOKEN")}`, "content-type": "application/json" },
-        body: JSON.stringify({
-          messaging_product: "whatsapp", to: waTo, type: "template",
-          template: { name: waTemplate, language: { code: env("WHATSAPP_DOCUMENT_LANG") ?? "he" }, components: [{ type: "body", parameters: waParams.map((p) => ({ type: "text", text: p })) }] },
-        }),
-      });
-      const j = await res.json().catch(() => ({})) as { messages?: Array<{ id?: string }>; error?: { code?: number } };
-      ok = res.ok; ref = j.messages?.[0]?.id ?? null; if (!ok) err = `whatsapp ${res.status} ${j.error?.code ?? ""}`.trim();
-    }
-  } catch (e) { err = `network ${(e as Error).name}`; }
+  const sent = channel === "EMAIL"
+    ? await postMail({
+      to, ...(bcc.length ? { bcc } : {}), subject, html: docEmailHtml(text, hasUpload ? null : t.pdfUrl, pdf !== null),
+      ...(pdf ? { attachments: [{ filename: safeFilename(t.docType, t.docNumber), content: pdf }] } : {}),
+    })
+    : await postTemplate(waTo, waTemplate, waParams);
+  const { ok, ref, err } = sent;
 
   // ---- record the outcome. If this fails after a send, say so: the mail did go out. ----
   const { error: fe } = await asUser.rpc("lalum_fin_doc_send_finish", { p_id: rowId as string, p_ok: ok, p_ref: ref, p_error: err });

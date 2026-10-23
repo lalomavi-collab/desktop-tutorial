@@ -207,13 +207,15 @@ const DOC_SEND_ERRORS: Record<string, string> = {
   too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
   archive_link_unavailable: "מערכת ההיסטוריה לא החזירה קישור למסמך הזה, ולכן אי אפשר לשלוח אותו כרגע. אפשר לנסות שוב מאוחר יותר.",
   bad_pdf: "הקובץ המצורף אינו PDF תקין, או שהוא גדול מדי (עד 4MB).",
-  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", already_sent: "המסמך כבר נשלח אוטומטית בערוץ הזה.", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
+  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", already_sent: "המסמך כבר נשלח אוטומטית בערוץ הזה.",
+  no_whatsapp_consent: "בכרטיס הלקוח לא נרשמה הסכמה להודעות WhatsApp.", no_mobile: "בכרטיס הלקוח אין נייד תקין.",
+  template_not_configured: "תבנית ה-WhatsApp למסמכים לא הוגדרה בשרת (WHATSAPP_DOCUMENT_TEMPLATE).", whatsapp_not_configured: "חיבור ה-WhatsApp לא הוגדר בשרת (טוקן או מזהה מספר).", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
   send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
 };
 export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
 
 /** Sends one issued document by e-mail on a partner's click. The customer's address comes from the customer record on the server. */
-export async function sendDocument(body: { document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string }): Promise<SendDocumentReply> {
+export async function sendDocument(body: { test?: boolean; channel?: "EMAIL" | "WHATSAPP"; customer_id?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string }): Promise<SendDocumentReply> {
   if (!supabase) return { ok: false, code: "fetch_failed" };
   const { data } = await supabase.auth.getSession();
   const ctl = new AbortController();
@@ -232,6 +234,13 @@ export async function sendDocument(body: { document_id?: string; archive_id?: st
     clearTimeout(timer);
   }
 }
+
+/**
+ * A delivery test that touches nothing: no document, no Invoice4U, no record. EMAIL goes to the signed in partner's own address with a
+ * sample PDF. WHATSAPP sends the approved document template with sample values to the mobile on the given customer's card (consent needed).
+ */
+export const sendTest = (channel: "EMAIL" | "WHATSAPP", customerId?: string): Promise<SendDocumentReply> =>
+  sendDocument({ test: true, channel, ...(customerId ? { customer_id: customerId } : {}) });
 
 /** Records that the partner opened WhatsApp with the document message prepared. There is no delivery receipt on this path. */
 export async function logWhatsappSend(target: { kind: "document" | "archive"; id: string }, recipient: string, text: string): Promise<boolean> {

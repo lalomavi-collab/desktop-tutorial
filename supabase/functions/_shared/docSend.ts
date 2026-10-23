@@ -123,3 +123,15 @@ export function autoBody(type: string, docNumber: number | null): string {
   const label = DOC_LABEL[type] ?? "מסמך";
   return `שלום,\n\nמצורף ${label}${docNumber ? ` מספר ${docNumber}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
 }
+
+// ---- delivery test: no document, no ledger, no Invoice4U ----
+
+/** A one page PDF ("LALUM: document delivery test"), so a test mail proves the attachment path too. 637 bytes, not a tax document. */
+export const SAMPLE_PDF_BASE64 = "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzMDAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA5MyA+PgpzdHJlYW0KQlQgL0YxIDE0IFRmIDIwIDgwIFRkIChMQUxVTTogZG9jdW1lbnQgZGVsaXZlcnkgdGVzdCkgVGogMCAtMjIgVGQgKE5vdCBhIHRheCBkb2N1bWVudC4pIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzg0IDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDU0CiUlRU9GCg==";
+
+/** Template body parameters for the WhatsApp test: the same three variables a real document fills, with a harmless sample. */
+export const testTemplateParams = (): string[] => ["בדיקת מערכת", "0", "https://lalumapp.com/"];
+
+/** The text of the test mail. It says plainly that nothing was issued or recorded. */
+export const testEmailBody = (): string =>
+  "שלום,\n\nזוהי הודעת בדיקה של שליחת המסמכים האוטומטית ב-LALUM. לא הופק מסמך ולא נרשם דבר במערכת.\n\nאם הגיעה אליך הודעה זו עם קובץ PDF מצורף, שליחת הדוא\"ל פועלת.";
