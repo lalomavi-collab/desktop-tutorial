@@ -135,3 +135,28 @@ export const testTemplateParams = (): string[] => ["בדיקת מערכת", "0",
 /** The text of the test mail. It says plainly that nothing was issued or recorded. */
 export const testEmailBody = (): string =>
   "שלום,\n\nזוהי הודעת בדיקה של שליחת המסמכים האוטומטית ב-LALUM. לא הופק מסמך ולא נרשם דבר במערכת.\n\nאם הגיעה אליך הודעה זו עם קובץ PDF מצורף, שליחת הדוא\"ל פועלת.";
+
+// ---- simulation of issuing: a draft rendered and mailed to the partner, nothing issued ----
+
+export interface SimLine { name: unknown; qty: unknown; price: unknown }
+export interface SimDraft { docType: string; issueDate: string | null; lines: SimLine[]; subtotal: unknown; vat: unknown; total: unknown }
+const money2 = (n: unknown): string => (Number.isFinite(Number(n)) ? Number(n).toFixed(2) : "0.00");
+
+/**
+ * What a partner receives when simulating the issue of a draft: the document as this system renders it, plainly marked as not a tax
+ * document. No customer name and no internal note are included (names are hidden on screen by default, and the note is never sent).
+ * Every typed value is escaped. At most 60 lines, as in the ledger.
+ */
+export function simulationEmail(d: SimDraft): { subject: string; html: string } {
+  const label = DOC_LABEL[d.docType] ?? "מסמך";
+  const rows = d.lines.slice(0, 60).map((l) =>
+    `<tr><td style="padding:4px 8px;border-bottom:1px solid #ddd">${escapeHtml(String(l.name ?? "").slice(0, 200))}</td><td style="padding:4px 8px;border-bottom:1px solid #ddd" dir="ltr">${escapeHtml(String(Number(l.qty) || 0))}</td><td style="padding:4px 8px;border-bottom:1px solid #ddd" dir="ltr">${money2(l.price)}</td></tr>`).join("");
+  const date = d.issueDate && /^\d{4}-\d{2}-\d{2}$/.test(d.issueDate) ? d.issueDate : "";
+  const html = `<div dir="rtl" lang="he" style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6">`
+    + `<p style="margin:0 0 12px;padding:8px 12px;background:#fff3cd"><b>סימולציה בלבד.</b> זו אינה חשבונית מס, לא הופק מסמך, לא הוקצה מספר ולא נשלח דבר ללקוח.</p>`
+    + `<p style="margin:0 0 12px">${escapeHtml(label)}${date ? `, תאריך <span dir="ltr">${escapeHtml(date)}</span>` : ""}</p>`
+    + `<table style="border-collapse:collapse;width:100%"><tr><th style="text-align:right;padding:4px 8px">תיאור</th><th style="text-align:right;padding:4px 8px">כמות</th><th style="text-align:right;padding:4px 8px">מחיר</th></tr>${rows}</table>`
+    + `<p style="margin:12px 0 0">לפני מע"מ: <span dir="ltr">${money2(d.subtotal)}</span><br>מע"מ: <span dir="ltr">${money2(d.vat)}</span><br><b>סה"כ: <span dir="ltr">${money2(d.total)}</span></b></p>`
+    + `<p style="margin:12px 0 0;color:#666">מצורף קובץ PDF לדוגמה (לא המסמך עצמו), כדי לבדוק גם את נתיב הצרופה.</p></div>`;
+  return { subject: `[סימולציה] ${label} מ-LALUM, לא הופק`, html };
+}
