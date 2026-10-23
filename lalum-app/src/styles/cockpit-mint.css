@@ -498,6 +498,22 @@
 .fl-delta { display: inline-flex; align-items: baseline; gap: 6px; font-weight: 700; color: var(--slate); }
 .fl-delta.up { color: var(--success); }
 .fl-delta.down { color: var(--danger); }
+
+/* Expenses over time: the same strip and bars as the revenue view, plus the category split. */
+.exp-chart .fin-controls { flex-wrap: wrap; }
+.exp-chart .fin-chart { padding-block: 6px 2px; }
+.exp-cats { border-top: 1px solid var(--line); padding-top: 14px; }
+.exp-cats-title { font-weight: 600; margin-bottom: 10px; }
+.exp-cat-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
+.exp-cat-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; margin-bottom: 5px; }
+.exp-cat-fig { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.exp-cat-fig small { color: var(--slate); font-weight: 600; margin-inline-start: 6px; }
+.exp-cat-bar { display: block; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.exp-cat-bar i { display: block; height: 100%; border-radius: 999px; background: var(--clay); }
+@media (max-width: 640px) {
+  .exp-chart .fin-seg { flex: 1 1 100%; }
+  .exp-chart .fin-seg button { flex: 1; padding-inline: 8px; }
+}
 .fl-rows { margin: 0; display: grid; gap: 4px; font-size: 13px; }
 .fl-rows > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .fl-rows dt { color: var(--slate); }
