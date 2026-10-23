@@ -5,6 +5,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { I4U_TYPE, archiveSummary, formatRanges, numberingGaps, splitName } from "../../../lib/cockpit/finance";
 import type { ArchiveDoc, FinCustomer } from "../../../lib/cockpit/finance";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
+import { ApprovalGate } from "./ApprovalGate";
 import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
 import { BACKUP_OUTCOME, backupArchiveBatch } from "../../../lib/cockpit/archiveBackup";
 import { ARCHIVE_DOC_TYPE } from "../../../lib/cockpit/financeSend";
@@ -99,18 +100,20 @@ export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: 
       <div className="ck-ok">ארכיון קריאה בלבד של מסמכים שהופקו במערכת ההיסטוריה. הוא משמש להיסטוריה, להתאמת דוחות ולבדיקת רציפות המספור, ואינו מקור למסמך חדש.</div>
       <div className="ck-card ck-stack">
         <div className="ck-title">ייבוא ממערכת ההיסטוריה</div>
-        <div className="ck-row">
-          <button className="ck-btn" disabled={busy} onClick={() => void importCustomers()}>ייבוא לקוחות</button>
-          <span className="ck-meta">מקשר לקוחות קיימים לפי ת.ז. ומוסיף את החדשים. אחרי זה הפקה חדשה לא תיצור לקוח כפול במערכת ההנפקה.</span>
-        </div>
-        <div className="ck-grid2">
-          <label className="ck-field">מתאריך<input className="ck-input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
-          <label className="ck-field">עד תאריך<input className="ck-input" type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
-        </div>
-        <div className="ck-row">
-          <button className="ck-btn primary" disabled={busy || from > to} onClick={() => void importDocuments()}>{busy ? "מייבא..." : "ייבוא מסמכים"}</button>
-          {busy && <button className="ck-btn" onClick={() => { stop.current = true; }}>עצירה</button>}
-        </div>
+        <ApprovalGate what="ייבוא לקוחות ומסמכים">
+          <div className="ck-row">
+            <button className="ck-btn" disabled={busy} onClick={() => void importCustomers()}>ייבוא לקוחות</button>
+            <span className="ck-meta">מקשר לקוחות קיימים לפי ת.ז. ומוסיף את החדשים. אחרי זה הפקה חדשה לא תיצור לקוח כפול במערכת ההנפקה.</span>
+          </div>
+          <div className="ck-grid2">
+            <label className="ck-field">מתאריך<input className="ck-input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
+            <label className="ck-field">עד תאריך<input className="ck-input" type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
+          </div>
+          <div className="ck-row">
+            <button className="ck-btn primary" disabled={busy || from > to} onClick={() => void importDocuments()}>{busy ? "מייבא..." : "ייבוא מסמכים"}</button>
+            {busy && <button className="ck-btn" onClick={() => { stop.current = true; }}>עצירה</button>}
+          </div>
+        </ApprovalGate>
         {log.map((l, i) => <div key={i} className={l.ok ? "ck-meta" : "ck-err"} aria-live="polite">{l.text}</div>)}
       </div>
 

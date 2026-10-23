@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { importError, importFromInvoice4u } from "../../../lib/cockpit/financeApi";
+import { ApprovalGate } from "./ApprovalGate";
 import { CUSTOMER_TEMPLATE_CSV, mapCustomers, parseDelimited } from "../../../lib/cockpit/customerImport";
 import type { ImportRow } from "../../../lib/cockpit/customerImport";
 import { readXlsx } from "../../../lib/cockpit/xlsxRead";
@@ -87,7 +88,9 @@ export function CustomersImport({ firmId, existing, revealed, onManual, onChange
       {method === "system" && (
         <div className="ck-stack">
           <div className="ck-meta">מקשר לקוחות קיימים לפי ת.ז. ומוסיף את החדשים. הפעולה לקריאה בלבד ואינה משנה דבר במערכת ההנפקה. אחרי זה הפקה חדשה לא תיצור לקוח כפול שם.</div>
-          <div className="ck-row"><button className="ck-btn primary" disabled={busy} onClick={() => void importSystem()}>{busy ? "מייבאים..." : "ייבוא לקוחות מהמערכת"}</button></div>
+          <ApprovalGate what="ייבוא לקוחות מהמערכת">
+            <div className="ck-row"><button className="ck-btn primary" disabled={busy} onClick={() => void importSystem()}>{busy ? "מייבאים..." : "ייבוא לקוחות מהמערכת"}</button></div>
+          </ApprovalGate>
         </div>
       )}
 
