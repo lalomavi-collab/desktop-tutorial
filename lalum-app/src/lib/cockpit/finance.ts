@@ -49,6 +49,9 @@ export interface FinPayment {
 export interface FinExpense {
   id: string; spent_on: string; supplier: string; category: string; description: string | null; total: number;
   vat_amount: number; vat_recoverable_pct: number; supplier_doc_ref: string | null; payment_method: PayMethod | null;
+  /** The source document (invoice or receipt) behind this expense, stored in the private bucket
+   *  finance-expense-docs (migration 0082). null means nothing is attached yet. */
+  source_doc_path?: string | null; source_doc_mime?: string | null; source_doc_size?: number | null;
 }
 
 export const DOC_TYPE: Record<DocType, string> = {
