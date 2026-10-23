@@ -24,6 +24,15 @@ t("expense normalization: unrecognized VAT joins the cost before the income tax 
   assert.deepEqual([v.recognizedVat, v.unrecognizedVat, v.accounting, v.deductible, v.itPct], [360.02, 179.98, 3179.98, 1430.99, 45]);
   assert.equal(normalizeExpense(ex(100, 18, 0, "OTHER", 0)).deductible, 0);
 });
+t("a fixed asset recovers its VAT and stays out of both tracks until depreciation is set", () => {
+  const v = normalizeExpense({ ...ex(35400, 5400, 100, "OFFICE"), tax_category: "FIXED_ASSET" });
+  assert.deepEqual([v.recognizedVat, v.accounting, v.deductible, v.capitalized], [5400, 0, 0, 30000]);
+  const r = computePnl(month({ expenses: [{ ...ex(35400, 5400, 100, "OFFICE"), tax_category: "FIXED_ASSET" }] }), P);
+  assert.equal(r.accounting.expenses, 0);
+  assert.equal(r.vat.in, 5400);
+  assert.equal(r.vaults.cashOut, 35400);
+  assert.ok(r.warnings.some((w) => w.includes("רכוש קבוע")));
+});
 t("an older vehicle row without a tax category falls back to 45 percent", () => {
   assert.equal(normalizeExpense(ex(118, 18, 100, "VEHICLE")).itPct, 45);
 });

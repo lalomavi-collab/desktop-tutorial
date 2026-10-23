@@ -31,6 +31,7 @@ const RATES: Record<string, { vatPct: number; itPct: number; review: boolean }> 
   LOCAL_HOSPITALITY_NON_DEDUCTIBLE: { vatPct: 0, itPct: 0, review: false },
   FINES_NON_DEDUCTIBLE: { vatPct: 0, itPct: 0, review: false },
   MIXED_CUSTOM: { vatPct: 100, itPct: 100, review: true },
+  FIXED_ASSET: { vatPct: 100, itPct: 0, review: true },
 };
 
 const SYSTEM = `אתה רואה חשבון ישראלי בכיר (CPA), יועץ מס מומחה ומנהל כספים ראשי (CFO), הפועל בתוך מערכת אוטומטית לניהול משרד וכספים.

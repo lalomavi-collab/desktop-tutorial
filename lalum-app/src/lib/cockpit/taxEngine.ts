@@ -11,7 +11,7 @@ export const r2 = (n: number): number => Math.round(Number(n.toFixed(6)) * 100) 
 
 export type TaxCategory =
   | "OPERATIONAL_100" | "VEHICLE_MAINTENANCE" | "VEHICLE_EV_CHARGING" | "OFFICE_REFRESHMENTS" | "CLIENT_GIFTS"
-  | "PROFESSIONAL_ATTIRE" | "HOME_OFFICE" | "LOCAL_HOSPITALITY_NON_DEDUCTIBLE" | "FINES_NON_DEDUCTIBLE" | "MIXED_CUSTOM";
+  | "PROFESSIONAL_ATTIRE" | "HOME_OFFICE" | "LOCAL_HOSPITALITY_NON_DEDUCTIBLE" | "FINES_NON_DEDUCTIBLE" | "MIXED_CUSTOM" | "FIXED_ASSET";
 
 export interface CategoryRule { label: string; vatPct: number; itPct: number; /** The default is a starting point that a person must confirm. */ review: boolean }
 
@@ -27,6 +27,10 @@ export const TAX_CATEGORY: Record<TaxCategory, CategoryRule> = {
   LOCAL_HOSPITALITY_NON_DEDUCTIBLE: { label: "אירוח בארץ (לא מוכר)", vatPct: 0, itPct: 0, review: false },
   FINES_NON_DEDUCTIBLE: { label: "קנסות (לא מוכר)", vatPct: 0, itPct: 0, review: false },
   MIXED_CUSTOM: { label: "מעורב, שיעורים מותאמים", vatPct: 100, itPct: 100, review: true },
+  // Equipment, furniture and building improvements: the input VAT is recovered when bought, the cost is not an expense
+  // of the period but is depreciated. No depreciation rate is assumed here until the accountant sets one, so until then
+  // the cost stays out of both tracks and the report says how much was capitalized.
+  FIXED_ASSET: { label: "רכוש קבוע (פחת, שיעור ממתין לרואה החשבון)", vatPct: 100, itPct: 0, review: true },
 };
 
 /** Category of the ledger's older expense form, mapped to the tax category it implies when none was chosen. */
@@ -43,13 +47,16 @@ export interface ExpenseNorm {
   accounting: number; recognizedVat: number; unrecognizedVat: number;
   /** Cost recognized by Income Tax: the accounting cost (unrecognized VAT included) times the recognition rate. */
   deductible: number; itPct: number;
+  /** Fixed assets only: the cost, net of recovered VAT, that goes to the balance sheet instead of the period. */
+  capitalized: number;
 }
 
 export function normalizeExpense(e: ExpenseIn): ExpenseNorm {
   const itPct = e.income_tax_recognition_pct ?? TAX_CATEGORY[taxCategoryOf(e)].itPct;
   const recognizedVat = r2((e.vat_amount * e.vat_recoverable_pct) / 100);
-  const accounting = r2(e.total - recognizedVat);
-  return { accounting, recognizedVat, unrecognizedVat: r2(e.vat_amount - recognizedVat), deductible: r2((accounting * itPct) / 100), itPct };
+  const cost = r2(e.total - recognizedVat), unrecognizedVat = r2(e.vat_amount - recognizedVat);
+  if (taxCategoryOf(e) === "FIXED_ASSET") return { accounting: 0, recognizedVat, unrecognizedVat, deductible: 0, itPct: 0, capitalized: cost };
+  return { accounting: cost, recognizedVat, unrecognizedVat, deductible: r2((cost * itPct) / 100), itPct, capitalized: 0 };
 }
 
 // ---------- Income tax and National Insurance ----------
@@ -121,6 +128,8 @@ export function computePnl(inp: PnlInput, p: TaxParams): Pnl {
   const vatOut = patur ? 0 : inp.vatOut;
   const vatIn = r2(norm.reduce((a, n) => a + n.recognizedVat, 0));
   const vatPayable = r2(vatOut - vatIn);
+  const capitalized = r2(norm.reduce((a, n) => a + n.capitalized, 0));
+  if (capitalized > 0) warnings.push(`${capitalized.toLocaleString("he-IL")} ₪ רכוש קבוע הוון ולא נרשם כהוצאה. הפחת שלו עוד לא חושב, ולכן הרווח גבוה מעט מהסופי עד שרואה החשבון תקבע שיעור`);
 
   // Track A: accounting profit before tax.
   const accExpenses = r2(norm.reduce((a, n) => a + n.accounting, 0));
