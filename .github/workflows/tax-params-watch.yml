@@ -1,0 +1,29 @@
+name: Tax parameters watch
+
+# Weekly. Fails (red in the Actions tab) when the current year's statutory tax parameters are missing or still a draft,
+# or when it is November or later and the next year's are not in yet. Indexation lands every 1 January, so the new
+# year's figures must be read from the Tax Authority and the National Insurance Institute and entered as VERIFIED
+# (two sources, enforced by the table) before then. This job only detects; it never changes a figure by itself,
+# because a silently wrong rate is worse than a visible alarm.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lalum-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run tax-check
+      - run: npm run tax-params-check
