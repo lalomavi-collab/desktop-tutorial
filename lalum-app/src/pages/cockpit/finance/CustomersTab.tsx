@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { CONSENT_BASIS, customerGaps, customerProblems, isMobile, splitName, whatsappConsentActive } from "../../../lib/cockpit/finance";
-import { rpcError } from "../../../lib/cockpit/financeApi";
+import { rpcError, sendDocumentError, sendTest } from "../../../lib/cockpit/financeApi";
 import { CustomersImport } from "./CustomersImport";
 import type { FinCustomer } from "../../../lib/cockpit/finance";
 
@@ -67,6 +67,15 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
     setMsg({ ok: true, text: given ? "ההסכמה נרשמה." : "ההסכמה בוטלה." });
     onChange();
   }
+  /** Sends a delivery test. Nothing is issued or recorded, so there is nothing to clean up. */
+  async function testSend(channel: "EMAIL" | "WHATSAPP", c?: FinCustomer) {
+    if (channel === "WHATSAPP" && !window.confirm("תישלח הודעת WhatsApp אמיתית (תבנית בדיקה) לנייד שבכרטיס הלקוח. להמשיך?")) return;
+    setMsg({ ok: true, text: "שולח הודעת בדיקה..." });
+    const r = await sendTest(channel, c?.id);
+    setMsg(r.ok
+      ? { ok: true, text: channel === "EMAIL" ? 'נשלח דוא"ל בדיקה לכתובת שלכם, עם קובץ PDF לדוגמה מצורף. לא הופק מסמך ולא נרשם דבר.' : "נשלחה הודעת WhatsApp בדיקה לנייד שבכרטיס. לא הופק מסמך ולא נרשם דבר." }
+      : { ok: false, text: sendDocumentError(r) });
+  }
   async function archive(c: FinCustomer) {
     if (!supabase) return;
     await supabase.from("lalum_fin_customers").update({ archived: !c.archived }).eq("id", c.id);
@@ -81,6 +90,12 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
         <input className="ck-input" aria-label="חיפוש לקוח" placeholder={cn.revealed ? "חיפוש לפי שם או ת.ז." : "חיפוש לפי מספר לקוח או ת.ז. (השמות מוסתרים)"} value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
         {archivedCount > 0 && <label className="ck-meta" style={{ display: "flex", alignItems: "center", gap: 6 }}><input type="checkbox" checked={withArchived} onChange={(e) => setWithArchived(e.target.checked)} />הצגת לקוחות בארכיון (<bdi>{archivedCount}</bdi>)</label>}
         <button className="ck-btn primary" onClick={() => open()}>לקוח חדש</button>
+      </div>
+      <div className="ck-card ck-stack" data-testid="delivery-test">
+        <div className="ck-label">בדיקת שליחה אוטומטית</div>
+        <div className="ck-meta">בודקת שהדוא"ל יוצא ומגיע עם קובץ PDF. לא מפיקה מסמך, לא פונה למערכת ההנפקה ולא נרשמת בשום מקום, ולכן אין מה למחוק אחריה.</div>
+        <div className="ck-row"><button className="ck-btn sm" onClick={() => void testSend("EMAIL")}>שלחו לי דוא"ל בדיקה</button></div>
+        {!editing && msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
       </div>
       <CustomersImport firmId={firmId} existing={customers} revealed={cn.revealed} onManual={() => open()} onChange={onChange} />
       {editing && cn.revealed && (
@@ -143,6 +158,7 @@ export function CustomersTab({ firmId, customers, onChange }: { firmId: string; 
                 <div className="ck-row">
                   {on ? <button className="ck-btn sm" onClick={() => void consent(c, false)}>ביטול הסכמה</button>
                     : <button className="ck-btn sm" onClick={() => void consent(c, true)}>רישום הסכמה</button>}
+                  {on && <button className="ck-btn sm" title="שולח הודעת בדיקה אמיתית לנייד שבכרטיס, בתבנית המסמכים. לא נרשם דבר." onClick={() => void testSend("WHATSAPP", c)}>הודעת WhatsApp בדיקה</button>}
                 </div>
               </div>);
           })()}

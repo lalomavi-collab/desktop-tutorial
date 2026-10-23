@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { createHmac } from "node:crypto";
-import { autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
+import { SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
 import { verifySvix, mapEvent, TRACKED_EVENTS } from "../../supabase/functions/_shared/resendEvents.ts";
 import { normalizeIsraeliPhone } from "../../supabase/functions/_shared/dunning.ts";
 
@@ -270,4 +270,29 @@ await t("the database: once only, consent for WhatsApp, no WhatsApp for a test d
   assert.ok(sql.includes("raise exception 'NO_WHATSAPP_CONSENT'") && sql.includes("raise exception 'TEST_DOCUMENT'"));
   assert.ok(sql.includes("lalum_fin_can(v_firm, 3)"));
   assert.ok(!/[—–]| - /.test(sql.replace(/--.*$/gm, "")), "no dash used as punctuation");
+});
+
+// ---- the delivery test: no document, no ledger, no Invoice4U ----
+await t("the sample PDF is a real, small PDF that passes the same check as a hand attached file", () => {
+  assert.equal(validPdfBase64(SAMPLE_PDF_BASE64), true);
+  const bytes = Buffer.from(SAMPLE_PDF_BASE64, "base64");
+  assert.ok(bytes.length < 2000 && bytes.subarray(0, 5).toString() === "%PDF-" && bytes.toString().includes("%%EOF"));
+});
+await t("the test mail says nothing was issued and has no dash used as punctuation", () => {
+  const b = testEmailBody();
+  assert.ok(b.includes("לא הופק מסמך") && b.includes("לא נרשם דבר")); assert.ok(!/[—–]| - /.test(b));
+});
+await t("the WhatsApp test fills the same three variables as a real document, with an https link", () => {
+  const p = testTemplateParams();
+  assert.equal(p.length, 3); assert.ok(p[2].startsWith("https://")); assert.ok(!/[\r\n\t]/.test(p.join("")));
+  assert.deepEqual(documentTemplateParams("INVOICE", 1, p[2]).slice(2), [p[2]]);
+});
+await t("the test branch comes before any reserve, never calls the ledger writers, and never mentions Invoice4U", () => {
+  const start = sendSrc.indexOf("if (b.test === true) {"), end = sendSrc.indexOf("if (!b.document_id === !b.archive_id)");
+  assert.ok(start > 0 && end > start, "the test branch comes first");
+  const branch = sendSrc.slice(start, end);
+  assert.ok(!/lalum_fin_doc_send_(reserve|finish)/.test(branch) && !/\.insert\(|\.update\(|\.delete\(/.test(branch));
+  assert.ok(!/invoice4u/i.test(branch));
+  assert.ok(branch.includes("user.email") && branch.includes('b.channel === "WHATSAPP"'));
+  assert.ok(branch.includes("whatsapp_consent_at") && branch.includes("no_whatsapp_consent"), "WhatsApp needs the recorded consent");
 });
