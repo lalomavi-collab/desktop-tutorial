@@ -51,7 +51,8 @@
     "password-check": "node scripts/password-check.mjs",
     "mcp-check": "node scripts/mcp-check.mjs",
     "mcp-client-check": "node scripts/mcp-client-check.mjs",
-    "market-chart-check": "node scripts/market-chart-check.mjs"
+    "market-chart-check": "node scripts/market-chart-check.mjs",
+    "accounting-check": "node scripts/accounting-check.mjs"
   },
   "dependencies": {
     "@accounter/shaam-uniform-format-generator": "0.2.6",
