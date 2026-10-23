@@ -101,12 +101,23 @@ const vatIncluded = (total: number) => r2((total * 18) / 118);
  *   מנוי חודשי ₪45.00 plus שיחות ₪22.62, plus 18% VAT, paid by card 3.10.2026).
  * - Google One / AI Pro, order SOP.3377-1494-8056-39954..5, 15.10.2026, ₪74.90, no VAT (Google Play's
  *   own renewal receipt, same subscription as the row already in the August batch).
- * What is NOT here yet, and why: the Cellcom mobile bill for the period from 14.9 to 13.10.2026 was found
- * (email received 20.10.2026) but its attachment is a PDF the mail tools here could not open to read
- * the actual figure, so no amount was available to verify against; the monthly Azrieli/הרצליה ביזנס
- * פארק rent, management fee and office electricity for the next period were not found in either
- * mailbox as of this writing, nor was a BF ביטחון internet bill or any Gett ride receipt for October;
- * and no new November or December 2026 expense exists yet, since those months have not finished.
+ * What is NOT here yet, and why: the monthly Azrieli/הרצליה ביזנס פארק rent, management fee and office
+ * electricity for the next period were not found in either mailbox as of this writing, nor was a BF
+ * ביטחון internet bill or any Gett ride receipt for October; and no new November or December 2026
+ * expense exists yet, since those months have not finished.
+ *
+ * October addendum (23.10.2026): the Cellcom mobile bill noted above as unreadable was supplied
+ * directly by the user as an 11-page PDF and read in full: account 404293236, a consolidated bill for
+ * seven phone lines plus home internet and TV, period 14.9 to 13.10.2026, total ₪595.44 (fixed charges
+ * ₪411.98, a ₪25.42 credit, VAT ₪69.58 on the ₪386.56 taxable balance, plus ₪139.30 VAT-exempt). Also
+ * resolved this round: InvoiceCredit_50004.pdf and three documents tied to a Portugal real-estate deal
+ * for a third party, "א.ש.ל.י חברה לבניה בע"מ" (an MAVEN/Hypotenuse Power invoice for €750, a matching
+ * bank transfer from that company's own account, and a PDM planning memo with no monetary figure at
+ * all), confirmed by the user as client funds, not a LALUM expense, and left out. A Cardkom document
+ * (1324714) an automated draft report read as ₪1,000 is, read in full, a ₪0.00 non-charge notice and
+ * is also left out. Still open: InvoiceCredit_50004.pdf (₪26,063.00, flagged as a credit document, not
+ * independently supplied here) and two Anthropic USD invoices (MOZ6IRTK-0016/0017, no sourced NIS rate)
+ * still need a primary document before import.
  */
 type Row = {
   spent_on: string; supplier: string; category: string; description: string;
@@ -188,6 +199,8 @@ const ROWS: Row[] = [
     total: 79.79, vat_amount: 12.17, vat_recoverable_pct: 100, ref: "152916", source: "חשבונית מס קבלה, invoice4u, 4.10.2026" },
   { spent_on: "2026-10-15", supplier: "Google One / AI Pro", category: "SOFTWARE", description: "מינוי AI Pro 5TB",
     total: 74.90, vat_amount: 0, vat_recoverable_pct: 100, ref: "SOP.3377-1494-8056-39954..5", source: "קבלת Google Play, 15.10.2026" },
+  { spent_on: "2026-10-14", supplier: "סלקום ישראל", category: "COMMUNICATION", description: "חשבון תקופתי מרוכז, 7 קווים + אינטרנט ביתי + TV, מ-14.9.2026 עד 13.10.2026",
+    total: 595.44, vat_amount: 69.58, vat_recoverable_pct: 100, ref: "404293236", source: "חשבון תקופתי מקור, סלקום, 14.10.2026 (נקרא במלואו, 11 עמודים)" },
   { spent_on: "2026-01-04", supplier: "נורית שטיין", category: "EDUCATION", description: "הדרכה",
     total: 560.00, vat_amount: 85.42, vat_recoverable_pct: 100, ref: "10283", source: "כרטסת חשבונות 2026, רבגונית/ארדני, 22.10.2026" },
   { spent_on: "2026-09-04", supplier: "ניהול חשבונות ישיר", category: "SOFTWARE", description: "שעון נוכחות",
@@ -483,7 +496,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     return (
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, כרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר), וארבע הוצאות חוזרות מאוקטובר שאומתו מול המסמך המקורי.</div>
+          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, כרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר), וחמש הוצאות חוזרות מאוקטובר שאומתו מול המסמך המקורי.</div>
           <button className="ck-btn" onClick={() => setOpen(true)}>פתיחה לבדיקה</button>
         </div>
       </div>
@@ -500,10 +513,12 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
         וחשבונית המים של עזריאלי (SI260210000489, מתוארכת 1.2.2026 ותחת מחלוקת של המשרד) הושארו בצד גם הן. כרטסת
         החשבונות של רונית (129 שורות, ינואר עד ספטמבר) יובאה במלואה לבקשת המשתמש, למעט שורות שכבר קיימות כאן ושורת
         "העברת מס תשומות" שאינה הוצאה אמיתית. שורת חיים פרידריך (אסמ' 90048) תוקנה לפי הכרטסת, 18% מע"מ במקום אפס.
-        ארבע שורות אוקטובר 2026 (Apple, שעון נוכחות, לינק תקשורת, Google One) אומתו מול המסמך המקורי שהתקבל בתיבה.
-        חשבון הסלקום הסלולרי לתקופה מ-14.9 עד 13.10 נמצא, אך צורף כ-PDF שלא ניתן לפתוח בכלים כאן, ולכן נשאר בחוץ; טרם
-        נמצאו חשבוניות שכירות, דמי ניהול או חשמל של עזריאלי/הרצליה ביזנס פארק לתקופה הבאה, וגם לא חשבונית BF ביטחון
-        או קבלת Gett לאוקטובר.
+חמש שורות אוקטובר 2026 (Apple, שעון נוכחות, לינק תקשורת, Google One, וחשבון הסלקום הסלולרי המרוכז) אומתו מול
+        המסמך המקורי שהתקבל בתיבה או שסופק ישירות על ידי המשתמש. טרם נמצאו חשבוניות שכירות, דמי ניהול או חשמל של
+        עזריאלי/הרצליה ביזנס פארק לתקופה הבאה, וגם לא חשבונית BF ביטחון או קבלת Gett לאוקטובר. שלושה מסמכים שסופקו
+        ישירות (MAVEN/Hypotenuse Power, העברה בנקאית תואמת, ומזכר תכנוני) התבררו כנוגעים לעסקת נדל"ן בפורטוגל של
+        חברה אחרת, "א.ש.ל.י חברה לבניה בע"מ", ואושרו על ידי המשתמש ככספי לקוח, לא כהוצאת המשרד, ולכן הושמטו. מסמך
+        קארדקום (1324714) שדוח אוטומטי קרא כ-₪1,000 התברר, בקריאה מלאה, כהודעת אי-חיוב על סך ₪0.00, והושמט גם הוא.
       </div>
       <div className="ck-table-wrap">
         <table className="ck-table" data-cards="off">
