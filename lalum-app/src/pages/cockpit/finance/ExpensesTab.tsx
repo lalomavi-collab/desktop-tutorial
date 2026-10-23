@@ -9,6 +9,7 @@ import { TAX_CATEGORY } from "../../../lib/cockpit/taxEngine";
 import type { TaxCategory } from "../../../lib/cockpit/taxEngine";
 import { advisorError, classifyExpense } from "../../../lib/cockpit/taxAdvisorAgent";
 import { HistoricalImport } from "./HistoricalImport";
+import { ExpensesChart } from "./ExpensesChart";
 
 const today = () => new Date().toISOString().slice(0, 10);
 type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string; taxCat: TaxCategory; itPct: string };
@@ -90,6 +91,7 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
 
   return (
     <div className="ck-stack">
+      <ExpensesChart expenses={expenses} />
       <HistoricalImport firmId={firmId} onImported={onChange} />
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
