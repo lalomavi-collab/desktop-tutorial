@@ -466,3 +466,55 @@
   .ck-root[data-ck-theme] .ck-sidebar, .ck-root[data-ck-theme] .ck-sidebar-nav { scrollbar-width: none; }
   .ck-root[data-ck-theme] .ck-sidebar::-webkit-scrollbar, .ck-root[data-ck-theme] .ck-sidebar-nav::-webkit-scrollbar { display: none; }
 }
+
+/* ------------------------------------------------------------------
+   Accounting presentation for the bookkeeping reports (owner, 23.10.2026: "numbers that look unordered, accounting design, professional
+   buttons, like a financial desk's tables"). Used by the income over time report; the same classes serve the other reports.
+     figure       tabular, two decimals, digits left to right, the sign in red, a zero in grey, the shekel sign small (.acct, Amt)
+     key figures  a ruled strip of cells: label, figure, then ruled memo rows (label and amount) instead of running sentences
+     table        right aligned digits that line up, a ruled header, quiet zebra, a total row with a single rule above and a double rule below
+     toggle       a segmented control, not a row of loose buttons
+   ------------------------------------------------------------------ */
+.acct { direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.acct small { font-size: .62em; font-weight: 600; color: var(--slate); margin-inline-start: .3em; }
+.acct.neg { color: var(--danger); }
+.acct.zero { color: var(--slate); }
+
+.fin-controls { gap: 10px; align-items: center; }
+.fin-seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 10px; overflow: hidden; background: var(--card); }
+.fin-seg button { font: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; min-height: 36px; padding: 6px 18px; border: 0; background: transparent; color: var(--slate); cursor: pointer; }
+.fin-seg button + button { border-inline-start: 1px solid var(--line-strong); }
+.fin-seg button:hover { background: var(--clay-tint); color: var(--ink); }
+.fin-seg button[aria-pressed="true"] { background: var(--clay); color: var(--on-clay); }
+.fin-seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.ck-root[data-ck-theme] .fin-year { min-height: 36px; width: auto; min-width: 96px; max-width: 120px; padding-block: 4px; font-size: 14px; font-weight: 600; }
+
+.fl-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; background: var(--card); }
+.fl-cell { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; min-width: 0; border-inline-start: 1px solid var(--line); }
+.fl-cell:first-child { border-inline-start: 0; }
+.fl-label { font-size: 12.5px; font-weight: 600; color: var(--slate); line-height: 1.3; }
+.fl-fig { font-size: 24px; font-weight: 700; line-height: 1.15; color: var(--ink); font-variant-numeric: tabular-nums; }
+.fl-note, .fl-foot { font-size: 12.5px; line-height: 1.5; color: var(--slate); }
+.fl-delta { display: inline-flex; align-items: baseline; gap: 6px; font-weight: 700; color: var(--slate); }
+.fl-delta.up { color: var(--success); }
+.fl-delta.down { color: var(--danger); }
+.fl-rows { margin: 0; display: grid; gap: 4px; font-size: 13px; }
+.fl-rows > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.fl-rows dt { color: var(--slate); }
+.fl-rows dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.fl-rows .fl-diff { margin-top: 2px; padding-top: 4px; border-top: 1px solid var(--line-strong); }
+.fl-rows .fl-diff dt { color: var(--ink); font-weight: 600; }
+
+.ck-root[data-ck-theme] .ck-fin .fin-ledger { font-size: 14.5px; }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger thead th { background: transparent; color: var(--slate); font-size: 12.5px; font-weight: 700; opacity: 1; border-bottom: 2px solid var(--line-strong); }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger thead th small { font-weight: 600; }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--clay-tint) 50%, transparent); }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger td.fin-ltr, .ck-root[data-ck-theme] .ck-fin .fin-ledger th.fin-num { text-align: right; }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger tfoot th, .ck-root[data-ck-theme] .ck-fin .fin-ledger tfoot td { font-weight: 700; background: var(--clay-tint); border-top: 1px solid var(--ink); border-bottom: 3px double var(--ink); color: var(--ink); }
+.ck-root[data-ck-theme] .ck-fin .fin-ledger tfoot th { text-align: start; font-size: 14.5px; }
+@media (max-width: 640px) {
+  .fl-strip { grid-template-columns: 1fr 1fr; }
+  .fl-cell { border-inline-start: 0; border-bottom: 1px solid var(--line); }
+  .fl-cell:nth-child(odd) { border-inline-end: 1px solid var(--line); }
+  .fl-fig { font-size: 21px; }
+}
