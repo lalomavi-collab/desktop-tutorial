@@ -11,14 +11,14 @@ import { advisorError, cfoAudit } from "../../../lib/cockpit/taxAdvisorAgent";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 const ENTITY: Record<EntityType, string> = { OSEK_MURSHE: "עוסק מורשה", LTD_COMPANY: "חברה בע\"מ", OSEK_PATUR: "עוסק פטור" };
-type Form = Record<"credit_points" | "mikdamot_income_tax_paid_ytd" | "mikdamot_bituach_leumi_paid_ytd" | "keren_hishtalmut_deposited_ytd" | "pension_deposited_ytd", string>;
+type Form = Record<"credit_points" | "vat_paid_ytd" | "mikdamot_income_tax_paid_ytd" | "mikdamot_bituach_leumi_paid_ytd" | "keren_hishtalmut_deposited_ytd" | "pension_deposited_ytd", string>;
 const toForm = (s: TaxSettingsRow | typeof DEFAULT_TAX_SETTINGS): Form => ({
-  credit_points: String(s.credit_points), mikdamot_income_tax_paid_ytd: String(s.mikdamot_income_tax_paid_ytd),
+  credit_points: String(s.credit_points), vat_paid_ytd: String(s.vat_paid_ytd), mikdamot_income_tax_paid_ytd: String(s.mikdamot_income_tax_paid_ytd),
   mikdamot_bituach_leumi_paid_ytd: String(s.mikdamot_bituach_leumi_paid_ytd), keren_hishtalmut_deposited_ytd: String(s.keren_hishtalmut_deposited_ytd),
   pension_deposited_ytd: String(s.pension_deposited_ytd),
 });
 const FIELDS: Array<[keyof Form, string]> = [
-  ["credit_points", "נקודות זיכוי"], ["mikdamot_income_tax_paid_ytd", "מקדמות מס הכנסה ששולמו מתחילת השנה"],
+  ["credit_points", "נקודות זיכוי"], ["vat_paid_ytd", "מע\"מ ששולם לרשות המסים מתחילת השנה"], ["mikdamot_income_tax_paid_ytd", "מקדמות מס הכנסה ששולמו מתחילת השנה"],
   ["mikdamot_bituach_leumi_paid_ytd", "מקדמות ביטוח לאומי ששולמו מתחילת השנה"], ["keren_hishtalmut_deposited_ytd", "הפקדות לקרן השתלמות"], ["pension_deposited_ytd", "הפקדות לפנסיה"],
 ];
 
@@ -62,19 +62,19 @@ export function TaxPnlTab({ firmId, docs, payments, expenses, archive }: { firmI
   const num = (k: keyof Form) => { const n = Number(form[k]); return Number.isFinite(n) && n >= 0 ? n : 0; };
   const period: Period = { from: `${year}-01-01`, to: monthPeriod(year, upTo).to };
   const report = useMemo(() => buildPnl(docs, payments, expenses, archive, period, {
-    entity_type: entity, credit_points: num("credit_points"), mikdamot_income_tax_paid_ytd: num("mikdamot_income_tax_paid_ytd"),
+    entity_type: entity, credit_points: num("credit_points"), vat_paid_ytd: num("vat_paid_ytd"), mikdamot_income_tax_paid_ytd: num("mikdamot_income_tax_paid_ytd"),
     mikdamot_bituach_leumi_paid_ytd: num("mikdamot_bituach_leumi_paid_ytd"), keren_hishtalmut_deposited_ytd: num("keren_hishtalmut_deposited_ytd"),
     pension_deposited_ytd: num("pension_deposited_ytd"),
   }, basis, paramsDb),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [docs, payments, expenses, archive, year, upTo, entity, basis, form, paramsDb]);
-  const { pnl, problems, final } = report;
+  const { pnl, problems, final, vatPeriod } = report;
   const isCo = entity === "LTD_COMPANY";
 
   async function save() {
     if (!supabase) return;
     const { error } = await supabase.from("lalum_fin_tax_settings").upsert({
-      firm_id: firmId, tax_year: year, entity_type: entity, reporting_basis: basis, credit_points: num("credit_points"),
+      firm_id: firmId, tax_year: year, entity_type: entity, reporting_basis: basis, credit_points: num("credit_points"), vat_paid_ytd: num("vat_paid_ytd"),
       mikdamot_income_tax_paid_ytd: num("mikdamot_income_tax_paid_ytd"), mikdamot_bituach_leumi_paid_ytd: num("mikdamot_bituach_leumi_paid_ytd"),
       keren_hishtalmut_deposited_ytd: num("keren_hishtalmut_deposited_ytd"), pension_deposited_ytd: num("pension_deposited_ytd"),
     }, { onConflict: "firm_id,tax_year" });
@@ -158,7 +158,8 @@ export function TaxPnlTab({ firmId, docs, payments, expenses, archive }: { firmI
         <div className="ck-card ck-stack">
           <div className="ck-title">מודל הכספות</div>
           <div className="ck-table-wrap"><table className="ck-table"><tbody>
-            <tr><td>כספת מע"מ (לתשלום ב-15 לחודש)</td><td className="fin-ltr">{money(pnl.vaults.vatVault)}</td></tr>
+            <tr><td>כספת מע"מ: יתרה לתשלום מתחילת השנה אחרי מה ששולם</td><td className="fin-ltr">{money(pnl.vaults.vatVault)}</td></tr>
+            {vatPeriod && <tr><td>דוח המע"מ הדו חודשי הנוכחי, <bdi>{vatPeriod.from}</bdi> עד <bdi>{vatPeriod.to}</bdi>, לדיווח ולתשלום עד <bdi>{vatPeriod.due}</bdi>: עסקאות <bdi>{money(vatPeriod.out)}</bdi>, תשומות <bdi>{money(vatPeriod.in)}</bdi></td><td className="fin-ltr">{money(vatPeriod.payable)}</td></tr>}
             <tr><td>מס הכנסה: חבות <bdi>{money(pnl.vaults.incomeTaxDue)}</bdi> מול מקדמות <bdi>{money(pnl.vaults.incomeTaxPaid)}</bdi></td><td className="fin-ltr">{pnl.vaults.incomeTaxBalance >= 0 ? "לשריון: " : "החזר צפוי: "}{money(Math.abs(pnl.vaults.incomeTaxBalance))}</td></tr>
             <tr><td>ביטוח לאומי: חבות <bdi>{money(pnl.vaults.blDue)}</bdi> מול מקדמות <bdi>{money(pnl.vaults.blPaid)}</bdi></td><td className="fin-ltr">{pnl.vaults.blBalance >= 0 ? "לשריון: " : "החזר צפוי: "}{money(Math.abs(pnl.vaults.blBalance))}</td></tr>
             <tr><td><b>נטו אמיתי פנוי למשיכה</b></td><td className="fin-ltr"><b>{money(pnl.vaults.safeToSpend)}</b></td></tr>

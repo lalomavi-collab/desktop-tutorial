@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { TAX_CATEGORY, computePnl, normalizeExpense, progressiveTax, selfEmployedBl } from "../src/lib/cockpit/taxEngine.ts";
 import { TAX_PARAMS, paramsFor, paramsProblems, paramsStaleness } from "../src/lib/cockpit/taxParams.ts";
-import { buildPnl, DEFAULT_TAX_SETTINGS } from "../src/lib/cockpit/taxPnl.ts";
+import { buildPnl, vatPeriodOf, DEFAULT_TAX_SETTINGS } from "../src/lib/cockpit/taxPnl.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 // The fixture is its own set of figures, so these checks never depend on what the registry holds for a given year.
@@ -125,5 +125,27 @@ t("the edge function's rate table equals the engine's", () => {
     assert.deepEqual([Number(m[1]), Number(m[2]), m[3] === "true"], [v.vatPct, v.itPct, v.review], k);
   }
   assert.ok(!/[\u2013\u2014]/.test(src), "no dashes as punctuation");
+});
+t("VAT already paid is cash out and only the remainder is reserved; the identity with profit after tax holds", () => {
+  const r = computePnl(month({ settings: { ...DEFAULT_TAX_SETTINGS, vat_paid_ytd: 2000 } }), P);
+  assert.equal(r.vaults.vatVault, 4659.98);
+  assert.equal(r.vaults.safeToSpend, 21463.18 - 0);
+});
+t("bimonthly VAT period: the pair of months that contains the date, due on the 15th after it", () => {
+  assert.deepEqual(vatPeriodOf([], [], [], [], "2026-10-23"), { from: "2026-09-01", to: "2026-10-31", due: "2026-11-15", out: 0, in: 0, payable: 0 });
+  assert.deepEqual(vatPeriodOf([], [], [], [], "2026-12-05").due, "2027-01-15");
+  assert.deepEqual(vatPeriodOf([], [], [], [], "2026-02-28").from, "2026-01-01");
+});
+t("expenses saved before the classification are counted in a warning, not silently assumed", () => {
+  const e = { id: "1", spent_on: "2026-10-03", supplier: "x", category: "OTHER", description: null, total: 118, vat_amount: 18, vat_recoverable_pct: 100, supplier_doc_ref: null, payment_method: null };
+  const r = buildPnl([], [], [e], [], { from: "2026-10-01", to: "2026-10-31" }, DEFAULT_TAX_SETTINGS);
+  assert.ok(r.pnl.warnings.some((w) => w.includes("1 הוצאות")));
+});
+t("data quality warnings: a doubled expense and an implausible margin are reported, not hidden", () => {
+  const e = { id: "1", spent_on: "2026-10-03", supplier: "x", category: "OTHER", description: null, total: 118, vat_amount: 18, vat_recoverable_pct: 100, supplier_doc_ref: null, payment_method: null, tax_category: "OPERATIONAL_100" };
+  const doc = { id: "d", customer_id: "c", doc_type: "INVOICE", status: "ISSUED", is_test: false, subtotal: 5000, vat_amount: 900, total: 5900, issue_date: "2026-10-02", source_proforma_id: null };
+  const r = buildPnl([doc], [], [e, { ...e, id: "2" }], [], { from: "2026-10-01", to: "2026-10-31" }, DEFAULT_TAX_SETTINGS);
+  assert.ok(r.pnl.warnings.some((w) => w.includes("ככפילות")));
+  assert.ok(r.pnl.warnings.some((w) => w.includes("חסרות הוצאות")));
 });
 function r2x(n) { return Math.round(n * 100) / 100; }

@@ -20,9 +20,9 @@ export const TAX_CATEGORY: Record<TaxCategory, CategoryRule> = {
   OPERATIONAL_100: { label: "הוצאה תפעולית מוכרת במלואה", vatPct: 100, itPct: 100, review: false },
   VEHICLE_MAINTENANCE: { label: "אחזקת רכב", vatPct: 66.67, itPct: 45, review: false },
   VEHICLE_EV_CHARGING: { label: "טעינת רכב חשמלי", vatPct: 66.67, itPct: 45, review: true },
-  OFFICE_REFRESHMENTS: { label: "כיבוד קל במשרד", vatPct: 100, itPct: 80, review: true },
+  OFFICE_REFRESHMENTS: { label: "כיבוד קל במשרד", vatPct: 100, itPct: 80, review: false },
   CLIENT_GIFTS: { label: "מתנות ללקוחות (מוגבלות בתקרה)", vatPct: 0, itPct: 100, review: true },
-  PROFESSIONAL_ATTIRE: { label: "ביגוד מקצועי", vatPct: 0, itPct: 80, review: true },
+  PROFESSIONAL_ATTIRE: { label: "ביגוד מקצועי", vatPct: 0, itPct: 80, review: false },
   HOME_OFFICE: { label: "משרד בבית", vatPct: 100, itPct: 100, review: true },
   LOCAL_HOSPITALITY_NON_DEDUCTIBLE: { label: "אירוח בארץ (לא מוכר)", vatPct: 0, itPct: 0, review: false },
   FINES_NON_DEDUCTIBLE: { label: "קנסות (לא מוכר)", vatPct: 0, itPct: 0, review: false },
@@ -80,6 +80,8 @@ export type EntityType = "OSEK_MURSHE" | "LTD_COMPANY" | "OSEK_PATUR";
 export interface TaxSettingsIn {
   entity_type: EntityType; credit_points: number;
   mikdamot_income_tax_paid_ytd: number; mikdamot_bituach_leumi_paid_ytd: number;
+  /** VAT already paid to the Tax Authority this year (bimonthly reports). Like advances, it has left the bank. */
+  vat_paid_ytd: number;
   keren_hishtalmut_deposited_ytd: number; pension_deposited_ytd: number;
   /** Company only: which dividend rate the "after dividend" line assumes. */
   dividend_holder?: "regular" | "substantial";
@@ -104,7 +106,7 @@ export interface Pnl {
   vaults: {
     incomeTaxDue: number; incomeTaxPaid: number; incomeTaxBalance: number;
     blDue: number; blPaid: number; blBalance: number;
-    vatVault: number; cashIn: number; cashOut: number; safeToSpend: number;
+    vatVault: number; vatPaid: number; cashIn: number; cashOut: number; safeToSpend: number;
   };
   warnings: string[];
 }
@@ -177,8 +179,8 @@ export function computePnl(inp: PnlInput, p: TaxParams): Pnl {
   const incomeTaxBalance = r2(netIncomeTax - s.mikdamot_income_tax_paid_ytd);
   const blBalance = r2(bl.total - s.mikdamot_bituach_leumi_paid_ytd);
   const cashIn = r2(inp.revenueNet + vatOut);
-  const cashOut = r2(inp.expenses.reduce((a, e) => a + e.total, 0) + s.mikdamot_income_tax_paid_ytd + s.mikdamot_bituach_leumi_paid_ytd);
-  const vatVault = Math.max(0, vatPayable);
+  const cashOut = r2(inp.expenses.reduce((a, e) => a + e.total, 0) + s.mikdamot_income_tax_paid_ytd + s.mikdamot_bituach_leumi_paid_ytd + s.vat_paid_ytd);
+  const vatVault = Math.max(0, r2(vatPayable - s.vat_paid_ytd));
   const safeToSpend = r2(cashIn - cashOut - vatVault - Math.max(0, incomeTaxBalance) - Math.max(0, blBalance));
 
   return {
@@ -190,7 +192,7 @@ export function computePnl(inp: PnlInput, p: TaxParams): Pnl {
     vaults: {
       incomeTaxDue: netIncomeTax, incomeTaxPaid: s.mikdamot_income_tax_paid_ytd, incomeTaxBalance,
       blDue: bl.total, blPaid: s.mikdamot_bituach_leumi_paid_ytd, blBalance,
-      vatVault, cashIn, cashOut, safeToSpend,
+      vatVault, vatPaid: s.vat_paid_ytd, cashIn, cashOut, safeToSpend,
     },
     warnings,
   };

@@ -25,6 +25,7 @@ create table if not exists public.lalum_fin_tax_settings (
   credit_points numeric(5,2) not null default 2.25 check (credit_points >= 0),
   mikdamot_income_tax_paid_ytd numeric(14,2) not null default 0 check (mikdamot_income_tax_paid_ytd >= 0),
   mikdamot_bituach_leumi_paid_ytd numeric(14,2) not null default 0 check (mikdamot_bituach_leumi_paid_ytd >= 0),
+  vat_paid_ytd numeric(14,2) not null default 0 check (vat_paid_ytd >= 0),
   keren_hishtalmut_deposited_ytd numeric(14,2) not null default 0 check (keren_hishtalmut_deposited_ytd >= 0),
   pension_deposited_ytd numeric(14,2) not null default 0 check (pension_deposited_ytd >= 0),
   updated_by   uuid,
