@@ -37,17 +37,24 @@ export const TAX_PARAMS: Record<number, TaxParams> = {
     year: 2026,
     status: "DRAFT",
     verifiedAt: null,
-    sources: [],
-    notes: "טיוטה. הסכומים הוזנו מידע כללי ומאתר מסחרי אחד, ולא נקראו מהמקור הרשמי. אין להציג תוצאה כסופית עד לאימות מול רשות המסים והביטוח הלאומי.",
+    // Read on 23 October 2026 from search summaries of these pages, not from the instruments themselves (gov.il, btl.gov.il and
+    // kolzchut.org.il could not be opened from the build environment). That is why the year stays a DRAFT: an accountant
+    // opens each source, confirms every figure, and only then is the row marked VERIFIED.
+    sources: [
+      "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf",
+      "https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx",
+      "https://www.kolzchut.org.il/he/%D7%94%D7%98%D7%91%D7%95%D7%AA_%D7%91%D7%9E%D7%A1_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%9C%D7%A2%D7%95%D7%91%D7%93_%D7%A2%D7%A6%D7%9E%D7%90%D7%99_%D7%A9%D7%97%D7%95%D7%A1%D7%9A_%D7%91%D7%A7%D7%A8%D7%9F_%D7%94%D7%A9%D7%AA%D7%9C%D7%9E%D7%95%D7%AA",
+    ],
+    notes: "טיוטה. המדרגות לפי לוח העזר של רשות המסים ל-2026 (המדרגות של 20% ו-31% תוקנו לעומת הערכה קודמת), הביטוח הלאומי לפי עמוד השיעורים של המוסד, תקרת קרן ההשתלמות לפי כל זכות. הנתונים נקראו מתקציר חיפוש ולא מהמסמכים עצמם. נותר לאמת תקרת פנסיה וסעיפי חוק.",
     brackets: [
-      { upTo: 84120, rate: 0.10 }, { upTo: 120720, rate: 0.14 }, { upTo: 193800, rate: 0.20 },
-      { upTo: 269280, rate: 0.31 }, { upTo: 560280, rate: 0.35 }, { upTo: null, rate: 0.47 },
+      { upTo: 84120, rate: 0.10 }, { upTo: 120720, rate: 0.14 }, { upTo: 228000, rate: 0.20 },
+      { upTo: 301200, rate: 0.31 }, { upTo: 560280, rate: 0.35 }, { upTo: null, rate: 0.47 },
     ],
     creditPointAnnual: 2904,
     surtax: { threshold: 721560, rate: 0.03 },
     bl: { reducedCeiling: 7703, reducedNi: 0.0447, reducedHealth: 0.0323, fullNi: 0.1283, fullHealth: 0.0517, maxMonthly: 51910, minMonthly: 3442 },
     niDeductionRate: 0.52,
-    hishtalmut: { rate: 0.045, incomeCeiling: null },
+    hishtalmut: { rate: 0.045, incomeCeiling: 293397 },
     pension: { deductionRate: 0.11, creditRate: 0.35, creditBaseRate: 0.05, incomeCeiling: null },
     corporateRate: 0.23,
     dividendRate: { regular: 0.25, substantial: 0.30 },

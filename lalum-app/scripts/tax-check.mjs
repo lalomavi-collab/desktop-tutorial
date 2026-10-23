@@ -9,7 +9,9 @@ import { buildPnl, vatPeriodOf, DEFAULT_TAX_SETTINGS } from "../src/lib/cockpit/
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 // The fixture is its own set of figures, so these checks never depend on what the registry holds for a given year.
-const P = { ...TAX_PARAMS[2026], status: "VERIFIED", verifiedAt: "2026-01-01", sources: ["a", "b"],
+const P = { ...TAX_PARAMS[2026],
+  brackets: [{ upTo: 84120, rate: 0.10 }, { upTo: 120720, rate: 0.14 }, { upTo: 193800, rate: 0.20 }, { upTo: 269280, rate: 0.31 }, { upTo: 560280, rate: 0.35 }, { upTo: null, rate: 0.47 }],
+  status: "VERIFIED", verifiedAt: "2026-01-01", sources: ["a", "b"],
   hishtalmut: { rate: 0.045, incomeCeiling: 300000 }, pension: { deductionRate: 0.11, creditRate: 0.35, creditBaseRate: 0.05, incomeCeiling: 300000 } };
 const ex = (total, vat, vatPct, cat, it) => ({ total, vat_amount: vat, vat_recoverable_pct: vatPct, category: cat, tax_category: null, income_tax_recognition_pct: it ?? null });
 const month = (o = {}) => ({
@@ -147,5 +149,11 @@ t("data quality warnings: a doubled expense and an implausible margin are report
   const r = buildPnl([doc], [], [e, { ...e, id: "2" }], [], { from: "2026-10-01", to: "2026-10-31" }, DEFAULT_TAX_SETTINGS);
   assert.ok(r.pnl.warnings.some((w) => w.includes("ככפילות")));
   assert.ok(r.pnl.warnings.some((w) => w.includes("חסרות הוצאות")));
+});
+t("the shipped 2026 draft matches the Tax Authority booklet's brackets as read, and stays a draft", () => {
+  assert.deepEqual(TAX_PARAMS[2026].brackets.map((b) => b.upTo), [84120, 120720, 228000, 301200, 560280, null]);
+  assert.equal(TAX_PARAMS[2026].creditPointAnnual, 2904);
+  assert.equal(TAX_PARAMS[2026].status, "DRAFT");
+  assert.equal(Math.round(TAX_PARAMS[2026].hishtalmut.rate * TAX_PARAMS[2026].hishtalmut.incomeCeiling), 13203);
 });
 function r2x(n) { return Math.round(n * 100) / 100; }
