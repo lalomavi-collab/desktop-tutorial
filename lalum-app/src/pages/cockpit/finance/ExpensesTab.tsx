@@ -4,7 +4,7 @@ import { Icon } from "../../../components/Icon";
 import { money } from "../../../lib/cockpit/shared";
 import { EXPENSE_CATEGORY, PAY_METHOD, recoverableVat } from "../../../lib/cockpit/finance";
 import type { FinExpense, PayMethod } from "../../../lib/cockpit/finance";
-import { scanReceipt, scanReceiptError } from "../../../lib/cockpit/financeApi";
+import { scanReceipt, scanReceiptError, uploadExpenseDoc, getExpenseDocUrl, expenseDocError } from "../../../lib/cockpit/financeApi";
 import { HistoricalImport } from "./HistoricalImport";
 import { ExpensesChart } from "./ExpensesChart";
 
@@ -23,8 +23,36 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [scanning, setScanning] = useState(false);
   const [lowConfidence, setLowConfidence] = useState<string[]>([]);
+  const [docBusy, setDocBusy] = useState<string | null>(null);
+  const [docMsg, setDocMsg] = useState<{ id: string; ok: boolean; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const docFileRef = useRef<HTMLInputElement>(null);
+  const docTargetRef = useRef<string | null>(null);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
+
+  function startDocUpload(expenseId: string) {
+    docTargetRef.current = expenseId;
+    docFileRef.current?.click();
+  }
+  async function onDocFile(e: { target: { files: FileList | null; value: string } }) {
+    const file = e.target.files?.[0];
+    const expenseId = docTargetRef.current;
+    e.target.value = ""; docTargetRef.current = null;
+    if (!file || !expenseId) return;
+    setDocBusy(expenseId); setDocMsg(null);
+    const r = await uploadExpenseDoc(expenseId, file);
+    setDocBusy(null);
+    if (!r.ok) { setDocMsg({ id: expenseId, ok: false, text: expenseDocError(r) }); return; }
+    setDocMsg(null);
+    onChange();
+  }
+  async function viewDoc(expenseId: string) {
+    setDocBusy(expenseId); setDocMsg(null);
+    const r = await getExpenseDocUrl(expenseId);
+    setDocBusy(null);
+    if (!r.ok || !r.url) { setDocMsg({ id: expenseId, ok: false, text: expenseDocError(r) }); return; }
+    window.open(r.url, "_blank", "noopener,noreferrer");
+  }
 
   async function onScanFile(e: { target: { files: FileList | null; value: string } }) {
     const file = e.target.files?.[0];
@@ -73,6 +101,7 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
         <div className="ck-row">
           <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment" style={{ display: "none" }} onChange={(e) => void onScanFile(e)} />
+          <input ref={docFileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" style={{ display: "none" }} onChange={(e) => void onDocFile(e)} />
           <button className="ck-btn" disabled={scanning} onClick={() => fileRef.current?.click()}>
             <Icon name="file" size={16} /> {scanning ? "קוראים את החשבונית…" : "סריקת חשבונית"}
           </button>
@@ -104,12 +133,19 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { setF(null); setLowConfidence([]); }}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th>מסמך מקור</th><th></th></tr></thead><tbody>
         {expenses.length ? expenses.map((e) => (
           <tr key={e.id}><td>{e.spent_on}</td><td className="fin-text">{e.supplier}{e.description ? <div className="ck-meta">{e.description}</div> : null}</td>
             <td>{EXPENSE_CATEGORY[e.category] ?? e.category}</td><td className="fin-num">{money(e.total)}</td><td className="fin-num">{money(e.vat_amount)}</td>
             <td className="fin-num">{money(recoverableVat(e))}{e.payment_method ? <div className="ck-meta">{PAY_METHOD[e.payment_method as PayMethod]}</div> : null}</td>
-            <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm danger" onClick={() => void remove(e.id)}>מחיקה</button></div></td></tr>)) : <tr><td colSpan={7}>אין הוצאות עדיין</td></tr>}
+            <td>
+              <button className="ck-btn sm" disabled={docBusy === e.id} onClick={() => void (e.source_doc_path ? viewDoc(e.id) : startDocUpload(e.id))}>
+                <Icon name="file" size={14} /> {docBusy === e.id ? "…" : e.source_doc_path ? "צפייה" : "העלאה"}
+              </button>
+              {e.source_doc_path && <button className="ck-btn sm" disabled={docBusy === e.id} onClick={() => startDocUpload(e.id)} title="החלפת המסמך">החלפה</button>}
+              {docMsg?.id === e.id && <div className={docMsg.ok ? "ck-ok" : "ck-err"}>{docMsg.text}</div>}
+            </td>
+            <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm danger" onClick={() => void remove(e.id)}>מחיקה</button></div></td></tr>)) : <tr><td colSpan={8}>אין הוצאות עדיין</td></tr>}
       </tbody></table></div>
     </div>
   );
