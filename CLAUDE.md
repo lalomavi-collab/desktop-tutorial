@@ -78,7 +78,7 @@ A session that needs to cross into another lane should do the smallest possible 
 
 ### Rules that prevent the collisions that actually happened
 
-- **One subject per pull request, opened as a draft the same session, merged only on the owner's explicit word.** A branch that lives for a day collects conflicts, so hand it over the day it is made. The one automatic merge is the daily updates feed (`claude/daily-audit-updates-*`, `updates.json` only).
+- **One subject per pull request, opened as a draft. Merging into `main` and deploying to production, Edge Functions included, happen only on the owner's explicit word ("מאשר מיזוג").** An instruction such as "do the fix" is not that word. The one standing exception is the daily updates feed (`daily-audit-automerge.yml`), approved by the owner on 20.10.2026. A branch that lives for a day still collects conflicts, so keep it short and re-fetch `main` before asking.
 - **Never push to `main` directly.** A repository rule requires a pull request, and automation that tries to push is rejected. This is not a rule to work around: it is what stops two sessions overwriting each other.
 - **`data/search-console` is a data branch and is never merged into `main`.** It deliberately diverges. Do not open a pull request from it.
 - **Shared files are conflict-prone.** `docs/seo-content-roadmap.md`, `src/lib/strings/*.ts`, `src/lib/blogMeta.ts` and `CLAUDE.md` are edited by everyone. Touch the fewest lines that do the job, and re-fetch before pushing.
