@@ -26,6 +26,7 @@ trade than letting the first real post report it.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -73,7 +74,14 @@ def check_facebook():
         print(f"[Facebook] not configured, missing: {', '.join(missing)}")
         return None
 
-    print(f"[Facebook] page id in the secret: {page}")
+    # The value itself is masked by Actions wherever it appears in a log, which
+    # is right for a token and unhelpful here: when the id is wrong, "***" says
+    # nothing about *how* it is wrong. A shape and a digest describe it without
+    # printing it, and the digest makes two runs comparable, so "I updated the
+    # secret" can be checked rather than believed.
+    shape = f"{len(page)} characters, {'all digits' if page.isdigit() else 'NOT all digits'}"
+    digest = hashlib.sha256(page.encode()).hexdigest()[:12]
+    print(f"[Facebook] the FACEBOOK_PAGE_ID secret: {shape}, fingerprint {digest}")
     query = urllib.parse.urlencode({"fields": "id,name,category", "access_token": token})
     try:
         _, me = get(f"{GRAPH}/me?{query}")
@@ -89,8 +97,13 @@ def check_facebook():
         print("[Facebook]   returned by  me/accounts?fields=id,name,access_token")
         return False
     if who != page:
+        want = hashlib.sha256(who.encode()).hexdigest()[:12]
         print(f"[Facebook] FAILED: the token belongs to page {who} ({name}),")
-        print(f"[Facebook]   but FACEBOOK_PAGE_ID says {page}. One of the two is wrong.")
+        print(f"[Facebook]   and FACEBOOK_PAGE_ID holds a different value.")
+        print(f"[Facebook]   Set the secret to {who} exactly. Its fingerprint will then")
+        print(f"[Facebook]   read {want}; anything else means the edit did not land where")
+        print(f"[Facebook]   Actions reads from (check the Actions tab of the secrets page,")
+        print(f"[Facebook]   not Codespaces or Dependabot, and this repository, not an org).")
         return False
 
     print(f"[Facebook] OK: page token for \"{name}\" ({who}), category {category}.")
