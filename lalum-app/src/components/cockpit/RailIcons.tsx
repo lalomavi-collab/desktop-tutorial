@@ -51,6 +51,8 @@ const ICONS: Record<string, ReactNode> = {
   "/workspace/payments": <><circle cx="12" cy="20" r="10" fill={D} /><circle cx="19" cy="13" r="11.5" fill={S} /><circle cx="19" cy="13" r="8.6" fill="none" stroke={L} strokeOpacity=".35" strokeWidth="1.2" /><text x="19" y="18.2" textAnchor="middle" fontSize="13" fontWeight="800" fill={L} fontFamily="Arial, sans-serif">₪</text></>,
   // public discussions: two overlapping bubbles
   "/workspace/discussions": <><path d="M3 4h16a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-8l-4 3.5V17H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z" fill={D} /><path d="M13 12h14a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-2v4l-5-4h-7a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z" fill={B} /><g fill={W}><circle cx="15.5" cy="19" r="1.5" /><circle cx="20" cy="19" r="1.5" /><circle cx="24.5" cy="19" r="1.5" /></g></>,
+  // campaigns: a megaphone with gold sound lines
+  "/workspace/campaigns": <><path d="M3 13h6l13-7.5v21L9 19H3a1.5 1.5 0 0 1-1.5-1.5v-3A1.5 1.5 0 0 1 3 13z" fill={B} /><path d="M6.5 19.5h4.6l1.8 7.2a1.5 1.5 0 0 1-1.5 1.8H9.6a1.5 1.5 0 0 1-1.5-1.1z" fill={D} /><path d="M25.5 12c1.5 1.1 2.4 2.5 2.4 4s-.9 2.9-2.4 4" {...stroke("#c9a94f", 2.6)} /><path d="M28.4 8.6c2 1.9 3 4.4 3 7.4" {...stroke("#efe2b4", 2)} /></>,
   // firm members: two people, the front one larger
   "/settings/members": <><circle cx="22" cy="9.5" r="4.5" fill={D} /><path d="M14 23a8 8 0 0 1 16 0z" fill={D} /><circle cx="12" cy="11" r="5.5" fill={B} /><path d="M2 28a10 10 0 0 1 20 0z" fill={B} /><circle cx="27" cy="5" r="3" fill={S} /></>,
   // billing and settings: a card with a cog
