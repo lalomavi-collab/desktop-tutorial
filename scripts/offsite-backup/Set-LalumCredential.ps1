@@ -15,13 +15,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -T
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt
 (user name is "crypt"; asks for the password only)
+
+.EXAMPLE
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt -Generate
+(creates a random 32-character password, stores it, and shows it once so it can be saved in the
+password manager; only for the two crypt targets, never for the S3 key)
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('lalum-supabase-s3', 'lalum-offsite-crypt', 'lalum-offsite-crypt-salt')]
     [string]$Target,
-    [string]$User
+    [string]$User,
+    [switch]$Generate
 )
 
 $ErrorActionPreference = 'Stop'
@@ -36,16 +42,27 @@ if (-not $User) {
 $User = $User.Trim()
 if (-not $User) { throw 'The user name is empty. Nothing was stored.' }
 
-$secure = Read-Host ("Paste the secret for '{0}' (asterisks appear while you paste) and press Enter" -f $Target) -AsSecureString
-$bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-try {
-    $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
-} finally {
-    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
-}
-$plain = $plain.Trim()
-if ($plain.Length -lt 8) {
-    throw ("Only {0} characters were pasted. Nothing was stored. Copy the secret again and rerun." -f $plain.Length)
+if ($Generate) {
+    if ($Target -eq 'lalum-supabase-s3') {
+        throw 'The S3 secret comes from Supabase and cannot be generated here. Run without -Generate and paste it.'
+    }
+    $alphabet = [char[]]((48..57) + (65..90) + (97..122))
+    $bytes = New-Object byte[] 32
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }
+    $plain = -join ($bytes | ForEach-Object { $alphabet[$_ % $alphabet.Length] })
+} else {
+    $secure = Read-Host ("Paste the secret for '{0}' (asterisks appear while you paste) and press Enter" -f $Target) -AsSecureString
+    $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+    try {
+        $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+    } finally {
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    }
+    $plain = $plain.Trim()
+    if ($plain.Length -lt 8) {
+        throw ("Only {0} characters were pasted. Nothing was stored. Copy the secret again and rerun." -f $plain.Length)
+    }
 }
 
 if (-not ('LalumCredWrite' -as [type])) {
@@ -97,6 +114,20 @@ public static class LalumCredWrite {
         }
     }
 
+    // The stored secret of a target, or null when the credential does not exist. Used only to
+    // refuse a crypt password that equals the other crypt password; never printed.
+    public static string ReadSecret(string target) {
+        IntPtr p;
+        if (!CredRead(target, 1, 0, out p)) { return null; }
+        try {
+            CREDENTIAL c = (CREDENTIAL)Marshal.PtrToStructure(p, typeof(CREDENTIAL));
+            if (c.CredentialBlobSize == 0) { return ""; }
+            return Marshal.PtrToStringUni(c.CredentialBlob, (int)(c.CredentialBlobSize / 2));
+        } finally {
+            CredFree(p);
+        }
+    }
+
     // Number of characters stored for the target, -1 when the credential does not exist.
     public static int StoredChars(string target) {
         IntPtr p;
@@ -112,7 +143,30 @@ public static class LalumCredWrite {
 '@
 }
 
+# The password and the salt must differ, or the backup script refuses to run.
+$otherTarget = switch ($Target) {
+    'lalum-offsite-crypt'      { 'lalum-offsite-crypt-salt' }
+    'lalum-offsite-crypt-salt' { 'lalum-offsite-crypt' }
+    default                    { $null }
+}
+if ($otherTarget) {
+    $other = [LalumCredWrite]::ReadSecret($otherTarget)
+    if ($other -and $other -ceq $plain) {
+        $other = $null
+        throw ("This value is identical to '{0}'. The password and the salt must differ. Nothing was stored." -f $otherTarget)
+    }
+    $other = $null
+}
+
 [LalumCredWrite]::Write($Target, $User, $plain)
-$plain = $null
 $stored = [LalumCredWrite]::StoredChars($Target)
 "Stored '{0}' for user '{1}': {2} characters." -f $Target, $User, $stored
+if ($Generate) {
+    ""
+    "SAVE THIS NOW in your password manager, entry '{0}', user '{1}'. It is shown only once:" -f $Target, $User
+    ""
+    "    " + $plain
+    ""
+    "Then run: cls"
+}
+$plain = $null
