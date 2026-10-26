@@ -158,12 +158,20 @@ async function syncFacebook(win: { from: string; to: string }, today: string): P
     getJson(`https://graph.facebook.com/${ver}/${path}?${new URLSearchParams(params)}`, { headers }, "graph");
 
   const posts: FbPost[] = [];
-  let body = await graph(`${pageId}/published_posts`, {
-    fields: "id,message,permalink_url,created_time,shares,reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)",
-    since: String(Math.floor(Date.parse(win.from + "T00:00:00Z") / 1000)),
-    limit: "50",
-  });
-  for (let page = 0; page < 5; page++) {
+  // Meta answers code 1 "Please reduce the amount of data" when a page of posts with their reaction and comment summaries is too heavy
+  // (it did at 50 on 26.10), so the page size steps down until one goes through; the next links keep the size that worked.
+  const since = String(Math.floor(Date.parse(win.from + "T00:00:00Z") / 1000));
+  const fields = "id,message,permalink_url,created_time,shares,reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)";
+  let body: Record<string, unknown> = {};
+  for (const limit of ["25", "10", "5", "2"]) {
+    try {
+      body = await graph(`${pageId}/published_posts`, { fields, since, limit });
+      break;
+    } catch (e) {
+      if (!(e instanceof SourceError) || e.status === "token_failed" || !/ 1 Please reduce/.test(e.message) || limit === "2") throw e;
+    }
+  }
+  for (let page = 0; page < 30; page++) {
     posts.push(...((body.data ?? []) as FbPost[]));
     const next = (body.paging as { next?: string } | undefined)?.next;
     if (!next || !next.startsWith("https://graph.facebook.com/")) break;
