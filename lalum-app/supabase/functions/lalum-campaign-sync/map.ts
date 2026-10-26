@@ -168,13 +168,14 @@ export function insightValue(v: unknown): number | null {
   return null;
 }
 
-/** Running totals of each post as of `day`, the page's followers, and post insights under ins_<metric>. */
+/** Running totals of each post as of `day`, the page's followers, and post insights under ins_<metric>. A post read without its
+ *  comment summary (the token lacks pages_read_user_content) has no comments row, not a zero. */
 export function mapFb(day: string, posts: FbPost[], followers: number | null, insights: Record<string, Record<string, number>>): MetricRow[] {
   const out: MetricRow[] = [];
   for (const p of posts) {
     if (!p.id) continue;
     out.push({ day, source: "facebook", scope: "post", key: p.id, metric: "reactions", value: Number(p.reactions?.summary?.total_count ?? 0) });
-    out.push({ day, source: "facebook", scope: "post", key: p.id, metric: "comments", value: Number(p.comments?.summary?.total_count ?? 0) });
+    if (p.comments) out.push({ day, source: "facebook", scope: "post", key: p.id, metric: "comments", value: Number(p.comments.summary?.total_count ?? 0) });
     out.push({ day, source: "facebook", scope: "post", key: p.id, metric: "shares", value: Number(p.shares?.count ?? 0) });
     for (const [m, v] of Object.entries(insights[p.id] ?? {})) out.push({ day, source: "facebook", scope: "post", key: p.id, metric: `ins_${m}`, value: v });
   }
