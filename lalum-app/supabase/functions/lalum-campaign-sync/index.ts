@@ -158,12 +158,28 @@ async function syncFacebook(win: { from: string; to: string }, today: string): P
     getJson(`https://graph.facebook.com/${ver}/${path}?${new URLSearchParams(params)}`, { headers }, "graph");
 
   const posts: FbPost[] = [];
-  let body = await graph(`${pageId}/published_posts`, {
-    fields: "id,message,permalink_url,created_time,shares,reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)",
-    since: String(Math.floor(Date.parse(win.from + "T00:00:00Z") / 1000)),
-    limit: "50",
-  });
-  for (let page = 0; page < 5; page++) {
+  // Meta answers code 1 "Please reduce the amount of data" when a page of posts with their reaction and comment summaries is too heavy
+  // (it did at 50 on 26.10), so the page size steps down until one goes through; the next links keep the size that worked.
+  // The comment count needs pages_read_user_content, which the read-only token does not carry (code 10 on 26.10): the posts are then
+  // read without it, and the comment column stays empty rather than showing zeros nobody counted.
+  const since = String(Math.floor(Date.parse(win.from + "T00:00:00Z") / 1000));
+  const baseFields = "id,message,permalink_url,created_time,shares,reactions.summary(total_count).limit(0)";
+  let fields = baseFields + ",comments.summary(total_count).limit(0)";
+  let commentsSkipped = false;
+  const limits = ["25", "10", "5", "2"];
+  let body: Record<string, unknown> = {};
+  for (let i = 0; ; ) {
+    try {
+      body = await graph(`${pageId}/published_posts`, { fields, since, limit: limits[i] });
+      break;
+    } catch (e) {
+      if (!(e instanceof SourceError) || e.status === "token_failed") throw e;
+      if (!commentsSkipped && /pages_read_user_content/.test(e.message)) { commentsSkipped = true; fields = baseFields; continue; }
+      if (/ 1 Please reduce/.test(e.message) && i < limits.length - 1) { i++; continue; }
+      throw e;
+    }
+  }
+  for (let page = 0; page < 30; page++) {
     posts.push(...((body.data ?? []) as FbPost[]));
     const next = (body.paging as { next?: string } | undefined)?.next;
     if (!next || !next.startsWith("https://graph.facebook.com/")) break;
@@ -209,7 +225,7 @@ async function syncFacebook(win: { from: string; to: string }, today: string): P
   };
   return {
     source: "facebook", status: "ok", rows: mapFb(today, posts, followers, insights), after,
-    detail: { ...win, posts: posts.length, insights_skipped: [...unsupported] },
+    detail: { ...win, posts: posts.length, insights_skipped: [...unsupported], ...(commentsSkipped ? { comments: "skipped: needs pages_read_user_content" } : {}) },
   };
 }
 

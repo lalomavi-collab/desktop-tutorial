@@ -98,7 +98,10 @@ await t("Facebook rows: running totals per post, insights, followers", () => {
   const rows = mapFb("2026-10-26", [{ id: "p1", reactions: { summary: { total_count: 7 } }, comments: { summary: { total_count: 2 } } }], 412, { p1: { post_media_view: 300 } });
   const v = (k, m) => rows.find((r) => r.key === k && r.metric === m)?.value;
   assert.equal(v("p1", "reactions"), 7);
+  assert.equal(v("p1", "comments"), 2);
   assert.equal(v("p1", "shares"), 0);
+  const noComments = mapFb("2026-10-26", [{ id: "p2", reactions: { summary: { total_count: 1 } } }], null, {});
+  assert.equal(noComments.some((r) => r.metric === "comments"), false);
   assert.equal(v("p1", "ins_post_media_view"), 300);
   assert.equal(v("", "followers"), 412);
   assert.equal(insightValue({ like: 3, love: 2 }), 5);
