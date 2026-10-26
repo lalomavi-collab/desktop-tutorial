@@ -1,5 +1,5 @@
 // lalum-campaign-sync: Supabase Edge Function (Deno), deployed with verify_jwt off (the gate below does its own check). pg_cron calls it
-// twice a day (migration 20261026090100) and the admin can run it from /workspace/campaigns. It reads each campaign source with its own
+// twice a day (migration 20261026072642) and the admin can run it from /workspace/campaigns. It reads each campaign source with its own
 // read-only credential and writes daily numbers to lalum_campaign_metrics_daily, with one row per source in lalum_campaign_sync_runs.
 //
 // Secrets (the owner pastes them into the Supabase function secrets; never in the repo, never in chat). A source whose secret is

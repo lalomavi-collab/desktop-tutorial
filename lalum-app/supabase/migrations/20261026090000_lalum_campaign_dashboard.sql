@@ -1,9 +1,9 @@
 -- Campaign dashboard (/workspace/campaigns). The edge function lalum-campaign-sync pulls Search Console, Cloudflare Web Analytics, the
--- Facebook page and the Meta ad account once a day and writes daily numbers here in one long table: one row per day, source, scope, key and
+-- Facebook page and the Meta ad account twice a day and writes daily numbers here in one long table: one row per day, source, scope, key and
 -- metric. LinkedIn and paid channels without an API are typed in by the admin (lalum_campaign_manual_post, lalum_campaign_manual_paid).
 -- The screen reads everything through lalum_campaign_summary. Nothing here stores a person: the internal counts are per day, never per lead.
--- The cron job is in 20261026090100, applied only after the function is deployed, its secrets are set and a manual ?dry=1 run looks right.
--- The file name is provisional: rename it to the version recorded in production when it is applied (docs/infra/migrations-map.md).
+-- The cron job is in 20261026072642, applied after the function was deployed and a manual ?dry=1 run looked right. This file was
+-- pasted in the SQL editor on 26.10.2026 and recorded under its own version, so the name and the production row match.
 
 create table if not exists public.lalum_campaigns (
   code             text primary key check (code ~ '^[a-z0-9-]{2,40}$'),
