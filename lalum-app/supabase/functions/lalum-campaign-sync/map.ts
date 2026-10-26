@@ -1,7 +1,7 @@
 // Pure part of lalum-campaign-sync: API answers in, metric rows out. No Deno API and no network, so scripts/campaign-sync-check.mjs
 // runs it under Node. Every row is one number for one day, source, scope, key and metric, the shape of lalum_campaign_metrics_daily.
 
-export type Source = "gsc" | "cloudflare" | "facebook" | "meta_ads" | "internal";
+export type Source = "gsc" | "cloudflare" | "facebook" | "instagram" | "meta_ads" | "internal";
 export type Scope = "site" | "page" | "query" | "path" | "referrer" | "post" | "paid";
 export interface MetricRow { day: string; source: Source; scope: Scope; key: string; metric: string; value: number }
 
@@ -21,9 +21,9 @@ export function dayRange(from: string, to: string): string[] {
 /** How far back each source reads. The first successful run backfills; later runs re-read a few days, because Search Console and
  *  Meta still revise recent days. Search Console and Cloudflare stop at yesterday: today is not over. */
 export function windowFor(source: Source, firstRun: boolean, today: string): { from: string; to: string } {
-  const back: Record<Source, [number, number]> = { gsc: [90, 10], cloudflare: [28, 3], facebook: [90, 90], meta_ads: [90, 7], internal: [180, 3] };
+  const back: Record<Source, [number, number]> = { gsc: [90, 10], cloudflare: [28, 3], facebook: [90, 90], instagram: [90, 90], meta_ads: [90, 7], internal: [180, 3] };
   const [first, later] = back[source];
-  const to = source === "internal" || source === "facebook" ? today : addDays(today, -1);
+  const to = source === "internal" || source === "facebook" || source === "instagram" ? today : addDays(today, -1);
   return { from: addDays(to, -((firstRun ? first : later) - 1)), to };
 }
 
@@ -207,6 +207,54 @@ export function matchPosts(registry: RegistryPost[], posts: FbPost[]): { links: 
     if (hit) { taken.add(hit.id); links.push({ rowId: hit.id, external_id: p.id, ...base }); continue; }
     const first = (p.message ?? "").split("\n").map((l) => l.trim()).find(Boolean) ?? null;
     adds.push({ external_id: p.id, ...base, title: first ? first.slice(0, 120) : null });
+  }
+  return { links, adds };
+}
+
+// ---- Instagram professional account -----------------------------------------------------------------------------------------------------
+
+export interface IgMedia {
+  id: string; caption?: string; permalink?: string; timestamp?: string; like_count?: number; comments_count?: number;
+  media_type?: string; media_product_type?: string;
+}
+
+/** Running totals of each media as of `day` (likes under reactions, so one column of the posts table reads both networks), the
+ *  account's followers, and media insights under ins_<metric>. A hidden like count comes back missing and counts as zero. */
+export function mapIg(day: string, media: IgMedia[], followers: number | null, insights: Record<string, Record<string, number>>): MetricRow[] {
+  const out: MetricRow[] = [];
+  for (const m of media) {
+    if (!m.id) continue;
+    out.push({ day, source: "instagram", scope: "post", key: m.id, metric: "reactions", value: Number(m.like_count ?? 0) });
+    out.push({ day, source: "instagram", scope: "post", key: m.id, metric: "comments", value: Number(m.comments_count ?? 0) });
+    for (const [k, v] of Object.entries(insights[m.id] ?? {})) out.push({ day, source: "instagram", scope: "post", key: m.id, metric: `ins_${k}`, value: v });
+  }
+  if (followers != null && Number.isFinite(followers)) out.push({ day, source: "instagram", scope: "site", key: "", metric: "followers", value: followers });
+  return mergeRows(out);
+}
+
+export interface IgKnown { id: number; external_id: string | null; post_no: number | null; campaign_code: string | null }
+export interface IgTemplate { campaign_code: string; post_no: number; match_prefix: string }
+export interface IgAdd extends PostAdd { campaign_code: string | null; post_no: number | null }
+
+/** Instagram posts are published by hand with the campaign's text, so a new one is tied to the campaign by the opening words of a
+ *  campaign post on Facebook and takes that post's number, once (the earliest media wins, as on Facebook). Known media are refreshed;
+ *  any other media is added outside the campaign. */
+export function matchIg(known: IgKnown[], templates: IgTemplate[], media: IgMedia[]): { links: PostLink[]; adds: IgAdd[] } {
+  const links: PostLink[] = [], adds: IgAdd[] = [];
+  const byId = new Map(known.filter((r) => r.external_id).map((r) => [r.external_id as string, r]));
+  const slot = (code: string | null, no: number | null) => `${code ?? ""}|${no ?? ""}`;
+  const taken = new Set(known.filter((r) => r.post_no != null).map((r) => slot(r.campaign_code, r.post_no)));
+  const open = templates.filter((t) => normText(t.match_prefix).length >= 8);
+  const sorted = [...media].filter((m) => m.id).sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? ""));
+  for (const m of sorted) {
+    const base = { permalink: m.permalink ?? null, published_at: m.timestamp ?? null };
+    const had = byId.get(m.id);
+    if (had) { links.push({ rowId: had.id, external_id: m.id, ...base }); continue; }
+    const text = normText(m.caption ?? "");
+    const hit = text ? open.find((t) => !taken.has(slot(t.campaign_code, t.post_no)) && text.startsWith(normText(t.match_prefix))) : undefined;
+    if (hit) taken.add(slot(hit.campaign_code, hit.post_no));
+    const first = (m.caption ?? "").split("\n").map((l) => l.trim()).find(Boolean) ?? null;
+    adds.push({ external_id: m.id, ...base, title: first ? first.slice(0, 120) : null, campaign_code: hit?.campaign_code ?? null, post_no: hit?.post_no ?? null });
   }
   return { links, adds };
 }

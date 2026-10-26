@@ -1,6 +1,6 @@
 // Campaign dashboard: the Legal AI campaign from a Google search to a booked meeting, on one screen. The numbers are synced once a day by
-// lalum-campaign-sync (Search Console, Cloudflare Web Analytics, the Facebook page, Meta Ads, the site's own forms); LinkedIn and paid
-// channels without an API are typed in at the bottom. A source that is not connected says so instead of showing zero. Platform admin only.
+// lalum-campaign-sync (Search Console, Cloudflare Web Analytics, the Facebook page and its Instagram account, Meta Ads, the site's own
+// forms); LinkedIn and paid channels without an API are typed in at the bottom. A source that is not connected says so instead of showing zero. Platform admin only.
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CockpitFrame } from "./CockpitFrame";
 import { Icon } from "../../components/Icon";
@@ -10,7 +10,7 @@ import { money } from "../../lib/cockpit/shared";
 import { loadCampaignSummary, refreshCampaigns, saveManualPaid, saveManualPost } from "../../lib/cockpit/campaigns";
 import type { SummaryState } from "../../lib/cockpit/campaigns";
 import {
-  channels, connected, funnel, health, isAiQuery, kpis, PAID_CHANNEL_HE, paidTotals, postViews, series, shortDay, windowOf,
+  channels, connected, funnel, health, isAiQuery, kpis, landingTable, PAID_CHANNEL_HE, paidTotals, postShares, postViews, series, shortDay, social, windowOf,
 } from "../../lib/cockpit/campaignsCore.ts";
 import type { CampaignSummary, Kpi } from "../../lib/cockpit/campaignsCore.ts";
 
@@ -109,13 +109,56 @@ function Posts({ s }: { s: CampaignSummary }) {
               <td>{cell(postViews(p.metrics))}</td>
               <td>{cell(p.metrics.reactions)}</td>
               <td>{cell(p.metrics.comments)}</td>
-              <td>{cell(p.metrics.shares)}</td>
+              <td>{cell(postShares(p.metrics))}</td>
               <td style={{ whiteSpace: "nowrap" }}>{!p.linked ? <span className="ck-badge yellow" style={{ whiteSpace: "nowrap" }}>לא נמצא בדף</span> : !p.inCampaign ? <span className="ck-badge" style={{ whiteSpace: "nowrap" }}>מחוץ לקמפיין</span> : null}</td>
             </tr>
           ))}
         </tbody></table></div>
       )}
-      <div className="db-note">פוסט שסומן "לא נמצא בדף" עוד לא קושר לפוסט שפורסם בפייסבוק. הקישור נעשה לפי מילות הפתיחה בסנכרון הראשון.</div>
+      <div className="db-note">פוסט שסומן "לא נמצא בדף" עוד לא קושר לפוסט שפורסם בפייסבוק. הקישור נעשה לפי מילות הפתיחה. פוסט באינסטגרם שנפתח באותן מילים כמו פוסט קמפיין בפייסבוק מקבל את המספר שלו.</div>
+    </div>
+  );
+}
+
+function Social({ s }: { s: CampaignSummary }) {
+  const rows = social(s);
+  const tone = { ok: "green", warn: "yellow", off: "" } as const;
+  return (
+    <div className="ck-card db-card">
+      <div className="db-head"><h3>רשתות חברתיות</h3><span className="ck-meta">פוסטים של הקמפיין בלבד, ספירה מצטברת. תא ריק: אין נתון</span></div>
+      <div className="ck-table-wrap"><table className="db-tbl"><thead><tr><th>רשת</th><th>מצב</th><th>עוקבים</th><th>פוסטים</th><th>צפיות</th><th>מעורבות</th><th>נכון ל</th></tr></thead><tbody>
+        {rows.map((r) => (
+          <tr key={r.platform}>
+            <td>{r.label}</td>
+            <td><span className={`ck-badge ${tone[r.tone]}`} style={{ whiteSpace: "nowrap" }}>{r.status}</span></td>
+            <td>{cell(r.followers)}</td><td>{nf(r.posts)}</td><td>{cell(r.views)}</td><td>{cell(r.engagement)}</td>
+            <td>{r.asOf ? shortDay(r.asOf) : ""}</td>
+          </tr>
+        ))}
+      </tbody></table></div>
+      <div className="db-note">פייסבוק ואינסטגרם נמשכים אוטומטית עם טוקן קריאה אחד של הדף. לינקדאין מוזן ידנית למטה, כי ה-API שלה דורש אישור מראש מלינקדאין. מעורבות: לייקים, תגובות ושיתופים.</div>
+    </div>
+  );
+}
+
+function LandingPages({ s }: { s: CampaignSummary }) {
+  const rows = landingTable(s);
+  const cfOn = connected(s, "cloudflare"), gscOn = connected(s, "gsc");
+  return (
+    <div className="ck-card db-card">
+      <div className="db-head"><h3>דפי הקמפיין</h3><span className="ck-meta">{s.days} ימים, כל דף בנפרד</span></div>
+      {rows.length === 0 ? <Empty text="לקמפיין לא הוגדרו דפים." /> : (
+        <div className="ck-table-wrap"><table className="db-tbl"><thead><tr><th>דף</th><th>צפיות</th><th>שינוי</th><th>ביקורים</th><th>חשיפות בגוגל</th><th>כניסות מגוגל</th></tr></thead><tbody>
+          {rows.map((r) => (
+            <tr key={r.key}>
+              <td><bdi dir="ltr">{r.key}</bdi></td>
+              <td>{cfOn ? nf(r.pageviews) : ""}</td><td>{cfOn && <Delta d={r.delta} />}</td><td>{cfOn ? nf(r.visits) : ""}</td>
+              <td>{gscOn ? nf(r.impressions) : ""}</td><td>{gscOn ? nf(r.clicks) : ""}</td>
+            </tr>
+          ))}
+        </tbody></table></div>
+      )}
+      <div className="db-note">דף שמופיע עם אפס לא קיבל אף ביקור בתקופה. גרסאות השפה של אותו דף נספרות יחד. תא ריק: המקור עוד לא מחובר.</div>
     </div>
   );
 }
@@ -314,7 +357,8 @@ export function CampaignsView({ preload }: { preload?: CampaignSummary }) {
       </div>
       <div className="db-kgrid">{k.map((x) => <KpiCard key={x.key} k={x} />)}</div>
       <Charts s={s} />
-      <div className="db-grid b"><Funnel s={s} /><Health s={s} onRefresh={() => void refresh()} busy={busy} msg={msg} /></div>
+      <div className="db-grid b"><Funnel s={s} /><LandingPages s={s} /></div>
+      <div className="db-grid"><Social s={s} /><Health s={s} onRefresh={() => void refresh()} busy={busy} msg={msg} /></div>
       <Posts s={s} />
       <Search s={s} />
       <Sources s={s} />
@@ -326,7 +370,7 @@ export function CampaignsView({ preload }: { preload?: CampaignSummary }) {
 
 export function CampaignsPage() {
   return (
-    <CockpitFrame title="קמפיינים" description="קמפיין Legal AI במקום אחד: גוגל, ביקורים באתר, המשפך עד לפגישה, פוסטים, ממומן ומצב החיבורים. מתעדכן כל בוקר." path="/workspace/campaigns">
+    <CockpitFrame title="קמפיינים" description="קמפיין Legal AI במקום אחד: גוגל, ביקורים באתר, דפי הקמפיין, המשפך עד לפגישה, פייסבוק, אינסטגרם ולינקדאין, ממומן ומצב החיבורים. מתעדכן פעמיים ביום." path="/workspace/campaigns">
       {({ platformAdmin }) => platformAdmin ? <CampaignsView /> : <div className="ck-card ck-empty">המסך זמין למנהל המערכת בלבד.</div>}
     </CockpitFrame>
   );
