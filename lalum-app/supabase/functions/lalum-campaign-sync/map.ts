@@ -140,7 +140,10 @@ export function mapCf(paths: CfGroup[], refs: CfGroup[]): MetricRow[] {
 
 /** The GraphQL query for one UTC day. The ids are checked to be hex before they reach the text, so nothing else can be injected. */
 export function cfQuery(accountTag: string, siteTag: string, day: string): string {
-  if (!/^[a-f0-9]{32}$/i.test(accountTag) || !/^[a-f0-9]{32}$/i.test(siteTag) || !/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error("bad cloudflare id or day");
+  // The error names the secret and its length, never its value, so a bad paste can be fixed without guessing which one.
+  if (!/^[a-f0-9]{32}$/i.test(accountTag)) throw new Error(`bad CF_ACCOUNT_ID: ${accountTag.length} chars, expected 32 hex`);
+  if (!/^[a-f0-9]{32}$/i.test(siteTag)) throw new Error(`bad CF_WEB_ANALYTICS_SITE_TAG: ${siteTag.length} chars, expected 32 hex`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error("bad cloudflare day");
   const filter = `{AND: [{datetime_geq: "${day}T00:00:00Z", datetime_lt: "${addDays(day, 1)}T00:00:00Z"}, {siteTag: "${siteTag}"}]}`;
   return `query { viewer { accounts(filter: {accountTag: "${accountTag}"}) {
   paths: rumPageloadEventsAdaptiveGroups(limit: 5000, orderBy: [count_DESC], filter: ${filter}) { count sum { visits } dimensions { date requestPath } }
