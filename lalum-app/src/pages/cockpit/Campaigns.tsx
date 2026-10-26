@@ -201,7 +201,7 @@ function Health({ s, onRefresh, busy, msg }: { s: CampaignSummary; onRefresh: ()
         {h.map((x) => <li key={x.source} className="ck-row" style={{ justifyContent: "space-between" }}><span>{x.label}</span><span className={`ck-badge ${tone[x.tone]}`}>{x.text}</span></li>)}
       </ul>
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
-      <div className="db-note">הסנכרון רץ כל בוקר בסביבות 08:30, אחרי שקובץ Search Console היומי נשמר. אפשר לרענן ידנית פעם בעשר דקות.</div>
+      <div className="db-note">הסנכרון רץ פעמיים ביום, בסביבות 08:30 ו 13:30. נתוני גוגל מתעדכנים בריצת הצהריים, אחרי שקובץ Search Console היומי נשמר. אפשר לרענן ידנית פעם בעשר דקות.</div>
     </div>
   );
 }
