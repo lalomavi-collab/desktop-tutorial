@@ -32,7 +32,8 @@ const CORS: Record<string, string> = {
 };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...CORS, "content-type": "application/json" } });
-const env = (k: string) => Deno.env.get(k) ?? "";
+// Trimmed: a secret pasted into the dashboard often carries a trailing newline or space, and the Cloudflare ids must be exact.
+const env = (k: string) => (Deno.env.get(k) ?? "").trim();
 
 type Status = "ok" | "not_configured" | "token_failed" | "error";
 class SourceError extends Error {
