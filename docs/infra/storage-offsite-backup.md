@@ -59,7 +59,7 @@ filename_encoding = base32768
 צריך מחשב Windows שבו OneDrive for work מחובר עם avraham@lalum.co ומסנכרן. כל הפקודות ב־PowerShell רגיל, לא כמנהל.
 
 1. **rclone:** `winget install Rclone.Rclone`, ואז פותחים חלון PowerShell חדש. `rclone version` צריך להראות 1.60 ומעלה.
-2. **הסקריפטים:** מעתיקים את `LalumOffsite.psm1`, `Backup-LalumStorage.ps1` ו־`Restore-LalumStorage.ps1` מ־`scripts/offsite-backup` לתיקייה קבועה, `C:\LALUM\offsite-backup`. תיקייה קבועה, כי המשימה השבועית מצביעה על הנתיב הזה.
+2. **הסקריפטים:** מעתיקים את `LalumOffsite.psm1`, `Backup-LalumStorage.ps1`, `Restore-LalumStorage.ps1` ו־`Set-LalumCredential.ps1` מ־`scripts/offsite-backup` לתיקייה קבועה, `C:\LALUM\offsite-backup`. תיקייה קבועה, כי המשימה השבועית מצביעה על הנתיב הזה.
 3. **מפתח S3:** פותחים https://supabase.com/dashboard/project/meoymkcotomoluwlwues/storage/s3, ובאזור Access keys יוצרים מפתח חדש בשם `lalum-offsite-backup`. ה־Secret מוצג פעם אחת בלבד.
 4. **שמירת המפתח:**
    ```
@@ -71,6 +71,13 @@ filename_encoding = base32768
    cmdkey /generic:lalum-offsite-crypt /user:crypt /pass
    cmdkey /generic:lalum-offsite-crypt-salt /user:crypt /pass
    ```
+   אם `cmdkey` ענה `Credential added successfully` אבל הרשומה נשמרה ריקה (קורה כשההדבקה בשאלה המוסתרת לא נקלטת; הסקריפט ייפול אז על `Credential ... was not found`), מריצים במקום `cmdkey` את העוזר, שורה אחת לכל סוד. הוא מציג כוכביות בזמן ההדבקה, מסרב לשמור ערך ריק ומדווח רק את מספר התווים שנשמר, בלי להציג את הסוד:
+   ```
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-supabase-s3
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt-salt
+   ```
+   השורה הראשונה שואלת קודם את ה־Access key ID (מוצג, לא סוד) ואז את ה־Secret; שתי האחרות שואלות רק את הסיסמה.
 6. **הרצה יבשה.** בודקת את שלושת הסודות ולא כותבת כלום:
    ```
    cd C:\LALUM\offsite-backup
@@ -117,6 +124,7 @@ filename_encoding = base32768
 |---|---|
 | `rclone was not found` | `winget install Rclone.Rclone`, ואז חלון PowerShell חדש. |
 | `Credential '...' was not found` | מריצים את פקודת `cmdkey` שמופיעה בהודעה. `cmdkey /list:lalum-supabase-s3` מראה אם רשומה קיימת, בלי הסיסמה. |
+| `cmdkey /list` מראה את הרשומה, ובכל זאת `Credential '...' was not found` | הרשומה נשמרה בלי סוד: ההדבקה בשאלה המוסתרת של `cmdkey` לא נקלטה. מריצים את `Set-LalumCredential.ps1` לאותו יעד (סעיף 5 בהתקנה); הוא מציג כוכביות ומסרב לערך ריק. |
 | `No buckets were found`, או `SignatureDoesNotMatch` או `AccessDenied` בלוג | המפתח בוטל או הודבק לא נכון. יוצרים מפתח חדש ומריצים שוב את `cmdkey` (אותו שם דורס את הרשומה הקודמת). |
 | `OneDrive for work was not found` | מתחברים ל־OneDrive עם avraham@lalum.co, או מעבירים `-Destination`. |
 | `Another backup or restore is already running` | מחכים לסיום. אם אין ריצה, בודקים ב־Task Manager שאין `powershell.exe` תקוע. |
