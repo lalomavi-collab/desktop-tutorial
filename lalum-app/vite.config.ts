@@ -75,6 +75,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/kyc", title: "הכר את הלקוח | LALUM", desc: "סטטוס תיעוד הכרת הלקוח בכל תיקי הפירמה, כרשומת בקרה בלבד.", noindex: true },
   { path: "workspace/import", title: "ייבוא תיקים מתיקייה | LALUM", desc: "יצירת תיקים מתיקיית העבודה של המשרד.", noindex: true },
   { path: "workspace/partner", title: "תמונת מצב לשותף | LALUM", desc: "יתרה, גיול חובות, תזרים וחריגות גבייה.", noindex: true },
+  { path: "workspace/campaigns", title: "קמפיינים | LALUM", desc: "קמפיין Legal AI: גוגל, ביקורים, משפך עד פגישה, פוסטים וממומן.", noindex: true },
   { path: "workspace/matter-360", title: "תיק 360 | LALUM", desc: "מרכז הפעילות סביב תיק: מסמכים, שעות ושכר טרחה.", noindex: true },
   { path: "workspace/portal-preview", title: "תצוגת פורטל לקוח | LALUM", desc: "כך הלקוח רואה את החשבונות שלו.", noindex: true },
   { path: "workspace/dashboard", title: "לוח בקרה | LALUM", desc: "תמונת מצב של התיקים, הפניות והמשימות במשרד.", noindex: true },
