@@ -4,9 +4,10 @@ import assert from "node:assert/strict";
 import { generateKeyPairSync, createVerify } from "node:crypto";
 import {
   normPath, normHost, mapGsc, mapGscFiles, mapCf, cfQuery, mapFb, matchPosts, normText, insightValue, leadsOf, mapMetaAds, signJwt, windowFor, dayRange, israelDay,
+  mapIg, matchIg,
 } from "../supabase/functions/lalum-campaign-sync/map.ts";
 import {
-  parseSummary, kpis, funnel, channelOf, channels, isAiQuery, paidTotals, health, windowOf, series, pct,
+  parseSummary, kpis, funnel, channelOf, channels, isAiQuery, paidTotals, health, windowOf, series, pct, social, landingTable, postViews, postShares,
 } from "../src/lib/cockpit/campaignsCore.ts";
 
 const t = async (name, fn) => { await fn(); console.log(`[PASS] ${name}`); };
@@ -104,6 +105,42 @@ await t("Facebook rows: running totals per post, insights, followers", () => {
   assert.equal(insightValue("x"), null);
 });
 
+await t("Instagram rows: likes under reactions, insights, followers; a hidden like count is zero", () => {
+  const rows = mapIg("2026-10-26", [{ id: "m1", like_count: 12, comments_count: 3 }, { id: "m2" }], 250, { m1: { views: 900, shares: 4 } });
+  const v = (k, m) => rows.find((r) => r.key === k && r.metric === m)?.value;
+  assert.ok(rows.every((r) => r.source === "instagram"));
+  assert.equal(v("m1", "reactions"), 12);
+  assert.equal(v("m1", "ins_views"), 900);
+  assert.equal(v("m2", "reactions"), 0);
+  assert.equal(v("", "followers"), 250);
+  assert.equal(mapIg("2026-10-26", [], null, {}).length, 0, "no followers number: no site row");
+});
+
+await t("Instagram: a new media takes the campaign number of the Facebook post it opens like, once; known media are refreshed", () => {
+  const templates = [
+    { campaign_code: "legal-ai", post_no: 9, match_prefix: "האם ה-AI שלכם הוא נכס אסטרטגי," },
+    { campaign_code: "legal-ai", post_no: 13, match_prefix: "\"אנחנו חברה ישראלית, ה-EU AI A" },
+    { campaign_code: "legal-ai", post_no: 15, match_prefix: "מקרה בוחן: איך קיצור דרך אחד ע" },
+  ];
+  const known = [{ id: 7, external_id: "ig_old", post_no: 15, campaign_code: "legal-ai" }];
+  const media = [
+    { id: "ig_again", caption: "האם ה AI שלכם הוא נכס אסטרטגי? גרסה שנייה", timestamp: "2026-10-02T08:00:00+0000" },
+    { id: "ig_9", caption: "האם ה-AI שלכם הוא נכס אסטרטגי, או פצצת זמן?\n#AI", timestamp: "2026-09-09T08:00:00+0000", permalink: "https://instagram.com/p/9" },
+    { id: "ig_old", caption: "מקרה בוחן: איך קיצור דרך אחד עם AI", timestamp: "2026-10-12T08:00:00+0000", permalink: "https://instagram.com/p/15" },
+    { id: "ig_15b", caption: "מקרה בוחן: איך קיצור דרך אחד עם AI מחק 40%", timestamp: "2026-10-13T08:00:00+0000" },
+    { id: "ig_x", caption: "", timestamp: "2026-10-14T08:00:00+0000" },
+  ];
+  const { links, adds } = matchIg(known, templates, media);
+  assert.deepEqual(links.map((l) => [l.rowId, l.external_id, l.permalink]), [[7, "ig_old", "https://instagram.com/p/15"]]);
+  const add = Object.fromEntries(adds.map((a) => [a.external_id, a]));
+  assert.equal(add.ig_9.post_no, 9, "the earliest media with the opening words takes the number");
+  assert.equal(add.ig_9.title, "האם ה-AI שלכם הוא נכס אסטרטגי, או פצצת זמן?");
+  assert.equal(add.ig_again.post_no, null, "a second media with the same words is added outside the campaign");
+  assert.equal(add.ig_15b.post_no, null, "number 15 is already held by a known media");
+  assert.equal(add.ig_x.campaign_code, null);
+  assert.deepEqual(windowFor("instagram", false, "2026-10-26"), { from: "2026-07-29", to: "2026-10-26" });
+});
+
 await t("Meta Ads: a lead is counted once, reach stays per campaign", () => {
   assert.equal(leadsOf([{ action_type: "onsite_conversion.lead_grouped", value: "2" }, { action_type: "lead", value: "2" }]), 2);
   assert.equal(leadsOf([{ action_type: "link_click", value: "9" }]), 0);
@@ -155,11 +192,18 @@ const raw = {
   steps: [{ day: "2026-10-24", step: "risk", value: 6 }, { day: "2026-10-24", step: "risk_result", value: 3 }],
   paid: [{ day: "2026-10-25", source: "manual", key: "google_ads", metric: "spend", value: 200 }, { day: "2026-10-25", source: "manual", key: "google_ads", metric: "leads", value: 2 }],
   queries: [], pages_gsc: [], paths_cf: [], lead_paths: [],
+  landing_paths: [{ key: "/risk", pageviews: 12, prev_pageviews: 8, visits: 7, clicks: 1, impressions: 40 }, { key: "/book/legal-ai", pageviews: 2, prev_pageviews: 0, visits: 2 }],
   referrers: [{ key: "gemini.google.com", cur: 3, prev: 0 }, { key: "google.com", cur: 5, prev: 4 }, { key: "lalumapp.com", cur: 9, prev: 9 }, { key: "(direct)", cur: 2, prev: 1 }],
-  posts: [{ post_no: 16, platform: "facebook", title: "36", linked: true, in_campaign: true, metrics: { reactions: 5, comments: 1 } }, { post_no: null, platform: "facebook", title: "x", linked: true, in_campaign: false, metrics: { reactions: 100 } }],
+  posts: [
+    { post_no: 16, platform: "facebook", title: "36", linked: true, in_campaign: true, metrics: { reactions: 5, comments: 1 } },
+    { post_no: null, platform: "facebook", title: "x", linked: true, in_campaign: false, metrics: { reactions: 100 } },
+    { post_no: 9, platform: "instagram", title: "9", linked: true, in_campaign: true, as_of: "2026-10-26", metrics: { reactions: 10, comments: 2, ins_views: 300, ins_shares: 3 } },
+    { post_no: null, platform: "linkedin", title: "li", linked: true, in_campaign: true, as_of: "2026-10-20", metrics: { impressions: 500, reactions: 8 } },
+  ],
   runs: [
     { source: "gsc", status: "ok", last_ok_at: "2026-10-26T03:20:00Z", mode: "public_file" }, { source: "cloudflare", status: "ok", last_ok_at: "2026-10-22T03:20:00Z" },
     { source: "facebook", status: "not_configured" }, { source: "meta_ads", status: "token_failed" },
+    { source: "instagram", status: "not_configured", mode: "no_account" },
   ],
 };
 
@@ -173,7 +217,8 @@ await t("summary: each source over its own window, unconnected sources are null,
   assert.equal(k.gsc_clicks.delta, null, "no clicks before: nothing to compare with");
   assert.equal(k.gsc_pos.cur, 5);
   assert.equal(k.requests.cur, 2, "a newsletter sign-up is not a request");
-  assert.equal(k.fb.cur, null, "Facebook never delivered: not connected");
+  assert.equal(k.fb.cur, 29, "campaign posts on every network: Facebook 5+1, Instagram 10+2+3, LinkedIn 8 typed in");
+  assert.equal(parseSummary({ ...raw, posts: raw.posts.slice(0, 2) }) && kpis(parseSummary({ ...raw, posts: raw.posts.slice(0, 2) })).find((x) => x.key === "fb").cur, null, "no network delivered: not connected");
   assert.equal(k.spend.cur, 200);
   assert.match(k.spend.note, /100 לליד/);
   assert.equal(pct(5, 4), 25);
@@ -222,6 +267,31 @@ await t("paid and data health", () => {
   const ser = series(s.site, "cloudflare", ["visits"], windowOf(s, "cloudflare"));
   assert.equal(ser.labels[0], "19.10");
   assert.deepEqual(ser.values[0], [4, 4, 4, 4, 4, 4, 4]);
+});
+
+await t("social: three networks side by side, campaign posts only, nothing shown for what never delivered", () => {
+  const withFollowers = { ...raw, site: [...raw.site, { day: "2026-10-25", source: "instagram", metric: "followers", value: 140 }, { day: "2026-10-26", source: "instagram", metric: "followers", value: 150 }] };
+  const r = Object.fromEntries(social(parseSummary(withFollowers)).map((x) => [x.platform, x]));
+  assert.equal(r.facebook.status, "ממתין לטוקן קריאה");
+  assert.equal(r.facebook.posts, 1);
+  assert.equal(r.facebook.views, null, "a post with no snapshot has no views, not zero");
+  assert.equal(r.facebook.engagement, null);
+  assert.equal(r.instagram.status, "אין חשבון עסקי מקושר לדף");
+  assert.equal(r.instagram.followers, 150, "the latest follower count");
+  assert.equal(kpis(parseSummary(withFollowers)).find((x) => x.key === "fb").note, "150 עוקבים באינסטגרם");
+  assert.deepEqual([r.instagram.views, r.instagram.engagement, r.instagram.asOf], [300, 15, "2026-10-26"]);
+  assert.deepEqual([r.linkedin.status, r.linkedin.views, r.linkedin.followers], ["הזנה ידנית", 500, null]);
+  assert.equal(postViews({ ins_views: 5, ins_reach: 9 }), 5);
+  assert.equal(postShares({ ins_shares: 2 }), 2);
+  const h = Object.fromEntries(health(parseSummary(raw), Date.parse("2026-10-26T06:00:00Z")).map((x) => [x.source, x]));
+  assert.equal(h.instagram.text, "לא מחובר: אין חשבון עסקי מקושר לדף");
+});
+
+await t("campaign pages: every page listed, the ones with no visit as zeros, each compared with the period before", () => {
+  const rows = landingTable(parseSummary(raw));
+  assert.deepEqual(rows.map((r) => [r.key, r.pageviews, r.delta]), [["/risk", 12, 50], ["/book/legal-ai", 2, null]], "/book is covered by a page under it");
+  const bare = landingTable(parseSummary({ ...raw, landing_paths: [] }));
+  assert.deepEqual(bare.map((r) => [r.key, r.pageviews]), [["/risk", 0], ["/book", 0]]);
 });
 
 console.log("campaign-sync-check: ok");

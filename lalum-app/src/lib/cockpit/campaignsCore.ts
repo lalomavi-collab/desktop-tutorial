@@ -7,7 +7,7 @@ const obj = (v: unknown): Record<string, unknown> | null => (v && typeof v === "
 const arr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v.map(obj).filter((x): x is Record<string, unknown> => !!x) : []);
 const str = (v: unknown): string => (v == null ? "" : String(v));
 
-export type SourceId = "gsc" | "cloudflare" | "facebook" | "meta_ads" | "internal" | "manual";
+export type SourceId = "gsc" | "cloudflare" | "facebook" | "instagram" | "meta_ads" | "internal" | "manual";
 export interface DayRow { day: string; source: string; metric: string; value: number; key?: string }
 export interface CampaignPost {
   postNo: number | null; platform: string; title: string; permalink: string | null; publishedAt: string | null;
@@ -21,10 +21,13 @@ export interface CampaignSummary {
   queries: Array<{ key: string; clicks: number; impressions: number; position: number | null }>;
   pagesGsc: Array<{ key: string; clicks: number; impressions: number; campaign: boolean }>;
   pathsCf: Array<{ key: string; pageviews: number; visits: number; campaign: boolean }>;
+  landingPaths: LandingPath[];
   referrers: Array<{ key: string; cur: number; prev: number }>;
   leadPaths: Array<{ key: string; leads: number }>;
   posts: CampaignPost[]; runs: Run[];
 }
+
+export interface LandingPath { key: string; pageviews: number; prevPageviews: number; visits: number; clicks: number; impressions: number }
 
 const dayRows = (v: unknown): DayRow[] => arr(v).map((r) => ({ day: str(r.day), source: str(r.source), metric: str(r.metric), value: n(r.value), ...(r.key != null ? { key: str(r.key) } : {}) }));
 
@@ -43,6 +46,9 @@ export function parseSummary(j: unknown): CampaignSummary | null {
     queries: arr(o.queries).map((r) => ({ key: str(r.key), clicks: n(r.clicks), impressions: n(r.impressions), position: r.position == null ? null : n(r.position) })),
     pagesGsc: arr(o.pages_gsc).map((r) => ({ key: str(r.key), clicks: n(r.clicks), impressions: n(r.impressions), campaign: r.campaign === true })),
     pathsCf: arr(o.paths_cf).map((r) => ({ key: str(r.key), pageviews: n(r.pageviews), visits: n(r.visits), campaign: r.campaign === true })),
+    landingPaths: arr(o.landing_paths).map((r) => ({
+      key: str(r.key), pageviews: n(r.pageviews), prevPageviews: n(r.prev_pageviews), visits: n(r.visits), clicks: n(r.clicks), impressions: n(r.impressions),
+    })),
     referrers: arr(o.referrers).map((r) => ({ key: str(r.key), cur: n(r.cur), prev: n(r.prev) })),
     leadPaths: arr(o.lead_paths).map((r) => ({ key: str(r.key), leads: n(r.leads) })),
     posts: arr(o.posts).map((r) => ({
@@ -90,8 +96,12 @@ export function kpis(s: CampaignSummary): Kpi[] {
     ({ key, label, cur: on ? cur : null, prev: on ? prev : null, delta: on ? pct(cur, prev) : null, note, money });
   const gscOn = connected(s, "gsc"), cfOn = connected(s, "cloudflare"), inOn = connected(s, "internal");
   const posts = s.posts.filter((p) => p.inCampaign);
-  const engagement = posts.reduce((a, p) => a + (p.metrics.reactions ?? 0) + (p.metrics.comments ?? 0) + (p.metrics.shares ?? 0), 0);
-  const followers = [...s.site].reverse().find((r) => r.source === "facebook" && r.metric === "followers")?.value ?? null;
+  const engagement = posts.reduce((a, p) => a + engagementOf(p.metrics), 0);
+  const fbF = followersOf(s, "facebook"), igF = followersOf(s, "instagram");
+  const he = (v: number) => v.toLocaleString("he-IL");
+  const followers = fbF != null && igF != null ? `${he(fbF)} עוקבים בפייסבוק, ${he(igF)} באינסטגרם`
+    : fbF != null ? `${he(fbF)} עוקבים בדף` : igF != null ? `${he(igF)} עוקבים באינסטגרם` : null;
+  const social = connected(s, "facebook") || connected(s, "instagram") || posts.some((p) => p.asOf);
   const p = paidTotals(s);
   const pos = (from: string, to: string) => {
     const im = sumRows(s.site, "gsc", ["impressions"], from, to);
@@ -106,7 +116,7 @@ export function kpis(s: CampaignSummary): Kpi[] {
     k("cf_visits", "ביקורים באתר", cfOn, sumRows(s.site, "cloudflare", ["visits"], c.from, c.to), sumRows(s.site, "cloudflare", ["visits"], c.pfrom, c.pto), `עד ${shortDay(c.to)}`),
     k("landing", "צפיות בדפי הקמפיין", cfOn, sumRows(s.landing, "cloudflare", ["pageviews"], c.from, c.to), sumRows(s.landing, "cloudflare", ["pageviews"], c.pfrom, c.pto), "risk, book, ייעוץ AI ומאמרי הקמפיין"),
     k("requests", "פניות ופגישות", inOn, sumRows(s.site, "internal", REQUEST_METRICS, i.from, i.to), sumRows(s.site, "internal", REQUEST_METRICS, i.pfrom, i.pto), "מהטפסים באתר"),
-    { key: "fb", label: "מעורבות בפוסטים", cur: connected(s, "facebook") || posts.some((p) => p.asOf) ? engagement : null, prev: null, delta: null, note: followers != null ? `${followers.toLocaleString("he-IL")} עוקבים בדף` : "תגובות, לייקים ושיתופים, מצטבר" },
+    { key: "fb", label: "מעורבות בפוסטים", cur: social ? engagement : null, prev: null, delta: null, note: followers ?? "תגובות, לייקים ושיתופים, מצטבר" },
     { key: "spend", label: "הוצאה על ממומן", cur: p.any ? p.spend : null, prev: null, delta: null, money: true, note: p.any ? (p.leads > 0 ? `${Math.round(p.spend / p.leads).toLocaleString("he-IL")} לליד` : "אין לידים ממומנים") : "לא רץ קמפיין ממומן" },
   ];
 }
@@ -208,22 +218,77 @@ export function paidTotals(s: CampaignSummary): { any: boolean; spend: number; c
 
 // ---- posts and data health ------------------------------------------------------------------------------------------------------------
 
-/** Views of a post: Meta's view metric when the token has insights, else the reach metric, else the impressions typed in by hand. */
-export const postViews = (m: Record<string, number>): number | null => m.ins_post_media_view ?? m.ins_post_impressions_unique ?? m.impressions ?? null;
+/** Views of a post: Meta's view metric when the token has insights (Facebook or Instagram), else the reach metric, else the impressions
+ *  typed in by hand. */
+export const postViews = (m: Record<string, number>): number | null =>
+  m.ins_post_media_view ?? m.ins_post_impressions_unique ?? m.ins_views ?? m.ins_reach ?? m.impressions ?? null;
+/** Shares: Facebook counts them on the post, Instagram only in its insights. */
+export const postShares = (m: Record<string, number>): number | null => m.shares ?? m.ins_shares ?? null;
+export const engagementOf = (m: Record<string, number>): number => (m.reactions ?? 0) + (m.comments ?? 0) + (postShares(m) ?? 0);
+
+/** The account's latest follower count, or null when that network never reported one. */
+export const followersOf = (s: CampaignSummary, source: string): number | null =>
+  [...s.site].reverse().find((r) => r.source === source && r.metric === "followers")?.value ?? null;
+
+export interface SocialRow {
+  platform: "facebook" | "instagram" | "linkedin"; label: string; tone: "ok" | "warn" | "off"; status: string;
+  followers: number | null; posts: number; views: number | null; engagement: number | null; asOf: string | null;
+}
+
+/** The three networks side by side, counting the campaign's posts only. Facebook and Instagram are synced; LinkedIn is typed in, because
+ *  its API needs LinkedIn's approval first. A network that never delivered a number shows an empty cell, never a zero. */
+export function social(s: CampaignSummary): SocialRow[] {
+  const run = (src: string) => s.runs.find((r) => r.source === src);
+  const row = (platform: SocialRow["platform"], label: string, tone: SocialRow["tone"], status: string): SocialRow => {
+    const posts = s.posts.filter((p) => p.platform === platform && p.inCampaign);
+    const seen = posts.filter((p) => p.asOf);
+    const views = seen.map((p) => postViews(p.metrics)).filter((v): v is number => v != null);
+    const asOf = seen.map((p) => p.asOf as string).sort().at(-1) ?? null;
+    return {
+      platform, label, tone, status, followers: platform === "linkedin" ? null : followersOf(s, platform), posts: posts.length,
+      views: views.length ? views.reduce((a, v) => a + v, 0) : null, engagement: seen.length ? seen.reduce((a, p) => a + engagementOf(p.metrics), 0) : null, asOf,
+    };
+  };
+  const synced = (src: "facebook" | "instagram"): [SocialRow["tone"], string] => {
+    const r = run(src);
+    if (r?.status === "ok") return ["ok", "מסונכרן אוטומטית"];
+    if (r?.status === "token_failed") return ["warn", "הטוקן נדחה"];
+    if (r?.status === "error") return ["warn", "שגיאה בסנכרון"];
+    if (src === "instagram" && r?.mode === "no_account") return ["off", "אין חשבון עסקי מקושר לדף"];
+    return ["off", "ממתין לטוקן קריאה"];
+  };
+  const li = s.posts.some((p) => p.platform === "linkedin" && p.asOf);
+  return [
+    row("facebook", "פייסבוק", ...synced("facebook")),
+    row("instagram", "אינסטגרם", ...synced("instagram")),
+    row("linkedin", "לינקדאין", li ? "ok" : "off", li ? "הזנה ידנית" : "ממתין להזנה ידנית"),
+  ];
+}
+
+/** Every campaign page, the ones with no visit included: a prefix with no row of its own (and no page under it) is listed with zeros. */
+export function landingTable(s: CampaignSummary): Array<LandingPath & { delta: number | null }> {
+  const under = (key: string, prefix: string) => key === prefix || key.startsWith(prefix + "/");
+  const rows: LandingPath[] = [...s.landingPaths];
+  for (const prefix of s.campaign?.landingPrefixes ?? []) {
+    if (!rows.some((r) => under(r.key, prefix))) rows.push({ key: prefix, pageviews: 0, prevPageviews: 0, visits: 0, clicks: 0, impressions: 0 });
+  }
+  return rows.map((r) => ({ ...r, delta: pct(r.pageviews, r.prevPageviews) }));
+}
 
 export const SOURCE_HE: Record<string, string> = {
-  gsc: "Google Search Console", cloudflare: "Cloudflare Web Analytics", facebook: "דף הפייסבוק", meta_ads: "Meta Ads", internal: "טפסים באתר",
+  gsc: "Google Search Console", cloudflare: "Cloudflare Web Analytics", facebook: "דף הפייסבוק", instagram: "חשבון האינסטגרם", meta_ads: "Meta Ads",
+  internal: "טפסים באתר",
 };
 
 export interface Health { source: string; label: string; tone: "ok" | "warn" | "bad" | "off"; text: string }
 
 /** Where each source stands, from its latest run. A source that has not delivered for two days is flagged even when its last run said ok. */
 export function health(s: CampaignSummary, nowMs: number): Health[] {
-  return ["gsc", "cloudflare", "facebook", "meta_ads", "internal"].map((source) => {
+  return ["gsc", "cloudflare", "facebook", "instagram", "meta_ads", "internal"].map((source) => {
     const r = s.runs.find((x) => x.source === source);
     const label = SOURCE_HE[source];
     if (!r) return { source, label, tone: "off", text: "טרם רץ" };
-    if (r.status === "not_configured") return { source, label, tone: "off", text: "לא מחובר: חסר סוד" };
+    if (r.status === "not_configured") return { source, label, tone: "off", text: r.mode === "no_account" ? "לא מחובר: אין חשבון עסקי מקושר לדף" : "לא מחובר: חסר סוד" };
     if (r.status === "token_failed") return { source, label, tone: "bad", text: "הטוקן נדחה, צריך טוקן חדש" };
     if (r.status !== "ok") return { source, label, tone: "bad", text: `שגיאה${r.error ? `: ${r.error}` : ""}` };
     const age = r.lastOkAt ? (nowMs - Date.parse(r.lastOkAt)) / 3_600_000 : Infinity;

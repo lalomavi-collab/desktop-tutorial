@@ -10,20 +10,26 @@
 //                              function asks the API itself and gets pages and queries per day.
 //   GSC_SITE_URL               optional, default https://lalumapp.com/; GSC_PUBLIC_FILE_BASE optional, the raw URL of that folder
 //   CF_ANALYTICS_TOKEN, CF_ACCOUNT_ID, CF_WEB_ANALYTICS_SITE_TAG   an API token with Account Analytics Read only
-//   FB_READ_PAGE_TOKEN         a page token with pages_read_engagement and read_insights only. Never the publishing token.
+//   FB_READ_PAGE_TOKEN         a page token with pages_read_engagement and read_insights only, plus instagram_basic and
+//                              instagram_manage_insights for the Instagram account linked to the page. Never the publishing token.
 //   FB_PAGE_ID (default 604003069451536), FB_GRAPH_VERSION (default v23.0),
 //   FB_POST_INSIGHT_METRICS    optional, default post_media_view,post_impressions_unique; a metric Meta refuses is skipped and named in the run row
+//   IG_USER_ID                 optional, the Instagram account id; without it the account linked to the Facebook page is used
+//   IG_MEDIA_INSIGHT_METRICS   optional, default views,reach,saved,shares; skipped per media type when Meta refuses it
 //   META_ADS_TOKEN, META_AD_ACCOUNT_ID   ads_read only. Until a paid campaign runs the ad panels stay empty.
 // Gate: header x-lalum-worker (pg_cron), or a signed-in platform admin with a second factor (the refresh button), at most once in 10 minutes.
 // ?dry=1 fetches and maps but writes nothing and returns counts with a small sample; ?only=gsc,facebook runs only those sources.
+// LinkedIn has no source here: its API needs LinkedIn's approval of a Community Management app, so its posts are typed in on the screen.
 // Tokens go in headers, never in a URL, a response, a log line or a run row.
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
-  type CfGroup, type FbPost, type GscFile, type GscRow, type MetaAdRow, type MetricRow, type RegistryPost, type Source,
-  addDays, cfQuery, chunk, dayRange, israelDay, mapCf, mapFb, mapGsc, mapGscFiles, mapMetaAds, matchPosts, signJwt, windowFor,
+  type CfGroup, type FbPost, type GscFile, type GscRow, type IgKnown, type IgMedia, type IgTemplate, type MetaAdRow, type MetricRow,
+  type RegistryPost, type Source,
+  addDays, cfQuery, chunk, dayRange, insightValue, israelDay, mapCf, mapFb, mapGsc, mapGscFiles, mapIg, mapMetaAds, matchIg, matchPosts,
+  signJwt, windowFor,
 } from "./map.ts";
 
-const SOURCES: Source[] = ["gsc", "cloudflare", "facebook", "meta_ads", "internal"];
+const SOURCES: Source[] = ["gsc", "cloudflare", "facebook", "instagram", "meta_ads", "internal"];
 const COOLDOWN_MS = 10 * 60_000;
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -139,11 +145,14 @@ async function syncCloudflare(win: { from: string; to: string }): Promise<Outcom
   return { source: "cloudflare", status: "ok", rows: mapCf(paths, refs), detail: { ...win, path_groups: paths.length } };
 }
 
+const graphVersion = () => (/^v\d+\.\d+$/.test(env("FB_GRAPH_VERSION")) ? env("FB_GRAPH_VERSION") : "v23.0");
+const fbPageId = () => (/^\d+$/.test(env("FB_PAGE_ID")) ? env("FB_PAGE_ID") : "604003069451536");
+
 async function syncFacebook(win: { from: string; to: string }, today: string): Promise<Outcome> {
   const token = env("FB_READ_PAGE_TOKEN");
   if (!token) return { source: "facebook", status: "not_configured", rows: [], detail: { missing: "FB_READ_PAGE_TOKEN" } };
-  const ver = /^v\d+\.\d+$/.test(env("FB_GRAPH_VERSION")) ? env("FB_GRAPH_VERSION") : "v23.0";
-  const pageId = /^\d+$/.test(env("FB_PAGE_ID")) ? env("FB_PAGE_ID") : "604003069451536";
+  const ver = graphVersion();
+  const pageId = fbPageId();
   const headers = { authorization: `Bearer ${token}` };
   const graph = (path: string, params: Record<string, string>) =>
     getJson(`https://graph.facebook.com/${ver}/${path}?${new URLSearchParams(params)}`, { headers }, "graph");
@@ -204,11 +213,87 @@ async function syncFacebook(win: { from: string; to: string }, today: string): P
   };
 }
 
+async function syncInstagram(win: { from: string; to: string }, today: string): Promise<Outcome> {
+  const token = env("FB_READ_PAGE_TOKEN");
+  if (!token) return { source: "instagram", status: "not_configured", rows: [], detail: { missing: "FB_READ_PAGE_TOKEN" } };
+  const headers = { authorization: `Bearer ${token}` };
+  const graph = (path: string, params: Record<string, string>) =>
+    getJson(`https://graph.facebook.com/${graphVersion()}/${path}?${new URLSearchParams(params)}`, { headers }, "graph");
+
+  let igId = /^\d+$/.test(env("IG_USER_ID")) ? env("IG_USER_ID") : "";
+  if (!igId) {
+    const page = await graph(fbPageId(), { fields: "instagram_business_account" });
+    igId = String((page.instagram_business_account as { id?: unknown } | undefined)?.id ?? "");
+  }
+  if (!/^\d+$/.test(igId)) {
+    return { source: "instagram", status: "not_configured", rows: [], detail: { mode: "no_account", missing: "an Instagram professional account linked to the page, or instagram_basic on the token" } };
+  }
+  const acct = await graph(igId, { fields: "followers_count,username" });
+  const followers = typeof acct.followers_count === "number" ? acct.followers_count : null;
+
+  // Newest first: stop at the first page that reaches back past the window.
+  const since = Date.parse(win.from + "T00:00:00Z");
+  const media: IgMedia[] = [];
+  let body = await graph(`${igId}/media`, { fields: "id,caption,permalink,timestamp,like_count,comments_count,media_type,media_product_type", limit: "50" });
+  for (let page = 0; page < 5; page++) {
+    const batch = (body.data ?? []) as IgMedia[];
+    media.push(...batch.filter((m) => Date.parse(m.timestamp ?? "") >= since));
+    const next = (body.paging as { next?: string } | undefined)?.next;
+    if (batch.some((m) => Date.parse(m.timestamp ?? "") < since) || !next || !next.startsWith("https://graph.facebook.com/")) break;
+    body = await getJson(next, { headers }, "graph");
+  }
+
+  // A metric one kind of media does not have (a story, an album) is refused for that kind only, not for the others.
+  const wanted = (env("IG_MEDIA_INSIGHT_METRICS") || "views,reach,saved,shares").split(",").map((m) => m.trim()).filter((m) => /^[a-z_]+$/.test(m));
+  const refused = new Set<string>();
+  const insights: Record<string, Record<string, number>> = {};
+  for (const group of chunk(media, 4)) {
+    await Promise.all(group.map(async (m) => {
+      const kind = m.media_product_type ?? m.media_type ?? "";
+      for (const metric of wanted) {
+        if (refused.has(`${kind}:${metric}`)) continue;
+        try {
+          const r = await graph(`${m.id}/insights`, { metric });
+          const d = ((r.data ?? []) as Array<{ values?: Array<{ value?: unknown }>; total_value?: { value?: unknown } }>)[0];
+          const n = insightValue(d?.values?.[0]?.value ?? d?.total_value?.value);
+          if (n != null) (insights[m.id] ??= {})[metric] = n;
+        } catch (e) {
+          if (e instanceof SourceError && e.status === "token_failed") throw e;
+          refused.add(`${kind}:${metric}`);
+        }
+      }
+    }));
+  }
+
+  const after = async (sb: SupabaseClient) => {
+    const [ig, fb] = await Promise.all([
+      sb.from("lalum_campaign_posts").select("id, external_id, post_no, campaign_code").eq("platform", "instagram"),
+      sb.from("lalum_campaign_posts").select("campaign_code, post_no, match_prefix").eq("platform", "facebook")
+        .not("campaign_code", "is", null).not("post_no", "is", null).not("match_prefix", "is", null),
+    ]);
+    if (ig.error || fb.error) throw new Error(`read posts ${(ig.error ?? fb.error)?.code}`);
+    const { links, adds } = matchIg((ig.data ?? []) as IgKnown[], (fb.data ?? []) as IgTemplate[], media);
+    for (const l of links) {
+      const { error: e } = await sb.from("lalum_campaign_posts").update({ permalink: l.permalink, published_at: l.published_at }).eq("id", l.rowId);
+      if (e) throw new Error(`link post ${e.code}`);
+    }
+    if (adds.length) {
+      const { error: e } = await sb.from("lalum_campaign_posts").upsert(adds.map((a) => ({ platform: "instagram", ...a })), { onConflict: "platform,external_id", ignoreDuplicates: true });
+      if (e) throw new Error(`add posts ${e.code}`);
+    }
+    return links.length + adds.length;
+  };
+  return {
+    source: "instagram", status: "ok", rows: mapIg(today, media, followers, insights), after,
+    detail: { ...win, account: typeof acct.username === "string" ? acct.username : null, media: media.length, insights_skipped: [...refused] },
+  };
+}
+
 async function syncMetaAds(win: { from: string; to: string }): Promise<Outcome> {
   const token = env("META_ADS_TOKEN"), account = env("META_AD_ACCOUNT_ID").replace(/^act_/, "");
   if (!token || !account) return { source: "meta_ads", status: "not_configured", rows: [], detail: { missing: "META_ADS_TOKEN or META_AD_ACCOUNT_ID" } };
   if (!/^\d{5,20}$/.test(account)) throw new SourceError("error", "META_AD_ACCOUNT_ID is not a numeric account id");
-  const ver = /^v\d+\.\d+$/.test(env("FB_GRAPH_VERSION")) ? env("FB_GRAPH_VERSION") : "v23.0";
+  const ver = graphVersion();
   const headers = { authorization: `Bearer ${token}` };
   const acct = await getJson(`https://graph.facebook.com/${ver}/act_${account}?fields=currency`, { headers }, "ads");
   const rows: MetaAdRow[] = [];
@@ -279,6 +364,7 @@ Deno.serve(async (req: Request) => {
         case "gsc": return await syncGsc(win, !hadOk.has(source));
         case "cloudflare": return await syncCloudflare(win);
         case "facebook": return await syncFacebook(win, today);
+        case "instagram": return await syncInstagram(win, today);
         case "meta_ads": return await syncMetaAds(win);
         case "internal": return await syncInternal(sb, win, dry);
       }
