@@ -65,7 +65,8 @@ await t("Cloudflare rows: site totals are the sum of the paths, empty referrer i
   assert.equal(v("referrer", "x.com", "visits"), undefined, "a referrer with no visits is not stored");
   const hex = "a".repeat(32);
   assert.match(cfQuery(hex, hex, "2026-10-20"), /datetime_lt: "2026-10-21T00:00:00Z"/);
-  assert.throws(() => cfQuery(hex, `${hex}"}`, "2026-10-20"), /bad cloudflare/);
+  assert.throws(() => cfQuery(hex, `${hex}"}`, "2026-10-20"), /bad CF_WEB_ANALYTICS_SITE_TAG: 34 chars/);
+  assert.throws(() => cfQuery(`${hex}\n`, hex, "2026-10-20"), /bad CF_ACCOUNT_ID: 33 chars/);
 });
 
 await t("Facebook: posts link to the registry by id or by their opening words, a repost does not steal a row", () => {
