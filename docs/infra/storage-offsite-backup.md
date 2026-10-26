@@ -61,23 +61,17 @@ filename_encoding = base32768
 1. **rclone:** `winget install Rclone.Rclone`, ואז פותחים חלון PowerShell חדש. `rclone version` צריך להראות 1.60 ומעלה.
 2. **הסקריפטים:** מעתיקים את `LalumOffsite.psm1`, `Backup-LalumStorage.ps1`, `Restore-LalumStorage.ps1` ו־`Set-LalumCredential.ps1` מ־`scripts/offsite-backup` לתיקייה קבועה, `C:\LALUM\offsite-backup`. תיקייה קבועה, כי המשימה השבועית מצביעה על הנתיב הזה.
 3. **מפתח S3:** פותחים https://supabase.com/dashboard/project/meoymkcotomoluwlwues/storage/s3, ובאזור Access keys יוצרים מפתח חדש בשם `lalum-offsite-backup`. ה־Secret מוצג פעם אחת בלבד.
-4. **שמירת המפתח:**
-   ```
-   cmdkey /generic:lalum-supabase-s3 /user:<ACCESS_KEY_ID> /pass
-   ```
-   במקום `<ACCESS_KEY_ID>` מדביקים את ה־Access key ID. כשמתבקשת סיסמה מדביקים את ה־Secret access key (הוא לא מוצג על המסך), ואז סוגרים את החלון ב־Supabase. ה־Secret לא עובר בצ׳אט, במייל או ב־Chrome.
-5. **סיסמאות ההצפנה:** יוצרים ושומרים במנהל הסיסמאות (הסעיף הקודם), ואז מריצים את שתי הפקודות ומדביקים בכל אחת את הסיסמה שלה:
-   ```
-   cmdkey /generic:lalum-offsite-crypt /user:crypt /pass
-   cmdkey /generic:lalum-offsite-crypt-salt /user:crypt /pass
-   ```
-   אם `cmdkey` ענה `Credential added successfully` אבל הרשומה נשמרה ריקה (קורה כשההדבקה בשאלה המוסתרת לא נקלטת; הסקריפט ייפול אז על `Credential ... was not found`), מריצים במקום `cmdkey` את העוזר, שורה אחת לכל סוד. הוא מציג כוכביות בזמן ההדבקה, מסרב לשמור ערך ריק ומדווח רק את מספר התווים שנשמר, בלי להציג את הסוד:
+4. **שמירת המפתח:** מריצים את העוזר מתוך `C:\LALUM\offsite-backup`:
    ```
    powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-supabase-s3
-   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt
-   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt-salt
    ```
-   השורה הראשונה שואלת קודם את ה־Access key ID (מוצג, לא סוד) ואז את ה־Secret; שתי האחרות שואלות רק את הסיסמה.
+   הוא שואל קודם את ה־Access key ID (מוצג, לא סוד) ואז את ה־Secret access key, שמוצג ככוכביות בזמן ההדבקה. הוא מסרב לשמור ערך ריק ומדווח רק את מספר התווים שנשמר (64), בלי להציג את הסוד. אחר כך סוגרים את החלון ב־Supabase. ה־Secret לא עובר בצ׳אט, במייל או ב־Chrome. (`cmdkey /generic:lalum-supabase-s3 /user:<ACCESS_KEY_ID> /pass` עושה אותו דבר, אבל ב־Windows Terminal השאלה המוסתרת שלו קלטה Enter ריק ושמרה רשומה ריקה, ועדיין ענתה `Credential added successfully`. לכן העוזר.)
+5. **סיסמאות ההצפנה:** שתי שורות, אחת אחרי השנייה. `-Generate` מייצר במחשב סיסמה אקראית של 32 אותיות וספרות, שומר אותה ב־Credential Manager ומדפיס אותה פעם אחת, כדי לשמור אותה במנהל הסיסמאות (אתר: שם הרשומה, משתמש: `crypt`) לפני שעוברים לשורה הבאה. בסוף `cls` מנקה את המסך. העוזר דורס רשומה קיימת ומסרב לערך זהה לרשומה השנייה:
+   ```
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt -Generate
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt-salt -Generate
+   ```
+   סיסמה שכבר שמורה במנהל הסיסמאות (למשל בהתקנה על מחשב אחר, כדי לקרוא גיבויים קיימים) מדביקים באותה פקודה בלי `-Generate`.
 6. **הרצה יבשה.** בודקת את שלושת הסודות ולא כותבת כלום:
    ```
    cd C:\LALUM\offsite-backup
@@ -123,12 +117,12 @@ filename_encoding = base32768
 | הודעה | מה לעשות |
 |---|---|
 | `rclone was not found` | `winget install Rclone.Rclone`, ואז חלון PowerShell חדש. |
-| `Credential '...' was not found` | מריצים את פקודת `cmdkey` שמופיעה בהודעה. `cmdkey /list:lalum-supabase-s3` מראה אם רשומה קיימת, בלי הסיסמה. |
-| `cmdkey /list` מראה את הרשומה, ובכל זאת `Credential '...' was not found` | הרשומה נשמרה בלי סוד: ההדבקה בשאלה המוסתרת של `cmdkey` לא נקלטה. מריצים את `Set-LalumCredential.ps1` לאותו יעד (סעיף 5 בהתקנה); הוא מציג כוכביות ומסרב לערך ריק. |
-| `No buckets were found`, או `SignatureDoesNotMatch` או `AccessDenied` בלוג | המפתח בוטל או הודבק לא נכון. יוצרים מפתח חדש ומריצים שוב את `cmdkey` (אותו שם דורס את הרשומה הקודמת). |
+| `Credential '...' was not found` | מריצים את `Set-LalumCredential.ps1` לאותו יעד (סעיפים 4 ו־5 בהתקנה). `cmdkey /list:lalum-supabase-s3` מראה אם רשומה קיימת, בלי הסיסמה. |
+| `cmdkey /list` מראה את הרשומה, ובכל זאת `Credential '...' was not found` | הרשומה נשמרה בלי סוד: ההדבקה בשאלה המוסתרת של `cmdkey` לא נקלטה. מריצים את `Set-LalumCredential.ps1` לאותו יעד (סעיפים 4 ו־5 בהתקנה); הוא מציג כוכביות ומסרב לערך ריק. |
+| `No buckets were found`, או `SignatureDoesNotMatch` או `AccessDenied` בלוג | המפתח בוטל או הודבק לא נכון. יוצרים מפתח חדש ומריצים שוב את העוזר ליעד `lalum-supabase-s3` (אותו שם דורס את הרשומה הקודמת). |
 | `OneDrive for work was not found` | מתחברים ל־OneDrive עם avraham@lalum.co, או מעבירים `-Destination`. |
 | `Another backup or restore is already running` | מחכים לסיום. אם אין ריצה, בודקים ב־Task Manager שאין `powershell.exe` תקוע. |
-| `No snapshots were found` בשחזור, למרות שיש גיבויים | הסיסמאות ב־Credential Manager שונות מאלה שהגיבוי נעשה איתן (יש הבדל בין אותיות גדולות לקטנות). מחזירים אותן ממנהל הסיסמאות עם `cmdkey`. |
+| `No snapshots were found` בשחזור, למרות שיש גיבויים | הסיסמאות ב־Credential Manager שונות מאלה שהגיבוי נעשה איתן (יש הבדל בין אותיות גדולות לקטנות). מחזירים אותן ממנהל הסיסמאות עם העוזר, בלי `-Generate`. |
 | `WARNING ... shrank` או `is gone` | בודקים ב־Supabase אם הקבצים נמחקו במכוון. אם לא: לא מוחקים שום תמונה ישנה, ומשחזרים מהתמונה האחרונה שלפני הירידה. |
 | `copy failed` או `verification failed` | פותחים את הלוג שבהודעה. ריצה שנכשלה לא מוחקת דבר, ו־`-List` מציג אותה כ־`no summary`. הריצה הבאה כותבת לתיקייה חדשה. |
 
