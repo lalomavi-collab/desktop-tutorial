@@ -11,6 +11,8 @@
 //
 // Access: only a firm partner or admin with MFA (lalum_fin_can). Writes use the service role.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { readReply, replyProblem } from "../_shared/invoice4u.ts";
+import type { Reply } from "../_shared/invoice4u.ts";
 
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -59,16 +61,12 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return json(400, { code: "bad_json" }); }
   const admin = createClient(url, serviceKey);
 
-  // The envelope differs between endpoints: `d`, or `<Operation>Result`, or bare.
-  async function call(op: string, payload: Obj): Promise<{ d: Obj; errors: Array<{ ID?: number; Error?: string }> }> {
+  // The envelope differs between endpoints: `d`, or `<Operation>Result`, or bare (readReply in _shared/invoice4u.ts).
+  async function call(op: string, payload: Obj): Promise<Reply> {
     const res = await fetch(`${base}/${op}`, {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...payload, token: apiKey }),
     });
-    const text = await res.text();
-    let parsed: Obj;
-    try { parsed = JSON.parse(text); } catch { throw new Error(`${op} HTTP ${res.status} non-JSON`); }
-    const d = ((parsed.d ?? parsed[`${op}Result`] ?? parsed) as Obj | null) ?? {};
-    return { d, errors: Array.isArray(d.Errors) ? (d.Errors as Array<{ ID?: number; Error?: string }>) : [] };
+    return readReply(op, res.status, await res.text());
   }
   async function logRun(row: Obj) {
     await admin.from("lalum_fin_import_runs").insert({ firm_id: firmId, run_by: user!.id, ...row });
@@ -76,11 +74,14 @@ Deno.serve(async (req) => {
 
   try {
     if (body.action === "customers") {
-      const { d, errors } = await call("GetCustomersByOrgId", {});
+      const r = await call("GetCustomersByOrgId", {});
+      const { d, errors } = r;
       const list = Array.isArray(d.Response) ? (d.Response as Obj[]) : [];
-      if (errors.length) {
-        await logRun({ kind: "CUSTOMERS", error: redact(JSON.stringify(errors), apiKey) });
-        return json(502, { code: "invoice4u_rejected", errors: errors.map((e) => e.Error) });
+      // An empty reply is not "no customers": read that way, a refused key logged two clean runs of zero (21.10 and 22.10.2026).
+      const problem = replyProblem(r);
+      if (errors.length || problem) {
+        await logRun({ kind: "CUSTOMERS", error: redact(problem ? `${problem} ${r.shape}` : JSON.stringify(errors), apiKey) });
+        return json(502, { code: problem === "invoice4u_unauthorized" ? problem : "invoice4u_rejected", errors: errors.map((e) => e.Error) });
       }
       const { data: existing } = await admin.from("lalum_fin_customers").select("id, tax_id, i4u_customer_id").eq("firm_id", firmId);
       const byI4u = new Set((existing ?? []).filter((c) => c.i4u_customer_id).map((c) => Number(c.i4u_customer_id)));
@@ -124,12 +125,13 @@ Deno.serve(async (req) => {
       let fetched = 0, inserted = 0, updated = 0, skipped = 0;
       const perType: Record<string, number> = {};
       for (const t of DOC_TYPES) {
-        const { d, errors } = await call("GetDocuments", {
+        const r = await call("GetDocuments", {
           dr: { DocumentType: t, From: wcf(from), To: wcf(to, true), ItemsIncluded: true, PaymentsIncluded: true },
         });
+        const { d, errors } = r;
         if (errors.length) {
           await logRun({ kind: "DOCUMENTS", date_from: from, date_to: to, fetched, inserted, updated, skipped, error: redact(`type ${t} ${JSON.stringify(errors)}`, apiKey) });
-          return json(502, { code: "invoice4u_rejected", doc_type: t, errors: errors.map((e) => e.Error) });
+          return json(502, { code: replyProblem(r) === "invoice4u_unauthorized" ? "invoice4u_unauthorized" : "invoice4u_rejected", doc_type: t, errors: errors.map((e) => e.Error) });
         }
         const docs = Array.isArray(d.Response) ? (d.Response as Obj[]) : [];
         const rows: Obj[] = [];
