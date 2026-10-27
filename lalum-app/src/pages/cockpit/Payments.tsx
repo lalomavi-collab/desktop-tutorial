@@ -23,7 +23,16 @@ type Milestone = {
   client_email: string | null;
   hosted_url: string | null;
   created_at: string;
+  last_error: string | null;
 };
+
+// Set by lalum-pay-webhook when a payment came in for a different sum (not applied) or with no sum to check (applied).
+// The same note is in the firm's audit log; here it is where the firm sees it.
+const PAY_FLAGS: Record<string, string> = {
+  PAY_AMOUNT_MISMATCH: "התקבל תשלום בסכום שונה מהסכום שנדרש, ולכן הוא לא סומן כשולם. יש לבדוק מול חברת הסליקה.",
+  PAY_AMOUNT_UNVERIFIED: "התשלום סומן כשולם, אבל ההודעה מחברת הסליקה לא כללה סכום לבדיקה. כדאי לוודא את הסכום מול חברת הסליקה.",
+};
+const payFlag = (e: string | null) => (e ? PAY_FLAGS[e.split(" ")[0]] ?? null : null);
 
 const fmtMoney = (amount: number, currency: string) => {
   const sym: Record<string, string> = { ILS: "₪", USD: "$", EUR: "€" };
@@ -154,6 +163,11 @@ function PaymentsInner({ canView }: { canView: boolean }) {
                 <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{B.statusLabels[bl.status as keyof typeof B.statusLabels] ?? bl.status}</span>
                 {bl.status !== "paid" && (
                   <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => void copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : B.copyLink}</button>
+                )}
+                {payFlag(bl.last_error) && (
+                  <div className="notice notice-err" role="alert" style={{ flexBasis: "100%", margin: 0, fontSize: 13 }}>
+                    {payFlag(bl.last_error)} <span dir="ltr" className="muted">{bl.last_error}</span>
+                  </div>
                 )}
               </div>
             ))}
