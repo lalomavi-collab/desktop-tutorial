@@ -20,6 +20,11 @@
 //
 // Access: the draft is read with the caller's own JWT, so the same row level security that guards
 // the ledger (firm partner or admin, MFA) decides who may issue. Writes use the service role.
+//
+// Fresh second factor (T04): issuing a tax document is final, so "issue" also needs a second factor typed in the last 120 seconds, not only an
+// aal2 session. The JWT's amr claim lists each method with the time it was used, and a code verified again in the same session adds a new entry
+// (the same reading as lalum_mfa_age_seconds, migration 0080). A browser driven by an agent has a signed-in tab but not the code, so it cannot issue.
+// Reconcile only records a document that already exists, so it is not gated.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { autoSendPlan, documentTemplateName } from "../_shared/docSend.ts";
 import { isEmail } from "../_shared/dunning.ts";
@@ -29,6 +34,23 @@ const CORS: Record<string, string> = {
   "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
   "access-control-allow-methods": "POST, OPTIONS",
 };
+const FRESH_FACTOR_SECONDS = 120;
+const FACTOR_METHODS = new Set(["totp", "phone", "webauthn", "mfa/totp", "mfa/phone", "mfa/webauthn"]);
+
+/** Seconds since the newest second factor in the JWT's amr claim, or null when the token is not aal2 or carries none. The gateway (verify_jwt)
+ *  and getUser have already checked the signature; this only reads the payload. */
+export function secondFactorAge(authHeader: string, nowSec = Math.floor(Date.now() / 1000)): number | null {
+  try {
+    const part = authHeader.replace(/^Bearer\s+/i, "").split(".")[1] ?? "";
+    const claims = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(part.length / 4) * 4, "=")));
+    if (claims?.aal !== "aal2" || !Array.isArray(claims.amr)) return null;
+    const stamps = claims.amr
+      .filter((e: unknown) => !!e && typeof e === "object" && FACTOR_METHODS.has(String((e as Obj).method)) && Number.isInteger((e as Obj).timestamp))
+      .map((e: Obj) => Number(e.timestamp));
+    return stamps.length ? nowSec - Math.max(...stamps) : null;
+  } catch { return null; }
+}
+
 const json = (status: number, data: unknown) =>
   new Response(JSON.stringify(data), { status, headers: { ...CORS, "content-type": "application/json" } });
 
@@ -68,6 +90,10 @@ Deno.serve(async (req) => {
   const docId = String(body.document_id ?? "");
   const action = body.action === "reconcile" ? "reconcile" : "issue";
   if (!docId) return json(400, { code: "missing_document" });
+  if (action === "issue") {
+    const age = secondFactorAge(authHeader);
+    if (age === null || age < -60 || age > FRESH_FACTOR_SECONDS) return json(403, { code: "fresh_second_factor", window_seconds: FRESH_FACTOR_SECONDS });
+  }
 
   // RLS decides who can read the row at all (finance level 1 or higher, behind MFA).
   const { data: doc } = await asUser.from("lalum_fin_documents").select("*").eq("id", docId).maybeSingle();
