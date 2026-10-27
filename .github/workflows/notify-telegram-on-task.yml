@@ -1,25 +1,24 @@
 name: "📝 Notify Telegram on Task Activity"
 
+# Issues opened by the owner only, and no comments: comments (pull request
+# comments included) were 153 runs a week, each billed as a full minute.
 on:
   issues:
     types: [opened, closed, reopened]
-  issue_comment:
-    types: [created]
 
 jobs:
   notify:
+    if: github.event.issue.user.login == github.repository_owner
     runs-on: ubuntu-latest
     steps:
       - name: "📤 Send task notification"
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          EVENT_NAME: ${{ github.event_name }}
           EVENT_ACTION: ${{ github.event.action }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
           ACTOR: ${{ github.actor }}
         run: |
           python3 - <<'EOF'
@@ -27,18 +26,13 @@ jobs:
           import os
           import urllib.request
 
-          event = os.environ["EVENT_NAME"]
           action = os.environ["EVENT_ACTION"]
           number = os.environ["ISSUE_NUMBER"]
           title = os.environ["ISSUE_TITLE"]
           url = os.environ["ISSUE_URL"]
           actor = os.environ["ACTOR"]
-          comment = os.environ.get("COMMENT_BODY", "")
 
-          if event == "issue_comment":
-              snippet = comment[:300]
-              text = f"💬 תגובה חדשה במשימה #{number}: {title}\n\n{snippet}\n\nמאת: {actor}\n{url}"
-          elif action == "opened":
+          if action == "opened":
               text = f"📝 משימה חדשה #{number}: {title}\n\nנוצרה על ידי: {actor}\n{url}"
           elif action == "closed":
               text = f"✅ משימה #{number} הושלמה: {title}\n\nנסגרה על ידי: {actor}"
