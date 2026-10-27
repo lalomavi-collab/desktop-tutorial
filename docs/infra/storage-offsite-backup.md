@@ -59,7 +59,7 @@ filename_encoding = base32768
 צריך מחשב Windows שבו OneDrive for work מחובר עם avraham@lalum.co ומסנכרן. כל הפקודות ב־PowerShell רגיל, לא כמנהל.
 
 1. **rclone:** `winget install Rclone.Rclone`, ואז פותחים חלון PowerShell חדש. `rclone version` צריך להראות 1.60 ומעלה.
-2. **הסקריפטים:** מעתיקים את `LalumOffsite.psm1`, `Backup-LalumStorage.ps1`, `Restore-LalumStorage.ps1` ו־`Set-LalumCredential.ps1` מ־`scripts/offsite-backup` לתיקייה קבועה, `C:\LALUM\offsite-backup`. תיקייה קבועה, כי המשימה השבועית מצביעה על הנתיב הזה.
+2. **הסקריפטים:** מעתיקים את `LalumOffsite.psm1`, `Backup-LalumStorage.ps1`, `Restore-LalumStorage.ps1`, `Set-LalumCredential.ps1` ו־`Show-LalumCredential.ps1` מ־`scripts/offsite-backup` לתיקייה קבועה, `C:\LALUM\offsite-backup`. תיקייה קבועה, כי המשימה השבועית מצביעה על הנתיב הזה.
 3. **מפתח S3:** פותחים https://supabase.com/dashboard/project/meoymkcotomoluwlwues/storage/s3, ובאזור Access keys יוצרים מפתח חדש בשם `lalum-offsite-backup`. ה־Secret מוצג פעם אחת בלבד.
 4. **שמירת המפתח:** מריצים את העוזר מתוך `C:\LALUM\offsite-backup`:
    ```
@@ -72,6 +72,8 @@ filename_encoding = base32768
    powershell -NoProfile -ExecutionPolicy Bypass -File .\Set-LalumCredential.ps1 -Target lalum-offsite-crypt-salt -Generate
    ```
    סיסמה שכבר שמורה במנהל הסיסמאות (למשל בהתקנה על מחשב אחר, כדי לקרוא גיבויים קיימים) מדביקים באותה פקודה בלי `-Generate`.
+
+   אם הסיסמה שהודפסה לא נשמרה בזמן, `Show-LalumCredential.ps1 -Target lalum-offsite-crypt` (או `-Target lalum-offsite-crypt-salt`) מציג אותה שוב, על המסך בלבד ורק לשתי סיסמאות ההצפנה. את המסך הזה לא מדביקים בשום מקום, גם לא בצ׳אט: סיסמה שעברה בצ׳אט מחליפים מיד בריצה חדשה עם `-Generate`.
 6. **הרצה יבשה.** בודקת את שלושת הסודות ולא כותבת כלום:
    ```
    cd C:\LALUM\offsite-backup
