@@ -11,7 +11,8 @@
 // Gate: header x-lalum-worker, checked by lalum_verify_worker_key, the key the dispatch worker's cron job already sends.
 // verify_jwt is false because pg_cron has no user JWT. ?dry=1 returns the plan's counts and writes nothing.
 // Right after setup Graph answers 403 until the Exchange role assignment propagates (30 minutes to 2 hours): such a run is
-// logged as not_authorized and writes nothing. Titles never reach the response or the run log, only counts.
+// logged as not_authorized and writes nothing. Titles never reach the response or the run log: counts, and for each deleted
+// (or held) row its Graph id and start time only, so a disappeared meeting can be traced in Outlook.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { type GraphEvent, planSync } from "./sync.ts";
 
@@ -100,6 +101,7 @@ Deno.serve(async (req: Request) => {
         rekeys: plan.rekeys.length,
         deletes: plan.deletes.length,
         held: plan.held,
+        gone: plan.gone,
       };
       if (dry) {
         result = { status: "dry_run", plan: plan.status, ...counts };

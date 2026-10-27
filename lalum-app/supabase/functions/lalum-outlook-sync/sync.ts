@@ -22,6 +22,9 @@ export type EventRow = {
 
 export type ExistingRow = { id: string; external_id: string | null; title: string; starts_at: string };
 export type Rekey = { id: string; external_id: string };
+// A row the run deletes (or would delete, when held), named without its title: the Graph id and the start are enough to find
+// the event in Outlook, and titles stay out of the run log.
+export type Gone = { external_id: string | null; starts_at: string };
 
 export type Plan =
   | { status: "refused"; reason: "too_few_events"; fetched: number }
@@ -30,6 +33,7 @@ export type Plan =
     upserts: EventRow[];
     rekeys: Rekey[];
     deletes: string[];
+    gone: Gone[];
     held: { inserts: number; deletes: number };
     fetched: number;
     skipped: number;
@@ -106,7 +110,9 @@ export function planSync(fetched: GraphEvent[], existing: ExistingRow[], now: Da
   }
   const moved = new Set(rekeys.map((k) => k.id));
   const newIds = new Set(rekeys.map((k) => k.external_id));
-  const deletes = orphans.filter((o) => !moved.has(o.id)).map((o) => o.id);
+  const goneRows = orphans.filter((o) => !moved.has(o.id));
+  const deletes = goneRows.map((o) => o.id);
+  const gone: Gone[] = goneRows.map((o) => ({ external_id: o.external_id, starts_at: o.starts_at }));
 
   if (deletes.length > MAX_DELETES) {
     // Too much would disappear at once, which looks like a broken fetch or a change of id format. Write only what is safe:
@@ -117,10 +123,11 @@ export function planSync(fetched: GraphEvent[], existing: ExistingRow[], now: Da
       upserts: safe,
       rekeys,
       deletes: [],
+      gone,
       held: { inserts: rows.length - safe.length, deletes: deletes.length },
       fetched: rows.length,
       skipped,
     };
   }
-  return { status: "ok", upserts: rows, rekeys, deletes, held: { inserts: 0, deletes: 0 }, fetched: rows.length, skipped };
+  return { status: "ok", upserts: rows, rekeys, deletes, gone, held: { inserts: 0, deletes: 0 }, fetched: rows.length, skipped };
 }
