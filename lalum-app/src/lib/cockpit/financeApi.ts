@@ -11,6 +11,7 @@ export interface DeliveryOutcome { status: "sent" | "skipped" | "failed" | "unkn
 
 const ISSUE_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.",
+  fresh_second_factor: "הפקה דורשת קוד אימות שהוזן בשתי הדקות האחרונות. לחצו שוב על הפקה והזינו קוד חדש.",
   not_found: "המסמך לא נמצא.",
   already_issued: "המסמך כבר הופק.",
   bad_related_document: "מסמך המקור חייב להיות מסמך שהופק לאותו לקוח, מהסוג המתאים ובאותה סביבה.",

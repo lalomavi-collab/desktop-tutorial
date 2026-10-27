@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, isMobile, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
 
+import { expenseBuckets } from "../src/lib/cockpit/financeExpenses.ts";
 import { parseDelimited, mapCustomers } from "../src/lib/cockpit/customerImport.ts";
 import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
@@ -467,4 +468,30 @@ t("share percent is whole, clamped, and zero for a non-positive total", () => {
   assert.equal(sharePct(300, 200), 100);
   assert.equal(sharePct(-5, 200), 0);
   assert.equal(sharePct(10, 0), 0);
+});
+
+t("expense series: day, week, month and year buckets, before and with VAT, running period out of the average", () => {
+  const rows = [exp({ id: "a", spent_on: "2026-10-03" }), exp({ id: "b", spent_on: "2026-10-03", total: 236, vat_amount: 36 }), exp({ id: "c", spent_on: "2026-09-10", category: "RENT", total: 590, vat_amount: 90 }), exp({ id: "d", spent_on: "2025-12-31" })];
+  const d = expenseBuckets(rows, "day", 2026, "2026-10-05");
+  assert.equal(d.buckets.length, 30);
+  assert.equal(d.buckets[29].key, "2026-10-05");
+  assert.equal(d.buckets.find((b) => b.key === "2026-10-03").amount, 300);
+  assert.equal(expenseBuckets(rows, "day", 2026, "2026-10-05", "total").buckets.find((b) => b.key === "2026-10-03").amount, 354);
+  const m = expenseBuckets(rows, "month", 2026, "2026-10-05");
+  assert.equal(m.buckets.length, 12);
+  assert.equal(m.amount, 800);
+  assert.equal(m.buckets[9].amount, 300);
+  assert.equal(m.buckets[9].future, false);
+  assert.equal(m.buckets[10].future, true);
+  assert.equal(m.average, 500);
+  assert.equal(m.averageOver, 1);
+  assert.equal(m.top.key, "2026-09");
+  assert.equal(m.hasRunning, true);
+  assert.equal(m.categories[0].category, "RENT");
+  assert.equal(m.categories.reduce((a, c) => a + c.amount, 0), 800);
+  const y = expenseBuckets(rows, "year", 2026, "2026-10-05");
+  assert.equal(y.buckets.length, 5);
+  assert.equal(y.buckets[3].amount, 100);
+  assert.equal(expenseBuckets(rows, "week", 2026, "2026-10-05").buckets.length, 12);
+  assert.equal(expenseBuckets([], "month", 2026, "2026-10-05").lastVsPrevious.pct, null);
 });

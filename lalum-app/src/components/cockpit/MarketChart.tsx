@@ -41,6 +41,8 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
   }, []);
   const n = labels.length;
   const barsH = bars ? 44 : 0, B = 26 + barsH, plotH = height - T - B, step = n > 1 ? (W - L - R) / (n - 1) : 0;
+  // Time labels about 40px apart at any width, the last one always shown: 28 daily labels fit a desktop card and thin out on a phone.
+  const every = Math.max(1, Math.ceil(40 / Math.max(1, step)));
 
   const primary = series.find((x) => x.kind !== "dashed") ?? series[0];
   const geo = useMemo(() => {
@@ -150,7 +152,7 @@ export function MarketChart({ title, labels, series, bars, ma, avg, trend, barsA
           const m = mean(bars.values), yy = baseY + 16 + (barsH - 8) - (m / barMax) * (barsH - 8);
           return <g aria-hidden="true"><line x1={L} x2={W - R} y1={yy} y2={yy} stroke="var(--chart-warn, #b8780a)" strokeWidth="1.2" strokeDasharray="5 4" /><text x={L - 7} y={yy + 4} textAnchor="end" className="mk-t mk-avg">{+m.toFixed(1)}</text></g>;
         })()}
-        {labels.map((lb, i) => (n <= 12 || i % 2 === 0 || i === n - 1) && <text key={i} x={geo.x(i)} y={height - 7} textAnchor="middle" className={`mk-t${i === shown && hover != null ? " mk-on" : ""}`}>{lb}</text>)}
+        {labels.map((lb, i) => (i === n - 1 || (i % every === 0 && n - 1 - i >= every)) && <text key={i} x={geo.x(i)} y={height - 7} textAnchor="middle" className={`mk-t${i === shown && hover != null ? " mk-on" : ""}`}>{lb}</text>)}
         {hover != null && (
           <g aria-hidden="true">
             <line x1={geo.x(hover)} x2={geo.x(hover)} y1={T} y2={height - B + barsH + 6} stroke="var(--slate)" strokeOpacity=".55" strokeDasharray="3 3" />
