@@ -50,6 +50,9 @@ create table if not exists public.lalum_fin_expense_docs (
 create index if not exists lalum_fin_expense_docs_firm_sha on public.lalum_fin_expense_docs (firm_id, sha256);
 
 alter table public.lalum_fin_expense_docs enable row level security;
+alter table public.lalum_fin_expense_docs force row level security;
+-- the tax settings of 0082 were the one finance table of that kind without it (the bank tables of 20261023101711 are forced)
+alter table public.lalum_fin_tax_settings force row level security;
 revoke all on public.lalum_fin_expense_docs from public, anon, authenticated;
 grant select on public.lalum_fin_expense_docs to authenticated;
 drop policy if exists lalum_fin_expense_docs_read on public.lalum_fin_expense_docs;
