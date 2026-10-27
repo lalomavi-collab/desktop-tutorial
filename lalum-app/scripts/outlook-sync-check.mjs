@@ -56,6 +56,8 @@ assert.equal(planSync([...five.slice(0, 4), ev("c", "2026-11-02T08:00:00", { isC
   assert.equal(p.status, "ok");
   assert.deepEqual(p.rekeys, []);
   assert.deepEqual(p.deletes.sort(), ["conf", "dupOld"]);
+  assert.deepEqual(p.gone.map((g) => g.external_id).sort(), ["conf5", "old28"]);
+  assert.ok(p.gone.every((g) => !("title" in g) && typeof g.starts_at === "string"));
   assert.equal(p.upserts.length, 6);
 }
 
@@ -68,6 +70,7 @@ assert.equal(planSync([...five.slice(0, 4), ev("c", "2026-11-02T08:00:00", { isC
   assert.equal(p.status, "ok");
   assert.deepEqual(p.rekeys, five.map((e, i) => ({ id: `r${i}`, external_id: e.id })));
   assert.deepEqual(p.deletes, ["gone"]);
+  assert.deepEqual(p.gone, [{ external_id: "AAkALgAAAAz", starts_at: "2026-11-05T06:30:00+00:00" }]);
 }
 
 // 6. Rows that started already, rows past the window and duplicate ids in one fetch.
@@ -75,6 +78,7 @@ assert.equal(planSync([...five.slice(0, 4), ev("c", "2026-11-02T08:00:00", { isC
   const existing = [row("past", "p1", "2026-10-25T03:00:00"), row("far", "f1", "2027-05-01T08:00:00")];
   const p = planSync([...five, five[0]], existing, NOW, END);
   assert.deepEqual(p.deletes, []);
+  assert.deepEqual(p.gone, []);
   assert.equal(p.upserts.length, 5);
 }
 
@@ -85,6 +89,7 @@ assert.equal(planSync([...five.slice(0, 4), ev("c", "2026-11-02T08:00:00", { isC
   const p = planSync(five, existing, NOW, END);
   assert.equal(p.status, "held");
   assert.deepEqual(p.deletes, []);
+  assert.equal(p.gone.length, MAX_DELETES + 1);
   assert.deepEqual(p.upserts.map((u) => u.external_id), ["g0"]);
   assert.deepEqual(p.held, { inserts: 4, deletes: MAX_DELETES + 1 });
   // Exactly at the cap is a normal run.
