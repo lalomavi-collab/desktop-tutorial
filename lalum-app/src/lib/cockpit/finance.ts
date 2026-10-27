@@ -49,6 +49,8 @@ export interface FinPayment {
 export interface FinExpense {
   id: string; spent_on: string; supplier: string; category: string; description: string | null; total: number;
   vat_amount: number; vat_recoverable_pct: number; supplier_doc_ref: string | null; payment_method: PayMethod | null;
+  /** Tax classification (migration 0082). Null on older rows; the tax engine then derives it from `category`. */
+  tax_category?: string | null; income_tax_recognition_pct?: number | null;
 }
 
 export const DOC_TYPE: Record<DocType, string> = {
