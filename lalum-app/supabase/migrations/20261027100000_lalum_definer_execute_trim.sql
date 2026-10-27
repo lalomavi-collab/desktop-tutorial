@@ -1,5 +1,5 @@
 -- Security day, step 14 (27.10.2026): the advisor lists every SECURITY DEFINER function a signed in user can
--- call (138 on 23.10, 140 on 27.10). All were read; these four have no caller outside the database: no policy, no view, no RPC from
+-- call (138 on 23.10, all read then; 140 on 27.10). These four have no caller outside the database: no policy, no view, no RPC from
 -- the app or a function, and every function that calls them is itself SECURITY DEFINER, so it runs as the
 -- owner and keeps working. A direct call from a session only answered questions about other customers and
 -- matters (is this customer locked for collections, was a reminder sent, why can this matter not be purged).
