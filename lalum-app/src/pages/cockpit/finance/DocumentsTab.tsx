@@ -7,7 +7,7 @@ import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
 import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
-import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
+import { checkProvider, issueDocument, issueError, providerCheckText, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
 import { verifyCode } from "../../../lib/cockpit/mfa";
 import { canSend, defaultBody, defaultSubject, deliveryText, sendSummary } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
@@ -177,6 +177,12 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     setBusy(null); onChange();
     setNote(r.ok ? { ok: true, text: `נמצא במערכת ההנפקה: מסמך מספר ${r.doc_number}. הסטטוס עודכן. ${deliveryText(r.delivery).text}` } : { ok: false, text: issueError(r) });
   }
+  async function checkConnection() {
+    setBusy("check"); setNote(null);
+    const r = await checkProvider(firmId);
+    setBusy(null);
+    setNote(providerCheckText(r));
+  }
   async function retainerDrafts() {
     if (!supabase) return;
     const now = new Date(), period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -229,6 +235,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
           <option value="">כל המסמכים</option><option value="OPEN_PROFORMA">חשבונות עסקה פתוחים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <div className="ck-row">
+          {level >= 3 && <button className="ck-btn" disabled={busy !== null} title="קריאה בלבד: שואל את מערכת ההנפקה אם היא מקבלת את המפתח שבשרת. לא מפיק ולא שומר דבר." onClick={() => void checkConnection()}>{busy === "check" ? "בודק..." : "בדיקת חיבור למערכת ההנפקה"}</button>}
           <button className="ck-btn" disabled={busy !== null || !customers.some((c) => c.retainer_active)} title="יוצר טיוטות בלבד, ללא הפקה" onClick={() => void retainerDrafts()}>טיוטות ריטיינר לחודש הנוכחי</button>
           <button className="ck-btn primary" disabled={!customers.length} onClick={() => { setNote(null); setEd(blankEditor()); }}>מסמך חדש</button>
         </div>

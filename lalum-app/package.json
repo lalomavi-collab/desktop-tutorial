@@ -28,6 +28,7 @@
     "cashflow-check": "node scripts/cashflow-check.mjs",
     "dunning-send-check": "node scripts/dunning-send-check.mjs",
     "doc-send-check": "node scripts/doc-send-check.mjs",
+    "invoice4u-reply-check": "node scripts/invoice4u-reply-check.mjs",
     "whatsapp-templates-check": "node scripts/whatsapp-templates-check.mjs",
     "collections-lock-e2e": "node scripts/collections-lock-e2e.mjs",
     "token-floor-check": "node scripts/token-floor-check.mjs",

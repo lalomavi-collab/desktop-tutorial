@@ -17,6 +17,8 @@ const ISSUE_ERRORS: Record<string, string> = {
   bad_related_document: "מסמך המקור חייב להיות מסמך שהופק לאותו לקוח, מהסוג המתאים ובאותה סביבה.",
   customer_not_found: "הלקוח לא נמצא.",
   customer_sync_failed: "פתיחת הלקוח במערכת ההנפקה נכשלה. אם הלקוח כבר קיים שם, הזינו את מספר הלקוח שלו בכרטיס הלקוח.",
+  invoice4u_unauthorized: "מערכת ההנפקה דוחה את מפתח ה-API שמוגדר בשרת. לא הופק מסמך והטיוטה נשמרה. אחרי שהמפתח הנכון יודבק בהגדרות השרת, לחצו על בדיקת חיבור ואז הפיקו.",
+  provider_unreadable: "מערכת ההנפקה החזירה תשובה ריקה, בלי תוצאה ובלי שגיאה. לא הופק מסמך. לחצו על בדיקת חיבור לפני ניסיון נוסף.",
   invoice4u_rejected: "מערכת ההנפקה דחתה את המסמך. הפרטים מופיעים בשורת המסמך.",
   invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.",
   casual_not_allowed: "לקוח מזדמן אפשרי רק בחשבונית מס קבלה ובחשבונית זיכוי.",
@@ -43,7 +45,21 @@ const RPC_ERRORS: Record<string, string> = {
 export const rpcError = (message: string): string => RPC_ERRORS[Object.keys(RPC_ERRORS).find((k) => message.includes(k)) ?? ""] ?? message;
 
 /** Issues a draft, or with action "reconcile" asks Invoice4U whether an uncertain attempt produced a document. */
-export async function issueDocument(documentId: string, action: "issue" | "reconcile" = "issue"): Promise<IssueReply> {
+export const issueDocument = (documentId: string, action: "issue" | "reconcile" = "issue"): Promise<IssueReply> =>
+  callIssue({ document_id: documentId, action });
+
+export interface ProviderCheck { ok?: boolean; code?: string; env?: "prod" | "qa"; errors?: Array<{ id?: number; error?: string }> }
+/** Asks Invoice4U, read only, whether it accepts the key the server holds. Creates nothing. */
+export const checkProvider = (firmId: string): Promise<ProviderCheck> => callIssue({ firm_id: firmId, action: "check" });
+export function providerCheckText(r: ProviderCheck): { ok: boolean; text: string } {
+  if (r.ok) return { ok: true, text: `החיבור למערכת ההנפקה תקין: המפתח מתקבל, בסביבה ${r.env === "prod" ? "האמיתית" : "הניסיונית"}. לא נוצר דבר.` };
+  if (r.code === "invoice4u_unauthorized") return { ok: false, text: "מערכת ההנפקה דוחה את המפתח שמוגדר בשרת (UnauthorizedUser). אי אפשר להפיק עד שיודבק המפתח הנכון." };
+  if (r.code === "provider_unreadable") return { ok: false, text: "מערכת ההנפקה החזירה תשובה ריקה, ולכן אי אפשר לקבוע אם המפתח תקין. נסו שוב בעוד כמה דקות." };
+  if (r.code === "invoice4u_rejected") return { ok: false, text: `מערכת ההנפקה דחתה את הבדיקה: ${(r.errors ?? []).map((x) => x.error).filter(Boolean).join(", ") || "ללא פירוט"}.` };
+  return { ok: false, text: issueError(r) };
+}
+
+async function callIssue(body: Record<string, string>): Promise<IssueReply & ProviderCheck> {
   if (!supabase) return { ok: false, code: "network" };
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token ?? "";
@@ -53,9 +69,9 @@ export async function issueDocument(documentId: string, action: "issue" | "recon
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-issue`, {
       method: "POST", signal: ctl.signal,
       headers: { "content-type": "application/json", authorization: `Bearer ${token}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
-      body: JSON.stringify({ document_id: documentId, action }),
+      body: JSON.stringify(body),
     });
-    try { return (await res.json()) as IssueReply; } catch { return { ok: false, code: "fetch_failed" }; }
+    try { return (await res.json()) as IssueReply & ProviderCheck; } catch { return { ok: false, code: "fetch_failed" }; }
   } catch {
     // A timeout or dropped connection is NOT proof that nothing was issued.
     return { ok: false, code: "fetch_failed" };
@@ -70,7 +86,7 @@ export interface ImportReply {
 }
 const IMPORT_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. נדרש שותף בפירמה עם אימות דו שלבי.",
-  invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.", invoice4u_rejected: "מערכת ההנפקה דחתה את הבקשה. בדקו שמפתח ה-API תקף לסביבה שנבחרה.",
+  invoice4u_not_configured: "החיבור למערכת ההנפקה לא הוגדר בשרת.", invoice4u_rejected: "מערכת ההנפקה דחתה את הבקשה. בדקו שמפתח ה-API תקף לסביבה שנבחרה.", invoice4u_unauthorized: "מערכת ההנפקה דוחה את מפתח ה-API שמוגדר בשרת. לא יובא דבר. יש להדביק את המפתח הנכון בהגדרות השרת.",
   archive_conflict: "מערכת ההיסטוריה מדווחת סכומים שונים ממה שכבר נשמר לאחד המספרים. הייבוא נעצר ודורש בדיקה ידנית.",
   bad_range: "טווח תאריכים לא תקין.", db_error: "שמירה למסד הנתונים נכשלה.", fetch_failed: "שגיאת תקשורת מול מערכת ההיסטוריה.",
 };
