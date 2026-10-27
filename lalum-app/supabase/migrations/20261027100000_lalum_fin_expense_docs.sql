@@ -133,8 +133,9 @@ end $$;
 revoke execute on function public.lalum_fin_expense_doc_open(uuid) from public, anon;
 grant execute on function public.lalum_fin_expense_doc_open(uuid) to authenticated;
 
+-- search_path pinned here too: create or replace resets it, and the security day pins it (advisor: mutable search_path).
 create or replace function public.lalum_export_classification() returns jsonb
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   select jsonb_build_object(
     'excluded', jsonb_build_object(
       'lalum_conflict_parties',       'blind index hashes of party names, meaningless outside the platform',
