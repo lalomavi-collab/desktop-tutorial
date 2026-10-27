@@ -49,9 +49,14 @@ export interface FinPayment {
 export interface FinExpense {
   id: string; spent_on: string; supplier: string; category: string; description: string | null; total: number;
   vat_amount: number; vat_recoverable_pct: number; supplier_doc_ref: string | null; payment_method: PayMethod | null;
-  /** The source document (invoice or receipt) behind this expense, stored in the private bucket
-   *  finance-expense-docs (migration 0082). null means nothing is attached yet. */
-  source_doc_path?: string | null; source_doc_mime?: string | null; source_doc_size?: number | null;
+  /** Tax classification (migration 0082). Null on older rows; the tax engine then derives it from `category`. */
+  tax_category?: string | null; income_tax_recognition_pct?: number | null;
+}
+
+/** A source document behind an expense (migration 20261027100000). Several per expense; a replaced one keeps its row
+ *  and its file, with superseded_at set. The storage path is never read by the browser. */
+export interface FinExpenseDoc {
+  id: string; expense_id: string; sha256: string; mime: string; size_bytes: number; uploaded_at: string; superseded_at: string | null;
 }
 
 export const DOC_TYPE: Record<DocType, string> = {

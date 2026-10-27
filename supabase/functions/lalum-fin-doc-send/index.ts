@@ -31,12 +31,14 @@
 //  * WHATSAPP (needs customer_id) sends the approved document template with sample values to the mobile on that customer's card, and only
 //    with the customer's recorded consent. Point it at a card that carries your own mobile.
 //  * Nothing is issued, reserved or logged, and no document or customer is created or changed. Hence nothing to delete afterwards.
+//  * With draft_id (EMAIL only) the draft is rendered by this system and mailed to the partner as a plainly marked simulation. The draft
+//    stays a draft: no number, no Invoice4U, no send record. Delete the draft and nothing is left.
 //
 // Env: RESEND_API_KEY, LALUM_FROM_EMAIL, LALUM_REPLY_TO, and for automatic WhatsApp WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID,
 //      WHATSAPP_DOCUMENT_TEMPLATE, WHATSAPP_DOCUMENT_LANG (default "he"). SUPABASE_URL and SUPABASE_ANON_KEY are injected.
 // Access: finance level 3 with MFA, decided by the database with the caller's own JWT.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { ARCHIVE_TYPE, autoBody, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, validPdfBase64 } from "../_shared/docSend.ts";
+import { ARCHIVE_TYPE, autoBody, simulationEmail, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, validPdfBase64 } from "../_shared/docSend.ts";
 import { isEmail, normalizeIsraeliPhone } from "../_shared/dunning.ts";
 
 const CORS: Record<string, string> = {
@@ -114,7 +116,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = firmId ? await asUser.rpc("lalum_fin_can", { p_firm: firmId, p_min: 3 }) : { data: false };
   if (!firmId || allowed !== true) return json(403, { code: "forbidden" });
 
-  let b: { test?: boolean; customer_id?: string; auto?: boolean; channel?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string };
+  let b: { test?: boolean; draft_id?: string; customer_id?: string; auto?: boolean; channel?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: unknown; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string };
   try { b = await req.json(); } catch { return json(400, { code: "bad_json" }); }
 
   // ---- delivery test: nothing is issued, reserved or logged ----
@@ -135,6 +137,16 @@ Deno.serve(async (req) => {
     }
     if (!env("RESEND_API_KEY")) return json(500, { code: "mail_not_configured" });
     if (!isEmail(user.email)) return json(422, { code: "no_own_email" });
+    // Simulation of issuing: a DRAFT rendered by this system and mailed to the partner. The draft stays a draft and nothing is numbered.
+    if (b.draft_id) {
+      const { data: d } = await asUser.from("lalum_fin_documents").select("id, firm_id, status, doc_type, issue_date, lines, subtotal, vat_amount, total").eq("id", b.draft_id).maybeSingle();
+      if (!d || d.firm_id !== firmId) return json(404, { code: "not_found" });
+      if (d.status !== "DRAFT") return json(409, { code: "not_a_draft" });
+      const sim = simulationEmail({ docType: d.doc_type, issueDate: d.issue_date, lines: Array.isArray(d.lines) ? d.lines : [], subtotal: d.subtotal, vat: d.vat_amount, total: d.total });
+      const s = await postMail({ to: [user.email.toLowerCase()], subject: sim.subject, html: sim.html, attachments: [{ filename: "lalum-delivery-test.pdf", content: SAMPLE_PDF_BASE64 }] });
+      if (!s.ok) { console.log("FIN_SIM_MAIL_ERR " + s.err); return json(502, { code: "send_failed", detail: s.err }); }
+      return json(200, { ok: true, channel: "EMAIL", test: true, count: 1, attached: true });
+    }
     const r = await postMail({
       to: [user.email.toLowerCase()], subject: "[בדיקה] בדיקת שליחה אוטומטית של מסמכים מ-LALUM",
       html: docEmailHtml(testEmailBody(), null, true), attachments: [{ filename: "lalum-delivery-test.pdf", content: SAMPLE_PDF_BASE64 }],

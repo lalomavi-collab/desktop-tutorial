@@ -1,14 +1,22 @@
 name: Auto-merge daily audit
 
-# The daily audit routine pushes fixes to a claude/daily-audit-* branch.
-# This workflow rebuilds that branch and, only if the build passes, merges
-# it into main. The build is the safety gate, so nothing reaches main (and
-# the live site) without compiling and type-checking first.
+# The daily updates job pushes the "חדשנו" feed to a
+# claude/daily-audit-updates-* branch. This workflow rebuilds that branch and,
+# only if the build and every guard below pass, merges it into main. The build
+# is the safety gate, so nothing reaches main (and the live site) without
+# compiling and type-checking first.
+#
+# This is the one automatic merge the owner approved (20.10.2026), and it is
+# limited to lalum-app/src/data/updates.json. Every other branch, including
+# the daily maintenance run, opens a draft pull request and waits for the
+# owner's explicit word. The trigger used to be claude/daily-audit-**, wider
+# than the guard below, so any branch under that prefix would have merged
+# itself on a green build.
 
 on:
   push:
     branches:
-      - "claude/daily-audit-**"
+      - "claude/daily-audit-updates-*"
 
 permissions:
   contents: write

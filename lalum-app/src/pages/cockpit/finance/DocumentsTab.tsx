@@ -1,12 +1,14 @@
 import { allocationShort } from "../../../lib/cockpit/financeAllocation";
 import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
 import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
 import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
-import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError } from "../../../lib/cockpit/financeApi";
+import { issueDocument, issueError, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
+import { verifyCode } from "../../../lib/cockpit/mfa";
 import { canSend, defaultBody, defaultSubject, deliveryText, sendSummary } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
 import { DocSendPanel } from "./DocSendPanel";
@@ -38,6 +40,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
   const [pay, setPay] = useState<{ doc: FinDocument; amount: string; date: string; method: PayMethod } | null>(null);
   const [typeFilter, setTypeFilter] = useState("");
   const [sendFor, setSendFor] = useState<string | null>(null);
+  // Issuing is final, so it is confirmed on the page (a native dialog can be accepted by an automated browser) with a fresh 6 digit code (T04).
+  const [ask, setAsk] = useState<{ text: string; factors: { id: string; name: string }[]; factorId: string; code: string; err: string | null } | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const sendsByDoc = useMemo(() => {
     const m = new Map<string, DocSend[]>();
@@ -128,11 +132,32 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     setBusy(null);
     if (id) { setEd(null); setNote({ ok: true, text: "הטיוטה נשמרה." }); onChange(); }
   }
+  /** Saves the draft and mails a rendered simulation to the partner. Nothing is issued, numbered or logged; deleting the draft leaves nothing. */
+  async function onSimulate() {
+    setBusy("sim");
+    const id = await saveDraft();
+    if (!id) { setBusy(null); return; }
+    const r = await simulateIssue(id);
+    setBusy(null); onChange();
+    setNote(r.ok
+      ? { ok: true, text: 'נשלחה אליכם סימולציה בדוא"ל, עם קובץ PDF לדוגמה מצורף. לא הופק מסמך, לא הוקצה מספר ולא נשלח דבר ללקוח. הטיוטה נשמרה, ואפשר למחוק אותה מהרשימה.' }
+      : { ok: false, text: sendDocumentError(r) });
+  }
   async function onIssue() {
-    if (!ed) return;
+    if (!ed || !supabase) return;
     const cust = cn.customer(byId.get(ed.customer_id) ?? { id: ed.customer_id });
-    if (!window.confirm(`להפיק ${DOC_TYPE[ed.doc_type]} ללקוח ${cust} על סך ${money(totals?.total)}?\nהפקה היא סופית: המסמך מקבל מספר רץ ואינו ניתן לעריכה או למחיקה. לביטול יופק מסמך זיכוי.`)) return;
+    const f = await supabase.auth.mfa.listFactors();
+    const factors = (f.data?.totp ?? []).filter((x) => x.status === "verified").map((x) => ({ id: x.id, name: x.friendly_name ?? "TOTP" }));
+    if (!factors.length) { setNote({ ok: false, text: "הפקה דורשת אימות דו שלבי פעיל. יש להפעיל אותו באבטחת החשבון ולחזור לכאן." }); return; }
+    setAsk({ text: `להפיק ${DOC_TYPE[ed.doc_type]} ללקוח ${cust} על סך ${money(totals?.total)}?\nהפקה היא סופית: המסמך מקבל מספר רץ ואינו ניתן לעריכה או למחיקה. לביטול יופק מסמך זיכוי.`, factors, factorId: factors[0].id, code: "", err: null });
+  }
+  async function confirmIssue(e: FormEvent) {
+    e.preventDefault();
+    if (!ed || !ask) return;
     setBusy("issue");
+    const err = await verifyCode(ask.factorId, ask.code);
+    if (err) { setBusy(null); setAsk({ ...ask, code: "", err }); return; }
+    setAsk(null);
     const id = await saveDraft();
     if (!id) { setBusy(null); return; }
     const r = await issueDocument(id);
@@ -262,9 +287,30 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
           {ed.customer_id && !casual && !customers.find((c) => c.id === ed.customer_id)?.tax_id && <div className="ck-meta">ללקוח הזה אין ת.ז. או ח.פ. בכרטיס. אם הוא עוסק מורשה, מסמך מעל הסף ידרוש אותם לצורך מספר הקצאה.</div>}
           <div className="ck-row">
             <button className="ck-btn" disabled={busy !== null} onClick={() => void onSave()}>שמירה כטיוטה</button>
+            <button className="ck-btn" disabled={busy !== null || problems.length > 0 || level < 3} title="שומר טיוטה ושולח אליכם סימולציה בדוא&quot;ל. לא מפיק, לא ממספר ולא פונה למערכת ההנפקה." onClick={() => void onSimulate()}>{busy === "sim" ? "שולח..." : "סימולציה אליי"}</button>
             <button className="ck-btn primary" disabled={busy !== null || problems.length > 0 || level < 3 || (!!edCustomer && !edCustomer.email)} title={level < 3 ? "הפקה דורשת הרשאת הפקה" : edCustomer && !edCustomer.email ? 'אין בכרטיס הלקוח כתובת דוא"ל' : undefined} onClick={() => void onIssue()}>{busy === "issue" ? "מפיק..." : "הפקה"}</button>
-            <button className="ck-btn" onClick={() => setEd(null)}>סגירה</button>
+            <button className="ck-btn" onClick={() => { setAsk(null); setEd(null); }}>סגירה</button>
           </div>
+          {ask && (
+            <form className="ck-card mfa-box" onSubmit={(e) => void confirmIssue(e)}>
+              <div className="ck-title">אישור הפקה</div>
+              <div className="ck-meta" style={{ whiteSpace: "pre-line" }}>{ask.text}</div>
+              {ask.factors.length > 1 && (
+                <div className="ck-row" style={{ flexWrap: "wrap" }}>
+                  {ask.factors.map((f) => (
+                    <button type="button" key={f.id} className={"ck-btn" + (f.id === ask.factorId ? " primary" : "")} onClick={() => setAsk({ ...ask, factorId: f.id, err: null })}>{f.name}</button>
+                  ))}
+                </div>
+              )}
+              <label className="mfa-label" htmlFor="issue-code">קוד בן 6 ספרות מאפליקציית האימות</label>
+              <input id="issue-code" className="field" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" aria-label="קוד אימות" value={ask.code} onChange={(e) => setAsk({ ...ask, code: e.target.value.replace(/\D/g, ""), err: null })} />
+              {ask.err && <div className="ck-err" aria-live="polite">{ask.err}</div>}
+              <div className="ck-row">
+                <button className="ck-btn primary" disabled={busy !== null || ask.code.length !== 6}>{busy === "issue" ? "מפיק..." : "אימות והפקה"}</button>
+                <button type="button" className="ck-btn" autoFocus disabled={busy !== null} onClick={() => setAsk(null)}>ביטול</button>
+              </div>
+            </form>
+          )}
         </div>
       )}
 

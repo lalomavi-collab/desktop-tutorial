@@ -23,17 +23,18 @@ import { PermissionsTab } from "./PermissionsTab";
 import { AuditLogTab } from "./AuditLogTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
+import { TaxPnlTab } from "./TaxPnlTab";
 import { RevenueView } from "./RevenueView";
 import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 import { ARCHIVE_COLS } from "../../../lib/cockpit/dashboardFinance";
 
-type Tab = "overview" | "documents" | "proformas" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+type Tab = "overview" | "documents" | "proformas" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow" | "pnl";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["pnl", "רווח והפסד ומס"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
 // The thirteen sections are grouped into four rubrics: one row of rubrics, and under the chosen one a short row of its sections.
 const GROUPS: Array<{ key: string; label: string; tabs: Tab[] }> = [
-  { key: "overview", label: "סקירה ודוחות", tabs: ["overview", "reports", "cashflow"] },
+  { key: "overview", label: "סקירה ודוחות", tabs: ["overview", "reports", "pnl", "cashflow"] },
   { key: "income", label: "הכנסות ולקוחות", tabs: ["documents", "proformas", "customers", "aging"] },
   { key: "outgo", label: "הוצאות ונאמנות", tabs: ["expenses", "trust"] },
   { key: "control", label: "ארכיון ובקרה", tabs: ["archive", "shaam", "permissions", "audit"] },
@@ -197,8 +198,9 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} sends={docSends} level={level} onChange={() => void load()} />}
-      {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
+      {tab === "expenses" && loaded && <Gate level={level} need={1}><ExpensesTab firmId={firmId} level={level} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
+      {tab === "pnl" && loaded && <Gate level={level} need={3}><TaxPnlTab firmId={firmId} docs={docs} payments={payments} expenses={expenses} archive={archive} /></Gate>}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}
       {tab === "audit" && level >= 4 && <AuditLogTab />}
       {tab === "aging" && loaded && <Gate level={level} need={3}><ArAgingTab customers={customers} docs={docs} payments={payments} dunning={dunning} canOverride={level >= 4} onChange={() => void load()} /></Gate>}

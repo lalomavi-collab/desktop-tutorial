@@ -11,6 +11,7 @@ export interface DeliveryOutcome { status: "sent" | "skipped" | "failed" | "unkn
 
 const ISSUE_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.",
+  fresh_second_factor: "הפקה דורשת קוד אימות שהוזן בשתי הדקות האחרונות. לחצו שוב על הפקה והזינו קוד חדש.",
   not_found: "המסמך לא נמצא.",
   already_issued: "המסמך כבר הופק.",
   bad_related_document: "מסמך המקור חייב להיות מסמך שהופק לאותו לקוח, מהסוג המתאים ובאותה סביבה.",
@@ -207,7 +208,7 @@ const DOC_SEND_ERRORS: Record<string, string> = {
   too_many: "יותר מדי נמענים. עד 6 כתובות בשליחה אחת.", bad_content: "טקסט ההודעה ארוך מדי (עד 2000 תווים).",
   archive_link_unavailable: "מערכת ההיסטוריה לא החזירה קישור למסמך הזה, ולכן אי אפשר לשלוח אותו כרגע. אפשר לנסות שוב מאוחר יותר.",
   bad_pdf: "הקובץ המצורף אינו PDF תקין, או שהוא גדול מדי (עד 4MB).",
-  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", already_sent: "המסמך כבר נשלח אוטומטית בערוץ הזה.",
+  duplicate_send: "המסמך כבר נשלח לנמען הזה בשתי הדקות האחרונות.", already_sent: "המסמך כבר נשלח אוטומטית בערוץ הזה.", not_a_draft: "סימולציה אפשרית רק על טיוטה שלא הופקה.",
   no_whatsapp_consent: "בכרטיס הלקוח לא נרשמה הסכמה להודעות WhatsApp.", no_mobile: "בכרטיס הלקוח אין נייד תקין.",
   template_not_configured: "תבנית ה-WhatsApp למסמכים לא הוגדרה בשרת (WHATSAPP_DOCUMENT_TEMPLATE).", whatsapp_not_configured: "חיבור ה-WhatsApp לא הוגדר בשרת (טוקן או מזהה מספר).", mail_not_configured: "שליחת הדוא\"ל לא הוגדרה בשרת.",
   send_failed: "השליחה נכשלה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. בדקו ביומן השליחות לפני ניסיון חוזר: ייתכן שההודעה נשלחה.",
@@ -215,7 +216,7 @@ const DOC_SEND_ERRORS: Record<string, string> = {
 export const sendDocumentError = (r: SendDocumentReply): string => DOC_SEND_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
 
 /** Sends one issued document by e-mail on a partner's click. The customer's address comes from the customer record on the server. */
-export async function sendDocument(body: { test?: boolean; channel?: "EMAIL" | "WHATSAPP"; customer_id?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string }): Promise<SendDocumentReply> {
+export async function sendDocument(body: { test?: boolean; draft_id?: string; channel?: "EMAIL" | "WHATSAPP"; customer_id?: string; document_id?: string; archive_id?: string; include_customer?: boolean; extra?: string; copy_to_me?: boolean; subject?: string; body?: string; pdf_base64?: string }): Promise<SendDocumentReply> {
   if (!supabase) return { ok: false, code: "fetch_failed" };
   const { data } = await supabase.auth.getSession();
   const ctl = new AbortController();
@@ -242,6 +243,9 @@ export async function sendDocument(body: { test?: boolean; channel?: "EMAIL" | "
 export const sendTest = (channel: "EMAIL" | "WHATSAPP", customerId?: string): Promise<SendDocumentReply> =>
   sendDocument({ test: true, channel, ...(customerId ? { customer_id: customerId } : {}) });
 
+/** Simulates issuing a saved draft: this system renders it and mails it to the signed in partner. The draft stays a draft; nothing is numbered. */
+export const simulateIssue = (draftId: string): Promise<SendDocumentReply> => sendDocument({ test: true, channel: "EMAIL", draft_id: draftId });
+
 /** Records that the partner opened WhatsApp with the document message prepared. There is no delivery receipt on this path. */
 export async function logWhatsappSend(target: { kind: "document" | "archive"; id: string }, recipient: string, text: string): Promise<boolean> {
   if (!supabase) return false;
@@ -254,15 +258,16 @@ export async function logWhatsappSend(target: { kind: "document" | "archive"; id
   return !fe;
 }
 
-// ---- Expense source documents (lalum-fin-expense-doc, migration 0082) ----
+// ---- Expense source documents (lalum-fin-expense-doc, migration 20261027100000) ----
 
-export interface ExpenseDocReply { ok?: boolean; code?: string; url?: string; sha256?: string; size?: number }
+export interface ExpenseDocReply { ok?: boolean; code?: string; url?: string; id?: string; sha256?: string; size?: number; duplicate?: boolean; same_file_elsewhere?: number }
 const EXPENSE_DOC_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה למסמך ההוצאה הזה.",
-  no_document: "לא צורף מסמך להוצאה הזו.", bad_type: "סוג הקובץ אינו נתמך. אפשר PDF, JPEG, PNG, WEBP או GIF.",
+  bad_type: "סוג הקובץ אינו נתמך. אפשר PDF, JPEG, PNG, WEBP או GIF.",
   bad_file: "תוכן הקובץ לא תואם לסוג שנשלח.", too_large: "הקובץ גדול מהמותר (עד 15MB).",
   upload_failed: "העלאת הקובץ נכשלה. אפשר לנסות שוב.", not_stored: "הקובץ לא נשמר במלואו. אפשר לנסות שוב.",
   record_failed: "הקובץ נשמר אך לא נקשר להוצאה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. אפשר לנסות שוב.",
+  bad_supersedes: "המסמך שביקשתם להחליף אינו שייך להוצאה הזו.", already_superseded: "המסמך הזה כבר הוחלף. רעננו את המסך.",
 };
 export const expenseDocError = (r: ExpenseDocReply): string => EXPENSE_DOC_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
 
@@ -278,7 +283,7 @@ async function callExpenseDoc(body: Record<string, unknown>): Promise<ExpenseDoc
       body: JSON.stringify(body),
     });
     const j = await res.json().catch(() => null);
-    if (!res.ok) return { ok: false, code: j?.code ?? "fetch_failed" };
+    if (!res.ok) return { ok: false, code: j?.code ?? (res.status === 401 ? "unauthorized" : "fetch_failed") };
     return (j ?? { ok: true }) as ExpenseDocReply;
   } catch {
     return { ok: false, code: "fetch_failed" };
@@ -287,12 +292,13 @@ async function callExpenseDoc(body: Record<string, unknown>): Promise<ExpenseDoc
   }
 }
 
-/** Attaches a scanned invoice or receipt to an expense that already exists. Replaces whatever was attached before. */
-export async function uploadExpenseDoc(expenseId: string, file: File): Promise<ExpenseDocReply> {
+/** Attaches a scanned invoice, receipt or credit note to an expense that already exists. With `supersedes`, it replaces that
+ *  document: the earlier one keeps its row and its file, marked as replaced. The same file twice is recorded once (duplicate). */
+export async function uploadExpenseDoc(expenseId: string, file: File, supersedes?: string): Promise<ExpenseDocReply> {
   let file_base64: string;
   try { file_base64 = await fileToBase64(file); } catch { return { ok: false, code: "fetch_failed" }; }
-  return callExpenseDoc({ action: "upload", expense_id: expenseId, media_type: file.type, file_base64 });
+  return callExpenseDoc({ action: "upload", expense_id: expenseId, media_type: file.type, file_base64, ...(supersedes ? { supersedes } : {}) });
 }
 
-/** A 60 second link to the document already attached to an expense, or ok:false with no_document when nothing is attached. */
-export const getExpenseDocUrl = (expenseId: string): Promise<ExpenseDocReply> => callExpenseDoc({ action: "url", expense_id: expenseId });
+/** A 60 second link to one expense document. Every call is written to the audit log. */
+export const getExpenseDocUrl = (docId: string): Promise<ExpenseDocReply> => callExpenseDoc({ action: "url", doc_id: docId });
