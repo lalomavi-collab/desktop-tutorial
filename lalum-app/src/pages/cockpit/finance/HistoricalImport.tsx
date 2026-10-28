@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { EXPENSE_CATEGORY, r2 } from "../../../lib/cockpit/finance";
 
@@ -123,6 +123,15 @@ type Row = {
   spent_on: string; supplier: string; category: string; description: string;
   total: number; vat_amount: number; vat_recoverable_pct: number; ref: string; source: string;
 };
+
+/**
+ * The identity of one line of ROWS, stored in lalum_fin_expenses.import_key (migration 20261027220000), which is unique
+ * per firm. It is built from the line as written in this file, never from the edited copy in the table below, so a line
+ * keeps its key however its date or amount was adjusted before import, and importing it again adds nothing. The
+ * migration's backfill builds the same string from a row's own columns; change one and the other must change with it.
+ */
+const importKey = (r: Row) =>
+  [r.spent_on, r.supplier, r.description.trim(), r.total.toFixed(2), r.vat_amount.toFixed(2), r.ref.trim()].join("|");
 
 const ROWS: Row[] = [
   { spent_on: "2026-01-03", supplier: "Meta Platforms Ireland", category: "MARKETING", description: "מודעות Meta, מ-31.12.2025 עד 3.1.2026",
@@ -468,26 +477,48 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [done, setDone] = useState(false);
+  // Keys of the lines already in the books, read from the server, so the panel remembers what was imported on any
+  // device. null until read (or when the read fails): then nothing is marked as present and the database's unique key
+  // still refuses a second copy.
+  const [present, setPresent] = useState<Set<string> | null>(null);
 
-  if (done) return null;
+  useEffect(() => {
+    if (!supabase) return;
+    let live = true;
+    void (async () => {
+      const { data, error } = await supabase!.from("lalum_fin_expenses").select("import_key").eq("firm_id", firmId).not("import_key", "is", null);
+      if (!live || error) return;
+      setPresent(new Set((data ?? []).map((r) => String((r as { import_key: string }).import_key))));
+    })();
+    return () => { live = false; };
+  }, [firmId]);
+
+  const inBooks = (i: number) => present?.has(importKey(ROWS[i])) ?? false;
+  const missing = present ? ROWS.filter((r) => !present.has(importKey(r))).length : ROWS.length;
+  if (done || (present && missing === 0)) return null;
 
   const setRow = (i: number, patch: Partial<Row>) => setRows((rs) => rs.map((r, j) => (j === i ? { ...r, ...patch } : r)));
-  const selectedCount = checked.filter(Boolean).length;
+  const selectedCount = checked.filter((c, i) => c && !inBooks(i)).length;
 
   async function importSelected() {
     if (!supabase) return;
     setBusy(true); setMsg(null);
-    const picked = rows.filter((_, i) => checked[i]);
-    const { error } = await supabase.from("lalum_fin_expenses").insert(
-      picked.map((r) => ({
+    const picked = rows.map((r, i) => ({ r, key: importKey(ROWS[i]) })).filter((_, i) => checked[i] && !inBooks(i));
+    // ON CONFLICT DO NOTHING on (firm_id, import_key): a line already in the books is skipped, not doubled, even when
+    // this screen did not know it was there.
+    const { data, error } = await supabase.from("lalum_fin_expenses").upsert(
+      picked.map(({ r, key }) => ({
         firm_id: firmId, spent_on: r.spent_on, supplier: r.supplier, category: r.category,
         description: r.description.trim() || null, total: r.total, vat_amount: r.vat_amount,
-        vat_recoverable_pct: r.vat_recoverable_pct, supplier_doc_ref: r.ref.trim() || null,
+        vat_recoverable_pct: r.vat_recoverable_pct, supplier_doc_ref: r.ref.trim() || null, import_key: key,
       })),
-    );
+      { onConflict: "firm_id,import_key", ignoreDuplicates: true },
+    ).select("id");
     setBusy(false);
     if (error) { setMsg({ ok: false, text: error.message }); return; }
-    setMsg({ ok: true, text: `יובאו ${picked.length} הוצאות.` });
+    const added = data?.length ?? 0;
+    const skipped = picked.length - added;
+    setMsg({ ok: true, text: skipped > 0 ? `יובאו ${added} הוצאות. ${skipped} כבר היו בספרים ודולגו.` : `יובאו ${added} הוצאות.` });
     onImported();
     setDone(true);
   }
@@ -496,7 +527,7 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
     return (
       <div className="ck-card">
         <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, כרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר), וחמש הוצאות חוזרות מאוקטובר שאומתו מול המסמך המקורי.</div>
+          <div className="ck-meta">ייבוא הוצאות היסטוריות: הוצאות מינואר עד אוגוסט 2026 שאומתו מול המיילים המקוריים, כרטסת החשבונות המלאה של רונית לשנת 2026 (129 שורות, מינואר עד ספטמבר), וחמש הוצאות חוזרות מאוקטובר שאומתו מול המסמך המקורי.{present ? ` ${missing} שורות עדיין לא בספרים.` : ""}</div>
           <button className="ck-btn" onClick={() => setOpen(true)}>פתיחה לבדיקה</button>
         </div>
       </div>
@@ -526,7 +557,9 @@ export function HistoricalImport({ firmId, onImported }: { firmId: string; onImp
           <tbody>
             {rows.map((r, i) => (
               <tr key={i}>
-                <td><input type="checkbox" checked={checked[i]} onChange={(e) => setChecked((c) => c.map((v, j) => (j === i ? e.target.checked : v)))} /></td>
+                <td>{inBooks(i)
+                  ? <span className="ck-meta">כבר בספרים</span>
+                  : <input type="checkbox" checked={checked[i]} onChange={(e) => setChecked((c) => c.map((v, j) => (j === i ? e.target.checked : v)))} />}</td>
                 <td><input className="ck-input" type="date" value={r.spent_on} onChange={(e) => setRow(i, { spent_on: e.target.value })} /></td>
                 <td className="fin-text">{r.supplier}</td>
                 <td><select className="ck-select" value={r.category} onChange={(e) => setRow(i, { category: e.target.value })}>{Object.entries(EXPENSE_CATEGORY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></td>
