@@ -30,13 +30,15 @@
      (dataviz skill). Status (good/warn/bad) is a fixed, reserved scale; --chart-cat-2/3
      extend it for the one true multi-identity chart (practice-area mix), ordered so
      every adjacent pair clears the checks. --chart-ok-l is a lighter step of the same
-     green hue, for a three-step ordinal read (e.g. new -> seen -> handled). */
+     green hue, for a three-step ordinal read (e.g. new -> seen -> handled). Retuned 28.10.2026:
+     #5a9c62 sat 14.9 from amber (normal vision, floor 15) and #b3402f 5.2 from --chart-ok under
+     protanopia (floor 6); both pass now, with the legend as the second encoding. */
   --chart-track: rgba(83, 112, 86, .12);
   --chart-grid: rgba(83, 112, 86, .14);
   --chart-ok: #216f33;
-  --chart-ok-l: #5a9c62;
+  --chart-ok-l: #559f68;
   --chart-warn: #b8780a;
-  --chart-bad: #b3402f;
+  --chart-bad: #c2384f;
   --chart-cat-2: #2a75ba;
   --chart-cat-3: #984588;
   --chart-neutral: #9a968c;

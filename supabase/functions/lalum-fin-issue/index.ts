@@ -3,6 +3,7 @@
 // was issued). Invoice4U owns the numbering and the allocation number; the ledger stores the result.
 //
 // POST { document_id, action?: "issue" | "reconcile" }   (default "issue")
+// POST { firm_id, action: "check" }   asks Invoice4U for today's tax invoices, a read only call, to prove the key is accepted.
 //
 // Env (SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are injected):
 //   INVOICE4U_API_KEY   PRODUCTION organization API key (GUID); passed as `token` per the Invoice4U docs.
@@ -28,6 +29,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { autoSendPlan, documentTemplateName } from "../_shared/docSend.ts";
 import { isEmail } from "../_shared/dunning.ts";
+import { readReply, replyProblem } from "../_shared/invoice4u.ts";
+import type { Obj, Reply } from "../_shared/invoice4u.ts";
 
 const CORS: Record<string, string> = {
   "access-control-allow-origin": "*",
@@ -57,9 +60,7 @@ const json = (status: number, data: unknown) =>
 const DOC_TYPE: Record<string, number> = { PROFORMA: 5, INVOICE: 1, RECEIPT: 2, INVOICE_RECEIPT: 3, CREDIT: 4 };
 const PAY_TYPE: Record<string, number> = { CARD: 1, CHEQUE: 2, TRANSFER: 3, CASH: 4, BIT: 8, PAYBOX: 9 };
 const DOCUMENT_ALREADY_CREATED = 134;
-
-type Obj = Record<string, unknown>;
-interface I4uError { ID?: number; Error?: string }
+const numbered = (d: Obj) => typeof d.DocumentNumber === "number" && d.DocumentNumber > 0;
 
 // Invoice4U echoes requests in some error bodies; never let the key reach a log or the database.
 const redact = (s: string, key: string) => s.split(key).join("[REDACTED]").slice(0, 1500);
@@ -85,10 +86,38 @@ Deno.serve(async (req) => {
   const user = auth?.user;
   if (!user) return json(401, { code: "unauthorized" });
 
-  let body: { document_id?: string; action?: string };
+  let body: { document_id?: string; firm_id?: string; action?: string };
   try { body = await req.json(); } catch { return json(400, { code: "bad_json" }); }
   const docId = String(body.document_id ?? "");
-  const action = body.action === "reconcile" ? "reconcile" : "issue";
+  const action = body.action === "reconcile" ? "reconcile" : body.action === "check" ? "check" : "issue";
+
+  async function call(op: string, payload: Obj): Promise<Reply> {
+    const res = await fetch(`${base}/${op}`, {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...payload, token: apiKey }),
+    });
+    // Invoice4U reports business errors as HTTP 200 with a non-empty Errors array.
+    return readReply(op, res.status, await res.text());
+  }
+
+  // CHECK: the same people who may issue may see whether Invoice4U accepts the key. Nothing is created or stored.
+  if (action === "check") {
+    const firmId = String(body.firm_id ?? "");
+    const { data: can } = firmId ? await asUser.rpc("lalum_fin_can", { p_firm: firmId, p_min: 3 }) : { data: false };
+    if (can !== true) return json(403, { code: "forbidden" });
+    const today = new Date().toISOString().slice(0, 10);
+    try {
+      const r = await call("GetDocuments", { dr: { DocumentType: DOC_TYPE.INVOICE, From: wcfDate(today), To: wcfDate(today) } });
+      const problem = replyProblem(r) ?? (r.errors.length ? "invoice4u_rejected" : null);
+      console.log(`FIN_KEY_CHECK ${problem ?? "ok"} env=${prod ? "prod" : "qa"} ${r.shape}`);
+      return json(200, problem
+        ? { ok: false, code: problem, env: prod ? "prod" : "qa", errors: r.errors.map((x) => ({ id: x.ID, error: x.Error })) }
+        : { ok: true, env: prod ? "prod" : "qa" });
+    } catch (e) {
+      console.log("FIN_KEY_CHECK_ERR " + redact(String(e), apiKey));
+      return json(502, { code: "fetch_failed" });
+    }
+  }
+
   if (!docId) return json(400, { code: "missing_document" });
   if (action === "issue") {
     const age = secondFactorAge(authHeader);
@@ -102,18 +131,6 @@ Deno.serve(async (req) => {
   const { data: canIssue } = await asUser.rpc("lalum_fin_can", { p_firm: doc.firm_id, p_min: 3 });
   if (canIssue !== true) return json(403, { code: "forbidden" });
   const admin = createClient(url, serviceKey);
-
-  async function call(op: string, payload: Obj): Promise<{ d: Obj; errors: I4uError[] }> {
-    const res = await fetch(`${base}/${op}`, {
-      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...payload, token: apiKey }),
-    });
-    const text = await res.text();
-    let parsed: Obj = {};
-    try { parsed = JSON.parse(text); } catch { throw new Error(`HTTP ${res.status} non-JSON`); }
-    const d = ((parsed.d as Obj) ?? parsed) as Obj;
-    // Invoice4U reports business errors as HTTP 200 with a non-empty Errors array.
-    return { d, errors: Array.isArray(d.Errors) ? (d.Errors as I4uError[]) : [] };
-  }
 
   type Channel = { status: "sent" | "skipped" | "failed" | "unknown"; code?: string };
   /** Sends the issued document on every channel the customer card allows. Never throws: the document already exists whatever happens here. */
@@ -159,10 +176,13 @@ Deno.serve(async (req) => {
     // RECONCILE: ask Invoice4U whether this identifier already produced a document.
     if (action === "reconcile") {
       if (!doc.api_identifier) return json(409, { code: "never_attempted" });
-      const { d, errors } = await call("GetDocumentByApiIdentifier", {
+      const r = await call("GetDocumentByApiIdentifier", {
         apiIdentifier: doc.api_identifier, docType: DOC_TYPE[doc.doc_type],
       });
-      if (errors.length || !(typeof d.DocumentNumber === "number" && d.DocumentNumber > 0)) {
+      const { d, errors } = r;
+      // A refused key proves nothing about the document, so it must not read as "not found".
+      if (replyProblem(r) === "invoice4u_unauthorized") return json(200, { ok: false, code: "invoice4u_unauthorized", status: doc.status });
+      if (errors.length || !numbered(d)) {
         return json(200, { ok: false, code: "not_found_at_provider", status: doc.status });
       }
       await store({
@@ -201,16 +221,21 @@ Deno.serve(async (req) => {
     // Link the ledger customer to an Invoice4U customer, creating one only when none is linked.
     let clientId = cust.i4u_customer_id as number | null;
     if (!casual && !clientId) {
-      const { d, errors } = await call("CreateCustomer", {
+      const r = await call("CreateCustomer", {
         cu: {
           Name: cust.name, UniqueID: cust.tax_id ?? "", Email: cust.email ?? "", Phone: cust.phone ?? "",
           Address: cust.address ?? "", City: cust.city ?? "", Active: true, PayTerms: 0, Retainer: false,
         },
       });
+      const { d, errors } = r;
       const id = Number(d.ID);
       if (errors.length || !(id > 0)) {
-        // A duplicate name is the expected case for a customer that already exists in Invoice4U.
-        await store({ last_error: redact(`CUSTOMER_SYNC ${JSON.stringify(errors)} id=${d.ID}`, apiKey) });
+        // Only a reply that names an error is a refusal of this customer (a duplicate name is the expected case for one that already exists
+        // in Invoice4U). A refused key or a reply with nothing in it says nothing about the customer, and linking would not help.
+        const problem = replyProblem(r) ?? (errors.length ? null : "provider_unreadable");
+        await store({ last_error: redact(`CUSTOMER_SYNC ${problem ?? "REJECTED"} ${JSON.stringify(errors)} ${r.shape}`, apiKey) });
+        console.log(`FIN_CUSTOMER_SYNC ${problem ?? "rejected"} ${r.shape}`);
+        if (problem) return json(502, { code: problem });
         return json(502, { code: "customer_sync_failed", detail: errors[0]?.Error ?? "unknown", hint: "link_existing_customer" });
       }
       clientId = id;
@@ -250,7 +275,7 @@ Deno.serve(async (req) => {
     // Persist the idempotency key BEFORE the call: if the response is lost, reconcile can still find it.
     await store({ api_identifier: `lalum-fin-${doc.id}`, last_error: null });
 
-    let result: { d: Obj; errors: I4uError[] };
+    let result: Reply;
     try {
       result = await call("CreateDocumentWithIdentifierValidation", { doc: invoiceDoc });
     } catch (e) {
@@ -258,11 +283,21 @@ Deno.serve(async (req) => {
       return json(502, { code: "outcome_uncertain", hint: "reconcile" });
     }
     const { d, errors } = result;
-    const alreadyCreated = errors.length > 0 && errors.every((x) => x.ID === DOCUMENT_ALREADY_CREATED)
-      && typeof d.DocumentNumber === "number" && d.DocumentNumber > 0;
+    // A refused key creates nothing: the draft stays a draft and can be issued once the key is fixed.
+    if (replyProblem(result) === "invoice4u_unauthorized") {
+      await store({ last_error: redact(`I4U_UNAUTHORIZED ${JSON.stringify(errors)}`, apiKey) });
+      return json(502, { code: "invoice4u_unauthorized" });
+    }
+    const alreadyCreated = errors.length > 0 && errors.every((x) => x.ID === DOCUMENT_ALREADY_CREATED) && numbered(d);
     if (errors.length && !alreadyCreated) {
       await store({ last_error: redact(`I4U_ERRORS ${JSON.stringify(errors)}`, apiKey) });
       return json(422, { code: "invoice4u_rejected", errors: errors.map((x) => ({ id: x.ID, error: x.Error })) });
+    }
+    // No error and no number is not proof either way. The row is never marked issued without its number; reconcile asks Invoice4U.
+    if (!numbered(d)) {
+      await store({ last_error: redact(`UNCERTAIN NO_NUMBER ${result.shape}`, apiKey) });
+      console.log(`FIN_ISSUE_NO_NUMBER ${result.shape}`);
+      return json(502, { code: "outcome_uncertain", hint: "reconcile" });
     }
 
     // The document now legally exists. A mismatch with our own total is flagged, never hidden.

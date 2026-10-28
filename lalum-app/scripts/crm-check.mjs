@@ -199,3 +199,39 @@ t("hours demo: invented data that agrees with itself, like the real report", () 
   assert.ok(d.people.some((p) => p.daysOver > 0) && d.people.some((p) => p.openSessions > 0)); // the preview shows the flags too
   assert.match(HOURS_DEMO_NOTE, /בדויים/);
 });
+
+// Matter 360 entry paths: fee terms and saved deadlines (28.10.2026). The rules mirror the CHECK constraints in the database.
+{
+  const { parseFeeForm, parseAmount, feeFormFrom, deadlineError, calcNote, sortDeadlines } = await import("../src/lib/cockpit/matter360Core.ts");
+  const form = (o) => ({ ...feeFormFrom(null), ...o });
+  t("fee terms: each model keeps only its own amounts and requires the one the database requires", () => {
+    assert.equal(parseAmount(""), null);
+    assert.equal(parseAmount("12,500.456"), 12500.46);
+    assert.equal(parseAmount("-5"), "bad");
+    assert.equal(parseAmount("1e3"), "bad");
+    assert.deepEqual(parseFeeForm(form({ fee_model: "hourly", fixed_fee: "999" })), { ok: true, terms: { fee_model: "hourly", fixed_fee: null, fee_cap: null, retainer_monthly: null, cap_alert_pct: 80 } });
+    assert.equal(parseFeeForm(form({ fee_model: "fixed" })).ok, false);
+    assert.equal(parseFeeForm(form({ fee_model: "capped", fee_cap: "" })).ok, false);
+    assert.equal(parseFeeForm(form({ fee_model: "subscription", retainer_monthly: "" })).ok, false);
+    const capped = parseFeeForm(form({ fee_model: "capped", fee_cap: "30000", cap_alert_pct: "90" }));
+    assert.ok(capped.ok && capped.terms.fee_cap === 30000 && capped.terms.cap_alert_pct === 90);
+    assert.equal(parseFeeForm(form({ fee_model: "capped", fee_cap: "1", cap_alert_pct: "0" })).ok, false);
+    assert.equal(parseFeeForm(form({ fee_model: "nonsense" })).ok, false);
+    const hybrid = parseFeeForm(form({ fee_model: "hybrid", retainer_monthly: "2500" }));
+    assert.ok(hybrid.ok && hybrid.terms.retainer_monthly === 2500 && hybrid.terms.fixed_fee === null);
+    assert.deepEqual(feeFormFrom({ fee_model: "fixed", fixed_fee: 15000, fee_cap: null, retainer_monthly: null }), { fee_model: "fixed", fixed_fee: "15000", fee_cap: "", retainer_monthly: "", cap_alert_pct: "80" });
+  });
+  t("deadlines: the input the table accepts, the note that records the count, and the order on screen", () => {
+    assert.equal(deadlineError("הגשת כתב הגנה", "2026-11-30", "FILING"), null);
+    assert.ok(deadlineError("  ", "2026-11-30", "FILING"));
+    assert.ok(deadlineError("x".repeat(256), "2026-11-30", "FILING"));
+    assert.ok(deadlineError("x", "2026-02-30", "FILING"));
+    assert.ok(deadlineError("x", "2026-11-30", "OTHER"));
+    const c = { eventDate: "2026-11-01", days: 30, countEventDay: false, rollForward: true, frozen: [], computedDue: "2026-12-01", due: "2026-12-01" };
+    assert.match(calcNote(c), /אירוע 2026-11-01, 30 ימים/);
+    assert.match(calcNote(c), /לא אומתו/);
+    assert.match(calcNote({ ...c, due: "2026-12-03" }), /^הוזן ידנית \(המחשבון הציע 2026-12-01\)/);
+    const r = (id, due_date, status) => ({ id, title: id, kind: "FILING", due_date, status, is_client_visible: false, source_note: null, created_at: "2026-10-28T00:00:00Z" });
+    assert.deepEqual(sortDeadlines([r("a", "2026-12-01", "DONE"), r("b", "2026-12-05", "PENDING"), r("c", "2026-11-20", "PENDING"), r("d", "2026-12-09", "DISMISSED")]).map((x) => x.id), ["c", "b", "d", "a"]);
+  });
+}

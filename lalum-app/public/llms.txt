@@ -18,18 +18,21 @@ LALUM brings law, real estate, and AI together in one practice. On the real esta
 
 ## Languages
 
-The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Hebrew lives at the clean address; each translated page has its own real path under /en/, /es/, /fr/, or /ar/ (for example https://lalumapp.com/en/advisory/). Cite the path-based address, never a ?lang= query: those are legacy links that redirect on load and canonicalise to the clean address.
+The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Hebrew lives at the clean address; each translated page has its own real path under /en/, /es/, /fr/, or /ar/ (for example https://lalumapp.com/en/advisory/). Cite the path-based address, never a ?lang= query: those are legacy links that redirect on load and canonicalise to the clean address. The Spanish, French and Arabic renderings are machine-assisted and not yet reviewed by a native speaker; they are noindex, and the Hebrew text prevails. Cite the Hebrew or English address.
 
 ## Key pages
 
 - Home: https://lalumapp.com/
 - Advisory and Mediation: https://lalumapp.com/advisory/
+- AI legal advisory (Hebrew, also /en/ai-legal-advisory/): https://lalumapp.com/ai-legal-advisory/ . Legal advice on artificial intelligence for companies, public bodies and law firms: when an organization needs an AI lawyer, EU AI Act roles (provider and deployer) and their obligations for Israeli companies, what Israeli law already requires without a dedicated AI statute (privacy and Amendment 13, anti-discrimination, consumer protection, the Supreme Court ruling on uncontrolled AI use), contracts with AI vendors, attorney client privilege, independent second opinions, and training for boards, teams and lawyers.
+- Real estate and urban renewal advisory (Hebrew, also /en/real-estate-legal-advisory/): https://lalumapp.com/real-estate-legal-advisory/ . Independent legal advice and second opinions on property deals in Israel and abroad and on urban renewal (TAMA 38 and pinui binui): developer agreements, guarantees, due diligence and risk, with Legal AI document review under an attorney's supervision.
 - Training and courses: https://lalumapp.com/training/
 - Knowledge center: https://lalumapp.com/knowledge/
 - Insights and articles: https://lalumapp.com/insights/
 - Questions and answers: https://lalumapp.com/faq/
 - Book a consultation: https://lalumapp.com/book/
 - AI for Israeli local authorities (sector rubric, Hebrew): https://lalumapp.com/ai-legal-advisory/local-authorities/ . A standing rubric for municipalities and their legal advisors: the Israeli Supreme Court ruling on an authority's uncontrolled use of AI (עע״מ 63194-08-25, Ben Cohen v. Ramat Gan Municipality, 22.3.2026), the Privacy Protection Authority's clarification barring LPR cameras for parking enforcement, the public-body duties under Privacy Protection Amendment 13, and two working tools: a human-oversight protocol and a CEO readiness checklist. The rubric now anchors a full local-authority cluster: use-by-use legal limits (reasoning and transparency, bias and equality, facial recognition, property-tax and collection, welfare, tort liability), a privacy-and-protections sub-cluster comparing Israeli law and the GDPR, and practical guides (vendor data-processing agreement, AI inventory and risk tiering, privacy impact assessment, incident response).
+- AI in Israeli government ministries (sector rubric, Hebrew): https://lalumapp.com/ai-legal-advisory/government-ministries/ . A standing rubric for ministries and their legal departments: the government guide to responsible AI use in the public sector and its traffic-light tracks (a guide, not law), the principles document and Government Resolution 4255, the draft privacy guidance, the Supreme Court ruling on human control, and a checklist for the director general.
 
 ## Featured articles
 

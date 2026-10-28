@@ -13,18 +13,16 @@ name: IndexNow submit
 # and Bing's) were retired, so there is nothing to call for Google.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "lalum-app/**"
-      # The workflow's own file, so a change to the submission itself is
-      # exercised on merge instead of waiting for the next content change.
-      - ".github/workflows/indexnow.yml"
+  # Daily only, not on every push to main: push runs were 177 of the 409
+  # Actions runs in the week to 27.10.2026 and most of the billed minutes,
+  # which a private repository on the Free plan cannot carry (2,000 a month).
+  # One submission a day keeps the crawlers current; run it by hand after a
+  # change that should not wait.
   workflow_dispatch:
   schedule:
-    # Safety net. IndexNow verifies a new key asynchronously and answers 403
-    # SiteVerificationNotCompleted until it finishes, so a daily run completes
-    # a submission that was still queued, and keeps the crawlers current.
+    # IndexNow verifies a new key asynchronously and answers 403
+    # SiteVerificationNotCompleted until it finishes, so a daily run also
+    # completes a submission that was still queued.
     - cron: "17 4 * * *"
 
 permissions:

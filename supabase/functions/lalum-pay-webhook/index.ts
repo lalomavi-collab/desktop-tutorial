@@ -36,6 +36,29 @@ function pick(obj: Record<string, unknown>, keys: string[]): string | null {
   return null;
 }
 
+// deno-lint-ignore no-explicit-any
+type Admin = any;
+
+// A payment that was not applied, or applied without its amount checked, has to
+// reach a person: the function log is gone after a day. The note goes on the
+// milestone (shown on the payments screen) and into the firm's audit log, with
+// amounts and ids only, never the payer's details.
+async function flag(admin: Admin, milestoneId: string, action: "PAY_AMOUNT_MISMATCH" | "PAY_AMOUNT_UNVERIFIED", meta: Record<string, string | number | null>) {
+  const note = `${action} ${Object.entries(meta).map(([k, v]) => `${k}=${v ?? "?"}`).join(" ")}`.slice(0, 300);
+  const { data: ms } = await admin.from("billing_milestones").update({ last_error: note, updated_at: new Date().toISOString() })
+    .eq("id", milestoneId).select("created_by").maybeSingle();
+  // Milestones carry no firm; the firm is the one of the member who created it.
+  const createdBy = (ms as { created_by?: string | null } | null)?.created_by;
+  if (!createdBy) return;
+  const { data: m } = await admin.from("lalum_firm_members").select("firm_id").eq("user_id", createdBy).limit(1).maybeSingle();
+  const firm = (m as { firm_id?: string } | null)?.firm_id;
+  if (!firm) return;
+  const { error } = await admin.rpc("lalum_append_audit", {
+    p_firm: firm, p_matter: null, p_actor: null, p_action: action, p_ai_hash: null, p_meta: { milestone_id: milestoneId, ...meta },
+  });
+  if (error) console.log(`PAY_AUDIT_FAILED milestone=${milestoneId}`);
+}
+
 Deno.serve(async (req) => {
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -89,21 +112,28 @@ Deno.serve(async (req) => {
     // we have not seen.
     const paidRaw = pick(payload, ["Sum", "Amount", "TotalSum", "Total", "PaidSum"]);
     if (paidRaw !== null) {
-      const { data: ms } = await admin.from("billing_milestones").select("amount").eq("id", milestoneId).maybeSingle();
+      const { data: ms } = await admin.from("billing_milestones").select("amount, currency").eq("id", milestoneId).maybeSingle();
       const paid = Number(paidRaw.replace(/,/g, ""));
       if (!ms || !Number.isFinite(paid) || Math.abs(paid - Number(ms.amount)) > 0.01) {
         console.log(`PAY_AMOUNT_MISMATCH milestone=${milestoneId}`);
+        if (ms) {
+          await flag(admin, milestoneId, "PAY_AMOUNT_MISMATCH", {
+            received: Number.isFinite(paid) ? paid : null, expected: Number(ms.amount), currency: ms.currency ?? null, payment: paymentId,
+          });
+        }
         return new Response(JSON.stringify({ received: true }), { status: 200, headers: { "content-type": "application/json" } });
       }
     } else {
       console.log(`PAY_AMOUNT_UNVERIFIED milestone=${milestoneId}`);
     }
-    await admin.from("billing_milestones").update({
+    const { data: updated } = await admin.from("billing_milestones").update({
       status: "paid",
       paid_at: new Date().toISOString(),
       payment_intent_id: paymentId,
       updated_at: new Date().toISOString(),
-    }).eq("id", milestoneId).neq("status", "paid");
+    }).eq("id", milestoneId).neq("status", "paid").select("id");
+    // Only the callback that actually marked it paid is flagged, so a repeated callback adds no second entry.
+    if (paidRaw === null && updated?.length) await flag(admin, milestoneId, "PAY_AMOUNT_UNVERIFIED", { payment: paymentId });
   }
 
   // Always 200 so Invoice4U does not retry the callback.

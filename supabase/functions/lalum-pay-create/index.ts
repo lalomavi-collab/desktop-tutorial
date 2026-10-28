@@ -5,9 +5,10 @@
 // document automatically.
 //
 // Env (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are injected):
-//   INVOICE4U_API_KEY        organization API key (GUID)
+//   INVOICE4U_API_KEY        PRODUCTION organization API key (GUID). Read only when INVOICE4U_ENV is "prod"; never sent to the QA host.
+//   FIN_INVOICE4U_QA_KEY     key of the Invoice4U QA account, the same secret lalum-fin-issue reads. Required in qa mode.
 //   INVOICE4U_CLEARING_COMPANY  6 UPay | 7 Meshulam | 12 YaadSarig | 15 Cardcom (default 7)
-//   INVOICE4U_ENV            "qa" (default) or "prod"
+//   INVOICE4U_ENV            "qa" (default) or "prod". Any other value is refused, so a stray paste cannot pick a host.
 //   INVOICE4U_ALLOW_SANDBOX  "true" to permit a sandbox checkout URL (testing); otherwise sandbox links are blocked so real clients never reach a test page
 //   LALUM_APP_URL            e.g. https://lalumapp.com
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -38,10 +39,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json(405, { code: "method_not_allowed" });
 
+  const env = (Deno.env.get("INVOICE4U_ENV") ?? "qa").trim().toLowerCase();
+  if (env !== "qa" && env !== "prod") return json(500, { code: "invoice4u_env_invalid", detail: "INVOICE4U_ENV must be qa or prod." });
+  const prod = env === "prod";
+  // The production key must never travel to the QA host, so each mode reads its own secret.
   // Trim: a trailing space or newline pasted into the secret would corrupt auth.
-  const apiKey = Deno.env.get("INVOICE4U_API_KEY")?.trim();
+  const apiKey = (prod ? Deno.env.get("INVOICE4U_API_KEY") : Deno.env.get("FIN_INVOICE4U_QA_KEY"))?.trim();
   const clearingCompany = Number(Deno.env.get("INVOICE4U_CLEARING_COMPANY") ?? "7");
-  const env = (Deno.env.get("INVOICE4U_ENV") ?? "qa").toLowerCase();
   const allowSandbox = Deno.env.get("INVOICE4U_ALLOW_SANDBOX") === "true";
   const appUrl = Deno.env.get("LALUM_APP_URL") ?? "https://lalumapp.com";
   // Shared secret that authenticates the Invoice4U callback to lalum-pay-webhook.
@@ -49,7 +53,9 @@ Deno.serve(async (req) => {
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !serviceKey) return json(500, { code: "not_configured" });
-  if (!apiKey) return json(500, { code: "invoice4u_not_configured", detail: "Set INVOICE4U_API_KEY." });
+  if (!apiKey) return json(500, prod
+    ? { code: "invoice4u_not_configured", detail: "Set INVOICE4U_API_KEY." }
+    : { code: "qa_key_missing", detail: "Set FIN_INVOICE4U_QA_KEY, the key of the Invoice4U QA account." });
 
   const asUser = createClient(url, serviceKey, { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } });
   const { data: auth } = await asUser.auth.getUser();
@@ -71,7 +77,7 @@ Deno.serve(async (req) => {
   if (!allowed) return json(403, { code: "forbidden" });
   if (m.status === "paid") return json(409, { code: "already_paid" });
 
-  const base = env.startsWith("prod")
+  const base = prod
     ? "https://api.invoice4u.co.il/Services/ApiService.svc"
     : "https://apiqa.invoice4u.co.il/Services/ApiService.svc";
   const currency = String(m.currency ?? "ILS").toUpperCase() === "ILS" ? "NIS" : String(m.currency);
@@ -83,7 +89,7 @@ Deno.serve(async (req) => {
     Currency: currency,
     Type: 1,
     Description: m.title,
-    IsQaMode: !env.startsWith("prod"),
+    IsQaMode: !prod,
     OrderIdClientUsage: id,
     Platform: "lalumapp",
     FullName: m.client_name || m.client_email || "לקוח לאלום",

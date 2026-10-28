@@ -189,13 +189,26 @@ export function stripLangPrefix(pathname: string): string {
   return m && isLang(m[1]) && m[1] !== "he" ? pathname.slice(3) || "/" : pathname || "/";
 }
 
+// Spanish, French and Arabic were written with machine assistance, and no
+// native speaker has read them (T24). A legal text in a language nobody checked
+// is a representation the practice cannot stand behind, so until a review sheet
+// comes back and is applied, those renderings stay reachable for a visitor who
+// picks them but are kept out of the index: noindex on the page, no hreflang
+// claim from any other page, no sitemap row. Remove a code from this set once
+// its review is applied, and everything else follows.
+export const UNREVIEWED_LANGS = new Set<Lang>(["es", "fr", "ar"]);
+
+export function isIndexableLang(lang: Lang): boolean {
+  return !UNREVIEWED_LANGS.has(lang);
+}
+
 export type Alternate = { hreflang: string; href: string };
 
 // The reciprocal hreflang set for a path. Only a route that is actually
 // translated gets one; for anything else this is empty, and the page makes no
 // claim about languages it does not have.
 export function alternatesFor(path: string): Alternate[] {
-  const langs = translatedLangs(path);
+  const langs = translatedLangs(path).filter(isIndexableLang);
   if (langs.length === 0) return [];
   return [
     ...langs.map((code) => ({ hreflang: code === "he" ? "he-IL" : code, href: langUrl(path, code) })),

@@ -1,7 +1,7 @@
 # Post 016 | AI fails in court: 36 citations | English (reduced version)
 **Platform:** LinkedIn (English)
 **Date:** to be set on approval
-**Status:** Reduced draft, awaiting explicit approval ("016 מאושר"). Not published.
+**Status:** Not published in English. The Hebrew version went up on Facebook on 21.10.2026 without the explicit approval ("016 מאושר"). On 28.10 the second sentence was corrected here: 23.2.2025 is the date of the judgment, not the date the petition was filed (December 2024).
 **Attached:** card image `images/016_ai_fails_en.png`.
 **Why reduced:** the earlier version stated details of HCJ 23602-01-25 (date, justice, outcome, costs, quotation) that were not verified against the judgment and are not in the verified rulings corpus. They were removed. Everything here rests on the verified record of HCJ 38379-12-24 (`lalum-app/src/data/rulings.json`, three sources).
 **Note on quotations:** the judgment is in Hebrew. The quotation below is our translation of the official text.
@@ -10,7 +10,7 @@
 
 36 citations to rulings. Five of them to rulings that do not exist.
 
-On 23 February 2025 the Israeli Supreme Court received a petition built on 36 references to judgments. On checking, five of them point to rulings that do not exist in the legal databases. By her account, counsel had relied on "a site recommended to her by colleagues" and did not verify the information.
+In a judgment of 23 February 2025, the Israeli Supreme Court dealt with a petition built on 36 references to judgments. On checking, five of them point to rulings that do not exist in the legal databases. By her account, counsel had relied on "a site recommended to her by colleagues" and did not verify the information.
 
 The Court refrained from imposing a sanction, because this was the first case of its kind in the Supreme Court, and ruled that the judgment serves as a warning for the future. The possible sanctions were set out expressly: dismissal on the threshold, personal costs on the lawyer rather than the client, and disciplinary proceedings at the Bar Association.
 

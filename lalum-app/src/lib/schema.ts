@@ -101,6 +101,23 @@ export function pageNode(
 // Compose a page's JSON-LD from its nodes. Drops nulls, returns null when the
 // page has none, a single node (with @context) when it has one, or an @graph
 // when it has several, so one page can carry FAQPage + HowTo together.
+// A service the firm offers, tied to the sitewide LegalService node by @id so
+// the page describes one offering of the same firm rather than a second
+// business. Returns null without a name.
+export function serviceNode(name: string, description: string, url: string): object | null {
+  if (!name.trim()) return null;
+  return {
+    "@type": "Service",
+    "@id": `${url.replace(/\/+$/, "")}/#service`,
+    name,
+    description,
+    url,
+    serviceType: "Legal services",
+    areaServed: { "@type": "Country", name: "Israel" },
+    provider: { "@id": "https://lalumapp.com/#organization" },
+  };
+}
+
 export function pageJsonLd(nodes: Array<object | null>): object | null {
   const real = nodes.filter((n): n is object => Boolean(n));
   if (real.length === 0) return null;
