@@ -91,18 +91,26 @@ const num = (x: unknown): number => { const v = typeof x === "number" ? x : type
 const numOrNull = (x: unknown): number | null => (x === null || x === undefined || x === "" ? null : Number.isFinite(Number(x)) ? Number(x) : null);
 const str = (x: unknown): string | null => (typeof x === "string" && x !== "" ? x : null);
 
+// The snapshot reads the run log while its own run is still open, and the log counts every status but "succeeded" as a failure, so the run
+// in flight (its own every time, or any job running at that moment) came out as failed and turned the tile red. A run in flight is neither.
+const IN_FLIGHT = new Set(["running", "starting"]);
+
 export function parseSnapshot(row: unknown): Snapshot | null {
   const r = obj(row);
   const takenAt = str(r.taken_at);
   if (!takenAt || !r.data || typeof r.data !== "object") return null;
   const d = obj(r.data), h = obj(d.http), o = obj(d.outlook), w = obj(d.web), f = obj(d.fin), s = obj(d.sec), m = obj(d.matters);
+  const cron: CronJob[] = (Array.isArray(d.cron) ? d.cron : []).map((x) => {
+    const j = obj(x), lastStatus = str(j.last_status), live = lastStatus !== null && IN_FLIGHT.has(lastStatus);
+    return { job: str(j.job) ?? "", schedule: str(j.schedule) ?? "", active: j.active !== false, runs: num(j.runs_24h), failed: Math.max(0, num(j.failed_24h) - (live ? 1 : 0)), lastAt: str(j.last_at), lastStatus };
+  });
   const campaign: SnapData["campaign"] = {};
   for (const [k, v] of Object.entries(obj(d.campaign))) { const c = obj(v); campaign[k] = { lastAt: str(c.last_at), status: str(c.status), lastOkAt: str(c.last_ok_at) }; }
   return {
     takenAt,
     data: {
-      cron: (Array.isArray(d.cron) ? d.cron : []).map((x) => { const j = obj(x); return { job: str(j.job) ?? "", schedule: str(j.schedule) ?? "", active: j.active !== false, runs: num(j.runs_24h), failed: num(j.failed_24h), lastAt: str(j.last_at), lastStatus: str(j.last_status) }; }),
-      cronFailed7d: num(d.cron_failed_7d),
+      cron,
+      cronFailed7d: Math.max(0, num(d.cron_failed_7d) - cron.filter((j) => j.lastStatus !== null && IN_FLIGHT.has(j.lastStatus)).length),
       http: { total: num(h.total), bad: num(h.bad), timedOut: num(h.timed_out) },
       outlook: { lastAt: str(o.last_at), status: str(o.status), lastOkAt: str(o.last_ok_at), fetched: numOrNull(o.fetched), held: num(o.held) },
       campaign,
@@ -368,7 +376,7 @@ function campTile(d: SnapData, web: WebDay[] | undefined, now: Date): Tile {
 function cronTile(d: SnapData, hist: HistoryPoint[]): Tile {
   const t = base("cron", "ops", false, "משימות מתוזמנות", "PG_CRON", "יומן הריצות של pg_cron ותשובות ה-HTTP של pg_net, בלי תוכן הפקודות", "כל 15 דקות", null);
   const jobs = d.cron, runs = jobs.reduce((s, j) => s + j.runs, 0), failed = jobs.reduce((s, j) => s + j.failed, 0);
-  const lastBad = jobs.filter((j) => j.active && j.lastStatus !== null && j.lastStatus !== "succeeded");
+  const lastBad = jobs.filter((j) => j.active && j.lastStatus !== null && j.lastStatus !== "succeeded" && !IN_FLIGHT.has(j.lastStatus));
   const inactive = jobs.filter((j) => !j.active);
   t.status = lastBad.length ? "bad" : failed > 0 || d.http.bad > 0 ? "watch" : "ok";
   t.value = `${nf(failed)} כשלים`; t.sub = `${nf(jobs.length)} משימות, ${nf(runs)} ריצות ב-24 שעות`; t.strip = `${nf(failed)} כשלים, ${nf(d.http.bad)} HTTP`;
