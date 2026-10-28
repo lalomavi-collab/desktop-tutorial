@@ -61,7 +61,7 @@ function Row({ t, open, onOpenStrip }: { t: Tile; open: boolean; onOpenStrip: ()
   );
 }
 
-export function ControlStrip() {
+export function ControlStrip({ onWall = false }: { onWall?: boolean }) {
   const d = useControlRoom(true);
   const [open, flip] = useStripOpen();
   if (!d.loaded || !d.snapshot) return null;
@@ -83,7 +83,7 @@ export function ControlStrip() {
         </ul>
         {open && <div className="ck-cstrip-foot">תמונת מצב <bdi>{fmtTime(d.snapshot.takenAt)}</bdi> · <Link to="/workspace/control">לחדר הבקרה</Link></div>}
       </aside>
-      <Link to="/workspace/control" className="ck-cstrip-chip"><Dot status={worst} />חדר בקרה: <bdi>{s.bad}</bdi> חסומים, <bdi>{s.watch}</bdi> לתשומת לב</Link>
+      {!onWall && <Link to="/workspace/control" className="ck-cstrip-chip"><Dot status={worst} />חדר בקרה: <bdi>{s.bad}</bdi> חסומים, <bdi>{s.watch}</bdi> לתשומת לב</Link>}
     </>
   );
 }

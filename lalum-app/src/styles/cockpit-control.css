@@ -63,15 +63,21 @@
 .ck-cwall-filter { display: flex; flex-wrap: wrap; gap: 6px; }
 .ck-cwall-filter button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
 .ck-cwall-filter button[aria-pressed="true"] { background: var(--clay-tint); border-color: var(--clay-soft); font-weight: 600; }
-.ck-cgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: start; }
-@media (max-width: 1280px) { .ck-cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .ck-cgrid { grid-template-columns: minmax(0, 1fr); } }
+/* The columns follow the wall's own width, not the window's, because the strip beside it takes 248px. On four columns a big tile is two by two,
+   so the four small tiles beside it fill its height and no row is left with a hole; the matters tile runs the full width between the two. */
+.ck-cwall { container-type: inline-size; }
+.ck-cgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; grid-auto-flow: row dense; }
+@container (min-width: 560px) { .ck-cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 1100px) {
+  .ck-cgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ck-cgrid > .ck-ctile.big { grid-row: span 2; }
+}
 .ck-ctile {
   display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; min-width: 0; scroll-margin-top: 80px;
   background: var(--card); border: 1px solid var(--line); border-radius: 16px; border-top: 3px solid var(--chart-neutral);
 }
-.ck-ctile.big { grid-column: span 2; }
-@media (max-width: 640px) { .ck-ctile.big { grid-column: auto; } }
+@container (min-width: 560px) { .ck-cgrid > .ck-ctile.big { grid-column: span 2; } }
+.ck-cgrid > #tile-mat { grid-column: 1 / -1; grid-row: auto; }
 .ck-ctile.st-ok { border-top-color: var(--chart-ok); }
 .ck-ctile.st-watch, .ck-ctile.st-stale { border-top-color: var(--chart-warn); }
 .ck-ctile.st-bad { border-top-color: var(--chart-bad); }
@@ -84,7 +90,10 @@
 .ck-ctile-st.bad { color: var(--danger); }
 .ck-ctile-val { font-size: 28px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.15; }
 .ck-ctile-sub { font-size: 13px; color: var(--slate); line-height: 1.45; }
-.ck-ctile .ck-btn { align-self: flex-start; }
+.ck-ctile-act { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.ck-ctile-check { font-size: 13px; line-height: 1.45; color: var(--slate); }
+.ck-ctile-check.ok { color: var(--success); }
+.ck-ctile-check.bad { color: var(--danger); }
 .ck-ctile-spark { padding-top: 4px; }
 .ck-ctile-counts dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 4px 0 0; }
 .ck-ctile-counts dl div { padding: 8px 10px; border-radius: 12px; background: color-mix(in srgb, var(--ink) 4%, transparent); }

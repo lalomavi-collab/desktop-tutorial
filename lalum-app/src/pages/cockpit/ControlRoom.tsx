@@ -44,7 +44,7 @@ function TileChart({ t }: { t: Tile }) {
   return null;
 }
 
-function TileCard({ t, open, onCheck, checking }: { t: Tile; open: boolean; onCheck: (() => void) | null; checking: boolean }) {
+function TileCard({ t, open, onCheck, checking, result }: { t: Tile; open: boolean; onCheck: (() => void) | null; checking: boolean; result: IssueCheck | null }) {
   return (
     <article id={`tile-${t.id}`} className={`ck-ctile st-${t.status}${t.big ? " big" : ""}`} aria-labelledby={`tile-${t.id}-name`}>
       <header className="ck-ctile-head">
@@ -55,7 +55,13 @@ function TileCard({ t, open, onCheck, checking }: { t: Tile; open: boolean; onCh
       {t.value && <div className="ck-ctile-val"><bdi>{t.value}</bdi></div>}
       {t.sub && <div className="ck-ctile-sub">{t.sub}</div>}
       <TileChart t={t} />
-      {onCheck && <button type="button" className="ck-btn" disabled={checking} onClick={onCheck} title="קריאה בלבד: שואל את מערכת ההנפקה אם היא מקבלת את המפתח שבשרת. לא מפיק ולא שומר דבר.">{checking ? "בודק..." : "בדיקת חיבור"}</button>}
+      {onCheck && (
+        <div className="ck-ctile-act">
+          <button type="button" className="ck-btn" disabled={checking} onClick={onCheck} title="קריאה בלבד: שואל את מערכת ההנפקה אם היא מקבלת את המפתח שבשרת. לא מפיק ולא שומר דבר.">{checking ? "בודק..." : "בדיקת חיבור"}</button>
+          {/* The answer sits beside the button, not only in the folded explanation, so a click visibly does something. */}
+          <span className={`ck-ctile-check${result && !checking ? (result.ok ? " ok" : " bad") : ""}`} role="status">{result && !checking ? `${result.text} (${fmtTime(result.at)})` : ""}</span>
+        </div>
+      )}
       <details className="ck-ctile-ex" open={open || undefined}>
         <summary>הסבר</summary>
         <dl>
@@ -118,7 +124,7 @@ function ControlWall({ firmId }: { firmId: string | null }) {
         {d.snapshot ? <>תמונת מצב מ-<bdi>{fmtDay(d.snapshot.takenAt)} {fmtTime(d.snapshot.takenAt)}</bdi>, נאספת כל 15 דקות. ירוק רק כשהמקור טרי ונקי; מקור שנעצר מסומן כך, והמספר הישן שלו לא מוצג כאילו הוא של היום.</> : "תמונת המצב עוד לא נאספה."}
       </div>
       <div className="ck-cgrid">
-        {shown.map((t) => <TileCard key={t.id} t={t} open={focus === t.id} checking={checking} onCheck={t.id === "issue" && firmId ? () => void runCheck() : null} />)}
+        {shown.map((t) => <TileCard key={t.id} t={t} open={focus === t.id} checking={checking} result={t.id === "issue" ? check : null} onCheck={t.id === "issue" && firmId ? () => void runCheck() : null} />)}
       </div>
     </div>
   );
