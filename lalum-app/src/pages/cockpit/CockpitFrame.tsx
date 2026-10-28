@@ -126,11 +126,11 @@ export function CockpitFrame({
   const [newInq, setNewInq] = useState(0);
   const hasMember = access.state !== "loading" && access.state !== "none" && !!access.member;
   const bookkeeper = hasMember && !access.platformAdmin && access.member?.role === "BOOKKEEPER";
-  // The control room reads data only the platform admin may see, so its rail item and the strip are shown to that role only. The strip waits
-  // a moment so the screen the user came for renders first; on the wall itself it would only repeat the tiles.
+  // The control room reads data only the platform admin may see, so its rail item and the strip are shown to that role only. The strip stays
+  // on every screen, the wall included, and waits a beat so the screen the user came for paints first.
   const controlRoom = !!user && access.state === "ok" && access.platformAdmin;
   const [stripReady, setStripReady] = useState(false);
-  useEffect(() => { if (!controlRoom) return; const t = window.setTimeout(() => setStripReady(true), 1200); return () => window.clearTimeout(t); }, [controlRoom]);
+  useEffect(() => { if (!controlRoom) return; const t = window.setTimeout(() => setStripReady(true), 300); return () => window.clearTimeout(t); }, [controlRoom]);
   useEffect(() => {
     if (!hasMember || bookkeeper || !supabase) return;
     let live = true;
@@ -200,7 +200,7 @@ export function CockpitFrame({
         {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
         <main ref={mainRef}>{body}</main>
       </div>
-      {controlRoom && stripReady && path !== "/workspace/control" && <Suspense fallback={null}><ControlStrip /></Suspense>}
+      {controlRoom && stripReady && <Suspense fallback={null}><ControlStrip onWall={path === "/workspace/control"} /></Suspense>}
     </div>
     </ClientNamesProvider>
   );
