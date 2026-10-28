@@ -37,3 +37,11 @@
 # changes under one name, so browsers may keep them for a year.
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+# The production build is also served at the project's own pages.dev address,
+# a second copy of every page on another host. Keep that copy out of search
+# results so it never competes with lalumapp.com. The rule matches only the
+# pages.dev host; lalumapp.com gets no X-Robots-Tag. (Preview deployments get
+# noindex from Cloudflare by default.)
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
