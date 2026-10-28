@@ -198,7 +198,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} sends={docSends} level={level} onChange={() => void load()} />}
-      {tab === "expenses" && loaded && <Gate level={level} need={3}><ExpensesTab firmId={firmId} expenses={expenses} onChange={() => void load()} /></Gate>}
+      {tab === "expenses" && loaded && <Gate level={level} need={1}><ExpensesTab firmId={firmId} level={level} expenses={expenses} onChange={() => void load()} /></Gate>}
       {tab === "reports" && loaded && <ReportsTab docs={docs} archive={archive} customers={customers} payments={payments} expenses={expenses} />}
       {tab === "pnl" && loaded && <Gate level={level} need={3}><TaxPnlTab firmId={firmId} docs={docs} payments={payments} expenses={expenses} archive={archive} /></Gate>}
       {tab === "permissions" && level >= 4 && <PermissionsTab />}

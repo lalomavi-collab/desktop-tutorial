@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { Icon } from "../../../components/Icon";
 import { money } from "../../../lib/cockpit/shared";
 import { EXPENSE_CATEGORY, PAY_METHOD, recoverableVat } from "../../../lib/cockpit/finance";
-import type { FinExpense, PayMethod } from "../../../lib/cockpit/finance";
-import { scanReceipt, scanReceiptError } from "../../../lib/cockpit/financeApi";
+import type { FinExpense, FinExpenseDoc, PayMethod } from "../../../lib/cockpit/finance";
+import { scanReceipt, scanReceiptError, uploadExpenseDoc, getExpenseDocUrl, expenseDocError } from "../../../lib/cockpit/financeApi";
 import { TAX_CATEGORY } from "../../../lib/cockpit/taxEngine";
 import type { TaxCategory } from "../../../lib/cockpit/taxEngine";
 import { advisorError, classifyExpense } from "../../../lib/cockpit/taxAdvisorAgent";
@@ -21,13 +21,71 @@ const FIELD_LABEL: Record<string, string> = {
   total: "סכום כולל", vat_amount: "מע\"מ", supplier_doc_ref: "מספר חשבונית הספק",
 };
 
-export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; expenses: FinExpense[]; onChange: () => void }) {
+// Why a deletion was refused, in words. A delete that fails silently looks like a screen that did not refresh.
+function removeError(e: { code?: string; message?: string }): string {
+  if (e.code === "23503") return "להוצאה מצורף מסמך מקור ולכן אי אפשר למחוק אותה. אם נרשמה בטעות, תקנו אותה.";
+  if ((e.message ?? "").includes("TAX_RETENTION")) return "ההוצאה נשמרת עד סוף תקופת השמירה למס ואי אפשר למחוק אותה.";
+  return "המחיקה נכשלה. נסו שוב.";
+}
+
+// level: the signed in user's finance level (1 view, 3 writes expenses). Below 3 the tab is read only, a bookkeeper included:
+// the source documents can be opened, nothing can be added, replaced or removed. The database and the function enforce the same.
+export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: string; level: number; expenses: FinExpense[]; onChange: () => void }) {
+  const canWrite = level >= 3;
   const [f, setF] = useState<Draft | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [scanning, setScanning] = useState(false);
   const [lowConfidence, setLowConfidence] = useState<string[]>([]);
+  const [docBusy, setDocBusy] = useState<string | null>(null);
+  const [docMsg, setDocMsg] = useState<{ id: string; kind: "ok" | "warn" | "err"; text: string } | null>(null);
+  const [docs, setDocs] = useState<FinExpenseDoc[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const docFileRef = useRef<HTMLInputElement>(null);
+  const docTargetRef = useRef<{ expenseId: string; supersedes: string | null } | null>(null);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
+
+  // Source documents (migration 20261027100000). The path is never selected: the browser only ever gets a 60 second link.
+  const [docsTick, setDocsTick] = useState(0);
+  useEffect(() => {
+    if (!supabase) return;
+    let live = true;
+    void (async () => {
+      const { data } = await supabase.from("lalum_fin_expense_docs").select("id, expense_id, sha256, mime, size_bytes, uploaded_at, superseded_at").eq("firm_id", firmId).order("uploaded_at");
+      if (live) setDocs((data as FinExpenseDoc[] | null) ?? []);
+    })();
+    return () => { live = false; };
+  }, [firmId, expenses, docsTick]);
+  const docsOf = useMemo(() => {
+    const m = new Map<string, FinExpenseDoc[]>();
+    for (const d of docs) m.set(d.expense_id, [...(m.get(d.expense_id) ?? []), d]);
+    return m;
+  }, [docs]);
+
+  function startDocUpload(expenseId: string, supersedes: string | null) {
+    docTargetRef.current = { expenseId, supersedes };
+    docFileRef.current?.click();
+  }
+  async function onDocFile(e: { target: { files: FileList | null; value: string } }) {
+    const file = e.target.files?.[0];
+    const target = docTargetRef.current;
+    e.target.value = ""; docTargetRef.current = null;
+    if (!file || !target) return;
+    setDocBusy(target.expenseId); setDocMsg(null);
+    const r = await uploadExpenseDoc(target.expenseId, file, target.supersedes ?? undefined);
+    setDocBusy(null);
+    if (!r.ok) { setDocMsg({ id: target.expenseId, kind: "err", text: expenseDocError(r) }); return; }
+    const elsewhere = r.same_file_elsewhere ?? 0;
+    if (r.duplicate) setDocMsg({ id: target.expenseId, kind: "ok", text: "הקובץ הזה כבר מצורף להוצאה." });
+    else if (elsewhere > 0) setDocMsg({ id: target.expenseId, kind: "warn", text: `נשמר. אותו קובץ מצורף גם ל${elsewhere === 1 ? "הוצאה אחרת" : `-${elsewhere} הוצאות אחרות`}, ייתכן שזו הוצאה כפולה.` });
+    setDocsTick((n) => n + 1);
+  }
+  async function viewDoc(expenseId: string, docId: string) {
+    setDocBusy(expenseId); setDocMsg(null);
+    const r = await getExpenseDocUrl(docId);
+    setDocBusy(null);
+    if (!r.ok || !r.url) { setDocMsg({ id: expenseId, kind: "err", text: expenseDocError(r) }); return; }
+    window.open(r.url, "_blank", "noopener,noreferrer");
+  }
 
   async function onScanFile(e: { target: { files: FileList | null; value: string } }) {
     const file = e.target.files?.[0];
@@ -85,18 +143,20 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
   }
   async function remove(id: string) {
     if (!supabase || !window.confirm("למחוק את ההוצאה?")) return;
-    await supabase.from("lalum_fin_expenses").delete().eq("id", id);
+    const { error } = await supabase.from("lalum_fin_expenses").delete().eq("id", id);
+    if (error) { setDocMsg({ id, kind: "err", text: removeError(error) }); return; }
     onChange();
   }
 
   return (
     <div className="ck-stack">
       <ExpensesChart expenses={expenses} />
-      <HistoricalImport firmId={firmId} onImported={onChange} />
-      <div className="ck-row" style={{ justifyContent: "space-between" }}>
+      {canWrite && <HistoricalImport firmId={firmId} onImported={onChange} />}
+      {canWrite && <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
         <div className="ck-row">
           <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment" style={{ display: "none" }} onChange={(e) => void onScanFile(e)} />
+          <input ref={docFileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" style={{ display: "none" }} onChange={(e) => void onDocFile(e)} />
           <button className="ck-btn" disabled={scanning} onClick={() => fileRef.current?.click()}>
             <Icon name="file" size={16} /> {scanning ? "קוראים את החשבונית…" : "סריקת חשבונית"}
           </button>
@@ -104,8 +164,8 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
             <Icon name="plus" size={16} /> הוצאה חדשה
           </button>
         </div>
-      </div>
-      {f && (
+      </div>}
+      {canWrite && f && (
         <div className="ck-card ck-stack">
           <div className="ck-title">הוצאה חדשה</div>
           {lowConfidence.length > 0 && (
@@ -132,12 +192,32 @@ export function ExpensesTab({ firmId, expenses, onChange }: { firmId: string; ex
           <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { setF(null); setLowConfidence([]); }}>ביטול</button></div>
         </div>
       )}
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th></th></tr></thead><tbody>
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th>מסמך מקור</th><th></th></tr></thead><tbody>
         {expenses.length ? expenses.map((e) => (
           <tr key={e.id}><td>{e.spent_on}</td><td className="fin-text">{e.supplier}{e.description ? <div className="ck-meta">{e.description}</div> : null}</td>
             <td>{EXPENSE_CATEGORY[e.category] ?? e.category}</td><td className="fin-num">{money(e.total)}</td><td className="fin-num">{money(e.vat_amount)}</td>
             <td className="fin-num">{money(recoverableVat(e))}{e.payment_method ? <div className="ck-meta">{PAY_METHOD[e.payment_method as PayMethod]}</div> : null}</td>
-            <td className="fin-actions-cell"><div className="fin-actions"><button className="ck-btn sm danger" onClick={() => void remove(e.id)}>מחיקה</button></div></td></tr>)) : <tr><td colSpan={7}>אין הוצאות עדיין</td></tr>}
+            <td>{(() => {
+              const all = docsOf.get(e.id) ?? [], live = all.filter((d) => !d.superseded_at), old = all.filter((d) => d.superseded_at);
+              const busy = docBusy === e.id;
+              return <>
+                {live.map((d, i) => (
+                  <div className="ck-row" key={d.id}>
+                    <button className="ck-btn sm" disabled={busy} onClick={() => void viewDoc(e.id, d.id)}><Icon name="file" size={14} /> {busy ? "…" : live.length > 1 ? `מסמך ${i + 1}` : "צפייה"}</button>
+                    {canWrite && <button className="ck-btn sm" disabled={busy} onClick={() => startDocUpload(e.id, d.id)} title="החלפת המסמך. הקודם נשמר ומסומן כמוחלף.">החלפה</button>}
+                  </div>
+                ))}
+                {canWrite && <button className="ck-btn sm" disabled={busy} onClick={() => startDocUpload(e.id, null)}><Icon name="file" size={14} /> {live.length ? "מסמך נוסף" : "העלאה"}</button>}
+                {!canWrite && !live.length && <span className="ck-meta">לא צורף</span>}
+                {old.length > 0 && (
+                  <details><summary className="ck-meta">גרסאות קודמות ({old.length})</summary>
+                    {old.map((d) => <button key={d.id} className="ck-btn sm" disabled={busy} onClick={() => void viewDoc(e.id, d.id)}>{d.uploaded_at.slice(0, 10)}</button>)}
+                  </details>
+                )}
+                {docMsg?.id === e.id && <div className={docMsg.kind === "ok" ? "ck-ok" : docMsg.kind === "warn" ? "ck-warn" : "ck-err"} aria-live="polite">{docMsg.text}</div>}
+              </>;
+            })()}</td>
+            <td className="fin-actions-cell">{canWrite && <div className="fin-actions"><button className="ck-btn sm danger" onClick={() => void remove(e.id)}>מחיקה</button></div>}</td></tr>)) : <tr><td colSpan={8}>אין הוצאות עדיין</td></tr>}
       </tbody></table></div>
     </div>
   );

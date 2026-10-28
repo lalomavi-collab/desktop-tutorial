@@ -273,3 +273,48 @@ export async function logWhatsappSend(target: { kind: "document" | "archive"; id
   const { error: fe } = await supabase.rpc("lalum_fin_doc_send_finish", { p_id: id, p_ok: true, p_ref: null, p_error: null });
   return !fe;
 }
+
+// ---- Expense source documents (lalum-fin-expense-doc, migration 20261027100000) ----
+
+export interface ExpenseDocReply { ok?: boolean; code?: string; url?: string; id?: string; sha256?: string; size?: number; duplicate?: boolean; same_file_elsewhere?: number }
+const EXPENSE_DOC_ERRORS: Record<string, string> = {
+  unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה למסמך ההוצאה הזה.",
+  bad_type: "סוג הקובץ אינו נתמך. אפשר PDF, JPEG, PNG, WEBP או GIF.",
+  bad_file: "תוכן הקובץ לא תואם לסוג שנשלח.", too_large: "הקובץ גדול מהמותר (עד 15MB).",
+  upload_failed: "העלאת הקובץ נכשלה. אפשר לנסות שוב.", not_stored: "הקובץ לא נשמר במלואו. אפשר לנסות שוב.",
+  record_failed: "הקובץ נשמר אך לא נקשר להוצאה. אפשר לנסות שוב.", fetch_failed: "שגיאת תקשורת. אפשר לנסות שוב.",
+  bad_supersedes: "המסמך שביקשתם להחליף אינו שייך להוצאה הזו.", already_superseded: "המסמך הזה כבר הוחלף. רעננו את המסך.",
+};
+export const expenseDocError = (r: ExpenseDocReply): string => EXPENSE_DOC_ERRORS[r.code ?? ""] ?? "הפעולה נכשלה. נסו שוב.";
+
+async function callExpenseDoc(body: Record<string, unknown>): Promise<ExpenseDocReply> {
+  if (!supabase) return { ok: false, code: "fetch_failed" };
+  const { data } = await supabase.auth.getSession();
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 45000);
+  try {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lalum-fin-expense-doc`, {
+      method: "POST", signal: ctl.signal,
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token ?? ""}`, apikey: String(import.meta.env.VITE_SUPABASE_ANON_KEY) },
+      body: JSON.stringify(body),
+    });
+    const j = await res.json().catch(() => null);
+    if (!res.ok) return { ok: false, code: j?.code ?? (res.status === 401 ? "unauthorized" : "fetch_failed") };
+    return (j ?? { ok: true }) as ExpenseDocReply;
+  } catch {
+    return { ok: false, code: "fetch_failed" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Attaches a scanned invoice, receipt or credit note to an expense that already exists. With `supersedes`, it replaces that
+ *  document: the earlier one keeps its row and its file, marked as replaced. The same file twice is recorded once (duplicate). */
+export async function uploadExpenseDoc(expenseId: string, file: File, supersedes?: string): Promise<ExpenseDocReply> {
+  let file_base64: string;
+  try { file_base64 = await fileToBase64(file); } catch { return { ok: false, code: "fetch_failed" }; }
+  return callExpenseDoc({ action: "upload", expense_id: expenseId, media_type: file.type, file_base64, ...(supersedes ? { supersedes } : {}) });
+}
+
+/** A 60 second link to one expense document. Every call is written to the audit log. */
+export const getExpenseDocUrl = (docId: string): Promise<ExpenseDocReply> => callExpenseDoc({ action: "url", doc_id: docId });

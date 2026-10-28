@@ -53,6 +53,12 @@ export interface FinExpense {
   tax_category?: string | null; income_tax_recognition_pct?: number | null;
 }
 
+/** A source document behind an expense (migration 20261027100000). Several per expense; a replaced one keeps its row
+ *  and its file, with superseded_at set. The storage path is never read by the browser. */
+export interface FinExpenseDoc {
+  id: string; expense_id: string; sha256: string; mime: string; size_bytes: number; uploaded_at: string; superseded_at: string | null;
+}
+
 export const DOC_TYPE: Record<DocType, string> = {
   PROFORMA: "חשבון עסקה",
   INVOICE: "חשבונית מס",
