@@ -18,7 +18,7 @@ import { OVERSIGHT_PAGE, OVERSIGHT_POINTS, OVERSIGHT_SOURCES } from "./src/lib/o
 import { SECURITY_PAGE, SECURITY_GROUPS, CHECKED_ON } from "./src/lib/securityPage";
 import { SECURITY_TEMPLATES } from "./src/lib/securityTemplates";
 import { TRACKS, BANDS, resultFor, resultPath, MAX_SCORE } from "./src/lib/riskScore";
-import { faqPageNode, pageJsonLd, pageNode } from "./src/lib/schema";
+import { faqPageNode, pageJsonLd, pageNode, serviceNode } from "./src/lib/schema";
 import type { QA } from "./src/lib/schema";
 import { articleFaqs } from "./src/lib/articleFaqs";
 import { toBlocks, blocksToText, parseInline } from "./src/lib/articleBlocks";
@@ -47,7 +47,7 @@ const coverUrl = (slug: string): string | undefined => {
 // description, instead of the app-shell default.
 const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: boolean; image?: string }[] = [
   { path: "advisory", title: "ייעוץ בנדל״ן, מיזוגים ורכישות וממשל AI | LALUM", desc: "ייעוץ משפטי בעסקאות נדל״ן, מיזוגים ורכישות ועסקאות בינלאומיות, התחדשות עירונית, גישור ובוררות, וממשל בינה מלאכותית כולל התאמה ל-EU AI Act." },
-  { path: "ai-legal-advisory", title: "ייעוץ, ליווי מלא והדרכות AI לחברות ולארגונים | LALUM", desc: "ייעוץ וליווי משפטי מלא לחברות ולארגונים בנושא בינה מלאכותית: ממשל AI, EU AI Act, אחריות אלגוריתמית, קניין רוחני וניהול סיכונים, לצד הדרכות להנהלה ולצוותים.", image: `${SITE}/og/pillar-ai.png` },
+  { path: "ai-legal-advisory", title: "עורך דין לענייני בינה מלאכותית: ייעוץ, EU AI Act והדרכות לארגונים | LALUM", desc: "ייעוץ משפטי בבינה מלאכותית לחברות, לרשויות ולמשרדי עורכי דין: EU AI Act, הדין בישראל ותיקון 13, חוזים מול ספקי AI, חיסיון והדרכות לצוותים.", image: `${SITE}/og/pillar-ai.png` },
   { path: "real-estate-legal-advisory", title: "נדל״ן והתחדשות עירונית בארץ ובחו״ל: ייעוץ וחוות דעת שנייה | LALUM", desc: "ייעוץ משפטי עצמאי וחוות דעת שנייה בעסקאות נדל״ן בארץ ובחו״ל ובהתחדשות עירונית (תמ״א 38 ופינוי-בינוי), בשילוב Legal AI לבדיקת נאותות וניהול סיכונים.", image: `${SITE}/og/pillar-real-estate.png` },
   { path: "mediation-dispute-resolution", title: "גישור מסחרי ויישוב סכסוכים עסקיים מכוון הכרעה | LALUM", desc: "גישור מסחרי ויישוב סכסוכים עסקיים בשיטת גישור מכוון הכרעה (DOM): סכסוכי שותפים, ספקים, נדל״ן והתחדשות עירונית, עם הערכה משפטית מנומקת והסכם בר-הגנה." },
   { path: "training", title: "קורס AI לעורכי דין והכשרות בינה מלאכותית לארגונים | LALUM", desc: "קורס AI לעורכי דין ולמשרדי עורכי דין, והכשרות בממשל בינה מלאכותית, EU AI Act וניהול סיכונים אלגוריתמי לדירקטוריונים ולצוותי מוצר." },
@@ -321,6 +321,11 @@ function articleBodyHtml(headline: string, dek: string, blocks: ArticleBlock[], 
   }
   if (topic) {
     out.push(`        <p>${esc("נושא")}: <a href="${topicPath(topic.slug)}/">${esc(topic.name)}</a></p>`);
+    // Straight to the service page, as the rendered article does, for the two
+    // areas the practice leads with only.
+    if (topic.lead && topic.pillar) {
+      out.push(`        <p>${esc("השירות בתחום")}: <a href="/${esc(topic.pillar.path)}/">${esc(topic.pillar.label)}</a></p>`);
+    }
   }
   if (related.length) {
     out.push(`        <h2>${esc(strings.he.ui.article.moreArticles)}</h2>`);
@@ -366,8 +371,11 @@ function pillarBodyHtml(p: PillarPage): string {
   out.push(`        <h2>${esc(p.relatedH2)}</h2>`);
   out.push(`        <ul>${p.related.map((r) => `<li><a href="/insights/${esc(encodeURI(r.slug))}/">${esc(r.title)}</a></li>`).join("")}</ul>`);
   out.push(`        <h2>${esc(p.faqH2)}</h2>`);
-  for (const f of faqsForPath(strings.he, `/${p.path}`)) {
+  // p.faqs is the same list faqsForPath resolves for this path, read directly
+  // so an answer's link to the page that covers it reaches the static copy too.
+  for (const f of p.faqs) {
     out.push(`        <h3>${esc(f.q)}</h3>\n        <p>${esc(f.a)}</p>`);
+    if (f.link) out.push(`        <p><a href="${esc(f.link.to)}/">${esc(f.link.label)}</a></p>`);
   }
   out.push(`        <h2>${esc(p.ctaH2)}</h2>`, `        <p>${esc(p.ctaBody)}</p>`, `        <p>${esc(p.disclaimer)}</p>`);
   return out.join("\n");
@@ -1067,7 +1075,14 @@ function seoPrerender(): Plugin {
           // so the Q&A is visible to crawlers and AI answer engines without running
           // JS. Uses the same faqsForPath/faqPageNode helpers the runtime PageMeta
           // uses, so hydration finds a matching #page-jsonld and nothing duplicates.
-          const faqNode = pageJsonLd([faqPageNode(faqsForPath(strings.he, `/${r.path}`))]);
+          // The two lead pillars also carry their Service node, as the runtime page does.
+          const leadPillar = r.path === "ai-legal-advisory" || r.path === "real-estate-legal-advisory"
+            ? pillarPagesFor("he").find((p: PillarPage) => p.path === r.path)
+            : undefined;
+          const faqNode = pageJsonLd([
+            leadPillar ? serviceNode(leadPillar.title, leadPillar.desc, leadPillar.url) : null,
+            faqPageNode(faqsForPath(strings.he, `/${r.path}`)),
+          ]);
           if (faqNode) {
             const script = `<script id="page-jsonld" type="application/ld+json">${JSON.stringify(faqNode)}</script>`;
             html = sub(html, "</head>", () => `    ${script}\n  </head>`);
