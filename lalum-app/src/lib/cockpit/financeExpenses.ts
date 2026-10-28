@@ -64,3 +64,51 @@ export function expenseBuckets(rows: FinExpense[], grain: ExpGrain, year: number
     categories: [...byCat.entries()].map(([category, a]) => ({ category, amount: r2(a), share: amount ? Math.round((a / amount) * 1000) / 10 : 0 })).filter((c) => c.amount !== 0).sort((a, b) => b.amount - a.amount),
   };
 }
+
+/** A supplier that bills on a fixed rhythm, so a month without its document means a document is missing.
+ *  Arnona is left out on purpose: it is a fixed charge set once a year, not a bill that can fail to arrive. */
+export interface RecurringSupplier { key: string; label: string; match: RegExp; exclude?: RegExp; months: 1 | 2 }
+export const RECURRING_SUPPLIERS: RecurringSupplier[] = [
+  { key: "electricity", label: "חשמל", match: /סלקום אנרג|חברת (ה)?חשמל/, months: 1 },
+  { key: "water", label: "מים", match: /^מי |תאגיד (ה)?מים/, months: 2 },
+  { key: "cellcom", label: "סלקום, סלולר", match: /סלקום/, exclude: /אנרג/, months: 1 },
+  { key: "link", label: "לינק, תקשורת לעסקים", match: /לינק ניהול תקשורת/, months: 1 },
+];
+export interface MissingBills { key: string; label: string; months: 1 | 2; lastSeen: string; missing: Array<{ expected: string; label: string }>; lapsed: boolean }
+
+const monthLabel = (d: string): string => `${MONTH_SHORT[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`;
+const daysBetween = (a: string, b: string): number => Math.round((toDate(a).getTime() - toDate(b).getTime()) / 86400000);
+const onDay = (y: number, m0: number, day: number): string => {
+  const last = new Date(Date.UTC(y, m0 + 1, 0)).getUTCDate();
+  return fmt(new Date(Date.UTC(y, m0, Math.min(day, last))));
+};
+
+/** For each recurring supplier the firm already uses, the billing dates since `from` (default 1 January of this year) that have no
+ *  document within a tolerance (12 days for a monthly bill, 20 for a two monthly one). A date is checked only once `graceDays` have
+ *  passed since it, so a bill that is merely late this week is not reported. The rhythm comes from the supplier's own documents:
+ *  the median day of the month, stepping from its last document before the range (or its first one in it). Three or more misses in
+ *  a row at the end mark the service as possibly ended rather than as three lost bills. */
+export function missingBills(rows: FinExpense[], today: string, opts: { from?: string; graceDays?: number; suppliers?: RecurringSupplier[] } = {}): MissingBills[] {
+  const from = opts.from ?? `${today.slice(0, 4)}-01-01`, grace = opts.graceDays ?? 10;
+  const out: MissingBills[] = [];
+  for (const s of opts.suppliers ?? RECURRING_SUPPLIERS) {
+    const dates = rows.filter((e) => s.match.test(e.supplier) && !(s.exclude?.test(e.supplier))).map((e) => e.spent_on).sort();
+    if (!dates.length) continue;
+    const tol = s.months === 1 ? 12 : 20;
+    const days = dates.map((d) => Number(d.slice(8, 10))).sort((a, b) => a - b);
+    const day = days[Math.floor((days.length - 1) / 2)];
+    const anchor = [...dates].reverse().find((d) => d < from) ?? dates[0];
+    const missing: Array<{ expected: string; label: string }> = [];
+    let trailing = 0;
+    for (let k = 0; k < 240; k++) {
+      const expected = onDay(Number(anchor.slice(0, 4)), Number(anchor.slice(5, 7)) - 1 + k * s.months, day);
+      if (addDays(expected, grace) > today) break;
+      if (addDays(expected, tol) < from) continue;
+      if (dates.some((d) => Math.abs(daysBetween(d, expected)) <= tol)) { trailing = 0; continue; }
+      missing.push({ expected, label: monthLabel(expected) });
+      trailing++;
+    }
+    if (missing.length) out.push({ key: s.key, label: s.label, months: s.months, lastSeen: dates[dates.length - 1], missing, lapsed: trailing >= 3 });
+  }
+  return out;
+}
