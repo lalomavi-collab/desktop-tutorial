@@ -1,4 +1,4 @@
--- Stubs for migration 20261028123000 (lalum_ops_snapshots) on plain Postgres 16: the pg_cron and pg_net catalogs, auth.mfa_factors,
+-- Stubs for migrations 20261028123000 (lalum_ops_snapshots) and 20261028143100 (its bank feed fields) on plain Postgres 16: the pg_cron and pg_net catalogs, auth.mfa_factors,
 -- the migration log, and the shape of every live table the snapshot counts (only the columns it reads). Run after 00_supabase_stubs.
 -- Test use only: never apply to a real project.
 create schema if not exists cron;
@@ -35,6 +35,10 @@ create table if not exists public.lalum_fin_archive (id uuid primary key default
   total numeric);
 create table if not exists public.lalum_fin_bank_lines (id uuid primary key default gen_random_uuid(), value_date date, balance_after numeric,
   created_at timestamptz not null default now());
+-- 20261028143100: the bank feed's balances and run log.
+create table if not exists public.lalum_fin_bank_balances (id uuid primary key default gen_random_uuid(), as_of date, balance numeric,
+  fetched_at timestamptz not null default now());
+create table if not exists public.lalum_fin_bank_sync_runs (id bigserial primary key, ran_at timestamptz not null default now(), status text, detail jsonb);
 
 -- The two gates the read policy uses, driven by settings so a test can be the admin with or without a second factor.
 create or replace function public.lalum_is_admin() returns boolean language sql stable as
