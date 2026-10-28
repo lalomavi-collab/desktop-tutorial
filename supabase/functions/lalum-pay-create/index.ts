@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     IsQaMode: !prod,
     OrderIdClientUsage: id,
     Platform: "lalumapp",
-    FullName: m.client_name || m.client_email || "לקוח לאלום",
+    FullName: m.client_name || m.client_email || "לקוח ללום",
     Phone: m.client_phone || "",
     Email: m.client_email || "",
     IsAutoCreateCustomer: true,
