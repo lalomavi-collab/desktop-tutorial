@@ -7,7 +7,7 @@ import { blogMeta } from "./src/lib/blogMeta";
 import articleCovers from "./src/data/articleCovers.json";
 import { blogPosts } from "./src/lib/blogPosts";
 import { strings } from "./src/lib/strings";
-import { alternatesFor, cvPath, langUrl, LANGS, EN_ARTICLE_SLUGS, type Lang } from "./src/lib/hreflang";
+import { alternatesFor, cvPath, langUrl, LANGS, EN_ARTICLE_SLUGS, isIndexableLang, type Lang } from "./src/lib/hreflang";
 import { enPosts } from "./src/data/enPosts";
 import { faqsForPath } from "./src/lib/pageFaqs";
 import { faqCategories } from "./src/lib/faq";
@@ -967,7 +967,9 @@ function applyMeta(template: string, r: { title: string; desc: string; url: stri
   // set is removed rather than repointed: telling Google that four translated
   // versions exist when the same Hebrew document is served at all of them is
   // what got those URLs crawled and then discarded as duplicates.
-  const alts = alternatesFor(`/${r.path}`);
+  // A noindex document claims no alternates: it is not offered to the index,
+  // so it is not part of any language set either.
+  const alts = r.noindex ? [] : alternatesFor(`/${r.path}`);
   if (alts.length === 0) {
     h = h.replace(/\s*<link rel="alternate" hreflang="[^"]*" href="[^"]*"\s*\/>/g, "");
   } else {
@@ -1238,8 +1240,12 @@ function seoPrerender(): Plugin {
           const pillar = pillarPagesFor(lang).find((x: PillarPage) => x.path === v.path);
           const title = pillar ? `${pillar.title} | LALUM` : dict.seo[v.seoKey!].title;
           const desc = pillar ? pillar.desc : dict.seo[v.seoKey!].desc;
+          // An unreviewed language (UNREVIEWED_LANGS) is still written, so a
+          // visitor who picks it gets the page, but it is noindex until its
+          // review is applied.
           let html = applyMeta(template, {
             title, desc: clip(desc), url: langUrl(`/${v.path}`, lang), path: v.path, image: undefined,
+            noindex: !isIndexableLang(lang),
           });
           // The document must declare the language it is written in, not the
           // template's Hebrew.
@@ -1298,7 +1304,8 @@ function seoPrerender(): Plugin {
         let xml = readFileSync(sitemapPath, "utf8");
         // Add the language variants. They are real, indexable addresses, so a
         // crawler should find them in the sitemap and not only by following an
-        // hreflang link from the Hebrew page.
+        // hreflang link from the Hebrew page. An unreviewed language is noindex
+        // and therefore has no row.
         const hubRows = TOPICS_IN_ORDER
           .filter((t) => (articlesByTopic(strings.he).get(t.slug)?.length ?? 0) > 0)
           .map((t) => `${SITE}${topicPath(t.slug)}/`)
@@ -1306,7 +1313,7 @@ function seoPrerender(): Plugin {
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
         if (hubRows.length) xml = sub(xml, "</urlset>", () => `${hubRows.join("\n")}\n</urlset>`);
         const rows = VARIANTS.flatMap((v) =>
-          LANGS.filter((l) => l.code !== "he").map((l) => langUrl(`/${v.path}`, l.code)),
+          LANGS.filter((l) => l.code !== "he" && isIndexableLang(l.code)).map((l) => langUrl(`/${v.path}`, l.code)),
         )
           .filter((loc) => !xml.includes(`<loc>${loc}</loc>`))
           .map((loc) => `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
