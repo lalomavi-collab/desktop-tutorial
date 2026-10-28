@@ -1,11 +1,11 @@
-// Loads one matter with its fee terms, client, hours and documents. Read only; every table is behind RLS,
-// so a member who may not see something simply gets less back.
+// Loads one matter with its fee terms, client, hours and documents, and writes the two things the screen lets a member enter:
+// fee terms and deadlines. Every table is behind RLS, so a member who may not see or change something gets less back or an error.
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import { isUuid } from "./matter360Core.ts";
-import type { TimeRow } from "./matter360Core.ts";
+import type { DeadlineRow, FeeTerms, TimeRow } from "./matter360Core.ts";
 
-export interface MatterRow { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string }
+export interface MatterRow { id: string; firm_id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string }
 export interface FeeRow { fee_model: string; fixed_fee: number | null; fee_cap: number | null; retainer_monthly: number | null; billing_active: boolean; fin_customer_id: string | null }
 export interface DocRow { id: string; file_name: string; doc_type: string | null; doc_date: string | null; created_at: string }
 export interface Matter360Data { matter: MatterRow; fee: FeeRow | null; clientName: string | null; time: TimeRow[]; docs: DocRow[]; trustHeld: number }
@@ -15,7 +15,7 @@ const num = (v: unknown): number | null => (v == null ? null : Number(v));
 
 export async function loadMatter360(id: string): Promise<Matter360State> {
   if (!supabase || !isUuid(id)) return { state: "missing" };
-  const m = await supabase.from("lalum_cockpit_matters").select("id, title, matter_code, practice_area, status, conflict_status, created_at").eq("id", id).maybeSingle();
+  const m = await supabase.from("lalum_cockpit_matters").select("id, firm_id, title, matter_code, practice_area, status, conflict_status, created_at").eq("id", id).maybeSingle();
   if (m.error || !m.data) return { state: "missing" };
   const [f, t, d, tr] = await Promise.all([
     supabase.from("lalum_matter_fees").select("fee_model, fixed_fee, fee_cap, retainer_monthly, billing_active, fin_customer_id").eq("matter_id", id).maybeSingle(),
@@ -38,4 +38,50 @@ export function useMatter360(id: string): Matter360State {
   const [s, setS] = useState<Matter360State>({ state: "loading" });
   useEffect(() => { let on = true; void loadMatter360(id).then((r) => { if (on) setS(r); }); return () => { on = false; }; }, [id]);
   return s;
+}
+
+// A refusal from RLS (42501) means the member lacks the permission, not that the input was wrong.
+const writeError = (e: { code?: string; message?: string } | null, denied: string): string | null =>
+  !e ? null : e.code === "42501" ? denied : `השמירה נכשלה (${e.code ?? "שגיאה"}). דבר לא נשמר.`;
+
+/** The member's finance level in the firm (0 to 4), or null while unknown. Fee terms are read and written from level 4. */
+export function useFinLevel(firmId: string): number | null {
+  const [lv, setLv] = useState<number | null>(null);
+  useEffect(() => {
+    let on = true;
+    if (!supabase) return;
+    void supabase.rpc("lalum_fin_level", { p_firm: firmId }).then((r) => { if (on) setLv(r.error ? 0 : Number(r.data ?? 0)); });
+    return () => { on = false; };
+  }, [firmId]);
+  return lv;
+}
+
+/** Creates or replaces the matter's fee terms. Billing activation and the fee agreement stay where they are. */
+export async function saveFeeTerms(matterId: string, firmId: string, t: FeeTerms): Promise<string | null> {
+  if (!supabase) return "אין חיבור למסד הנתונים.";
+  const { error } = await supabase.from("lalum_matter_fees").upsert({ matter_id: matterId, firm_id: firmId, ...t }, { onConflict: "matter_id" });
+  return writeError(error, "עריכת תנאי שכר טרחה דורשת הרשאת כספים מלאה.");
+}
+
+const DEADLINE_COLS = "id, title, kind, due_date, status, is_client_visible, source_note, created_at";
+
+export async function loadDeadlines(matterId: string): Promise<{ rows: DeadlineRow[]; error: string | null }> {
+  if (!supabase) return { rows: [], error: "אין חיבור למסד הנתונים." };
+  const r = await supabase.from("lalum_deadlines").select(DEADLINE_COLS).eq("matter_id", matterId).order("due_date").limit(500);
+  return { rows: (r.data as DeadlineRow[] | null) ?? [], error: r.error ? `טעינת המועדים נכשלה (${r.error.code ?? "שגיאה"}).` : null };
+}
+
+/** firm_id is filled by the database from the matter (trigger lalum_firm_t). */
+export async function addDeadline(matterId: string, d: { title: string; kind: string; due_date: string; source_note: string }): Promise<string | null> {
+  if (!supabase) return "אין חיבור למסד הנתונים.";
+  const { error } = await supabase.from("lalum_deadlines").insert({ matter_id: matterId, title: d.title.trim(), kind: d.kind, due_date: d.due_date, source_note: d.source_note });
+  return writeError(error, "רק מי שבצוות התיק (או שותף) יכול לשמור מועד.");
+}
+
+export async function updateDeadline(id: string, patch: { status?: string; is_client_visible?: boolean }): Promise<string | null> {
+  if (!supabase) return "אין חיבור למסד הנתונים.";
+  const denied = "רק מי שבצוות התיק (או שותף) יכול לשנות מועד.";
+  // RLS hides a row the member may not change, so a refused update returns no row rather than an error.
+  const { data, error } = await supabase.from("lalum_deadlines").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", id).select("id");
+  return writeError(error, denied) ?? ((data as unknown[] | null)?.length ? null : denied);
 }
