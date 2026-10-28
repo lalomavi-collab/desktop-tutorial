@@ -59,7 +59,9 @@ export interface SnapData {
     importLastAt: string | null; importOkAt: string | null; importLastError: string | null;
     expensesRows: number; expensesImportKey: boolean; archiveRows: number;
     proformasOpen: number; proformasOpenTotal: number; proformasOpenOld: number;
-    bankLastDay: string | null; bankBalance: number | null;
+    bankLastDay: string | null; bankBalance: number | null; bankBalanceDay: string | null;
+    /** The Financy feed (lalum-fin-bank-sync): last run, its status, last good run, and when Financy last read the bank. */
+    bankSync: { lastAt: string | null; status: string | null; lastOkAt: string | null; dataAt: string | null };
   };
   sec: { definer: number; totp: number; users: number; usersNoFirm: number; partnersNoTotp: number };
   matters: { live: number; binned: number; high: number; caution: number; notAssessed: number; deadlines: number; deadlines14: number; overdue: number; feeTerms: number; timeEntries: number; inquiries: number };
@@ -99,7 +101,7 @@ export function parseSnapshot(row: unknown): Snapshot | null {
   const r = obj(row);
   const takenAt = str(r.taken_at);
   if (!takenAt || !r.data || typeof r.data !== "object") return null;
-  const d = obj(r.data), h = obj(d.http), o = obj(d.outlook), w = obj(d.web), f = obj(d.fin), s = obj(d.sec), m = obj(d.matters);
+  const d = obj(r.data), h = obj(d.http), o = obj(d.outlook), w = obj(d.web), f = obj(d.fin), s = obj(d.sec), m = obj(d.matters), bs = obj(f.bank_sync);
   const cron: CronJob[] = (Array.isArray(d.cron) ? d.cron : []).map((x) => {
     const j = obj(x), lastStatus = str(j.last_status), live = lastStatus !== null && IN_FLIGHT.has(lastStatus);
     return { job: str(j.job) ?? "", schedule: str(j.schedule) ?? "", active: j.active !== false, runs: num(j.runs_24h), failed: Math.max(0, num(j.failed_24h) - (live ? 1 : 0)), lastAt: str(j.last_at), lastStatus };
@@ -119,7 +121,8 @@ export function parseSnapshot(row: unknown): Snapshot | null {
         importLastAt: str(f.import_last_at), importOkAt: str(f.import_ok_at), importLastError: str(f.import_last_error),
         expensesRows: num(f.expenses_rows), expensesImportKey: f.expenses_import_key === true, archiveRows: num(f.archive_rows),
         proformasOpen: num(f.proformas_open), proformasOpenTotal: num(f.proformas_open_total), proformasOpenOld: num(f.proformas_open_old),
-        bankLastDay: str(f.bank_last_day), bankBalance: numOrNull(f.bank_balance),
+        bankLastDay: str(f.bank_last_day), bankBalance: numOrNull(f.bank_balance), bankBalanceDay: str(f.bank_balance_day),
+        bankSync: { lastAt: str(bs.last_at), status: str(bs.status), lastOkAt: str(bs.last_ok_at), dataAt: str(bs.data_at) },
       },
       sec: { definer: num(s.definer_callable), totp: num(s.totp_verified), users: num(s.users_total), usersNoFirm: num(s.users_no_firm), partnersNoTotp: num(s.partners_no_totp) },
       matters: {
@@ -253,19 +256,58 @@ function arTile(d: SnapData, now: Date): Tile {
   return t;
 }
 
+// What a failed bank feed run means, in the tile's words. Anything else is a failed call.
+const BANK_SYNC_PROBLEM: Record<string, { status: Status; value: string; today: string; fix: string }> = {
+  consent_expired: { status: "bad", value: "ההסכמה פגה", today: "Financy מדווח שההסכמה מול הבנק פגה או בוטלה, ולכן לא נכנסות תנועות חדשות.", fix: "חידוש ההסכמה באפליקציה של Financy, בחיבור של לאומי. הריצה הבאה משלימה את מה שחסר." },
+  provider_error: { status: "watch", value: "Financy לא קרא את הבנק", today: "Financy נכשל בקריאה האחרונה מהבנק. לרוב זה חולף ביום הבא.", fix: "אם זה חוזר יומיים, לבדוק את החיבור של לאומי באפליקציה של Financy." },
+  token_failed: { status: "bad", value: "המפתח נדחה", today: "Financy דוחה את המפתח שבסודות של Supabase.", fix: "מפתח חדש מ-Financy (הגדרות, גישה ל-API) לשלושת הסודות FINANCY_* ב-Supabase." },
+  not_linked: { status: "watch", value: "החשבון לא זוהה", today: "הסנכרון רץ, אבל לא מצא ב-Financy חשבון עו״ש בלאומי שמספרו מסתיים בספרות של חשבון העסק. שום חשבון אחר לא נקרא.", fix: "לחבר ב-Financy את חשבון העסק בלאומי. אם הוא כבר מחובר, לומר לי, ואקשר אותו ידנית." },
+  account_missing: { status: "bad", value: "החשבון נעלם", today: "החשבון שקושר כבר לא מופיע ב-Financy, ולכן לא נכנסות תנועות.", fix: "לבדוק באפליקציה של Financy שחשבון העסק עדיין מחובר." },
+  connection_missing: { status: "bad", value: "החיבור נעלם", today: "החיבור של חשבון העסק כבר לא מופיע ב-Financy.", fix: "לחבר מחדש את לאומי באפליקציה של Financy." },
+};
+
 function cashTile(d: SnapData, now: Date): Tile {
-  const t = base("cash", "fin", false, "מזומן בבנק", "FIN · BANK", "שורות הבנק שיובאו לחשבון בלאומי", "ידני, בכל ייבוא קובץ", { to: "/settings/billing", label: "הנהלת חשבונות" });
-  const f = d.fin, age = daysSince(f.bankLastDay, now);
+  const f = d.fin, s = f.bankSync;
+  // The feed counts once it has run with a key. Before that, and for the months before it, the Leumi file is the source.
+  const feed = !!s.lastAt && s.status !== "not_configured";
+  const t = base("cash", "fin", false, "מזומן בבנק", "FIN · BANK",
+    feed ? "חשבון העסק בלאומי דרך Financy (קריאה בלבד), והקובץ מלאומי לתקופה שלפני" : "שורות הבנק שיובאו לחשבון בלאומי",
+    feed ? "פעמיים ביום, 07:30 ו-14:30" : "ידני, בכל ייבוא קובץ", { to: "/settings/billing", label: "הנהלת חשבונות" });
+  const balDay = f.bankBalanceDay ?? f.bankLastDay;
+  if (feed) {
+    const p = s.status === "ok" ? null : BANK_SYNC_PROBLEM[s.status ?? ""] ?? { status: "bad" as Status, value: "הסנכרון נכשל", today: "הריצה האחרונה של הסנכרון נכשלה.", fix: "לבדוק את משימת lalum-fin-bank-sync באריח המשימות המתוזמנות." };
+    const readAt = s.dataAt ?? s.lastOkAt, readAge = daysSince(readAt, now), balAge = daysSince(balDay, now), runAge = hoursSince(s.lastOkAt, now);
+    const last = balDay ? ` היתרה האחרונה שנשמרה היא מ-${fmtDay(balDay)}.` : "";
+    if (p) {
+      t.status = p.status; t.value = p.value; t.sub = `בריצה של ${fmtDay(s.lastAt)} ${fmtTime(s.lastAt)}`; t.strip = p.value;
+      t.today = `${STATUS_LABEL[p.status]}. ${p.today}${last}`; t.fix = p.fix;
+    } else if (f.bankBalance === null || balAge === null || balAge > BANK_STALE_DAYS || readAge === null || readAge > BANK_STALE_DAYS) {
+      t.status = "stale"; t.value = "יתרה לא מוצגת"; t.sub = readAt ? `נקרא מהבנק ב-${fmtDay(readAt)}` : "אין עדיין קריאה מהבנק"; t.strip = readAt ? `נקרא ב-${fmtDay(readAt)}` : "אין קריאה";
+      t.today = `מיושן. הסנכרון רץ, אבל ${readAt ? `Financy קרא את הבנק לאחרונה ב-${fmtDay(readAt)}` : "Financy עוד לא קרא את הבנק"}.${last} יתרה מלפני יותר משבוע לא מוצגת.`;
+      t.fix = "לבדוק באפליקציה של Financy שהחיבור של לאומי מתעדכן כל יום.";
+    } else {
+      t.status = runAge !== null && runAge > DAILY_STALE_HOURS ? "stale" : "ok";
+      t.value = money(f.bankBalance); t.sub = `יתרה ב-${fmtDay(balDay)}, נקרא מהבנק ב-${fmtDay(readAt)} ${fmtTime(readAt)}`; t.strip = `${money(f.bankBalance)} ב-${fmtDay(balDay)}`;
+      t.today = t.status === "ok" ? `תקין. היתרה בלאומי ב-${fmtDay(balDay)}, כפי ש-Financy קרא אותה ב-${fmtDay(readAt)}. התנועות החדשות הותאמו למסמכים ולהוצאות.`
+        : `מיושן. הריצה התקינה האחרונה של הסנכרון הייתה ב-${fmtDay(s.lastOkAt)}, לפני יותר מיממה.`;
+      t.fix = t.status === "ok" ? "אין פעולה." : "לבדוק את משימת lalum-fin-bank-sync באריח המשימות המתוזמנות.";
+    }
+    return t;
+  }
+  const waiting = s.status === "not_configured"
+    ? "הסנכרון מ-Financy בנוי ומחכה למפתח: שלושת הסודות FINANCY_* ב-Supabase. עד אז, קובץ ייצוא מלאומי לחודשים החסרים."
+    : "קובץ ייצוא מלאומי לחודשים החסרים, או המפתח של Financy בסודות של Supabase לסנכרון היומי.";
+  const age = daysSince(balDay, now);
   if (!f.bankLastDay || age === null) {
     t.status = "none"; t.value = "אין נתוני בנק"; t.sub = "לא יובא קובץ"; t.strip = "אין נתוני בנק";
-    t.today = "לא מחובר. לא יובאה אף שורת בנק."; t.fix = "ייבוא קובץ ייצוא מלאומי.";
+    t.today = "לא מחובר. לא יובאה אף שורת בנק."; t.fix = waiting;
   } else if (age > BANK_STALE_DAYS || f.bankBalance === null) {
-    t.status = "stale"; t.value = "יתרה לא מוצגת"; t.sub = `תנועה אחרונה ב-${fmtDay(f.bankLastDay)}, לפני ${age} ימים`; t.strip = `נתון אחרון ${fmtDay(f.bankLastDay)}`;
+    t.status = "stale"; t.value = "יתרה לא מוצגת"; t.sub = `תנועה אחרונה ב-${fmtDay(f.bankLastDay)}, לפני ${daysSince(f.bankLastDay, now)} ימים`; t.strip = `נתון אחרון ${fmtDay(f.bankLastDay)}`;
     t.today = `מיושן. התנועה האחרונה מ-${fmtDay(f.bankLastDay)}. היתרה לא מוצגת בכוונה: יתרה מלפני יותר משבוע מטעה יותר מחוסר נתון.`;
-    t.fix = "קובץ ייצוא מלאומי לחודשים החסרים. ההחלטה על חיבור ישיר (Financy) פתוחה בשרשור דשבורד הבנק.";
+    t.fix = waiting;
   } else {
-    t.status = "ok"; t.value = money(f.bankBalance); t.sub = `יתרה ב-${fmtDay(f.bankLastDay)}`; t.strip = `${money(f.bankBalance)} ב-${fmtDay(f.bankLastDay)}`;
-    t.today = `תקין. היתרה אחרי התנועה של ${fmtDay(f.bankLastDay)}.`; t.fix = "אין פעולה.";
+    t.status = "ok"; t.value = money(f.bankBalance); t.sub = `יתרה ב-${fmtDay(balDay)}`; t.strip = `${money(f.bankBalance)} ב-${fmtDay(balDay)}`;
+    t.today = `תקין. היתרה אחרי התנועה של ${fmtDay(balDay)}.`; t.fix = "אין פעולה.";
   }
   return t;
 }

@@ -1,5 +1,6 @@
--- Tests for migration 20261028123000 (lalum_ops_snapshots, and live matters only in lalum_v_admin_matters). Order: 00_supabase_stubs,
--- 08_ops_snapshot_stub, 20261028123000_lalum_ops_snapshots, then this file:
+-- Tests for migration 20261028123000 (lalum_ops_snapshots, and live matters only in lalum_v_admin_matters) and 20261028143100 (the bank
+-- feed fields). Order: 00_supabase_stubs, 08_ops_snapshot_stub, 20261028123000_lalum_ops_snapshots, 20261028143100_lalum_ops_snapshot_bank_sync,
+-- then this file:
 --   psql -v ON_ERROR_STOP=1 -f ops_snapshot.sql
 -- Every assertion raises on failure; fixtures roll back.
 begin;
@@ -74,8 +75,30 @@ begin
   assert (d -> 'fin' ->> 'proformas_open')::int = 2 and (d -> 'fin' ->> 'proformas_open_total')::numeric = 502000
      and (d -> 'fin' ->> 'proformas_open_old')::int = 1, 'open pro formas ' || (d -> 'fin')::text;
   assert (d -> 'fin' ->> 'bank_balance')::numeric = 41369.21 and (d -> 'fin' ->> 'bank_last_day')::date = current_date - 57, 'bank';
+  assert (d -> 'fin' ->> 'bank_balance_day')::date = current_date - 57, 'a file balance is dated by its line';
+  assert d -> 'fin' -> 'bank_sync' ->> 'last_at' is null, 'no bank feed run yet';
   -- nothing that names a person
   assert d::text !~* '(email|title|firm_name)', 'no personal field in the snapshot';
+end $$;
+
+-- the bank feed: its balance wins when newer, a line without a running balance does not blank it, and data_at is the last good run's
+insert into public.lalum_fin_bank_lines (value_date, balance_after) values (current_date - 1, null);
+insert into public.lalum_fin_bank_balances (as_of, balance, fetched_at) values
+  (current_date - 2, 50000, now() - interval '1 day'), (current_date - 1, 52000.5, now() - interval '1 hour');
+insert into public.lalum_fin_bank_sync_runs (ran_at, status, detail) values
+  (now() - interval '1 day', 'ok', '{"data_at": "2026-10-27T05:10:00Z"}'),
+  (now() - interval '2 hours', 'ok', '{"data_at": "2026-10-28T05:12:00Z"}'),
+  (now() - interval '1 hour', 'consent_expired', '{}'),
+  (now() - interval '40 days', 'ok', '{"data_at": "2026-09-01T05:00:00Z"}');
+select lalum_private.ops_snapshot() is not null as took \gset
+do $$
+declare d jsonb := (select data from public.lalum_ops_snapshots order by taken_at desc, id desc limit 1);
+begin
+  assert (d -> 'fin' ->> 'bank_balance')::numeric = 52000.5 and (d -> 'fin' ->> 'bank_balance_day')::date = current_date - 1, 'feed balance ' || (d -> 'fin')::text;
+  assert (d -> 'fin' ->> 'bank_last_day')::date = current_date - 1, 'last movement';
+  assert d -> 'fin' -> 'bank_sync' ->> 'status' = 'consent_expired', 'last run status';
+  assert d -> 'fin' -> 'bank_sync' ->> 'data_at' = '2026-10-28T05:12:00Z', 'data_at of the last good run';
+  assert (d -> 'fin' -> 'bank_sync' ->> 'last_ok_at')::timestamptz between now() - interval '3 hours' and now() - interval '1 hour', 'last good run';
 end $$;
 
 -- the view: live and routed only, columns unchanged

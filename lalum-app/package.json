@@ -51,6 +51,7 @@
     "outlook-sync-check": "node scripts/outlook-sync-check.mjs",
     "campaign-sync-check": "node scripts/campaign-sync-check.mjs",
     "control-room-check": "node scripts/control-room-check.mjs",
+    "bank-sync-check": "node scripts/bank-sync-check.mjs",
     "popup-check": "node scripts/popup-check.mjs",
     "conflict-check": "node scripts/conflict-check.mjs",
     "pipeline-shield-check": "node scripts/pipeline-shield-check.mjs",
