@@ -40,8 +40,11 @@ input, reads no database row and needs no secret, so it can stay public. After e
 compare with the expected answer; it proves the deployed bundle is the one with the current shield:
 
 ```
-{"masked":"מר [CLIENT_NAME_1], ת.ז. [ID_NUMBER_1], טלפון [PHONE_1], דוא\"ל [EMAIL_1], ברחוב [ADDRESS_1], חשבון בנק [BANK_ACCOUNT_1]"}
+{"masked":"מר [CLIENT_NAME_1], ת.ז. [ID_NUMBER_1], טלפון [PHONE_1], דוא\"ל [EMAIL_1], ברחוב [ADDRESS_1], חשבון בנק [BANK_ACCOUNT_1], [CLIENT_NAME_2], Adv"}
 ```
+
+From version 27 the string ends with a synthetic `John Smith, Adv`. Versions 24 to 26 answer without the last part,
+so this line alone tells which of them is live.
 
 Note that the street name is masked and the word "ברחוב" is kept; `lalum-inquiry-email` uses a different
 address rule and answers `ב[ADDRESS_1]`.
@@ -62,3 +65,18 @@ party, because bulk import sends no parties and the engine had never seen a decl
 this policy. Cost: two imported documents that both only mention a person no longer raise anything; the match
 appears the moment either side is declared. Existing matters keep their stored status; nothing is recomputed.
 Tests: `npm run conflict-check`.
+
+## Version 27 (not deployed): a title after the name (T49)
+
+Only a title before a name was recognized (`Adv John Smith`, `עו"ד יוסי לוינסון`). A signature line puts it
+after the name: `John Smith, Adv`, `Jane Doe Esq.`, `Dan Levi CPA`, `יוסי לוינסון, עו"ד`. Those names reached
+the model unmasked. Version 27 adds two heuristics next to the existing ones, with the same confidence (0.75):
+English `Adv`, `Esq` or `CPA` after one to three capitalized words, and Hebrew `עו"ד` or `רו"ח` after a comma.
+Without the comma a Hebrew title usually opens the next name, which the title rule already takes. Stop words
+before the comma are cut, as for the other Hebrew heuristics. `/selftest` changed with it (above).
+
+Source: `lalomavi-collab/LALUMap`, `lib/ai/anonymizerProxy.ts`, with the same cases in `tests/pii-corpus.test.ts`.
+The bundle here was edited in the same three places (two regular expressions, the loop that runs them, the
+probe); `npm run pipeline-shield-check` cuts the shield out of `index.js` and runs the cases against it.
+Deploy order: version 26 first (day 2, step 6: the gateway token, then the deploy), then version 27 on its own
+approval. Rollback: the Versions menu of the function, back to version 26.
