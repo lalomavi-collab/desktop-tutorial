@@ -6,7 +6,8 @@ name: Publish campaign post (manual, any number)
 # lalum-app/public/og/<num>_<slug>_<lang>.png, then run this workflow and pass
 # the number. Manual only, on purpose: nothing reaches a live professional
 # audience without a person choosing to send it. Use dry_run first to build and
-# print without sending.
+# print without sending. A real run also needs the post's "approved" entry for
+# each platform (see scripts/publish_post.py); without it nothing is sent.
 on:
   workflow_dispatch:
     inputs:

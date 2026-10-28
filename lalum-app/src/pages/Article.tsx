@@ -232,6 +232,15 @@ export function Article() {
             {t.insights.heroPill}:{" "}
             <Link to={topicPath(topic.slug)} style={{ color: "var(--clay)" }}>{topic.name}</Link>
           </p>
+          {/* One step to the service page instead of two through the topic hub,
+              for the two areas the practice leads with. Mediation and the
+              other topics keep the hub link alone. */}
+          {topic.lead && topic.pillar && (
+            <p style={{ fontSize: 14.5, color: "var(--slate)", margin: "6px 0 0" }}>
+              השירות בתחום:{" "}
+              <Link to={`/${topic.pillar.path}`} style={{ color: "var(--clay)" }}>{topic.pillar.label}</Link>
+            </p>
+          )}
         </section>
       )}
 

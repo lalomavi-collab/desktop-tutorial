@@ -40,8 +40,11 @@ input, reads no database row and needs no secret, so it can stay public. After e
 compare with the expected answer; it proves the deployed bundle is the one with the current shield:
 
 ```
-{"masked":"מר [CLIENT_NAME_1], ת.ז. [ID_NUMBER_1], טלפון [PHONE_1], דוא\"ל [EMAIL_1], ברחוב [ADDRESS_1], חשבון בנק [BANK_ACCOUNT_1]"}
+{"masked":"מר [CLIENT_NAME_1], ת.ז. [ID_NUMBER_1], טלפון [PHONE_1], דוא\"ל [EMAIL_1], ברחוב [ADDRESS_1], חשבון בנק [BANK_ACCOUNT_1], [CLIENT_NAME_2], Adv"}
 ```
+
+From version 27 the string ends with a synthetic `John Smith, Adv`. Versions 24 to 26 answer without the last part,
+so this line alone tells which of them is live.
 
 Note that the street name is masked and the word "ברחוב" is kept; `lalum-inquiry-email` uses a different
 address rule and answers `ב[ADDRESS_1]`.
@@ -62,3 +65,43 @@ party, because bulk import sends no parties and the engine had never seen a decl
 this policy. Cost: two imported documents that both only mention a person no longer raise anything; the match
 appears the moment either side is declared. Existing matters keep their stored status; nothing is recomputed.
 Tests: `npm run conflict-check`.
+
+## Version 27 (not deployed): a title after the name (T49)
+
+Only a title before a name was recognized (`Adv John Smith`, `עו"ד יוסי לוינסון`). A signature line puts it
+after the name: `John Smith, Adv`, `Jane Doe Esq.`, `Dan Levi CPA`, `יוסי לוינסון, עו"ד`. Those names reached
+the model unmasked. Version 27 adds two heuristics next to the existing ones, with the same confidence (0.75):
+English `Adv`, `Esq` or `CPA` after one to three capitalized words, and Hebrew `עו"ד` or `רו"ח` after a comma.
+Without the comma a Hebrew title usually opens the next name, which the title rule already takes. Stop words
+before the comma are cut, as for the other Hebrew heuristics. `/selftest` changed with it (above).
+
+Source: `lalomavi-collab/LALUMap`, `lib/ai/anonymizerProxy.ts`, with the same cases in `tests/pii-corpus.test.ts`.
+The bundle here was edited in the same three places (two regular expressions, the loop that runs them, the
+probe); `npm run pipeline-shield-check` cuts the shield out of `index.js` and runs the cases against it.
+Deploy order: version 26 first (day 2, step 6: the gateway token, then the deploy), then version 27 on its own
+approval. Rollback: the Versions menu of the function, back to version 26.
+
+## Version 28 (not deployed): parties of an existing matter (4.3, T50)
+
+A matter got its declared parties only when it was opened, and the intake form left the adverse party optional, so
+the RED rule (an adverse party who is an active client in another matter) never had input: in production 0 ADVERSE
+rows. `POST /api/v1/matters/parties` (user JWT) takes `{ matter_id, parties: [{ role: "CLIENT" | "ADVERSE", name?,
+idNumber?, companyReg? }] }`, at most 10 parties, and with no parties only answers the counts per role.
+
+- Access: the database answers `lalum_is_staff_on` as the caller (firm, second factor, partner or admin, or an attorney
+  on the matter's team, matter not in the bin), so the anon key is used for that one call. Anything else is 404.
+- Every party goes through the conflict engine with the matter itself excluded, like a new document.
+- RED stores nothing and answers 409 with the neutral sentence. A check row on the matter (`DIRECT_CONFLICT`, source
+  `PARTIES`) and a `CONFLICT_HALT` audit line go to the firm's own log, so the partner sees it in the conflict review.
+- YELLOW and GREEN store blind indexes only, add a check row, raise the matter from CLEAN to POTENTIAL on YELLOW, and
+  write `MATTER_PARTIES_DECLARED` with counts. A party already declared on the matter with the same role is not stored
+  twice. If the check row or the audit line fails, the parties just stored are removed.
+- No migration: the service role writes `lalum_conflict_parties`, `lalum_conflict_checks` and the matter's
+  `conflict_status`, and the audit goes through `lalum_append_audit`.
+
+The cockpit shows it as "צדדים לתיק" on the matter page, next to the conflict review; before version 28 is live the
+route answers 404 and the panel stays hidden. Source: `lalomavi-collab/LALUMap`, `lib/services/matterParties.ts`,
+tests in `tests/matter-parties.test.ts`. The bundle got the same code in three places (`parseParties` and
+`declareParties` before `var BADGE=`, the store and the route before `var PROBE=`, one dispatch line) plus `ANON`.
+`npm run pipeline-parties-check` cuts the engine out of `index.js` and runs the cases against it.
+Deploy order: after version 27. `/selftest` does not change. Rollback: the Versions menu, back to version 27.

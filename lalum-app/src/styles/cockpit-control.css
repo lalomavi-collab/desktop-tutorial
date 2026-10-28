@@ -1,0 +1,116 @@
+/* Control room: the strip on the left of every cockpit screen (ControlStrip) and the wall at /workspace/control (ControlRoom).
+   Theme tokens only, so the light and the dark cockpit both work; status colours are the reserved chart status scale.
+   Text never under 12px (npm run cockpit-text-check). */
+
+.ck-cdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; background: var(--chart-neutral); }
+.ck-cdot.ok { background: var(--chart-ok); }
+.ck-cdot.watch, .ck-cdot.stale { background: var(--chart-warn); }
+.ck-cdot.bad { background: var(--chart-bad); box-shadow: 0 0 0 3px color-mix(in srgb, var(--chart-bad) 22%, transparent); }
+.ck-cdot.none { background: transparent; border: 2px solid var(--chart-neutral); width: 9px; height: 9px; box-sizing: border-box; }
+.ck-spark { display: block; flex: 0 0 auto; overflow: visible; }
+
+/* ---- the strip: a third column on the left (the end side in RTL), sticky, folding to a column of dots ---- */
+.ck-cstrip { display: none; }
+.ck-cstrip-chip {
+  position: fixed; inset-inline-start: auto; inset-inline-end: 12px; bottom: 12px; z-index: 30;
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px;
+  background: var(--card); border: 1px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+}
+@media (min-width: 861px) {
+  .ck-cstrip-chip { display: none; }
+  .ck-cstrip {
+    display: flex; flex-direction: column; gap: 6px; flex: 0 0 248px; width: 248px; position: sticky; top: 0; height: 100dvh; overflow-y: auto;
+    padding: 12px 10px; background: var(--card); border-inline-start: 1px solid var(--line); scrollbar-width: thin;
+  }
+  .ck-cstrip.closed { flex-basis: 46px; width: 46px; padding: 12px 6px; align-items: center; }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 861px) { .ck-cstrip { transition: flex-basis .18s ease, width .18s ease; } }
+.ck-cstrip-head { display: flex; align-items: center; gap: 8px; }
+.ck-cstrip-toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; flex: 0 0 auto;
+  border: 1px solid var(--line); background: transparent; color: var(--slate); cursor: pointer;
+}
+.ck-cstrip-toggle:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.ck-cstrip-title { font-weight: 700; font-size: 15px; color: var(--ink); text-decoration: none; }
+.ck-cstrip-title:hover { text-decoration: underline; }
+.ck-cstrip-sum { font-size: 12px; color: var(--slate); line-height: 1.5; }
+.ck-cstrip-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.ck-cstrip.closed .ck-cstrip-list { gap: 6px; align-items: center; }
+.ck-cstrip-dot { display: inline-flex; width: 30px; height: 26px; align-items: center; justify-content: center; border: 0; background: transparent; border-radius: 8px; cursor: pointer; }
+.ck-cstrip-dot:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.ck-cstrip-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 6px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--ink); font: inherit; text-align: start; cursor: pointer;
+}
+.ck-cstrip-btn:hover, .ck-cstrip-btn[aria-expanded="true"] { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.ck-cstrip-main { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ck-cstrip-name { font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+.ck-cstrip-nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ck-cstrip-st { font-size: 12px; font-weight: 500; color: var(--slate); white-space: nowrap; flex: 0 0 auto; }
+.ck-cstrip-main .ck-spark { margin-top: 3px; }
+.ck-cstrip-val { font-size: 12px; color: var(--slate); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ck-cstrip-ex { padding: 4px 8px 10px 6px; font-size: 12.5px; line-height: 1.55; color: var(--ink); display: flex; flex-direction: column; gap: 6px; }
+.ck-cstrip-ex p { margin: 0; text-align: justify; }
+.ck-cstrip-ex a { color: var(--clay); font-weight: 600; }
+.ck-cstrip-foot { margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--slate); }
+.ck-cstrip-foot a { color: var(--clay); }
+
+/* ---- the wall ---- */
+.ck-cwall-bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; }
+.ck-cwall-sum { display: flex; flex-wrap: wrap; gap: 8px; }
+.ck-cwall-sum span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-size: 13px; }
+.ck-cwall-filter { display: flex; flex-wrap: wrap; gap: 6px; }
+.ck-cwall-filter button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+.ck-cwall-filter button[aria-pressed="true"] { background: var(--clay-tint); border-color: var(--clay-soft); font-weight: 600; }
+/* The columns follow the wall's own width, not the window's, because the strip beside it takes 248px. On four columns a big tile is two by two,
+   so the four small tiles beside it fill its height and no row is left with a hole; the matters tile runs the full width between the two. */
+.ck-cwall { container-type: inline-size; }
+.ck-cgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; grid-auto-flow: row dense; }
+@container (min-width: 560px) { .ck-cgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 1100px) {
+  .ck-cgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ck-cgrid > .ck-ctile.big { grid-row: span 2; }
+}
+.ck-ctile {
+  display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; min-width: 0; scroll-margin-top: 80px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px; border-top: 3px solid var(--chart-neutral);
+}
+@container (min-width: 560px) { .ck-cgrid > .ck-ctile.big { grid-column: span 2; } }
+.ck-cgrid > #tile-mat { grid-column: 1 / -1; grid-row: auto; }
+.ck-ctile.st-ok { border-top-color: var(--chart-ok); }
+.ck-ctile.st-watch, .ck-ctile.st-stale { border-top-color: var(--chart-warn); }
+.ck-ctile.st-bad { border-top-color: var(--chart-bad); }
+.ck-ctile-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ck-ctile-name { font-weight: 700; font-size: 15px; color: var(--ink); }
+.ck-ctile-code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--slate); }
+.ck-ctile-st { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--slate); }
+.ck-ctile-st.ok { color: var(--success); }
+.ck-ctile-st.watch, .ck-ctile-st.stale { color: var(--warning); }
+.ck-ctile-st.bad { color: var(--danger); }
+.ck-ctile-val { font-size: 28px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.ck-ctile-sub { font-size: 13px; color: var(--slate); line-height: 1.45; }
+.ck-ctile-act { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.ck-ctile-check { font-size: 13px; line-height: 1.45; color: var(--slate); }
+.ck-ctile-check.ok { color: var(--success); }
+.ck-ctile-check.bad { color: var(--danger); }
+.ck-ctile-spark { padding-top: 4px; }
+.ck-ctile-counts dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 4px 0 0; }
+.ck-ctile-counts dl div { padding: 8px 10px; border-radius: 12px; background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.ck-ctile-counts dt { font-size: 12px; color: var(--slate); }
+.ck-ctile-counts dd { margin: 0; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ck-ctile-risk { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.ck-ctile-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--chart-track); }
+.ck-ctile-bar i { display: block; height: 100%; }
+.ck-ctile-bar i.bad { background: var(--chart-bad); }
+.ck-ctile-bar i.watch { background: var(--chart-warn); }
+.ck-ctile-bar i.none { background: var(--chart-neutral); }
+.ck-ctile-bar i.ok { background: var(--chart-ok); }
+.ck-ctile-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--slate); }
+.ck-ctile-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ck-ctile-ex { margin-top: 4px; border-top: 1px solid var(--line); padding-top: 6px; }
+.ck-ctile-ex summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); list-style: revert; }
+.ck-ctile-ex dl { margin: 8px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.ck-ctile-ex dt { font-size: 12px; font-weight: 700; color: var(--slate); }
+.ck-ctile-ex dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: justify; }
+.ck-ctile-ex a { color: var(--clay); font-weight: 600; }

@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { InAppBrowserBanner } from "./InAppBrowserBanner";
+import { UnreviewedTranslationNotice } from "./UnreviewedTranslationNotice";
 // The chat bot is deferred: it is not needed for first paint, so splitting it
 // out keeps it (and its dependencies) off the initial load.
 const ChatWidget = lazy(() => import("./ChatWidget").then((m) => ({ default: m.ChatWidget })));
@@ -49,6 +50,7 @@ export function MarketingLayout() {
     <>
       <a href="#main" className="skip-link">{t.ui.skipToContent}</a>
       <InAppBrowserBanner />
+      <UnreviewedTranslationNotice />
       <Header />
       <main id="main">
         {/* Keyed by path so each navigation replays the reveal (app-like page transition).

@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ClientNamesProvider, ClientNamesToggle } from "../../components/cockpit/ClientNames";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useCardTables } from "../../lib/cockpit/useCardTables";
 import { PageMeta } from "../../components/PageMeta";
@@ -16,6 +16,9 @@ import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 
+// The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
+const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));
+
 // The sidebar is grouped into labelled sections so the growing list of screens
 // stays scannable. A null heading is the top group, shown without a label. In
 // the narrow row layout the headings are hidden and every item flows inline.
@@ -23,6 +26,7 @@ type NavItem = [string, string, boolean, string];
 const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
   { heading: null, items: [
     ["/workspace/dashboard", "לוח בקרה", false, "home"],
+    ["/workspace/control", "חדר בקרה", false, "chart"],
     ["/workspace", "תיקים", false, "folder"],
   ] },
   { heading: "לקוחות ופניות", items: [
@@ -82,7 +86,7 @@ function useCkTheme(): [CkTheme, () => void] {
 }
 
 // The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
-const PRIMARY = new Set(["/workspace/dashboard", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
+const PRIMARY = new Set(["/workspace/dashboard", "/workspace/control", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
 function useRailOpen(): [boolean, () => void] {
   const [open, setOpen] = useState(false);
   useEffect(() => { try { if (localStorage.getItem("ck-rail-open") === "1") setOpen(true); } catch { /* storage blocked */ } }, []);
@@ -122,6 +126,11 @@ export function CockpitFrame({
   const [newInq, setNewInq] = useState(0);
   const hasMember = access.state !== "loading" && access.state !== "none" && !!access.member;
   const bookkeeper = hasMember && !access.platformAdmin && access.member?.role === "BOOKKEEPER";
+  // The control room reads data only the platform admin may see, so its rail item and the strip are shown to that role only. The strip stays
+  // on every screen, the wall included, and waits a beat so the screen the user came for paints first.
+  const controlRoom = !!user && access.state === "ok" && access.platformAdmin;
+  const [stripReady, setStripReady] = useState(false);
+  useEffect(() => { if (!controlRoom) return; const t = window.setTimeout(() => setStripReady(true), 300); return () => window.clearTimeout(t); }, [controlRoom]);
   useEffect(() => {
     if (!hasMember || bookkeeper || !supabase) return;
     let live = true;
@@ -145,10 +154,11 @@ export function CockpitFrame({
   }
 
   // Collapsed: the primary screens, plus the current screen when it is not one of them so the rail never hides where you are.
-  const allItems = NAV_SECTIONS.flatMap((x) => x.items);
+  const navSections = controlRoom ? NAV_SECTIONS : NAV_SECTIONS.map((x) => ({ ...x, items: x.items.filter(([to]) => to !== "/workspace/control") }));
+  const allItems = navSections.flatMap((x) => x.items);
   const shown = allItems.filter(([to]) => PRIMARY.has(to) || to === path);
   const moreCount = allItems.length - shown.length;
-  const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? NAV_SECTIONS : [{ heading: null, items: shown }];
+  const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
   return (
     <ClientNamesProvider>
     <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
@@ -190,6 +200,7 @@ export function CockpitFrame({
         {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
         <main ref={mainRef}>{body}</main>
       </div>
+      {controlRoom && stripReady && <Suspense fallback={null}><ControlStrip onWall={path === "/workspace/control"} /></Suspense>}
     </div>
     </ClientNamesProvider>
   );

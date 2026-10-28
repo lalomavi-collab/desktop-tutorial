@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLang } from "../context/LangContext";
-import { langUrl, alternatesFor, bcp47For } from "../lib/hreflang";
+import { langUrl, alternatesFor, bcp47For, UNREVIEWED_LANGS } from "../lib/hreflang";
 import { syncLangParam } from "../lib/langParam";
 
 // Per-route SEO: sets the document title, description, canonical, and Open Graph
@@ -59,9 +59,12 @@ export function PageMeta({ title, description, image, path, jsonLd, noindex }: P
     // ?lang=en, Hebrew at the clean URL, so each language variant is its own
     // self-referencing canonical, reciprocal with the hreflang alternates.
     const url = langUrl(routePath, lang);
+    // A language nobody has reviewed yet is kept out of the index like an auth
+    // page (see UNREVIEWED_LANGS), and claims no alternates.
+    const hide = noindex || UNREVIEWED_LANGS.has(lang);
     // Keep auth pages (login, portal) out of the index; restore the default on
     // every other route so navigation never leaves a stale noindex behind.
-    setMeta("name", "robots", noindex ? "noindex, nofollow" : ROBOTS_DEFAULT);
+    setMeta("name", "robots", noindex ? "noindex, nofollow" : hide ? "noindex, follow" : ROBOTS_DEFAULT);
     setMeta("property", "og:title", title);
     setMeta("name", "twitter:title", title);
     setMeta("property", "og:url", url);
@@ -86,7 +89,7 @@ export function PageMeta({ title, description, image, path, jsonLd, noindex }: P
     // Language alternates for indexable pages only. Auth pages (login, portal)
     // are noindex and single-language, so they carry no hreflang set; strip any
     // left over from a previous indexable route.
-    if (noindex) {
+    if (hide) {
       document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
     } else {
       setAlternates(routePath);

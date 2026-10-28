@@ -51,6 +51,11 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
       const inMatters = (await findExisting([fileHash])).get(fileHash) ?? [];
       if (matterId && inMatters.includes(matterId)) { setStatus({ kind: "warn", text: "הקובץ הזה כבר קיים בכספת של התיק, ולכן לא נקלט שוב." }); return; }
     }
+    // A new matter opens with its adverse party declared, or with an explicit "none": the conflict rule that checks
+    // an adverse party against active clients has never received an adverse party (step 4.3).
+    const hasAdverse = !!(str("adverse_name") || str("adverse_id"));
+    if (!matterId && !hasAdverse && f.get("no_adverse") !== "on") { setStatus({ kind: "err", text: "בתיק חדש יש להזין את הצד שכנגד, או לסמן במפורש שאין צד שכנגד." }); return; }
+    if (hasAdverse && f.get("no_adverse") === "on") { setStatus({ kind: "err", text: "סומן שאין צד שכנגד, אבל הוזן צד שכנגד. יש לבחור אחד מהשניים." }); return; }
     const parties: Array<{ role: string; name?: string; idNumber?: string }> = [];
     if (str("client_name") || str("client_id")) parties.push({ role: "CLIENT", name: str("client_name") || undefined, idNumber: str("client_id") || undefined });
     if (str("adverse_name") || str("adverse_id")) parties.push({ role: "ADVERSE", name: str("adverse_name") || undefined, idNumber: str("adverse_id") || undefined });
@@ -102,6 +107,7 @@ export function IntakeForm({ matterId: fixedMatter, matters, firmId, onDone }: {
         <label className="ck-field">שם הצד שכנגד<input className="ck-input" name="adverse_name" autoComplete="off" /></label>
         <label className="ck-field">ת.ז. / ח.פ. של הצד שכנגד<input className="ck-input" name="adverse_id" autoComplete="off" /></label>
       </div>
+      {!matterId && <label className="ck-row ck-meta"><input type="checkbox" name="no_adverse" /> אין צד שכנגד בתיק הזה (למשל ייעוץ, עריכת צוואה או רישום). בלי צד שכנגד או הסימון הזה, תיק חדש לא נפתח.</label>}
       <div className="ck-label">על המסמך (חובה, כדי שהתיק יישאר מסודר)</div>
       <div className="ck-grid2">
         <label className="ck-field">מה סוג המסמך?

@@ -3,7 +3,7 @@ import { Link } from "../components/AppLink";
 import { scriptDir } from "../lib/hreflang";
 import { PageMeta } from "../components/PageMeta";
 import { Icon } from "../components/Icon";
-import { pageNode, faqPageNode, pageJsonLd } from "../lib/schema";
+import { pageNode, faqPageNode, pageJsonLd, serviceNode } from "../lib/schema";
 import type { PillarPage } from "../lib/pillars";
 import { DiscussionsTrigger, type DiscussionTopic } from "./DiscussionsPanel";
 import { PillarArt, type PillarArtTheme } from "./PillarArt";
@@ -37,7 +37,11 @@ export function PillarView({ P }: { P: PillarPage }) {
   const faqs = P.faqs;
   const discussionTopic = DISCUSSION_TOPIC[P.path];
   const artTheme = ART_THEME[P.path];
-  const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), faqPageNode(faqs)]);
+  // The two areas the practice leads with also say what the page offers, as a
+  // Service provided by the firm's LegalService node. Mediation gets none: per
+  // the two-focus-areas rule it gets nothing new.
+  const service = artTheme ? serviceNode(P.title, P.desc, P.url) : null;
+  const jsonLd = pageJsonLd([pageNode("WebPage", P.title, P.desc, P.url), service, faqPageNode(faqs)]);
   // Single open question at a time, same as PracticeFaq. Empty string is
   // "none open", not a valid question text, so it never collides with a q.
   const [openFaq, setOpenFaq] = useState("");
@@ -198,7 +202,10 @@ export function PillarView({ P }: { P: PillarPage }) {
                   <span className="pfaq-chev" aria-hidden="true"><Icon name="chevron-d" size={18} /></span>
                 </button>
                 <div className="pfaq-a" id={`${key}-p`} role="region" aria-labelledby={`${key}-b`}>
-                  <div><p>{f.a}</p></div>
+                  <div>
+                    <p>{f.a}</p>
+                    {f.link && <p><Link to={f.link.to} style={{ color: "var(--clay)" }}>{f.link.label}</Link></p>}
+                  </div>
                 </div>
               </div>
             );
