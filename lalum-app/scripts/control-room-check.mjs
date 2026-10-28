@@ -164,6 +164,18 @@ t("cron: a job whose last run failed blocks; failures earlier in the day or a ba
   assert.match(tiles(d).cron.today, /lalum-dispatch-worker/);
 });
 
+t("cron: the run still in flight when the snapshot reads the log (its own, every time) is not a failure", () => {
+  const d = clone(REAL);
+  d.cron.push({ job: "lalum-ops-snapshot", active: true, last_at: "2026-10-28T14:15:00.196548+00:00", runs_24h: 1, schedule: "*/15 * * * *", failed_24h: 1, last_ok_at: null, last_status: "running" });
+  d.cron_failed_7d = 1;
+  const c = tiles(d).cron;
+  assert.equal(c.status, "ok");
+  assert.equal(c.value, "0 כשלים");
+  assert.match(c.today, /\(0 ב-7 ימים\)/);
+  d.cron[3].failed_24h = 2; d.cron_failed_7d = 2;
+  assert.equal(tiles(d).cron.status, "watch", "an earlier failed run of the same job still counts");
+});
+
 t("calendar: held changes block, a missed day is stale", () => {
   const d = clone(REAL); d.outlook.status = "held"; d.outlook.held = 11;
   assert.equal(tiles(d).cal.status, "bad");
