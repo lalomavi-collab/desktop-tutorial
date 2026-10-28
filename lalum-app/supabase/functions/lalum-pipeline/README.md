@@ -80,3 +80,28 @@ The bundle here was edited in the same three places (two regular expressions, th
 probe); `npm run pipeline-shield-check` cuts the shield out of `index.js` and runs the cases against it.
 Deploy order: version 26 first (day 2, step 6: the gateway token, then the deploy), then version 27 on its own
 approval. Rollback: the Versions menu of the function, back to version 26.
+
+## Version 28 (not deployed): parties of an existing matter (4.3, T50)
+
+A matter got its declared parties only when it was opened, and the intake form left the adverse party optional, so
+the RED rule (an adverse party who is an active client in another matter) never had input: in production 0 ADVERSE
+rows. `POST /api/v1/matters/parties` (user JWT) takes `{ matter_id, parties: [{ role: "CLIENT" | "ADVERSE", name?,
+idNumber?, companyReg? }] }`, at most 10 parties, and with no parties only answers the counts per role.
+
+- Access: the database answers `lalum_is_staff_on` as the caller (firm, second factor, partner or admin, or an attorney
+  on the matter's team, matter not in the bin), so the anon key is used for that one call. Anything else is 404.
+- Every party goes through the conflict engine with the matter itself excluded, like a new document.
+- RED stores nothing and answers 409 with the neutral sentence. A check row on the matter (`DIRECT_CONFLICT`, source
+  `PARTIES`) and a `CONFLICT_HALT` audit line go to the firm's own log, so the partner sees it in the conflict review.
+- YELLOW and GREEN store blind indexes only, add a check row, raise the matter from CLEAN to POTENTIAL on YELLOW, and
+  write `MATTER_PARTIES_DECLARED` with counts. A party already declared on the matter with the same role is not stored
+  twice. If the check row or the audit line fails, the parties just stored are removed.
+- No migration: the service role writes `lalum_conflict_parties`, `lalum_conflict_checks` and the matter's
+  `conflict_status`, and the audit goes through `lalum_append_audit`.
+
+The cockpit shows it as "צדדים לתיק" on the matter page, next to the conflict review; before version 28 is live the
+route answers 404 and the panel stays hidden. Source: `lalomavi-collab/LALUMap`, `lib/services/matterParties.ts`,
+tests in `tests/matter-parties.test.ts`. The bundle got the same code in three places (`parseParties` and
+`declareParties` before `var BADGE=`, the store and the route before `var PROBE=`, one dispatch line) plus `ANON`.
+`npm run pipeline-parties-check` cuts the engine out of `index.js` and runs the cases against it.
+Deploy order: after version 27. `/selftest` does not change. Rollback: the Versions menu, back to version 27.
