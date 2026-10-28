@@ -21,6 +21,12 @@ Secrets, all set as repository secrets:
                           company page, or w_member_social to post as a person
   LINKEDIN_AUTHOR_URN     urn:li:organization:<id>  or  urn:li:person:<id>
 
+Approval lives in the data, not in anyone's memory. A real run sends a post
+only to the platforms named under its "approved" key, for example
+  "approved": {"facebook": "21.10.2026, the owner's words", "linkedin": "..."}
+and that key is added only in a pull request the owner merges. A dry run
+ignores it, so an unapproved draft can still be built and checked.
+
 A platform whose secrets are missing is reported and skipped, so one
 unconfigured side never blocks the other. The run fails if nothing at all was
 delivered: a green run that published nothing is the worst of the three
@@ -227,8 +233,23 @@ def main() -> int:
     post = posts[args.number]
     slug = post["slug"]
 
+    # Post 016 reached a live audience without the explicit word its pull
+    # request asked for, because nothing here checked. Now a real run refuses
+    # every platform the post was not approved for, before anything is sent.
+    platforms = [p for p in ("linkedin", "facebook") if args.only in (None, p)]
+    if not args.dry_run:
+        approved = post.get("approved")
+        approved = approved if isinstance(approved, dict) else {}
+        refused = [p for p in platforms if not str(approved.get(p) or "").strip()]
+        for p in refused:
+            print(f"post {args.number} is not approved for {p}: no approved.{p} in {DATA.name}")
+        platforms = [p for p in platforms if p not in refused]
+        if not platforms:
+            print("\nNothing was published: no platform is approved for this post.")
+            return 1
+
     cards = {l: CARDS / f"{args.number}_{slug}_{l}.png" for l in ("he", "en")}
-    needed = {"linkedin": ["en"], "facebook": ["he"]}.get(args.only, ["he", "en"])
+    needed = [{"linkedin": "en", "facebook": "he"}[p] for p in platforms]
     for lang in needed:
         if not cards[lang].exists():
             print(f"missing card image: {cards[lang].relative_to(ROOT)}")
@@ -238,10 +259,10 @@ def main() -> int:
     print(f"post {args.number} ({slug}){scope}{'  [dry run]' if args.dry_run else ''}\n")
 
     results = {}
-    if args.only in (None, "linkedin"):
+    if "linkedin" in platforms:
         results["LinkedIn"] = publish_linkedin(
             post["en"], cards["en"], post["en"].split("\n")[0], args.dry_run)
-    if args.only in (None, "facebook"):
+    if "facebook" in platforms:
         results["Facebook"] = publish_facebook(
             post["he"], cards["he"], post.get("first_comment_he", ""), args.dry_run)
 
