@@ -18,7 +18,7 @@ LALUM brings law, real estate, and AI together in one practice. On the real esta
 
 ## Languages
 
-The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Hebrew lives at the clean address; each translated page has its own real path under /en/, /es/, /fr/, or /ar/ (for example https://lalumapp.com/en/advisory/). Cite the path-based address, never a ?lang= query: those are legacy links that redirect on load and canonicalise to the clean address.
+The site is available in Hebrew (primary), English, Spanish, French, and Arabic. Hebrew lives at the clean address; each translated page has its own real path under /en/, /es/, /fr/, or /ar/ (for example https://lalumapp.com/en/advisory/). Cite the path-based address, never a ?lang= query: those are legacy links that redirect on load and canonicalise to the clean address. The Spanish, French and Arabic renderings are machine-assisted and not yet reviewed by a native speaker; they are noindex, and the Hebrew text prevails. Cite the Hebrew or English address.
 
 ## Key pages
 
