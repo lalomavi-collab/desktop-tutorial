@@ -82,6 +82,51 @@ t("cash: a balance older than 7 days is not shown", () => {
   assert.equal(tiles(fresh).cash.value, "₪41.4K");
 });
 
+// The Financy feed (20261028143100): the snapshot carries bank_balance_day and bank_sync.
+const feed = (sync, over = {}) => {
+  const x = clone(REAL);
+  Object.assign(x.fin, { bank_balance: 52000.5, bank_balance_day: "2026-10-27", bank_sync: sync }, over);
+  return x;
+};
+const OK_RUN = { status: "ok", last_at: "2026-10-28T05:30:04Z", last_ok_at: "2026-10-28T05:30:04Z", data_at: "2026-10-28T05:12:00Z" };
+
+t("cash: until the key is in, the file rules hold and the tile says what is missing", () => {
+  const waiting = tiles(feed({ status: "not_configured", last_at: "2026-10-28T05:30:00Z", last_ok_at: null, data_at: null }, { bank_balance: 41369.21, bank_balance_day: "2026-09-01" })).cash;
+  assert.equal(waiting.status, "stale"); assert.equal(waiting.value, "יתרה לא מוצגת");
+  assert.match(waiting.fix, /FINANCY_\*/);
+  assert.match(tiles(REAL).cash.fix, /Financy/);
+});
+
+t("cash: a fresh read shows the balance, even on a quiet account", () => {
+  const c = tiles(feed(OK_RUN)).cash;
+  assert.equal(c.status, "ok"); assert.equal(c.value, "₪52K"); assert.equal(c.strip, "₪52K ב-27.10");
+  assert.match(c.src, /Financy/); assert.match(c.fresh, /07:30/);
+  // the last movement is still 1.9: a balance read today is today's balance
+  assert.equal(feed(OK_RUN).fin.bank_last_day, "2026-09-01");
+});
+
+t("cash: a read older than a week, or a stopped job, is not today's money", () => {
+  const old = tiles(feed({ ...OK_RUN, data_at: "2026-10-18T05:00:00Z" })).cash;
+  assert.equal(old.status, "stale"); assert.ok(!old.strip.includes("₪")); assert.ok(!old.value.includes("₪"));
+  const oldBalance = tiles(feed(OK_RUN, { bank_balance_day: "2026-10-19" })).cash;
+  assert.equal(oldBalance.status, "stale"); assert.ok(!oldBalance.value.includes("₪"));
+  const stopped = tiles(feed({ ...OK_RUN, last_at: "2026-10-26T12:30:00Z", last_ok_at: "2026-10-26T12:30:00Z", data_at: "2026-10-26T05:00:00Z" }, { bank_balance_day: "2026-10-26" })).cash;
+  assert.equal(stopped.status, "stale"); assert.match(stopped.today, /26\.10/);
+});
+
+t("cash: a run that failed says why, and shows no balance", () => {
+  const run = (status) => tiles(feed({ ...OK_RUN, status, last_at: "2026-10-28T12:30:00Z" })).cash;
+  assert.equal(run("consent_expired").status, "bad"); assert.equal(run("consent_expired").value, "ההסכמה פגה");
+  assert.equal(run("token_failed").value, "המפתח נדחה");
+  assert.equal(run("not_linked").status, "watch");
+  assert.equal(run("provider_error").status, "watch");
+  assert.equal(run("transactions_failed").status, "bad"); assert.equal(run("transactions_failed").value, "הסנכרון נכשל");
+  for (const st of ["consent_expired", "token_failed", "not_linked", "account_missing", "error"]) {
+    assert.ok(!run(st).strip.includes("₪") && !run(st).value.includes("₪"), st);
+    assert.match(run(st).today, /27\.10/, `${st} names the last stored balance`);
+  }
+});
+
 t("issuing: green only after a connection check that passed", () => {
   assert.equal(tiles(REAL).issue.status, "bad");
   const ok = { ok: true, text: "החיבור למערכת ההנפקה תקין", at: "2026-10-28T12:00:00Z" };
@@ -176,6 +221,9 @@ t("no dash used as punctuation in any text the control room shows", () => {
   // the text itself, not the code inside ${...} (a minus there is arithmetic)
   const bad = hebrew.map((s) => s.replace(/\$\{[^}]*\}/g, "")).filter((s) => /[\u2013\u2014]| - /.test(s));
   assert.deepEqual(bad, []);
-  const rendered = buildTiles({ snapshot: snap(REAL), web: WEB, now: NOW }).flatMap((x) => [x.value, x.sub, x.strip, x.today, x.fix, x.src, x.fresh]);
+  const runs = ["ok", "not_configured", "consent_expired", "provider_error", "token_failed", "not_linked", "account_missing", "connection_missing", "error"];
+  const rendered = [REAL, ...runs.map((status) => feed({ ...OK_RUN, status }))]
+    .flatMap((data) => buildTiles({ snapshot: snap(data), web: WEB, now: NOW }))
+    .flatMap((x) => [x.value, x.sub, x.strip, x.today, x.fix, x.src, x.fresh]);
   assert.deepEqual(rendered.filter((s) => /[\u2013\u2014]| - /.test(s)), []);
 });
