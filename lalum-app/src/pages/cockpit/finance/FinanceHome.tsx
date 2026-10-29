@@ -11,6 +11,7 @@ import { ExpensesTab } from "./ExpensesTab";
 import { OpenProformasTab } from "./OpenProformasTab";
 import { ArchiveTab } from "./ArchiveTab";
 import { ShaamExportTab } from "./ShaamExportTab";
+import { DocDesignTab } from "./DocDesignTab";
 import { TrustTab } from "./TrustTab";
 import type { MatterRef } from "./TrustTab";
 import { ArAgingTab } from "./ArAgingTab";
@@ -29,13 +30,13 @@ import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATI
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 import { ARCHIVE_COLS } from "../../../lib/cockpit/dashboardFinance";
 
-type Tab = "overview" | "documents" | "proformas" | "customers" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow" | "pnl";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["pnl", "רווח והפסד ומס"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+type Tab = "overview" | "documents" | "proformas" | "customers" | "design" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow" | "pnl";
+const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["design", "עיצוב מסמכים"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["pnl", "רווח והפסד ומס"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
-// The thirteen sections are grouped into four rubrics: one row of rubrics, and under the chosen one a short row of its sections.
+// The sections are grouped into four rubrics: one row of rubrics, and under the chosen one a short row of its sections.
 const GROUPS: Array<{ key: string; label: string; tabs: Tab[] }> = [
   { key: "overview", label: "סקירה ודוחות", tabs: ["overview", "reports", "pnl", "cashflow"] },
-  { key: "income", label: "הכנסות ולקוחות", tabs: ["documents", "proformas", "customers", "aging"] },
+  { key: "income", label: "הכנסות ולקוחות", tabs: ["documents", "proformas", "customers", "aging", "design"] },
   { key: "outgo", label: "הוצאות ונאמנות", tabs: ["expenses", "trust"] },
   { key: "control", label: "ארכיון ובקרה", tabs: ["archive", "shaam", "permissions", "audit"] },
 ];
@@ -196,6 +197,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} sends={docSends} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "proformas" && loaded && <Gate level={level} need={2}><OpenProformasTab customers={customers} docs={docs} archive={archive} onOpenDocuments={() => setTab("documents")} onOpenArchive={() => setTab("archive")} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
+      {tab === "design" && loaded && <Gate level={level} need={1}><DocDesignTab firmId={firmId} firmName={firmName} level={level} docs={docs} customers={customers} /></Gate>}
       {tab === "trust" && loaded && <Gate level={level} need={4}><TrustTab firmId={firmId} statementAccounts={statementAccounts} customers={customers} matters={matters} accounts={trustAccounts} rows={trust} docs={docs} payments={payments} onChange={() => void load()} /></Gate>}
       {tab === "archive" && loaded && <ArchiveTab docs={archive} customers={customers} sends={docSends} level={level} onChange={() => void load()} />}
       {tab === "expenses" && loaded && <Gate level={level} need={1}><ExpensesTab firmId={firmId} level={level} expenses={expenses} onChange={() => void load()} /></Gate>}
