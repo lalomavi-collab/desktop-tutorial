@@ -1,0 +1,33 @@
+/* Finance dashboard over the bank lines (BankDashboardTab). Money colours come from .ck-fin (cockpit.css), so the
+   light and dark themes both hold; nothing here sets text below 12px. */
+.bd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.bd-change { font-weight: 600; }
+.bd-change.good { color: var(--fin-inflow); }
+.bd-change.bad { color: var(--fin-outflow); }
+
+.bd-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.bd-insight { gap: 4px; border-inline-start: 4px solid var(--chart-neutral); }
+.bd-insight.warn { border-inline-start-color: var(--chart-warn); }
+.bd-insight b { font-size: 14.5px; }
+
+.bd-draw { border: 2px solid var(--fin-inflow-line); background: linear-gradient(180deg, var(--fin-inflow-bg), var(--card) 70%); }
+.bd-draw .fin-figure.bd-draw-figure { font-size: 34px; font-weight: 800; color: var(--fin-inflow); }
+.bd-wf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.bd-wf { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bd-wf caption { text-align: start; font-weight: 700; font-size: 13.5px; padding-bottom: 6px; }
+.bd-wf td { padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.bd-wf td:last-child { text-align: end; white-space: nowrap; padding-inline-start: 12px; }
+.bd-wf tr.sub td { font-weight: 600; }
+.bd-wf tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--line-strong); padding-top: 8px; }
+.bd-reserve { display: flex; gap: 6px; align-items: center; margin-top: 4px; max-width: 240px; }
+.bd-reserve .ck-input { min-height: 36px; padding: 6px 10px; flex: 1 1 auto; min-width: 0; }
+.bd-reserve .ck-btn { flex: 0 0 auto; white-space: nowrap; }
+.bd-list { margin: 4px 0 0; padding-inline-start: 18px; }
+
+.bd-heat { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; direction: rtl; }
+.bd-heat-dow { font-size: 12px; color: var(--slate); text-align: center; font-weight: 600; }
+.bd-heat-day { font-size: 12.5px; text-align: center; padding: 8px 0; border-radius: 8px; background: var(--chart-track); font-variant-numeric: tabular-nums; }
+
+.bd-accounts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.bd-accounts li { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.bd-acc-figure { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 2px 0; }

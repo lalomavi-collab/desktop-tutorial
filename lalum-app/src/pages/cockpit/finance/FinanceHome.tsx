@@ -25,17 +25,18 @@ import { AuditLogTab } from "./AuditLogTab";
 import { Gate } from "./Gate";
 import { ReportsTab } from "./ReportsTab";
 import { TaxPnlTab } from "./TaxPnlTab";
+import { BankDashboardTab } from "./BankDashboardTab";
 import { RevenueView } from "./RevenueView";
 import { allocationAuthStatus, allocationGaps, ALLOCATION_AUTH_EXPIRES, ALLOCATION_VERIFIED_ON } from "../../../lib/cockpit/financeAllocation";
 import { incomeRows } from "../../../lib/cockpit/financeReports";
 import { ARCHIVE_COLS } from "../../../lib/cockpit/dashboardFinance";
 
-type Tab = "overview" | "documents" | "proformas" | "customers" | "design" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow" | "pnl";
-const TABS: Array<[Tab, string]> = [["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["design", "עיצוב מסמכים"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["pnl", "רווח והפסד ומס"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
+type Tab = "dashboard" | "overview" | "documents" | "proformas" | "customers" | "design" | "expenses" | "trust" | "archive" | "shaam" | "reports" | "permissions" | "audit" | "aging" | "cashflow" | "pnl";
+const TABS: Array<[Tab, string]> = [["dashboard", "לוח בקרה"], ["overview", "סקירה"], ["documents", "מסמכים"], ["proformas", "חשבונות עסקה פתוחים"], ["customers", "לקוחות"], ["design", "עיצוב מסמכים"], ["expenses", "הוצאות"], ["trust", "כספי נאמנות"], ["reports", "דוחות"], ["pnl", "רווח והפסד ומס"], ["aging", "גיול חובות"], ["cashflow", "תזרים 13 שבועות"], ["archive", "ארכיון היסטוריה"], ["shaam", "קובץ מבנה אחיד"], ["permissions", "הרשאות"], ["audit", "יומן ביקורת"]];
 const ADMIN_ONLY_TABS: Tab[] = ["permissions", "audit"];
 // The sections are grouped into four rubrics: one row of rubrics, and under the chosen one a short row of its sections.
 const GROUPS: Array<{ key: string; label: string; tabs: Tab[] }> = [
-  { key: "overview", label: "סקירה ודוחות", tabs: ["overview", "reports", "pnl", "cashflow"] },
+  { key: "overview", label: "סקירה ודוחות", tabs: ["dashboard", "overview", "reports", "pnl", "cashflow"] },
   { key: "income", label: "הכנסות ולקוחות", tabs: ["documents", "proformas", "customers", "aging", "design"] },
   { key: "outgo", label: "הוצאות ונאמנות", tabs: ["expenses", "trust"] },
   { key: "control", label: "ארכיון ובקרה", tabs: ["archive", "shaam", "permissions", "audit"] },
@@ -43,7 +44,7 @@ const GROUPS: Array<{ key: string; label: string; tabs: Tab[] }> = [
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
 export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: string }) {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const [customers, setCustomers] = useState<FinCustomer[]>([]);
   const [docs, setDocs] = useState<FinDocument[]>([]);
   const [payments, setPayments] = useState<FinPayment[]>([]);
@@ -154,6 +155,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {hasTest && <div className="ck-warn">במערכת יש מסמכי בדיקה מסביבת הניסוי של מערכת ההנפקה. הם מסומנים ואינם נספרים בדוחות.</div>}
       {!loaded && !error && <div className="ck-meta">טוען...</div>}
 
+      {tab === "dashboard" && loaded && <Gate level={level} need={3}><BankDashboardTab firmId={firmId} docs={docs} payments={payments} expenses={expenses} archive={archive} reserveSaved={cashSettings ? cashSettings.safety_reserve : null} onReserveSaved={() => void load()} /></Gate>}
       {tab === "overview" && loaded && (
         <>
           <RevenueView rows={allIncome} />

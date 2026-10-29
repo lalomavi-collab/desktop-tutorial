@@ -26,6 +26,7 @@
     "shaam-client-check": "node scripts/shaam-client-check.mjs",
     "ar-aging-check": "node scripts/ar-aging-check.mjs",
     "cashflow-check": "node scripts/cashflow-check.mjs",
+    "bank-dashboard-check": "node scripts/bank-dashboard-check.mjs",
     "dunning-send-check": "node scripts/dunning-send-check.mjs",
     "doc-send-check": "node scripts/doc-send-check.mjs",
     "invoice4u-reply-check": "node scripts/invoice4u-reply-check.mjs",
