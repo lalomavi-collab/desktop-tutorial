@@ -268,11 +268,13 @@ const BANK_SYNC_PROBLEM: Record<string, { status: Status; value: string; today: 
 
 function cashTile(d: SnapData, now: Date): Tile {
   const f = d.fin, s = f.bankSync;
-  // The feed counts once it has run with a key. Before that, and for the months before it, the Leumi file is the source.
+  // The feed counts once it has run with a key. Before that, and for the months before it, the Leumi file is the source. Once it
+  // runs, the monthly statement still comes in through the same merge (20261029100100): it adds what the feed missed and its daily
+  // closings check the feed.
   const feed = !!s.lastAt && s.status !== "not_configured";
   const t = base("cash", "fin", false, "מזומן בבנק", "FIN · BANK",
-    feed ? "חשבון העסק בלאומי דרך Financy (קריאה בלבד), והקובץ מלאומי לתקופה שלפני" : "שורות הבנק שיובאו לחשבון בלאומי",
-    feed ? "פעמיים ביום, 07:30 ו-14:30" : "ידני, בכל ייבוא קובץ", { to: "/settings/billing", label: "הנהלת חשבונות" });
+    feed ? "חשבון העסק בלאומי: Financy (קריאה בלבד), ודף הבנק החודשי שמשלים ובודק אותו" : "שורות הבנק שיובאו מדפי הבנק של לאומי",
+    feed ? "פעמיים ביום, 07:30 ו-14:30, ודף בנק פעם בחודש" : "ידני, בכל ייבוא קובץ", { to: "/settings/billing", label: "הנהלת חשבונות" });
   const balDay = f.bankBalanceDay ?? f.bankLastDay;
   if (feed) {
     const p = s.status === "ok" ? null : BANK_SYNC_PROBLEM[s.status ?? ""] ?? { status: "bad" as Status, value: "הסנכרון נכשל", today: "הריצה האחרונה של הסנכרון נכשלה.", fix: "לבדוק את משימת lalum-fin-bank-sync באריח המשימות המתוזמנות." };

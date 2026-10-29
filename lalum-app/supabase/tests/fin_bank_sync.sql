@@ -1,6 +1,7 @@
 -- Tests for migration 20261028143000 (the bank feed: lalum_fin_bank_sync_link, lalum_fin_bank_sync_apply, the balances table, the run
--- log, and the service role gate on lalum_fin_recon_auto). Order: 00_supabase_stubs, 09_fin_bank_sync_stub,
--- 20261023101711_fin_pnl_bank_reconciliation_v1, 20261028143000_lalum_fin_bank_sync, then this file:
+-- log, and the service role gate on lalum_fin_recon_auto), with the apply writing through the merge of 20261029100100. Order:
+-- 00_supabase_stubs, 09_fin_bank_sync_stub, 20261023101711_fin_pnl_bank_reconciliation_v1, 20261028143000_lalum_fin_bank_sync,
+-- 20261029100000_lalum_fin_bank_closing, 20261029100100_lalum_fin_bank_lines_merge, then this file:
 --   psql -v ON_ERROR_STOP=1 -f fin_bank_sync.sql
 -- Every assertion raises on failure; fixtures roll back. Dates are relative to today so the file does not age.
 begin;
