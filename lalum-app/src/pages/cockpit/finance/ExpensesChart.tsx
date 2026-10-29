@@ -62,7 +62,7 @@ export function ExpensesChart({ expenses }: { expenses: FinExpense[] }) {
             <g key={b.key}>
               <title>{`${b.label}: ${acctText(b.amount)} ₪ (${b.count} הוצאות)`}</title>
               {!b.future && b.amount > 0 && <rect x={x} y={H - h} width={w} height={h} rx={3} fill="var(--clay)" opacity={b.to >= today ? 0.55 : 1} />}
-              {i % everyNth === 0 && <text x={x + w / 2} y={H + 16} textAnchor="middle" fontSize="11" fill="var(--slate)">{b.label}</text>}
+              {i % everyNth === 0 && <text x={x + w / 2} y={H + 16} textAnchor="middle" fontSize="12" fill="var(--slate)">{b.label}</text>}
             </g>);
         })}
       </svg>

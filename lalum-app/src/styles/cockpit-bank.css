@@ -46,11 +46,11 @@
 .bdk.out .db-kicon, .bdt.out .db-kicon { background: var(--fin-outflow-bg); color: var(--fin-outflow); box-shadow: inset 0 0 0 1px var(--fin-outflow-line); }
 
 /* The change chip: arrow and percent, the colour says good or bad news (a status, so it ships with the arrow, never colour alone). */
-.bd-delta { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-size: 12.5px; font-weight: 700; color: var(--slate);
+.bd-delta { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-size: 13px; font-weight: 700; color: var(--slate);
   padding: 2px 10px; border-radius: 9999px; background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--line); white-space: nowrap; }
 .bd-delta.good { color: var(--success); }
 .bd-delta.bad { color: var(--danger); }
-.bd-delta small { font-size: 12px; font-weight: 500; color: var(--slate); }
+.bd-delta small { font-size: 13px; font-weight: 500; color: var(--slate); }
 .bd-change { font-weight: 600; }
 .bd-change.good { color: var(--success); }
 .bd-change.bad { color: var(--danger); }
@@ -102,7 +102,7 @@
 .bd-bridge li { display: grid; grid-template-columns: minmax(0, 11fr) minmax(64px, 8fr) auto; align-items: center; gap: 4px 12px; font-size: 13.5px; color: var(--ink); }
 .bd-bridge li.total { font-weight: 800; border-top: 2px solid var(--line-strong); padding-top: 9px; }
 .bd-bridge li.total .bd-br-val { font-size: 15px; }
-.bd-br-label small { display: block; font-size: 12px; font-weight: 400; color: var(--slate); }
+.bd-br-label small { display: block; font-size: 13px; font-weight: 400; color: var(--slate); }
 .bd-br-track { position: relative; height: 12px; direction: ltr; }
 .bd-br-bar { position: absolute; top: 0; bottom: 0; min-width: 2px; border-radius: 4px; }
 .bd-br-tick { position: absolute; top: -1px; bottom: -1px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--slate); opacity: .55; }
@@ -120,7 +120,7 @@
 .bd-meter-key { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink); }
 .bd-meter-key li { display: inline-flex; align-items: center; gap: 6px; transition: opacity .15s ease; }
 .bd-meter-key li.dim { opacity: .45; }
-.bd-meter-key small { font-size: 12px; color: var(--slate); }
+.bd-meter-key small { font-size: 13px; color: var(--slate); }
 
 /* ---------- Donut beside its list ---------- */
 .bd-share { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 18px; align-items: center; }
@@ -130,21 +130,21 @@
 .bd-share-list li.dim { opacity: .45; }
 .bd-share-list li:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 .bd-share-name { grid-area: name; display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bd-share-list li > small { grid-area: pct; font-size: 12px; color: var(--slate); text-align: end; font-variant-numeric: tabular-nums; }
+.bd-share-list li > small { grid-area: pct; font-size: 13px; color: var(--slate); text-align: end; font-variant-numeric: tabular-nums; }
 .bd-share-list li > .acct { grid-area: amt; font-weight: 700; }
 .bd-share-track { grid-area: track; display: block; height: 6px; border-radius: 9999px; background: var(--chart-track); overflow: hidden; }
 .bd-share-track i { display: block; height: 100%; border-radius: 9999px; }
 
 /* ---------- Calendar heat map ---------- */
 .bd-heat { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; direction: rtl; }
-.bd-heat-dow { font-size: 12px; color: var(--slate); text-align: center; font-weight: 600; padding-bottom: 2px; }
-.bd-heat-day { position: relative; font-size: 12.5px; text-align: center; padding: 8px 0; border-radius: 8px; color: var(--ink); font-variant-numeric: tabular-nums; cursor: default; }
+.bd-heat-dow { font-size: 13px; color: var(--slate); text-align: center; font-weight: 600; padding-bottom: 2px; }
+.bd-heat-day { position: relative; font-size: 13px; text-align: center; padding: 8px 0; border-radius: 8px; color: var(--ink); font-variant-numeric: tabular-nums; cursor: default; }
 .bd-heat-day.s3 { color: var(--heat-on-3); }
 .bd-heat-day.s4 { color: var(--heat-on-4); font-weight: 700; }
 .bd-heat-day.hot { box-shadow: inset 0 0 0 2px var(--ink); }
 .bd-heat-day:focus-visible { outline: 3px solid var(--clay); outline-offset: 1px; }
 .bd-heat-tip { left: 50%; top: 0; z-index: 4; white-space: nowrap; pointer-events: none; color: var(--ink); font-weight: 400; }
-.bd-heat-key { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 8px; font-size: 12px; color: var(--slate); }
+.bd-heat-key { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 8px; font-size: 13px; color: var(--slate); }
 .bd-heat-key i { display: inline-block; width: 16px; height: 10px; border-radius: 3px; }
 .bd-heat-key span { margin-inline: 4px; }
 
@@ -153,9 +153,9 @@
 .bd-rank li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; font-size: 13.5px; color: var(--ink); }
 .bd-rank li.dim { opacity: .55; }
 .bd-rank-name { min-width: 0; overflow-wrap: anywhere; }
-.bd-rank-name small { display: block; font-size: 12px; color: var(--slate); }
+.bd-rank-name small { display: block; font-size: 13px; color: var(--slate); }
 .bd-rank-val { display: inline-flex; align-items: baseline; gap: 8px; justify-content: flex-end; white-space: nowrap; font-weight: 700; }
-.bd-rank-val .bd-change { font-size: 12px; }
+.bd-rank-val .bd-change { font-size: 13px; }
 .bd-rank-track { grid-column: 1 / -1; display: block; height: 6px; border-radius: 9999px; background: var(--chart-track); overflow: hidden; }
 .bd-rank-track i { display: block; height: 100%; border-radius: 9999px; }
 
@@ -163,7 +163,7 @@
 .bd-tx { list-style: none; margin: 0; padding: 0; }
 .bd-tx li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
 .bd-tx li:last-child { border-bottom: 0; }
-.bd-tx-date { min-width: 40px; font-size: 12.5px; color: var(--slate); font-variant-numeric: tabular-nums; }
+.bd-tx-date { min-width: 40px; font-size: 13px; color: var(--slate); font-variant-numeric: tabular-nums; }
 .bd-tx-name { min-width: 0; }
 .bd-tx .fin-name, .bd-tx .fin-sub { max-width: none; }
 .bd-tx li > .acct { font-weight: 700; }

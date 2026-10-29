@@ -157,10 +157,10 @@ function PaymentsInner({ canView }: { canView: boolean }) {
               <div key={bl.id} style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", border: "1px solid var(--line)", borderRadius: 10, padding: "10px 14px" }}>
                 <div style={{ flex: 1, minWidth: 140 }}>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>{bl.title}</div>
-                  <div className="muted" style={{ fontSize: 12 }} dir="ltr">{cn.text(bl.client_email)}</div>
+                  <div className="muted" style={{ fontSize: 13 }} dir="ltr">{cn.text(bl.client_email)}</div>
                 </div>
                 <span dir="ltr" style={{ fontWeight: 700 }}>{fmtMoney(bl.amount, bl.currency)}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{B.statusLabels[bl.status as keyof typeof B.statusLabels] ?? bl.status}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: bl.status === "paid" ? "#2c6444" : "var(--clay)", textTransform: "uppercase" }}>{B.statusLabels[bl.status as keyof typeof B.statusLabels] ?? bl.status}</span>
                 {bl.status !== "paid" && (
                   <button type="button" className="btn btn-ghost btn-sm" disabled={payBusy === bl.id} onClick={() => void copyPayLink(bl.id)}>{payBusy === bl.id ? "…" : B.copyLink}</button>
                 )}

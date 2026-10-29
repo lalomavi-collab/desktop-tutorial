@@ -25,13 +25,13 @@
 .ck-st-unit { color: var(--slate); font-size: 13px; margin-top: 6px; }
 .ck-st-chip { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 12px; border-radius: 12px; background: var(--clay-tint, #e7ede4); color: var(--chart-ok, #216f33); }
 .ck-st-chip b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.ck-st-chip small { font-size: 12px; color: var(--slate); }
+.ck-st-chip small { font-size: 13px; color: var(--slate); }
 .ck-st-chip.down { background: color-mix(in srgb, var(--chart-warn, #b8780a) 14%, transparent); color: color-mix(in srgb, var(--chart-warn, #b8780a) 70%, var(--ink)); }
 .ck-st-ribbon { animation: ck-st-fade .8s ease .35s backwards; }
 @keyframes ck-st-fade { from { opacity: 0; } }
 .ck-st-stem { transform-origin: bottom; transform-box: fill-box; animation: ck-st-rise .5s ease backwards; }
 @keyframes ck-st-rise { from { opacity: 0; transform: scaleY(.2); } to { opacity: 1; transform: none; } }
-.ck-st-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--slate); }
+.ck-st-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; color: var(--slate); }
 .ck-st-foot b { color: var(--ink); font-variant-numeric: tabular-nums; }
 .ck-st-foot .muted { opacity: .8; }
 
@@ -39,7 +39,7 @@
 .ck-tip {
   position: absolute; transform: translate(-50%, calc(-100% - 10px)); z-index: 5; pointer-events: none;
   background: var(--card-solid, #fff); border: 1px solid var(--line-strong); border-radius: 10px;
-  padding: 6px 10px; box-shadow: 0 10px 22px rgba(20, 30, 20, .18); font-size: 12.5px; line-height: 1.5;
+  padding: 6px 10px; box-shadow: 0 10px 22px rgba(20, 30, 20, .18); font-size: 13px; line-height: 1.5;
   white-space: nowrap; display: flex; flex-direction: column; gap: 1px; color: var(--ink);
 }
 .ck-tip.flip { transform: translate(calc(-100% + 18px), calc(-100% - 10px)); }
@@ -69,7 +69,7 @@
 .ck-pillval { font-size: 13px; font-weight: 700; color: var(--slate); font-variant-numeric: tabular-nums; }
 .ck-pill { width: 34px; border-radius: 18px 18px 6px 6px; box-shadow: inset 0 2px 0 rgba(255, 255, 255, .4); transition: height .5s ease, transform .15s ease; transform-origin: bottom; animation: ck-grow-y .5s ease backwards; }
 .ck-pillcol:hover .ck-pill, .ck-pillcol:focus-visible .ck-pill { transform: scaleY(1.03); }
-.ck-pilllabel { font-size: 12.5px; font-weight: 600; color: var(--clay); text-align: center; }
+.ck-pilllabel { font-size: 13px; font-weight: 600; color: var(--clay); text-align: center; }
 .ck-pillcol:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; border-radius: 8px; }
 @keyframes ck-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
@@ -89,14 +89,14 @@
 .ck-minibar-col { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .ck-minibar { width: 100%; max-width: 26px; border-radius: 8px 8px 3px 3px; transform-origin: bottom; animation: ck-grow-y .5s ease backwards; transition: transform .15s ease; }
 .ck-minibar-col:hover .ck-minibar, .ck-minibar-col:focus-visible .ck-minibar { transform: scaleY(1.04); }
-.ck-minibar-label { font-size: 12px; color: var(--slate); }
+.ck-minibar-label { font-size: 13px; color: var(--slate); }
 .ck-minibar-col:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
 
 /* Gauge. */
 .ck-gauge { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ck-gauge-arc { transition: stroke-dasharray .6s ease; filter: drop-shadow(0 2px 4px rgba(20, 30, 20, .18)); }
 .ck-gauge-label { font-size: 13.5px; }
-.ck-gauge-sub { font-size: 12px; color: var(--slate); }
+.ck-gauge-sub { font-size: 13px; color: var(--slate); }
 
 /* Status bar. */
 .ck-statusbar-track { height: 10px; border-radius: 6px; background: var(--chart-track, rgba(83, 112, 86, .12)); overflow: hidden; min-width: 90px; }

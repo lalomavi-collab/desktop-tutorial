@@ -86,9 +86,9 @@ function ClientDocumentsInner({ canView }: { canView: boolean }) {
                     <Icon name="folder" size={18} />
                     <span>
                       <span style={{ fontWeight: 600, display: "block" }}>{label}</span>
-                      {c.email && c.name && <span className="muted" style={{ fontSize: 12 }} dir="ltr">{c.email}</span>}
+                      {c.email && c.name && <span className="muted" style={{ fontSize: 13 }} dir="ltr">{c.email}</span>}
                     </span>
-                    <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{c.file_count} קבצים</span>
+                    <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{c.file_count} קבצים</span>
                   </button>
                   <button type="button" className="btn btn-clay btn-sm" disabled={zipBusy === c.client_id} onClick={() => void downloadAllZip(c)}>
                     <Icon name="folder" size={14} /> {zipBusy === c.client_id ? "מכין zip..." : "הורדת הכול (zip)"}
@@ -100,7 +100,7 @@ function ClientDocumentsInner({ canView }: { canView: boolean }) {
                       <div key={f.path} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
                         <Icon name="file" size={15} />
                         <span style={{ flex: 1, fontSize: 14, wordBreak: "break-word" }}>{f.name}</span>
-                        <span className="muted" style={{ fontSize: 12 }}>{prettySize(f.size)}</span>
+                        <span className="muted" style={{ fontSize: 13 }}>{prettySize(f.size)}</span>
                         {f.url
                           ? <a className="btn btn-ghost btn-sm" href={f.url} target="_blank" rel="noopener noreferrer">הורדה</a>
                           : null}

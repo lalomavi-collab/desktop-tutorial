@@ -1,0 +1,124 @@
+/* ------------------------------------------------------------------
+   Cockpit type scale (owner, 29.10.2026: "clearer text, fonts, sizes and rubrics; uncluttered, accessible and comfortable", with
+   Financy, Plus500, TradingView and Google Finance as the reference). Those screens read cleanly for the same three reasons: one
+   strong sans for every rubric, a short scale of sizes used the same way everywhere, and body text at 15 to 16px. The cockpit had
+   26 different sizes, most text at 12 to 14px, and every rubric in Amatic SC, a display hand that turns thin and spindly below
+   about 32px. Now:
+     page title            --ck-display (Amatic SC), the signature face, only where it is large (.ck-top h1, the greeting, hero)
+     rubrics               --ck-head: Heebo 700. Panel and section headings 20px, card titles 18px, small rubrics (.ck-label) 15px
+     body                  16px, line 1.6 (descriptions, table cells, timeline, the editor at 17px)
+     secondary             15px (.ck-meta), captions 14px (chips, badges, table headers), floor 13px (chart ticks, timestamps)
+     controls              15px weight 600 (buttons, tabs, fields), unchanged
+   Revert the rubric face alone by setting --ck-head to var(--ck-display) and --ck-head-w to 400 below.
+   Loaded after cockpit.css, cockpit-mint.css and cockpit-dashboard.css; selectors carry the theme attribute so they win without !important.
+   ------------------------------------------------------------------ */
+.ck-root {
+  --ck-head: "Heebo", "Assistant", var(--sans);
+  --ck-head-w: 700;
+  --ck-fs-cap: 13px;
+  --ck-fs-sm: 14px;
+  --ck-fs-meta: 15px;
+  --ck-fs-body: 16px;
+  --ck-fs-lead: 18px;
+  --ck-fs-h3: 20px;
+  --ck-fs-h2: 22px;
+}
+.ck-root[data-ck-theme] { font-size: var(--ck-fs-body); line-height: 1.6; }
+
+/* Rubrics */
+.ck-root[data-ck-theme] :is(h2, h3, h4), .ck-root[data-ck-theme] :is(.ck-title, .ck-doc h2) {
+  font-family: var(--ck-head); font-weight: var(--ck-head-w); letter-spacing: 0; line-height: 1.3; color: var(--ink);
+}
+.ck-root[data-ck-theme] :is(h2, .ck-doc h2) { font-size: var(--ck-fs-h2); }
+.ck-root[data-ck-theme] :is(h3, h4) { font-size: var(--ck-fs-lead); }
+.ck-root[data-ck-theme] .ck-title { font-size: var(--ck-fs-lead); line-height: 1.35; }
+.ck-root[data-ck-theme] .ck-panel h2 { font-size: var(--ck-fs-h3); margin: 0; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.ck-root[data-ck-theme] .ck-label { font-size: var(--ck-fs-meta); font-weight: 700; color: var(--ink); letter-spacing: 0; margin: 6px 0 -2px; }
+
+/* Text */
+.ck-root[data-ck-theme] .ck-meta { font-size: var(--ck-fs-meta); line-height: 1.6; }
+.ck-root[data-ck-theme] .ck-field { font-size: var(--ck-fs-sm); font-weight: 600; color: var(--ink); }
+.ck-root[data-ck-theme] :is(.ck-chip, .ck-badge, .ck-pii) { font-size: var(--ck-fs-sm); }
+.ck-root[data-ck-theme] .ck-link { font-size: var(--ck-fs-sm); text-underline-offset: 3px; }
+.ck-root[data-ck-theme] .ck-tl li { font-size: var(--ck-fs-meta); }
+.ck-root[data-ck-theme] .ck-tl time { font-size: var(--ck-fs-cap); }
+.ck-root[data-ck-theme] .ck-table td { font-size: var(--ck-fs-meta); }
+.ck-root[data-ck-theme] .ck-table th { font-size: var(--ck-fs-sm); font-weight: 700; }
+.ck-root[data-ck-theme] .ck-gate label { font-size: var(--ck-fs-meta); }
+.ck-root[data-ck-theme] .ck-editor { font-size: 17px; line-height: 1.85; }
+/* A badge says its status with a dot of its own colour instead of an emoji, so it renders the same on every system. */
+.ck-badge.dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* ------------------------------------------------------------------
+   Matter cockpit (/workspace?matter=): fewer controls on screen at once.
+   - Header: the matter in one line of large UI type, its tags and the actions beside it.
+   - Documents: each one is a single row (name on two lines at most, type, origin and date as one quiet line); the actions of a
+     document appear only on the open one, so ten documents show ten rows instead of forty controls.
+   - Tools: the nine tools of the matter (upload, template, annexes, signature, re-analysis, KYC, conflicts, parties, team) and the
+     reference sections are one list of rows that open in place, instead of nine loose buttons of different widths.
+   - Agents: the score, the three counts and the findings as cards with the title first and one action line.
+   ------------------------------------------------------------------ */
+.ck-mhead { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+.ck-mhead-main { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ck-root[data-ck-theme] .ck-mtitle { font-family: var(--ck-head); font-weight: 700; font-size: 24px; line-height: 1.25; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ck-mhead-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.ck-doclist { display: flex; flex-direction: column; gap: 6px; }
+.ck-ditem { display: flex; flex-direction: column; gap: 8px; border-radius: 14px; padding: 2px; }
+.ck-ditem.on { background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--clay-soft); padding: 2px 2px 10px; }
+.ck-ditem-row { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.ck-ditem-row > input { margin-top: 14px; flex-shrink: 0; }
+.ck-dpick {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: start; font: inherit; color: var(--ink);
+  background: transparent; border: 0; border-radius: 12px; padding: 9px 12px; cursor: pointer;
+}
+.ck-dpick:hover { background: color-mix(in srgb, var(--clay) 8%, transparent); }
+.ck-dpick:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.ck-dname { font-size: var(--ck-fs-meta); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ck-ditem.on .ck-dname { font-weight: 700; -webkit-line-clamp: unset; display: block; }
+.ck-dsub { font-size: var(--ck-fs-cap); font-weight: 500; color: var(--slate); line-height: 1.4; }
+.ck-dsub .warn { color: var(--warning); font-weight: 700; }
+.ck-ditem .ck-docacts { padding-inline: 12px; }
+.ck-ditem .ck-docacts .ck-row { gap: 8px; }
+
+.ck-tools { display: flex; flex-direction: column; border: 1px solid var(--line-strong); border-radius: 16px; overflow: hidden; background: var(--card); }
+.ck-tools > details + details, .ck-tools > details + div, .ck-tools > div + details { border-top: 1px solid var(--line); }
+.ck-root[data-ck-theme] .ck-tools > details > summary.ck-btn {
+  width: 100%; justify-content: space-between; align-items: center; gap: 10px; text-align: start;
+  min-height: 50px; padding: 10px 16px; border: 0; border-radius: 0; box-shadow: none; background: transparent; color: var(--ink);
+  font-size: var(--ck-fs-meta); font-weight: 600; list-style: none;
+}
+.ck-tools > details > summary::-webkit-details-marker { display: none; }
+.ck-tools > details > summary::after {
+  content: ""; flex-shrink: 0; width: 8px; height: 8px; border-right: 2px solid var(--slate); border-bottom: 2px solid var(--slate);
+  transform: rotate(45deg); margin-top: -4px; transition: transform .15s ease;
+}
+.ck-tools > details[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+.ck-root[data-ck-theme] .ck-tools > details > summary.ck-btn:hover { background: color-mix(in srgb, var(--clay) 7%, transparent); }
+.ck-root[data-ck-theme] .ck-tools > details[open] > summary.ck-btn { background: var(--clay-tint); }
+.ck-tools > details > :not(summary) { padding: 12px 16px 16px; }
+.ck-tools .ck-tool-count { font-size: var(--ck-fs-cap); font-weight: 600; color: var(--slate); margin-inline-start: auto; }
+
+.ck-edbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.ck-edbar .fin-seg button { min-height: 40px; font-size: var(--ck-fs-sm); }
+.ck-edbar-end { margin-inline-start: auto; }
+
+.ck-agentbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+.ck-agentbar .ck-field { flex: 1 1 180px; }
+.ck-riskbox { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.ck-riskscore { display: flex; align-items: baseline; gap: 8px; }
+.ck-riskscore b { font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); }
+.ck-riskscore span { font-size: var(--ck-fs-sm); font-weight: 600; color: var(--slate); }
+.ck-riskcounts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ck-riskcounts li { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 12px; background: color-mix(in srgb, currentColor 8%, transparent); font-size: var(--ck-fs-cap); font-weight: 600; }
+.ck-riskcounts b { font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ck-riskcounts .red { color: var(--danger); }
+.ck-riskcounts .yellow { color: var(--warning); }
+.ck-riskcounts .green { color: var(--success); }
+.ck-root[data-ck-theme] .ck-finding { gap: 6px; padding: 14px 16px; background: var(--card); }
+.ck-finding-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.ck-finding-head b { font-size: var(--ck-fs-body); font-weight: 700; line-height: 1.35; color: var(--ink); }
+.ck-finding-head .ck-badge { flex-shrink: 0; }
+.ck-finding-text { margin: 0; text-align: start; font-size: var(--ck-fs-meta); line-height: 1.6; color: color-mix(in srgb, var(--ink) 86%, var(--paper)); }
+.ck-finding-acts { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.ck-finding-acts .ck-link { flex: 1 1 100%; min-width: 0; }

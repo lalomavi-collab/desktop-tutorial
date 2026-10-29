@@ -1,5 +1,5 @@
 // Text clarity floor for the cockpit (management system). Run with: npm run cockpit-text-check
-// 1) No text smaller than 12px in the cockpit stylesheets.
+// 1) No text smaller than 13px in the cockpit stylesheets or in inline styles of the cockpit screens (raised from 12px, 29.10.2026).
 // 2) Every text and status token clears WCAG AA (4.5:1) on every surface it sits on, in both themes.
 // The tokens are read from the stylesheets themselves, so a palette edit that breaks legibility fails here.
 import { readFileSync, readdirSync } from "node:fs";
@@ -10,13 +10,21 @@ const read = (f) => readFileSync(new URL(f, dir), "utf8");
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 
 // 1) font-size floor
-const MIN = 12;
+const MIN = 13;
 t(`no cockpit text under ${MIN}px`, () => {
   const bad = [];
   for (const f of readdirSync(dir).filter((x) => /^cockpit.*\.css$/.test(x))) {
     read(f).split("\n").forEach((line, i) => {
       for (const m of line.matchAll(/font-size:\s*([\d.]+)px/g)) if (parseFloat(m[1]) < MIN) bad.push(`${f}:${i + 1} ${m[0]}`);
     });
+  }
+  const src = new URL("../src/", import.meta.url);
+  for (const d of ["pages/cockpit/", "pages/cockpit/finance/", "components/cockpit/"]) {
+    for (const f of readdirSync(new URL(d, src)).filter((x) => x.endsWith(".tsx"))) {
+      readFileSync(new URL(d + f, src), "utf8").split("\n").forEach((line, i) => {
+        for (const m of line.matchAll(/fontSize:\s*([\d.]+)\b/g)) if (parseFloat(m[1]) < MIN) bad.push(`${d}${f}:${i + 1} ${m[0]}`);
+      });
+    }
   }
   assert.deepEqual(bad, [], `text below ${MIN}px:\n${bad.join("\n")}`);
 });

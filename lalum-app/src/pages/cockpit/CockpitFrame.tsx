@@ -15,6 +15,7 @@ import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt,
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
+import "../../styles/cockpit-type.css";
 
 // The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
 const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));

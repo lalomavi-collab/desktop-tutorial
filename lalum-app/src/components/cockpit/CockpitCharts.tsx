@@ -176,7 +176,7 @@ export function Donut({ segments, centre, sub }: { segments: Array<{ label: stri
           ))}
         </g>
         <text x="70" y="68" textAnchor="middle" fontSize="25" fontWeight="800" fill="var(--ink)">{hover != null ? nf(segments[hover].value) : centre}</text>
-        <text x="70" y="88" textAnchor="middle" fontSize="11.5" fill="var(--slate)">{hover != null ? segments[hover].label : sub}</text>
+        <text x="70" y="88" textAnchor="middle" fontSize="12" fill="var(--slate)">{hover != null ? segments[hover].label : sub}</text>
       </svg>
       <ul className="ck-legend">
         {segments.map((s, i) => {
