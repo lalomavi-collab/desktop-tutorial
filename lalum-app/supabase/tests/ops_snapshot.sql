@@ -1,6 +1,7 @@
--- Tests for migration 20261028123000 (lalum_ops_snapshots, and live matters only in lalum_v_admin_matters) and 20261028143100 (the bank
--- feed fields). Order: 00_supabase_stubs, 08_ops_snapshot_stub, 20261028123000_lalum_ops_snapshots, 20261028143100_lalum_ops_snapshot_bank_sync,
--- then this file:
+-- Tests for migration 20261028123000 (lalum_ops_snapshots, and live matters only in lalum_v_admin_matters), 20261028143100 (the bank
+-- feed fields) and 20261029100200 (the balance by its chain). Order: 00_supabase_stubs, 08_ops_snapshot_stub,
+-- 20261028123000_lalum_ops_snapshots, 20261028143100_lalum_ops_snapshot_bank_sync, 20261029100000_lalum_fin_bank_closing,
+-- 20261029100200_lalum_ops_snapshot_bank_closing, then this file:
 --   psql -v ON_ERROR_STOP=1 -f ops_snapshot.sql
 -- Every assertion raises on failure; fixtures roll back.
 begin;
@@ -38,8 +39,8 @@ insert into public.lalum_fin_import_runs (kind, error, created_at) values
 insert into public.lalum_fin_expenses default values;
 insert into public.lalum_fin_archive (issue_date, i4u_doc_type, status_id, total) values
   (current_date - 7, 3, 1, 1180), (current_date - 400, 5, 1, 500000), (current_date - 30, 5, 1, 2000.4), (current_date - 30, 5, 2, 9000);
-insert into public.lalum_fin_bank_lines (value_date, balance_after, created_at) values
-  (current_date - 60, 100, now() - interval '2 hours'), (current_date - 57, 41369.21, now() - interval '1 hour');
+insert into public.lalum_fin_bank_lines (value_date, amount, balance_after, created_at) values
+  (current_date - 60, 100, 100, now() - interval '2 hours'), (current_date - 57, 41269.21, 41369.21, now() - interval '1 hour');
 
 select lalum_private.ops_snapshot() is not null as took \gset
 do $$
@@ -81,8 +82,22 @@ begin
   assert d::text !~* '(email|title|firm_name)', 'no personal field in the snapshot';
 end $$;
 
--- the bank feed: its balance wins when newer, a line without a running balance does not blank it, and data_at is the last good run's
-insert into public.lalum_fin_bank_lines (value_date, balance_after) values (current_date - 1, null);
+-- a day's lines stored in one statement share created_at: the closing is the end of their chain (as 25.9: 18,423.59, then -18,728
+-- to -304.41), not the line that happens to sort last
+insert into public.lalum_fin_bank_lines (id, value_date, amount, balance_after, created_at) values
+  ('00000000-0000-0000-0000-00000000b001', current_date - 50, -18728, -304.41, now() - interval '30 minutes'),
+  ('00000000-0000-0000-0000-00000000b002', current_date - 50, 500, 18423.59, now() - interval '30 minutes');
+select lalum_private.ops_snapshot() is not null as took \gset
+do $$
+declare d jsonb := (select data from public.lalum_ops_snapshots order by taken_at desc, id desc limit 1);
+begin
+  assert (d -> 'fin' ->> 'bank_balance')::numeric = -304.41 and (d -> 'fin' ->> 'bank_balance_day')::date = current_date - 50,
+    'closing by the chain ' || (d -> 'fin')::text;
+end $$;
+
+-- the bank feed: its balance wins when newer and on its own day over a file line stored later, a line without a running balance does
+-- not blank it, and data_at is the last good run's
+insert into public.lalum_fin_bank_lines (value_date, amount, balance_after) values (current_date - 1, -10, null), (current_date - 1, 1, 99999);
 insert into public.lalum_fin_bank_balances (as_of, balance, fetched_at) values
   (current_date - 2, 50000, now() - interval '1 day'), (current_date - 1, 52000.5, now() - interval '1 hour');
 insert into public.lalum_fin_bank_sync_runs (ran_at, status, detail) values
