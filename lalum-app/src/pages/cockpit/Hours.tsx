@@ -24,7 +24,7 @@ function Note({ m }: { m: { ok: boolean; text: string } | null }) {
 }
 
 /** The attendance clock: one button, the open session, and the last sessions of the month. */
-function ClockCard({ userId }: { userId: string }) {
+function ClockCard({ userId, onChanged }: { userId: string; onChanged: () => void }) {
   const now = useNow();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -43,6 +43,7 @@ function ClockCard({ userId }: { userId: string }) {
     setBusy(false);
     setMsg(err ? { ok: false, text: err } : { ok: true, text: open ? "נרשמה יציאה." : "נרשמה כניסה." });
     setV((x) => x + 1);
+    if (!err) onChanged();
   }
   return (
     <div className="ck-card">
@@ -64,7 +65,7 @@ function ClockCard({ userId }: { userId: string }) {
 }
 
 /** Time on matters: the running timer, a manual entry, and the person's own recent entries. */
-function MyWork({ firmId, userId }: { firmId: string; userId: string }) {
+function MyWork({ firmId, userId, onChanged }: { firmId: string; userId: string; onChanged: () => void }) {
   const { name } = useClientNames();
   const now = useNow(15000);
   const [matters, setMatters] = useState<MatterOption[]>([]);
@@ -88,7 +89,7 @@ function MyWork({ firmId, userId }: { firmId: string; userId: string }) {
     return () => { on = false; };
   }, []);
   const label = (id: string) => { const m = matters.find((x) => x.matter_id === id); return m ? name(m) : "תיק"; };
-  const done = (err: string | null, ok: string) => { setMsg(err ? { ok: false, text: err } : { ok: true, text: ok }); setV((x) => x + 1); };
+  const done = (err: string | null, ok: string) => { setMsg(err ? { ok: false, text: err } : { ok: true, text: ok }); setV((x) => x + 1); if (!err) onChanged(); };
   const worked = Math.floor(Number(mins));
   return (
     <>
@@ -202,11 +203,11 @@ function Kpi({ title, value, sub }: { title: string; value: string; sub?: string
 }
 
 /** Presence against logged against billable, per person and per matter. */
-function PartnerReport({ firmId, demo }: { firmId: string; demo: boolean }) {
+function PartnerReport({ firmId, demo, refresh }: { firmId: string; demo: boolean; refresh: number }) {
   const { name } = useClientNames();
   const [range, setRange] = useState(() => monthRange(new Date()));
   const [tick, setTick] = useState(0);
-  const res = api.useHoursIndex(range.from, range.to, tick, !demo);
+  const res = api.useHoursIndex(range.from, range.to, tick + refresh, !demo);
   const [open, setOpen] = useState<string | null>(null);
   const data = demo ? buildHoursDemo(new Date()) : res.state === "ready" ? res.data : null;
   const tot = data ? totals(data.people) : null;
@@ -271,6 +272,9 @@ function HoursBody({ member }: { member: Membership }) {
   const partner = ["FIRM_PARTNER", "ADMIN"].includes(member.role);
   // The preview is for partners only, is never stored, and hides the real punch and timer so nobody clocks in by accident during a demo.
   const [demo, setDemo] = useState(() => partner && new URLSearchParams(window.location.search).get("demo") === "1");
+  // A punch or an entry saved above reloads the report below, so its totals never lag behind the person's own work.
+  const [changed, setChanged] = useState(0);
+  const onChanged = () => setChanged((c) => c + 1);
   if (!user) return null;
   return (
     <div className="ck-stack">
@@ -279,9 +283,9 @@ function HoursBody({ member }: { member: Membership }) {
           <button className={`ck-btn${demo ? " primary" : ""}`} aria-pressed={demo} onClick={() => setDemo((d) => !d)}>{demo ? "יציאה מתצוגת הדגמה" : "תצוגת הדגמה (נתונים בדויים)"}</button>
         </div>
       )}
-      {!demo && <ClockCard userId={user.id} />}
-      {!demo && <MyWork firmId={member.firm_id} userId={user.id} />}
-      {partner && <PartnerReport firmId={member.firm_id} demo={demo} />}
+      {!demo && <ClockCard userId={user.id} onChanged={onChanged} />}
+      {!demo && <MyWork firmId={member.firm_id} userId={user.id} onChanged={onChanged} />}
+      {partner && <PartnerReport firmId={member.firm_id} demo={demo} refresh={changed} />}
     </div>
   );
 }
