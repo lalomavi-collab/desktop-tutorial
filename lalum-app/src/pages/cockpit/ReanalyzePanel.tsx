@@ -5,7 +5,7 @@ import type { MatterDoc } from "../../lib/cockpit/shared";
 import { DOC_TYPE } from "../../lib/cockpit/docMeta";
 import { buildPlan, countByType, isAssessed, reanalyzePlan, UNTYPED, type Analysis } from "../../lib/cockpit/reanalyze";
 
-/** Partner only. Runs documents again under a practice area chosen per document type or per document, and stores the
+/** Partner or firm admin (both pass lalum_mgr_ok on the server). Runs documents again under a practice area chosen per document type or per document, and stores the
     results (migration 0046). A choice on a document wins over the choice for its type; "ללא שינוי" leaves a document as it is.
     Only contracts, court filings and untyped documents feed the risk summary of the matter (migration 0042); the others
     are analysed and stored but do not change it. Nothing here changes document text or the matter's own practice area. */
