@@ -284,7 +284,7 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
 
   if (!loaded) return <div className="ck-meta">טוען את נתוני הבנק...</div>;
   if (error) return <div className="ck-err" aria-live="polite">{error}</div>;
-  if (lines.length === 0) return <div className="ck-card"><div className="ck-title">אין עדיין שורות בנק</div><div className="ck-meta">הלוח נבנה מדפי הבנק. אחרי שדף הבנק החודשי ייובא, היתרה, התזרים והתחזית יופיעו כאן.</div></div>;
+  if (lines.length === 0) return <div className="ck-card ck-empty"><div className="ck-title">אין עדיין שורות בנק</div><div className="ck-meta">הלוח נבנה מדפי הבנק. אחרי שדף הבנק החודשי ייובא, היתרה, התזרים והתחזית יופיעו כאן.</div></div>;
 
   const mi = view.months.findIndex((x) => x.month === sel);
   const cur = view.months[mi], prev = mi > 0 ? view.months[mi - 1] : null;

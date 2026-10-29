@@ -161,4 +161,4 @@
 @media (min-width: 861px) {
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-nav a.ck-nav-sm { font-size: 13px; padding: 4px 3px 3px; gap: 2px; }
 }
-.ck-root[data-ck-theme] h3.ck-insight-title { margin: 0; font-size: 30px; line-height: 1.05; }
+.ck-root[data-ck-theme] h3.ck-insight-title { margin: 0; font-size: 19px; line-height: 1.3; }

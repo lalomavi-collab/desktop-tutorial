@@ -117,11 +117,11 @@ export function TaxPnlTab({ firmId, docs, payments, expenses, archive }: { firmI
 
       {pnl && <>
         <div className="fin-kpis">
-          <div><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-kpi">{money(pnl.accounting.revenue)}</div><div className="fin-note">בצנרת (חשבונות עסקה פתוחים): {money(pnl.vat.pipelineNet)}, מע"מ {money(pnl.vat.pipeline)}</div></div>
-          <div><div className="ck-meta">רווח חשבונאי לפני מס</div><div className="fin-kpi">{money(pnl.accounting.profit)}</div><div className="fin-note">שולי רווח <bdi>{pnl.accounting.margin}%</bdi></div></div>
-          <div><div className="ck-meta">סך חבות מס וביטוח לאומי</div><div className="fin-kpi">{money(pnl.tax.total)}</div><div className="fin-note">שיעור אפקטיבי <bdi>{pnl.tax.effectiveRate}%</bdi></div></div>
-          <div><div className="ck-meta">רווח נקי אחרי מס</div><div className="fin-kpi" style={{ color: "var(--ck-ok, inherit)" }}>{money(pnl.net.afterTax)}</div></div>
-          <div><div className="ck-meta">נטו פנוי אחרי הפרשות</div><div className="fin-kpi">{money(pnl.vaults.safeToSpend)}</div></div>
+          <div className="ck-card fin-stat"><div className="ck-meta">הכנסות לפני מע"מ</div><div className="fin-kpi">{money(pnl.accounting.revenue)}</div><div className="fin-note">בצנרת (חשבונות עסקה פתוחים): {money(pnl.vat.pipelineNet)}, מע"מ {money(pnl.vat.pipeline)}</div></div>
+          <div className="ck-card fin-stat"><div className="ck-meta">רווח חשבונאי לפני מס</div><div className="fin-kpi">{money(pnl.accounting.profit)}</div><div className="fin-note">שולי רווח <bdi>{pnl.accounting.margin}%</bdi></div></div>
+          <div className="ck-card fin-stat"><div className="ck-meta">סך חבות מס וביטוח לאומי</div><div className="fin-kpi">{money(pnl.tax.total)}</div><div className="fin-note">שיעור אפקטיבי <bdi>{pnl.tax.effectiveRate}%</bdi></div></div>
+          <div className="ck-card fin-stat"><div className="ck-meta">רווח נקי אחרי מס</div><div className="fin-kpi" style={{ color: "var(--ck-ok, inherit)" }}>{money(pnl.net.afterTax)}</div></div>
+          <div className="ck-card fin-stat"><div className="ck-meta">נטו פנוי אחרי הפרשות</div><div className="fin-kpi">{money(pnl.vaults.safeToSpend)}</div></div>
         </div>
 
         <div className="ck-card ck-stack">

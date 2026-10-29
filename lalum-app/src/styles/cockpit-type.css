@@ -122,3 +122,109 @@
 .ck-finding-text { margin: 0; text-align: start; font-size: var(--ck-fs-meta); line-height: 1.6; color: color-mix(in srgb, var(--ink) 86%, var(--paper)); }
 .ck-finding-acts { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
 .ck-finding-acts .ck-link { flex: 1 1 100%; min-width: 0; }
+
+/* ------------------------------------------------------------------
+   Designed text (owner, 29.10.2026 evening: "no plain text; everything professionally designed and uncluttered"). An audit of every
+   primary screen (dashboard, control room, matters, inquiries, tasks, calendar, hours, KYC, partner view, billing and bookkeeping)
+   found the loose text was always one of five things, so each now has one component look, in both themes:
+     explanation        a .ck-meta block in a card, panel or stack: a note (tinted surface, info icon, 14px)
+     status message     div.ck-warn / .ck-err / .ck-ok: a callout (status icon, accent edge, 14px)
+     section rubric     .ck-label: a sage marker before it; between cards also a hairline after it
+     empty state        .ck-empty and .db-empty: a dashed frame with a tray icon, centred
+     chart reading      .db-trend-note: an insight row with a trend icon; .db-note: the card's footer line
+   A subtitle (a .ck-meta right after a title), a figure's caption (a .ck-meta right before the figure) and status text inside a row keep
+   their plain form. Icons are masks filled with currentColor, so they follow the theme tokens.
+   ------------------------------------------------------------------ */
+.ck-root {
+  --ck-i-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 7.6h.01'/%3E%3C/svg%3E");
+  --ck-i-warn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5 21.5 20h-19z'/%3E%3Cpath d='M12 10v4.5M12 17.3h.01'/%3E%3C/svg%3E");
+  --ck-i-err: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v5.5M12 16.4h.01'/%3E%3C/svg%3E");
+  --ck-i-ok: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12.5 2.7 2.7L16.2 9.5'/%3E%3C/svg%3E");
+  --ck-i-trend: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 16.5 5.5-5.5 4 4 7.5-7.5'/%3E%3Cpath d='M15 7.5h5.5V13'/%3E%3C/svg%3E");
+  --ck-i-tray: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 13.5 6.2 5.5h11.6l2.7 8V19h-17z'/%3E%3Cpath d='M3.5 13.5h5l1.2 2.3h4.6l1.2-2.3h5'/%3E%3C/svg%3E");
+}
+
+/* Explanation: a note */
+.ck-root[data-ck-theme] :is(.ck-card, .ck-stack, .ck-panel, .ck-gate) > .ck-meta:not(:is(.ck-title, .ck-hero-title, .ck-mtitle, .ck-label, h2, h3, h4, b, strong) + .ck-meta):not(:empty):not(.ck-empty .ck-meta, .ck-card .ck-stack > .ck-meta:first-child, .ck-meta:has(+ :is(.fin-figure, .fin-kpi, .ck-bar, b))),
+.ck-root[data-ck-theme] .db-trend-note {
+  position: relative; margin: 0; padding: 10px 14px; padding-inline-start: 42px; border-radius: 12px;
+  background: color-mix(in srgb, var(--clay) 7%, var(--card)); border: 1px solid color-mix(in srgb, var(--clay) 16%, transparent);
+  font-size: var(--ck-fs-sm); font-weight: 400; line-height: 1.6; color: color-mix(in srgb, var(--ink) 88%, var(--paper)); text-align: start;
+}
+.ck-root[data-ck-theme] :is(.ck-card, .ck-stack, .ck-panel, .ck-gate) > .ck-meta:not(:is(.ck-title, .ck-hero-title, .ck-mtitle, .ck-label, h2, h3, h4, b, strong) + .ck-meta):not(:empty):not(.ck-empty .ck-meta, .ck-card .ck-stack > .ck-meta:first-child, .ck-meta:has(+ :is(.fin-figure, .fin-kpi, .ck-bar, b)))::before,
+.ck-root[data-ck-theme] .db-trend-note::before,
+.ck-root[data-ck-theme] div:is(.ck-warn, .ck-err, .ck-ok, .crm-banner):not(:empty)::before {
+  content: ""; position: absolute; inset-inline-start: 14px; top: 12px; width: 18px; height: 18px; background: currentColor;
+  -webkit-mask: var(--ck-i-info) center / contain no-repeat; mask: var(--ck-i-info) center / contain no-repeat;
+}
+.ck-root[data-ck-theme] :is(.ck-card, .ck-stack, .ck-panel, .ck-gate) > .ck-meta:not(:is(.ck-title, .ck-hero-title, .ck-mtitle, .ck-label, h2, h3, h4, b, strong) + .ck-meta):not(:empty):not(.ck-empty .ck-meta, .ck-card .ck-stack > .ck-meta:first-child, .ck-meta:has(+ :is(.fin-figure, .fin-kpi, .ck-bar, b)))::before { background: var(--clay); }
+.ck-root[data-ck-theme] .db-trend-note::before { background: var(--clay); -webkit-mask-image: var(--ck-i-trend); mask-image: var(--ck-i-trend); }
+
+/* The line that opens a group inside a card (a report's "tax invoices: 2 documents, ..." above its table) is the group's caption */
+.ck-root[data-ck-theme] .ck-card .ck-stack > .ck-meta:first-child:not(:only-child) { font-size: var(--ck-fs-meta); font-weight: 600; color: var(--ink); }
+
+/* Status message: a callout */
+.ck-root[data-ck-theme] div:is(.ck-warn, .ck-err, .ck-ok, .crm-banner):not(:empty) {
+  position: relative; padding: 11px 16px; padding-inline-start: 44px; border-radius: 12px; border-inline-start: 4px solid currentColor;
+  font-size: var(--ck-fs-sm); font-weight: 500; line-height: 1.6; text-align: start;
+}
+.ck-root[data-ck-theme] div:is(.ck-warn, .crm-banner.yellow, .crm-banner.red):not(:empty)::before { -webkit-mask-image: var(--ck-i-warn); mask-image: var(--ck-i-warn); }
+.ck-root[data-ck-theme] div.ck-err:not(:empty)::before { -webkit-mask-image: var(--ck-i-err); mask-image: var(--ck-i-err); }
+.ck-root[data-ck-theme] div:is(.ck-ok, .crm-banner.green):not(:empty)::before { -webkit-mask-image: var(--ck-i-ok); mask-image: var(--ck-i-ok); }
+
+/* Section rubric */
+.ck-root[data-ck-theme] .ck-label { display: flex; align-items: center; gap: 10px; }
+.ck-root[data-ck-theme] .ck-label::before { content: ""; flex-shrink: 0; width: 4px; height: 1.05em; border-radius: 2px; background: var(--clay); }
+.ck-root[data-ck-theme] .ck-label:where(:not(.ck-card .ck-label, .ck-panel .ck-label, .ck-tools .ck-label, .ck-gate .ck-label)) { font-size: 17px; margin-top: 10px; }
+.ck-root[data-ck-theme] .ck-label:where(:not(.ck-card .ck-label, .ck-panel .ck-label, .ck-tools .ck-label, .ck-gate .ck-label))::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* Empty state */
+.ck-root[data-ck-theme] :is(.ck-empty, .db-empty) {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;
+  padding: 26px 18px; border: 1.5px dashed var(--line-strong); border-radius: 16px; box-shadow: none;
+  background: color-mix(in srgb, var(--clay) 4%, var(--card)); color: color-mix(in srgb, var(--ink) 78%, var(--paper));
+  font-size: var(--ck-fs-meta); font-weight: 500; line-height: 1.55;
+}
+.ck-root[data-ck-theme] :is(.ck-empty, .db-empty):not(:has(svg, img))::before {
+  content: ""; width: 34px; height: 34px; background: var(--clay); opacity: .75;
+  -webkit-mask: var(--ck-i-tray) center / contain no-repeat; mask: var(--ck-i-tray) center / contain no-repeat;
+}
+.ck-root[data-ck-theme] .ck-empty .ck-meta { font-size: var(--ck-fs-meta); }
+
+/* Card footer line and timeline */
+.ck-root[data-ck-theme] .db-note { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.ck-root[data-ck-theme] .ck-tl li { position: relative; }
+.ck-root[data-ck-theme] .ck-tl li::before {
+  content: ""; position: absolute; inset-inline-start: -18px; top: 6px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--card-solid, var(--card)); border: 2px solid var(--clay);
+}
+.ck-root[data-ck-theme] .ck-gate > b { font-size: var(--ck-fs-body); }
+.ck-root[data-ck-theme] .ck-gate label + label { border-top: 1px solid var(--line); padding-top: 6px; }
+
+/* A row action that should not compete with the row (for example "move to bin" on every line of a table): text only until hovered. */
+.ck-root[data-ck-theme] .ck-btn.quiet { background: transparent; border-color: transparent; box-shadow: none; color: var(--slate); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.ck-root[data-ck-theme] .ck-btn.quiet:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); }
+
+/* A select that sits in a row with other controls (a month and a year picker) takes its content width instead of the row's,
+   which is what most rows already ask for inline; without it two pickers in a short row stacked one above the other. */
+.ck-root[data-ck-theme] .ck-row > .ck-select { width: auto; max-width: 100%; }
+
+/* Inside a table cell a button or tag breaks between words, never inside one: "anywhere" let the table squeeze the documents,
+   customers and aging actions column down to one letter per line. An actions cell keeps each button whole and lets the table
+   size it like any other column, so the buttons sit in one row where there is room and stack where there is not; status tags
+   in one cell may stack too. On a small laptop a button may also wrap between words, so the table fits without scrolling. */
+.ck-root[data-ck-theme] :is(td, th) :is(.ck-btn, .ck-badge, .ck-chip) { overflow-wrap: break-word; }
+.ck-root[data-ck-theme] .ck-fin .ck-table td.fin-actions-cell { width: auto; }
+.ck-root[data-ck-theme] td.fin-actions-cell .fin-actions { flex-wrap: wrap; }
+.ck-root[data-ck-theme] td.fin-actions-cell .ck-btn { white-space: nowrap; }
+.ck-root[data-ck-theme] .ck-fin .ck-table td:has(> .ck-badge + .ck-badge) { white-space: normal; }
+@media (max-width: 1100px) { .ck-root[data-ck-theme] td.fin-actions-cell .ck-btn { white-space: normal; } }
+/* Where a wide table (aging, expenses) still scrolls sideways, its actions stay in view at the end of the row, as on a phone. */
+@media (max-width: 1366px) {
+  .ck-root[data-ck-theme] .ck-fin .ck-table td.fin-actions-cell { position: sticky; left: 0; z-index: 1; background: var(--card-solid, var(--card)); box-shadow: 6px 0 10px -6px rgba(0, 0, 0, .25); }
+  .ck-root[data-ck-theme="dark"] .ck-fin .ck-table td.fin-actions-cell { background: var(--card); }
+}
+
+/* A delete on every row of a table (expenses, document drafts) reads as a quiet text action until pointed at, like the matters
+   table's "move to bin": a column of red outlines was the loudest thing on the screen. */
+.ck-root[data-ck-theme] td.fin-actions-cell .ck-btn.danger:not(:hover, :focus-visible) { background: transparent; border-color: transparent; box-shadow: none; text-decoration: underline; text-underline-offset: 3px; }
