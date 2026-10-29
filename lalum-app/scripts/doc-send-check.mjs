@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { createHmac } from "node:crypto";
-import { simulationEmail, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, autoSendPlan, autoBody, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
+import { simulationEmail, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, autoSendPlan, autoBody, attachedWord, pdfAttachment, documentTemplateName, documentTemplateParams, resolveRecipients, splitAddresses, cleanSubject, docEmailHtml, safeFilename, defaultSubject as srvSubject, ARCHIVE_TYPE, validPdfBase64, MAX_UPLOAD_BYTES } from "../../supabase/functions/_shared/docSend.ts";
 import { verifySvix, mapEvent, TRACKED_EVENTS } from "../../supabase/functions/_shared/resendEvents.ts";
 import { normalizeIsraeliPhone } from "../../supabase/functions/_shared/dunning.ts";
 
@@ -233,6 +233,17 @@ await t("the automatic text names the document and signs with the canonical name
   const b = autoBody("INVOICE", 90094);
   assert.ok(b.includes("חשבונית מס מספר 90094")); assert.ok(b.includes("ד״ר עו״ד אברהם ללום")); assert.ok(!/[—–]/.test(b));
   assert.equal(b, c.defaultBody({ doc_type: "INVOICE", doc_number: 90094 }), "the screen and the server send the same default text");
+});
+await t("\"attached\" agrees with the document's gender, the same on the screen and on the server", () => {
+  assert.ok(autoBody("CREDIT", 50004).includes("מצורפת חשבונית זיכוי מספר 50004."));
+  assert.ok(autoBody("RECEIPT", 2).includes("מצורפת קבלה מספר 2."));
+  assert.ok(autoBody("INVOICE_RECEIPT", 3).includes("מצורפת חשבונית מס קבלה"));
+  assert.ok(autoBody("PROFORMA", 5).includes("מצורף חשבון עסקה מספר 5."));
+  assert.equal(attachedWord("UNKNOWN"), "מצורף"); assert.equal(attachedWord(null), "מצורף");
+  for (const type of ["PROFORMA", "INVOICE", "RECEIPT", "INVOICE_RECEIPT", "CREDIT"]) assert.equal(autoBody(type, 1), c.defaultBody({ doc_type: type, doc_number: 1 }), type);
+});
+await t("a PDF attachment names its type, so mail clients preview it instead of offering an unknown file", () => {
+  assert.deepEqual(pdfAttachment("credit-50004.pdf", "QQ=="), { filename: "credit-50004.pdf", content: "QQ==", content_type: "application/pdf" });
 });
 await t("the screen says what the automatic delivery did, and never leaves a missing channel silent", () => {
   const ok = c.deliveryText({ email: { status: "sent" }, whatsapp: { status: "sent" } });

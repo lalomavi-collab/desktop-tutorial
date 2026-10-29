@@ -14,6 +14,8 @@ export const DOC_SEND_COLS = "id, document_id, archive_id, channel, recipient, s
 /** What a message is about, for the texts: a ledger document or an archive document (whose type is the provider's number, unknown numbers give null). */
 export interface SendSubject { doc_type: DocType | null; doc_number: number | null }
 const label = (t: DocType | null): string => (t ? DOC_TYPE[t] : "מסמך");
+/** "Attached" agrees with the name: חשבונית and קבלה are feminine. Same rule as attachedWord in supabase/functions/_shared/docSend.ts. */
+const attached = (t: DocType | null): string => (t && t !== "PROFORMA" ? "מצורפת" : "מצורף");
 /** The provider's DocumentType codes as a ledger document type. */
 export const ARCHIVE_DOC_TYPE: Record<number, DocType> = { 1: "INVOICE", 2: "RECEIPT", 3: "INVOICE_RECEIPT", 4: "CREDIT", 5: "PROFORMA" };
 
@@ -22,7 +24,7 @@ export const defaultSubject = (d: SendSubject): string =>
 
 /** No customer name on purpose: names are hidden on screen by default and the greeting reads fine without one. */
 export const defaultBody = (d: SendSubject): string =>
-  `שלום,\n\nמצורף ${label(d.doc_type)}${d.doc_number ? ` מספר ${d.doc_number}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
+  `שלום,\n\n${attached(d.doc_type)} ${label(d.doc_type)}${d.doc_number ? ` מספר ${d.doc_number}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
 
 /** Israeli mobile to E.164 digits without the plus sign (what wa.me expects), or null. Same rule as supabase/functions/_shared/dunning.ts. */
 export function waNumber(raw: string | null | undefined): string | null {

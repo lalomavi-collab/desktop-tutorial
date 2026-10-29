@@ -79,6 +79,8 @@ export function docEmailHtml(body: string, pdfUrl: string | null, attached: bool
 const FILE_STEM: Record<string, string> = { PROFORMA: "proforma", INVOICE: "tax-invoice", RECEIPT: "receipt", INVOICE_RECEIPT: "tax-invoice-receipt", CREDIT: "credit" };
 /** ASCII only, so every mail client shows the attachment name correctly. */
 export const safeFilename = (type: string, docNumber: number | null): string => `${FILE_STEM[type] ?? "document"}-${docNumber ?? "draft"}.pdf`;
+/** Every attachment this code sends is a PDF. Said explicitly: left to the provider it went out as application/octet-stream (29.10). */
+export const pdfAttachment = (filename: string, content: string) => ({ filename, content, content_type: "application/pdf" as const });
 
 // ---- automatic delivery at issue time ----
 
@@ -118,10 +120,13 @@ export function autoSendPlan(i: AutoPlanInput): AutoPlan {
   return { send, skipped };
 }
 
+/** "Attached" agrees with the document's name: חשבונית and קבלה are feminine, חשבון עסקה and a plain מסמך are masculine. */
+export const attachedWord = (type: string | null): string => (type && type !== "PROFORMA" && DOC_LABEL[type] ? "מצורפת" : "מצורף");
+
 /** The default text of an automatic mail: names the document, never the customer (names are hidden on screen by default). */
 export function autoBody(type: string, docNumber: number | null): string {
   const label = DOC_LABEL[type] ?? "מסמך";
-  return `שלום,\n\nמצורף ${label}${docNumber ? ` מספר ${docNumber}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
+  return `שלום,\n\n${attachedWord(type)} ${label}${docNumber ? ` מספר ${docNumber}` : ""}.\n\nלשאלות אפשר להשיב להודעה זו.\n\nבברכה,\nד״ר עו״ד אברהם ללום`;
 }
 
 // ---- delivery test: no document, no ledger, no Invoice4U ----

@@ -38,7 +38,7 @@
 //      WHATSAPP_DOCUMENT_TEMPLATE, WHATSAPP_DOCUMENT_LANG (default "he"). SUPABASE_URL and SUPABASE_ANON_KEY are injected.
 // Access: finance level 3 with MFA, decided by the database with the caller's own JWT.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { ARCHIVE_TYPE, autoBody, simulationEmail, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, resolveRecipients, safeFilename, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, validPdfBase64 } from "../_shared/docSend.ts";
+import { ARCHIVE_TYPE, autoBody, simulationEmail, cleanSubject, defaultSubject, docEmailHtml, documentTemplateName, documentTemplateParams, MAX_ATTACHMENT_BYTES, pdfAttachment, resolveRecipients, safeFilename, SAMPLE_PDF_BASE64, testEmailBody, testTemplateParams, validPdfBase64 } from "../_shared/docSend.ts";
 import { isEmail, normalizeIsraeliPhone } from "../_shared/dunning.ts";
 
 const CORS: Record<string, string> = {
@@ -52,7 +52,7 @@ const env = (k: string) => Deno.env.get(k) ?? undefined;
 
 interface Sent { ok: boolean; ref: string | null; err: string | null }
 /** One mail through Resend. The sender and reply address come from the environment, as for every mail from this function. */
-async function postMail(msg: { to: string[]; bcc?: string[]; subject: string; html: string; attachments?: Array<{ filename: string; content: string }> }): Promise<Sent> {
+async function postMail(msg: { to: string[]; bcc?: string[]; subject: string; html: string; attachments?: Array<{ filename: string; content: string; content_type: string }> }): Promise<Sent> {
   try {
     const from = env("LALUM_FROM_EMAIL") ?? "LALUM <no-reply@lalumapp.com>", replyTo = env("LALUM_REPLY_TO") ?? "avraham@lalum.co";
     const res = await fetch("https://api.resend.com/emails", {
@@ -143,13 +143,13 @@ Deno.serve(async (req) => {
       if (!d || d.firm_id !== firmId) return json(404, { code: "not_found" });
       if (d.status !== "DRAFT") return json(409, { code: "not_a_draft" });
       const sim = simulationEmail({ docType: d.doc_type, issueDate: d.issue_date, lines: Array.isArray(d.lines) ? d.lines : [], subtotal: d.subtotal, vat: d.vat_amount, total: d.total });
-      const s = await postMail({ to: [user.email.toLowerCase()], subject: sim.subject, html: sim.html, attachments: [{ filename: "lalum-delivery-test.pdf", content: SAMPLE_PDF_BASE64 }] });
+      const s = await postMail({ to: [user.email.toLowerCase()], subject: sim.subject, html: sim.html, attachments: [pdfAttachment("lalum-delivery-test.pdf", SAMPLE_PDF_BASE64)] });
       if (!s.ok) { console.log("FIN_SIM_MAIL_ERR " + s.err); return json(502, { code: "send_failed", detail: s.err }); }
       return json(200, { ok: true, channel: "EMAIL", test: true, count: 1, attached: true });
     }
     const r = await postMail({
       to: [user.email.toLowerCase()], subject: "[בדיקה] בדיקת שליחה אוטומטית של מסמכים מ-LALUM",
-      html: docEmailHtml(testEmailBody(), null, true), attachments: [{ filename: "lalum-delivery-test.pdf", content: SAMPLE_PDF_BASE64 }],
+      html: docEmailHtml(testEmailBody(), null, true), attachments: [pdfAttachment("lalum-delivery-test.pdf", SAMPLE_PDF_BASE64)],
     });
     if (!r.ok) { console.log("FIN_TEST_MAIL_ERR " + r.err); return json(502, { code: "send_failed", detail: r.err }); }
     return json(200, { ok: true, channel: "EMAIL", test: true, count: 1, attached: true });
@@ -247,7 +247,7 @@ Deno.serve(async (req) => {
   const sent = channel === "EMAIL"
     ? await postMail({
       to, ...(bcc.length ? { bcc } : {}), subject, html: docEmailHtml(text, hasUpload ? null : t.pdfUrl, pdf !== null),
-      ...(pdf ? { attachments: [{ filename: safeFilename(t.docType, t.docNumber), content: pdf }] } : {}),
+      ...(pdf ? { attachments: [pdfAttachment(safeFilename(t.docType, t.docNumber), pdf)] } : {}),
     })
     : await postTemplate(waTo, waTemplate, waParams);
   const { ok, ref, err } = sent;
