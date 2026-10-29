@@ -91,7 +91,7 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
         sb.from("lalum_fin_bank_accounts").select("id, bank_code, branch, account_last4, label, is_active"),
         sb.from("lalum_fin_recon_matches").select("bank_line_id, target_kind, expense_id, matched_amount, note"),
         // Stated balances arrive with migration 20261028143000; until it is applied the read fails and the lines' own chain is used.
-        sb.from("lalum_fin_bank_balances").select("bank_account_id, as_of, balance, fetched_at").order("as_of", { ascending: false }).limit(500),
+        sb.from("lalum_fin_bank_balances").select("bank_account_id, as_of, balance, fetched_at, source").order("as_of", { ascending: false }).limit(500),
         sb.from("lalum_fin_tax_settings").select("*").eq("firm_id", firmId).eq("tax_year", new Date().getFullYear()).maybeSingle(),
         sb.from("lalum_tax_params").select("*"),
         sb.from("lalum_fin_ext_facts").select("kind, account_ref, label, amount, currency, due_on, as_of").order("as_of", { ascending: false }).limit(200),
@@ -127,7 +127,7 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
     const card = classifyCard(ext);
     const firstStatement = lines.reduce<string | null>((m, l) => (m == null || l.value_date < m ? l.value_date : m), null);
     return {
-      cl, bals, balance, asOf, months, rec, series: balanceSeries(all), card, cardMonths: cardMonths(card), cardRec: cardRecurring(card),
+      cl, bals, balance, asOf, months, rec, series: balanceSeries(all, stored), card, cardMonths: cardMonths(card), cardRec: cardRecurring(card),
       firstStatement, fromFinancy: all.length - lines.length,
     };
   }, [lines, matches, accounts, stored, expenses, ext]);
