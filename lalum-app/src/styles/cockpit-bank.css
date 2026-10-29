@@ -31,3 +31,5 @@
 .bd-accounts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .bd-accounts li { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
 .bd-acc-figure { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 2px 0; }
+.bd-expected td { color: var(--slate); font-style: italic; }
+.bd .fin-text { overflow-wrap: anywhere; }

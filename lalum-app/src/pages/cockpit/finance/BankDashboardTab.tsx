@@ -6,18 +6,29 @@ import { buildPnl, DEFAULT_TAX_SETTINGS } from "../../../lib/cockpit/taxPnl";
 import type { TaxSettingsRow } from "../../../lib/cockpit/taxPnl";
 import type { TaxParams } from "../../../lib/cockpit/taxParams";
 import {
-  accountBalances, addMonths, balanceSeries, categoryTotals, changePct, classify, defaultReserve, drawable, forecast30, insights,
-  monthlyCash, monthOf, monthTaxes, recurring, spendByDay, vatPeriod,
+  accountBalances, addMonths, balanceSeries, cardCategories, cardInsights, cardMonths, cardRecurring, cardTaxPaid, categoryTotals, changePct,
+  classify, classifyCard, defaultReserve, drawable, forecast30, insights, liquidity, monthlyCash, monthOf, monthTaxes, openCardCharges,
+  recurring, runway, spendByDay, vatPeriod, withHistory,
 } from "../../../lib/cockpit/bankDashboard";
-import type { BankAccount, BankLine, Classified, ReconMatch, StoredBalance, YtdTax } from "../../../lib/cockpit/bankDashboard";
+import type { BankAccount, BankLine, Classified, ExtFact, ExtLine, ReconMatch, StoredBalance, YtdTax } from "../../../lib/cockpit/bankDashboard";
 import { Amt } from "../../../components/cockpit/Amt";
 import { Donut, GroupedBars } from "../../../components/cockpit/CockpitCharts";
 import { MarketChart } from "../../../components/cockpit/MarketChart";
-import { pctText } from "../../../lib/cockpit/accounting";
+import { acct, pctText } from "../../../lib/cockpit/accounting";
 import "../../../styles/cockpit-bank.css";
 
 const MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
+const SHORT = ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יוני", "יולי", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"];
 const monthName = (ym: string) => `${MONTHS[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`;
+/** A bar's month: short, with the year on the first bar and on every January, so a year and a half of bars stays readable. */
+const barLabel = (ym: string, i: number) => `${SHORT[Number(ym.slice(5, 7)) - 1]}${i === 0 || ym.endsWith("-01") ? ` ${ym.slice(2, 4)}` : ""}`;
+const CUR: Record<string, string> = { USD: "$", EUR: "€", GBP: "£" };
+/** A figure in a foreign currency, in the same form as Amt. */
+function Fx({ n, cur }: { n: number; cur: string }) {
+  if (cur === "ILS") return <Amt n={n} />;
+  const a = acct(n);
+  return <span className={`acct${a.neg ? " neg" : ""}${a.zero ? " zero" : ""}`} dir="ltr">{a.neg ? "−" : ""}{a.text}<small>{CUR[cur] ?? cur}</small></span>;
+}
 const dmy = (iso: string | null | undefined) => (iso ? iso.split("-").reverse().join(".") : "");
 const PALETTE = ["var(--chart-ok, #216f33)", "var(--chart-cat-2, #2a75ba)", "var(--chart-cat-3, #984588)", "var(--chart-ok-l, #559f68)", "var(--chart-neutral, #9a968c)"];
 const HOW: Record<Classified["how"], string> = { MATCH: "", RULE: "", LEARNED: "לפי תנועות קודמות", NONE: "לא שויך" };
@@ -40,6 +51,8 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
   const [lines, setLines] = useState<BankLine[]>([]);
   const [matches, setMatches] = useState<ReconMatch[]>([]);
   const [stored, setStored] = useState<StoredBalance[]>([]);
+  const [ext, setExt] = useState<ExtLine[]>([]);
+  const [facts, setFacts] = useState<ExtFact[]>([]);
   const [settings, setSettings] = useState<TaxSettingsRow | null>(null);
   const [paramsDb, setParamsDb] = useState<TaxParams[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -65,16 +78,28 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
         all.push(...((r.data as BankLine[] | null) ?? []).map((l) => ({ ...l, amount: Number(l.amount), balance_after: l.balance_after == null ? null : Number(l.balance_after) })));
         if (!r.data || r.data.length < 1000) break;
       }
-      const [a, m, b, s, p] = await Promise.all([
+      // What Financy shows beyond the statement (migration 20261029150000), finance level 3 only. Missing or refused, it is left out.
+      const extAll: ExtLine[] = [];
+      for (let off = 0; ; off += 1000) {
+        const r = await sb.from("lalum_fin_ext_lines").select("id, account_kind, account_ref, txn_date, description, source_category, amount, currency")
+          .order("txn_date").order("id").range(off, off + 999);
+        if (r.error) break;
+        extAll.push(...((r.data as ExtLine[] | null) ?? []).map((x) => ({ ...x, amount: Number(x.amount) })));
+        if (!r.data || r.data.length < 1000) break;
+      }
+      const [a, m, b, s, p, f] = await Promise.all([
         sb.from("lalum_fin_bank_accounts").select("id, bank_code, branch, account_last4, label, is_active"),
         sb.from("lalum_fin_recon_matches").select("bank_line_id, target_kind, expense_id, matched_amount, note"),
         // Stated balances arrive with migration 20261028143000; until it is applied the read fails and the lines' own chain is used.
         sb.from("lalum_fin_bank_balances").select("bank_account_id, as_of, balance, fetched_at").order("as_of", { ascending: false }).limit(500),
         sb.from("lalum_fin_tax_settings").select("*").eq("firm_id", firmId).eq("tax_year", new Date().getFullYear()).maybeSingle(),
         sb.from("lalum_tax_params").select("*"),
+        sb.from("lalum_fin_ext_facts").select("kind, account_ref, label, amount, currency, due_on, as_of").order("as_of", { ascending: false }).limit(200),
       ]);
       if (!live) return;
       setLines(all);
+      setExt(extAll);
+      setFacts(((f.data as ExtFact[] | null) ?? []).map((x) => ({ ...x, amount: Number(x.amount) })));
       setAccounts((a.data as BankAccount[] | null) ?? []);
       setMatches(((m.data as ReconMatch[] | null) ?? []).map((x) => ({ ...x, matched_amount: x.matched_amount == null ? null : Number(x.matched_amount) })));
       setStored(((b.data as StoredBalance[] | null) ?? []).map((x) => ({ ...x, balance: Number(x.balance) })));
@@ -90,15 +115,22 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
 
   const view = useMemo(() => {
     const expCat = new Map(expenses.map((e) => [e.id, e.category]));
-    const cl = classify(lines, matches, (id) => expCat.get(id));
+    // Before the first statement line the account's days come from Financy; the balance today is always the statement's.
+    const all = withHistory(lines, accounts, ext);
+    const cl = classify(all, matches, (id) => expCat.get(id));
     const bals = accountBalances(accounts, lines, stored);
     const known = bals.filter((x) => x.balance != null);
     const balance = known.length ? known.reduce((s, x) => s + (x.balance as number), 0) : null;
     const asOf = known.length ? known.map((x) => x.asOf as string).sort()[0] : null;
     const months = monthlyCash(cl, asOf);
-    const rec = recurring(cl);
-    return { cl, bals, balance, asOf, months, rec, series: balanceSeries(lines) };
-  }, [lines, matches, accounts, stored, expenses]);
+    const rec = recurring(cl, asOf);
+    const card = classifyCard(ext);
+    const firstStatement = lines.reduce<string | null>((m, l) => (m == null || l.value_date < m ? l.value_date : m), null);
+    return {
+      cl, bals, balance, asOf, months, rec, series: balanceSeries(all), card, cardMonths: cardMonths(card), cardRec: cardRecurring(card),
+      firstStatement, fromFinancy: all.length - lines.length,
+    };
+  }, [lines, matches, accounts, stored, expenses, ext]);
 
   const sel = month ?? view.months[view.months.length - 1]?.month ?? monthOf(today);
   const year = Number(sel.slice(0, 4));
@@ -127,15 +159,19 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
     return { byMonth, cur: byMonth[upTo - 1], problems, warnings, final, vatByPeriod, incomeTaxByMonth, outstanding };
   })();
 
+  const liq = view.balance != null && view.asOf ? liquidity(view.balance, view.asOf, facts) : null;
+  const cards = view.asOf ? openCardCharges(facts, view.asOf).flatMap((c) => (c.due ? [{ amount: c.amount, due: c.due, label: `כרטיס אשראי ***${c.account_ref}` }] : [])) : [];
   const fc = view.balance != null && view.asOf
-    ? forecast30(view.cl, view.rec, view.balance, view.asOf, { vatByPeriod: tax.vatByPeriod, incomeTaxByMonth: tax.incomeTaxByMonth }, tax.outstanding)
+    ? forecast30(view.cl, view.rec, view.balance, view.asOf, { vatByPeriod: tax.vatByPeriod, incomeTaxByMonth: tax.incomeTaxByMonth }, tax.outstanding,
+      { cards, paidElsewhere: cardTaxPaid(view.card) })
     : null;
 
   const suggested = defaultReserve(view.rec);
   const reserve = reserveText != null && reserveText.trim() !== "" && Number.isFinite(Number(reserveText)) ? Math.max(0, Number(reserveText)) : reserveSaved ?? suggested;
   const isNow = view.asOf != null && sel === monthOf(view.asOf);
   const d = tax.cur ? drawable(sel, tax.cur, view.cl, isNow ? fc : null, reserve) : null;
-  const ins = insights(view.cl, sel, view.asOf, today, d);
+  const ins = [...insights(view.cl, sel, view.asOf, today, d), ...cardInsights(view.card, sel)];
+  const rw = liq ? runway(view.months, liq.liquid) : null;
 
   const saveReserve = async () => {
     if (!supabase) return;
@@ -157,15 +193,29 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
   const maxDay = Math.max(1, ...days);
   const firstDow = new Date(`${sel}-01T00:00:00Z`).getUTCDay();
   const recent = [...view.cl].sort((a, b) => b.value_date.localeCompare(a.value_date) || (b.created_at ?? "").localeCompare(a.created_at ?? "")).slice(0, 12);
-  const series = view.series.slice(-90);
+  const series = view.series;
+  // Day and month on the axis while the series spans less than a year; past that, month and year, so no label repeats.
+  const longSeries = series.length > 1 && Date.parse(series[series.length - 1].date) - Date.parse(series[0].date) > 360 * 86400000;
   const profitByMonth = new Map(tax.byMonth.map((x) => [x.month, x]));
+  const beforeStatement = view.firstStatement != null && sel < monthOf(view.firstStatement);
+  const cardRefs = [...new Set(view.card.map((l) => l.account_ref))];
+  const cm = view.cardMonths.find((m) => m.month === sel) ?? null;
+  const card12 = view.cardMonths.slice(-12);
+  const cardAvg = card12.length ? Math.round(card12.reduce((a, m) => a + m.ils, 0) / card12.length) : 0;
+  const cardCats = cardCategories(view.card, sel);
+  const cardSel = view.card.filter((l) => monthOf(l.txn_date) === sel).sort((a, b) => b.txn_date.localeCompare(a.txn_date) || a.amount - b.amount);
+  const fxText = (fx: Record<string, number>) => Object.entries(fx).filter(([, v]) => v !== 0).map(([c, v]) => `${CUR[c] ?? c}${acct(v).text}`).join(", ");
 
   return (
     <div className="ck-stack bd">
       <div className="ck-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
         <div>
           <div className="ck-title">לוח בקרה כספי</div>
-          <div className="ck-meta">לפי דפי הבנק עד <bdi>{dmy(view.asOf)}</bdi>. Financy משמש לצפייה בלבד, והנתונים כאן מגיעים מדף הבנק החודשי.</div>
+          <div className="ck-meta">
+            לפי דפי הבנק עד <bdi>{dmy(view.asOf)}</bdi>
+            {view.fromFinancy > 0 && view.firstStatement ? <>, ולפני <bdi>{dmy(view.firstStatement)}</bdi> לפי Financy</> : ""}.
+            {view.card.length > 0 || facts.length > 0 ? " פירוט הכרטיס, החיוב הפתוח, המסגרות והערבות נקראו מ־Financy, לצפייה בלבד." : " Financy משמש לצפייה בלבד, והנתונים כאן מגיעים מדף הבנק החודשי."}
+          </div>
         </div>
         <select className="ck-select" aria-label="חודש" value={sel} onChange={(e) => setMonth(e.target.value)} style={{ maxWidth: 200 }}>
           {[...view.months].reverse().map((m) => <option key={m.month} value={m.month}>{monthName(m.month)}{m.partial ? " (חלקי)" : ""}</option>)}
@@ -179,12 +229,24 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
       )}
 
       <div className="bd-kpis">
-        <div className="ck-card fin-stat"><div className="ck-meta">מצב נזיל</div><div className="fin-figure"><Amt n={view.balance} /></div><div className="fin-note">יתרת העו״ש ב־<bdi>{dmy(view.asOf)}</bdi>{view.bals.length > 1 ? `, ${view.bals.length} חשבונות` : ""}.</div></div>
+        <div className="ck-card fin-stat">
+          <div className="ck-meta">מצב נזיל</div><div className="fin-figure"><Amt n={liq ? liq.liquid : view.balance} /></div>
+          <div className="fin-note">
+            {liq && liq.cardDue > 0
+              ? <>עו״ש <bdi><Amt n={liq.balance} /></bdi> ב־<bdi>{dmy(view.asOf)}</bdi>, פחות חיוב כרטיס פתוח <bdi><Amt n={liq.cardDue} /></bdi>{liq.cardDueOn ? <> שיורד ב־<bdi>{dmy(liq.cardDueOn)}</bdi></> : ""}.</>
+              : <>יתרת העו״ש ב־<bdi>{dmy(view.asOf)}</bdi>{view.bals.length > 1 ? `, ${view.bals.length} חשבונות` : ""}.</>}
+            {rw && rw.months > 0 ? <> מכסה כ־<bdi>{rw.months.toLocaleString("he-IL")}</bdi> חודשי הוצאות של העסק.</> : ""}
+          </div>
+        </div>
         <div className="ck-card fin-stat fin-inflow"><div className="ck-meta">נכנס ב{MONTHS[Number(sel.slice(5, 7)) - 1]}</div><div className="fin-figure"><Amt n={cur?.inflow ?? 0} /></div><Change cur={cur?.inflow ?? 0} prev={prev?.inflow} goodWhenUp /></div>
         <div className="ck-card fin-stat fin-outflow"><div className="ck-meta">יצא ב{MONTHS[Number(sel.slice(5, 7)) - 1]}</div><div className="fin-figure"><Amt n={cur?.outflow ?? 0} /></div><Change cur={cur?.outflow ?? 0} prev={prev?.outflow} goodWhenUp={false} /></div>
         <div className="ck-card fin-stat"><div className="ck-meta">נטו בבנק</div><div className="fin-figure"><Amt n={cur?.net ?? 0} /></div><Change cur={cur?.net ?? 0} prev={prev?.net} goodWhenUp /></div>
       </div>
-      <div className="fin-note">לא כולל העברות בין חשבונות, המרות מטבע ומשיכות בעלים (<bdi><Amt n={cur?.owner ?? 0} /></bdi> בחודש הזה). חיוב כרטיס האשראי נספר ביום החיוב, כי פירוט הכרטיס עוד לא מגיע אלינו.{cur?.partial ? " החודש לא מכוסה במלואו בדפי הבנק." : ""}</div>
+      <div className="fin-note">
+        לא כולל העברות בין חשבונות, המרות מטבע ומשיכות בעלים (<bdi><Amt n={cur?.owner ?? 0} /></bdi> בחודש הזה).
+        {view.card.length > 0 ? " חיוב כרטיס האשראי נספר פעם אחת, ביום שהבנק גבה אותו. הפירוט לפי בית עסק מופיע בכרטיס האשראי למטה ולא נספר שוב." : " חיוב כרטיס האשראי נספר ביום החיוב, כי פירוט הכרטיס עוד לא מגיע אלינו."}
+        {beforeStatement ? " החודש הזה קודם לדף הבנק הראשון: התנועות לפי Financy, בלי התאמה לחשבוניות." : cur?.partial ? " החודש לא מכוסה במלואו בדפי הבנק." : ""}
+      </div>
 
       {d && (
         <div className="ck-card bd-draw">
@@ -220,6 +282,7 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
                   <tr><td>מע״מ שעוד לא שולם</td><td><Amt n={-d.cash.vat} /></td></tr>
                   <tr><td>מקדמת מס הכנסה (הערכה)</td><td><Amt n={-d.cash.incomeTax} /></td></tr>
                   <tr><td>ביטוח לאומי ב־30 הימים הקרובים</td><td><Amt n={-d.cash.bl} /></td></tr>
+                  {d.cash.card > 0 && <tr><td>חיוב הכרטיס הפתוח (כבר הוצא)</td><td><Amt n={-d.cash.card} /></td></tr>}
                   <tr>
                     <td>
                       <label htmlFor="bd-reserve">רזרבה תפעולית</label>
@@ -245,12 +308,12 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
       <div className="ck-grid2">
         <div className="ck-card">
           <div className="ck-title">תזרים מזומנים לפי חודש</div>
-          <GroupedBars buckets={view.months.map((m) => MONTHS[Number(m.month.slice(5, 7)) - 1] + (m.partial ? "*" : ""))} unit="₪"
+          <GroupedBars buckets={view.months.map((m, i) => barLabel(m.month, i) + (m.partial ? "*" : ""))} unit="₪"
             series={[{ label: "נכנס", color: "var(--fin-inflow)", values: view.months.map((m) => Math.round(m.inflow)) }, { label: "יצא", color: "var(--fin-outflow)", values: view.months.map((m) => Math.round(m.outflow)) }]} />
           <div className="fin-note">* חודש שלא מכוסה במלואו בדפי הבנק.</div>
         </div>
         <div className="ck-card">
-          <MarketChart title="יתרה לאורך זמן" labels={series.map((x) => dmy(x.date).slice(0, 5))} height={220}
+          <MarketChart title="יתרה לאורך זמן" labels={series.map((x) => (longSeries ? `${x.date.slice(5, 7)}.${x.date.slice(2, 4)}` : dmy(x.date).slice(0, 5)))} height={220}
             series={[{ key: "bal", label: "יתרה", color: "var(--chart-ok, #216f33)", values: series.map((x) => x.balance), kind: "area" }]} />
         </div>
       </div>
@@ -288,11 +351,12 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
         {view.rec.length === 0 ? <div className="ck-meta">עוד אין מספיק חודשים לזיהוי חיובים קבועים.</div> : (
           <div className="ck-table-wrap"><table className="ck-table">
             <thead><tr><th>תנועה</th><th>קטגוריה</th><th>תדירות</th><th className="fin-num">סכום אחרון</th><th className="fin-num">שינוי</th><th>הבא בתאריך</th></tr></thead>
-            <tbody>{view.rec.map((r) => (
+            <tbody>{[...view.rec].sort((a, b) => Number(a.stale) - Number(b.stale)).map((r) => (
               <tr key={r.key}><td className="fin-text">{r.label}</td><td>{r.cat.label}</td><td>{r.cadence === "MONTHLY" ? "חודשי" : "דו חודשי"}</td>
                 <td className="fin-num"><Amt n={r.amount} /></td>
                 <td className="fin-num">{r.changePct == null || r.changePct === 0 ? "ללא שינוי" : <span className={`bd-change ${(r.changePct > 0) === (r.amount > 0) ? "good" : "bad"}`}><bdi>{pctText(r.changePct)}</bdi></span>}</td>
-                <td><bdi>{dmy(r.next)}</bdi>{view.asOf && r.next <= view.asOf && <span className="fin-sub">לא נראה בדף הבנק</span>}</td></tr>
+                <td>{r.stale ? <span className="fin-sub">הופסק? נראה לאחרונה ב־<bdi>{dmy(r.last)}</bdi>, ולכן לא נספר בתחזית</span>
+                  : <><bdi>{dmy(r.next)}</bdi>{view.asOf && r.next <= view.asOf && <span className="fin-sub">לא נראה בדף הבנק</span>}</>}</td></tr>
             ))}</tbody>
           </table></div>
         )}
@@ -301,19 +365,25 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
       {fc && (
         <div className="ck-card">
           <div className="ck-title">תחזית ל־30 יום</div>
-          <div className="ck-meta">מ־<bdi>{dmy(fc.startOn)}</bdi> עד <bdi>{dmy(fc.end)}</bdi>, מהיתרה בדף הבנק. נספרים רק חיובים: תקבולים נכנסים לתחזית רק כשהם בחשבון.</div>
-          {fc.rows.length === 0 ? <div className="ck-meta">אין חיובים צפויים בתקופה.</div> : (
+          <div className="ck-meta">
+            מ־<bdi>{dmy(fc.startOn)}</bdi> עד <bdi>{dmy(fc.end)}</bdi>, מהיתרה בדף הבנק. עמודת היתרה סופרת רק חיובים, כי תקבול נכנס לחשבון רק כשהוא נכנס.
+            {fc.expected.length > 0 ? " העמודה שלידה מוסיפה את התקבולים שחוזרים כל חודש באותו סכום." : ""}
+          </div>
+          {fc.timeline.length === 0 ? <div className="ck-meta">אין חיובים צפויים בתקופה.</div> : (
             <div className="ck-table-wrap"><table className="ck-table">
-              <thead><tr><th>תאריך</th><th>תנועה</th><th className="fin-num">סכום</th><th className="fin-num">יתרה</th></tr></thead>
-              <tbody>{fc.rows.map((r, i) => (
-                <tr key={i}><td><bdi>{dmy(r.date)}</bdi></td><td className="fin-text">{r.label}{r.note && <span className="fin-sub">{r.note}</span>}</td>
-                  <td className="fin-num"><Amt n={r.amount} /></td><td className="fin-num"><Amt n={r.balance} /></td></tr>
+              <thead><tr><th>תאריך</th><th>תנועה</th><th className="fin-num">סכום</th><th className="fin-num">יתרה</th>{fc.expected.length > 0 && <th className="fin-num">עם תקבולים צפויים</th>}</tr></thead>
+              <tbody>{fc.timeline.map((r, i) => (
+                <tr key={i} className={r.expected ? "bd-expected" : undefined}><td><bdi>{dmy(r.date)}</bdi></td>
+                  <td className="fin-text">{r.label}{r.note && <span className="fin-sub">{r.note}</span>}</td>
+                  <td className="fin-num"><Amt n={r.amount} plus={r.expected} /></td><td className="fin-num">{r.expected ? "" : <Amt n={r.balance} />}</td>
+                  {fc.expected.length > 0 && <td className="fin-num"><Amt n={r.withReceipts} /></td>}</tr>
               ))}</tbody>
             </table></div>
           )}
-          <div className={fc.minBalance < 0 ? "ck-warn" : "fin-note"}>
-            {fc.minBalance < 0 ? <>אם לא ייכנס כסף, היתרה תרד מתחת לאפס ב־<bdi>{dmy(fc.minOn)}</bdi> ותגיע ל־<bdi><Amt n={fc.minBalance} /></bdi>.</>
-              : <>הנקודה הנמוכה בתקופה: <bdi><Amt n={fc.minBalance} /></bdi> ב־<bdi>{dmy(fc.minOn)}</bdi>, גם בלי שייכנס כסף.</>}
+          <div className={fc.shortOn ? "ck-warn" : "fin-note"}>
+            {fc.shortOn ? <>אם לא ייכנס כסף, היתרה תרד מתחת לאפס ב־<bdi>{dmy(fc.shortOn)}</bdi> ותגיע עד <bdi><Amt n={fc.minBalance} /></bdi> ב־<bdi>{dmy(fc.minOn)}</bdi>.</>
+              : <>הקופה מכסה את כל 30 הימים גם בלי שייכנס כסף. הנקודה הנמוכה: <bdi><Amt n={fc.minBalance} /></bdi> ב־<bdi>{dmy(fc.minOn)}</bdi>.</>}
+            {fc.shortOn && fc.expected.length > 0 ? (fc.shortOnWithReceipts ? <> גם עם התקבולים הקבועים היא יורדת מתחת לאפס ב־<bdi>{dmy(fc.shortOnWithReceipts)}</bdi>.</> : " עם התקבולים הקבועים היא נשארת מעל אפס.") : ""}
           </div>
           {fc.excluded.length > 0 && (
             <>
@@ -339,6 +409,63 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
         </table></div>
         <div className="fin-note">הרווח אחרי מס מחושב מהחשבוניות וההוצאות בהנהלת החשבונות (לא מהבנק), לפי מנוע המס, לשנה שנבחרה בלבד.</div>
       </div>
+
+      {view.card.length > 0 && (
+        <div className="ck-card">
+          <div className="ck-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <div className="ck-title">כרטיס אשראי {cardRefs.map((r) => <bdi key={r}>{`***${r}`} </bdi>)}</div>
+            <span className="ck-badge">לפי Financy, לצפייה בלבד</span>
+          </div>
+          <div className="ck-meta">פירוט לפי בית עסק ולפי יום הרכישה. החיוב החודשי כבר נספר בבנק ביום שנגבה, ולכן הפירוט כאן לא נספר שוב בתזרים. עסקה בתשלומים מופיעה בחודש הרכישה.</div>
+          <div className="bd-kpis">
+            <div className="ck-card fin-stat"><div className="ck-meta">חיוב פתוח</div><div className="fin-figure"><Amt n={liq?.cardDue ?? 0} /></div>
+              <div className="fin-note">{liq?.cardDueOn ? <>יורד מהעו״ש ב־<bdi>{dmy(liq.cardDueOn)}</bdi>. הסכום עשוי להשתנות עד אז.</> : "אין חיוב פתוח ידוע אחרי תאריך דף הבנק."}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">מסגרת הכרטיס</div><div className="fin-figure"><Amt n={liq?.cardLimit ?? null} /></div>
+              <div className="fin-note">{liq?.cardLimit ? <>פנוי <bdi><Amt n={liq.cardLimit - liq.cardDue} /></bdi>, ניצול <bdi>{Math.round((liq.cardDue / liq.cardLimit) * 100)}%</bdi>.</> : "המסגרת לא נקראה."}</div></div>
+            <div className="ck-card fin-stat fin-outflow"><div className="ck-meta">רכישות ב{MONTHS[Number(sel.slice(5, 7)) - 1]}</div><div className="fin-figure"><Amt n={cm?.ils ?? 0} /></div>
+              <div className="fin-note">{cm ? <>{cm.count} עסקאות{fxText(cm.fx) ? <>, ועוד <bdi>{fxText(cm.fx)}</bdi> במטבע חוץ</> : ""}.</> : "אין רכישות בחודש הזה."}</div></div>
+            <div className="ck-card fin-stat"><div className="ck-meta">ממוצע לחודש</div><div className="fin-figure"><Amt n={cardAvg} /></div>
+              <div className="fin-note">ב־{card12.length} החודשים האחרונים, בשקלים בלבד.</div></div>
+          </div>
+          <div className="ck-grid2">
+            <div>
+              <div className="ck-meta">רכישות בשקלים לפי חודש</div>
+              <GroupedBars buckets={card12.map((m, i) => barLabel(m.month, i))} unit="₪" series={[{ label: "רכישות", color: "var(--fin-outflow)", values: card12.map((m) => Math.round(m.ils)) }]} />
+            </div>
+            <div>
+              <div className="ck-meta">לפי קטגוריה ב{MONTHS[Number(sel.slice(5, 7)) - 1]}</div>
+              {cardCats.length === 0 ? <div className="ck-meta">אין רכישות בשקלים בחודש הזה.</div> : (
+                <div className="ck-table-wrap"><table className="ck-table">
+                  <thead><tr><th>קטגוריה</th><th className="fin-num">עסקאות</th><th className="fin-num">סכום</th><th className="fin-num">חלק</th></tr></thead>
+                  <tbody>{cardCats.map((c) => <tr key={c.key}><td>{c.label}</td><td className="fin-num">{c.count}</td><td className="fin-num"><Amt n={c.amount} /></td><td className="fin-num"><bdi>{c.share}%</bdi></td></tr>)}</tbody>
+                </table></div>
+              )}
+            </div>
+          </div>
+          {cardSel.length > 0 && (
+            <div className="ck-table-wrap"><table className="ck-table">
+              <thead><tr><th>תאריך</th><th>בית עסק</th><th className="fin-num">סכום</th></tr></thead>
+              <tbody>{cardSel.map((l) => (
+                <tr key={l.id}><td><bdi>{dmy(l.txn_date)}</bdi></td>
+                  <td className="fin-text"><span className="fin-name"><bdi>{l.description}</bdi></span><span className="fin-sub">{l.cat.label}</span></td>
+                  <td className="fin-num"><Fx n={l.amount} cur={l.currency} /></td></tr>
+              ))}</tbody>
+            </table></div>
+          )}
+          {view.cardRec.length > 0 && (
+            <>
+              <div className="ck-meta" style={{ marginTop: 8 }}>מנויים וחיובים קבועים בכרטיס</div>
+              <div className="ck-table-wrap"><table className="ck-table">
+                <thead><tr><th>בית עסק</th><th>קטגוריה</th><th className="fin-num">סכום אחרון</th><th>הבא בתאריך</th></tr></thead>
+                <tbody>{view.cardRec.map((r) => (
+                  <tr key={`${r.key}|${r.currency}`}><td className="fin-text"><bdi>{r.label}</bdi></td><td>{r.cat.label}</td><td className="fin-num"><Fx n={r.amount} cur={r.currency} /></td>
+                    <td><bdi>{dmy(r.next)}</bdi></td></tr>
+                ))}</tbody>
+              </table></div>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="ck-grid2">
         <div className="ck-card">
@@ -366,7 +493,32 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
               );
             })}
           </ul>
-          <div className="fin-note">הלוואות ומשכנתאות לא מחוברות. כשיהיה חיבור ישיר לבנק הן יופיעו כאן.</div>
+          {liq && (liq.overdraft != null || liq.guarantees.length > 0 || liq.fx.length > 0) && (
+            <ul className="bd-accounts" style={{ marginTop: 10 }}>
+              {liq.overdraft != null && (
+                <li>
+                  <div><b>מסגרת אשראי בעו״ש</b></div>
+                  <div className="bd-acc-figure"><Amt n={liq.overdraft} /></div>
+                  <div className="fin-note">זמין כולל המסגרת: <bdi><Amt n={liq.balance + liq.overdraft} /></bdi>. משיכה מהמסגרת היא הלוואה בריבית, לא כסף של העסק.</div>
+                </li>
+              )}
+              {liq.guarantees.map((g) => (
+                <li key={`${g.account_ref}|${g.as_of}`}>
+                  <div><b>ערבות בנקאית</b> <span className="fin-sub">{g.label ?? ""}</span></div>
+                  <div className="bd-acc-figure"><Amt n={g.amount} /></div>
+                  <div className="fin-note">התחייבות של הבנק כלפי צד אחר, נכון ל־<bdi>{dmy(g.as_of)}</bdi>. היא לא חוב לתשלום עכשיו ולכן לא יורדת מהיתרה. אם הערבות תמומש, הבנק בדרך כלל גובה את הסכום מהלקוח שביקש אותה.</div>
+                </li>
+              ))}
+              {liq.fx.map((x) => (
+                <li key={`${x.account_ref}|${x.as_of}`}>
+                  <div><b>{x.label ?? `חשבון ${x.currency}`}</b></div>
+                  <div className="bd-acc-figure"><Fx n={x.amount} cur={x.currency} /></div>
+                  <div className="fin-note">נכון ל־<bdi>{dmy(x.as_of)}</bdi>, לפי Financy.</div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="fin-note">{facts.length > 0 ? "המסגרות, הערבות וחשבון המט״ח לפי Financy. הלוואות לא מוצגות שם, ולכן גם לא כאן." : "הלוואות ומשכנתאות לא מחוברות. כשיהיה חיבור ישיר לבנק הן יופיעו כאן."}</div>
         </div>
       </div>
 

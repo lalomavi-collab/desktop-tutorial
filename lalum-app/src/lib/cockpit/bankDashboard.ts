@@ -5,14 +5,17 @@
 // Two layers, never mixed in one figure:
 //  * Cash, from the bank lines (statement files, later a direct feed): balance, in, out, net, recurring charges, forecast.
 //    Like Financy, moves between the owner's own accounts and currency conversions are left out of in and out. Unlike
-//    Financy, the card bill counts as one outflow on the day it is charged, because the card's own lines do not reach us.
+//    Financy, the card bill counts as one outflow on the day the bank charges it; the card's own lines (read from Financy)
+//    are shown merchant by merchant beside it and never counted a second time.
+//  * What Financy shows beyond the statement (lalum_fin_ext_lines, lalum_fin_ext_facts): the account before the first
+//    statement line, the card line by line, the card's open charge, the limits and the bank guarantee.
 //  * Business, from the ledger and the tax engine (taxPnl.ts): profit, income tax and National Insurance for the month.
 //
 // Net in the bank is not money the owner can take: it holds VAT that belongs to the state, and nothing was set aside
 // from it for income tax and National Insurance. So the drawable figure is the lower of two:
 //  1. earned: the month's profit after income tax and National Insurance, less what the owner already took this month;
-//  2. cash: the balance, less the VAT, income tax advance and National Insurance due in the next 30 days, less an
-//     operating reserve (by default one month of the recurring business charges). The full 30 day running balance,
+//  2. cash: the balance, less the VAT, income tax advance and National Insurance due in the next 30 days and the card's
+//     open month, less an operating reserve (by default one month of the recurring business charges). The full 30 day running balance,
 //     fixed charges included, is shown beside it and warns when it would fall below zero.
 import { EXPENSE_CATEGORY, r2 } from "./finance.ts";
 
@@ -21,6 +24,8 @@ import { EXPENSE_CATEGORY, r2 } from "./finance.ts";
 export interface BankLine {
   id: string; bank_account_id: string; value_date: string; description: string | null; reference?: string | null;
   amount: number; balance_after: number | null; created_at?: string | null;
+  /** Set on a line taken from Financy for a day before the first statement line (withHistory). */
+  origin?: "FINANCY";
 }
 /** A reconciliation decision on a bank line (lalum_fin_recon_matches), made by hand or by the auto matcher. */
 export interface ReconMatch {
@@ -74,6 +79,7 @@ const RULES: Array<[RegExp, Cat]> = [
   [/^עמל|^עמ\.|עמלת|מסלול בסיסי|דמי ניהול חשבון|הקצאת אשראי/, CAT.BANK_FEES],
   [/מט["״]?ח/, CAT.MOVE],
   [/העברה עצמית/, CAT.OWNER_DRAW],
+  [/^המרה/, CAT.MOVE],
   [/החזרת שיק/, CAT.CLIENTS],
 ];
 const ruleCat = (desc: string | null | undefined): Cat | null => {
@@ -271,6 +277,8 @@ export interface Recurring {
   /** Signed, like the bank line: negative is a charge. The latest month's total. */
   amount: number; prevAmount: number | null; changePct: number | null;
   last: string; next: string; months: number;
+  /** Payments due by asOf (five days' grace) that never came; at two or more the series has stopped and is left out of the forecast. */
+  missed: number; stale: boolean;
 }
 
 const median = (xs: number[]): number => { const s = [...xs].sort((a, b) => a - b); const h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
@@ -289,9 +297,10 @@ export const isGeneric = (desc: string | null | undefined): boolean => GENERIC.t
  * Charges and receipts that repeat: the same counterparty in the same direction in at least two calendar months, a
  * month or two months apart. Several lines of one counterparty in one month are one payment of that month. A text
  * that names only the channel repeats only when its monthly amount does too (within 5%), since different payers hide
- * behind it.
+ * behind it. Given the statement date, a series that missed two payments in a row counts as stopped (a lease that ended,
+ * a subscription cancelled): it stays in the list, marked, and leaves the forecast and the reserve.
  */
-export function recurring(lines: Classified[]): Recurring[] {
+export function recurring(lines: Classified[], asOf: string | null = null): Recurring[] {
   const groups = new Map<string, Classified[]>();
   for (const l of lines) {
     if (l.cat.flow === "MOVE" || l.amount === 0) continue;
@@ -316,13 +325,187 @@ export function recurring(lines: Classified[]): Recurring[] {
     if (!cadence) continue;
     const lastM = ms[ms.length - 1], prevM = ms[ms.length - 2];
     const latest = [...ls].sort((a, b) => b.value_date.localeCompare(a.value_date))[0];
+    const step = cadence === "MONTHLY" ? 1 : 2, next = sameDayLater(lastM.last, step);
+    let missed = 0;
+    if (asOf) for (let d = next; addDays(d, 5) <= asOf; d = sameDayLater(d, step)) missed++;
     out.push({
       key, label: (latest.description ?? "").trim() || latest.cat.label, cat: latest.cat, cadence,
       amount: lastM.sum, prevAmount: prevM.sum, changePct: changePct(Math.abs(lastM.sum), Math.abs(prevM.sum)),
-      last: lastM.last, next: sameDayLater(lastM.last, cadence === "MONTHLY" ? 1 : 2), months: ms.length,
+      last: lastM.last, next, months: ms.length, missed, stale: missed >= 2,
     });
   }
   return out.sort((a, b) => a.next.localeCompare(b.next) || a.amount - b.amount);
+}
+
+// ---------- What Financy shows beyond the statement ----------
+
+/** A transaction Financy lists (lalum_fin_ext_lines): the card merchant by merchant, or the current account before the statement. */
+export interface ExtLine {
+  id: string; account_kind: "card" | "current"; account_ref: string; txn_date: string; description: string;
+  source_category?: string | null; amount: number; currency: string;
+}
+/** A figure Financy states about an account on a day (lalum_fin_ext_facts). */
+export interface ExtFact {
+  kind: "CARD_ACCRUED" | "CARD_LIMIT" | "OVERDRAFT_LIMIT" | "GUARANTEE" | "FX_BALANCE";
+  account_ref: string; label?: string | null; amount: number; currency: string; due_on?: string | null; as_of: string;
+}
+
+/**
+ * The current account's days before its first statement line, from Financy, as bank lines. Their running balance is chained
+ * back from the statement's opening balance (its first closing less the lines up to it), so the balance and the months reach
+ * as far back as Financy does. A day the statement covers is never taken from Financy, so a statement imported later for
+ * those days replaces them by itself.
+ */
+export function withHistory(lines: BankLine[], accounts: BankAccount[], ext: ExtLine[]): BankLine[] {
+  const closings = dailyClosings(lines);
+  const added: BankLine[] = [];
+  for (const a of accounts) {
+    const own = lines.filter((l) => l.bank_account_id === a.id);
+    if (own.length === 0) continue;
+    const first = own.reduce((m, l) => (l.value_date < m ? l.value_date : m), own[0].value_date);
+    const hist = ext.filter((e) => e.account_kind === "current" && e.account_ref === a.account_last4 && e.currency === "ILS" && e.txn_date < first)
+      .sort((x, y) => y.txn_date.localeCompare(x.txn_date) || y.id.localeCompare(x.id));
+    const c = (closings.get(a.id) ?? [])[0];
+    let bal: number | null = c ? r2(c.balance - own.filter((l) => l.value_date <= c.date).reduce((s, l) => s + l.amount, 0)) : null;
+    const acc: BankLine[] = [];
+    for (const e of hist) {
+      acc.push({ id: `financy:${e.id}`, bank_account_id: a.id, value_date: e.txn_date, description: e.description, reference: null,
+        amount: Number(e.amount), balance_after: bal, origin: "FINANCY" });
+      if (bal != null) bal = r2(bal - Number(e.amount));
+    }
+    // Oldest first, and within a day in the order of the chain, so the line that closes a day is also stored last.
+    acc.reverse().forEach((l, i) => added.push({ ...l, created_at: `financy:${String(i).padStart(6, "0")}` }));
+  }
+  return [...added, ...lines];
+}
+
+/** The newest fact of each kind and account. */
+export function latestFacts(facts: ExtFact[]): ExtFact[] {
+  const m = new Map<string, ExtFact>();
+  for (const f of facts) {
+    const k = `${f.kind}|${f.account_ref}`, cur = m.get(k);
+    if (!cur || f.as_of > cur.as_of) m.set(k, f);
+  }
+  return [...m.values()];
+}
+
+export interface CardCharge { account_ref: string; amount: number; due: string | null; as_of: string }
+/** Card charges already made and not yet taken from the bank: the open month of each card, due after the balance's day. */
+export function openCardCharges(facts: ExtFact[], asOf: string): CardCharge[] {
+  return latestFacts(facts)
+    .filter((f) => f.kind === "CARD_ACCRUED" && Number(f.amount) > 0 && (f.due_on ? f.due_on > asOf : f.as_of >= asOf))
+    .map((f) => ({ account_ref: f.account_ref, amount: r2(Number(f.amount)), due: f.due_on ?? null, as_of: f.as_of }));
+}
+
+export interface Liquidity {
+  balance: number; asOf: string;
+  /** The open card charges, already spent and due after asOf. liquid = balance less them, as Financy shows it. */
+  cardDue: number; cardDueOn: string | null; liquid: number;
+  overdraft: number | null; cardLimit: number | null; guarantees: ExtFact[]; fx: ExtFact[];
+}
+export function liquidity(balance: number, asOf: string, facts: ExtFact[]): Liquidity {
+  const latest = latestFacts(facts), cards = openCardCharges(facts, asOf);
+  const total = (k: ExtFact["kind"]) => {
+    const fs = latest.filter((f) => f.kind === k);
+    return fs.length ? r2(fs.reduce((s, f) => s + Number(f.amount), 0)) : null;
+  };
+  const cardDue = r2(cards.reduce((s, c) => s + c.amount, 0));
+  return {
+    balance, asOf, cardDue, cardDueOn: cards.map((c) => c.due).filter((d): d is string => !!d).sort()[0] ?? null,
+    liquid: r2(balance - cardDue), overdraft: total("OVERDRAFT_LIMIT"), cardLimit: total("CARD_LIMIT"),
+    guarantees: latest.filter((f) => f.kind === "GUARANTEE"), fx: latest.filter((f) => f.kind === "FX_BALANCE"),
+  };
+}
+
+// The card's merchants, by names that cannot mean anything else; the rest stays unassigned and still counts.
+const CARD_RULES: Array<[RegExp, string]> = [
+  [/מע["״]?מ/, "TAX_VAT"],
+  [/מס הכנסה/, "TAX_IT"],
+  [/דמי כרטיס|עמלת|^עמל/, "CARD_FEES"],
+  [/לשכת עורכי הדין|אגרת/, "FEES"],
+  [/פלאפון|סלקום|בזק|פרטנר|הוט מובייל|גולן טלקום|לינק ניהול תקשורת|zadarma/i, "COMMUNICATION"],
+  [/facebk|fb\.me|google ads/i, "MARKETING"],
+  [/microsoft|msbill|anthropic|openai|genspark|cloudflare|google workspace|wix\.com|godaddy|apple\.com\/bill|depositphotos|linkedin|github|vercel|supabase|adobe|canva|dropbox|notion/i, "SOFTWARE"],
+  [/fiverr/i, "PROFESSIONAL"],
+  [/כביש 6|מנהרות הכרמל|טעינ|ev-edge|yellow|כלמוביל|אוטו בנצ|פנגו|סונול|חניון/i, "VEHICLE"],
+  [/^gett\b|priority pass|tfl travel|busfor|skybus|e-travels/i, "TRAVEL"],
+];
+const CARD_LABEL: Record<string, string> = { ...EXPENSE_CATEGORY, TAX_VAT: "מע״מ", TAX_IT: "מס הכנסה", CARD_FEES: "עמלות ודמי כרטיס" };
+
+export interface CardLine extends ExtLine { cat: Cat; how: "RULE" | "NONE" }
+export function classifyCard(ext: ExtLine[]): CardLine[] {
+  return ext.filter((e) => e.account_kind === "card").map((e) => {
+    const k = CARD_RULES.find(([re]) => re.test(e.description))?.[1];
+    if (!k) return { ...e, amount: Number(e.amount), cat: C("CARD:NONE", "לא מסווג", "כרטיס", "OUT"), how: "NONE" as const };
+    return { ...e, amount: Number(e.amount), cat: C(`CARD:${k}`, CARD_LABEL[k], k.startsWith("TAX_") ? "מסים" : "כרטיס", "OUT"), how: "RULE" as const };
+  });
+}
+/** Card lines in the shape of bank lines, for the month and category functions above. */
+const asBank = (cl: CardLine[]): Classified[] => cl.map((l) => ({
+  id: l.id, bank_account_id: `card:${l.account_ref}`, value_date: l.txn_date, description: l.description, amount: l.amount,
+  balance_after: null, cat: l.cat, how: l.how,
+}));
+
+export interface CardMonth { month: string; ils: number; fx: Record<string, number>; count: number }
+/** Spending on the card per month of purchase (positive; a refund nets), shekels apart from each foreign currency. */
+export function cardMonths(cl: CardLine[]): CardMonth[] {
+  if (cl.length === 0) return [];
+  const ms = cl.map((l) => monthOf(l.txn_date)).sort();
+  const out: CardMonth[] = [];
+  for (let m = ms[0]; m <= ms[ms.length - 1]; m = addMonths(m, 1)) {
+    const ls = cl.filter((l) => monthOf(l.txn_date) === m);
+    const fx: Record<string, number> = {};
+    for (const l of ls) if (l.currency !== "ILS") fx[l.currency] = r2((fx[l.currency] ?? 0) - l.amount);
+    out.push({ month: m, ils: r2(-ls.filter((l) => l.currency === "ILS").reduce((s, l) => s + l.amount, 0)), fx, count: ls.length });
+  }
+  return out;
+}
+/** The card's spending in shekels for one month by category, largest first. */
+export const cardCategories = (cl: CardLine[], month: string): CatTotal[] => categoryTotals(asBank(cl.filter((l) => l.currency === "ILS")), month, "OUT");
+
+/**
+ * Charges that repeat on the card (subscriptions), each currency on its own, taxes left out. Stopped series are dropped,
+ * judged by the newest card line rather than today, since the card is read once a month.
+ */
+export function cardRecurring(cl: CardLine[]): Array<Recurring & { currency: string }> {
+  const asOf = cl.reduce<string | null>((m, l) => (m == null || l.txn_date > m ? l.txn_date : m), null);
+  return [...new Set(cl.map((l) => l.currency))].flatMap((cur) =>
+    recurring(asBank(cl.filter((l) => l.currency === cur && l.cat.group !== "מסים")), asOf).filter((r) => r.amount < 0 && !r.stale).map((r) => ({ ...r, currency: cur })))
+    .sort((a, b) => a.next.localeCompare(b.next));
+}
+/** VAT and income tax paid with the card: the bank shows them only inside the card bill. */
+export const cardTaxPaid = (cl: CardLine[]): Array<{ key: "TAX_VAT" | "TAX_IT"; date: string }> =>
+  cl.filter((l) => l.amount < 0 && (l.cat.key === "CARD:TAX_VAT" || l.cat.key === "CARD:TAX_IT"))
+    .map((l) => ({ key: l.cat.key === "CARD:TAX_VAT" ? "TAX_VAT" as const : "TAX_IT" as const, date: l.txn_date }));
+
+/** Two identical charges on one day: a purchase in installments, or a charge taken twice. */
+export function cardPairs(cl: CardLine[], month: string): Array<{ date: string; description: string; amount: number; count: number }> {
+  const m = new Map<string, { date: string; description: string; amount: number; count: number }>();
+  for (const l of cl) {
+    if (monthOf(l.txn_date) !== month || l.amount === 0) continue;
+    const k = `${l.txn_date}|${l.description}|${l.amount}|${l.currency}`;
+    const c = m.get(k) ?? { date: l.txn_date, description: l.description, amount: l.amount, count: 0 };
+    c.count++; m.set(k, c);
+  }
+  return [...m.values()].filter((c) => c.count > 1);
+}
+
+/** What the card's month calls for: a large charge with no category, identical charges on one day, a tax paid with the card. */
+export function cardInsights(cl: CardLine[], month: string): Insight[] {
+  const out: Insight[] = [];
+  const nf = (n: number) => Math.abs(n).toLocaleString("he-IL", { maximumFractionDigits: 2 });
+  const dm = (iso: string) => iso.split("-").reverse().join(".");
+  const cur = (c: string) => (c === "ILS" ? "₪" : c);
+  const inMonth = cl.filter((l) => monthOf(l.txn_date) === month);
+  const big = inMonth.filter((l) => l.how === "NONE" && l.currency === "ILS" && l.amount <= -1000).sort((a, b) => a.amount - b.amount).slice(0, 3);
+  if (big.length > 0) out.push({ tone: "info", title: "חיוב גדול בכרטיס בלי קטגוריה", body: `${big.map((l) => `${l.description.trim()} ${nf(l.amount)} ₪ ב־${dm(l.txn_date)}`).join(", ")}. אם זו הוצאה של העסק, ודאו שיש עליה חשבונית ברשימת ההוצאות.` });
+  for (const p of cardPairs(cl, month).slice(0, 2)) {
+    const l = inMonth.find((x) => x.txn_date === p.date && x.description === p.description && x.amount === p.amount);
+    out.push({ tone: "info", title: "חיובים זהים באותו יום", body: `${p.description.trim()}: ${p.count} חיובים של ${nf(p.amount)} ${cur(l?.currency ?? "ILS")} ב־${dm(p.date)}. כך נראית עסקה בתשלומים. אם לא היו תשלומים, כדאי לברר מול חברת האשראי.` });
+  }
+  const tax = inMonth.filter((l) => l.cat.group === "מסים" && l.amount < 0);
+  if (tax.length > 0) out.push({ tone: "info", title: "מס ששולם בכרטיס", body: `${tax.map((l) => `${l.cat.label} ${nf(l.amount)} ₪ ב־${dm(l.txn_date)}`).join(", ")}. בבנק הוא מופיע רק בתוך חיוב הכרטיס, והתחזית רואה בתקופה שלו תקופה ששולמה.` });
+  return out;
 }
 
 // ---------- Taxes from the ledger ----------
@@ -357,14 +540,26 @@ export function vatPeriod(iso: string): { from: string; to: string; months: stri
 
 export const HORIZON_DAYS = 30;
 export interface ForecastItem {
-  date: string; label: string; amount: number; kind: "RECURRING" | "BL" | "VAT" | "INCOME_TAX";
+  date: string; label: string; amount: number; kind: "RECURRING" | "BL" | "VAT" | "INCOME_TAX" | "CARD" | "RECEIPT";
   /** The date was taken from the previous payment, or the item was due before the statement ended and no payment was seen. */
   note?: string;
 }
 export interface ForecastRow extends ForecastItem { balance: number }
+/** One line of the combined view: charges and expected receipts by date, with the balance without and with the receipts. */
+export interface TimelineRow extends ForecastItem { balance: number; withReceipts: number; expected: boolean }
 export interface Forecast {
   start: number; startOn: string; end: string; rows: ForecastRow[]; outflows: number; inflows: number;
   minBalance: number; minOn: string; excluded: Array<{ label: string; amount: number; why: string }>;
+  /** Receipts that repeat at the same amount, due in the period: shown beside the charges, never in rows or minBalance. */
+  expected: ForecastItem[]; timeline: TimelineRow[];
+  /** The first day the balance falls below zero: without any receipt, and with the expected ones. Null when it never does. */
+  shortOn: string | null; shortOnWithReceipts: string | null;
+}
+export interface ForecastExtra {
+  /** Card charges already made and due in the bank later (openCardCharges): they replace the card bill estimated from the past. */
+  cards?: Array<{ amount: number; due: string; label: string }>;
+  /** Tax payments made outside the bank lines (cardTaxPaid), so a period paid with the card is not counted as open. */
+  paidElsewhere?: Array<{ key: "TAX_VAT" | "TAX_IT"; date: string }>;
 }
 export const addDays = (iso: string, n: number): string => new Date(Date.parse(iso + "T00:00:00Z") + n * 86400000).toISOString().slice(0, 10);
 
@@ -378,25 +573,39 @@ export interface TaxDue {
 /**
  * The next 30 days after the statement date, as a running balance. Charges come from the recurring list (VAT and
  * income tax excluded there); VAT and the income tax advance come from the ledger and the engine, for every period not
- * yet paid, on the day of month of the previous payment (or the 15th). Expected receipts (a receipt that repeats at
- * the same amount, open pro formas) are listed apart and not counted: the money is not in until it is in.
+ * yet paid, on the day of month of the previous payment (or the 15th); a tax paid with the card counts as paid. The
+ * card's open month, when Financy states it, replaces the card bill estimated from the past. Expected receipts (a receipt
+ * that repeats at the same amount) get a second running balance beside the first, never in it; open pro formas are listed
+ * apart: the money is not in until it is in.
  */
 export function forecast30(classified: Classified[], rec: Recurring[], start: number, startOn: string, taxes: TaxDue,
-  openReceivables = 0): Forecast {
+  openReceivables = 0, extra: ForecastExtra = {}): Forecast {
   const end = addDays(startOn, HORIZON_DAYS);
   const items: ForecastItem[] = [];
+  const cards = extra.cards ?? [];
+  // A card bill within ten days of a known open charge is that charge.
+  const knownCard = (d: string) => cards.some((c) => Math.abs(dayDiff(d, c.due)) <= 10);
+  const stopped: Forecast["excluded"] = [];
   for (const r of rec) {
     // Owner draws are what this screen computes, not a commitment; VAT and income tax are added below from the ledger.
     if (r.amount >= 0 || r.cat.key === "OWNER_DRAW" || r.cat.key === "TAX_VAT" || r.cat.key === "TAX_IT") continue;
+    if (r.stale) { stopped.push({ label: r.label, amount: r.amount, why: `לא נראה מאז ${r.last.split("-").reverse().join(".")}. אם החיוב עדיין קיים, הוא יחזור לתחזית כשיופיע שוב` }); continue; }
     let d = r.next;
     const step = r.cadence === "MONTHLY" ? 1 : 2;
     let late = false;
     while (d <= startOn) { if (addDays(d, 5) <= startOn) late = true; d = sameDayLater(d, step); }
     const kind = r.cat.key === "TAX_BL" ? "BL" as const : "RECURRING" as const;
-    for (; d <= end; d = sameDayLater(d, step)) items.push({ date: d, label: r.label, amount: r.amount, kind, note: late ? "החיוב הקודם לא נראה בדף הבנק" : undefined });
+    for (; d <= end; d = sameDayLater(d, step)) {
+      if (r.cat.key === "CARD" && knownCard(d)) continue;
+      items.push({ date: d, label: r.label, amount: r.amount, kind, note: late ? "החיוב הקודם לא נראה בדף הבנק" : undefined });
+    }
+  }
+  for (const c of cards) {
+    if (c.due > startOn && c.due <= end && c.amount > 0) items.push({ date: c.due, label: c.label, amount: -r2(c.amount), kind: "CARD", note: "החיוב שנצבר עד עכשיו, לפי Financy. הסכום עשוי להשתנות" });
   }
   // VAT and the income tax advance: what the last payment of each covered, and what is still open after it.
-  const lastPaid = (key: string) => classified.filter((l) => l.cat.key === key && l.amount < 0).map((l) => l.value_date).sort().pop() ?? null;
+  const lastPaid = (key: "TAX_VAT" | "TAX_IT") => [...classified.filter((l) => l.cat.key === key && l.amount < 0).map((l) => l.value_date),
+    ...(extra.paidElsewhere ?? []).filter((p) => p.key === key && p.date <= startOn).map((p) => p.date)].sort().pop() ?? null;
   const vatLast = lastPaid("TAX_VAT"), itLast = lastPaid("TAX_IT");
   const paidThrough = (d: string | null) => (d ? vatPeriod(addMonths(d.slice(0, 7), -2) + "-01").to : null);
   const dueOn = (periodTo: string, payDay: string | null) => {
@@ -430,20 +639,42 @@ export function forecast30(classified: Classified[], rec: Recurring[], start: nu
     if (bal < minBalance) { minBalance = bal; minOn = it.date; }
     return { ...it, balance: bal };
   });
-  const excluded: Forecast["excluded"] = [];
+  const excluded: Forecast["excluded"] = [...stopped], expected: ForecastItem[] = [];
   for (const r of rec) {
-    if (r.amount <= 0 || r.cat.flow !== "IN") continue;
+    if (r.amount <= 0 || r.cat.flow !== "IN" || r.stale) continue;
     let d = r.next;
     while (d <= startOn) d = sameDayLater(d, r.cadence === "MONTHLY" ? 1 : 2);
-    if (d <= end) excluded.push({ label: `${r.label} (${d.split("-").reverse().join(".")})`, amount: r.amount, why: "תקבול קבוע צפוי. לא נכלל עד שייכנס" });
+    if (d <= end) expected.push({ date: d, label: r.label, amount: r.amount, kind: "RECEIPT", note: "תקבול שחוזר באותו סכום. לא נספר עד שייכנס" });
+  }
+  // Both views by date; on a day with both, the charge goes first.
+  const timeline: TimelineRow[] = [];
+  let a = start, b = start, shortOn: string | null = null, shortOnWithReceipts: string | null = null;
+  for (const it of [...items.map((x) => ({ ...x, expected: false })), ...expected.map((x) => ({ ...x, expected: true }))]
+    .sort((x, y) => x.date.localeCompare(y.date) || Number(x.expected) - Number(y.expected) || x.amount - y.amount)) {
+    if (!it.expected) a = r2(a + it.amount);
+    b = r2(b + it.amount);
+    if (a < 0 && !shortOn) shortOn = it.date;
+    if (b < 0 && !shortOnWithReceipts) shortOnWithReceipts = it.date;
+    timeline.push({ ...it, balance: a, withReceipts: b });
   }
   if (openReceivables > 0) excluded.push({ label: "חשבונות עסקה פתוחים", amount: r2(openReceivables), why: "לא נכללו, כי מועד התשלום לא ידוע" });
   if (!itLast) excluded.push({ label: "מקדמות מס הכנסה", amount: 0, why: "אין עדיין תשלום מקדמה בדפי הבנק, ולכן אין מועד" });
   return {
-    start, startOn, end, rows, minBalance, minOn, excluded,
+    start, startOn, end, rows, minBalance, minOn, excluded, expected, timeline, shortOn, shortOnWithReceipts,
     outflows: r2(-items.filter((i) => i.amount < 0).reduce((a, i) => a + i.amount, 0)),
     inflows: r2(items.filter((i) => i.amount > 0).reduce((a, i) => a + i.amount, 0)),
   };
+}
+
+/**
+ * How many months of business outflow the money covers if nothing comes in: the liquid balance over the average outflow
+ * (taxes included, the owner's draws not) of the last three months the bank lines cover in full.
+ */
+export function runway(months: MonthCash[], liquid: number): { months: number; avgOut: number; basis: string[] } | null {
+  const full = months.filter((m) => !m.partial && m.outflow > 0).slice(-3);
+  if (full.length === 0) return null;
+  const avgOut = r2(full.reduce((s, m) => s + m.outflow, 0) / full.length);
+  return { months: Math.round((Math.max(0, liquid) / avgOut) * 10) / 10, avgOut, basis: full.map((m) => m.month) };
 }
 
 // ---------- Drawable salary ----------
@@ -455,13 +686,13 @@ export interface Drawable {
   /** Taken by the owner in the month, from the bank lines. Positive. */
   taken: number; earnedLeft: number;
   /** Only for the month of the statement: what the cash allows now. */
-  cash: null | { balance: number; asOf: string; vat: number; incomeTax: number; bl: number; reserve: number; left: number };
+  cash: null | { balance: number; asOf: string; vat: number; incomeTax: number; bl: number; card: number; reserve: number; left: number };
   drawable: number; binding: "EARNED" | "CASH";
 }
 
 /** The reserve when the partner set none: one month of the recurring business charges, taxes and the owner's own excluded. */
 export function defaultReserve(rec: Recurring[]): number {
-  return r2(rec.filter((r) => r.amount < 0 && r.cadence === "MONTHLY" && r.cat.flow === "OUT" && r.cat.group !== "מסים")
+  return r2(rec.filter((r) => r.amount < 0 && r.cadence === "MONTHLY" && r.cat.flow === "OUT" && r.cat.group !== "מסים" && !r.stale)
     .reduce((a, r) => a - r.amount, 0));
 }
 
@@ -471,8 +702,9 @@ export function drawable(month: string, tax: MonthTax, classified: Classified[],
   let cash: Drawable["cash"] = null;
   if (fc) {
     const sum = (k: ForecastItem["kind"]) => r2(-fc.rows.filter((r) => r.kind === k).reduce((a, r) => a + r.amount, 0));
-    const vat = sum("VAT"), incomeTax = sum("INCOME_TAX"), bl = sum("BL");
-    cash = { balance: fc.start, asOf: fc.startOn, vat, incomeTax, bl, reserve: r2(reserve), left: r2(fc.start - vat - incomeTax - bl - reserve) };
+    // The card's open month is already spent; the reserve stands for the month after it.
+    const vat = sum("VAT"), incomeTax = sum("INCOME_TAX"), bl = sum("BL"), card = sum("CARD");
+    cash = { balance: fc.start, asOf: fc.startOn, vat, incomeTax, bl, card, reserve: r2(reserve), left: r2(fc.start - vat - incomeTax - bl - card - reserve) };
   }
   const left = cash ? Math.min(earnedLeft, cash.left) : earnedLeft;
   return {
@@ -490,7 +722,7 @@ export function insights(classified: Classified[], month: string, asOf: string |
   const nf = (n: number) => Math.abs(n).toLocaleString("he-IL", { maximumFractionDigits: 0 });
   if (asOf && dayDiff(asOf, today) > 35) out.push({ tone: "warn", title: "דף הבנק ישן", body: `הנתונים עד ${asOf.split("-").reverse().join(".")}. העלו את דף הבנק של החודש האחרון כדי שהיתרה והתחזית יהיו נכונות.` });
   const inMonth = classified.filter((l) => monthOf(l.value_date) === month);
-  const noDoc = inMonth.filter((l) => l.amount > 0 && l.cat.key !== "REFUNDS" && l.how !== "MATCH" && l.cat.flow === "IN");
+  const noDoc = inMonth.filter((l) => l.amount > 0 && l.cat.key !== "REFUNDS" && l.how !== "MATCH" && l.cat.flow === "IN" && l.origin !== "FINANCY");
   if (noDoc.length > 0) out.push({ tone: "warn", title: "תקבולים בלי מסמך", body: `${noDoc.length} תקבולים בסך ${nf(noDoc.reduce((a, l) => a + l.amount, 0))} ₪ עוד לא שויכו לחשבונית או לקבלה. על כל תקבול צריך להפיק מסמך.` });
   const unassigned = inMonth.filter((l) => l.cat.key === "UNMATCHED_OUT");
   if (unassigned.length > 0) {
