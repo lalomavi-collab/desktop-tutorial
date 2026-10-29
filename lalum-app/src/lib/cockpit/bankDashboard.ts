@@ -32,7 +32,7 @@ export interface ReconMatch {
   bank_line_id: string; target_kind: string; expense_id: string | null; matched_amount?: number | null; note?: string | null;
 }
 /** A balance the bank stated (lalum_fin_bank_balances): a statement closing or a feed reading. */
-export interface StoredBalance { bank_account_id: string; as_of: string; balance: number; fetched_at?: string | null }
+export interface StoredBalance { bank_account_id: string; as_of: string; balance: number; fetched_at?: string | null; source?: "file" | "financy" | null }
 export interface BankAccount { id: string; bank_code: string; branch?: string | null; account_last4: string; label?: string | null; is_active: boolean }
 
 // ---------- Categories ----------
@@ -192,13 +192,42 @@ export function accountBalances(accounts: BankAccount[], lines: BankLine[], stor
   });
 }
 
-/** Total balance by day across accounts, each account carried forward from its last known day. */
-export function balanceSeries(lines: BankLine[]): Array<{ date: string; balance: number }> {
+/**
+ * Total balance by day across accounts, each account carried forward from its last known day. A day's balance is the statement's
+ * closing stored for it, else the one its lines give by their running balances, else the balance read on that day (Financy's), else
+ * the day before moved by that day's lines: a feed line has no running balance, so the days after the last statement are chained.
+ */
+export function balanceSeries(lines: BankLine[], stored: StoredBalance[] = []): Array<{ date: string; balance: number }> {
   const closings = dailyClosings(lines);
-  const dates = [...new Set([...closings.values()].flatMap((d) => d.map((x) => x.date)))].sort();
+  const accounts = new Set([...closings.keys(), ...stored.map((s) => s.bank_account_id)]);
+  const days = new Map<string, Array<{ date: string; balance: number }>>();
+  for (const acc of accounts) {
+    const pick = new Map<string, StoredBalance>();
+    for (const s of stored.filter((x) => x.bank_account_id === acc)) {
+      const cur = pick.get(s.as_of);
+      const rank = (x: StoredBalance) => (x.source === "file" ? 1 : 0);
+      if (!cur || rank(s) > rank(cur) || (rank(s) === rank(cur) && (s.fetched_at ?? "") > (cur.fetched_at ?? ""))) pick.set(s.as_of, s);
+    }
+    const close = new Map((closings.get(acc) ?? []).map((c) => [c.date, c.balance]));
+    const moves = new Map<string, number>();
+    for (const l of lines) if (l.bank_account_id === acc && l.balance_after == null) moves.set(l.value_date, (moves.get(l.value_date) ?? 0) + Number(l.amount));
+    const dates = [...new Set([...pick.keys(), ...close.keys(), ...moves.keys()])].sort();
+    const out: Array<{ date: string; balance: number }> = [];
+    let prev: number | null = null;
+    for (const date of dates) {
+      const st = pick.get(date);
+      const v = st?.source === "file" ? Number(st.balance) : close.has(date) ? close.get(date)! : st ? Number(st.balance)
+        : prev != null ? r2(prev + (moves.get(date) ?? 0)) : null;
+      if (v == null) continue;
+      prev = r2(v);
+      out.push({ date, balance: prev });
+    }
+    days.set(acc, out);
+  }
+  const dates = [...new Set([...days.values()].flatMap((d) => d.map((x) => x.date)))].sort();
   const idx = new Map<string, number>(), last = new Map<string, number>();
   return dates.map((date) => {
-    for (const [acc, d] of closings) {
+    for (const [acc, d] of days) {
       let i = idx.get(acc) ?? 0;
       while (i < d.length && d[i].date <= date) { last.set(acc, d[i].balance); i++; }
       idx.set(acc, i);

@@ -85,6 +85,22 @@ t("the newest balance wins, the bank's own statement on a tie", () => {
   assert.deepEqual(balanceSeries(ls).map((x) => x.balance), [900, 30618.02]);
 });
 
+t("after the last statement the series follows the daily Financy read, day by day", () => {
+  // The statement ends 28.10 at 30,618.02. The read of 30.10 brings 29.10 (two lines, no running balance) and 30.10's balance.
+  const ls = [L("2026-10-28", "z", 8850, 30618.02), L("2026-10-29", "ביטוח לאומי-י", -3503), L("2026-10-29", "העברה", 1000),
+    L("2026-10-30", "לאומי ויזה", -3030.53)];
+  const st = [{ bank_account_id: A, as_of: "2026-10-28", balance: 30618.02, source: "file", fetched_at: "a" },
+    { bank_account_id: A, as_of: "2026-10-30", balance: 25084.49, source: "financy", fetched_at: "b" }];
+  assert.deepEqual(balanceSeries(ls, st), [{ date: "2026-10-28", balance: 30618.02 }, { date: "2026-10-29", balance: 28115.02 },
+    { date: "2026-10-30", balance: 25084.49 }]);
+  // Without the read the days are chained from the statement; a statement's stored closing beats a read of the same day.
+  assert.deepEqual(balanceSeries(ls).map((x) => x.balance), [30618.02, 28115.02, 25084.49]);
+  const both = [...st, { bank_account_id: A, as_of: "2026-10-30", balance: 25000, source: "file", fetched_at: "a" }];
+  assert.equal(balanceSeries(ls, both).at(-1).balance, 25000);
+  const acc = [{ id: A, bank_code: "10", account_last4: "2082", is_active: true }];
+  assert.deepEqual(accountBalances(acc, ls, st)[0], { accountId: A, balance: 25084.49, asOf: "2026-10-30", source: "STATED" });
+});
+
 const book = () => {
   n = 0;
   const ls = [
