@@ -10,6 +10,7 @@ import type { TaxCategory } from "../../../lib/cockpit/taxEngine";
 import { advisorError, classifyExpense } from "../../../lib/cockpit/taxAdvisorAgent";
 import { HistoricalImport } from "./HistoricalImport";
 import { ExpensesChart } from "./ExpensesChart";
+import { missingBills } from "../../../lib/cockpit/financeExpenses";
 
 const today = () => new Date().toISOString().slice(0, 10);
 type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string; taxCat: TaxCategory; itPct: string };
@@ -43,6 +44,8 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
   const docFileRef = useRef<HTMLInputElement>(null);
   const docTargetRef = useRef<{ expenseId: string; supersedes: string | null } | null>(null);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
+  // Electricity, water and phone bills arrive every month or two; a gap means a document that never reached the books.
+  const missing = useMemo(() => missingBills(expenses, today()), [expenses]);
 
   // Source documents (migration 20261027100000). The path is never selected: the browser only ever gets a 60 second link.
   const [docsTick, setDocsTick] = useState(0);
@@ -151,6 +154,14 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
   return (
     <div className="ck-stack">
       <ExpensesChart expenses={expenses} />
+      {missing.length > 0 && (
+        <div className="ck-warn" role="status">
+          <div><strong>חסרות חשבוניות של ספקים קבועים.</strong> בדקו אם החשבונית הגיעה ולא נקלטה, או שצריך לבקש אותה מהספק.</div>
+          {missing.map((m) => (
+            <div key={m.key}>{m.label}: {m.missing.map((x) => x.label).join(", ")}{m.lapsed ? `. אין מסמך מאז ${m.lastSeen.split("-").reverse().join(".")}, ייתכן שהשירות הסתיים.` : ""}</div>
+          ))}
+        </div>
+      )}
       {canWrite && <HistoricalImport firmId={firmId} onImported={onChange} />}
       {canWrite && <div className="ck-row" style={{ justifyContent: "space-between" }}>
         <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>

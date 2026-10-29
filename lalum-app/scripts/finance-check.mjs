@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { incomeRows, incomeByKind, revenueByCustomer, receivablesAging, toCsv, incomeHtml, revenueBuckets, weekStart } from "../src/lib/cockpit/financeReports.ts";
 import { isShekel, computeTotals, draftProblems, openBalance, summarize, monthPeriod, recoverableVat, numberingGaps, formatRanges, archiveSummary, archiveRevenueEffect, splitName, customerProblems, customerGaps, isMobile, CASUAL_TYPES, closedBy, isOpenProforma, trustHeld, trustBreakdown, maskAccount, trustPostProblems, canReverse, trustAccountProblems, trustCloseProblem, reconState, statementProblems, statementCorrectionProblems, trustValueDate, trustHeldAsOf, valueDateProblems, trustAccountLock, trustHealth, reconHealth, healthSummary, trustFlowCoverage, trustNetSince, sharePct } from "../src/lib/cockpit/finance.ts";
 
-import { expenseBuckets } from "../src/lib/cockpit/financeExpenses.ts";
+import { expenseBuckets, missingBills } from "../src/lib/cockpit/financeExpenses.ts";
 import { parseDelimited, mapCustomers } from "../src/lib/cockpit/customerImport.ts";
 import { ilIdOk, addressOn } from "../src/lib/cockpit/businessProfileCore.ts";
 import { allocationThreshold, allocationGaps, allocationShort, allocationAuthStatus } from "../src/lib/cockpit/financeAllocation.ts";
@@ -494,4 +494,36 @@ t("expense series: day, week, month and year buckets, before and with VAT, runni
   assert.equal(y.buckets[3].amount, 100);
   assert.equal(expenseBuckets(rows, "week", 2026, "2026-10-05").buckets.length, 12);
   assert.equal(expenseBuckets([], "month", 2026, "2026-10-05").lastVsPrevious.pct, null);
+});
+t("a recurring supplier's missing bill is reported once its date and the grace days have passed; arnona and lookalikes are not checked", () => {
+  const bills = (supplier, dates) => dates.map((d, i) => exp({ id: `${supplier}${i}`, supplier, spent_on: d }));
+  const rows = [
+    ...bills("סלקום אנרג'י", ["2026-02-21", "2026-03-21", "2026-04-21", "2026-05-18", "2026-06-18", "2026-07-18", "2026-08-18", "2026-09-18", "2026-10-18"]),
+    ...bills("סלקום", ["2026-01-21", "2026-03-14", "2026-04-14", "2026-05-14", "2026-06-14", "2026-07-14", "2026-08-18", "2026-09-14"]),
+    ...bills("סלקום ישראל", ["2026-10-14"]),
+    ...bills("לינק ניהול תקשורת לעסקים", ["2026-01-04", "2026-02-03", "2026-03-03", "2026-05-03", "2026-06-03", "2026-08-03", "2026-09-03", "2026-10-04"]),
+    ...bills("מי נתניה", ["2026-09-28"]),
+    ...bills("דור חדש חומרי חשמל", ["2026-02-10"]),
+    ...bills("עיריית נתניה, ארנונה", ["2026-01-01"]),
+  ];
+  const m = missingBills(rows, "2026-10-28");
+  assert.deepEqual(m.map((x) => [x.key, x.missing.map((y) => y.expected), x.lapsed]), [
+    ["cellcom", ["2026-02-14"], false],
+    ["link", ["2026-04-03", "2026-07-03"], false],
+  ]);
+  assert.equal(m[1].missing[0].label, "אפר׳ 2026");
+  // October's electricity bill is due on the 18th: on the 27th it is only late, on the 29th it is missing.
+  const noOct = rows.filter((e) => !(e.supplier === "סלקום אנרג'י" && e.spent_on === "2026-10-18"));
+  assert.equal(missingBills(noOct, "2026-10-27").some((x) => x.key === "electricity"), false);
+  assert.deepEqual(missingBills(noOct, "2026-10-29").find((x) => x.key === "electricity").missing.map((y) => y.expected), ["2026-10-18"]);
+  // A water bill every two months: the next one is not due until about 28 November.
+  assert.equal(missingBills(rows, "2026-12-07").some((x) => x.key === "water"), false);
+  assert.deepEqual(missingBills(rows, "2026-12-09").find((x) => x.key === "water").missing.map((y) => y.expected), ["2026-11-28"]);
+  // A service that stopped: three misses in a row at the end read as possibly ended, and the rhythm runs on from December.
+  const stopped = missingBills(bills("לינק ניהול תקשורת לעסקים", ["2025-12-03", "2026-01-03", "2026-02-03", "2026-03-03"]), "2026-07-01");
+  assert.deepEqual(stopped[0].missing.map((y) => y.expected), ["2026-04-03", "2026-05-03", "2026-06-03"]);
+  assert.equal(stopped[0].lapsed, true);
+  assert.deepEqual(missingBills(bills("לינק ניהול תקשורת לעסקים", ["2025-12-03", "2026-03-03"]), "2026-03-20")[0].missing.map((y) => y.expected), ["2026-01-03", "2026-02-03"]);
+  // A supplier the firm never used is not reported at all.
+  assert.deepEqual(missingBills([], "2026-10-28"), []);
 });
