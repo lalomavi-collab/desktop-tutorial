@@ -61,7 +61,8 @@ export const allocationShort = (n: string | null | undefined): string =>
  * connected, and move it after every renewal; the overview warns from three weeks before it. `null` means no
  * connection is known yet, so there is nothing to warn about.
  */
-export const ALLOCATION_AUTH_EXPIRES: string | null = null;
+// Granted 1.10.2026 09:26 to Invoice4U, valid to 1.1.2027 09:26 (the authorization record, read by the owner on 29.10.2026).
+export const ALLOCATION_AUTH_EXPIRES: string | null = "2027-01-01";
 export const ALLOCATION_AUTH_WARN_DAYS = 21;
 
 /** Whole days from `today` to the expiry (negative once past), and whether the overview should warn. */
