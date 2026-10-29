@@ -155,7 +155,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
       {hasTest && <div className="ck-warn">במערכת יש מסמכי בדיקה מסביבת הניסוי של מערכת ההנפקה. הם מסומנים ואינם נספרים בדוחות.</div>}
       {!loaded && !error && <div className="ck-meta">טוען...</div>}
 
-      {tab === "dashboard" && loaded && <Gate level={level} need={3}><BankDashboardTab firmId={firmId} docs={docs} payments={payments} expenses={expenses} archive={archive} reserveSaved={cashSettings ? cashSettings.safety_reserve : null} onReserveSaved={() => void load()} /></Gate>}
+      {tab === "dashboard" && loaded && <Gate level={level} need={3}><BankDashboardTab firmId={firmId} docs={docs} payments={payments} expenses={expenses} archive={archive} reserveSaved={cashSettings ? cashSettings.safety_reserve : null} onReserveSaved={() => void load()} onOpen={(t) => setTab(t)} /></Gate>}
       {tab === "overview" && loaded && (
         <>
           <RevenueView rows={allIncome} />

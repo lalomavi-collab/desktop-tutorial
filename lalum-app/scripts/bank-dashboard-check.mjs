@@ -8,6 +8,7 @@ import {
   withHistory, latestFacts, openCardCharges, liquidity, classifyCard, cardMonths, cardCategories, cardRecurring, cardTaxPaid, cardPairs,
   cardInsights, runway,
 } from "../src/lib/cockpit/bankDashboard.ts";
+import { lastMonths, balanceWindow, bridge, bridgeScale, forecastDays, flowByDay, heatStep, recentDays, recurringLoad, shares, RANGES } from "../src/lib/cockpit/bankTiles.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const A = "acc-1";
@@ -374,6 +375,90 @@ t("every text the screen shows is free of dashes used as punctuation", () => {
   for (const l of ccl) texts.push(l.cat.label + l.cat.group);
   for (const mo of ["2026-01", "2026-06", "2026-10"]) for (const i of cardInsights(ccl, mo)) texts.push(i.title, i.body.replace(/גביית מע"מ אינטרנט - שע"מ/g, ""));
   for (const s of texts) assert.doesNotMatch(s, /[—–]| - /, s);
+});
+
+// ---------- The tiles (bankTiles.ts) ----------
+
+t("tiles: one range for every trend, counted back from the last month or day", () => {
+  const ms = ["2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"].map((month) => ({ month }));
+  assert.deepEqual(lastMonths(ms, "6").map((m) => m.month), ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"]);
+  assert.equal(lastMonths(ms, "12").length, 12); assert.equal(lastMonths(ms, "all").length, 14);
+  const s = ["2026-03-31", "2026-04-28", "2026-04-29", "2026-09-30", "2026-10-28"].map((date, i) => ({ date, balance: i }));
+  assert.deepEqual(balanceWindow(s, "6").map((p) => p.date), ["2026-04-29", "2026-09-30", "2026-10-28"], "six months back from 28.10 starts after 28.4");
+  assert.equal(balanceWindow(s, "all").length, 5);
+  assert.deepEqual(balanceWindow(s.slice(3), "6").map((p) => p.date), ["2026-09-30", "2026-10-28"], "two points stay");
+  assert.deepEqual(balanceWindow([s[0], s[4]], "6").map((p) => p.date), ["2026-03-31", "2026-10-28"], "a cut that leaves one point keeps the last two");
+  assert.deepEqual(RANGES.map((r) => r.key), ["6", "12", "all"]);
+});
+
+t("tiles: the drawable salary as a bridge, every step from where the last ended, the result from zero", () => {
+  const b = bridge({ label: "רווח", value: 20000 }, [{ label: "מס", value: -3000 }, { label: "ביטוח לאומי", value: -2500 }, { label: "נמשך", value: 0 }], { label: "נותר" });
+  assert.deepEqual(b.map((r) => [r.kind, r.from, r.to]), [["start", 0, 20000], ["step", 20000, 17000], ["step", 17000, 14500], ["step", 14500, 14500], ["total", 0, 14500]]);
+  assert.deepEqual(bridgeScale(b), { lo: 0, hi: 20000 });
+  const neg = bridge({ label: "יתרה", value: 5000 }, [{ label: "מע״מ", value: -8000 }], { label: "הקופה מאפשרת" });
+  assert.equal(neg[2].to, -3000);
+  assert.deepEqual(bridgeScale(neg), { lo: -3000, hi: 5000 }, "below zero stays on the scale");
+  assert.deepEqual(bridgeScale(bridge({ label: "x", value: 0 }, [], { label: "y" })), { lo: 0, hi: 1 }, "a bridge of zeros still has a scale");
+});
+
+t("tiles: the forecast drawn one day at a time, matching its own running balances", () => {
+  const cl = book(), rec = recurring(cl);
+  const fc = forecast30(cl, rec, 30618.02, "2026-10-28", TAX, 20000);
+  const days = forecastDays(fc);
+  assert.equal(days.length, 31, "the start day and thirty more");
+  assert.deepEqual([days[0].date, days[0].balance], ["2026-10-28", 30618.02]);
+  assert.equal(days[days.length - 1].date, fc.end);
+  assert.equal(days[days.length - 1].balance, fc.timeline[fc.timeline.length - 1].balance);
+  assert.equal(days[days.length - 1].withReceipts, fc.timeline[fc.timeline.length - 1].withReceipts);
+  assert.equal(Math.min(...days.map((d) => d.balance)), fc.minBalance, "the low point is the forecast's own");
+  const nov1 = days.find((d) => d.date === "2026-11-01");
+  assert.equal(r2(nov1.withReceipts - nov1.balance), 11800, "the steady receipt shows only in the second line");
+});
+
+t("tiles: money per day, in and out, and five steps of one hue", () => {
+  const cl = book();
+  const out = flowByDay(cl, "2026-10", "OUT"), inn = flowByDay(cl, "2026-10", "IN");
+  assert.equal(out.length, 31);
+  assert.deepEqual(out, spendByDay(cl, "2026-10"), "out is the dashboard's spend by day");
+  const inLines = cl.filter((l) => l.value_date.startsWith("2026-10") && l.cat.flow === "IN");
+  assert.equal(r2(inn.reduce((a, v) => a + v, 0)), r2(inLines.reduce((a, l) => a + l.amount, 0)));
+  assert.ok(inn.every((v) => v >= 0) && out.every((v) => v >= 0));
+  assert.deepEqual([0, 1, 25, 26, 50, 51, 99, 100].map((v) => heatStep(v, 100)), [0, 1, 1, 2, 2, 3, 4, 4]);
+  assert.equal(heatStep(5, 0), 0); assert.equal(heatStep(-5, 10), 0);
+});
+
+t("tiles: the last fourteen days, moves between accounts left out", () => {
+  n = 0;
+  const cl = classify([L("2026-10-28", "מימסרים דחויים", 11800), L("2026-10-27", "הראל בטוח-י", -776.35), L("2026-10-15", "העברה עצמית", -500),
+    L("2026-10-14", "הראל בטוח-י", -1), L("2026-10-28", "הראל בטוח-י", -10)], [], () => null);
+  const moved = cl.find((l) => l.description === "העברה עצמית");
+  const days = recentDays(cl.map((l) => (l === moved ? { ...l, cat: CAT.MOVE } : l)), "2026-10-28");
+  assert.equal(days.length, 14);
+  assert.deepEqual([days[0].date, days[13].date], ["2026-10-15", "2026-10-28"]);
+  assert.deepEqual([days[13].inflow, days[13].outflow], [11800, 10]);
+  assert.equal(days[12].outflow, 776.35);
+  assert.equal(days[0].outflow, 0, "a move between accounts is not out");
+  assert.equal(days.reduce((a, d) => a + d.outflow, 0), 786.35, "14.10 is before the window");
+});
+
+t("tiles: the recurring list as a monthly load, stopped series last and out of the totals", () => {
+  const cl = book(), rec = recurring(cl, "2026-10-28");
+  const load = recurringLoad(rec);
+  assert.equal(load.rows.length, rec.length);
+  for (const r of load.rows) assert.equal(r.monthly, r2(r.cadence === "MONTHLY" ? r.amount : r.amount / 2));
+  const live = rec.filter((r) => !r.stale);
+  assert.equal(load.outflow, r2(-live.filter((r) => r.amount < 0).reduce((s, r) => s + (r.cadence === "MONTHLY" ? r.amount : r.amount / 2), 0)));
+  assert.equal(load.inflow, r2(live.filter((r) => r.amount > 0).reduce((s, r) => s + (r.cadence === "MONTHLY" ? r.amount : r.amount / 2), 0)));
+  const firstStale = load.rows.findIndex((r) => r.stale);
+  if (firstStale >= 0) assert.ok(load.rows.slice(firstStale).every((r) => r.stale), "stopped series sit at the end");
+  const head = load.rows.filter((r) => !r.stale).map((r) => Math.abs(r.monthly));
+  assert.deepEqual(head, [...head].sort((a, b) => b - a), "largest first");
+});
+
+t("tiles: parts of a whole for a meter", () => {
+  assert.deepEqual(shares([{ value: 27587.49 }, { value: 3030.53 }]).map((p) => p.pct), [90, 10]);
+  assert.deepEqual(shares([{ value: -5 }, { value: 5 }]).map((p) => p.pct), [0, 100], "a negative part counts as nothing");
+  assert.deepEqual(shares([{ value: 0 }, { value: 0 }]).map((p) => p.pct), [0, 0]);
 });
 
 function dailyClosingsOf(lines) {

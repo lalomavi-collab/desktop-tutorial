@@ -1,35 +1,181 @@
-/* Finance dashboard over the bank lines (BankDashboardTab). Money colours come from .ck-fin (cockpit.css), so the
-   light and dark themes both hold; nothing here sets text below 12px. */
-.bd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
-.bd-change { font-weight: 600; }
-.bd-change.good { color: var(--fin-inflow); }
-.bd-change.bad { color: var(--fin-outflow); }
+/* Finance dashboard over the bank lines (BankDashboardTab): one filter bar, four stat tiles, then a grid of tiles that all
+   share one shell (icon chip, title in the heading face, a chart, a closing line, the same figures as a table behind a
+   disclosure). Money colours come from .ck-fin (cockpit.css) and the chart tokens from the theme, so the light and the
+   dark cockpit both hold; nothing here sets text below 12px. Layout follows the width the board really has (a container
+   query), not the window, so it holds beside the sidebar too. */
+.bd {
+  container: bd / inline-size;
+  /* Five steps of one hue for the calendar heat map, and the text that stays legible on the two darkest. */
+  --heat-1: 22%; --heat-2: 44%; --heat-3: 68%; --heat-4: 92%; --heat-on-3: var(--ink); --heat-on-4: #fff;
+}
+.ck-root[data-ck-theme="dark"] .bd { --heat-1: 14%; --heat-2: 28%; --heat-3: 46%; --heat-4: 92%; --heat-on-3: var(--ink); --heat-on-4: #151922; }
+.bd-body { display: flex; flex-direction: column; gap: 16px; min-width: 0; transition: opacity .2s ease; }
+.bd.busy .bd-body { opacity: .55; pointer-events: none; }
+.bd .fin-text { overflow-wrap: anywhere; }
+.bd-list { margin: 4px 0 0; padding-inline-start: 18px; }
 
-.bd-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+/* ---------- Filter bar ---------- */
+.bd-bar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 18px; }
+.bd-bar-titles { flex: 1 1 320px; min-width: 0; }
+.bd-bar h2 { margin: 0 0 2px; font-size: 24px; font-weight: 800; color: var(--ink); }
+.ck-root[data-ck-theme] .bd-bar h2 { font-family: var(--ck-display); font-weight: 400; font-size: 42px; line-height: 1; letter-spacing: 0; }
+.bd-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.bd-controls .ck-select { width: auto; max-width: 220px; min-height: 36px; padding-block: 4px; border-radius: 10px; }
+.bd-refresh svg { flex-shrink: 0; }
+.bd.busy .bd-refresh svg { animation: bd-spin 1s linear infinite; }
+@keyframes bd-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .bd.busy .bd-refresh svg { animation: none; } .bd-body { transition: none; } }
+
+/* ---------- Insights ---------- */
+.bd-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .bd-insight { gap: 4px; border-inline-start: 4px solid var(--chart-neutral); }
 .bd-insight.warn { border-inline-start-color: var(--chart-warn); }
 .bd-insight b { font-size: 14.5px; }
 
-.bd-draw { border: 2px solid var(--fin-inflow-line); background: linear-gradient(180deg, var(--fin-inflow-bg), var(--card) 70%); }
-.bd-draw .fin-figure.bd-draw-figure { font-size: 34px; font-weight: 800; color: var(--fin-inflow); }
-.bd-wf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-.bd-wf { width: 100%; border-collapse: collapse; font-size: 14px; }
-.bd-wf caption { text-align: start; font-weight: 700; font-size: 13.5px; padding-bottom: 6px; }
-.bd-wf td { padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-.bd-wf td:last-child { text-align: end; white-space: nowrap; padding-inline-start: 12px; }
-.bd-wf tr.sub td { font-weight: 600; }
-.bd-wf tr.total td { font-weight: 800; border-bottom: 0; border-top: 2px solid var(--line-strong); padding-top: 8px; }
-.bd-reserve { display: flex; gap: 6px; align-items: center; margin-top: 4px; max-width: 240px; }
+/* ---------- Stat tiles ---------- */
+.bd-kpis { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@container bd (min-width: 540px) { .bd-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container bd (min-width: 1040px) { .bd-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.bdk { padding: 16px 18px; gap: 8px; }
+.bdk-head { display: flex; align-items: center; gap: 10px; }
+.bdk-label { font-size: 13.5px; font-weight: 600; color: var(--slate); }
+.bdk-fig { font-size: 28px; line-height: 1.15; font-weight: 700; color: var(--ink); }
+.bdk-note { font-size: 13px; line-height: 1.55; color: var(--slate); }
+.bd-footnote { margin-top: -6px; }
+.bdk.in .db-kicon, .bdt.in .db-kicon { background: var(--fin-inflow-bg); color: var(--fin-inflow); box-shadow: inset 0 0 0 1px var(--fin-inflow-line); }
+.bdk.out .db-kicon, .bdt.out .db-kicon { background: var(--fin-outflow-bg); color: var(--fin-outflow); box-shadow: inset 0 0 0 1px var(--fin-outflow-line); }
+
+/* The change chip: arrow and percent, the colour says good or bad news (a status, so it ships with the arrow, never colour alone). */
+.bd-delta { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-size: 12.5px; font-weight: 700; color: var(--slate);
+  padding: 2px 10px; border-radius: 9999px; background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--line); white-space: nowrap; }
+.bd-delta.good { color: var(--success); }
+.bd-delta.bad { color: var(--danger); }
+.bd-delta small { font-size: 12px; font-weight: 500; color: var(--slate); }
+.bd-change { font-weight: 600; }
+.bd-change.good { color: var(--success); }
+.bd-change.bad { color: var(--danger); }
+
+/* ---------- Tile grid ---------- */
+.bd-tiles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@container bd (min-width: 860px) {
+  .bd-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bdt.wide { grid-column: 1 / -1; }
+}
+.bdt { container-type: inline-size; }
+.bdt-head { display: flex; align-items: center; gap: 10px 12px; flex-wrap: wrap; }
+.bdt-titles { flex: 1 1 170px; min-width: 0; }
+.bdt-titles h3 { margin: 0; }
+.bdt-titles .db-note { margin-top: 2px; line-height: 1.5; }
+.bdt-aside { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bdt-fig { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; font-size: 26px; line-height: 1.15; font-weight: 700; color: var(--ink); }
+/* The one hero figure on the board: the salary that can be drawn, large, in the UI face, with proportional digits. */
+.bdt-fig.hero { font-size: 48px; line-height: 1.05; font-weight: 800; letter-spacing: -.01em; }
+.bdt-fig.hero .acct { font-variant-numeric: proportional-nums; }
+.bdt-foot { display: flex; flex-direction: column; gap: 4px; }
+.bdt.in { background: linear-gradient(180deg, var(--fin-inflow-bg), var(--card) 46%); border-color: var(--fin-inflow-line); }
+.bdt-more { border-top: 1px solid var(--line); padding-top: 10px; }
+.bdt-more summary { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; font-size: 13px; font-weight: 700; color: var(--mint-deep, var(--clay)); border-radius: 8px; }
+.bdt-more summary::-webkit-details-marker { display: none; }
+.bdt-more summary::before { content: ""; width: 7px; height: 7px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-top: -4px; transition: transform .15s ease; }
+.bdt-more[open] summary { margin-bottom: 10px; }
+.bdt-more[open] summary::before { transform: rotate(-135deg); margin-top: 3px; }
+.bdt-more summary:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+.ck-root[data-ck-theme="dark"] .bdt-more summary { color: var(--clay); }
+
+/* Totals over the range, and two or three small figures side by side. */
+.bd-sums { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--slate); }
+.bd-sums span { display: inline-flex; align-items: center; gap: 6px; }
+.bd-sums i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.bd-sums .acct { color: var(--ink); font-weight: 700; }
+.bd-pairstat { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.bd-pairstat > div { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--clay-tint); box-shadow: inset 0 0 0 1px var(--line); min-width: 0; }
+.bd-pairstat b { font-size: 20px; font-weight: 700; color: var(--ink); }
+
+/* ---------- Drawable salary: two bridges ---------- */
+.bd-bridges { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@container (min-width: 720px) { .bd-bridges { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bd-bridge { margin: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card-solid, var(--card)); min-width: 0; }
+.bd-bridge.strong { border: 2px solid var(--fin-inflow-line); }
+.bd-bridge figcaption { font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 10px; }
+.bd-bridge.strong figcaption { color: var(--fin-inflow); }
+.bd-bridge ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.bd-bridge li { display: grid; grid-template-columns: minmax(0, 11fr) minmax(64px, 8fr) auto; align-items: center; gap: 4px 12px; font-size: 13.5px; color: var(--ink); }
+.bd-bridge li.total { font-weight: 800; border-top: 2px solid var(--line-strong); padding-top: 9px; }
+.bd-bridge li.total .bd-br-val { font-size: 15px; }
+.bd-br-label small { display: block; font-size: 12px; font-weight: 400; color: var(--slate); }
+.bd-br-track { position: relative; height: 12px; direction: ltr; }
+.bd-br-bar { position: absolute; top: 0; bottom: 0; min-width: 2px; border-radius: 4px; }
+.bd-br-tick { position: absolute; top: -1px; bottom: -1px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--slate); opacity: .55; }
+.bd-br-zero { position: absolute; top: -4px; bottom: -4px; width: 1px; background: var(--line-strong); }
+.bd-br-val { text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bd-br-extra { grid-column: 1 / -1; }
+.bd-reserve-box { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 12px; background: var(--clay-tint); }
+.bd-reserve { display: flex; gap: 6px; align-items: center; max-width: 260px; }
 .bd-reserve .ck-input { min-height: 36px; padding: 6px 10px; flex: 1 1 auto; min-width: 0; }
 .bd-reserve .ck-btn { flex: 0 0 auto; white-space: nowrap; }
-.bd-list { margin: 4px 0 0; padding-inline-start: 18px; }
 
+/* ---------- Meter: parts of one whole ---------- */
+.bd-meter-bar { display: flex; gap: 2px; height: 12px; border-radius: 6px; overflow: hidden; background: var(--chart-track); }
+.bd-meter-bar i { display: block; min-width: 3px; transition: opacity .15s ease; }
+.bd-meter-key { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink); }
+.bd-meter-key li { display: inline-flex; align-items: center; gap: 6px; transition: opacity .15s ease; }
+.bd-meter-key li.dim { opacity: .45; }
+.bd-meter-key small { font-size: 12px; color: var(--slate); }
+
+/* ---------- Donut beside its list ---------- */
+.bd-share { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 18px; align-items: center; }
+@container (max-width: 400px) { .bd-share { grid-template-columns: minmax(0, 1fr); justify-items: center; } .bd-share-list { width: 100%; } }
+.bd-share-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.bd-share-list li { display: grid; grid-template-columns: minmax(0, 1fr) 7.5em; grid-template-areas: "name amt" "track pct"; align-items: center; gap: 4px 10px; font-size: 13.5px; color: var(--ink); border-radius: 8px; transition: opacity .15s ease; }
+.bd-share-list li.dim { opacity: .45; }
+.bd-share-list li:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
+.bd-share-name { grid-area: name; display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bd-share-list li > small { grid-area: pct; font-size: 12px; color: var(--slate); text-align: end; font-variant-numeric: tabular-nums; }
+.bd-share-list li > .acct { grid-area: amt; font-weight: 700; }
+.bd-share-track { grid-area: track; display: block; height: 6px; border-radius: 9999px; background: var(--chart-track); overflow: hidden; }
+.bd-share-track i { display: block; height: 100%; border-radius: 9999px; }
+
+/* ---------- Calendar heat map ---------- */
 .bd-heat { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; direction: rtl; }
-.bd-heat-dow { font-size: 12px; color: var(--slate); text-align: center; font-weight: 600; }
-.bd-heat-day { font-size: 12.5px; text-align: center; padding: 8px 0; border-radius: 8px; background: var(--chart-track); font-variant-numeric: tabular-nums; }
+.bd-heat-dow { font-size: 12px; color: var(--slate); text-align: center; font-weight: 600; padding-bottom: 2px; }
+.bd-heat-day { position: relative; font-size: 12.5px; text-align: center; padding: 8px 0; border-radius: 8px; color: var(--ink); font-variant-numeric: tabular-nums; cursor: default; }
+.bd-heat-day.s3 { color: var(--heat-on-3); }
+.bd-heat-day.s4 { color: var(--heat-on-4); font-weight: 700; }
+.bd-heat-day.hot { box-shadow: inset 0 0 0 2px var(--ink); }
+.bd-heat-day:focus-visible { outline: 3px solid var(--clay); outline-offset: 1px; }
+.bd-heat-tip { left: 50%; top: 0; z-index: 4; white-space: nowrap; pointer-events: none; color: var(--ink); font-weight: 400; }
+.bd-heat-key { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 8px; font-size: 12px; color: var(--slate); }
+.bd-heat-key i { display: inline-block; width: 16px; height: 10px; border-radius: 3px; }
+.bd-heat-key span { margin-inline: 4px; }
 
-.bd-accounts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.bd-accounts li { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
-.bd-acc-figure { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 2px 0; }
+/* ---------- Ranked rows with a bar ---------- */
+.bd-rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.bd-rank li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; font-size: 13.5px; color: var(--ink); }
+.bd-rank li.dim { opacity: .55; }
+.bd-rank-name { min-width: 0; overflow-wrap: anywhere; }
+.bd-rank-name small { display: block; font-size: 12px; color: var(--slate); }
+.bd-rank-val { display: inline-flex; align-items: baseline; gap: 8px; justify-content: flex-end; white-space: nowrap; font-weight: 700; }
+.bd-rank-val .bd-change { font-size: 12px; }
+.bd-rank-track { grid-column: 1 / -1; display: block; height: 6px; border-radius: 9999px; background: var(--chart-track); overflow: hidden; }
+.bd-rank-track i { display: block; height: 100%; border-radius: 9999px; }
+
+/* ---------- Recent lines, as Financy lists them ---------- */
+.bd-tx { list-style: none; margin: 0; padding: 0; }
+.bd-tx li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.bd-tx li:last-child { border-bottom: 0; }
+.bd-tx-date { min-width: 40px; font-size: 12.5px; color: var(--slate); font-variant-numeric: tabular-nums; }
+.bd-tx-name { min-width: 0; }
+.bd-tx .fin-name, .bd-tx .fin-sub { max-width: none; }
+.bd-tx li > .acct { font-weight: 700; }
+.bd-more-btn { align-self: flex-start; }
+
+/* ---------- Accounts ---------- */
+.bd-accounts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.bd-accounts > li { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: var(--card-solid, var(--card)); min-width: 0; }
+.bd-acc-figure { font-size: 22px; font-weight: 700; color: var(--ink); }
 .bd-expected td { color: var(--slate); font-style: italic; }
-.bd .fin-text { overflow-wrap: anywhere; }
+
+/* ---------- Charts inside a tile ---------- */
+.bd-spark, .bd-cols, .bd-pair { width: 100%; }
+.bd-spark svg, .bd-cols svg, .bd-pair svg { max-width: 100%; touch-action: pan-y; }
+.bd-spark svg:focus-visible, .bd-cols svg:focus-visible, .bd-pair svg:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
