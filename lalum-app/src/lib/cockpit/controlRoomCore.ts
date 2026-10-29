@@ -21,8 +21,11 @@ export const WALL_ORDER: TileId[] = ["pnl", "ar", "cash", "issue", "sec", "mat",
 export const SNAPSHOT_STALE_MIN = 45;
 /** An archive import older than this, or failing, makes every bookkeeping figure stale. */
 export const IMPORT_STALE_DAYS = 3;
-/** A bank balance older than this is not shown. */
+/** A bank balance from a daily feed older than this is not shown. */
 export const BANK_STALE_DAYS = 7;
+/** The bank comes in as a monthly statement (owner's decision, 29.10.2026: Financy stays view only). A statement's balance is
+ *  shown with its date until a month and ten days have passed, which means the next month's statement was not imported. */
+export const STATEMENT_STALE_DAYS = 40;
 /** A daily sync older than this missed a run. */
 export const DAILY_STALE_HOURS = 26;
 /** Google reports with a lag of two to three days; more than this means the sync stopped. */
@@ -273,8 +276,8 @@ function cashTile(d: SnapData, now: Date): Tile {
   // closings check the feed.
   const feed = !!s.lastAt && s.status !== "not_configured";
   const t = base("cash", "fin", false, "מזומן בבנק", "FIN · BANK",
-    feed ? "חשבון העסק בלאומי: Financy (קריאה בלבד), ודף הבנק החודשי שמשלים ובודק אותו" : "שורות הבנק שיובאו מדפי הבנק של לאומי",
-    feed ? "פעמיים ביום, 07:30 ו-14:30, ודף בנק פעם בחודש" : "ידני, בכל ייבוא קובץ", { to: "/settings/billing", label: "הנהלת חשבונות" });
+    feed ? "חשבון העסק בלאומי: Financy (קריאה בלבד), ודף הבנק החודשי שמשלים ובודק אותו" : "דפי הבנק החודשיים של לאומי. Financy משמש לצפייה בלבד",
+    feed ? "פעמיים ביום, 07:30 ו-14:30, ודף בנק פעם בחודש" : "פעם בחודש, בייבוא דף הבנק", { to: "/settings/billing", label: "הנהלת חשבונות" });
   const balDay = f.bankBalanceDay ?? f.bankLastDay;
   if (feed) {
     const p = s.status === "ok" ? null : BANK_SYNC_PROBLEM[s.status ?? ""] ?? { status: "bad" as Status, value: "הסנכרון נכשל", today: "הריצה האחרונה של הסנכרון נכשלה.", fix: "לבדוק את משימת lalum-fin-bank-sync באריח המשימות המתוזמנות." };
@@ -296,20 +299,20 @@ function cashTile(d: SnapData, now: Date): Tile {
     }
     return t;
   }
-  const waiting = s.status === "not_configured"
-    ? "הסנכרון מ-Financy בנוי ומחכה למפתח: שלושת הסודות FINANCY_* ב-Supabase. עד אז, קובץ ייצוא מלאומי לחודשים החסרים."
-    : "קובץ ייצוא מלאומי לחודשים החסרים, או המפתח של Financy בסודות של Supabase לסנכרון היומי.";
+  const waiting = "לייבא מלאומי את דף הבנק של החודש שהסתיים (הנהלת חשבונות, ייבוא קובץ בנק).";
   const age = daysSince(balDay, now);
   if (!f.bankLastDay || age === null) {
     t.status = "none"; t.value = "אין נתוני בנק"; t.sub = "לא יובא קובץ"; t.strip = "אין נתוני בנק";
     t.today = "לא מחובר. לא יובאה אף שורת בנק."; t.fix = waiting;
-  } else if (age > BANK_STALE_DAYS || f.bankBalance === null) {
-    t.status = "stale"; t.value = "יתרה לא מוצגת"; t.sub = `תנועה אחרונה ב-${fmtDay(f.bankLastDay)}, לפני ${daysSince(f.bankLastDay, now)} ימים`; t.strip = `נתון אחרון ${fmtDay(f.bankLastDay)}`;
-    t.today = `מיושן. התנועה האחרונה מ-${fmtDay(f.bankLastDay)}. היתרה לא מוצגת בכוונה: יתרה מלפני יותר משבוע מטעה יותר מחוסר נתון.`;
+  } else if (age > STATEMENT_STALE_DAYS || f.bankBalance === null) {
+    t.status = "stale"; t.value = "יתרה לא מוצגת"; t.sub = `דף הבנק האחרון עד ${fmtDay(balDay)}, לפני ${age} ימים`; t.strip = `נתון אחרון ${fmtDay(balDay)}`;
+    t.today = `מיושן. דף הבנק האחרון מגיע עד ${fmtDay(balDay)}, ודף של חודש שלם לא יובא מאז. היתרה לא מוצגת בכוונה: יתרה מלפני יותר מ-${STATEMENT_STALE_DAYS} יום מטעה יותר מחוסר נתון.`;
     t.fix = waiting;
   } else {
-    t.status = "ok"; t.value = money(f.bankBalance); t.sub = `יתרה ב-${fmtDay(balDay)}`; t.strip = `${money(f.bankBalance)} ב-${fmtDay(balDay)}`;
-    t.today = `תקין. היתרה אחרי התנועה של ${fmtDay(balDay)}.`; t.fix = "אין פעולה.";
+    t.status = "ok"; t.value = money(f.bankBalance); t.sub = `לפי דף הבנק, יתרה ב-${fmtDay(balDay)}`; t.strip = `${money(f.bankBalance)} ב-${fmtDay(balDay)}`;
+    t.today = age <= BANK_STALE_DAYS ? `תקין. היתרה לפי דף הבנק אחרי התנועה של ${fmtDay(balDay)}.`
+      : `תקין לדפי בנק חודשיים. היתרה לפי דף הבנק ב-${fmtDay(balDay)}, לפני ${age} ימים. תנועות מאז יופיעו בדף של החודש הבא.`;
+    t.fix = age <= BANK_STALE_DAYS ? "אין פעולה." : `אין פעולה עד תחילת החודש הבא. ${waiting}`;
   }
   return t;
 }

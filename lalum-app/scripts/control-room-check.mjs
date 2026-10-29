@@ -73,13 +73,19 @@ t("profit and loss figures come from the bookkeeping engine: the last full month
   assert.equal(x.chart.kind, "dual");
 });
 
-t("cash: a balance older than 7 days is not shown", () => {
-  assert.equal(tiles(REAL).cash.value, "יתרה לא מוצגת");
+t("cash from monthly statements: the balance shows with its date for 40 days, then it is hidden", () => {
+  assert.equal(tiles(REAL).cash.value, "יתרה לא מוצגת", "a statement ending 1.9 is 57 days old on 28.10");
   assert.match(tiles(REAL).cash.sub, /1\.9/);
   assert.ok(!tiles(REAL).cash.strip.includes("₪"));
   const fresh = clone(REAL); fresh.fin.bank_last_day = "2026-10-26";
   assert.equal(tiles(fresh).cash.status, "ok");
   assert.equal(tiles(fresh).cash.value, "₪41.4K");
+  assert.equal(tiles(fresh).cash.fix, "אין פעולה.");
+  const month = clone(REAL); month.fin.bank_last_day = "2026-09-30";
+  const c = tiles(month).cash;
+  assert.equal(c.status, "ok"); assert.equal(c.value, "₪41.4K"); assert.match(c.sub, /לפי דף הבנק/); assert.match(c.today, /לפני 28 ימים/);
+  const late = clone(REAL); late.fin.bank_last_day = "2026-09-17";
+  assert.equal(tiles(late).cash.status, "stale", "41 days: the month's statement was not imported");
 });
 
 // The Financy feed (20261028143100): the snapshot carries bank_balance_day and bank_sync.
@@ -90,11 +96,13 @@ const feed = (sync, over = {}) => {
 };
 const OK_RUN = { status: "ok", last_at: "2026-10-28T05:30:04Z", last_ok_at: "2026-10-28T05:30:04Z", data_at: "2026-10-28T05:12:00Z" };
 
-t("cash: until the key is in, the file rules hold and the tile says what is missing", () => {
+t("cash: with no feed key the monthly statement is the source, and the tile never asks for Financy keys", () => {
   const waiting = tiles(feed({ status: "not_configured", last_at: "2026-10-28T05:30:00Z", last_ok_at: null, data_at: null }, { bank_balance: 41369.21, bank_balance_day: "2026-09-01" })).cash;
   assert.equal(waiting.status, "stale"); assert.equal(waiting.value, "יתרה לא מוצגת");
-  assert.match(waiting.fix, /FINANCY_\*/);
-  assert.match(tiles(REAL).cash.fix, /Financy/);
+  assert.match(waiting.fix, /דף הבנק/); assert.doesNotMatch(waiting.fix, /FINANCY|Financy/);
+  assert.match(waiting.src, /Financy משמש לצפייה בלבד/); assert.match(waiting.fresh, /פעם בחודש/);
+  const statement = tiles(feed({ status: "not_configured", last_at: "2026-10-28T05:30:00Z", last_ok_at: null, data_at: null }, { bank_balance: 30618.02, bank_balance_day: "2026-10-28" })).cash;
+  assert.equal(statement.status, "ok"); assert.equal(statement.value, "₪30.6K");
 });
 
 t("cash: a fresh read shows the balance, even on a quiet account", () => {
