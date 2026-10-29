@@ -105,10 +105,10 @@ function MessageInboxInner({ canView }: { canView: boolean }) {
     return (
       <div key={m.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
-          {!m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
-          {m.handled && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
-          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(m.created_at)}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{catLabel}</span>
+          {!m.handled && <span style={{ fontSize: 13, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{P.inbox.newBadge}</span>}
+          {m.handled && <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{P.inbox.replied} ✓</span>}
+          <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{fmtDate(m.created_at)}</span>
         </div>
         {m.subject && <div style={{ fontWeight: 600, marginBottom: 4 }}>{m.subject}</div>}
         <p style={{ margin: "0 0 14px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{m.body}</p>
@@ -151,7 +151,7 @@ function MessageInboxInner({ canView }: { canView: boolean }) {
               <input type="checkbox" checked={inboxUnhandledOnly} onChange={(e) => setInboxUnhandledOnly(e.target.checked)} />
               {P.inbox.unhandledOnly}
             </label>
-            <span className="muted" style={{ fontSize: 12.5 }}>{inboxGroups.length} {P.inbox.clients}</span>
+            <span className="muted" style={{ fontSize: 13 }}>{inboxGroups.length} {P.inbox.clients}</span>
           </div>
           {inboxGroups.length === 0 ? (
             <p className="muted" style={{ fontSize: 14 }}>{P.inbox.noneFiltered}</p>
@@ -166,8 +166,8 @@ function MessageInboxInner({ canView }: { canView: boolean }) {
                       style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
                       <Icon name="user" size={17} />
                       <span dir="ltr" style={{ fontWeight: 600, wordBreak: "break-all" }}>{label}</span>
-                      {g.unhandled > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unhandled} {P.inbox.newBadge}</span>}
-                      <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.msgs.length} {P.inbox.msgsWord}</span>
+                      {g.unhandled > 0 && <span style={{ fontSize: 13, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unhandled} {P.inbox.newBadge}</span>}
+                      <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{g.msgs.length} {P.inbox.msgsWord}</span>
                       <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
                     </button>
                     {open && (

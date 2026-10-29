@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STATUS, PRACTICE, RESPONSE, STEPS } from "../../lib/cockpit/shared";
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
 import { originals } from "../../lib/cockpit/originals";
+import { DOC_ORIGIN, DOC_TYPE } from "../../lib/cockpit/docMeta";
 import { BLOCKED, openPendingWindow, printInto } from "../../lib/cockpit/printWindow";
 import { IntakeForm } from "./Intake";
 import { Retention } from "./Retention";
@@ -30,7 +31,7 @@ interface SignoffStatus { complete: boolean; steps: Record<string, { valid: bool
 const TOKEN_RE = /\[[A-Z_]+_\d+\]/g;
 
 const Badge = ({ sev }: { sev: string }) =>
-  sev === "RED" ? <span className="ck-badge red">🔴 סיכון גבוה</span> : sev === "YELLOW" ? <span className="ck-badge yellow">🟡 זהירות</span> : <span className="ck-badge green">🟢 תקין</span>;
+  sev === "RED" ? <span className="ck-badge red dot">סיכון גבוה</span> : sev === "YELLOW" ? <span className="ck-badge yellow dot">זהירות</span> : <span className="ck-badge green dot">תקין</span>;
 const ConflictBadge = ({ c }: { c: string }) => { const [t, l] = CONFLICT[c] ?? ["yellow", c]; return <span className={`ck-badge ${t}`}>{l}</span>; };
 const PiiBadge = () => <span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 PII Masked &amp; Secured</span>;
 
@@ -269,41 +270,42 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   const groups: Array<Finding[]> = [findings.filter((f) => f.severity !== "GREEN"), findings.filter((f) => f.severity === "GREEN")];
   const FindingCard = ({ f }: { f: Finding }) => (
     <div className={`ck-finding ${f.severity.toLowerCase()}`}>
-      <div className="ck-row"><Badge sev={f.severity} /><b style={{ fontSize: 13.5 }}>{f.ruleName}</b></div>
-      <div className="ck-meta">{f.description}</div>
-      <div className="ck-row">
+      <div className="ck-finding-head"><b>{f.ruleName}</b><Badge sev={f.severity} /></div>
+      <p className="ck-finding-text">{f.description}</p>
+      <div className="ck-finding-acts">
         <button className="ck-link" onClick={() => setHighlight(f)}>{f.citation ? `מקור: ${f.citation}` : "הצג מקור וקטע"}</button>
-        {f.fallbackClause && <button className="ck-btn" onClick={() => insertClause(f.fallbackClause!)}>הוספת סעיף חלופי</button>}
+        {f.fallbackClause && <button className="ck-btn sm" onClick={() => insertClause(f.fallbackClause!)}>הוספת סעיף חלופי</button>}
       </div>
     </div>
   );
 
   return (
     <div className="ck-stack">
-      <div className="ck-card">
-        <div className="ck-row" style={{ justifyContent: "space-between" }}>
-          <div>
-            <div className="ck-title">{cn.name(matter)}</div>
-            <div className="ck-row" style={{ marginTop: 6 }}><span className="ck-chip">{PRACTICE[matter.practice_area]}</span> <ConflictBadge c={matter.conflict_status} /> <span className="ck-chip">{MATTER_STATUS[matter.status]}</span></div>
-            {matter.matter_code && (
-              <div className="ck-row ck-meta" style={{ marginTop: 6 }}>
-                <span dir="ltr" title="קוד התיק: מפתח יחיד לדואר ולתיקיות חיצוניות">{matter.matter_code}</span>
-                {(role === "FIRM_PARTNER" || role === "ADMIN") && (
-                  <label className="ck-row" title="כשהסימון כבוי, שום דבר מהתיק לא מועתק לתיקייה חיצונית">
-                    <input type="checkbox" checked={matter.sync_enabled === true} onChange={(e) => void setSync(e.target.checked)} /> סנכרון לתיקייה חיצונית
-                  </label>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="ck-row"><PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to={`/workspace/matter-360?matter=${matter.id}`}>תיק 360</Link><Link className="ck-btn" to="/workspace">לרשימה</Link></div>
+      <div className="ck-card ck-mhead">
+        <div className="ck-mhead-main">
+          <div className="ck-mtitle">{cn.name(matter)}</div>
+          <div className="ck-row"><span className="ck-chip">{PRACTICE[matter.practice_area]}</span> <ConflictBadge c={matter.conflict_status} /> <span className="ck-chip">{MATTER_STATUS[matter.status]}</span></div>
+          {matter.matter_code && (cn.name(matter) !== matter.matter_code || role === "FIRM_PARTNER" || role === "ADMIN") && (
+            <div className="ck-row ck-meta">
+              {cn.name(matter) !== matter.matter_code && <span dir="ltr" title="קוד התיק: מפתח יחיד לדואר ולתיקיות חיצוניות">{matter.matter_code}</span>}
+              {(role === "FIRM_PARTNER" || role === "ADMIN") && (
+                <label className="ck-row" title="כשהסימון כבוי, שום דבר מהתיק לא מועתק לתיקייה חיצונית">
+                  <input type="checkbox" checked={matter.sync_enabled === true} onChange={(e) => void setSync(e.target.checked)} /> סנכרון לתיקייה חיצונית
+                </label>
+              )}
+            </div>
+          )}
         </div>
-        {role === "FIRM_PARTNER" && routing && (
-          <div className="ck-row"><label className="ck-meta" htmlFor="resp">תגובה לתיק:</label>
-            <select id="resp" className="ck-select" style={{ width: "auto" }} value={routing.partner_response} onChange={(e) => void setResponse(e.target.value)}>
-              {Object.entries(RESPONSE).map(([k, v]) => <option key={k} value={k} disabled={k === "PENDING_REVIEW"}>{v}</option>)}
-            </select></div>
-        )}
+        <div className="ck-mhead-acts">
+          <PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to={`/workspace/matter-360?matter=${matter.id}`}>תיק 360</Link><Link className="ck-btn" to="/workspace">לרשימה</Link>
+          {role === "FIRM_PARTNER" && routing && (
+            <label className="ck-row ck-meta" htmlFor="resp">תגובה לתיק:
+              <select id="resp" className="ck-select" style={{ width: "auto" }} value={routing.partner_response} onChange={(e) => void setResponse(e.target.value)}>
+                {Object.entries(RESPONSE).map(([k, v]) => <option key={k} value={k} disabled={k === "PENDING_REVIEW"}>{v}</option>)}
+              </select>
+            </label>
+          )}
+        </div>
       </div>
 
       <div className="ck-tabs" role="tablist" aria-label="חלוניות">
@@ -313,51 +315,77 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
       <div className="ck-cp" style={gridStyle}>
         <section className={`ck-panel${open(1)}`} aria-label="כספת תיק">
           <h2>כספת תיק ומרכז ראיות</h2>
-          <div className="ck-row"><PiiBadge /></div>
-          <div className="ck-label">מסמכים</div>
+          <div className="ck-label">מסמכים ({docs.length})</div>
           {platformAdmin && role === "FIRM_PARTNER" && docs.length > 1 && (
             <div className="ck-row">
               <label className="ck-meta"><input type="checkbox" checked={picked.size > 0 && picked.size === docs.length} onChange={(e) => setPicked(setAll(docs.map((d) => d.id), e.target.checked))} /> סימון הכל</label>
               {picked.size > 0 && <button className="ck-btn danger" onClick={() => void trashPicked()}>העברת {picked.size} מסומנים לסל</button>}
             </div>)}
-          <div className="ck-stack">{docs.map((d) => (
-            <div key={d.id} className="ck-stack">
-              <div className="ck-docrow"><div className="ck-docname">{platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}<button className={`ck-btn${d.id === docId ? " primary" : ""}`} style={{ justifyContent: "flex-start", flex: 1, minWidth: 0 }} onClick={() => selectDoc(d, matter)}><bdi>{d.file_name}</bdi></button></div><div className="ck-docacts">{cn.canReveal && openOriginalEnabled() && <button className="ck-btn" aria-label={`פתיחת המקור של ${cn.name(matter)}`} title="פתיחת קובץ המקור כפי שהועלה (נרשם ביומן)" onClick={() => void openDocOriginal(d)}>פתיחת המקור</button>}{platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}</div></div>
-              <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
-              <RiskScope doc={d} canScope={role === "FIRM_PARTNER" || role === "ADMIN"} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
-            </div>))}</div>
-          <details><summary className="ck-btn" style={{ display: "inline-flex" }}>העלאת מסמך נוסף</summary>
-            <div style={{ marginTop: 10 }}><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
-          <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
-          {platformAdmin && (role === "FIRM_PARTNER" || role === "ADMIN") && docs.length > 0 && <ReanalyzePanel matterId={matter.id} practiceArea={matter.practice_area} docs={docs} onDone={() => setRev((n) => n + 1)} />}
-          <details><summary className="ck-btn" style={{ display: "inline-flex" }}>יצירת מסמך מתבנית</summary>
-            <div style={{ marginTop: 10 }}><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
-          {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
-          <SignatureRequests matterId={matter.id} firmId={member.firm_id} documentId={doc?.id ?? null} canManage={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} />
-          <ConflictReview matterId={matter.id} conflictStatus={matter.conflict_status} canDecide={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
-          <MatterParties matterId={matter.id} canDeclare={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onChange={() => setRev((n) => n + 1)} />
-          <MatterAccess matterId={matter.id} department={(matter as { department?: string | null }).department ?? null} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
-          <div className="ck-label">מפת ישויות</div>
-          {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
-          {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
-          <div className="ck-label">ציר זמן</div>
-          <ul className="ck-tl">{timeline.map(([t, s], i) => <li key={i}><time>{fmt(t)}</time>{s}</li>)}</ul>
-          <Retention matterId={matter.id} practiceArea={matter.practice_area} basis={matter.retention_basis ?? "STATUTORY"} consentAt={matter.client_consent_at} endedAt={matter.handling_ended_at} legalHold={matter.legal_hold === true} holdReason={matter.legal_hold_reason} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
-          {(role === "FIRM_PARTNER" || role === "ADMIN") && <ArchiveExport matter={matter} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
+          <div className="ck-doclist">{docs.map((d) => {
+            const on = d.id === docId;
+            const typed = !!(d.doc_type && d.doc_origin);
+            const sub = typed ? [DOC_TYPE[d.doc_type!], `מקור: ${DOC_ORIGIN[d.doc_origin!]}`, d.doc_date ? new Date(d.doc_date).toLocaleDateString("he-IL") : null].filter(Boolean).join(" · ") : null;
+            return (
+              <div key={d.id} className={`ck-ditem${on ? " on" : ""}`}>
+                <div className="ck-ditem-row">
+                  {platformAdmin && role === "FIRM_PARTNER" && <input type="checkbox" aria-label={`סימון ${d.file_name}`} checked={picked.has(d.id)} onChange={() => setPicked((p0) => toggle(p0, d.id))} />}
+                  <button className="ck-dpick" aria-pressed={on} title={d.file_name} onClick={() => selectDoc(d, matter)}>
+                    <span className="ck-dname"><bdi>{d.file_name}</bdi></span>
+                    <span className="ck-dsub">{sub ?? <span className="warn">לא סווג</span>}{d.risk_excluded && " · לא נכלל בסיכון התיק"}</span>
+                  </button>
+                </div>
+                {on && (
+                  <div className="ck-docacts">
+                    {cn.canReveal && openOriginalEnabled() && <button className="ck-btn sm" aria-label={`פתיחת המקור של ${cn.name(matter)}`} title="פתיחת קובץ המקור כפי שהועלה (נרשם ביומן)" onClick={() => void openDocOriginal(d)}>פתיחת המקור</button>}
+                    {platformAdmin && role === "FIRM_PARTNER" && <button className="ck-btn sm" aria-label={`העברת ${d.file_name} לסל המיחזור`} title="העברת הקובץ לסל המיחזור (התיק נשאר)" onClick={() => void trashDocument(d)}>הקובץ לסל</button>}
+                    {!typed && <DocMeta doc={d} canEdit={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />}
+                    <RiskScope doc={d} canScope={role === "FIRM_PARTNER" || role === "ADMIN"} onSaved={() => { prefer.current = d.id; setRev((n) => n + 1); }} />
+                  </div>
+                )}
+              </div>
+            );
+          })}</div>
+          <div className="ck-label">כלים ומידע בתיק</div>
+          <div className="ck-tools">
+            <details><summary className="ck-btn">העלאת מסמך נוסף</summary>
+              <div><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+            <details><summary className="ck-btn">יצירת מסמך מתבנית</summary>
+              <div><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
+            {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
+            <SignatureRequests matterId={matter.id} firmId={member.firm_id} documentId={doc?.id ?? null} canManage={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} />
+            {platformAdmin && (role === "FIRM_PARTNER" || role === "ADMIN") && docs.length > 0 && <ReanalyzePanel matterId={matter.id} practiceArea={matter.practice_area} docs={docs} onDone={() => setRev((n) => n + 1)} />}
+            <KycPanel matterId={matter.id} role={role} onPending={setKycPending} />
+            <ConflictReview matterId={matter.id} conflictStatus={matter.conflict_status} canDecide={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
+            <MatterParties matterId={matter.id} canDeclare={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} onChange={() => setRev((n) => n + 1)} />
+            <MatterAccess matterId={matter.id} department={(matter as { department?: string | null }).department ?? null} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
+            <details><summary className="ck-btn">מפת ישויות</summary>
+              <div className="ck-stack">
+                {Object.keys(counts).length ? <div className="ck-row">{Object.entries(counts).map(([k, v]) => <span key={k} className="ck-chip">{KIND_HE[k] ?? k}: {v}</span>)}</div> : <span className="ck-meta">לא זוהו ישויות</span>}
+                {tokens.length > 0 && <div className="ck-row">{tokens.map((t) => <code key={t} className="ck-chip" dir="ltr">{t}</code>)}</div>}
+              </div></details>
+            <details><summary className="ck-btn">ציר זמן ({timeline.length})</summary>
+              <div><ul className="ck-tl">{timeline.map(([t, s], i) => <li key={i}><time>{fmt(t)}</time>{s}</li>)}</ul></div></details>
+            <details><summary className="ck-btn">שמירת חומרים וייצוא ללקוח{matter.legal_hold === true ? ": עיכוב משפטי פעיל" : ""}</summary>
+              <div className="ck-stack">
+                <Retention matterId={matter.id} practiceArea={matter.practice_area} basis={matter.retention_basis ?? "STATUTORY"} consentAt={matter.client_consent_at} endedAt={matter.handling_ended_at} legalHold={matter.legal_hold === true} holdReason={matter.legal_hold_reason} canManage={role === "FIRM_PARTNER" || role === "ADMIN"} onChange={() => setRev((n) => n + 1)} />
+                {(role === "FIRM_PARTNER" || role === "ADMIN") && <ArchiveExport matter={matter} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
+              </div></details>
+          </div>
         </section>
         <div className="ck-handle" role="separator" aria-orientation="vertical" tabIndex={0} aria-label="שינוי רוחב" onPointerDown={(e) => drag(e, "w1")} />
 
         <section className={`ck-panel${open(2)}`} aria-label="עורך חכם">
           <h2>עורך חכם ומרחב מסמכים</h2>
           {!doc ? <span className="ck-meta">אין מסמך בתיק.</span> : <>
-            <div className="ck-row">
-              <button className={`ck-btn${mode === "edit" ? " primary" : ""}`} onClick={() => setMode("edit")}>עריכה</button>
-              <button className={`ck-btn${mode === "redline" ? " primary" : ""}`} onClick={() => setMode("redline")}>מעקב שינויים (Redline)</button>
-              <button className="ck-btn" onClick={() => void save()}>שמירה</button>
-              <button className="ck-btn danger" onClick={() => { if (window.confirm("לשחזר את המסמך לגרסה שנקלטה? השינויים יימחקו.")) onEdit(doc.baseline_content); }}>שחזור למסמך המקורי המוסתר</button>
+            <div className="ck-edbar">
+              <div className="fin-seg" role="group" aria-label="תצוגת המסמך">
+                <button aria-pressed={mode === "edit"} onClick={() => setMode("edit")}>עריכה</button>
+                <button aria-pressed={mode === "redline"} title="Redline" onClick={() => setMode("redline")}>מעקב שינויים</button>
+              </div>
+              <button className="ck-btn primary sm" onClick={() => void save()}>שמירה</button>
               <span className="ck-meta" aria-live="polite">{saveMsg}</span>
+              <button className="ck-btn sm danger ck-edbar-end" title="שחזור למסמך המקורי המוסתר. השינויים יימחקו." onClick={() => { if (window.confirm("לשחזר את המסמך לגרסה שנקלטה? השינויים יימחקו.")) onEdit(doc.baseline_content); }}>שחזור למקור</button>
             </div>
-            <VersionHistory documentId={doc.id} current={text} version={vrev} onBeforeSnapshot={save} onRestored={() => { prefer.current = doc.id; setRev((n) => n + 1); }} />
             {highlight && (
               <div className="ck-card">
                 <div className="ck-title">{highlight.ruleName}</div>
@@ -370,20 +398,26 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
               ? <textarea ref={taRef} className="ck-editor" dir="rtl" aria-label="עורך המסמך" spellCheck={false} value={text} onChange={(e) => onEdit(e.target.value)} />
               : <div className="ck-editor" dir="rtl" tabIndex={0} aria-label="תצוגת שינויים">{diffWords(doc.baseline_content, text).map(([o, t], i) => (o === "=" ? <span key={i}>{t}</span> : o === "+" ? <ins key={i}>{t}</ins> : <del key={i}>{t}</del>))}</div>}
             <div className="ck-meta">הטקסט המוצג מוסתר מפרטים מזהים. כל שמירה עוברת שוב הסתרה אוטומטית. שינוי בטקסט מבטל אישורים קודמים.</div>
+            <div className="ck-tools"><VersionHistory documentId={doc.id} current={text} version={vrev} onBeforeSnapshot={save} onRestored={() => { prefer.current = doc.id; setRev((n) => n + 1); }} /></div>
           </>}
         </section>
         <div className="ck-handle" role="separator" aria-orientation="vertical" tabIndex={0} aria-label="שינוי רוחב" onPointerDown={(e) => drag(e, "w3")} />
 
         <section className={`ck-panel${open(3)}`} aria-label="אולפן סוכני תחום ושער אישור">
           <h2>אולפן סוכני תחום</h2>
-          <label className="ck-field">פלייבוק מקצועי
-            <select className="ck-select" value={area} onChange={(e) => void reanalyze(e.target.value)}>{Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-          </label>
-          <div className="ck-row"><button className="ck-btn" onClick={() => void reanalyze(area)}>ניתוח מחדש על הטקסט הנוכחי</button><span className="ck-meta" aria-live="polite">{anMsg}</span></div>
-          {risk ? <div className="ck-stack">
-            <div className="ck-row"><Badge sev="RED" /> <b>{risk.red}</b> <Badge sev="YELLOW" /> <b>{risk.yellow}</b> <Badge sev="GREEN" /> <b>{risk.green}</b></div>
-            <div><span className="ck-chip">ציון בטיחות: {risk.score}/100</span></div><div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
+          <div className="ck-agentbar">
+            <label className="ck-field">פלייבוק מקצועי
+              <select className="ck-select" value={area} onChange={(e) => void reanalyze(e.target.value)}>{Object.entries(PRACTICE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+            </label>
+            <button className="ck-btn" title="ניתוח מחדש על הטקסט הנוכחי" onClick={() => void reanalyze(area)}>ניתוח מחדש</button>
+            <span className="ck-meta" aria-live="polite">{anMsg}</span>
+          </div>
+          {risk ? <div className="ck-riskbox">
+            <div className="ck-riskscore"><span>ציון בטיחות</span><b>{risk.score}</b><span>מתוך 100</span></div>
+            <div className="ck-bar"><div style={{ width: `${risk.score}%` }} /></div>
+            <ul className="ck-riskcounts"><li className="red"><b>{risk.red}</b>סיכון גבוה</li><li className="yellow"><b>{risk.yellow}</b>זהירות</li><li className="green"><b>{risk.green}</b>תקין</li></ul>
           </div> : <span className="ck-meta">אין ניתוח</span>}
+          <div className="ck-label">ממצאים לטיפול ({groups[0].length})</div>
           <div className="ck-stack">
             {groups[0].length ? groups[0].map((f) => <FindingCard key={f.ruleId} f={f} />) : <span className="ck-meta">לא נמצאו ממצאים בסיכון.</span>}
             {groups[1].length > 0 && <details><summary className="ck-meta">כללים שהתקיימו ({groups[1].length})</summary><div className="ck-stack" style={{ marginTop: 8 }}>{groups[1].map((f) => <FindingCard key={f.ruleId} f={f} />)}</div></details>}

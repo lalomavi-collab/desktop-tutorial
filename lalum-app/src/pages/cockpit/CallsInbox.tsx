@@ -97,10 +97,10 @@ function CallsInboxInner({ canView }: { canView: boolean }) {
     return (
       <div key={c.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 18, background: "var(--card)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-          {intent && <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
-          {!c.is_processed && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
-          {c.is_billable && <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
-          <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{fmtDate(c.created_at)}</span>
+          {intent && <span style={{ fontSize: 13, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>{intent}</span>}
+          {!c.is_processed && <span style={{ fontSize: 13, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{C.processing}</span>}
+          {c.is_billable && <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>{C.billable}</span>}
+          <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{fmtDate(c.created_at)}</span>
         </div>
         {c.summary && <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.6 }}>{c.summary}</p>}
         {task && (
@@ -143,8 +143,8 @@ function CallsInboxInner({ canView }: { canView: boolean }) {
                   style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "14px 16px", background: open ? "var(--clay-tint)" : "none", border: "none", cursor: "pointer", textAlign: "start", font: "inherit", color: "inherit" }}>
                   <Icon name="phone" size={17} />
                   <span dir="ltr" style={{ fontWeight: 600 }}>{g.phone}</span>
-                  {g.unprocessed > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unprocessed} {C.toProcess}</span>}
-                  <span className="muted" style={{ fontSize: 12.5, marginInlineStart: "auto" }}>{g.rows.length} {C.callsWord}</span>
+                  {g.unprocessed > 0 && <span style={{ fontSize: 13, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>{g.unprocessed} {C.toProcess}</span>}
+                  <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{g.rows.length} {C.callsWord}</span>
                   <span className={"faq-chevron" + (open ? " open" : "")} aria-hidden="true"><Icon name="chevron-d" size={16} /></span>
                 </button>
                 {open && (

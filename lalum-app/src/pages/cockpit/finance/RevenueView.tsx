@@ -73,7 +73,7 @@ export function RevenueView({ rows }: { rows: IncomeRow[] }) {
             <g key={b.key}>
               <title>{`${b.label}: ${acctText(b.net)} \u20AA (${b.count} מסמכים)`}</title>
               {!b.future && b.net !== 0 && <rect x={x} y={b.net >= 0 ? H - h : H} width={w} height={h} rx={3} fill={b.net >= 0 ? "var(--clay)" : "var(--danger)"} opacity={b.to >= today ? 0.55 : 1} />}
-              <text x={x + w / 2} y={H + 16} textAnchor="middle" fontSize="11" fill="var(--slate)">{b.label}</text>
+              <text x={x + w / 2} y={H + 16} textAnchor="middle" fontSize="12" fill="var(--slate)">{b.label}</text>
             </g>);
         })}
       </svg>

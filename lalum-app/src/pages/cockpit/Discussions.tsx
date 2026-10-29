@@ -89,16 +89,16 @@ function DiscussionsInner({ canModerate }: { canModerate: boolean }) {
             return (
               <div key={d.id} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--clay)", textTransform: "uppercase", letterSpacing: ".06em" }}>
                     {topicBySlug.get(d.topic)?.name ?? d.topic}
                   </span>
                   {isPending
-                    ? <span style={{ fontSize: 11, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>ממתינה</span>
-                    : <span style={{ fontSize: 11, fontWeight: 700, color: "#2c6444" }}>פורסמה ✓</span>}
+                    ? <span style={{ fontSize: 13, fontWeight: 700, color: "var(--paper)", background: "var(--clay)", borderRadius: 9999, padding: "2px 9px" }}>ממתינה</span>
+                    : <span style={{ fontSize: 13, fontWeight: 700, color: "#2c6444" }}>פורסמה ✓</span>}
                   {(d.asker_name || d.asker_email) && (
-                    <span className="muted" style={{ fontSize: 12 }} dir="ltr">{d.asker_name}{d.asker_name && d.asker_email ? " · " : ""}{d.asker_email}</span>
+                    <span className="muted" style={{ fontSize: 13 }} dir="ltr">{d.asker_name}{d.asker_name && d.asker_email ? " · " : ""}{d.asker_email}</span>
                   )}
-                  <span className="muted" style={{ fontSize: 12, marginInlineStart: "auto" }}>{new Date(d.created_at).toLocaleDateString(bcp47For(lang))}</span>
+                  <span className="muted" style={{ fontSize: 13, marginInlineStart: "auto" }}>{new Date(d.created_at).toLocaleDateString(bcp47For(lang))}</span>
                 </div>
                 <p style={{ margin: "0 0 12px", whiteSpace: "pre-wrap", fontSize: 14.5 }}>{d.question}</p>
                 {isPending ? (
@@ -117,7 +117,7 @@ function DiscussionsInner({ canModerate }: { canModerate: boolean }) {
                   </>
                 ) : (
                   <div style={{ borderInlineStart: "3px solid var(--clay)", paddingInlineStart: 12 }}>
-                    <div className="label" style={{ color: "var(--clay)", fontSize: 11 }}>התשובה שפורסמה</div>
+                    <div className="label" style={{ color: "var(--clay)", fontSize: 13 }}>התשובה שפורסמה</div>
                     <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap", fontSize: 14 }}>{d.reply}</p>
                   </div>
                 )}
