@@ -8,7 +8,7 @@ import {
   withHistory, latestFacts, openCardCharges, liquidity, classifyCard, cardMonths, cardCategories, cardRecurring, cardTaxPaid, cardPairs,
   cardInsights, runway,
 } from "../src/lib/cockpit/bankDashboard.ts";
-import { lastMonths, balanceWindow, bridge, bridgeScale, forecastDays, flowByDay, heatStep, recentDays, recurringLoad, shares, RANGES } from "../src/lib/cockpit/bankTiles.ts";
+import { lastMonths, balanceWindow, bridge, bridgeScale, forecastDays, flowByDay, heatStep, nextKnown, recentDays, recurringLoad, shares, RANGES } from "../src/lib/cockpit/bankTiles.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const A = "acc-1";
@@ -453,6 +453,27 @@ t("tiles: the recurring list as a monthly load, stopped series last and out of t
   if (firstStale >= 0) assert.ok(load.rows.slice(firstStale).every((r) => r.stale), "stopped series sit at the end");
   const head = load.rows.filter((r) => !r.stale).map((r) => Math.abs(r.monthly));
   assert.deepEqual(head, [...head].sort((a, b) => b - a), "largest first");
+});
+
+t("tiles: VAT, the advance and the card show the forecast's next payment in the recurring list, against the last one paid", () => {
+  const cl = book(), rec = recurring(cl, "2026-10-28");
+  const cards = openCardCharges(FACTS, "2026-10-28").map((c) => ({ amount: c.amount, due: c.due, label: "כרטיס ***9616" }));
+  const fc = forecast30(cl, rec, 30618.02, "2026-10-28", TAX, 0, { cards });
+  const known = nextKnown(fc);
+  assert.deepEqual(known.get("CARD"), { amount: -3030.53, date: "2026-11-15", note: "החיוב שנצבר, לפי Financy" });
+  const vat = fc.rows.find((r) => r.kind === "VAT");
+  assert.deepEqual([known.get("TAX_VAT").amount, known.get("TAX_VAT").date], [vat.amount, vat.date]);
+  assert.equal(nextKnown(null).size, 0);
+  const load = recurringLoad(rec, known);
+  const card = load.rows.find((r) => r.catKey === "CARD");
+  assert.deepEqual([card.amount, card.lastAmount, card.next], [-3030.53, -4619.32, "2026-11-15"], "one number for the card: Financy's, not last month's");
+  assert.equal(card.changePct, changePct(3030.53, 4619.32));
+  for (const r of load.rows.filter((x) => known.has(x.catKey) && !x.stale)) {
+    assert.equal(r.amount, known.get(r.catKey).amount); assert.ok(r.note);
+    assert.equal(r.monthly, r2(r.cadence === "MONTHLY" ? r.amount : r.amount / 2));
+  }
+  assert.equal(load.outflow, r2(-load.rows.filter((r) => !r.stale && r.monthly < 0).reduce((s, r) => s + r.monthly, 0)), "the total is the rows shown");
+  assert.ok(recurringLoad(rec).rows.every((r) => r.note === null && r.amount === r.lastAmount), "without a forecast, history as before");
 });
 
 t("tiles: parts of a whole for a meter", () => {

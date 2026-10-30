@@ -2,7 +2,7 @@
 // another (the drawable salary), the 30 day forecast as one point a day, money per day of a month, the recurring list
 // as a monthly load, and the last days of movement. Pure functions over bankDashboard's outputs; no new figure is
 // computed here that the dashboard did not already show, only its shape. Checked by `npm run bank-dashboard-check`.
-import { addDays, addMonths, monthOf } from "./bankDashboard.ts";
+import { addDays, addMonths, changePct, monthOf } from "./bankDashboard.ts";
 import type { Classified, Forecast, Recurring } from "./bankDashboard.ts";
 import { r2 } from "./finance.ts";
 
@@ -97,15 +97,44 @@ export function recentDays(lines: Classified[], asOf: string, n = 14): Array<{ d
 
 // ---------- Recurring as a monthly load ----------
 
-export interface LoadRow { key: string; label: string; catLabel: string; amount: number; monthly: number; cadence: Recurring["cadence"]; next: string; last: string; changePct: number | null; stale: boolean }
+export interface LoadRow {
+  key: string; label: string; catLabel: string; catKey: string; amount: number; monthly: number; cadence: Recurring["cadence"]; next: string;
+  last: string; changePct: number | null; stale: boolean;
+  /** The amount paid last time, and where the amount shown comes from when it is not that one. */
+  lastAmount: number; note: string | null;
+}
+
+/** A next payment the screen knows exactly, or computes better than history: one per recurring category. */
+export interface Known { amount: number; date: string; note: string }
+const KNOWN: Array<[string, Forecast["rows"][number]["kind"], string]> = [
+  ["TAX_VAT", "VAT", "לפי הספרים"],
+  ["TAX_IT", "INCOME_TAX", "הערכה לפי מנוע המס"],
+  ["CARD", "CARD", "החיוב שנצבר, לפי Financy"],
+];
+/** The next VAT payment, income tax advance and card charge as the 30 day forecast has them (the ledger, the tax engine,
+ *  Financy's open charge), so the recurring list shows the same figure as the forecast and the cash for drawing. */
+export function nextKnown(fc: Forecast | null): Map<string, Known> {
+  const out = new Map<string, Known>();
+  for (const [key, kind, note] of KNOWN) {
+    const it = fc?.rows.find((r) => r.kind === kind);
+    if (it) out.set(key, { amount: it.amount, date: it.date, note });
+  }
+  return out;
+}
 
 /** The recurring list as what it costs, or brings, a month: a charge every two months counts half. Stopped series stay
- *  in the rows (last, marked) and out of the two totals, like the forecast leaves them out. Largest first. */
-export function recurringLoad(rec: Recurring[]): { inflow: number; outflow: number; rows: LoadRow[] } {
-  const rows = rec.map((r) => ({
-    key: r.key, label: r.label, catLabel: r.cat.label, amount: r.amount, monthly: r2(r.cadence === "MONTHLY" ? r.amount : r.amount / 2),
-    cadence: r.cadence, next: r.next, last: r.last, changePct: r.changePct, stale: r.stale,
-  })).sort((a, b) => Number(a.stale) - Number(b.stale) || Math.abs(b.monthly) - Math.abs(a.monthly));
+ *  in the rows (last, marked) and out of the two totals, like the forecast leaves them out. Largest first. A series whose
+ *  next payment is known (nextKnown) counts that payment, against the last one paid. */
+export function recurringLoad(rec: Recurring[], known: Map<string, Known> = new Map()): { inflow: number; outflow: number; rows: LoadRow[] } {
+  const rows = rec.map((r) => {
+    const k = r.stale ? undefined : known.get(r.cat.key);
+    const amount = k ? k.amount : r.amount;
+    return {
+      key: r.key, label: r.label, catLabel: r.cat.label, catKey: r.cat.key, amount, monthly: r2(r.cadence === "MONTHLY" ? amount : amount / 2),
+      cadence: r.cadence, next: k ? k.date : r.next, last: r.last, changePct: k ? changePct(Math.abs(k.amount), Math.abs(r.amount)) : r.changePct,
+      stale: r.stale, lastAmount: r.amount, note: k ? k.note : null,
+    };
+  }).sort((a, b) => Number(a.stale) - Number(b.stale) || Math.abs(b.monthly) - Math.abs(a.monthly));
   const live = rows.filter((r) => !r.stale);
   return {
     inflow: r2(live.filter((r) => r.monthly > 0).reduce((s, r) => s + r.monthly, 0)),
