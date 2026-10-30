@@ -196,7 +196,7 @@ export function FinanceHome({ firmId, firmName }: { firmId: string; firmName: st
           <div className="ck-meta">דוח לעיון בלבד. תקופת הדיווח למע"מ ושיטת ההכרה בהכנסה נקבעות מול רואה החשבון.</div>
         </>
       )}
-      {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} payments={payments} sends={docSends} archiveCount={archive.length} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
+      {tab === "documents" && loaded && <Gate level={level} need={2}><DocumentsTab level={level} firmId={firmId} customers={customers} docs={docs} archive={archive} payments={payments} sends={docSends} onOpenArchive={() => setTab("archive")} onChange={() => void load()} /></Gate>}
       {tab === "proformas" && loaded && <Gate level={level} need={2}><OpenProformasTab customers={customers} docs={docs} archive={archive} onOpenDocuments={() => setTab("documents")} onOpenArchive={() => setTab("archive")} /></Gate>}
       {tab === "customers" && loaded && <Gate level={level} need={2}><CustomersTab firmId={firmId} customers={customers} onChange={() => void load()} /></Gate>}
       {tab === "design" && loaded && <Gate level={level} need={1}><DocDesignTab firmId={firmId} firmName={firmName} level={level} docs={docs} customers={customers} /></Gate>}

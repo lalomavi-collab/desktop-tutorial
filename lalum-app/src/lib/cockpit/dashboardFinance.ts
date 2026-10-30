@@ -7,7 +7,7 @@ import { incomeByKind, incomeRows, INCOME_KIND_LABEL, receivablesAging, AGING_BU
 import { todayIL } from "./arAging";
 
 /** Columns read from the history archive. FinanceHome reads the same ones. */
-export const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name";
+export const ARCHIVE_COLS = "id, i4u_doc_id, i4u_doc_type, doc_number, issue_date, i4u_client_id, subject, currency, subtotal, vat_amount, total, allocation_number, status_id, paid, balance, rate:raw->>ConversionRate, gname:raw->GeneralCustomer->>Name, cname:raw->>ClientName, opened:raw->HasBeenOpenedByEndUser, i4u_status:raw->>Status";
 const MONTH_SHORT = ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יוני", "יולי", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"];
 
 export interface FinanceDash {

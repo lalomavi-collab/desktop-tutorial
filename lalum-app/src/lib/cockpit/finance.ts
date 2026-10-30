@@ -222,6 +222,12 @@ export interface ArchiveDoc {
   rate?: number | string | null;
   /** Name of a casual (one-off) customer, from the raw record. Empty when the document has a customer card. */
   gname?: string | null;
+  /** The customer name the provider printed on the document, from the raw record. A casual customer of the history system has only this. */
+  cname?: string | null;
+  /** The provider recorded that the customer opened its mail (HasBeenOpenedByEndUser in the raw record). */
+  opened?: boolean | string | null;
+  /** The provider's status label (פתוחה, סגורה, מזוכית), from the raw record. */
+  i4u_status?: string | null;
 }
 /** Invoice4U DocumentType codes, as documented by Invoice4U. */
 export const I4U_TYPE: Record<number, string> = { 1: "חשבונית מס", 2: "קבלה", 3: "חשבונית מס קבלה", 4: "חשבונית זיכוי", 5: "חשבון עסקה" };

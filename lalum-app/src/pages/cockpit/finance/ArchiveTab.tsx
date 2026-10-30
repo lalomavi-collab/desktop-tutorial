@@ -31,7 +31,7 @@ export function ArchiveTab({ docs, customers, sends, level, onChange }: { docs: 
   const custByI4u = new Map(customers.filter((c) => c.i4u_customer_id).map((c) => [Number(c.i4u_customer_id), c]));
   const [sendFor, setSendFor] = useState<string | null>(null);
   const sendDoc = sendFor ? docs.find((d) => d.id === sendFor) : undefined;
-  const who = (d: ArchiveDoc): string => cn.casual((d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || "");
+  const who = (d: ArchiveDoc): string => cn.casual((d.i4u_client_id ? splitName(byI4u.get(Number(d.i4u_client_id)) ?? "").name : "") || d.gname || d.cname || "");
   const [from, setFrom] = useState(`${new Date().getFullYear() - 1}-01-01`);
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10));
   const [busy, setBusy] = useState(false);
