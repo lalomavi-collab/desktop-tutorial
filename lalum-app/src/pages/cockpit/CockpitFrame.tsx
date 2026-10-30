@@ -16,6 +16,7 @@ import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 import "../../styles/cockpit-type.css";
+import "../../styles/cockpit-navy.css";
 
 // The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
 const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));
@@ -77,13 +78,15 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/settings/members": GavelArt,
 };
 
-type CkTheme = "mint" | "dark";
-// The cockpit opens in the light mint look; the choice is remembered per browser (storage may be blocked, so every access is guarded).
-function useCkTheme(): [CkTheme, () => void] {
-  const [theme, setTheme] = useState<CkTheme>("mint");
-  useEffect(() => { try { const t = localStorage.getItem("ck-theme"); if (t === "dark" || t === "mint") setTheme(t); } catch { /* storage blocked */ } }, []);
-  const flip = () => setTheme((t) => { const n = t === "mint" ? "dark" : "mint"; try { localStorage.setItem("ck-theme", n); } catch { /* storage blocked */ } return n; });
-  return [theme, flip];
+type CkLook = "navy" | "beige" | "dark";
+const LOOKS: Array<[CkLook, string]> = [["navy", "כחול"], ["beige", "בז׳"], ["dark", "כהה"]];
+// Three looks (owner, 30.10.2026: the navy of Clio's apps is added beside the beige and the dark, not instead of them).
+// Beige stays the default; the choice is remembered per browser in the keys the cockpit already used (storage may be blocked, so every access is guarded).
+function useCkLook(): [CkLook, (l: CkLook) => void] {
+  const [look, setLookState] = useState<CkLook>("beige");
+  useEffect(() => { try { if (localStorage.getItem("ck-theme") === "dark") setLookState("dark"); else if (localStorage.getItem("ck-skin") === "navy") setLookState("navy"); } catch { /* storage blocked */ } }, []);
+  const setLook = (l: CkLook) => { setLookState(l); try { localStorage.setItem("ck-theme", l === "dark" ? "dark" : "mint"); localStorage.setItem("ck-skin", l === "navy" ? "navy" : "sage"); } catch { /* storage blocked */ } };
+  return [look, setLook];
 }
 
 // The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
@@ -119,7 +122,7 @@ export function CockpitFrame({
   const nav = useNavigate();
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
-  const [theme, flipTheme] = useCkTheme();
+  const [look, setLook] = useCkLook();
   const [railOpen, flipRail] = useRailOpen();
   const mainRef = useRef<HTMLElement>(null);
   useCardTables(mainRef);
@@ -162,13 +165,13 @@ export function CockpitFrame({
   const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
   return (
     <ClientNamesProvider>
-    <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
+    <div className="ck-root ck-with-sidebar" data-ck-theme={look === "dark" ? "dark" : "mint"} data-ck-skin={look === "navy" ? "navy" : undefined} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
         <RailDefs />
         <div className="ck-sidebar-brand">
-          <Wordmark height={26} style={{ color: "var(--ink)" }} />
-          <button type="button" className="ck-theme" onClick={flipTheme} aria-label={theme === "mint" ? "מעבר למצב כהה" : "מעבר למצב בהיר"} title={theme === "mint" ? "מצב כהה" : "מצב בהיר"}><RailIcon id={theme === "mint" ? "moon" : "theme"} size={30} /></button>
+          <Wordmark height={26} style={{ color: "var(--ck-brand-ink, var(--ink))" }} />
+          <div className="ck-looks" role="group" aria-label="מראה הקוקפיט">{LOOKS.map(([k, label]) => <button key={k} type="button" className={`ck-look ck-look-${k}`} aria-pressed={look === k} aria-label={`מראה ${label}`} title={label} onClick={() => setLook(k)} />)}</div>
         </div>
         <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label="ניווט הקוקפיט">
           {sections.map((sec) => (

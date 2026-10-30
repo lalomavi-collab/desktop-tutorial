@@ -390,6 +390,15 @@
 .ck-sidebar-brand button.ck-theme { padding: 6px; }
 .ck-sidebar-brand button.ck-theme:hover, .ck-sidebar-nav button.ck-railmore:hover { background: color-mix(in srgb, var(--clay) 12%, transparent); }
 .ck-sidebar-brand button.ck-theme:focus-visible, .ck-sidebar-nav button.ck-railmore:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+/* The look picker (owner, 30.10.2026): three swatches, navy, beige and dark, in place of the old two way switch; the current one wears a ring. */
+.ck-looks { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.ck-look { inline-size: 24px; block-size: 24px; flex: none; padding: 0; border-radius: 50%; cursor: pointer; border: 1px solid rgba(0, 0, 0, .2); }
+.ck-look-navy { background: #14324f; }
+.ck-look-beige { background: linear-gradient(135deg, #f5f1e8 50%, #537056 50%); }
+.ck-look-dark { background: #151922; border-color: rgba(255, 255, 255, .25); }
+.ck-root[data-ck-theme="dark"] .ck-look-navy { border-color: rgba(255, 255, 255, .4); }
+.ck-look[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--ink); }
+.ck-look:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 @media (min-width: 861px) {
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar { width: 108px; }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand { flex-direction: column; align-items: center; gap: 8px; }
