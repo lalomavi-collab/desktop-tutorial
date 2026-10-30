@@ -9,7 +9,7 @@ Run on `main` at `db197d9` and on the live project `meoymkcotomoluwlwues` (advis
 | 3 functions without `search_path` | Closed 27.10 | Migration `20261027185211`; the lint no longer appears. |
 | Leaked password protection off | Closed 28.10 | Turned on by the owner (security day step 11); the lint no longer appears. |
 | `PII_GATEWAY_TOKEN` equal to `RESEND_API_KEY` | Closed 28.10 | Dedicated `lpg_` token (security day step 6); `pii_shield.gateway_clients` holds 1 active row, created 28.10 13:39 UTC. |
-| `pg_net` installed in `public` | Moved to `extensions` by migration `20261031070000` (applied by hand, see below) | Only the registration was in `public`; the extension's objects live in schema `net` and stay there. |
+| `pg_net` installed in `public` | Move to `extensions`: migration `20261031070000`, applied by hand from the SQL editor (see below) | Only the registration was in `public`; the extension's objects live in schema `net` and stay there. |
 | SECURITY DEFINER functions callable by `authenticated` (141) | Reviewed; 3 gates fixed, 3 grants removed, the rest by design | This document. |
 
 Still listed by the advisor and by design: 12 tables with row level security on and no policy (`lalum_private.*`, `pii_shield.*`, three run and counter tables in `public`). They are read and written only by the service role or by SECURITY DEFINER functions; no policy means signed in users get nothing.
@@ -25,6 +25,8 @@ Sign-up is open, so any person can hold a signed in session that belongs to no f
 Shown live on 30.10 with a simulated signed in id in no firm, rolled back: `lalum_admin_ok` NULL, both inline gates NULL. No call to the four entry points in the API log of the last 24 hours; the audit log holds 2 `MEMBER_ROLE_SET` and 1 `MEMBER_PASSWORD_RESET_REQUESTED`, all by the firm administrator. Older API logs were not read.
 
 Fix: migration `20261030223000_lalum_definer_null_gates.sql` wraps each test in `coalesce(..., false)`. Test: `lalum-app/supabase/tests/definer_null_gates.sql` shows the gap before the migration, the refusal after it, and that members keep the same rules.
+
+Applied in production by hand on 30.10 and verified live at 23:54 UTC: the three gates carry the `coalesce`, the three revoked functions are closed to `authenticated`, and for a signed in id in no firm `lalum_admin_ok` returns false (it returned NULL before).
 
 Every other gate in the 141 was read for the same pattern: those that compare with `lalum_my_firm_id()` either check `v_firm is null` first, use `is distinct from`, or fail on a later lookup by firm (`not exists ... firm_id = v_firm`). The helpers `lalum_fin_level`, `lalum_mgr_ok`, `lalum_is_partner_of`, `lalum_export_role_ok` and the `exists` helpers never return NULL.
 
