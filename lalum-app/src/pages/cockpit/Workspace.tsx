@@ -53,7 +53,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
     })();
     return () => { live = false; };
   }, []);
-  const risk = (r: string | null) => (r === "HIGH_RISK" ? <span className="ck-badge red">🔴 סיכון גבוה</span> : r === "CAUTION" ? <span className="ck-badge yellow">🟡 זהירות</span> : r === "NOT_ASSESSED" ? <span className="ck-badge">לא נבדק</span> : <span className="ck-badge green">🟢 תקין</span>);
+  const risk = (r: string | null) => (r === "HIGH_RISK" ? <span className="ck-badge red dot">סיכון גבוה</span> : r === "CAUTION" ? <span className="ck-badge yellow dot">זהירות</span> : r === "NOT_ASSESSED" ? <span className="ck-badge">לא נבדק</span> : <span className="ck-badge green dot">תקין</span>);
   return (
     <div className="ck-stack">
       <div className="ck-card ck-hero"><div className="ck-hero-art"><HeroArt /></div><div className="ck-row" style={{ justifyContent: "space-between", flex: 1 }}><div><div className="ck-hero-title">{firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii">🔒 PII Masked &amp; Secured</span></div></div>
@@ -98,7 +98,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
               {isPartner && <td><input type="checkbox" aria-label={`סימון ${name(x)}`} checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} /></td>}
               <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{name(x)}</Link></td>
               <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
-              {isPartner && <td><button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
+              {isPartner && <td><button className="ck-btn sm quiet" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
             </tr>); })}
         </tbody></table></div>
         </>

@@ -374,7 +374,7 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
                 {sentOn.whatsapp && <div className="ck-meta">נשלח ב-WhatsApp <bdi>{sentOn.whatsapp}</bdi></div>}
                 {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>
-              <td className="fin-actions-cell"><div className="fin-actions" style={{ flexWrap: "wrap" }}>
+              <td className="fin-actions-cell"><div className="fin-actions">
                 {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
                 {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול מערכת ההנפקה</button>}
                 {canSend(d) && <>

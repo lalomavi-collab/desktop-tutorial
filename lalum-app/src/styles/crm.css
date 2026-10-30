@@ -2,7 +2,7 @@
 .crm-demo { background: rgba(184, 132, 42, .14); color: var(--warning); border: 1px solid rgba(184, 132, 42, .35); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; }
 .crm-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 14px; }
 .crm-kpi { display: flex; flex-direction: column; gap: 6px; }
-.crm-kpi small { color: var(--slate); font-size: 12px; }
+.crm-kpi small { color: var(--slate); font-size: 13px; line-height: 1.5; }
 .crm-kpi b { font-size: 26px; font-variant-numeric: tabular-nums; }
 .crm-kpi.trust { border: 2px dashed var(--clay-soft); }
 .crm-kpi.trust::before { content: "התחייבות ללקוחות, לא הכנסה"; font-size: 12px; font-weight: 700; color: var(--clay); }
