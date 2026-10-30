@@ -1,6 +1,6 @@
 // Text clarity floor for the cockpit (management system). Run with: npm run cockpit-text-check
 // 1) No text smaller than 13px in the cockpit stylesheets or in inline styles of the cockpit screens (raised from 12px, 29.10.2026).
-// 2) Every text and status token clears WCAG AA (4.5:1) on every surface it sits on, in both themes.
+// 2) Every text and status token clears WCAG AA (4.5:1) on every surface it sits on, in both themes and in the navy skin of the light one.
 // The tokens are read from the stylesheets themselves, so a palette edit that breaks legibility fails here.
 import { readFileSync, readdirSync } from "node:fs";
 import assert from "node:assert/strict";
@@ -51,6 +51,7 @@ const base = tokens(block(read("cockpit.css"), ".ck-root"));
 const themes = {
   "dark (instrument panel)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="dark"]')) },
   "mint (light)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="mint"]')) },
+  "navy (light, default skin)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="mint"]')), ...tokens(block(read("cockpit-navy.css"), '.ck-root[data-ck-theme="mint"][data-ck-skin="navy"]')) },
 };
 for (const [name, tk] of Object.entries(themes)) {
   t(`AA contrast: ${name}`, () => {

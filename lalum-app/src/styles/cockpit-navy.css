@@ -1,0 +1,145 @@
+/* ------------------------------------------------------------------
+   Navy skin of the light cockpit (owner, 30.10.2026): "the look of Clio's app, a quality professional app made by known
+   designers", ahead of the App Store and Google Play listings. Learnt from Clio, not copied from it:
+     ground      cool paper grey, flat (no gradient blobs, no glass), white cards with a hairline and a low shadow
+     brand       one deep navy carries the rail, the primary action, selection and the page's one band
+     type        one geometric sans (Heebo) at every level, page titles heavy and compact; Amatic is not used in this skin
+     shape       16px cards, 10px controls, no pills, no lifts on hover
+     icons       the rail and the illustrations keep their drawings, recoloured from sage to navy, with the gold as the warm note
+   It sits on top of the mint theme (data-ck-theme="mint" data-ck-skin="navy" on .ck-root), so every structural rule of the
+   light theme still applies and only colour and shape change here. Without the attribute the cockpit is the earlier sage look.
+   The dark theme is not touched. Contrast of every token is checked in scripts/cockpit-text-check.mjs.
+   ------------------------------------------------------------------ */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] {
+  --ivory: #f3f5f8;
+  --paper: #f8f9fb;
+  --card: #ffffff;
+  --card-solid: #ffffff;
+  --ink: #0f2236;
+  --slate: #4a5869;
+  --line: #e1e6ed;
+  --line-strong: #c7d0db;
+  --clay: #14324f;
+  --clay-tint: #e8eef5;
+  --clay-soft: rgba(20, 50, 79, .2);
+  --clay-hover: #0b2239;
+  --clay-bright: #9dbbe0;
+  --on-clay: #ffffff;
+  --danger: #b42318;
+  --warning: #85540a;
+  --success: #1c6a3e;
+  --mint-deep: #14324f;
+  --mint-rail: #14324f;
+  --glass-shadow: 0 1px 2px rgba(15, 34, 54, .06), 0 6px 18px rgba(15, 34, 54, .05);
+  --chart-track: rgba(20, 50, 79, .08);
+  --chart-grid: rgba(20, 50, 79, .1);
+  --chart-ok: #1d4f86;
+  --chart-ok-l: #6d9bd1;
+  --chart-cat-2: #0e8a7e;
+  --chart-neutral: #8a94a3;
+  --ck-display: "Heebo", "Assistant", var(--sans);
+  background: var(--ivory);
+}
+
+/* Surfaces: flat white cards, hairline, low shadow */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-card, .ck-table-wrap, .ck-panel) {
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--glass-shadow); backdrop-filter: none;
+}
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-grid2 > .ck-card:hover { border-color: var(--line-strong); box-shadow: var(--glass-shadow); transform: none; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-top { background: color-mix(in srgb, var(--ivory) 92%, transparent); border-bottom: 1px solid var(--line); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-drawer { background: var(--card); box-shadow: 8px 0 32px rgba(15, 34, 54, .18); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-editor { background: #fff; }
+
+/* The screen band: a calm navy tint, the drawing on it, no glow */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-band { background: var(--clay-tint); border: 1px solid color-mix(in srgb, var(--clay) 12%, transparent); border-radius: 16px; box-shadow: none; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-band-art { filter: drop-shadow(0 6px 8px rgba(15, 34, 54, .16)); }
+
+/* The page's one band: the hero opens each screen in navy, the way Clio's store pages open */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero { background: var(--clay); border-color: var(--clay); color: #fff; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero :is(.ck-hero-title, .ck-title, h2, h3, b, strong) { color: #fff; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero :is(.ck-meta, p, span) { color: rgba(255, 255, 255, .86); }
+
+/* Type: one sans; page titles heavy and compact, without the side rule */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-top h1 {
+  font-family: var(--ck-display); font-weight: 800; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.2; letter-spacing: -.01em;
+  color: var(--ink); padding-inline-start: 0; border-inline-start: 0;
+}
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(h1, .ck-hero-title) { font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero-title { font-size: clamp(22px, 2.2vw, 28px); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .db-hello strong { font-weight: 800; font-size: 26px; line-height: 1.2; letter-spacing: -.01em; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .bd-bar h2 { font-weight: 800; font-size: 26px; line-height: 1.2; letter-spacing: -.01em; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-label::before { background: var(--clay); }
+@media (max-width: 640px) { .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-top h1 { font-size: 26px; } }
+
+/* Controls: 10px corners, navy primary, white secondary with a hairline */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-btn, .ck-nav a, .ck-logout) {
+  background: #fff; border: 1px solid var(--line-strong); color: var(--ink); border-radius: 10px; box-shadow: none;
+}
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-btn, .ck-nav a):hover { background: var(--paper); border-color: var(--clay); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-btn.primary, .ck-nav a[aria-current="page"], .ck-doc .ck-btn.primary) {
+  background: var(--clay); border-color: var(--clay); color: var(--on-clay); box-shadow: 0 1px 2px rgba(15, 34, 54, .2);
+}
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-btn.primary:hover { background: var(--clay-hover); border-color: var(--clay-hover); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-btn.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: #fff; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-btn.quiet { background: transparent; border-color: transparent; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-input, .ck-select, .ck-textarea) { background: #fff; border-color: var(--line-strong); border-radius: 10px; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-input, .ck-select, .ck-textarea):focus { border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-soft); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-field { color: var(--ink); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .fin-rubric { border-radius: 10px; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .fin-rubric[aria-selected="true"] { background: var(--clay-tint); border-color: var(--clay); color: var(--clay); box-shadow: inset 0 -3px 0 var(--clay); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-bar { background: var(--chart-track); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-bar > div { background: var(--clay); }
+
+/* Tables: a quiet header, a cool hover */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-table th { background: var(--paper); color: var(--slate); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-table tbody tr:hover td { background: #f6f8fb; }
+
+/* Status: the same meanings on cool tints */
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-warn, .ck-badge.yellow) { background: #fdf3dc; color: #6b4600; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-err, .ck-badge.red) { background: #fdecea; color: #8f1d14; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-ok, .ck-pii, .ck-badge.green) { background: #e7f3ec; color: #18512f; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-editor ins { background: #e7f3ec; color: #18512f; }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-editor del { background: #fdecea; color: #8f1d14; }
+
+/* The rail: navy, white labels, the current screen on a lighter tile with a white edge */
+@media (min-width: 861px) {
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar { background: var(--clay); border-inline-end: 0; --ck-brand-ink: #ffffff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-brand { border-bottom-color: rgba(255, 255, 255, .14); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-theme, .ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore, .ck-nav-heading) { color: rgba(255, 255, 255, .84); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button.ck-theme, .ck-sidebar-brand button.ck-theme, .ck-sidebar-nav button.ck-railmore):hover { background: rgba(255, 255, 255, .09); color: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav a[aria-current="page"] { background: rgba(255, 255, 255, .15); color: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav a[aria-current="page"]::after { background: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-nav-group + .ck-nav-group, .ck-sidebar-foot) { border-top-color: rgba(255, 255, 255, .14); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-foot button.ck-logout { color: #ffc9c2; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-foot button.ck-logout:hover { background: rgba(255, 201, 194, .12); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button):focus-visible { outline-color: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-brand button.ck-theme { background: rgba(255, 255, 255, .92); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-brand button.ck-theme:hover { background: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-railicon { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .25)); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav a[aria-current="page"] .ck-railicon { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .3)); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav .ck-navbadge { box-shadow: 0 0 0 2px var(--clay); }
+}
+
+/* Drawings (rail icons, page illustrations): the sage ramp mapped onto a navy ramp; gold, white and red stay */
+.ck-root[data-ck-skin="navy"] #rl-g stop:first-child { stop-color: #8fb0d6; }
+.ck-root[data-ck-skin="navy"] #rl-g stop:last-child { stop-color: #4f78a8; }
+.ck-root[data-ck-skin="navy"] #rl-d stop:first-child { stop-color: #4f78a8; }
+.ck-root[data-ck-skin="navy"] #rl-d stop:last-child { stop-color: #2b4f7a; }
+.ck-root[data-ck-skin="navy"] svg [stop-color="#eef2ea"] { stop-color: #eef3f8; }
+.ck-root[data-ck-skin="navy"] svg [stop-color="#9bbb9f"] { stop-color: #8fb0d6; }
+.ck-root[data-ck-skin="navy"] svg [stop-color="#6a8f6e"] { stop-color: #4f78a8; }
+.ck-root[data-ck-skin="navy"] svg [stop-color="#5f8564"] { stop-color: #3c6494; }
+.ck-root[data-ck-skin="navy"] svg [stop-color="#3f5a43"] { stop-color: #14324f; }
+.ck-root[data-ck-skin="navy"] svg [fill="#2a3f2d"] { fill: #0f2236; }
+.ck-root[data-ck-skin="navy"] svg [fill="#3f5a43"] { fill: #14324f; }
+.ck-root[data-ck-skin="navy"] svg [stroke="#3f5a43"] { stroke: #14324f; }
+.ck-root[data-ck-skin="navy"] svg [fill="#537056"] { fill: #2b4f7a; }
+.ck-root[data-ck-skin="navy"] svg [stroke="#537056"] { stroke: #2b4f7a; }
+.ck-root[data-ck-skin="navy"] svg [fill="#5f8564"] { fill: #3c6494; }
+.ck-root[data-ck-skin="navy"] svg [fill="#6a8f6e"] { fill: #4f78a8; }
+.ck-root[data-ck-skin="navy"] svg [fill="#9bbb9f"] { fill: #8fb0d6; }
+.ck-root[data-ck-skin="navy"] svg [fill="#a9c4ad"] { fill: #a8c1dd; }
+.ck-root[data-ck-skin="navy"] svg [fill="#c9d9c8"] { fill: #cfdcea; }
+.ck-root[data-ck-skin="navy"] svg [stroke="#c9d9c8"] { stroke: #cfdcea; }
+.ck-root[data-ck-skin="navy"] svg [fill="#dfe9dc"] { fill: #e3ebf4; }
+.ck-root[data-ck-skin="navy"] svg [fill="#eef2ea"] { fill: #eef3f8; }

@@ -74,6 +74,10 @@ The wordmark is artwork. Use `src/components/Wordmark.tsx` inside the app. It in
 - No dashes as punctuation in any copy or comment.
 - No second logo or mark.
 
+## The cockpit's navy skin
+
+By the owner's request (30.10.2026, "the look of Clio's apps, a quality professional app"), the light cockpit wears a navy skin: `src/styles/cockpit-navy.css`, applied as `data-ck-skin="navy"` on `.ck-root` over the light (mint) theme. Cool grey ground, flat white cards with a hairline, one deep navy (`#14324f`) for the rail, the primary action and selection, Heebo at every level, 16px cards and 10px controls. Charts move from green to a navy and blue ramp; red stays for expenses and risk, amber for caution. The drawings keep their shapes, recoloured by CSS. The dark theme and the public site are unchanged. `ck-skin` set to `sage` in the browser's storage brings back the earlier look. Contrast of the skin's tokens is checked by `npm run cockpit-text-check`.
+
 ## Not this system: documents and posts
 
 Documents (docx, html, pdf), social images and decks use the Prestige palette from the root `CLAUDE.md`: Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`. That palette is not used in the app.

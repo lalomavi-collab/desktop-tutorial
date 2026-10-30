@@ -16,6 +16,7 @@ import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 import "../../styles/cockpit-type.css";
+import "../../styles/cockpit-navy.css";
 
 // The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
 const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));
@@ -86,6 +87,14 @@ function useCkTheme(): [CkTheme, () => void] {
   return [theme, flip];
 }
 
+type CkSkin = "navy" | "sage";
+// The light theme wears the navy skin (owner, 30.10.2026: the look of Clio's apps, navy on white); "sage" in storage keeps the earlier look.
+function useCkSkin(): CkSkin {
+  const [skin, setSkin] = useState<CkSkin>("navy");
+  useEffect(() => { try { if (localStorage.getItem("ck-skin") === "sage") setSkin("sage"); } catch { /* storage blocked */ } }, []);
+  return skin;
+}
+
 // The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
 const PRIMARY = new Set(["/workspace/dashboard", "/workspace/control", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
 function useRailOpen(): [boolean, () => void] {
@@ -120,6 +129,7 @@ export function CockpitFrame({
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   const [theme, flipTheme] = useCkTheme();
+  const skin = useCkSkin();
   const [railOpen, flipRail] = useRailOpen();
   const mainRef = useRef<HTMLElement>(null);
   useCardTables(mainRef);
@@ -162,12 +172,12 @@ export function CockpitFrame({
   const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
   return (
     <ClientNamesProvider>
-    <div className="ck-root ck-with-sidebar" data-ck-theme={theme} dir="rtl" lang="he">
+    <div className="ck-root ck-with-sidebar" data-ck-theme={theme} data-ck-skin={theme === "mint" ? skin : undefined} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
         <RailDefs />
         <div className="ck-sidebar-brand">
-          <Wordmark height={26} style={{ color: "var(--ink)" }} />
+          <Wordmark height={26} style={{ color: "var(--ck-brand-ink, var(--ink))" }} />
           <button type="button" className="ck-theme" onClick={flipTheme} aria-label={theme === "mint" ? "מעבר למצב כהה" : "מעבר למצב בהיר"} title={theme === "mint" ? "מצב כהה" : "מצב בהיר"}><RailIcon id={theme === "mint" ? "moon" : "theme"} size={30} /></button>
         </div>
         <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label="ניווט הקוקפיט">
