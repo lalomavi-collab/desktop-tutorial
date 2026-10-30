@@ -9,7 +9,7 @@ Run on `main` at `db197d9` and on the live project `meoymkcotomoluwlwues` (advis
 | 3 functions without `search_path` | Closed 27.10 | Migration `20261027185211`; the lint no longer appears. |
 | Leaked password protection off | Closed 28.10 | Turned on by the owner (security day step 11); the lint no longer appears. |
 | `PII_GATEWAY_TOKEN` equal to `RESEND_API_KEY` | Closed 28.10 | Dedicated `lpg_` token (security day step 6); `pii_shield.gateway_clients` holds 1 active row, created 28.10 13:39 UTC. |
-| `pg_net` installed in `public` | Accepted, see below | 0 functions and 0 tables of the extension are in `public`; all of them live in schema `net`. |
+| `pg_net` installed in `public` | Moved to `extensions` by migration `20261031070000` (applied by hand, see below) | Only the registration was in `public`; the extension's objects live in schema `net` and stay there. |
 | SECURITY DEFINER functions callable by `authenticated` (141) | Reviewed; 3 gates fixed, 3 grants removed, the rest by design | This document. |
 
 Still listed by the advisor and by design: 12 tables with row level security on and no policy (`lalum_private.*`, `pii_shield.*`, three run and counter tables in `public`). They are read and written only by the service role or by SECURITY DEFINER functions; no policy means signed in users get nothing.
@@ -42,9 +42,19 @@ Every other gate in the 141 was read for the same pattern: those that compare wi
 
 After the migration the advisor should list 138. The number is not the measure: the measure is that every function a stranger can call refuses a stranger.
 
-## pg_net in public: accepted
+## pg_net: moved from public to extensions
 
-The extension's registered schema is `public`, but its functions and its queue tables are in schema `net`, which the API does not expose. Moving it means `drop extension pg_net` and `create extension pg_net with schema extensions`: that drops the request queue and the response table, while five cron jobs (one of them every minute) post through it. No exposure is removed by the move, so it stays, recorded here. If a clean advisor list is wanted anyway, do it right after the morning backup, between two dispatch-worker minutes, and check the five jobs afterwards.
+The advisor flags the extension's registered schema, `public`. Its functions and its queue tables are in schema `net`, which is not among the API's exposed schemas, so the move removes a lint rather than an exposure. The owner chose to move it anyway on 30.10, for a clean advisor list.
+
+`pg_net` is not relocatable, so migration `20261031070000_lalum_pg_net_to_extensions.sql` drops it and creates it again in schema `extensions` at the same version (0.20.4), in one transaction:
+
+- It takes an exclusive lock on the queue and the response log with a 5 second `lock_timeout`, and refuses to continue if a request is waiting in the queue. Either case aborts with nothing changed, and it can run again seconds later.
+- Lost: `net._http_response`, a 6 hour log (`pg_net.ttl`). `lalum_private.ops_snapshot` counts HTTP results from it, so the snapshot's `http` figures restart from the moment of the move.
+- Grants come back through the platform's event trigger `issue_pg_net_access` (USAGE on `net` for postgres, anon, authenticated, service_role, supabase_functions_admin) and the extension script's own table grants.
+- Read on 30.10 before writing it: no database object outside the extension depends on its objects, no trigger calls `supabase_functions`, and every caller uses `net.*` by name: five cron jobs (`lalum-dispatch-worker` every minute, `lalum-daily-report`, `lalum-campaign-sync`, `lalum-outlook-sync`, `lalum-fin-bank-sync`) and `ops_snapshot`.
+- Window: between 07:00 and 11:00 UTC, clear of the bank, campaign and calendar syncs. Rehearsed on a local Postgres 16 with a stand in extension: clean run, a rerun, a busy queue and a held lock.
+
+After the move, check that `lalum-dispatch-worker` keeps succeeding and that new 2xx rows reach `net._http_response`. If no row arrives within two minutes, `select net.worker_restart();` restarts the background worker (the documented call).
 
 ## Reviewing a new SECURITY DEFINER function
 
