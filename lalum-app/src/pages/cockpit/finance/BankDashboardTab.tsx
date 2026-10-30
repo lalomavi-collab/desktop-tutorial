@@ -12,7 +12,7 @@ import {
   recurring, runway, vatPeriod, withHistory,
 } from "../../../lib/cockpit/bankDashboard";
 import type { BankAccount, BankLine, Classified, ExtFact, ExtLine, ReconMatch, StoredBalance, YtdTax } from "../../../lib/cockpit/bankDashboard";
-import { balanceWindow, bridge, flowByDay, forecastDays, lastMonths, RANGES, recentDays, recurringLoad } from "../../../lib/cockpit/bankTiles";
+import { balanceWindow, bridge, flowByDay, forecastDays, lastMonths, nextKnown, RANGES, recentDays, recurringLoad } from "../../../lib/cockpit/bankTiles";
 import type { Range } from "../../../lib/cockpit/bankTiles";
 import { Amt } from "../../../components/cockpit/Amt";
 import { MarketChart } from "../../../components/cockpit/MarketChart";
@@ -306,7 +306,8 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
   const catTotal = cats.reduce((s, c) => s + Math.max(0, c.amount), 0);
   const heat = flowByDay(view.cl, sel, heatSide);
   const heatMax = Math.max(0, ...heat);
-  const load = recurringLoad(view.rec);
+  // VAT, the income tax advance and the card show the forecast's figure for their next payment, so each has one number on the page.
+  const load = recurringLoad(view.rec, nextKnown(fc));
   const days14 = recentDays(view.cl, view.asOf ?? today, 14);
   const byDate = [...view.cl].sort((a, b) => b.value_date.localeCompare(a.value_date) || (b.created_at ?? "").localeCompare(a.created_at ?? ""));
   const monthLines = byDate.filter((l) => monthOf(l.value_date) === sel);
@@ -541,10 +542,10 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
           <Tile icon="repeat" title="תנועות קבועות" sub="מה שחוזר כל חודש או כל חודשיים, מחושב לחודש"
             more={view.rec.length === 0 ? undefined : (
               <div className="ck-table-wrap"><table className="ck-table">
-                <thead><tr><th>תנועה</th><th>קטגוריה</th><th>תדירות</th><th className="fin-num">סכום אחרון</th><th className="fin-num">שינוי</th><th>הבא בתאריך</th></tr></thead>
+                <thead><tr><th>תנועה</th><th>קטגוריה</th><th>תדירות</th><th className="fin-num">סכום</th><th className="fin-num">שינוי</th><th>הבא בתאריך</th></tr></thead>
                 <tbody>{load.rows.map((r) => (
                   <tr key={r.key}><td className="fin-text">{r.label}</td><td>{r.catLabel}</td><td>{r.cadence === "MONTHLY" ? "חודשי" : "דו חודשי"}</td>
-                    <td className="fin-num"><Amt n={r.amount} /></td>
+                    <td className="fin-num"><Amt n={r.amount} />{r.note && <span className="fin-sub">{r.note}, בפעם הקודמת <Amt n={r.lastAmount} /></span>}</td>
                     <td className="fin-num">{r.changePct == null || r.changePct === 0 ? "ללא שינוי" : <span className={`bd-change ${(r.changePct > 0) === (r.amount > 0) ? "good" : "bad"}`}><bdi>{pctText(r.changePct)}</bdi></span>}</td>
                     <td>{r.stale ? <span className="fin-sub">הופסק? נראה לאחרונה ב־<bdi>{dmy(r.last)}</bdi>, ולכן לא נספר בתחזית</span>
                       : <><bdi>{dmy(r.next)}</bdi>{view.asOf && r.next <= view.asOf && <span className="fin-sub">לא נראה בדף הבנק</span>}</>}</td></tr>
@@ -560,7 +561,7 @@ export function BankDashboardTab({ firmId, docs, payments, expenses, archive, re
                 <RankBars label="החיובים והתקבולים הקבועים הגדולים"
                   rows={load.rows.slice(0, 6).map((r) => ({
                     key: r.key, label: r.label, value: r.monthly, dim: r.stale,
-                    sub: <>{r.catLabel}, {r.cadence === "MONTHLY" ? "חודשי" : "דו חודשי"}{r.stale ? <>, הופסק?</> : <>, הבא ב־<bdi>{dmy(r.next)}</bdi></>}</>,
+                    sub: <>{r.catLabel}, {r.cadence === "MONTHLY" ? "חודשי" : "דו חודשי"}{r.stale ? <>, הופסק?</> : <>, הבא ב־<bdi>{dmy(r.next)}</bdi></>}{r.note && <>, {r.note}</>}</>,
                     shown: <Amt n={r.amount} plus={r.amount > 0} />,
                     after: r.changePct != null && r.changePct !== 0 ? <span className={`bd-change ${(r.changePct > 0) === (r.amount > 0) ? "good" : "bad"}`}><bdi dir="ltr">{pctText(r.changePct)}</bdi></span> : undefined,
                   }))} />
