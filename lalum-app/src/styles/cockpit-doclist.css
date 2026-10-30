@@ -1,0 +1,16 @@
+/* The documents list (DocumentsTab): one row per document with icon actions, the sent ticks and the allocation mark,
+   the way the invoicing system lays out its own list. Colours come from the theme tokens, so all three looks carry it. */
+.ck-fin .doc-icons { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.ck-fin .doc-ico { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--slate); cursor: pointer; }
+.ck-fin .doc-ico:hover:not(:disabled), .ck-fin .doc-ico:focus-visible { color: var(--clay); background: var(--clay-tint); border-color: var(--line); }
+.ck-fin .doc-ico.wa:hover:not(:disabled) { color: var(--success); }
+.ck-fin .doc-ico:disabled { opacity: .45; cursor: not-allowed; }
+.ck-fin .doc-marks { display: inline-flex; align-items: center; gap: 4px; }
+.ck-fin .doc-mark { display: inline-grid; place-items: center; width: 24px; height: 24px; color: var(--success); }
+.ck-fin .doc-mark.bounced { color: var(--danger); }
+.ck-fin .doc-kind { display: block; font-size: 13px; color: var(--slate); }
+.ck-fin .doc-subject { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ck-fin .doc-row-more { margin-top: 6px; }
+.ck-fin .doc-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ck-fin .doc-tools .ck-input { max-width: 260px; }
+.ck-fin tfoot td { font-weight: 700; background: var(--clay-tint); }

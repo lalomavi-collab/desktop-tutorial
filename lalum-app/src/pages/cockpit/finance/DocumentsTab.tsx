@@ -5,13 +5,18 @@ import { useClientNames } from "../../../components/cockpit/ClientNames";
 import { supabase } from "../../../lib/supabase";
 import { money } from "../../../lib/cockpit/shared";
 import { CASUAL_TYPES, DEFAULT_VAT_RATE, DOC_TYPE, NEEDS_PAYMENT, PAY_METHOD, computeTotals, draftProblems, openBalance } from "../../../lib/cockpit/finance";
-import { closedBy, isOpenProforma, splitName } from "../../../lib/cockpit/finance";
-import type { DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
-import { checkProvider, issueDocument, issueError, providerCheckText, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
+import { isOpenProforma, splitName } from "../../../lib/cockpit/finance";
+import type { ArchiveDoc, DocType, FinCustomer, FinDocument, FinPayment, PayMethod } from "../../../lib/cockpit/finance";
+import { checkProvider, issueDocument, issueError, logWhatsappSend, providerCheckText, rpcError, sendDocument, sendDocumentError, simulateIssue } from "../../../lib/cockpit/financeApi";
 import { verifyCode } from "../../../lib/cockpit/mfa";
-import { canSend, defaultBody, defaultSubject, deliveryText, sendSummary } from "../../../lib/cockpit/financeSend";
+import { defaultBody, defaultSubject, deliveryText, waNumber, waText, whatsappUrl } from "../../../lib/cockpit/financeSend";
 import type { DocSend } from "../../../lib/cockpit/financeSend";
+import { archivePdfLink } from "../../../lib/cockpit/archivePdf";
+import { buildDocRows, rowMatches, sentMark, typeMatches } from "../../../lib/cockpit/docList";
+import type { DocRow } from "../../../lib/cockpit/docList";
 import { DocSendPanel } from "./DocSendPanel";
+import { DocIcon, IconButton } from "./DocIcons";
+import "../../../styles/cockpit-doclist.css";
 
 interface EditLine { name: string; qty: string; price: string }
 interface Editor {
@@ -29,9 +34,12 @@ const blankEditor = (): Editor => ({
 });
 const toLines = (e: Editor) => e.lines.map((l) => ({ name: l.name, qty: Number(l.qty), price: Number(l.price) }));
 const uncertain = (d: FinDocument) => d.status === "DRAFT" && (d.last_error ?? "").startsWith("UNCERTAIN");
+const PAGE = 100;
 
-export function DocumentsTab({ level, firmId, customers, docs, payments, sends, archiveCount, onOpenArchive, onChange }: {
-  level: number; firmId: string; customers: FinCustomer[]; docs: FinDocument[]; payments: FinPayment[]; sends: DocSend[]; archiveCount: number; onOpenArchive: () => void; onChange: () => void;
+/** Every document in one list, ledger and history archive together, each row with the icon actions of the invoicing system's own list:
+ *  view, print, mail to the customer in one click, WhatsApp, and every other option (extra addresses, edited text, copy link, the send log). */
+export function DocumentsTab({ level, firmId, customers, docs, archive, payments, sends, onOpenArchive, onChange }: {
+  level: number; firmId: string; customers: FinCustomer[]; docs: FinDocument[]; archive: ArchiveDoc[]; payments: FinPayment[]; sends: DocSend[]; onOpenArchive: () => void; onChange: () => void;
 }) {
   const cn = useClientNames();
   const [ed, setEd] = useState<Editor | null>(null);
@@ -43,13 +51,14 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
   // Issuing is final, so it is confirmed on the page (a native dialog can be accepted by an automated browser) with a fresh 6 digit code (T04).
   const [ask, setAsk] = useState<{ text: string; factors: { id: string; name: string }[]; factorId: string; code: string; err: string | null } | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  const sendsByDoc = useMemo(() => {
-    const m = new Map<string, DocSend[]>();
-    for (const s of sends) if (s.document_id) m.set(s.document_id, [...(m.get(s.document_id) ?? []), s]);
-    return m;
-  }, [sends]);
+  const [q, setQ] = useState("");
+  const [limit, setLimit] = useState(PAGE);
   const byId = useMemo(() => new Map(customers.map((c) => [c.id, c])), [customers]);
   const docById = useMemo(() => new Map(docs.map((d) => [d.id, d])), [docs]);
+  const rows = useMemo(() => buildDocRows(docs, archive, sends, customers), [docs, archive, sends, customers]);
+  const rowByKey = useMemo(() => new Map(rows.map((r) => [r.key, r])), [rows]);
+  /** The customer as the screen may show it: the name while names are revealed, a neutral label while hidden. */
+  const who = (r: DocRow): string => (r.customer ? (cn.revealed ? splitName(r.customer.name).name : cn.customer(r.customer)) : cn.casual(r.casualName));
 
   const totals = ed ? computeTotals(toLines(ed), Number(ed.vat_rate) || 0, ed.tax_included) : null;
   const edCustomer = ed ? byId.get(ed.customer_id) : undefined;
@@ -209,31 +218,92 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
     setPay(null); setNote({ ok: true, text: "התשלום נרשם. זהו רישום פנימי בלבד, לא מסמך מס. להפקת קבלה השתמשו ב\"הפקת קבלה\"." }); onChange();
   }
 
-  const togglePick = (id: string) => setPicked((p) => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const togglePick = (key: string) => setPicked((p) => { const n = new Set(p); if (n.has(key)) n.delete(key); else n.add(key); return n; });
+  const target = (r: DocRow) => (r.source === "ledger" ? { document_id: r.id } : { archive_id: r.id });
+  const subj = (r: DocRow) => ({ doc_type: r.docType, doc_number: r.number });
+  const name = (r: DocRow) => `${r.typeLabel} ${r.number ?? ""}`.trim();
   /** Bulk send, one mail per document, with the default text. Each document goes through the same server checks as a single send. */
   async function bulkSend(toCustomers: boolean) {
-    const list = docs.filter((d) => picked.has(d.id) && canSend(d));
+    const list = rows.filter((r) => picked.has(r.key) && r.sendable);
     if (!list.length) return;
-    const who = toCustomers ? "ללקוחות שלהם" : "אליכם";
-    if (!window.confirm(`לשלוח ${list.length} מסמכים ${who} בדוא"ל, עם נוסח ברירת המחדל?`)) return;
+    const whom = toCustomers ? "ללקוחות שלהם" : "אליכם";
+    if (!window.confirm(`לשלוח ${list.length} מסמכים ${whom} בדוא"ל, עם נוסח ברירת המחדל?`)) return;
     setBusy("bulk");
     let ok = 0; const failed: string[] = [];
-    for (const d of list) {
-      const r = await sendDocument({ document_id: d.id, include_customer: toCustomers, copy_to_me: !toCustomers, subject: defaultSubject(d), body: defaultBody(d) });
-      if (r.ok) ok += 1; else failed.push(`${DOC_TYPE[d.doc_type]} ${d.doc_number ?? ""}: ${sendDocumentError(r)}`);
+    for (const r of list) {
+      const res = await sendDocument({ ...target(r), include_customer: toCustomers, copy_to_me: !toCustomers, subject: defaultSubject(subj(r)), body: defaultBody(subj(r)) });
+      if (res.ok) ok += 1; else failed.push(`${name(r)}: ${sendDocumentError(res)}`);
     }
     setBusy(null); setPicked(new Set()); onChange();
     setNote({ ok: failed.length === 0, text: `נשלחו ${ok} מתוך ${list.length}.${failed.length ? ` לא נשלחו: ${failed.join(" | ")}` : ""}` });
   }
-  const shown = docs.filter((d) => !typeFilter || (typeFilter === "OPEN_PROFORMA" ? isOpenProforma(d, docs) : d.doc_type === typeFilter));
+
+  function openPanel(r: DocRow) { setSendFor(r.key); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  /** The document's link: stored on a ledger document, asked of the history system for an archive document. Null with the reason shown. */
+  async function linkOf(r: DocRow): Promise<string | null> {
+    if (r.pdfUrl) return r.pdfUrl;
+    if (r.source !== "archive") { setNote({ ok: false, text: `${name(r)}: למסמך אין עדיין קישור.` }); return null; }
+    setBusy(`link:${r.key}`);
+    const res = await archivePdfLink(r.id);
+    setBusy(null);
+    if (res.ok) return res.url;
+    setNote({ ok: false, text: `${name(r)}: ${res.text}` });
+    return null;
+  }
+  async function viewRow(r: DocRow) {
+    setNote(null);
+    const u = await linkOf(r);
+    if (u) window.open(u, "_blank", "noopener,noreferrer");
+  }
+  /** One click: the default text to the customer's card address, with a copy to the partner. Without an address, or for a test
+   *  document, the full send window opens instead, where an address can be typed. */
+  async function mailRow(r: DocRow) {
+    setNote(null);
+    if (r.isTest || !r.customer?.email) {
+      openPanel(r);
+      if (!r.isTest) setNote({ ok: false, text: `${name(r)}: אין בכרטיס הלקוח כתובת דוא"ל. הזינו כתובת בחלון השליחה, או עדכנו את כרטיס הלקוח.` });
+      return;
+    }
+    if (!window.confirm(`לשלוח את ${name(r)} ללקוח ${who(r)} בדוא"ל, עם עותק אליכם?`)) return;
+    setBusy(`mail:${r.key}`);
+    const res = await sendDocument({ ...target(r), include_customer: true, copy_to_me: true, subject: defaultSubject(subj(r)), body: defaultBody(subj(r)) });
+    setBusy(null); onChange();
+    setNote(res.ok ? { ok: true, text: `${name(r)} נשלח ללקוח${res.attached ? " עם קובץ PDF מצורף" : ", עם קישור למסמך"}, ועותק אליכם.${res.warning ? " יומן השליחות לא עודכן במלואו." : ""}` } : { ok: false, text: sendDocumentError(res) });
+  }
+  /** Opens WhatsApp with the message ready. The sending itself happens there, so the log records the opening. */
+  async function whatsappRow(r: DocRow) {
+    setNote(null);
+    const u = await linkOf(r);
+    if (!u) return;
+    const text = waText(subj(r), u);
+    window.open(whatsappUrl(r.customer?.phone, text), "_blank", "noopener,noreferrer");
+    const mobile = waNumber(r.customer?.phone);
+    const ok = await logWhatsappSend({ kind: r.source === "ledger" ? "document" : "archive", id: r.id }, mobile ? `+${mobile}` : "", text);
+    setNote({ ok, text: ok ? `WhatsApp נפתח עם ההודעה על ${name(r)}${mobile ? "" : ". אין בכרטיס נייד תקין, בחרו איש קשר"}.` : "WhatsApp נפתח, אך הרישום ביומן השליחות נכשל." });
+    onChange();
+  }
+
+  const filtered = rows.filter((r) => typeMatches(r, typeFilter) && rowMatches(r, q, cn.revealed, who(r)));
+  const shown = filtered.slice(0, limit);
+  const pickable = shown.filter((r) => r.sendable);
+  const allPicked = pickable.length > 0 && pickable.every((r) => picked.has(r.key));
+  // A sum is only meaningful within one kind of document: an invoice and the receipt for it would count the same money twice.
+  const oneKind = typeFilter !== "";
+  const sign = (r: DocRow) => (r.docType === "CREDIT" ? -1 : 1);
+  const sumNet = filtered.reduce((t, r) => t + sign(r) * (r.docType === "RECEIPT" ? 0 : r.subtotal), 0);
+  const sumTotal = filtered.reduce((t, r) => t + sign(r) * r.total, 0);
+  const panelRow = sendFor ? rowByKey.get(sendFor) : undefined;
   const receiptMode = ed?.doc_type === "RECEIPT";
 
   return (
     <div className="ck-stack">
       <div className="ck-row" style={{ justifyContent: "space-between" }}>
-        <select className="ck-select" aria-label="סינון לפי סוג" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} style={{ maxWidth: 220 }}>
-          <option value="">כל המסמכים</option><option value="OPEN_PROFORMA">חשבונות עסקה פתוחים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-        </select>
+        <div className="doc-tools">
+          <select className="ck-select" aria-label="סינון לפי סוג" value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setLimit(PAGE); }} style={{ maxWidth: 220 }}>
+            <option value="">כל המסמכים</option><option value="OPEN_PROFORMA">חשבונות עסקה פתוחים</option>{Object.entries(DOC_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+          <input className="ck-input" type="search" aria-label="חיפוש מסמך" placeholder={cn.revealed ? "מספר מסמך, הקצאה, לקוח או נושא" : "מספר מסמך או מספר הקצאה"} value={q} onChange={(e) => { setQ(e.target.value); setLimit(PAGE); }} />
+        </div>
         <div className="ck-row">
           {level >= 3 && <button className="ck-btn" disabled={busy !== null} title="קריאה בלבד: שואל את מערכת ההנפקה אם היא מקבלת את המפתח שבשרת. לא מפיק ולא שומר דבר." onClick={() => void checkConnection()}>{busy === "check" ? "בודק..." : "בדיקת חיבור למערכת ההנפקה"}</button>}
           <button className="ck-btn" disabled={busy !== null || !customers.some((c) => c.retainer_active)} title="יוצר טיוטות בלבד, ללא הפקה" onClick={() => void retainerDrafts()}>טיוטות ריטיינר לחודש הנוכחי</button>
@@ -242,8 +312,8 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
       </div>
       {!customers.length && <div className="ck-warn">כדי להפיק מסמך יש להוסיף לקוח בלשונית "לקוחות".</div>}
       {note && <div className={note.ok ? "ck-ok" : "ck-err"} aria-live="polite">{note.text}</div>}
-      {archiveCount > 0 && (
-        <div className="ck-meta">מסמכים שהופקו במערכת ההיסטוריה (<bdi>{archiveCount}</bdi>) נמצאים בלשונית "ארכיון היסטוריה" ולא ברשימה הזאת. <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
+      {archive.length > 0 && (
+        <div className="ck-meta">הרשימה כוללת גם את המסמכים שהופקו במערכת ההיסטוריה (<bdi>{archive.length}</bdi>). ייבוא, גיבוי ובדיקת רציפות המספור נמצאים בלשונית "ארכיון היסטוריה". <button className="ck-link" onClick={onOpenArchive}>מעבר לארכיון</button></div>
       )}
 
       {ed && totals && (
@@ -321,9 +391,10 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
         </div>
       )}
 
-      {sendFor && docById.get(sendFor) && (
-        <DocSendPanel key={sendFor} target={{ kind: "document", id: sendFor, docType: docById.get(sendFor)!.doc_type, docNumber: docById.get(sendFor)!.doc_number, pdfUrl: docById.get(sendFor)!.pdf_url, isTest: docById.get(sendFor)!.is_test }}
-          customer={byId.get(docById.get(sendFor)!.customer_id)} sends={sendsByDoc.get(sendFor) ?? []} level={level} onClose={() => setSendFor(null)} onChange={onChange} />
+      {panelRow && (
+        <DocSendPanel key={panelRow.key} target={{ kind: panelRow.source === "ledger" ? "document" : "archive", id: panelRow.id, docType: panelRow.docType, docNumber: panelRow.number, pdfUrl: panelRow.pdfUrl, isTest: panelRow.isTest }}
+          customer={panelRow.customer} casualName={panelRow.casualName} sends={sends.filter((x) => (panelRow.source === "ledger" ? x.document_id : x.archive_id) === panelRow.id)}
+          level={level} onClose={() => setSendFor(null)} onChange={onChange} />
       )}
 
       {picked.size > 0 && (
@@ -350,49 +421,70 @@ export function DocumentsTab({ level, firmId, customers, docs, payments, sends, 
         </div>
       )}
 
-      <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th aria-label="בחירה"></th><th>מס'</th><th>סוג</th><th>לקוח</th><th>תאריך</th><th className="fin-num">סה"כ</th><th className="fin-num">יתרה</th><th>סטטוס</th><th></th></tr></thead><tbody>
-        {shown.length ? shown.map((d) => {
-          const bal = openBalance(d, docs, payments);
-          const src = d.related_doc_id ? docById.get(d.related_doc_id) : null;
-          const sentOn = sendSummary(sendsByDoc.get(d.id) ?? []);
+      <div className="ck-table-wrap"><table className="ck-table"><thead><tr>
+        <th>{pickable.length ? <input type="checkbox" aria-label="בחירת כל המסמכים המוצגים" checked={allPicked} onChange={() => setPicked((p) => { const n = new Set(p); for (const r of pickable) { if (allPicked) n.delete(r.key); else n.add(r.key); } return n; })} /> : null}</th>
+        <th>לקוח</th><th>סוג לקוח</th><th>מס'</th><th>סוג</th><th>תאריך</th><th>נושא</th><th className="fin-num">לפני מע"מ</th><th className="fin-num">סה"כ</th><th>הערה</th><th>מצב</th><th>פעולות</th>
+      </tr></thead><tbody>
+        {shown.length ? shown.map((r) => {
+          const d = r.doc;
+          const bal = d ? openBalance(d, docs, payments) : 0;
+          const src = d?.related_doc_id ? docById.get(d.related_doc_id) : null;
+          const mark = sentMark(r);
+          const rowBusy = busy !== null && busy.endsWith(`:${r.key}`);
           return (
-            <tr key={d.id}>
-              <td>{canSend(d) ? <input type="checkbox" aria-label={`בחירת ${DOC_TYPE[d.doc_type]} ${d.doc_number ?? ""}`} checked={picked.has(d.id)} onChange={() => togglePick(d.id)} /> : null}</td>
-              <td>{d.doc_number ?? ""}</td>
-              <td>{DOC_TYPE[d.doc_type]}{src ? <div className="ck-meta">מול {src.doc_number}</div> : null}</td>
-              <td>{cn.customer(byId.get(d.customer_id) ?? { id: d.customer_id })}</td><td>{d.issue_date}</td>
-              <td className="fin-num">{d.doc_type === "CREDIT" ? `-${money(d.total)}` : money(d.total)}</td>
-              <td className="fin-num">{d.doc_type === "INVOICE" && d.status === "ISSUED" ? money(bal) : ""}</td>
+            <tr key={r.key}>
+              <td>{r.sendable ? <input type="checkbox" aria-label={`בחירת ${name(r)}`} checked={picked.has(r.key)} onChange={() => togglePick(r.key)} /> : null}</td>
+              <td className="fin-text"><span className="fin-name" title={who(r)}>{who(r)}</span></td>
+              <td>{r.casual ? "מזדמן" : "קיים"}</td>
+              <td>{r.number ?? ""}</td>
+              <td>{r.typeLabel}{src ? <span className="doc-kind">מול <bdi>{src.doc_number}</bdi></span> : null}{r.source === "archive" ? <span className="doc-kind">מערכת ההיסטוריה</span> : null}</td>
+              <td>{r.date}</td>
+              <td className="fin-text"><span className="doc-subject" title={cn.text(r.subject)}>{cn.text(r.subject)}</span></td>
+              <td className="fin-num">{r.docType === "RECEIPT" ? "" : r.docType === "CREDIT" ? `-${money(r.subtotal)}` : money(r.subtotal)}</td>
+              <td className="fin-num">{r.docType === "CREDIT" ? `-${money(r.total)}` : money(r.total)}{d?.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 ? <span className="doc-kind">יתרה <bdi>{money(bal)}</bdi></span> : null}</td>
               <td>
-                {d.status === "DRAFT" ? <span className={`ck-badge ${uncertain(d) ? "red" : "yellow"}`}>{uncertain(d) ? "תוצאה לא ודאית" : "טיוטה"}</span>
-                  : d.is_test ? <span className="ck-badge yellow">בדיקה</span> : <span className="ck-badge green">הופק</span>}
-                {d.allocation_number && <div className="ck-meta" dir="ltr">הקצאה {allocationShort(d.allocation_number)}</div>}
-                {d.doc_type === "PROFORMA" && d.status === "ISSUED" && !d.is_test && (closedBy(d, docs) ? <div className="ck-meta">נסגר ע"י מסמך <bdi>{closedBy(d, docs)?.doc_number}</bdi></div> : <span className="ck-badge yellow">פתוח</span>)}
-                {d.source_proforma_id && <div className="ck-meta">נוצר מחשבון עסקה</div>}
-                {sentOn.email && <div className="ck-meta">נשלח בדוא"ל <bdi>{sentOn.email}</bdi>{sentOn.opened ? <> · נפתח <bdi>{sentOn.opened}</bdi></> : null}</div>}
-                {sentOn.bounced && <span className="ck-badge red">הודעה חזרה</span>}
-                {sentOn.whatsapp && <div className="ck-meta">נשלח ב-WhatsApp <bdi>{sentOn.whatsapp}</bdi></div>}
-                {d.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
+                {r.note && <span className={`ck-badge ${r.note.tone}`} title={r.note.title}>{r.note.text}</span>}
+                {d?.source_proforma_id && <span className="doc-kind">נוצר מחשבון עסקה</span>}
+                {d?.last_error && <div className="ck-meta" style={{ maxWidth: 260 }}>{d.last_error.slice(0, 120)}</div>}
               </td>
-              <td className="fin-actions-cell"><div className="fin-actions">
-                {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
-                {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול מערכת ההנפקה</button>}
-                {canSend(d) && <>
-                  <a className="ck-btn sm" href={d.pdf_url ?? undefined} target="_blank" rel="noopener noreferrer">צפייה</a>
-                  <button className="ck-btn sm" onClick={() => { setNote(null); setSendFor(d.id); window.scrollTo({ top: 0, behavior: "smooth" }); }}>שליחה</button></>}
-                {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
-                {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
-                  <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
-                  <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
-                {isOpenProforma(d, docs) && <>
-                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE")}>המרה לחשבונית מס</button>
-                  <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE_RECEIPT")}>המרה לחשבונית מס קבלה</button></>}
-                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT" || d.doc_type === "PROFORMA") && <button className="ck-btn sm" onClick={() => duplicateDoc(d)}>שכפול</button>}
-                {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
-              </div></td>
+              <td><span className="doc-marks">
+                {mark.ticks > 0 && <span className={`doc-mark${mark.bounced ? " bounced" : ""}`} title={mark.title} role="img" aria-label={mark.title}><DocIcon name={mark.ticks === 2 ? "checks" : "check"} /></span>}
+                {mark.bounced && <span className="ck-badge red">חזר</span>}
+                {r.allocation && <span className="doc-mark" title={`מספר הקצאה ${r.allocation}`} role="img" aria-label={`מספר הקצאה ${allocationShort(r.allocation)}`}><DocIcon name="hash" /></span>}
+              </span></td>
+              <td className="fin-actions-cell">
+                {r.sendable && <div className="doc-icons">
+                  <IconButton name="eye" label={`צפייה ב-${name(r)}`} busy={busy === `link:${r.key}`} disabled={busy !== null && !rowBusy} onClick={() => void viewRow(r)} />
+                  <IconButton name="print" label={`הדפסת ${name(r)} (נפתח בלשונית חדשה, משם מדפיסים)`} disabled={busy !== null} onClick={() => void viewRow(r)} />
+                  <IconButton name="mail" label={r.customer?.email && !r.isTest ? `שליחת ${name(r)} ללקוח בדוא"ל, עם עותק אליי` : `שליחת ${name(r)} בדוא"ל (אין כתובת בכרטיס: הזנה ידנית)`} busy={busy === `mail:${r.key}`} disabled={level < 3 || (busy !== null && !rowBusy)} onClick={() => void mailRow(r)} />
+                  <IconButton name="whatsapp" tone="wa" label={`שליחת ${name(r)} ב-WhatsApp`} disabled={level < 3 || busy !== null} onClick={() => void whatsappRow(r)} />
+                  <IconButton name="more" label={`כל אפשרויות השליחה של ${name(r)}: כתובות נוספות, עריכת הנוסח, העתקת קישור, יומן שליחות`} onClick={() => { setNote(null); openPanel(r); }} />
+                </div>}
+                {d && <div className={`fin-actions${r.sendable ? " doc-row-more" : ""}`}>
+                  {d.status === "DRAFT" && !uncertain(d) && <><button className="ck-btn sm" onClick={() => editDraft(d)}>עריכה</button><button className="ck-btn sm danger" onClick={() => void removeDraft(d)}>מחיקה</button></>}
+                  {uncertain(d) && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>בדיקת סטטוס מול מערכת ההנפקה</button>}
+                  {d.status === "ISSUED" && !d.allocation_number && d.doc_type !== "PROFORMA" && d.doc_type !== "RECEIPT" && <button className="ck-btn sm" disabled={busy === d.id} onClick={() => void reconcile(d)}>רענון מספר הקצאה</button>}
+                  {d.doc_type === "INVOICE" && d.status === "ISSUED" && bal > 0 && <>
+                    <button className="ck-btn sm" onClick={() => receiptFor(d)}>הפקת קבלה</button>
+                    <button className="ck-btn sm" onClick={() => setPay({ doc: d, amount: String(bal), date: today(), method: "TRANSFER" })}>רישום תשלום</button></>}
+                  {isOpenProforma(d, docs) && <>
+                    <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE")}>המרה לחשבונית מס</button>
+                    <button className="ck-btn sm" onClick={() => convertProforma(d, "INVOICE_RECEIPT")}>המרה לחשבונית מס קבלה</button></>}
+                  {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT" || d.doc_type === "PROFORMA") && <button className="ck-btn sm" onClick={() => duplicateDoc(d)}>שכפול</button>}
+                  {(d.doc_type === "INVOICE" || d.doc_type === "INVOICE_RECEIPT") && d.status === "ISSUED" && <button className="ck-btn sm" onClick={() => creditFor(d)}>זיכוי</button>}
+                </div>}
+              </td>
             </tr>);
-        }) : <tr><td colSpan={9}>אין מסמכים עדיין</td></tr>}
-      </tbody></table></div>
+        }) : <tr><td colSpan={12}>{rows.length ? "אין מסמכים שמתאימים לסינון" : "אין מסמכים עדיין"}</td></tr>}
+      </tbody>
+      {oneKind && filtered.length > 0 && (
+        <tfoot><tr><td colSpan={7}>סה"כ <bdi>{filtered.length}</bdi> מסמכים בסינון</td><td className="fin-num">{money(sumNet)}</td><td className="fin-num">{money(sumTotal)}</td><td colSpan={3}></td></tr></tfoot>
+      )}
+      </table></div>
+      {filtered.length > shown.length && (
+        <div className="ck-row"><span className="ck-meta">מוצגים <bdi>{shown.length}</bdi> מתוך <bdi>{filtered.length}</bdi>.</span><button className="ck-btn" onClick={() => setLimit((n) => n + PAGE)}>הצגת עוד {Math.min(PAGE, filtered.length - shown.length)}</button></div>
+      )}
+      <div className="ck-meta">✓ נשלח מהמערכת. ✓✓ נפתח אצל הלקוח: לפי מעקב הפתיחה שלנו, או לפי מערכת ההיסטוריה. היעדר סימון אינו אומר שלא נשלח: שליחות שנעשו במערכת ההיסטוריה עצמה אינן ביומן שלנו. # ירוק: יש מספר הקצאה (המספר המלא בריחוף).</div>
     </div>
   );
 }
