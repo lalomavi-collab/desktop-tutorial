@@ -20,8 +20,8 @@ The wordmark is artwork, not text. It carries no font: the letters are outlines.
 | `public/lalum-logo-inverse.svg` | wordmark, white, transparent, for dark grounds |
 | `public/lalum-logo.png` | the same wordmark at 1768 px wide, for contexts that reject SVG (email) |
 | `public/lalum-mark.svg` | the square lockup exactly as supplied |
-| `public/favicon.svg`, `public/favicon.ico` | the lockup with the black field trimmed to 86%, because at 16 to 48 px the supplied margin swallows the letters |
-| `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`, `public/lalum-badge.png` | the lockup at the supplied proportions, which also keep the wordmark inside the maskable safe circle |
+| `public/favicon.svg`, `public/favicon.ico` | the lockup on the navy field, trimmed to 86%, because at 16 to 48 px the supplied margin swallows the letters |
+| `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`, `public/lalum-badge.png` | the lockup on the navy field at the supplied proportions, which also keep the wordmark inside the maskable safe circle |
 | `src/components/Wordmark.tsx` | the same paths inline, filled with `currentColor`, for use inside the app |
 
 ## Regenerating
@@ -33,6 +33,15 @@ The Open Graph cards are rebuilt from `public/lalum-logo.svg`:
 Playwright is a dev tool here, not an app dependency, so it is not in
 `package.json`. The icons were rendered from the same vector; regenerate them
 only if the artwork itself changes, and keep the geometry above.
+
+The icon field: by the owner's decision (30.10.2026), the app icons and the
+favicon carry the white wordmark on navy `#14324F`, the colour of the app,
+instead of the supplied black. The wordmark, its size and its position are
+unchanged; `public/lalum-mark.svg` stays exactly as supplied. To rebuild them,
+take `lalum-mark.svg` (or `favicon.svg` for the favicon) with the field filled
+`#14324F`, and render it square at 512, 192, 180 and 360 px; the favicon at 16,
+32 and 48 px into one `.ico`. Raise the `?v=` query on the icon links in
+`index.html` so browsers drop the cached icon.
 
 ## Using it
 
