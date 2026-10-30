@@ -51,7 +51,7 @@ const base = tokens(block(read("cockpit.css"), ".ck-root"));
 const themes = {
   "dark (instrument panel)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="dark"]')) },
   "mint (light)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="mint"]')) },
-  "navy (light, default skin)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="mint"]')), ...tokens(block(read("cockpit-navy.css"), '.ck-root[data-ck-theme="mint"][data-ck-skin="navy"]')) },
+  "navy (light, one of three looks)": { ...base, ...tokens(block(read("cockpit-mint.css"), '.ck-root[data-ck-theme="mint"]')), ...tokens(block(read("cockpit-navy.css"), '.ck-root[data-ck-theme="mint"][data-ck-skin="navy"]')) },
 };
 for (const [name, tk] of Object.entries(themes)) {
   t(`AA contrast: ${name}`, () => {

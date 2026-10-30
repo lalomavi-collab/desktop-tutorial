@@ -7,7 +7,8 @@
      shape       16px cards, 10px controls, no pills, no lifts on hover
      icons       the rail and the illustrations keep their drawings, recoloured from sage to navy, with the gold as the warm note
    It sits on top of the mint theme (data-ck-theme="mint" data-ck-skin="navy" on .ck-root), so every structural rule of the
-   light theme still applies and only colour and shape change here. Without the attribute the cockpit is the earlier sage look.
+   light theme still applies and only colour and shape change here. It is one of three looks picked in the rail (navy, beige,
+   dark), added beside the other two and not instead of them (owner, 30.10.2026); beige stays the default.
    The dark theme is not touched. Contrast of every token is checked in scripts/cockpit-text-check.mjs.
    ------------------------------------------------------------------ */
 .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] {
@@ -115,8 +116,9 @@
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-foot button.ck-logout { color: #ffc9c2; }
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-foot button.ck-logout:hover { background: rgba(255, 201, 194, .12); }
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] :is(.ck-sidebar-nav a, .ck-sidebar-foot a, .ck-sidebar-foot button):focus-visible { outline-color: #fff; }
-  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-brand button.ck-theme { background: rgba(255, 255, 255, .92); }
-  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-brand button.ck-theme:hover { background: #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-look[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--clay), 0 0 0 4px #fff; }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-look-navy { border-color: rgba(255, 255, 255, .55); }
+  .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-look:focus-visible { outline-color: #fff; }
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-railicon { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .25)); }
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav a[aria-current="page"] .ck-railicon { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .3)); }
   .ck-root.ck-with-sidebar[data-ck-theme="mint"][data-ck-skin="navy"] .ck-sidebar-nav .ck-navbadge { box-shadow: 0 0 0 2px var(--clay); }
