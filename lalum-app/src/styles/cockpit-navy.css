@@ -58,6 +58,8 @@
 .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero { background: var(--clay); border-color: var(--clay); color: #fff; }
 .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero :is(.ck-hero-title, .ck-title, h2, h3, b, strong) { color: #fff; }
 .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero :is(.ck-meta, p, span) { color: rgba(255, 255, 255, .86); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero-art [fill="var(--clay-tint)"] { fill: rgba(255, 255, 255, .14); }
+.ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-hero-art [fill="var(--clay-soft)"] { fill: rgba(255, 255, 255, .08); }
 
 /* Type: one sans; page titles heavy and compact, without the side rule */
 .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] .ck-top h1 {
