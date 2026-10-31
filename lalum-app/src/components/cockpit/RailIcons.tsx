@@ -82,6 +82,8 @@ ICONS["/workspace/matter-360"] = ICONS["/workspace"];
 ICONS["/workspace/portal-preview"] = ICONS["user"];
 // Data export had no picture of its own, so its row in the "more tools" panel stood empty; it takes the client documents file.
 ICONS["/workspace/export"] = ICONS["/workspace/client-docs"];
+// display preferences: three slider tracks, one knob in gold
+ICONS["/settings/preferences"] = <><rect x="3" y="3" width="26" height="26" rx="7" fill={B} /><path d="M8.5 10.5h15M8.5 16h15M8.5 21.5h15" {...stroke(W, 2)} /><circle cx="19" cy="10.5" r="3.1" fill={S} /><circle cx="12" cy="16" r="3.1" fill={W} /><circle cx="20.5" cy="21.5" r="3.1" fill={W} /></>;
 
 export function RailIcon({ id, size = 30 }: { id: string; size?: number }) {
   return (

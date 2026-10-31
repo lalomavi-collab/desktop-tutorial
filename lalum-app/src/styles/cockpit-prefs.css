@@ -1,0 +1,101 @@
+/* Personal display preferences (lib/cockpit/ckPrefs.ts): attributes on <html> that only the system's own roots read, so the
+   public site never changes. The defaults set no attribute at all, so nothing here runs for anyone who never opened the screen. */
+
+/* Text size: five steps. The zoom of each step matches SIZE_ZOOM in ckPrefs.ts (prefs-check compares them). It applies to the
+   content of a screen and of the entry gate; the rail and the floating buttons keep their size, so the frame never breaks. */
+html[data-ck-size="0"] { --ck-zoom: .92; }
+html[data-ck-size="2"] { --ck-zoom: 1.1; }
+html[data-ck-size="3"] { --ck-zoom: 1.22; }
+html[data-ck-size="4"] { --ck-zoom: 1.36; }
+html[data-ck-size] .ck-root .ck-shell,
+html[data-ck-size] .ck-entry .gate-main { zoom: var(--ck-zoom); }
+/* Zoom scales viewport units too, so the few heights tied to the screen are divided back, and stay inside it. */
+html[data-ck-size] .ck-root .ck-cp { min-height: calc((100dvh - 190px) / var(--ck-zoom)); }
+html[data-ck-size] .ck-root .ck-panel { max-height: calc((100dvh - 190px) / var(--ck-zoom)); }
+html[data-ck-size] .ck-root .ck-cal-grid-wrap { max-height: calc(72vh / var(--ck-zoom)); }
+html[data-ck-size] .ck-root .ck-drawer { width: min(420px, calc(100vw / var(--ck-zoom))); }
+@media (max-width: 900px) {
+  html[data-ck-size] .ck-root .ck-cp { min-height: 0; }
+  html[data-ck-size] .ck-root .ck-panel { max-height: none; }
+}
+
+/* High contrast: secondary text close to the main text, firmer lines, solid cards, and a thicker focus ring. Each look keeps
+   its own colours; the steps are checked for AAA (7:1) in scripts/prefs-check.mjs. */
+html[data-ck-contrast="high"] .ck-root[data-ck-theme="mint"] {
+  --slate: #2f2c27;
+  --line: #b3a78f;
+  --line-strong: #857a64;
+  --card: #ffffff;
+  --clay: #3f5a43;
+  --clay-hover: #33493a;
+}
+html[data-ck-contrast="high"] .ck-root[data-ck-theme="mint"][data-ck-skin="navy"] {
+  --slate: #26323f;
+  --line: #a9b6c5;
+  --line-strong: #6f7f92;
+  --clay: #0b2239;
+  --clay-hover: #06182a;
+}
+html[data-ck-contrast="high"] .ck-root[data-ck-theme="dark"] {
+  --ink: #ffffff;
+  --slate: #d6dbe2;
+  --line: rgba(255, 255, 255, .24);
+  --line-strong: rgba(255, 255, 255, .42);
+}
+html[data-ck-contrast="high"] .ck-root :focus-visible { outline-width: 3px !important; outline-offset: 2px; }
+html[data-ck-contrast="high"] .ck-root main :is(p, li, td) a:not(.ck-btn) { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Reduced motion: no animations and no transitions inside the system. The device setting is honoured on its own as well. */
+html[data-ck-motion="reduce"] :is(.ck-root, .ck-root *, .ck-root *::before, .ck-root *::after) {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* The preferences screen (pages/cockpit/Preferences.tsx). */
+.ck-prefs { display: flex; flex-direction: column; gap: 14px; max-inline-size: 880px; }
+.ck-prefs-card { display: flex; flex-direction: column; gap: 12px; }
+.ck-prefs-card > header { display: flex; flex-direction: column; gap: 2px; }
+.ck-prefs-card h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+.ck-prefs-card header p, .ck-prefs-note { margin: 0; font-size: 14px; color: var(--slate); text-align: start; text-align-last: auto; line-height: 1.5; }
+.ck-prefs-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.ck-prefs-opt {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; min-inline-size: 104px; min-block-size: 92px;
+  padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card));
+  color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center;
+}
+.ck-prefs-opt:hover { background: var(--clay-tint); }
+.ck-prefs-opt[aria-pressed="true"] { border-color: var(--clay); box-shadow: inset 0 0 0 2px var(--clay); background: var(--clay-tint); }
+.ck-prefs-opt:focus-visible, .ck-prefs-switch:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ck-prefs-glyph { font-weight: 700; line-height: 1; color: var(--ink); }
+.ck-prefs-look { display: grid; grid-template-columns: 22px 1fr; grid-template-rows: 1fr 1fr; gap: 4px; inline-size: 72px; block-size: 46px; padding: 5px; border-radius: 10px; border: 1px solid rgba(0, 0, 0, .12); }
+.ck-prefs-look i { display: block; border-radius: 4px; }
+.ck-prefs-look i:first-child { grid-row: 1 / 3; }
+.ck-prefs-look.navy { background: #f3f5f8; } .ck-prefs-look.navy i:first-child { background: #14324f; } .ck-prefs-look.navy i { background: #ffffff; border: 1px solid #e1e6ed; }
+.ck-prefs-look.beige { background: #f5f1e8; } .ck-prefs-look.beige i:first-child { background: #537056; } .ck-prefs-look.beige i { background: #ffffff; border: 1px solid #e3dccd; }
+.ck-prefs-look.dark { background: #14161b; } .ck-prefs-look.dark i:first-child { background: #7fb785; } .ck-prefs-look.dark i { background: #1e222a; border: 1px solid rgba(255, 255, 255, .12); }
+.ck-prefs-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 4px; }
+.ck-prefs-row + .ck-prefs-row { border-top: 1px solid var(--line); padding-top: 14px; }
+.ck-prefs-row > div { display: flex; flex-direction: column; gap: 2px; }
+.ck-prefs-row b { font-size: 15.5px; color: var(--ink); }
+.ck-prefs-switch {
+  position: relative; flex: none; inline-size: 52px; block-size: 30px; border-radius: 999px; border: 1px solid var(--line-strong, var(--line));
+  background: var(--clay-tint); cursor: pointer; padding: 0;
+}
+.ck-prefs-switch::after {
+  content: ""; position: absolute; inset-block-start: 3px; inset-inline-start: 3px; inline-size: 22px; block-size: 22px; border-radius: 50%;
+  background: var(--card-solid, #fff); box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+}
+.ck-prefs-switch[aria-checked="true"] { background: var(--clay); border-color: var(--clay); }
+.ck-prefs-switch[aria-checked="true"]::after { inset-inline-start: 25px; }
+.ck-prefs-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+@media (prefers-reduced-motion: no-preference) {
+  .ck-prefs-opt, .ck-prefs-switch { transition: background .15s ease, border-color .15s ease; }
+  .ck-prefs-switch::after { transition: inset-inline-start .15s ease; }
+}
+@media (max-width: 640px) {
+  .ck-prefs-opt { min-inline-size: 0; flex: 1 1 88px; }
+  .ck-prefs-row { align-items: flex-start; }
+}

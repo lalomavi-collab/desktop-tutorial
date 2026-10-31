@@ -9,6 +9,7 @@ import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
 import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
+import { bootCkPrefs } from "../../lib/cockpit/ckPrefs";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import { QuickAdd } from "../../components/cockpit/QuickAdd";
@@ -16,13 +17,16 @@ import { Icon } from "../../components/Icon";
 import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
 import { LOOK_EN, NAV_EN, NAV_HEADING_EN, SCREEN_EN, TRANSLATED_SCREENS, useCkLang } from "../../lib/cockpit/ckLang";
 import { supabase } from "../../lib/supabase";
-import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt, ImportArt, InboxArt, ScalesArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
+import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt, ImportArt, InboxArt, ScalesArt, SearchArt, ShieldArt, SlidersArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 import "../../styles/cockpit-type.css";
 import "../../styles/cockpit-navy.css";
 import "../../styles/cockpit-rail-more.css";
+
+// The personal display preferences (text size, contrast, motion) apply as soon as the frame's code loads, before it paints.
+bootCkPrefs();
 
 // The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
 const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));
@@ -65,6 +69,7 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
     ["/settings/members", "חברי הפירמה", false, "user"],
     ["/settings/billing", "חיוב והגדרות", false, "card"],
     ["/settings/security", "אבטחה", false, "shield"],
+    ["/settings/preferences", "העדפות תצוגה", false, "sliders"],
     ["/workspace/export", "ייצוא נתונים", false, "file"],
   ] },
   { heading: "כללי", items: [
@@ -77,7 +82,7 @@ const NAV_SECTIONS: Array<{ heading: string | null; items: NavItem[] }> = [
 const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/workspace/inquiries": InboxArt, "/workspace/tasks": TasksArt, "/workspace/scorecard": ChartArt, "/workspace/import": ImportArt,
   "/workspace/kyc": SearchArt, "/admin/matters": GavelArt, "/workspace/bin": TrashArt, "/settings/billing": CardArt2,
-  "/settings/security": ShieldArt, "/workspace/guide": BookArt,
+  "/settings/security": ShieldArt, "/workspace/guide": BookArt, "/settings/preferences": SlidersArt,
   // The screens separated out of the client portal, and the roster screen.
   "/workspace/calls": HeadsetArt, "/workspace/inbox": InboxArt, "/workspace/client-docs": FolderArt,
   "/workspace/payments": ScalesArt, "/workspace/discussions": CheckArt, "/workspace/campaigns": ChartArt, "/workspace/scheduling": TasksArt, "/workspace/hours": ChartArt,
@@ -89,8 +94,9 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
 const PRIMARY = new Set(["/workspace/dashboard", "/workspace", "/workspace/inquiries", "/settings/billing"]);
 
 // The external bookkeeper sees the bookkeeping system and nothing else; the database refuses the rest (0073), this keeps the interface honest.
-const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"]];
-const BOOKKEEPER_PATHS = ["/settings/billing", "/workspace/guide"];
+// Display preferences are personal and touch no data, so the bookkeeper has them too.
+const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"], ["/settings/preferences", "העדפות תצוגה", false, "sliders"]];
+const BOOKKEEPER_PATHS = ["/settings/billing", "/workspace/guide", "/settings/preferences"];
 
 /** Standalone frame for the partner and admin area: Hebrew (RTL) or English (LTR), gated by firm membership. */
 export function CockpitFrame({
@@ -204,6 +210,7 @@ export function CockpitFrame({
         </nav>
         <div className="ck-sidebar-foot">
           <Link to="/portal"><RailIcon id="user" size={26} /><span>{tx("אזור אישי", "Personal area")}</span></Link>
+          <Link to="/settings/preferences"><RailIcon id="/settings/preferences" size={26} /><span>{tx("העדפות", "Preferences")}</span></Link>
           <Link to="/"><RailIcon id="site" size={26} /><span>{tx("לאתר", "To the site")}</span></Link>
           {user && (
             <button type="button" className="ck-logout" onClick={() => void leave()}>
