@@ -1,0 +1,89 @@
+/* The matters table (MatterTable.tsx): the search and filter bar, the sortable columns, and the cards view.
+   Coloured by the look's own tokens, so it reads in beige, navy and dark without a rule per look. */
+.ck-mt { display: flex; flex-direction: column; gap: 12px; }
+
+.ck-mt-bar { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--card-solid, var(--card)); border: 1px solid var(--line); }
+/* Two rows: the search and the view on top, the filters under them. On a phone the filters fold behind one button. */
+.ck-mt-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; }
+.ck-mt-filters .ck-mt-chips { margin-inline-start: auto; }
+.ck-mt-filterbtn { display: none; align-items: center; gap: 6px; min-block-size: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card)); color: var(--ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.ck-mt-filterbtn[aria-expanded="true"] { background: var(--clay-tint); }
+.ck-mt-filterbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ck-mt-n.on { background: var(--clay); color: var(--on-clay, #fff); }
+.ck-mt-search { position: relative; flex: 1 1 260px; min-inline-size: 200px; display: flex; align-items: center; }
+.ck-mt-search .ck-input { padding-inline-start: 38px; min-block-size: 42px; }
+.ck-mt-search-ic { position: absolute; inset-inline-start: 12px; color: var(--slate); pointer-events: none; }
+.ck-mt-field { display: flex; flex-direction: column; gap: 4px; flex: 0 1 auto; font-size: 13px; font-weight: 700; color: var(--slate); }
+.ck-mt-field .ck-select { inline-size: auto; min-inline-size: 140px; min-block-size: 42px; padding-block: 8px; }
+.ck-mt-dir { inline-size: 42px; block-size: 42px; flex: none; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card)); color: var(--ink); cursor: pointer; font-size: 13px; }
+.ck-mt-dir:hover { background: var(--clay-tint); }
+
+.ck-mt-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ck-mt-chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 42px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-strong, var(--line)); background: transparent; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.ck-mt-chip:hover { background: var(--clay-tint); }
+.ck-mt-chip[aria-pressed="true"] { background: var(--clay); border-color: var(--clay); color: var(--on-clay, #fff); }
+.ck-mt-n { min-inline-size: 22px; block-size: 22px; padding: 0 6px; border-radius: 999px; display: inline-grid; place-items: center; font-size: 13px; background: rgba(179, 64, 47, .14); color: #8a2f21; }
+.ck-mt-chip[aria-pressed="true"] .ck-mt-n { background: rgba(255, 255, 255, .22); color: inherit; }
+
+.ck-mt-view { display: inline-flex; flex: none; gap: 2px; padding: 3px; border-radius: 12px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card)); }
+.ck-mt-view button { display: inline-flex; align-items: center; gap: 6px; block-size: 34px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent; color: var(--slate); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.ck-mt-view button svg { fill: currentColor; }
+.ck-mt-view button svg path { fill: none; }
+.ck-mt-view button[aria-pressed="true"] { background: var(--clay); color: var(--on-clay, #fff); }
+.ck-mt-view button:not([aria-pressed="true"]):hover { color: var(--ink); background: var(--clay-tint); }
+
+.ck-mt-dir:focus-visible, .ck-mt-chip:focus-visible, .ck-mt-view button:focus-visible, .ck-mt-sort:focus-visible, .ck-mt-reset:focus-visible, .ck-mt-card-title:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.ck-mt-count { display: flex; align-items: center; gap: 12px; font-size: 13.5px; color: var(--slate); padding-inline: 4px; }
+.ck-mt-reset { border: 0; background: none; padding: 4px 2px; color: var(--ink); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+/* The table: the name carries its code and practice under it, and the sortable headers are buttons. */
+.ck-mt-table .ck-mt-name { white-space: normal; min-inline-size: 180px; }
+.ck-mt-table .ck-mt-name a { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.ck-mt-table .ck-mt-name small, .ck-mt-stack small { display: block; margin-block-start: 2px; font-size: 13px; }
+.ck-mt-stack { display: block; }
+.ck-mt-sort { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; color: inherit; font: inherit; font-weight: inherit; cursor: pointer; }
+.ck-mt-sort:hover, .ck-mt-sort.on { color: var(--ink); }
+.ck-mt-arrow { inline-size: 10px; font-size: 13px; transform: scale(.7); }
+.ck-mt-due { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.ck-mt-due small { font-size: 13px; }
+.ck-mt-soon { font-weight: 700; color: var(--ink); }
+
+/* Cards: three across on a wide screen, two on a tablet, one on a phone. */
+.ck-mt-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+.ck-mt-card { display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 14px; border-radius: 16px; background: var(--card-solid, var(--card)); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(15, 34, 54, .05); }
+.ck-mt-card.breach { border-color: var(--danger); }
+.ck-mt-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.ck-mt-card-title { color: var(--ink); font-size: 16.5px; font-weight: 700; line-height: 1.3; text-decoration: none; overflow-wrap: anywhere; }
+.ck-mt-card-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ck-mt-card-badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ck-mt-card-dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; padding-block-start: 10px; border-block-start: 1px solid var(--line); align-items: center; font-size: 14px; }
+.ck-mt-card-dl dt { color: var(--slate); font-size: 13px; }
+.ck-mt-card-dl dd { margin: 0; color: var(--ink); }
+.ck-mt-card-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block-start: auto; }
+.ck-mt-card-pick { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--slate); margin-inline-end: auto; }
+.ck-mt-card .ck-btn.sm { min-block-size: 36px; padding: 6px 14px; font-size: 14px; }
+
+/* The site justifies p, li and dd inside main; nothing in the table bar or the cards should be. */
+.ck-mt li, .ck-mt dd { text-align: start; text-align-last: auto; }
+
+.ck-root[data-ck-theme="dark"] .ck-mt-card { box-shadow: none; }
+.ck-root[data-ck-theme="dark"] .ck-mt-n { background: rgba(230, 132, 120, .2); color: #f0a99e; }
+
+@media (max-width: 860px) {
+  .ck-mt-bar { padding: 10px; gap: 10px; }
+  .ck-mt-row:first-child { align-items: center; gap: 8px; }
+  .ck-mt-search { flex: 1 1 100%; min-inline-size: 0; }
+  .ck-mt-filterbtn { display: inline-flex; flex: none; padding: 0 12px; }
+  .ck-mt-row:first-child .ck-mt-view { margin-inline-start: auto; }
+  .ck-mt-filters { display: none; }
+  .ck-mt-filters.open { display: flex; }
+  .ck-mt-field { flex: 1 1 140px; }
+  .ck-mt-field .ck-select { inline-size: 100%; min-inline-size: 0; }
+  .ck-mt-filters .ck-mt-chips { margin-inline-start: 0; }
+  .ck-mt-view button { padding: 0 8px; }
+  .ck-mt-view button span { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ck-mt-chip, .ck-mt-view button { transition: background .15s ease, color .15s ease; }
+}
