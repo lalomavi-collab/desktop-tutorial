@@ -46,7 +46,7 @@ export function ConflictReview({ matterId, conflictStatus, canDecide, onChange }
   const cur = CONFLICT[conflictStatus] ?? ["yellow", conflictStatus];
 
   return (
-    <details>
+    <details id="ck-tool-conflict">
       <summary className="ck-btn" style={{ display: "inline-flex" }}>בדיקת ניגוד עניינים{rows.length ? ` (${rows.length})` : ""}</summary>
       <div className="ck-stack" style={{ marginTop: 10 }}>
         <div className="ck-row" style={{ gap: 8, alignItems: "center" }}>

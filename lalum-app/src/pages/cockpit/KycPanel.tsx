@@ -67,7 +67,7 @@ export function KycPanel({ matterId, role, onPending }: { matterId: string; role
   const parties = Array.from(new Set([1, ...records.map((r) => r.party_no), partyNo])).sort((a, b) => a - b);
 
   return (
-    <details>
+    <details id="ck-tool-kyc">
       <summary className="ck-btn" style={{ display: "inline-flex" }}>הכרת לקוח (KYC){records.length ? `: ${records.every((r) => r.status === "COMPLETE") ? "הושלם" : "טיוטה"}` : ""}</summary>
       <div className="ck-stack" style={{ marginTop: 10 }}>
         <div className="ck-warn">רשומת בקרה בלבד. אין להזין כאן שמות, מספרי זיהוי או טקסט חופשי: פרטי הזיהוי נשמרים בתיק הפירמה. הרשימה משקפת נוהל פנימי, וחובות הדין החלות על התיק נקבעות על ידי עורך הדין האחראי.</div>
