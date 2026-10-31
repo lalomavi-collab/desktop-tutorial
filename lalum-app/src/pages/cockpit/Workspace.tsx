@@ -58,7 +58,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
   const risk = (r: string | null) => (r === "HIGH_RISK" ? <span className="ck-badge red dot">סיכון גבוה</span> : r === "CAUTION" ? <span className="ck-badge yellow dot">זהירות</span> : r === "NOT_ASSESSED" ? <span className="ck-badge">לא נבדק</span> : <span className="ck-badge green dot">תקין</span>);
   return (
     <div className="ck-stack">
-      <div className="ck-card ck-hero"><div className="ck-hero-art"><HeroArt /></div><div className="ck-row" style={{ justifyContent: "space-between", flex: 1 }}><div><div className="ck-hero-title">{/^lalum$/i.test(firmName.trim()) ? <Wordmark height={28} label={firmName} /> : firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii">🔒 PII Masked &amp; Secured</span></div></div>
+      <div className="ck-card ck-hero"><div className="ck-hero-art"><HeroArt /></div><div className="ck-row" style={{ justifyContent: "space-between", flex: 1 }}><div><div className="ck-hero-title">{/^lalum$/i.test(firmName.trim()) ? <Wordmark height={28} label={firmName} /> : firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 מידע מזהה מוסתר ומאובטח</span></div></div>
       <div className="ck-label">מה עושים עכשיו?</div>
       <div className="ck-card ck-start">
         <CardArt name="intake" />
