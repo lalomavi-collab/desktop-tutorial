@@ -74,6 +74,10 @@ The wordmark is artwork. Use `src/components/Wordmark.tsx` inside the app. It in
 - No dashes as punctuation in any copy or comment.
 - No second logo or mark.
 
+## The tasks board
+
+By the owner's request (31.10.2026, from the competitor scan), `/workspace/tasks` opens on five counters (overdue, today, this week, no due date, done this week), each one a filter, over the open tasks in four columns by when they are due: overdue, today, the next seven days, and later or undated. A list view sits beside the board and is remembered per browser; the new task form opens from one button. Days are Israel days and the week opens on Sunday (`src/lib/cockpit/taskBoard.ts`, checked by `npm run task-board-check`). There is no "awaiting a manager's review" counter: tasks carry no review state yet, and the board shows only what the data records.
+
 ## The cockpit's navy skin
 
 By the owner's request (30.10.2026, "the look of Clio's apps, a quality professional app"), the cockpit offers a navy look beside the beige and the dark ones, not instead of them; the three swatches at the top of the rail switch between them, beige stays the default, and the choice is remembered per browser. The navy look is a skin: `src/styles/cockpit-navy.css`, applied as `data-ck-skin="navy"` on `.ck-root` over the light (mint) theme. Cool grey ground, flat white cards with a hairline, one deep navy (`#14324f`) for the rail, the primary action and selection, Heebo at every level, 16px cards and 10px controls. Charts move from green to a navy and blue ramp; red stays for expenses and risk, amber for caution. The drawings keep their shapes, recoloured by CSS. The dark theme and the public site are unchanged. Contrast of the skin's tokens is checked by `npm run cockpit-text-check`.
