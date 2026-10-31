@@ -505,3 +505,7 @@ export function summarize(tiles: Tile[]): Summary {
 /** Problems first, then the wall's order. */
 export const stripOrder = (tiles: Tile[]): Tile[] =>
   [...tiles].sort((a, b) => RANK[a.status] - RANK[b.status] || WALL_ORDER.indexOf(a.id) - WALL_ORDER.indexOf(b.id));
+/** A tile that asks someone to act: blocked, stale or for attention. Fine and not connected stay on the wall only (owner, 31.10.2026). */
+export const needsAction = (t: Tile): boolean => t.status === "bad" || t.status === "stale" || t.status === "watch";
+/** The strip shows only what needs action, problems first. */
+export const actionTiles = (tiles: Tile[]): Tile[] => stripOrder(tiles).filter(needsAction);

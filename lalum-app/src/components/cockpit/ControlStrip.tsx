@@ -1,9 +1,10 @@
-// The control room strip: a column on the left of every cockpit screen with one row per area, problems first, that folds down to a
-// column of status dots. A row opens to what the tile says today and what completes it; the full wall is one click away. On a phone it
-// is a single chip that opens the wall. Shown to the platform admin only (the data answers nobody else), loaded after the page itself.
+// The control room strip: a column on the left of every cockpit screen that lists only what needs action (owner, 31.10.2026: blocked,
+// stale, for attention), problems first, and folds down to a column of status dots. Fine and not connected areas stay on the wall and
+// are counted in one line. A row opens to what the tile says today and what completes it; the full wall is one click away. On a phone
+// it is a single chip that opens the wall. Shown to the platform admin only (the data answers nobody else), loaded after the page itself.
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { buildTiles, fmtTime, STATUS_LABEL, stripOrder, summarize } from "../../lib/cockpit/controlRoomCore";
+import { actionTiles, buildTiles, fmtTime, STATUS_LABEL, summarize } from "../../lib/cockpit/controlRoomCore";
 import type { Status, Tile } from "../../lib/cockpit/controlRoomCore";
 import { useControlRoom } from "../../lib/cockpit/controlRoom";
 import { monotonePath } from "../../lib/cockpit/marketChart";
@@ -67,6 +68,8 @@ export function ControlStrip({ onWall = false }: { onWall?: boolean }) {
   if (!d.loaded || !d.snapshot) return null;
   const tiles = buildTiles({ snapshot: d.snapshot, history: d.history, web: d.web, now: d.now });
   const s = summarize(tiles);
+  const act = actionTiles(tiles);
+  const rest = tiles.length - act.length;
   const worst: Status = s.bad ? "bad" : s.watch ? "watch" : s.none ? "none" : "ok";
   return (
     <>
@@ -77,10 +80,15 @@ export function ControlStrip({ onWall = false }: { onWall?: boolean }) {
           </button>
           {open && <Link to="/workspace/control" className="ck-cstrip-title">חדר בקרה</Link>}
         </div>
-        {open && <div className="ck-cstrip-sum"><bdi>{s.ok}</bdi> תקינים · <bdi>{s.watch}</bdi> לתשומת לב · <bdi>{s.bad}</bdi> חסומים · <bdi>{s.none}</bdi> לא מחוברים</div>}
-        <ul className="ck-cstrip-list">
-          {stripOrder(tiles).map((t) => <Row key={t.id} t={t} open={open} onOpenStrip={() => { if (!open) flip(); }} />)}
-        </ul>
+        {open && <div className="ck-cstrip-sum">{act.length ? <>דורש פעולה: {[s.bad && <><bdi>{s.bad}</bdi> {s.bad === 1 ? "חסום" : "חסומים"}</>, s.watch && <><bdi>{s.watch}</bdi> לתשומת לב</>].filter(Boolean).map((x, i) => <span key={i}>{i > 0 && ", "}{x}</span>)}</> : "אין כרגע דבר שדורש פעולה."}</div>}
+        {act.length > 0 ? (
+          <ul className="ck-cstrip-list">
+            {act.map((t) => <Row key={t.id} t={t} open={open} onOpenStrip={() => { if (!open) flip(); }} />)}
+          </ul>
+        ) : (
+          <div className="ck-cstrip-calm" title="אין כרגע דבר שדורש פעולה"><Dot status="ok" />{open && <span>הכול תקין</span>}</div>
+        )}
+        {open && rest > 0 && <div className="ck-cstrip-rest">שאר האזורים בחדר הבקרה: {[s.ok && <><bdi>{s.ok}</bdi> {s.ok === 1 ? "תקין" : "תקינים"}</>, s.none && <><bdi>{s.none}</bdi> {s.none === 1 ? "לא מחובר" : "לא מחוברים"}</>].filter(Boolean).map((x, i) => <span key={i}>{i > 0 && ", "}{x}</span>)}.</div>}
         {open && <div className="ck-cstrip-foot">תמונת מצב <bdi>{fmtTime(d.snapshot.takenAt)}</bdi> · <Link to="/workspace/control">לחדר הבקרה</Link></div>}
       </aside>
       {!onWall && <Link to="/workspace/control" className="ck-cstrip-chip"><Dot status={worst} />חדר בקרה: <bdi>{s.bad}</bdi> חסומים, <bdi>{s.watch}</bdi> לתשומת לב</Link>}

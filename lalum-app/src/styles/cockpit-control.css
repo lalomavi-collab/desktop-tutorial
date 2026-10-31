@@ -53,6 +53,9 @@
 .ck-cstrip-ex { padding: 4px 8px 10px 6px; font-size: 13px; line-height: 1.55; color: var(--ink); display: flex; flex-direction: column; gap: 6px; }
 .ck-cstrip-ex p { margin: 0; text-align: justify; }
 .ck-cstrip-ex a { color: var(--clay); font-weight: 600; }
+.ck-cstrip-calm { display: flex; align-items: center; gap: 8px; padding: 7px 6px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.ck-cstrip.closed .ck-cstrip-calm { justify-content: center; padding-inline: 0; }
+.ck-cstrip-rest { font-size: 13px; color: var(--slate); line-height: 1.5; padding-inline: 6px; }
 .ck-cstrip-foot { margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; color: var(--slate); }
 .ck-cstrip-foot a { color: var(--clay); }
 

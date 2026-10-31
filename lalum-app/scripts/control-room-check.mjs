@@ -2,7 +2,7 @@
 // rules that keep an old or unreconciled number from showing as today's. Run with: npm run control-room-check
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildTiles, daily, parseSnapshot, stripOrder, summarize, webDays, money, SNAPSHOT_STALE_MIN } from "../src/lib/cockpit/controlRoomCore.ts";
+import { actionTiles, buildTiles, daily, needsAction, parseSnapshot, stripOrder, summarize, webDays, money, SNAPSHOT_STALE_MIN } from "../src/lib/cockpit/controlRoomCore.ts";
 
 const t = (name, fn) => { fn(); console.log(`[PASS] ${name}`); };
 const NOW = new Date("2026-10-28T12:10:00Z");
@@ -41,6 +41,17 @@ t("28.10: the real snapshot gives 4 green, 4 attention or stale, 2 blocked, 1 no
   assert.deepEqual(summarize(all), { ok: 4, watch: 4, bad: 2, none: 1 });
 });
 
+t("the strip lists only what needs action: blocked first, then stale and attention; fine and not connected stay on the wall", () => {
+  const all = Object.values(tiles(REAL));
+  const act = actionTiles(all);
+  const s = summarize(all);
+  assert.equal(act.length, s.bad + s.watch, "every blocked, stale and attention tile, and nothing else");
+  assert.ok(act.every(needsAction));
+  assert.ok(act.every((x) => x.status !== "ok" && x.status !== "none"));
+  assert.deepEqual(act.map((x) => x.id), stripOrder(all).filter(needsAction).map((x) => x.id), "the strip keeps the problems first order");
+  assert.equal(act[0].status, "bad");
+  assert.deepEqual(actionTiles(all.map((x) => ({ ...x, status: "ok" }))), [], "a calm day: nothing listed");
+});
 t("the receivable is not shown while the import fails, and old pro formas keep it hidden after", () => {
   const x = tiles(REAL).ar;
   assert.equal(x.value, "לא מאומת");
