@@ -1,0 +1,32 @@
+/* The intake brief (components/cockpit/IntakeBrief.tsx): three short steps on top of a matter. One topic per screen, so the
+   card stays light; every colour comes from the cockpit tokens, so the three looks and the contrast check cover it. */
+.ck-brief { gap: 14px; border-color: var(--clay-soft); }
+.ck-brief-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.ck-brief-steps { display: flex; gap: 6px; flex-wrap: wrap; }
+.ck-brief-step { font: inherit; font-size: 13.5px; display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 9999px; border: 1px solid var(--line-strong); background: transparent; color: var(--slate); cursor: pointer; min-height: 38px; }
+.ck-brief-step.on { color: var(--ink); border-color: var(--clay); background: var(--clay-tint); font-weight: 700; }
+.ck-brief-num { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 13px; font-weight: 700; background: var(--line); color: var(--ink); }
+.ck-brief-step.on .ck-brief-num { background: var(--clay); color: var(--on-clay); }
+.ck-brief-step:focus-visible, .ck-brief-opt:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ck-brief-body { display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
+.ck-brief-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 16px; margin: 0; }
+.ck-brief-map div { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.ck-brief-map dt { font-size: 13px; color: var(--slate); }
+.ck-brief-map dd { margin: 2px 0 0; font-size: 14.5px; color: var(--ink); overflow-wrap: anywhere; }
+.ck-brief-q { font-size: 18px; font-weight: 700; line-height: 1.45; }
+.ck-brief-ctx { font-size: 13.5px; color: var(--ink); background: var(--clay-tint); border-radius: 10px; padding: 8px 12px; }
+.ck-brief-why { font-size: 13.5px; color: var(--slate); line-height: 1.6; }
+.ck-brief-why b { color: var(--ink); }
+.ck-brief-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.ck-brief-opt { font: inherit; font-size: 14px; padding: 9px 16px; min-height: 40px; border-radius: 9999px; border: 1px solid var(--line-strong); background: var(--card); color: var(--ink); cursor: pointer; }
+.ck-brief-opt:hover { background: var(--clay-tint); }
+.ck-brief-opt[aria-pressed="true"] { background: var(--clay); border-color: transparent; color: var(--on-clay); font-weight: 700; }
+.ck-brief-topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.ck-brief-topic { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.ck-brief-topic ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ck-brief-topic li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ck-brief-topic li span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ck-brief-topic b { font-size: 14px; }
+.ck-brief-topic small { font-size: 13px; color: var(--slate); line-height: 1.5; }
+.ck-brief-topic .ck-btn { flex: none; }
+.ck-brief-foot { border-top: 1px solid var(--line); padding-top: 10px; }

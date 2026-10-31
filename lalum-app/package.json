@@ -38,6 +38,7 @@
     "address-check": "node scripts/address-check.mjs",
     "name-check": "node scripts/name-check.mjs",
     "doc-suggest-check": "node scripts/doc-suggest-check.mjs",
+    "intake-brief-check": "node scripts/intake-brief-check.mjs",
     "bulk-check": "node scripts/bulk-check.mjs",
     "playbook-check": "node scripts/playbook-check.mjs",
     "client-names-check": "node scripts/client-names-check.mjs",

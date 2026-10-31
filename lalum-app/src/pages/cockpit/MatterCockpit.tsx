@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent as RPointerEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { callPipeline, CONFLICT, diffWords, errorText, fmt, KIND_HE, MATTER_STATUS, PRACTICE, RESPONSE, STEPS } from "../../lib/cockpit/shared";
 import type { Finding, MatterDoc, Membership, Risk } from "../../lib/cockpit/shared";
@@ -24,6 +24,8 @@ import { SignatureRequests } from "./SignatureRequests";
 import { ConflictReview } from "./ConflictReview";
 import { MatterAccess } from "./MatterAccess";
 import { MatterParties } from "./MatterParties";
+import { IntakeBrief } from "../../components/cockpit/IntakeBrief";
+import type { Panel } from "../../lib/cockpit/intakeBrief";
 
 interface Matter { id: string; title: string; practice_area: string; status: string; conflict_status: string; created_at: string; retention_basis: string; client_consent_at: string | null; handling_ended_at: string | null; legal_hold: boolean; legal_hold_reason: string | null; matter_code?: string; sync_enabled?: boolean }
 interface Routing { partner_response: string; dispatched_at: string; first_viewed_at: string | null; responded_at: string | null }
@@ -64,6 +66,9 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   const [drawer, setDrawer] = useState(false);
   const [showOrig, setShowOrig] = useState(false);
   const [tab, setTab] = useState(1);
+  // The intake brief opens by itself right after an intake (?brief=1 from the matter list, or an upload here).
+  const [q] = useSearchParams();
+  const [briefOpen, setBriefOpen] = useState(() => q.get("brief") === "1");
   const [timeline, setTimeline] = useState<Array<[string, string]>>([]);
   const [loaded, setLoaded] = useState(false);
   const [rev, setRev] = useState(0);
@@ -266,6 +271,13 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
   const counts = doc?.entity_counts ?? {};
   const complete = signoff?.complete === true;
   const open = (n: number) => (tab === n ? " on" : "");
+  // A suggested step in the brief opens the tool it names: the findings pane, or one of the tools in the vault.
+  const goPanel = (p: Panel) => {
+    if (p === "findings") { setTab(3); document.getElementById("ck-agent")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    setTab(1);
+    const el = document.getElementById(`ck-tool-${p}`) as HTMLDetailsElement | null;
+    if (el) { el.open = true; el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  };
   const gridStyle = { "--cp1": `${widths.w1}px`, "--cp3": `${widths.w3}px` } as CSSProperties;
   const groups: Array<Finding[]> = [findings.filter((f) => f.severity !== "GREEN"), findings.filter((f) => f.severity === "GREEN")];
   const FindingCard = ({ f }: { f: Finding }) => (
@@ -297,6 +309,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           )}
         </div>
         <div className="ck-mhead-acts">
+          {docs.length > 0 && <button className="ck-btn" aria-expanded={briefOpen} onClick={() => setBriefOpen((b) => !b)}>תדריך קליטה</button>}
           <PiiBadge /><button className="ck-btn" onClick={() => setDrawer(true)}>בודק PII</button><Link className="ck-btn" to={`/workspace/matter-360?matter=${matter.id}`}>תיק 360</Link><Link className="ck-btn" to="/workspace">לרשימה</Link>
           {role === "FIRM_PARTNER" && routing && (
             <label className="ck-row ck-meta" htmlFor="resp">תגובה לתיק:
@@ -307,6 +320,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           )}
         </div>
       </div>
+
+      {briefOpen && doc && <IntakeBrief key={doc.id} matterId={matter.id} doc={doc} practiceArea={matter.practice_area} conflictStatus={matter.conflict_status} onPanel={goPanel} onClose={() => setBriefOpen(false)} />}
 
       <div className="ck-tabs" role="tablist" aria-label="חלוניות">
         {[[1, "כספת"], [2, "עורך"], [3, "סוכן ואישור"]].map(([n, l]) => <button key={n} className={`ck-btn${tab === n ? " primary" : ""}`} onClick={() => setTab(n as number)}>{l}</button>)}
@@ -348,8 +363,8 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
           <div className="ck-label">כלים ומידע בתיק</div>
           <div className="ck-tools">
             <details><summary className="ck-btn">העלאת מסמך נוסף</summary>
-              <div><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
-            <details><summary className="ck-btn">יצירת מסמך מתבנית</summary>
+              <div><IntakeForm matterId={matter.id} firmId={member.firm_id} onDone={(_m, d) => { prefer.current = d; setRev((n) => n + 1); setBriefOpen(true); }} /></div></details>
+            <details id="ck-tool-template"><summary className="ck-btn">יצירת מסמך מתבנית</summary>
               <div><TemplateGenerator matterId={matter.id} practiceArea={matter.practice_area} onDone={(d) => { prefer.current = d; setRev((n) => n + 1); }} /></div></details>
             {doc && <AnnexAssembly matterId={matter.id} firmId={member.firm_id} parent={doc} docs={docs} canRestore={(id) => tokenMap(id) !== null} restore={(id, t) => { const m = tokenMap(id); return m ? restore(t, m) : t; }} />}
             <SignatureRequests matterId={matter.id} firmId={member.firm_id} documentId={doc?.id ?? null} canManage={["FIRM_PARTNER", "ATTORNEY", "ADMIN"].includes(role)} />
@@ -403,7 +418,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
         </section>
         <div className="ck-handle" role="separator" aria-orientation="vertical" tabIndex={0} aria-label="שינוי רוחב" onPointerDown={(e) => drag(e, "w3")} />
 
-        <section className={`ck-panel${open(3)}`} aria-label="אולפן סוכני תחום ושער אישור">
+        <section id="ck-agent" className={`ck-panel${open(3)}`} aria-label="אולפן סוכני תחום ושער אישור">
           <h2>אולפן סוכני תחום</h2>
           <div className="ck-agentbar">
             <label className="ck-field">פלייבוק מקצועי
