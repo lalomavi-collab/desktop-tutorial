@@ -3,13 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { CockpitFrame } from "./CockpitFrame";
-import { fmt } from "../../lib/cockpit/shared";
 import {
   CHANNEL, VIA, closeTask, createTask, dur, firmPeople, fmtExact, myInquiryAddress, handleInquiry, listInquiries, listTasks, logReply, matterOptions, openRaw, scorecard,
 } from "../../lib/cockpit/work";
 import type { Inquiry, MatterLabel, Person, Reply, Scorecard, Task } from "../../lib/cockpit/work";
 import { useClientNames } from "../../components/cockpit/ClientNames";
-import { CheckArt, InboxArt } from "../../components/cockpit/CockpitIllustrations";
+import { InboxArt } from "../../components/cockpit/CockpitIllustrations";
+import { TaskBoard } from "../../components/cockpit/TaskBoard";
 import { InquiryInsights, ScoreInsights, TaskInsights } from "../../components/cockpit/CockpitInsights";
 
 const mins = (a: string, b: string) => (new Date(b).getTime() - new Date(a).getTime()) / 60000;
@@ -78,52 +78,41 @@ function TasksView() {
   const [d, setD] = useState<{ tasks: Task[]; titles: Map<string, MatterLabel>; people: Person[] } | null>(null);
   const [matters, setMatters] = useState<Array<{ id: string; title: string; matter_code: string | null }>>([]);
   const [f, setF] = useState({ matter: "", title: "", due: "", who: "" });
-  const [show, setShow] = useState<"OPEN" | "DONE">("OPEN");
+  const [adding, setAdding] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const load = useCallback(async () => { setD(await listTasks()); }, []);
   useEffect(() => { void load(); void matterOptions().then(setMatters); }, [load]);
   if (!d) return <div className="ck-meta">טוען...</div>;
-  const name = (id: string) => d.people.find((p) => p.user_id === id)?.display_name ?? "חבר צוות";
-  const now = Date.now();
-  const rows = d.tasks.filter((t) => (show === "OPEN" ? t.status === "OPEN" : t.status !== "OPEN"));
 
   async function add() {
     const e = await createTask(f.matter, f.title, f.due ? new Date(f.due).toISOString() : null, f.who || null);
     setMsg({ ok: !e, text: e ?? "המשימה נוצרה." });
-    if (!e) { setF({ ...f, title: "", due: "" }); await load(); }
+    if (!e) { setF({ ...f, title: "", due: "" }); setAdding(false); await load(); }
   }
   async function close(t: Task, s: "DONE" | "CANCELLED") { const e = await closeTask(t.id, s); setMsg({ ok: !e, text: e ?? (s === "DONE" ? "המשימה הושלמה." : "המשימה בוטלה.") }); if (!e) await load(); }
 
   return (
     <div className="ck-stack">
-      <div className="ck-warn">משימה היא פעולה פתוחה בתיק עם אחראי ומועד יעד. משימה שהושלמה לפני המועד נספרת לטובת האחראי במדד, ומשימה פתוחה שעבר מועדה נספרת כאיחור. אל תכתבו בכותרת פרטים מזהים של הלקוח.</div>
-      <div className="ck-card ck-stack">
-        <div className="ck-title">משימה חדשה</div>
-        <div className="ck-grid2">
-          <label className="ck-field">תיק<select className="ck-select" value={f.matter} onChange={(e) => setF({ ...f, matter: e.target.value })}><option value="">בחרו תיק</option>{matters.map((m) => <option key={m.id} value={m.id}>{cn.name(m)}</option>)}</select></label>
-          <label className="ck-field">אחראי<select className="ck-select" value={f.who} onChange={(e) => setF({ ...f, who: e.target.value })}><option value="">אני</option>{d.people.map((p) => <option key={p.user_id} value={p.user_id}>{p.display_name}</option>)}</select></label>
-          <label className="ck-field">מה צריך לעשות<input className="ck-input" value={f.title} maxLength={200} onChange={(e) => setF({ ...f, title: e.target.value })} /></label>
-          <label className="ck-field">מועד יעד<input className="ck-input" type="datetime-local" value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} /></label>
-        </div>
-        <div className="ck-row"><button className="ck-btn primary" disabled={!f.matter || f.title.trim().length < 3} onClick={() => void add()}>יצירת משימה</button></div>
+      <div className="ck-row" style={{ justifyContent: "space-between" }}>
+        <div className="ck-meta">משימה היא פעולה פתוחה בתיק עם אחראי ומועד יעד. אל תכתבו בכותרת פרטים מזהים של הלקוח.</div>
+        <button className="ck-btn primary" aria-expanded={adding} aria-controls="ck-task-new" onClick={() => setAdding((a) => !a)}>{adding ? "סגירת הטופס" : "משימה חדשה"}</button>
       </div>
+      {adding && (
+        <div id="ck-task-new" className="ck-card ck-stack">
+          <div className="ck-title">משימה חדשה</div>
+          <div className="ck-grid2">
+            <label className="ck-field">תיק<select className="ck-select" value={f.matter} onChange={(e) => setF({ ...f, matter: e.target.value })}><option value="">בחרו תיק</option>{matters.map((m) => <option key={m.id} value={m.id}>{cn.name(m)}</option>)}</select></label>
+            <label className="ck-field">אחראי<select className="ck-select" value={f.who} onChange={(e) => setF({ ...f, who: e.target.value })}><option value="">אני</option>{d.people.map((p) => <option key={p.user_id} value={p.user_id}>{p.display_name}</option>)}</select></label>
+            <label className="ck-field">מה צריך לעשות<input className="ck-input" value={f.title} maxLength={200} onChange={(e) => setF({ ...f, title: e.target.value })} /></label>
+            <label className="ck-field">מועד יעד<input className="ck-input" type="datetime-local" value={f.due} onChange={(e) => setF({ ...f, due: e.target.value })} /></label>
+          </div>
+          <div className="ck-row"><button className="ck-btn primary" disabled={!f.matter || f.title.trim().length < 3} onClick={() => void add()}>יצירת משימה</button></div>
+        </div>
+      )}
       {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} role="status">{msg.text}</div>}
+      <TaskBoard tasks={d.tasks} titles={d.titles} people={d.people} onClose={(t, s) => void close(t, s)} />
+      <div className="ck-meta">משימה שהושלמה לפני המועד נספרת לטובת האחראי במדד השירות, ומשימה פתוחה שעבר מועדה נספרת כאיחור.</div>
       <TaskInsights tasks={d.tasks} />
-      <div className="ck-row"><select className="ck-select" style={{ width: "auto" }} value={show} onChange={(e) => setShow(e.target.value as "OPEN" | "DONE")}><option value="OPEN">משימות פתוחות</option><option value="DONE">סגורות</option></select></div>
-      {rows.length === 0 ? <div className="ck-card ck-empty"><CheckArt size={104} /><div className="ck-meta">{show === "OPEN" ? "אין משימות פתוחות." : "אין משימות סגורות."}</div></div> : (
-        <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>משימה</th><th>תיק</th><th>אחראי</th><th>מועד יעד</th><th>מצב</th><th>פעולות</th></tr></thead><tbody>
-          {rows.map((t) => {
-            const late = t.status === "OPEN" && t.due_at && new Date(t.due_at).getTime() < now;
-            return (
-              <tr key={t.id}>
-                <td style={{ whiteSpace: "normal", maxWidth: 300 }}>{t.title}</td>
-                <td><Link to={`/workspace/${t.matter_id}`}>{cn.name(d.titles.get(t.matter_id))}</Link></td>
-                <td>{name(t.assignee)}</td><td>{t.due_at ? fmt(t.due_at) : "ללא מועד"}</td>
-                <td>{t.status === "DONE" ? <span className="ck-badge green">הושלמה {fmt(t.closed_at)}</span> : t.status === "CANCELLED" ? <span className="ck-badge yellow">בוטלה</span> : late ? <span className="ck-badge red">באיחור</span> : <span className="ck-badge yellow">פתוחה</span>}</td>
-                <td>{t.status === "OPEN" && <div className="ck-row"><button className="ck-btn" onClick={() => void close(t, "DONE")}>הושלמה</button><button className="ck-btn" onClick={() => void close(t, "CANCELLED")}>ביטול</button></div>}</td>
-              </tr>);
-          })}
-        </tbody></table></div>)}
     </div>
   );
 }

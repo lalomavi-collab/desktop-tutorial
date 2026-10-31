@@ -1,0 +1,57 @@
+/* The tasks board (TaskBoard.tsx): the counters, the bar, and the four columns.
+   Coloured by the look's own tokens, so it reads in beige, navy and dark without a rule per look. */
+.ck-tb { display: flex; flex-direction: column; gap: 14px; }
+
+.ck-tb-counters { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.ck-tb-counter { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--card-solid, var(--card)); color: var(--ink); font: inherit; text-align: start; cursor: pointer; }
+.ck-tb-counter b { font-size: 28px; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ck-tb-counter span { font-size: 14px; font-weight: 600; color: var(--slate); }
+.ck-tb-counter.bad b { color: var(--danger); }
+.ck-tb-counter.warn b { color: var(--warning); }
+.ck-tb-counter.ok b { color: var(--success); }
+.ck-tb-counter:hover { background: var(--clay-tint); }
+.ck-tb-counter[aria-pressed="true"] { border-color: var(--clay); box-shadow: inset 0 0 0 1px var(--clay); background: var(--clay-tint); }
+.ck-tb-counter:focus-visible, .ck-tb-view button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.ck-tb-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; }
+.ck-tb-field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--slate); }
+.ck-tb-field .ck-select { inline-size: auto; min-inline-size: 170px; min-block-size: 42px; padding-block: 8px; }
+.ck-tb-view { display: inline-flex; gap: 2px; padding: 3px; margin-inline-start: auto; border-radius: 12px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card)); }
+.ck-tb-view button { block-size: 34px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: var(--slate); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.ck-tb-view button[aria-pressed="true"] { background: var(--clay); color: var(--on-clay, #fff); }
+
+/* Four columns on a wide screen, two on a tablet, one under the other on a phone. */
+.ck-tb-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.ck-tb-col { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 16px; background: var(--paper, var(--clay-tint)); border: 1px solid var(--line); min-block-size: 120px; }
+.ck-tb-colhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 6px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.ck-tb-colhead b { min-inline-size: 26px; block-size: 26px; padding: 0 8px; border-radius: 999px; display: inline-grid; place-items: center; font-size: 13px; background: var(--card-solid, var(--card)); border: 1px solid var(--line); }
+.ck-tb-col.overdue .ck-tb-colhead b { color: var(--danger); }
+.ck-tb-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ck-tb-card { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: var(--card-solid, var(--card)); border: 1px solid var(--line); text-align: start; text-align-last: auto; }
+.ck-tb-card.late { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
+.ck-tb-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.35; overflow-wrap: anywhere; }
+.ck-tb-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13.5px; color: var(--slate); }
+.ck-tb-meta a { color: var(--ink); font-weight: 600; }
+.ck-tb-due { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.ck-tb-due.late { color: var(--danger); }
+.ck-tb-none { padding: 8px 4px; font-size: 13.5px; color: var(--slate); }
+.ck-tb-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ck-tb .ck-btn.sm { min-block-size: 34px; padding: 5px 12px; font-size: 13.5px; }
+
+.ck-root[data-ck-theme="dark"] .ck-tb-col { background: rgba(255, 255, 255, .03); }
+
+@media (max-width: 1180px) {
+  .ck-tb-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .ck-tb-counters { gap: 6px; }
+  .ck-tb-counter { align-items: center; padding: 8px 4px; border-radius: 12px; text-align: center; text-align-last: center; }
+  .ck-tb-counter b { font-size: 22px; }
+  .ck-tb-counter span { font-size: 13px; line-height: 1.25; }
+  .ck-tb-board { grid-template-columns: 1fr; }
+  .ck-tb-field { flex: 1 1 150px; }
+  .ck-tb-field .ck-select { inline-size: 100%; min-inline-size: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ck-tb-counter, .ck-tb-view button { transition: background .15s ease, border-color .15s ease; }
+}
