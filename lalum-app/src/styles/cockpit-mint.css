@@ -399,6 +399,9 @@
 .ck-root[data-ck-theme="dark"] .ck-look-navy { border-color: rgba(255, 255, 255, .4); }
 .ck-look[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--ink); }
 .ck-look:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+/* The rail logo is a link back to the entry gate; it keeps the colour the brand block gives it. */
+.ck-brand-home { display: inline-flex; color: inherit; border-radius: 8px; }
+.ck-brand-home:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
 @media (min-width: 861px) {
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar { width: 108px; }
   .ck-root.ck-with-sidebar[data-ck-theme] .ck-sidebar-brand { flex-direction: column; align-items: center; gap: 8px; }

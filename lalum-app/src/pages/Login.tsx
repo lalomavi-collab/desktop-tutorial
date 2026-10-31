@@ -145,7 +145,7 @@ export function Login() {
       setMode("in");
       return;
     }
-    // Partners and admins land in the case cockpit; everyone else in the client portal.
+    // Partners and admins land on the entry gate (the app's home screen, owner 31.10.2026); everyone else in the client portal.
     let dest = "/portal";
     if (supabase) {
       const { data: auth } = await supabase.auth.getUser();
@@ -154,7 +154,7 @@ export function Login() {
           supabase.from("lalum_firm_members").select("firm_id").eq("user_id", auth.user.id).maybeSingle(),
           supabase.rpc("lalum_is_admin"),
         ]);
-        if (m.data || a.data === true) dest = "/workspace";
+        if (m.data || a.data === true) dest = "/workspace/start";
       }
     }
     navigate(dest);

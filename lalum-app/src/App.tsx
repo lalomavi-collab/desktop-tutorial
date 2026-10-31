@@ -44,6 +44,7 @@ const LegalOS = lazy(() => import("./pages/LegalOS").then((m) => ({ default: m.L
 // Case cockpit for partners and admins: standalone surfaces (own Hebrew frame, no marketing
 // header or footer), gated by firm membership inside CockpitFrame.
 const Workspace = lazy(() => import("./pages/cockpit/Workspace").then((m) => ({ default: m.Workspace })));
+const EntryGate = lazy(() => import("./pages/cockpit/EntryGate").then((m) => ({ default: m.EntryGate })));
 const AdminMatters = lazy(() => import("./pages/cockpit/AdminMatters").then((m) => ({ default: m.AdminMatters })));
 const Billing = lazy(() => import("./pages/cockpit/Billing").then((m) => ({ default: m.Billing })));
 const Security = lazy(() => import("./pages/cockpit/Security").then((m) => ({ default: m.Security })));
@@ -116,6 +117,7 @@ export default function App() {
           <Route path="os" element={<Suspense fallback={null}><LegalOS /></Suspense>} />
           <Route path="partners" element={<Suspense fallback={null}><Partners /></Suspense>} />
           <Route path="workspace" element={<Suspense fallback={null}><Workspace /></Suspense>} />
+          <Route path="workspace/start" element={<Suspense fallback={null}><EntryGate /></Suspense>} />
           <Route path="workspace/import" element={<Suspense fallback={null}><ImportFolderPage /></Suspense>} />
           <Route path="workspace/hours" element={<Suspense fallback={null}><Hours /></Suspense>} />
           <Route path="workspace/export" element={<Suspense fallback={null}><FirmExport /></Suspense>} />

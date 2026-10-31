@@ -79,6 +79,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/control", title: "חדר בקרה | LALUM", desc: "כל התחומים בתמונה אחת: כספים, תיקים, תוכן ותשתית, עם הסבר לכל אריח.", noindex: true },
   { path: "workspace/matter-360", title: "תיק 360 | LALUM", desc: "מרכז הפעילות סביב תיק: מסמכים, שעות ושכר טרחה.", noindex: true },
   { path: "workspace/portal-preview", title: "תצוגת פורטל לקוח | LALUM", desc: "כך הלקוח רואה את החשבונות שלו.", noindex: true },
+  { path: "workspace/start", title: "במה נעבוד היום? | LALUM", desc: "מסך הפתיחה של המערכת: בחירת החלק שאליו נכנסים.", noindex: true },
   { path: "workspace/dashboard", title: "לוח בקרה | LALUM", desc: "תמונת מצב של התיקים, הפניות והמשימות במשרד.", noindex: true },
   { path: "workspace/inquiries", title: "פניות לקוחות | LALUM", desc: "פניות של לקוחות שהגיעו לתיקים.", noindex: true },
   { path: "workspace/tasks", title: "משימות | LALUM", desc: "משימות פתוחות בתיקים.", noindex: true },

@@ -73,7 +73,7 @@ export function Partners() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user && access.state === "ok") navigate("/workspace", { replace: true });
+    if (user && access.state === "ok") navigate("/workspace/start", { replace: true });
   }, [user, access.state, navigate]);
 
   async function onSubmit(e: FormEvent) {

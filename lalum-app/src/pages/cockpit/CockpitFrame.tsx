@@ -8,6 +8,7 @@ import { RailDefs, RailIcon } from "../../components/cockpit/RailIcons";
 import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
+import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import { supabase } from "../../lib/supabase";
@@ -77,17 +78,6 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/workspace/payments": ScalesArt, "/workspace/discussions": CheckArt, "/workspace/campaigns": ChartArt, "/workspace/scheduling": TasksArt, "/workspace/hours": ChartArt,
   "/settings/members": GavelArt,
 };
-
-type CkLook = "navy" | "beige" | "dark";
-const LOOKS: Array<[CkLook, string]> = [["navy", "כחול"], ["beige", "בז׳"], ["dark", "כהה"]];
-// Three looks (owner, 30.10.2026: the navy of Clio's apps is added beside the beige and the dark, not instead of them).
-// Beige stays the default; the choice is remembered per browser in the keys the cockpit already used (storage may be blocked, so every access is guarded).
-function useCkLook(): [CkLook, (l: CkLook) => void] {
-  const [look, setLookState] = useState<CkLook>("beige");
-  useEffect(() => { try { if (localStorage.getItem("ck-theme") === "dark") setLookState("dark"); else if (localStorage.getItem("ck-skin") === "navy") setLookState("navy"); } catch { /* storage blocked */ } }, []);
-  const setLook = (l: CkLook) => { setLookState(l); try { localStorage.setItem("ck-theme", l === "dark" ? "dark" : "mint"); localStorage.setItem("ck-skin", l === "navy" ? "navy" : "sage"); } catch { /* storage blocked */ } };
-  return [look, setLook];
-}
 
 // The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
 const PRIMARY = new Set(["/workspace/dashboard", "/workspace/control", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
@@ -165,12 +155,15 @@ export function CockpitFrame({
   const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
   return (
     <ClientNamesProvider>
-    <div className="ck-root ck-with-sidebar" data-ck-theme={look === "dark" ? "dark" : "mint"} data-ck-skin={look === "navy" ? "navy" : undefined} dir="rtl" lang="he">
+    <div className="ck-root ck-with-sidebar" {...lookAttrs(look)} dir="rtl" lang="he">
       <PageMeta title={title} description={description} path={path} noindex />
       <aside className="ck-sidebar">
         <RailDefs />
         <div className="ck-sidebar-brand">
-          <Wordmark height={26} style={{ color: "var(--ck-brand-ink, var(--ink))" }} />
+          {/* The logo leads back to the entry gate, the app's home screen (owner, 31.10.2026). */}
+          <Link to={bookkeeper ? "/settings/billing" : "/workspace/start"} className="ck-brand-home" aria-label="LALUM, למסך הפתיחה">
+            <Wordmark height={26} style={{ color: "var(--ck-brand-ink, var(--ink))" }} />
+          </Link>
           <div className="ck-looks" role="group" aria-label="מראה הקוקפיט">{LOOKS.map(([k, label]) => <button key={k} type="button" className={`ck-look ck-look-${k}`} aria-pressed={look === k} aria-label={`מראה ${label}`} title={label} onClick={() => setLook(k)} />)}</div>
         </div>
         <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label="ניווט הקוקפיט">
