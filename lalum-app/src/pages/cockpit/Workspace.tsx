@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
 import { trashMatter } from "../../lib/cockpit/bin";
+import { rememberMatter } from "../../lib/cockpit/recentMatters";
 import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import { CardArt, EmptyArt, HeroArt } from "../../components/cockpit/CockpitArt";
@@ -140,6 +141,8 @@ export function Workspace() {
   const fromQuery = q.get("matter");
   const param = useParams().matterId;
   const matterId = param ?? (fromQuery && /^[0-9a-f-]{36}$/i.test(fromQuery) ? fromQuery : undefined);
+  // Feeds the entry gate's "recently viewed" row (ids only; see recentMatters.ts).
+  useEffect(() => { if (matterId) rememberMatter(matterId); }, [matterId]);
   return (
     <CockpitFrame title="קוקפיט תיקים" description="קוקפיט התיקים של LALUM: כספת, עורך חכם ואולפן סוכני תחום עם אישור אנושי לפני ייצוא." path="/workspace">
       {({ member, platformAdmin }) => member && (matterId

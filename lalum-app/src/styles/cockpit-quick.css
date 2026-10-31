@@ -1,0 +1,46 @@
+/* The quick add button and its menu (QuickAdd.tsx). Fixed at the bottom inline end of the screen (the left in Hebrew), above
+   the content, coloured by the look's own accent so it is navy, sage or bright on dark without a rule per look. */
+.ck-quick { position: fixed; inset-block-end: 24px; inset-inline-end: 24px; z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.ck-quick-btn {
+  inline-size: 60px; block-size: 60px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--clay); color: var(--on-clay, #fff);
+  box-shadow: 0 2px 6px rgba(15, 34, 54, .18), 0 10px 26px rgba(15, 34, 54, .22);
+  transition: transform .15s ease, background .15s ease;
+}
+.ck-quick-btn:hover { background: var(--clay-hover, var(--clay)); }
+.ck-quick-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.ck-quick-btn[aria-expanded="true"] { transform: rotate(90deg); }
+.ck-quick-btn svg { color: inherit; }
+
+.ck-quick-menu {
+  min-inline-size: 280px; padding: 8px; border-radius: 16px;
+  background: var(--card-solid, var(--card)); border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(15, 34, 54, .08), 0 16px 40px rgba(15, 34, 54, .16);
+}
+.ck-root[data-ck-theme="dark"] .ck-quick-menu { box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .9); }
+.ck-quick-menu ul { list-style: none; margin: 0; padding: 0; }
+.ck-quick-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+.ck-quick-menu a:hover { background: var(--clay-tint); }
+.ck-quick-menu a:focus-visible { outline: 2px solid var(--clay); outline-offset: -2px; }
+.ck-quick-ic { inline-size: 36px; block-size: 36px; flex: none; border-radius: 10px; display: grid; place-items: center; background: var(--clay-tint); color: var(--clay); }
+.ck-root[data-ck-theme="dark"] .ck-quick-ic { color: var(--ink); }
+.ck-quick-tx { display: flex; flex-direction: column; gap: 1px; text-align: start; }
+.ck-quick-tx b { font-size: 15px; font-weight: 700; }
+.ck-quick-tx small { font-size: 13px; color: var(--slate); }
+
+@media (max-width: 600px) {
+  .ck-quick { inset-block-end: 16px; inset-inline-end: 16px; }
+  .ck-quick-btn { inline-size: 56px; block-size: 56px; }
+  .ck-quick-menu { min-inline-size: min(300px, calc(100vw - 32px)); }
+}
+@media (prefers-reduced-motion: reduce) { .ck-quick-btn { transition: none; } }
+@media print { .ck-quick { display: none; } }
+/* The platform admin's control strip sits on the same end side: a column on wide screens, a chip at the bottom on narrow ones.
+   The button moves clear of it rather than over it. */
+@media (min-width: 861px) {
+  .ck-root:has(.ck-cstrip:not(.closed)) .ck-quick { inset-inline-end: calc(248px + 24px); }
+  .ck-root:has(.ck-cstrip.closed) .ck-quick { inset-inline-end: calc(46px + 24px); }
+}
+@media (max-width: 860px) {
+  .ck-root:has(.ck-cstrip-chip) .ck-quick { inset-block-end: 72px; }
+}

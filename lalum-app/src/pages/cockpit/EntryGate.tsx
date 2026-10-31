@@ -8,6 +8,10 @@ import { useCockpitAccess } from "../../lib/cockpit/shared";
 import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
 import { CardArt2, ChartArt, FolderArt, InboxArt, ScalesArt, TasksArt } from "../../components/cockpit/CockpitIllustrations";
 import { MfaGate } from "./MfaGate";
+import { ClientNamesProvider } from "../../components/cockpit/ClientNames";
+import { GateRecent, GateSearch } from "../../components/cockpit/GateMatters";
+import { QuickAdd } from "../../components/cockpit/QuickAdd";
+import { useGateMatters } from "../../lib/cockpit/gateMatters";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-type.css";
@@ -59,28 +63,7 @@ export function EntryGate() {
   const name = member?.name ?? "";
   const partnerLike = platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(member?.role ?? "");
 
-  const cards = (
-    <>
-      <div className="gate-head">
-        <div className="gate-logo"><Wordmark height={64} /></div>
-        <h1>במה נעבוד היום?</h1>
-        <div className="gate-sub">בחרו את החלק במערכת שאליו תרצו להיכנס.</div>
-      </div>
-      <ul className="gate-grid" role="list">
-        {GATE_PARTS.map(({ key, to, title, line, Art }) => (
-          <li key={key}>
-            <Link to={to} className={`gate-card gate-${key}${key === last ? " is-last" : ""}`} onClick={() => remember(key)} aria-describedby={`gate-line-${key}`}>
-              <span className="gate-tile" aria-hidden="true"><Art size={118} /></span>
-              <span className="gate-title">{title}</span>
-              <span className="gate-line" id={`gate-line-${key}`}>{line}</span>
-              <span className="gate-go" aria-hidden="true">{key === last ? "המשך" : "כניסה"} <span className="gate-arrow">←</span></span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className="gate-foot"><b>מאובטח:</b> שמות הלקוחות מוסתרים כברירת מחדל. <Link to="/workspace/guide">מדריך למערכת</Link></div>
-    </>
-  );
+  const cards = <GateBody last={last} remember={remember} />;
 
   return (
     <div className="ck-root ck-entry" {...lookAttrs(look)} dir="rtl" lang="he">
@@ -94,9 +77,41 @@ export function EntryGate() {
           {ready && <span className="gate-av" aria-hidden="true">{initialOf(name)}</span>}
         </div>
       </header>
+      <ClientNamesProvider>
       <main className="gate-main">
         {!ready ? <div className="ck-meta gate-wait">טוען...</div> : partnerLike ? <MfaGate required={platformAdmin || member?.lalum_firms.require_mfa === true}>{cards}</MfaGate> : cards}
       </main>
+      {ready && <QuickAdd />}
+      </ClientNamesProvider>
     </div>
+  );
+}
+
+/** What the gate shows once the member is through the second factor; the matters load only from here, as on every cockpit screen. */
+function GateBody({ last, remember }: { last: string; remember: (k: string) => void }) {
+  const matters = useGateMatters(true);
+  return (
+    <>
+      <div className="gate-head">
+        <div className="gate-logo"><Wordmark height={64} /></div>
+        <h1>במה נעבוד היום?</h1>
+        <div className="gate-sub">בחרו את החלק במערכת שאליו תרצו להיכנס.</div>
+        <GateSearch matters={matters} />
+      </div>
+      <ul className="gate-grid" role="list">
+        {GATE_PARTS.map(({ key, to, title, line, Art }) => (
+          <li key={key}>
+            <Link to={to} className={`gate-card gate-${key}${key === last ? " is-last" : ""}`} onClick={() => remember(key)} aria-describedby={`gate-line-${key}`}>
+              <span className="gate-tile" aria-hidden="true"><Art size={118} /></span>
+              <span className="gate-title">{title}</span>
+              <span className="gate-line" id={`gate-line-${key}`}>{line}</span>
+              <span className="gate-go" aria-hidden="true">{key === last ? "המשך" : "כניסה"} <span className="gate-arrow">←</span></span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <GateRecent matters={matters} />
+      <div className="gate-foot"><b>מאובטח:</b> שמות הלקוחות מוסתרים כברירת מחדל. <Link to="/workspace/guide">מדריך למערכת</Link></div>
+    </>
   );
 }
