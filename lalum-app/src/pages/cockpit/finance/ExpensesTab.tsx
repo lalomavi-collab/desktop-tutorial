@@ -11,6 +11,8 @@ import { advisorError, classifyExpense } from "../../../lib/cockpit/taxAdvisorAg
 import { HistoricalImport } from "./HistoricalImport";
 import { ExpensesChart } from "./ExpensesChart";
 import { missingBills } from "../../../lib/cockpit/financeExpenses";
+import { ExpenseIntake } from "./ExpenseIntake";
+import type { IntakeDraft } from "../../../lib/cockpit/expenseIntake";
 
 const today = () => new Date().toISOString().slice(0, 10);
 type Draft = { spent_on: string; supplier: string; category: string; description: string; total: string; vat_amount: string; pct: string; ref: string; method: string; taxCat: TaxCategory; itPct: string };
@@ -43,6 +45,8 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
   const fileRef = useRef<HTMLInputElement>(null);
   const docFileRef = useRef<HTMLInputElement>(null);
   const docTargetRef = useRef<{ expenseId: string; supersedes: string | null } | null>(null);
+  // The invoice a draft was read from: attached to the new expense once it is saved, so a scan never loses its source.
+  const pendingFileRef = useRef<File | null>(null);
   const set = (k: keyof Draft) => (e: { target: { value: string } }) => f && setF({ ...f, [k]: e.target.value });
   // Electricity, water and phone bills arrive every month or two; a gap means a document that never reached the books.
   const missing = useMemo(() => missingBills(expenses, today()), [expenses]);
@@ -98,15 +102,18 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
     const r = await scanReceipt(firmId, file);
     setScanning(false);
     if (!r.ok || !r.draft) { setMsg({ ok: false, text: scanReceiptError(r) }); return; }
-    const d = r.draft;
+    fillFromDraft(r.draft, file, r.low_confidence_fields ?? []);
+  }
+  function fillFromDraft(d: IntakeDraft, file: File, unsure: string[] = []) {
+    pendingFileRef.current = file;
     setF({
       spent_on: d.spent_on ?? today(), supplier: d.supplier ?? "", category: d.category ?? "OTHER",
       description: d.description ?? "", total: d.total != null ? String(d.total) : "",
       vat_amount: d.vat_amount != null ? String(d.vat_amount) : "", pct: "100",
       ref: d.supplier_doc_ref ?? "", method: "", taxCat: "OPERATIONAL_100", itPct: "100",
     });
-    setLowConfidence(r.low_confidence_fields ?? []);
-    setMsg({ ok: true, text: "הטיוטה מולאה מהחשבונית. בדקו את הסכומים לפני השמירה." });
+    setLowConfidence(unsure);
+    setMsg({ ok: true, text: "הטיוטה מולאה מהחשבונית. בדקו את הסכומים לפני השמירה. הקובץ יצורף להוצאה בשמירה." });
   }
 
   // Choosing a category fills in its suggested rates; both stay editable and are what is saved.
@@ -137,12 +144,22 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
     const itPct = Number(f.itPct);
     if (!(itPct >= 0 && itPct <= 100)) return setMsg({ ok: false, text: 'שיעור ההכרה למס הכנסה הוא בין 0 ל-100.' });
     if (!(pct >= 0 && pct <= 100)) return setMsg({ ok: false, text: 'שיעור המע"מ לניכוי הוא בין 0 ל-100.' });
-    const { error } = await supabase.from("lalum_fin_expenses").insert({
+    const { data, error } = await supabase.from("lalum_fin_expenses").insert({
       firm_id: firmId, spent_on: f.spent_on, supplier: f.supplier.trim(), category: f.category, description: f.description.trim() || null,
       total, vat_amount: vat, vat_recoverable_pct: pct, tax_category: f.taxCat, income_tax_recognition_pct: itPct, supplier_doc_ref: f.ref.trim() || null, payment_method: f.method || null,
-    });
-    if (error) return setMsg({ ok: false, text: error.message });
-    setF(null); setMsg(null); setLowConfidence([]); onChange();
+    }).select("id").single();
+    if (error || !data) return setMsg({ ok: false, text: error?.message ?? "השמירה נכשלה. נסו שוב." });
+    const file = pendingFileRef.current, id = (data as { id: string }).id;
+    pendingFileRef.current = null;
+    setF(null); setMsg(null); setLowConfidence([]);
+    if (file) {
+      setDocBusy(id);
+      const r = await uploadExpenseDoc(id, file);
+      setDocBusy(null);
+      if (!r.ok) setDocMsg({ id, kind: "err", text: `ההוצאה נשמרה, אבל החשבונית לא צורפה: ${expenseDocError(r)}` });
+      setDocsTick((n) => n + 1);
+    }
+    onChange();
   }
   async function remove(id: string) {
     if (!supabase || !window.confirm("למחוק את ההוצאה?")) return;
@@ -164,14 +181,15 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
       )}
       {canWrite && <HistoricalImport firmId={firmId} onImported={onChange} />}
       {canWrite && <div className="ck-row" style={{ justifyContent: "space-between" }}>
-        <div className="ck-meta">שיעור המע"מ לניכוי נקבע לכל הוצאה בנפרד. המערכת אינה מנחשת אותו.</div>
-        <div className="ck-row">
-          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" capture="environment" style={{ display: "none" }} onChange={(e) => void onScanFile(e)} />
+        <div className="ck-meta">חשבונית שמועלית נקלטת לבד: מצורפת להוצאה שלה, או נרשמת כהוצאה חדשה בסיווג של אותו ספק (אחרת עסקי 100%). מה שלא נקרא בבירור נשאר לבדיקה.</div>
+        <div className="ck-row" style={{ flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <ExpenseIntake firmId={firmId} expenses={expenses} docs={docs} onDone={() => { setDocsTick((n) => n + 1); onChange(); }} onFillForm={(d, file) => fillFromDraft(d, file)} />
+          <input ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" capture="environment" style={{ display: "none" }} onChange={(e) => void onScanFile(e)} />
           <input ref={docFileRef} type="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" style={{ display: "none" }} onChange={(e) => void onDocFile(e)} />
           <button className="ck-btn" disabled={scanning} onClick={() => fileRef.current?.click()}>
             <Icon name="file" size={16} /> {scanning ? "קוראים את החשבונית…" : "סריקת חשבונית"}
           </button>
-          <button className="ck-btn primary" onClick={() => { setF(blank()); setMsg(null); setLowConfidence([]); }}>
+          <button className="ck-btn" onClick={() => { pendingFileRef.current = null; setF(blank()); setMsg(null); setLowConfidence([]); }}>
             <Icon name="plus" size={16} /> הוצאה חדשה
           </button>
         </div>
@@ -200,7 +218,7 @@ export function ExpensesTab({ firmId, level, expenses, onChange }: { firmId: str
           <div className="ck-row"><button className="ck-btn sm" disabled={advising || !f.supplier.trim()} onClick={() => void suggest()}>{advising ? "מסווגים…" : "הצעת סיווג מהיועץ"}</button>{TAX_CATEGORY[f.taxCat].review && <span className="ck-meta">הקטגוריה הזו דורשת אישור מול רואה החשבון.</span>}</div>
           {advice && <div className="ck-meta" aria-live="polite">{advice}</div>}
           {msg && <div className={msg.ok ? "ck-ok" : "ck-err"} aria-live="polite">{msg.text}</div>}
-          <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { setF(null); setLowConfidence([]); }}>ביטול</button></div>
+          <div className="ck-row"><button className="ck-btn primary" onClick={() => void save()}>שמירה</button><button className="ck-btn" onClick={() => { pendingFileRef.current = null; setF(null); setLowConfidence([]); }}>ביטול</button></div>
         </div>
       )}
       <div className="ck-table-wrap"><table className="ck-table"><thead><tr><th>תאריך</th><th>ספק</th><th>קטגוריה</th><th className="fin-num">סה"כ</th><th className="fin-num">מע"מ</th><th className="fin-num">לניכוי</th><th>מסמך מקור</th><th></th></tr></thead><tbody>

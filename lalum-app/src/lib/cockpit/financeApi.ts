@@ -168,11 +168,13 @@ export async function sendReminder(body: { customer_id: string; tier: 1 | 2 | 3;
 export interface ReceiptDraft {
   spent_on: string | null; supplier: string | null; category: string | null; description: string | null;
   total: number | null; vat_amount: number | null; supplier_doc_ref: string | null;
+  /** ISO code of the printed amounts (ILS for shekels), null when the document does not say. */
+  currency?: string | null;
 }
 export interface ScanReceiptReply { ok: boolean; draft?: ReceiptDraft; low_confidence_fields?: string[]; code?: string }
 const SCAN_ERRORS: Record<string, string> = {
   unauthorized: "פג תוקף ההתחברות. התחברו מחדש.", forbidden: "אין הרשאה. סריקת חשבוניות דורשת שותף בפירמה עם אימות דו שלבי.",
-  bad_media_type: "סוג הקובץ אינו נתמך. אפשר לסרוק תמונה (JPEG, PNG, WEBP).",
+  bad_media_type: "סוג הקובץ אינו נתמך. אפשר PDF או תמונה (JPEG, PNG, WEBP).",
   image_too_small: "הקובץ קטן מדי. בחרו צילום ברור של החשבונית.", image_too_large: "הקובץ גדול מדי.",
   too_many_requests: "יותר מדי סריקות בשעה האחרונה. נסו שוב מאוחר יותר.",
   upstream_error: "קריאת החשבונית נכשלה. אפשר לנסות שוב, או למלא ידנית.", fetch_failed: "שגיאת תקשורת. אפשר לנסות שוב, או למלא ידנית.",
@@ -190,8 +192,8 @@ export const fileToBase64 = (file: File): Promise<string> => new Promise((resolv
   reader.readAsDataURL(file);
 });
 
-/** Reads a photographed or scanned receipt and returns a draft for the Expenses form to pre-fill. Never writes
- *  anything: the caller still reviews and saves through the ordinary form, same as a hand-typed entry. */
+/** Reads a photographed or scanned receipt, or a PDF invoice, and returns a draft. Never writes anything itself: the form
+ *  saves it after a person looks, and the automatic intake (ExpenseIntake) books it only under the rules in expenseIntake.ts. */
 export async function scanReceipt(firmId: string, file: File): Promise<ScanReceiptReply> {
   if (!supabase) return { ok: false, code: "fetch_failed" };
   let imageBase64: string;
