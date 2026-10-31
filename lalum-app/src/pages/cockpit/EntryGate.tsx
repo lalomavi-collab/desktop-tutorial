@@ -14,6 +14,7 @@ import { QuickAdd } from "../../components/cockpit/QuickAdd";
 import { useGateMatters } from "../../lib/cockpit/gateMatters";
 import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
 import { LOOK_EN, useCkLang } from "../../lib/cockpit/ckLang";
+import { bootCkPrefs } from "../../lib/cockpit/ckPrefs";
 import "../../styles/cockpit.css";
 import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-type.css";
@@ -35,6 +36,9 @@ const GATE_PARTS: Part[] = [
 ];
 
 const LAST_KEY = "ck-gate-last";
+
+// The personal display preferences apply as soon as the gate's code loads, before it paints.
+bootCkPrefs();
 
 /** The initial for the round badge: the first letter of the name, skipping titles such as ד״ר and עו״ד. */
 function initialOf(name: string | null | undefined): string {
@@ -117,7 +121,7 @@ function GateBody({ last, remember }: { last: string; remember: (k: string) => v
         ))}
       </ul>
       <GateRecent matters={matters} />
-      <div className="gate-foot"><b>{tx("מאובטח:", "Secure:")}</b> {tx("שמות הלקוחות מוסתרים כברירת מחדל.", "client names are hidden by default.")} <Link to="/workspace/guide">{tx("מדריך למערכת", "System guide")}</Link></div>
+      <div className="gate-foot"><b>{tx("מאובטח:", "Secure:")}</b> {tx("שמות הלקוחות מוסתרים כברירת מחדל.", "client names are hidden by default.")} <Link to="/workspace/guide">{tx("מדריך למערכת", "System guide")}</Link> · <Link to="/settings/preferences">{tx("העדפות תצוגה", "Display preferences")}</Link></div>
     </>
   );
 }

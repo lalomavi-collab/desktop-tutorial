@@ -35,6 +35,7 @@
     "whatsapp-templates-check": "node scripts/whatsapp-templates-check.mjs",
     "collections-lock-e2e": "node scripts/collections-lock-e2e.mjs",
     "token-floor-check": "node scripts/token-floor-check.mjs",
+    "prefs-check": "node scripts/prefs-check.mjs",
     "address-check": "node scripts/address-check.mjs",
     "name-check": "node scripts/name-check.mjs",
     "doc-suggest-check": "node scripts/doc-suggest-check.mjs",

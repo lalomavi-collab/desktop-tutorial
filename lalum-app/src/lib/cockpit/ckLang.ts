@@ -56,6 +56,7 @@ export const NAV_EN: Record<string, string> = {
   "/settings/members": "Firm members",
   "/settings/billing": "Billing and settings",
   "/settings/security": "Security",
+  "/settings/preferences": "Display preferences",
   "/workspace/export": "Data export",
   "/workspace/bin": "Recycle bin",
   "/workspace/guide": "Guide",
@@ -73,6 +74,7 @@ export const NAV_HEADING_EN: Record<string, string> = {
 // Every framed screen's title and the line under it, in English. A screen not listed keeps its Hebrew title.
 export const SCREEN_EN: Record<string, [string, string]> = {
   "/settings/security": ["Account security", "Change the password, and turn on and manage two factor sign in for the account."],
+  "/settings/preferences": ["Display preferences", "Text size, look, language, contrast and motion. Each choice applies at once and is kept in this browser."],
   "/settings/billing": ["Firm billing and settings", "The firm's finances: tax documents, customers, expenses and reports. On the second tab: the firm's plan, user seats and the automatic intake connection."],
   "/workspace/inbox": ["Message inbox", "Client messages grouped by client, with a drafted reply and sending."],
   "/workspace/control": ["Control room", "One picture of every area: finance, matters, content and marketing, infrastructure and security. Each tile carries a status, a number where it can be trusted, and an explanation that opens."],
@@ -101,7 +103,7 @@ export const SCREEN_EN: Record<string, [string, string]> = {
 
 // The screens whose content is written in English too. Until a screen is here, its content keeps reading in Hebrew,
 // right to left, under an English frame: the site's own rule for pages that have no translation.
-export const TRANSLATED_SCREENS = new Set<string>([]);
+export const TRANSLATED_SCREENS = new Set<string>(["/settings/preferences"]);
 
 export const PRACTICE_EN: Record<string, string> = {
   REAL_ESTATE: "Real estate / TAMA 38",

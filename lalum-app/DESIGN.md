@@ -88,7 +88,11 @@ By the owner's request (31.10.2026: a language choice on every page), every scre
 
 ## The short rail
 
-By the owner's request (31.10.2026, from the competitor scan), the rail holds the four screens used every day: dashboard, matters, client inquiries, and billing. The screen you are on joins them while you are there, so the rail never hides where you are. "עוד כלים" opens every other screen, in its group, in a card beside the rail (rising from the bottom edge on a phone); it closes on a choice, on Escape or on a click outside, and the control room lives there too, while its strip stays on every screen (`src/styles/cockpit-rail-more.css`). The bookkeeper's rail is unchanged: bookkeeping alone.
+By the owner's request (31.10.2026, from the competitor scan), the rail holds the four screens used every day: dashboard, matters, client inquiries, and billing. The screen you are on joins them while you are there, so the rail never hides where you are. "עוד כלים" opens every other screen, in its group, in a card beside the rail (rising from the bottom edge on a phone); it closes on a choice, on Escape or on a click outside, and the control room lives there too, while its strip stays on every screen (`src/styles/cockpit-rail-more.css`). The bookkeeper's rail holds bookkeeping and the display preferences, which touch no data.
+
+## Display preferences
+
+`/settings/preferences` (owner, 31.10.2026, from the competitor scan) gathers what makes the system comfortable to read: text size in five steps, the look, the language, high contrast and reduced motion. Every choice applies at once and belongs to the browser, like the look and the language before it; nothing reaches the server. The rules live in `src/lib/cockpit/ckPrefs.ts` and `src/styles/cockpit-prefs.css`, and they act only through attributes on `<html>` that the system's own roots read, so the public site never changes and a default sets no attribute at all. Text size zooms the content of a screen and of the entry gate, never the rail or the floating buttons, and the few heights tied to the screen are divided back so a panel stays inside it. High contrast keeps each look's own colours and lifts the main and the secondary text to 7:1 on every surface. A date format choice was left out on purpose: the system keeps one Israeli date form, and a second one would split every table and every exported document. Check with `npm run prefs-check`.
 
 ## Not this system: documents and posts
 

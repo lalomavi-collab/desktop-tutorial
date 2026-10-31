@@ -94,6 +94,7 @@ const STATIC_ROUTES: { path: string; title: string; desc: string; noindex?: bool
   { path: "workspace/inbox", title: "תיבת הודעות | LALUM", desc: "הודעות הלקוחות, מקובצות לפי לקוח, עם מענה.", noindex: true },
   { path: "workspace/payments", title: "גביית לקוחות | LALUM", desc: "הפקת בקשות תשלום ללקוחות ומעקב סטטוס הגבייה.", noindex: true },
   { path: "settings/security", title: "אבטחת חשבון | LALUM", desc: "הפעלה וניהול של אימות דו-שלבי לחשבון.", noindex: true },
+  { path: "settings/preferences", title: "העדפות תצוגה | LALUM", desc: "גודל הטקסט, המראה, השפה, ניגודיות ותנועה במערכת.", noindex: true },
   { path: "settings/members", title: "חברי המשרד | LALUM", desc: "צוות המשרד, התפקידים וההרשאות לפי שיוך ומחלקה.", noindex: true },
   { path: "settings/billing", title: "חיוב והגדרות משרד | LALUM", desc: "מסלול המנוי, מושבים וחשבוניות של המשרד.", noindex: true },
   { path: "legal/saas-terms", title: "תנאי שירות SaaS | LALUM", desc: "תנאי השירות למשרדי עורכי דין המשתמשים בקוקפיט.", noindex: true },

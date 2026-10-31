@@ -101,6 +101,21 @@ export function ShieldArt({ size }: { size?: number }) {
   );
 }
 
+/** Display preferences: a panel with three sliders, and the letter that grows in a gold badge. */
+export function SlidersArt({ size }: { size?: number }) {
+  return (
+    <Svg id="pa" size={size}>
+      <rect x="14" y="24" width="86" height="76" rx="14" fill="url(#pa-d)" />
+      <rect x="20" y="30" width="74" height="64" rx="10" fill="url(#pa-w)" />
+      <path d="M32 46h50M32 62h50M32 78h50" stroke="#c9d9c8" strokeWidth="5" strokeLinecap="round" />
+      <path d="M32 46h28M32 62h12M32 78h38" stroke={G.b} strokeWidth="5" strokeLinecap="round" />
+      <circle cx="60" cy="46" r="7" fill="url(#pa-d)" /><circle cx="44" cy="62" r="7" fill="url(#pa-d)" /><circle cx="70" cy="78" r="7" fill="url(#pa-d)" />
+      <circle cx="96" cy="26" r="14" fill="url(#pa-s)" />
+      <text x="96" y="32" textAnchor="middle" fontSize="17" fontWeight="800" fill={G.ink} fontFamily="Arial, sans-serif">א</text>
+    </Svg>
+  );
+}
+
 export function HeadsetArt({ size }: { size?: number }) {
   return (
     <Svg id="ea" size={size}>
