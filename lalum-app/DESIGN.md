@@ -82,6 +82,10 @@ By the owner's request (30.10.2026, "the look of Clio's apps, a quality professi
 
 By the owner's request (31.10.2026, after Clio's "select the application" screen), the first screen after a partner or admin signs in is `/workspace/start`: the wordmark large, one question, and six cards that open the parts of the system (matters, finance, dashboard, clients, diary, LEX). Each card points at a screen that already exists, carries one soft tint of its own and one of the cockpit drawings, and reads like an app icon; on a phone the cards become two columns of tiles with the name only. The card opened last is offered first. The bookkeeper skips the gate and lands in finance; a client goes to the portal. The rail logo leads back to the gate. It follows the three looks through the same tokens (`src/styles/cockpit-gate.css`).
 
+## The system language
+
+By the owner's request (31.10.2026: a language choice on every page), every screen of the system carries a two segment switch, `עב` and `EN`, at the end of its top bar: the framed screens, the entry gate, the guide and the partner sign in (`src/components/cockpit/CkLangSwitch.tsx`). It rides on the site's own language state, so a choice made on the site carries into the system and `<html lang/dir>` stays true; the other site languages read the system in English. In English the frame speaks English and runs left to right: the rail, each screen's title and line, the gate, the quick actions and the client names control (`src/lib/cockpit/ckLang.ts`). A screen whose content is not translated yet keeps reading in Hebrew, right to left, inside the English frame, the site's own rule for pages with no translation; a screen moves into `TRANSLATED_SCREENS` when its content is translated.
+
 ## Not this system: documents and posts
 
 Documents (docx, html, pdf), social images and decks use the Prestige palette from the root `CLAUDE.md`: Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`. That palette is not used in the app.

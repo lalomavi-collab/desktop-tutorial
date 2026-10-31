@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { supabase } from "../../lib/supabase";
+import { useCkLang } from "../../lib/cockpit/ckLang";
 import { casualLabel, customerLabel, displayName, idleExpired, maskedText, matchesQuery, reasonError, reasonLabel, REVEAL_REASONS, REASON_NOTE_MAX, type CustomerLike, type Named, type RevealReasonCode } from "../../lib/cockpit/clientNames";
 
 export interface RevealReason { code: RevealReasonCode; note: string }
@@ -72,15 +73,21 @@ export function ClientNamesProvider({ children }: { children: ReactNode }) {
   return <C.Provider value={value}>{children}</C.Provider>;
 }
 
+const REASON_EN: Record<RevealReasonCode, string> = {
+  INVOICE: "Issuing an invoice or document", COLLECTION: "Collection and reminder", RECONCILIATION: "Bank or bookkeeping reconciliation",
+  CLIENT_CONTACT: "Enquiry or call with the client", MATTER_WORK: "Work on a matter", OTHER: "Other (details required)",
+};
+
 /** The control in the page header, on every cockpit screen (bookkeeping included): always says which state the screen is in. Showing names asks for a reason, and the reason is what the log keeps. */
 export function ClientNamesToggle() {
   const { canReveal, revealed, reason, reasonRecorded, reveal, hide } = useClientNames();
+  const { tx } = useCkLang();
   const [asking, setAsking] = useState(false);
   const [code, setCode] = useState<string>("");
   const [note, setNote] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  if (!canReveal) return <span className="ck-chip" title="שמות הלקוחות מוסתרים. הצגתם מותרת לשותף או לעורך דין עם אימות דו שלבי.">שמות לקוחות מוסתרים</span>;
+  if (!canReveal) return <span className="ck-chip" title={tx("שמות הלקוחות מוסתרים. הצגתם מותרת לשותף או לעורך דין עם אימות דו שלבי.", "Client names are hidden. A partner or a lawyer with two factor sign in may show them.")}>{tx("שמות לקוחות מוסתרים", "Client names hidden")}</span>;
   const close = () => { setAsking(false); setCode(""); setNote(""); setMsg(""); };
   const submit = async () => {
     setBusy(true); const e = await reveal(code, note); setBusy(false);
@@ -88,14 +95,14 @@ export function ClientNamesToggle() {
   };
   if (asking && !revealed) {
     return (
-      <form className="ck-row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label="סיבה להצגת שמות לקוחות" onSubmit={(ev) => { ev.preventDefault(); void submit(); }}>
-        <select className="ck-select" aria-label="סיבה להצגת השמות" value={code} onChange={(e) => { setCode(e.target.value); setMsg(""); }} style={{ maxWidth: 230 }}>
-          <option value="">למה להציג שמות? (חובה)</option>
-          {REVEAL_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
+      <form className="ck-row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label={tx("סיבה להצגת שמות לקוחות", "Reason for showing client names")} onSubmit={(ev) => { ev.preventDefault(); void submit(); }}>
+        <select className="ck-select" aria-label={tx("סיבה להצגת השמות", "Reason for showing the names")} value={code} onChange={(e) => { setCode(e.target.value); setMsg(""); }} style={{ maxWidth: 230 }}>
+          <option value="">{tx("למה להציג שמות? (חובה)", "Why show names? (required)")}</option>
+          {REVEAL_REASONS.map((r) => <option key={r.code} value={r.code}>{tx(r.label, REASON_EN[r.code])}</option>)}
         </select>
-        <input className="ck-input" aria-label="פירוט הסיבה" placeholder={code === "OTHER" ? "פירוט (חובה), בלי שם לקוח" : "פירוט (לא חובה), בלי שם לקוח"} maxLength={REASON_NOTE_MAX} value={note} onChange={(e) => { setNote(e.target.value); setMsg(""); }} style={{ maxWidth: 260 }} />
-        <button type="submit" className="ck-btn primary" disabled={busy || !code}>הצגה ורישום ביומן</button>
-        <button type="button" className="ck-btn" onClick={close}>ביטול</button>
+        <input className="ck-input" aria-label={tx("פירוט הסיבה", "Reason details")} placeholder={code === "OTHER" ? tx("פירוט (חובה), בלי שם לקוח", "Details (required), no client name") : tx("פירוט (לא חובה), בלי שם לקוח", "Details (optional), no client name")} maxLength={REASON_NOTE_MAX} value={note} onChange={(e) => { setNote(e.target.value); setMsg(""); }} style={{ maxWidth: 260 }} />
+        <button type="submit" className="ck-btn primary" disabled={busy || !code}>{tx("הצגה ורישום ביומן", "Show and log it")}</button>
+        <button type="button" className="ck-btn" onClick={close}>{tx("ביטול", "Cancel")}</button>
         {msg && <span className="ck-err" role="alert">{msg}</span>}
       </form>
     );
@@ -103,11 +110,11 @@ export function ClientNamesToggle() {
   return (
     <span className="ck-row" style={{ gap: 8, flexWrap: "wrap" }}>
       <span className={`ck-chip${revealed ? " warn" : ""}`} role="status">
-        {revealed ? `שמות לקוחות מוצגים${reason ? ` · ${reasonLabel(reason.code)}${reason.code === "OTHER" && reason.note ? `: ${reason.note}` : ""}` : ""}` : "שמות לקוחות מוסתרים"}
-        {revealed && !reasonRecorded ? " · הסיבה לא נרשמה ביומן (עדכון מסד הנתונים ממתין)" : ""}
+        {revealed ? `${tx("שמות לקוחות מוצגים", "Client names shown")}${reason ? ` · ${tx(reasonLabel(reason.code), REASON_EN[reason.code])}${reason.code === "OTHER" && reason.note ? `: ${reason.note}` : ""}` : ""}` : tx("שמות לקוחות מוסתרים", "Client names hidden")}
+        {revealed && !reasonRecorded ? tx(" · הסיבה לא נרשמה ביומן (עדכון מסד הנתונים ממתין)", " · the reason was not logged (database update pending)") : ""}
       </span>
       <button type="button" className="ck-btn" aria-pressed={revealed} onClick={() => { if (revealed) hide(); else setAsking(true); }}>
-        {revealed ? "הסתרת השמות" : "הצגת שמות (נרשם ביומן)"}
+        {revealed ? tx("הסתרת השמות", "Hide names") : tx("הצגת שמות (נרשם ביומן)", "Show names (logged)")}
       </button>
     </span>
   );

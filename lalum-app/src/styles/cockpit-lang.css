@@ -1,0 +1,14 @@
+/* The system language switch (CkLangSwitch.tsx): two segments in the top bar of every screen and of the entry gate.
+   Coloured by the look's own tokens, so it is navy, sage or bright on dark without a rule per look. */
+.ck-langsw { display: inline-flex; align-items: center; flex: none; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid var(--line-strong, var(--line)); background: var(--card-solid, var(--card)); }
+.ck-langsw button {
+  min-inline-size: 42px; block-size: 32px; padding: 0 10px; border: 0; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--slate); font: inherit; font-size: 14px; font-weight: 700; letter-spacing: .02em; line-height: 1;
+  transition: background .15s ease, color .15s ease;
+}
+.ck-langsw button:hover { color: var(--ink); }
+.ck-langsw button[aria-pressed="true"] { background: var(--clay); color: var(--on-clay, #fff); }
+.ck-langsw button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* In the top bar the switch sits at the inline end, after the client names control. */
+.ck-top-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
