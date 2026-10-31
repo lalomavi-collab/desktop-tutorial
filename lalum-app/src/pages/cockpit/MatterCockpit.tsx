@@ -35,7 +35,7 @@ const TOKEN_RE = /\[[A-Z_]+_\d+\]/g;
 const Badge = ({ sev }: { sev: string }) =>
   sev === "RED" ? <span className="ck-badge red dot">סיכון גבוה</span> : sev === "YELLOW" ? <span className="ck-badge yellow dot">זהירות</span> : <span className="ck-badge green dot">תקין</span>;
 const ConflictBadge = ({ c }: { c: string }) => { const [t, l] = CONFLICT[c] ?? ["yellow", c]; return <span className={`ck-badge ${t}`}>{l}</span>; };
-const PiiBadge = () => <span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 PII Masked &amp; Secured</span>;
+const PiiBadge = () => <span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 מידע מזהה מוסתר ומאובטח</span>;
 
 function tokenMap(docId: string): Map<string, string> | null {
   const o = originals.get(docId);
