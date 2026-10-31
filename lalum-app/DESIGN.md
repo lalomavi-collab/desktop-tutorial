@@ -86,6 +86,10 @@ By the owner's request (31.10.2026, after Clio's "select the application" screen
 
 By the owner's request (31.10.2026: a language choice on every page), every screen of the system carries a two segment switch, `עב` and `EN`, at the end of its top bar: the framed screens, the entry gate, the guide and the partner sign in (`src/components/cockpit/CkLangSwitch.tsx`). It rides on the site's own language state, so a choice made on the site carries into the system and `<html lang/dir>` stays true; the other site languages read the system in English. In English the frame speaks English and runs left to right: the rail, each screen's title and line, the gate, the quick actions and the client names control (`src/lib/cockpit/ckLang.ts`). A screen whose content is not translated yet keeps reading in Hebrew, right to left, inside the English frame, the site's own rule for pages with no translation; a screen moves into `TRANSLATED_SCREENS` when its content is translated.
 
+## The short rail
+
+By the owner's request (31.10.2026, from the competitor scan), the rail holds the four screens used every day: dashboard, matters, client inquiries, and billing. The screen you are on joins them while you are there, so the rail never hides where you are. "עוד כלים" opens every other screen, in its group, in a card beside the rail (rising from the bottom edge on a phone); it closes on a choice, on Escape or on a click outside, and the control room lives there too, while its strip stays on every screen (`src/styles/cockpit-rail-more.css`). The bookkeeper's rail is unchanged: bookkeeping alone.
+
 ## Not this system: documents and posts
 
 Documents (docx, html, pdf), social images and decks use the Prestige palette from the root `CLAUDE.md`: Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`. That palette is not used in the app.

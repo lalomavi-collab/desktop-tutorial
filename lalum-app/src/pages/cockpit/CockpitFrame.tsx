@@ -12,6 +12,7 @@ import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import { QuickAdd } from "../../components/cockpit/QuickAdd";
+import { Icon } from "../../components/Icon";
 import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
 import { LOOK_EN, NAV_EN, NAV_HEADING_EN, SCREEN_EN, TRANSLATED_SCREENS, useCkLang } from "../../lib/cockpit/ckLang";
 import { supabase } from "../../lib/supabase";
@@ -21,6 +22,7 @@ import "../../styles/cockpit-mint.css";
 import "../../styles/cockpit-dashboard.css";
 import "../../styles/cockpit-type.css";
 import "../../styles/cockpit-navy.css";
+import "../../styles/cockpit-rail-more.css";
 
 // The control room strip loads after the screen itself, in its own chunk, and only for the platform admin.
 const ControlStrip = lazy(() => import("../../components/cockpit/ControlStrip").then((m) => ({ default: m.ControlStrip })));
@@ -82,14 +84,9 @@ const BAND: Record<string, (p: { size?: number }) => ReactNode> = {
   "/settings/members": GavelArt,
 };
 
-// The rail opens on the six screens used every day; "עוד" reveals the rest in their groups. The choice is remembered per browser.
-const PRIMARY = new Set(["/workspace/dashboard", "/workspace/control", "/workspace", "/workspace/inquiries", "/workspace/tasks", "/workspace/scheduling", "/settings/billing"]);
-function useRailOpen(): [boolean, () => void] {
-  const [open, setOpen] = useState(false);
-  useEffect(() => { try { if (localStorage.getItem("ck-rail-open") === "1") setOpen(true); } catch { /* storage blocked */ } }, []);
-  const flip = () => setOpen((o) => { try { localStorage.setItem("ck-rail-open", o ? "0" : "1"); } catch { /* storage blocked */ } return !o; });
-  return [open, flip];
-}
+// A short rail (owner, 31.10.2026, from the competitor scan): the four screens used every day, plus the screen you are on when it is
+// not one of them, so the rail never hides where you are. "עוד כלים" opens every other screen in its group, in a panel beside the rail.
+const PRIMARY = new Set(["/workspace/dashboard", "/workspace", "/workspace/inquiries", "/settings/billing"]);
 
 // The external bookkeeper sees the bookkeeping system and nothing else; the database refuses the rest (0073), this keeps the interface honest.
 const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"]];
@@ -118,7 +115,19 @@ export function CockpitFrame({
   const [look, setLook] = useCkLook();
   const { lang, dir, tx } = useCkLang();
   const en = lang === "en";
-  const [railOpen, flipRail] = useRailOpen();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreBtn = useRef<HTMLButtonElement>(null);
+  const morePanel = useRef<HTMLDivElement>(null);
+  const closeMore = () => setMoreOpen(false);
+  useEffect(() => {
+    if (!moreOpen) return;
+    morePanel.current?.querySelector<HTMLElement>("a")?.focus();
+    const away = (e: PointerEvent) => { const t = e.target as Node; if (!morePanel.current?.contains(t) && !moreBtn.current?.contains(t)) setMoreOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") { setMoreOpen(false); moreBtn.current?.focus(); } };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
+  }, [moreOpen]);
   const mainRef = useRef<HTMLElement>(null);
   useCardTables(mainRef);
   // Number of unanswered inquiries, shown on the nav item (counts only; the rows themselves load on the inquiries screen).
@@ -160,12 +169,13 @@ export function CockpitFrame({
   const navSections = controlRoom ? NAV_SECTIONS : NAV_SECTIONS.map((x) => ({ ...x, items: x.items.filter(([to]) => to !== "/workspace/control") }));
   const allItems = navSections.flatMap((x) => x.items);
   const shown = allItems.filter(([to]) => PRIMARY.has(to) || to === path);
-  const moreCount = allItems.length - shown.length;
-  const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
+  const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : [{ heading: null, items: shown }];
+  // The panel: every screen outside the four, in its group; the top group is named there, since the rail no longer shows it as one.
+  const moreGroups = navSections.map((x) => ({ heading: x.heading ?? "סקירה", items: x.items.filter(([to]) => !PRIMARY.has(to)) })).filter((x) => x.items.length > 0);
   // In English the frame speaks English; a screen whose content is not translated yet keeps reading in Hebrew, right to left, inside it.
   const [shownTitle, shownDesc] = en && SCREEN_EN[path] ? SCREEN_EN[path] : [title, description];
   const navLabel = (to: string, he: string) => (en ? (bookkeeper && to === "/settings/billing" ? "Bookkeeping" : NAV_EN[to] ?? he) : he);
-  const heading = (h: string | null) => (h && en ? NAV_HEADING_EN[h] ?? h : h);
+  const heading = (h: string | null) => (h && en ? NAV_HEADING_EN[h] ?? (h === "סקירה" ? "Overview" : h) : h);
   const bodyLang = en && screen && !TRANSLATED_SCREENS.has(path) ? { dir: "rtl" as const, lang: "he" } : {};
   return (
     <ClientNamesProvider>
@@ -183,7 +193,6 @@ export function CockpitFrame({
         <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label={tx("ניווט הקוקפיט", "System navigation")}>
           {sections.map((sec) => (
             <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={heading(sec.heading) ?? undefined}>
-              {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{heading(sec.heading)}</div>}
               {sec.items.map(([to, label, end]) => (
                 <NavLink key={to} to={to} end={end || to === "/workspace"} className={to === "/workspace/dashboard" ? "ck-nav-sm" : undefined}>
                   <RailIcon id={to} size={to === "/workspace/dashboard" ? 28 : 38} /><span>{navLabel(to, label)}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={tx(`${newInq} פניות חדשות`, `${newInq} new inquiries`)}>{newInq}</b>}
@@ -191,7 +200,7 @@ export function CockpitFrame({
               ))}
             </div>
           ))}
-          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} aria-controls="ck-rail-nav" onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? tx("פחות", "Less") : tx(`עוד ${moreCount}`, `${moreCount} more`)}</span></button>}
+          {!bookkeeper && <button ref={moreBtn} type="button" className="ck-railmore" aria-haspopup="dialog" aria-expanded={moreOpen} aria-controls="ck-more-menu" onClick={() => setMoreOpen((o) => !o)}><RailIcon id={moreOpen ? "less" : "more"} size={30} /><span>{tx("עוד כלים", "More tools")}</span></button>}
         </nav>
         <div className="ck-sidebar-foot">
           <Link to="/portal"><RailIcon id="user" size={26} /><span>{tx("אזור אישי", "Personal area")}</span></Link>
@@ -203,6 +212,26 @@ export function CockpitFrame({
           )}
         </div>
       </aside>
+      {moreOpen && !bookkeeper && (
+        <div className="ck-moremenu" id="ck-more-menu" role="dialog" aria-label={tx("עוד כלים", "More tools")} ref={morePanel}>
+          <div className="ck-moremenu-head">
+            <b>{tx("עוד כלים", "More tools")}</b>
+            <button type="button" className="ck-moremenu-x" aria-label={tx("סגירה", "Close")} onClick={() => { closeMore(); moreBtn.current?.focus(); }}><Icon name="x" size={18} /></button>
+          </div>
+          <div className="ck-moremenu-grid">
+            {moreGroups.map((g) => (
+              <section key={g.heading} aria-label={heading(g.heading) ?? undefined}>
+                <div className="ck-moremenu-h" aria-hidden="true">{heading(g.heading)}</div>
+                <ul role="list">
+                  {g.items.map(([to, label, end]) => (
+                    <li key={to}><NavLink to={to} end={end || to === "/workspace"} onClick={closeMore}><RailIcon id={to} size={26} /><span>{navLabel(to, label)}</span></NavLink></li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="ck-shell">
         <header className="ck-top">
           <h1 className="serif">{shownTitle}</h1>

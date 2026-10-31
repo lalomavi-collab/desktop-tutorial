@@ -80,6 +80,8 @@ ICONS["/workspace/partner"] = ICONS["/workspace/dashboard"];
 ICONS["/workspace/control"] = <><rect x="2" y="5" width="28" height="22" rx="5" fill={B} /><rect x="5" y="8" width="6" height="16" rx="2" fill={D} /><path d="M13.5 18.5h3l2.2-6 3 9 2.2-5h3.6" {...stroke("#efe2b4", 2.2)} /></>;
 ICONS["/workspace/matter-360"] = ICONS["/workspace"];
 ICONS["/workspace/portal-preview"] = ICONS["user"];
+// Data export had no picture of its own, so its row in the "more tools" panel stood empty; it takes the client documents file.
+ICONS["/workspace/export"] = ICONS["/workspace/client-docs"];
 
 export function RailIcon({ id, size = 30 }: { id: string; size?: number }) {
   return (

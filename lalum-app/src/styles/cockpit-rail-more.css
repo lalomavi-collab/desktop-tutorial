@@ -1,0 +1,28 @@
+/* The "more tools" panel of the short rail (CockpitFrame.tsx): every screen outside the four daily ones, in its group, in a card
+   that opens beside the rail. Coloured by the look's own tokens, so it reads in the three looks without a rule per look. */
+.ck-moremenu {
+  position: fixed; z-index: 70; inset-block-end: 16px; inset-inline-start: 108px;
+  inline-size: min(560px, calc(100vw - 124px)); max-block-size: calc(100dvh - 32px); overflow: auto;
+  padding: 16px 18px 18px; border-radius: 18px; color: var(--ink);
+  background: var(--card-solid, var(--card)); border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(15, 34, 54, .08), 0 18px 44px rgba(15, 34, 54, .18);
+}
+.ck-root[data-ck-theme="dark"] .ck-moremenu { box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .9); }
+.ck-moremenu-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-block-end: 10px; font-size: 17px; }
+.ck-moremenu-x { inline-size: 36px; block-size: 36px; flex: none; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--slate); cursor: pointer; }
+.ck-moremenu-x:hover { background: var(--clay-tint); color: var(--ink); }
+.ck-moremenu-x:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.ck-moremenu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.ck-moremenu-h { margin: 0 0 4px; padding-inline: 8px; font-size: 13px; font-weight: 700; color: var(--slate); }
+.ck-moremenu ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.ck-moremenu a { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 15px; font-weight: 600; line-height: 1.25; }
+.ck-moremenu a:hover { background: var(--clay-tint); }
+.ck-moremenu a[aria-current="page"] { background: color-mix(in srgb, var(--clay) 14%, transparent); }
+.ck-moremenu a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.ck-moremenu a .ck-railicon { flex: none; }
+
+/* Under 861px the rail is a row above the content, so the panel rises from the bottom edge across the screen. */
+@media (max-width: 860px) {
+  .ck-moremenu { inset-inline: 10px; inset-block-end: 10px; inline-size: auto; max-block-size: 75dvh; }
+  .ck-moremenu-grid { grid-template-columns: 1fr; }
+}
