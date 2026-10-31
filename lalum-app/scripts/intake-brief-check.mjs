@@ -118,4 +118,22 @@ t("summary: names the answers given", () => {
   assert.match(text, /ממצאים: 1 בסיכון גבוה, 1 לזהירות/);
 });
 
+t("deep reading: its questions come right after the three that decide, without duplicates, at most eight", () => {
+  const m = B.readMap(reInput);
+  const base = B.questionsFor(reInput, m);
+  const ai = [1, 2, 3, 4].map((n) => ({ id: `ai_${n}`, ask: `שאלה ${n}`, why: "כי זה משנה את הניתוח", options: [{ id: "o1", label: "כן" }, { id: "unknown", label: "לא ידוע עדיין" }] }));
+  const merged = B.mergeQuestions(base, [...ai, base[0]]);
+  assert.deepEqual(merged.map((q) => q.id), ["goal", "side", "stage", "ai_1", "ai_2", "ai_3", "deadline", "red"]);
+  assert.deepEqual(B.mergeQuestions(base, []).map((q) => q.id), base.map((q) => q.id));
+});
+
+t("deep reading: gaps found in the matter suggest a client meeting even when goal and side are known", () => {
+  const m = B.readMap(reInput);
+  const known = { goal: "deal", side: "buyer" };
+  assert.ok(!B.stepsFor(reInput, m, known, "x").some((s) => s.id === "meet"));
+  const meet = B.stepsFor(reInput, m, known, "x", 2).find((s) => s.id === "meet");
+  assert.ok(meet);
+  assert.match(meet.when, /2 פערים/);
+});
+
 console.log("intake-brief-check: all passed");

@@ -321,7 +321,7 @@ export function MatterCockpit({ matterId, member, platformAdmin = false }: { mat
         </div>
       </div>
 
-      {briefOpen && doc && <IntakeBrief key={doc.id} matterId={matter.id} doc={doc} practiceArea={matter.practice_area} conflictStatus={matter.conflict_status} onPanel={goPanel} onClose={() => setBriefOpen(false)} />}
+      {briefOpen && doc && <IntakeBrief key={doc.id} matterId={matter.id} doc={doc} docs={docs} practiceArea={matter.practice_area} conflictStatus={matter.conflict_status} onPanel={goPanel} onClose={() => setBriefOpen(false)} />}
 
       <div className="ck-tabs" role="tablist" aria-label="חלוניות">
         {[[1, "כספת"], [2, "עורך"], [3, "סוכן ואישור"]].map(([n, l]) => <button key={n} className={`ck-btn${tab === n ? " primary" : ""}`} onClick={() => setTab(n as number)}>{l}</button>)}
