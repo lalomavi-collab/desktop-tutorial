@@ -12,6 +12,8 @@ import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
 import { QuickAdd } from "../../components/cockpit/QuickAdd";
+import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
+import { LOOK_EN, NAV_EN, NAV_HEADING_EN, SCREEN_EN, TRANSLATED_SCREENS, useCkLang } from "../../lib/cockpit/ckLang";
 import { supabase } from "../../lib/supabase";
 import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt, ImportArt, InboxArt, ScalesArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
@@ -93,7 +95,7 @@ function useRailOpen(): [boolean, () => void] {
 const BOOKKEEPER_NAV: NavItem[] = [["/settings/billing", "הנהלת חשבונות", false, "card"]];
 const BOOKKEEPER_PATHS = ["/settings/billing", "/workspace/guide"];
 
-/** Standalone frame for the partner and admin area: Hebrew, RTL, gated by firm membership. */
+/** Standalone frame for the partner and admin area: Hebrew (RTL) or English (LTR), gated by firm membership. */
 export function CockpitFrame({
   title,
   description,
@@ -114,6 +116,8 @@ export function CockpitFrame({
   async function leave() { await signOut(); nav("/", { replace: true }); }
   const access = useCockpitAccess();
   const [look, setLook] = useCkLook();
+  const { lang, dir, tx } = useCkLang();
+  const en = lang === "en";
   const [railOpen, flipRail] = useRailOpen();
   const mainRef = useRef<HTMLElement>(null);
   useCardTables(mainRef);
@@ -135,13 +139,17 @@ export function CockpitFrame({
     return () => { live = false; clearInterval(t); };
   }, [hasMember, bookkeeper]);
   let body: ReactNode;
-  if (loading || access.state === "loading") body = <div className="ck-meta">טוען...</div>;
-  else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">נדרשת התחברות</div><div className="ck-meta">הכניסה לשותפים ולאדמין.</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>להתחברות</Link></div>;
-  else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">החשבון אינו משויך לפירמה</div><div className="ck-meta">כדי להשתמש בקוקפיט יש לצרף את החשבון לפירמה. פנו למנהל המערכת של LALUM.</div></div>;
-  else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">אין פירמה משויכת לחשבון זה</div><div className="ck-meta">מסך זה פועל בתוך פירמה. מסך הניהול זמין למנהל הפלטפורמה.</div></div>;
+  // True once the body is the screen itself rather than one of the frame's own notices (loading, sign in, no firm).
+  let screen = false;
+  if (loading || access.state === "loading") body = <div className="ck-meta">{tx("טוען...", "Loading...")}</div>;
+  else if (!user) body = <div className="ck-card" style={{ maxWidth: 480, margin: "40px auto" }}><div className="ck-title">{tx("נדרשת התחברות", "Sign in required")}</div><div className="ck-meta">{tx("הכניסה לשותפים ולאדמין.", "For partners and administrators.")}</div><Link className="ck-btn primary" to="/login" style={{ alignSelf: "flex-start" }}>{tx("להתחברות", "Sign in")}</Link></div>;
+  else if (access.state === "none") body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">{tx("החשבון אינו משויך לפירמה", "This account is not linked to a firm")}</div><div className="ck-meta">{tx("כדי להשתמש בקוקפיט יש לצרף את החשבון לפירמה. פנו למנהל המערכת של LALUM.", "To use the system the account has to join a firm. Contact the LALUM system administrator.")}</div></div>;
+  else if (needsFirm && !access.member) body = <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">{tx("אין פירמה משויכת לחשבון זה", "No firm is linked to this account")}</div><div className="ck-meta">{tx("מסך זה פועל בתוך פירמה. מסך הניהול זמין למנהל הפלטפורמה.", "This screen works inside a firm. The administration screen is available to the platform administrator.")}</div></div>;
   else {
-    const inner = bookkeeper && !BOOKKEEPER_PATHS.includes(path)
-      ? <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">מסך זה אינו חלק מהנהלת החשבונות</div><div className="ck-meta">לתפקיד הנהלת חשבונות יש גישה למערכת הנהלת החשבונות בלבד.</div><Link className="ck-btn primary" to="/settings/billing" style={{ alignSelf: "flex-start" }}>להנהלת חשבונות</Link></div>
+    const blocked = bookkeeper && !BOOKKEEPER_PATHS.includes(path);
+    screen = !blocked;
+    const inner = blocked
+      ? <div className="ck-card" style={{ maxWidth: 520, margin: "40px auto" }}><div className="ck-title">{tx("מסך זה אינו חלק מהנהלת החשבונות", "This screen is not part of bookkeeping")}</div><div className="ck-meta">{tx("לתפקיד הנהלת חשבונות יש גישה למערכת הנהלת החשבונות בלבד.", "The bookkeeper role has access to the bookkeeping system only.")}</div><Link className="ck-btn primary" to="/settings/billing" style={{ alignSelf: "flex-start" }}>{tx("להנהלת חשבונות", "To bookkeeping")}</Link></div>
       : children({ member: access.member, platformAdmin: access.platformAdmin });
     // The external bookkeeper signs in with a password only (owner's decision, 0079), so she gets no second factor screen.
     const partnerLike = access.platformAdmin || ["FIRM_PARTNER", "ADMIN"].includes(access.member?.role ?? "");
@@ -154,49 +162,57 @@ export function CockpitFrame({
   const shown = allItems.filter(([to]) => PRIMARY.has(to) || to === path);
   const moreCount = allItems.length - shown.length;
   const sections: Array<{ heading: string | null; items: NavItem[] }> = bookkeeper ? [{ heading: null, items: BOOKKEEPER_NAV }] : railOpen ? navSections : [{ heading: null, items: shown }];
+  // In English the frame speaks English; a screen whose content is not translated yet keeps reading in Hebrew, right to left, inside it.
+  const [shownTitle, shownDesc] = en && SCREEN_EN[path] ? SCREEN_EN[path] : [title, description];
+  const navLabel = (to: string, he: string) => (en ? (bookkeeper && to === "/settings/billing" ? "Bookkeeping" : NAV_EN[to] ?? he) : he);
+  const heading = (h: string | null) => (h && en ? NAV_HEADING_EN[h] ?? h : h);
+  const bodyLang = en && screen && !TRANSLATED_SCREENS.has(path) ? { dir: "rtl" as const, lang: "he" } : {};
   return (
     <ClientNamesProvider>
-    <div className="ck-root ck-with-sidebar" {...lookAttrs(look)} dir="rtl" lang="he">
-      <PageMeta title={title} description={description} path={path} noindex />
+    <div className="ck-root ck-with-sidebar" {...lookAttrs(look)} dir={dir} lang={lang}>
+      <PageMeta title={shownTitle} description={shownDesc} path={path} noindex />
       <aside className="ck-sidebar">
         <RailDefs />
         <div className="ck-sidebar-brand">
           {/* The logo leads back to the entry gate, the app's home screen (owner, 31.10.2026). */}
-          <Link to={bookkeeper ? "/settings/billing" : "/workspace/start"} className="ck-brand-home" aria-label="LALUM, למסך הפתיחה">
+          <Link to={bookkeeper ? "/settings/billing" : "/workspace/start"} className="ck-brand-home" aria-label={tx("LALUM, למסך הפתיחה", "LALUM, to the start screen")}>
             <Wordmark height={26} style={{ color: "var(--ck-brand-ink, var(--ink))" }} />
           </Link>
-          <div className="ck-looks" role="group" aria-label="מראה הקוקפיט">{LOOKS.map(([k, label]) => <button key={k} type="button" className={`ck-look ck-look-${k}`} aria-pressed={look === k} aria-label={`מראה ${label}`} title={label} onClick={() => setLook(k)} />)}</div>
+          <div className="ck-looks" role="group" aria-label={tx("מראה הקוקפיט", "System look")}>{LOOKS.map(([k, label]) => { const l = en ? LOOK_EN[k] : label; return <button key={k} type="button" className={`ck-look ck-look-${k}`} aria-pressed={look === k} aria-label={en ? `${l} look` : `מראה ${l}`} title={l} onClick={() => setLook(k)} />; })}</div>
         </div>
-        <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label="ניווט הקוקפיט">
+        <nav className="ck-sidebar-nav" id="ck-rail-nav" aria-label={tx("ניווט הקוקפיט", "System navigation")}>
           {sections.map((sec) => (
-            <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={sec.heading ?? undefined}>
-              {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{sec.heading}</div>}
+            <div key={sec.heading ?? "__top"} className="ck-nav-group" role="group" aria-label={heading(sec.heading) ?? undefined}>
+              {sec.heading && railOpen && <div className="ck-nav-heading" aria-hidden="true">{heading(sec.heading)}</div>}
               {sec.items.map(([to, label, end]) => (
                 <NavLink key={to} to={to} end={end || to === "/workspace"} className={to === "/workspace/dashboard" ? "ck-nav-sm" : undefined}>
-                  <RailIcon id={to} size={to === "/workspace/dashboard" ? 28 : 38} /><span>{label}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={`${newInq} פניות חדשות`}>{newInq}</b>}
+                  <RailIcon id={to} size={to === "/workspace/dashboard" ? 28 : 38} /><span>{navLabel(to, label)}</span>{to === "/workspace/inquiries" && newInq > 0 && <b className="ck-navbadge" aria-label={tx(`${newInq} פניות חדשות`, `${newInq} new inquiries`)}>{newInq}</b>}
                 </NavLink>
               ))}
             </div>
           ))}
-          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} aria-controls="ck-rail-nav" onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? "פחות" : `עוד ${moreCount}`}</span></button>}
+          {!bookkeeper && <button type="button" className="ck-railmore" aria-expanded={railOpen} aria-controls="ck-rail-nav" onClick={flipRail}><RailIcon id={railOpen ? "less" : "more"} size={30} /><span>{railOpen ? tx("פחות", "Less") : tx(`עוד ${moreCount}`, `${moreCount} more`)}</span></button>}
         </nav>
         <div className="ck-sidebar-foot">
-          <Link to="/portal"><RailIcon id="user" size={26} /><span>אזור אישי</span></Link>
-          <Link to="/"><RailIcon id="site" size={26} /><span>לאתר</span></Link>
+          <Link to="/portal"><RailIcon id="user" size={26} /><span>{tx("אזור אישי", "Personal area")}</span></Link>
+          <Link to="/"><RailIcon id="site" size={26} /><span>{tx("לאתר", "To the site")}</span></Link>
           {user && (
             <button type="button" className="ck-logout" onClick={() => void leave()}>
-              <RailIcon id="logout" size={26} /><span>התנתקות</span>
+              <RailIcon id="logout" size={26} /><span>{tx("התנתקות", "Sign out")}</span>
             </button>
           )}
         </div>
       </aside>
       <div className="ck-shell">
         <header className="ck-top">
-          <h1 className="serif">{title}</h1>
-          {hasMember && <ClientNamesToggle />}
+          <h1 className="serif">{shownTitle}</h1>
+          <div className="ck-top-tools">
+            {hasMember && <ClientNamesToggle />}
+            <CkLangSwitch />
+          </div>
         </header>
-        {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{description}</p></div> : null; })()}
-        <main ref={mainRef}>{body}</main>
+        {(() => { const Art = BAND[path]; return Art ? <div className="ck-band"><div className="ck-band-art"><Art size={92} /></div><p>{shownDesc}</p></div> : null; })()}
+        <main ref={mainRef} {...bodyLang}>{body}</main>
       </div>
       {controlRoom && stripReady && <Suspense fallback={null}><ControlStrip onWall={path === "/workspace/control"} /></Suspense>}
       {hasMember && !bookkeeper && <QuickAdd />}

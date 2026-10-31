@@ -5,6 +5,8 @@ import { Wordmark } from "../../components/Wordmark";
 import { useAuth } from "../../context/AuthContext";
 import { REMEMBER_KEY } from "../../lib/supabase";
 import { useCockpitAccess } from "../../lib/cockpit/shared";
+import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
+import { useCkLang } from "../../lib/cockpit/ckLang";
 import "../../styles/cockpit.css";
 
 // Abstract line-art for the partners entry: a skyline suggesting real estate
@@ -65,6 +67,7 @@ function PartnersArt() {
 /** Dedicated entry for law-firm partners and platform admins. Sign-in only: accounts are provisioned by LALUM. */
 export function Partners() {
   const { user, loading, signIn, signOut } = useAuth();
+  const { lang, dir, tx } = useCkLang();
   const access = useCockpitAccess();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -87,40 +90,40 @@ export function Partners() {
   }
 
   return (
-    <div className="ck-root partners-root" dir="rtl" lang="he">
-      <PageMeta title="כניסה לשותפים" description="כניסה לפירמות שותפות ולמנהלי LALUM." path="/partners" noindex />
+    <div className="ck-root partners-root" dir={dir} lang={lang}>
+      <PageMeta title={tx("כניסה לשותפים", "Partner sign in")} description={tx("כניסה לפירמות שותפות ולמנהלי LALUM.", "Sign in for partner firms and LALUM administrators.")} path="/partners" noindex />
       <div className="ck-shell partners-shell" style={{ maxWidth: 1040 }}>
-        <header className="ck-top"><h1 className="serif">כניסה לשותפים</h1><nav className="ck-nav"><Link to="/">לאתר</Link><Link to="/workspace/guide">מה זה הקוקפיט?</Link></nav></header>
+        <header className="ck-top"><h1 className="serif">{tx("כניסה לשותפים", "Partner sign in")}</h1><div className="ck-top-tools"><nav className="ck-nav"><Link to="/">{tx("לאתר", "To the site")}</Link><Link to="/workspace/guide">{tx("מה זה הקוקפיט?", "What is the system?")}</Link></nav><CkLangSwitch /></div></header>
         <div className="partners-layout">
           <main className="ck-stack">
             <div className="ck-card partners-intro-card">
-              <div className="ck-title partners-intro-title">אזור הפירמות השותפות</div>
-              <div className="ck-meta partners-intro-meta">קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה לפירמות ולמנהלי LALUM בלבד, ללא הרשמה עצמית.</div>
+              <div className="ck-title partners-intro-title">{tx("אזור הפירמות השותפות", "The partner firms area")}</div>
+              <div className="ck-meta partners-intro-meta">{tx("קליטה אוטומטית של תיקים, בדיקת ניגוד עניינים, סיכון לפי תחום ואישור שותף בארבעה שלבים. הגישה לפירמות ולמנהלי LALUM בלבד, ללא הרשמה עצמית.", "Automatic matter intake, a conflict check, risk by practice area and partner approval in four steps. Access for firms and LALUM administrators only, with no self sign up.")}</div>
             </div>
-            {loading || (user && access.state === "loading") ? <div className="ck-meta">טוען...</div>
+            {loading || (user && access.state === "loading") ? <div className="ck-meta">{tx("טוען...", "Loading...")}</div>
               : user && access.state === "none" ? (
-                <div className="ck-card"><div className="ck-title">החשבון אינו משויך לפירמה</div>
-                  <div className="ck-meta">{user.email} מחובר, אך אינו חבר בפירמה. פנו אל LALUM לצירוף החשבון.</div>
-                  <div className="ck-row"><button className="ck-btn" onClick={() => void signOut()}>התנתקות</button><Link className="ck-btn" to="/portal">לאזור האישי</Link></div></div>
+                <div className="ck-card"><div className="ck-title">{tx("החשבון אינו משויך לפירמה", "This account is not linked to a firm")}</div>
+                  <div className="ck-meta"><bdi>{user.email}</bdi> {tx("מחובר, אך אינו חבר בפירמה. פנו אל LALUM לצירוף החשבון.", "is signed in but is not a member of a firm. Contact LALUM to add the account.")}</div>
+                  <div className="ck-row"><button className="ck-btn" onClick={() => void signOut()}>{tx("התנתקות", "Sign out")}</button><Link className="ck-btn" to="/portal">{tx("לאזור האישי", "To the personal area")}</Link></div></div>
               ) : !user ? (
                 <form className="ck-card" onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {error && <div className="ck-err" aria-live="polite">{error}</div>}
-                  <label className="ck-label" htmlFor="p-email">דוא"ל</label>
+                  <label className="ck-label" htmlFor="p-email">{tx("דוא\"ל", "Email")}</label>
                   <input id="p-email" className="field" type="email" autoComplete="email" required dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} />
-                  <label className="ck-label" htmlFor="p-pass">סיסמה</label>
+                  <label className="ck-label" htmlFor="p-pass">{tx("סיסמה", "Password")}</label>
                   <input id="p-pass" className="field" type="password" autoComplete="current-password" required dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  <button className="ck-btn primary" disabled={busy}>{busy ? "נכנס..." : "כניסה"}</button>
+                  <button className="ck-btn primary" disabled={busy}>{busy ? tx("נכנס...", "Signing in...") : tx("כניסה", "Sign in")}</button>
                   <div className="ck-meta">
-                    <Link to="/login?mode=reset">שכחתם סיסמה?</Link>
+                    <Link to="/login?mode=reset">{tx("שכחתם סיסמה?", "Forgot your password?")}</Link>
                     {" · "}
-                    אין לכם גישה עדיין? <Link to="/book">תיאום שיחה עם LALUM</Link>
+                    {tx("אין לכם גישה עדיין?", "No access yet?")} <Link to="/book">{tx("תיאום שיחה עם LALUM", "Book a call with LALUM")}</Link>
                   </div>
                 </form>
               ) : null}
           </main>
           <aside className="partners-aside" aria-hidden="true">
             <Wordmark height={40} style={{ color: "var(--ink)" }} />
-            <p className="partners-tagline">נדל״ן והתחדשות עירונית, ובינה מלאכותית. שני תחומים, קו הכרעה אחד.</p>
+            <p className="partners-tagline">{tx("נדל״ן והתחדשות עירונית, ובינה מלאכותית. שני תחומים, קו הכרעה אחד.", "Real estate and urban renewal, and artificial intelligence. Two areas, one line of judgement.")}</p>
             <div className="partners-art"><PartnersArt /></div>
           </aside>
         </div>

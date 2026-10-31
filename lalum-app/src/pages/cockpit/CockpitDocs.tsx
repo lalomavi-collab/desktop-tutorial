@@ -1,16 +1,20 @@
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
 import { PageMeta } from "../../components/PageMeta";
+import { CkLangSwitch } from "../../components/cockpit/CkLangSwitch";
+import { useCkLang } from "../../lib/cockpit/ckLang";
 import "../../styles/cockpit.css";
 
-// Guide and legal drafts for the case cockpit. Public, Hebrew, noindex.
+// Guide and legal drafts for the case cockpit. Public, noindex. The documents are written in Hebrew only, so in English
+// the header speaks English and the document itself keeps reading in Hebrew, right to left.
 function DocFrame({ title, description, path, children }: { title: string; description: string; path: string; children: ReactNode }) {
+  const { lang, dir, tx } = useCkLang();
   return (
-    <div className="ck-root" dir="rtl" lang="he">
+    <div className="ck-root" dir={dir} lang={lang}>
       <PageMeta title={title} description={description} path={path} noindex />
       <div className="ck-shell">
-        <header className="ck-top"><h1 className="serif">{title}</h1><nav className="ck-nav" aria-label="ניווט"><Link to="/workspace">לקוקפיט</Link><Link to="/workspace/guide">מדריך</Link><Link to="/">לאתר</Link></nav></header>
-        <main className="ck-doc">{children}</main>
+        <header className="ck-top"><h1 className="serif" dir="rtl" lang="he">{title}</h1><div className="ck-top-tools"><nav className="ck-nav" aria-label={tx("ניווט", "Navigation")}><Link to="/workspace">{tx("לקוקפיט", "To the system")}</Link><Link to="/workspace/guide">{tx("מדריך", "Guide")}</Link><Link to="/">{tx("לאתר", "To the site")}</Link></nav><CkLangSwitch /></div></header>
+        <main className="ck-doc" dir="rtl" lang="he">{children}</main>
       </div>
     </div>
   );
