@@ -69,8 +69,52 @@
 .ck-entry .gate-foot b { color: var(--ink); }
 .ck-entry .gate-foot a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; margin-inline-start: 6px; white-space: nowrap; }
 
+/* Search, under the question: one field, a panel of matters under it while it has focus. */
+.ck-entry .gate-find { position: relative; max-inline-size: 560px; margin: 22px auto 0; text-align: start; }
+.ck-entry .gate-find-ic { position: absolute; inset-inline-start: 16px; inset-block-start: 50%; transform: translateY(-50%); color: var(--slate); pointer-events: none; }
+.ck-entry .gate-find input {
+  inline-size: 100%; block-size: 50px; padding-inline: 46px 16px; border-radius: 12px; font: inherit; font-size: 16px; color: var(--ink);
+  background: var(--card-solid, var(--card)); border: 1px solid var(--line-strong); box-shadow: 0 1px 2px rgba(15, 34, 54, .05);
+}
+.ck-entry .gate-find input::placeholder { color: var(--slate); }
+.ck-entry .gate-find input:focus-visible { outline: 3px solid var(--clay-soft); border-color: var(--clay); }
+.ck-entry .gate-find-pop {
+  position: absolute; inset-inline: 0; inset-block-start: calc(100% + 6px); z-index: 20; padding: 8px; border-radius: 14px;
+  background: var(--card-solid, var(--card)); border: 1px solid var(--line); box-shadow: 0 2px 6px rgba(15, 34, 54, .08), 0 16px 40px rgba(15, 34, 54, .14);
+}
+.ck-root[data-ck-theme="dark"].ck-entry .gate-find-pop { box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .9); }
+.ck-entry .gate-find-head { padding: 6px 10px 4px; font-size: 13px; font-weight: 700; color: var(--slate); }
+.ck-entry .gate-find-pop ul { list-style: none; margin: 0; padding: 0; }
+.ck-entry .gate-find-pop a { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+.ck-entry .gate-find-pop a:hover, .ck-entry .gate-find-pop a:focus-visible { background: var(--clay-tint); outline: none; }
+.ck-entry .gate-find-name { font-weight: 700; font-size: 15px; }
+.ck-entry .gate-find-meta { font-size: 13px; color: var(--slate); white-space: nowrap; }
+.ck-entry .gate-find-empty, .ck-entry .gate-find-note { padding: 6px 10px; font-size: 13px; color: var(--slate); }
+.ck-entry .gate-find-note { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; }
+
+/* The matters opened last: a row of small cards under the parts. */
+.ck-entry .gate-recent { margin-top: 36px; text-align: start; }
+.ck-entry .gate-recent-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.ck-entry .gate-recent h2 { margin: 0; font-size: 18px; font-weight: 800; color: var(--ink); font-family: inherit; }
+.ck-entry .gate-recent-top a { font-size: 14px; font-weight: 600; color: var(--clay); text-underline-offset: 3px; }
+.ck-root[data-ck-theme="dark"].ck-entry .gate-recent-top a { color: var(--ink); }
+.ck-entry .gate-recent ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.ck-entry .gate-rcard {
+  display: grid; grid-template-columns: auto 1fr; grid-template-areas: "ic name" "ic meta" "ic date"; column-gap: 12px; row-gap: 2px; align-items: center;
+  padding: 14px 16px; border-radius: 14px; text-decoration: none; color: var(--ink);
+  background: var(--card-solid, var(--card)); border: 1px solid var(--line);
+}
+.ck-entry .gate-rcard:hover { border-color: var(--line-strong); }
+.ck-entry .gate-rcard:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+.ck-entry .gate-rcard-ic { grid-area: ic; inline-size: 38px; block-size: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--clay-tint); color: var(--clay); align-self: start; }
+.ck-root[data-ck-theme="dark"].ck-entry .gate-rcard-ic { color: var(--ink); }
+.ck-entry .gate-rcard-name { grid-area: name; font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ck-entry .gate-rcard-meta { grid-area: meta; font-size: 13px; color: var(--slate); }
+.ck-entry .gate-rcard-date { grid-area: date; font-size: 13px; color: var(--slate); }
+
 @media (max-width: 960px) {
   .ck-entry .gate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .ck-entry .gate-recent ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 /* Phone: two columns of tiles, the name only, like the home screen of a phone. */
 @media (max-width: 600px) {
@@ -84,5 +128,11 @@
   .ck-entry .gate-title { font-size: 16px; margin: 0; }
   .ck-entry .gate-line, .ck-entry .gate-go { display: none; }
   .ck-entry .gate-sub { font-size: 15px; }
+  .ck-entry .gate-recent ul { gap: 10px; }
+  .ck-entry .gate-rcard { padding: 12px 14px; grid-template-columns: 1fr; grid-template-areas: "name" "meta" "date"; }
+  .ck-entry .gate-rcard-ic { display: none; }
+  .ck-entry .gate-rcard-date { display: none; }
+  /* Room for the quick add button under the last row. */
+  .ck-entry .gate-main { padding-bottom: 96px; }
 }
 @media (prefers-reduced-motion: reduce) { .ck-entry .gate-card { transition: none; } }

@@ -11,6 +11,7 @@ import { useCockpitAccess } from "../../lib/cockpit/shared";
 import { LOOKS, lookAttrs, useCkLook } from "../../lib/cockpit/useCkLook";
 import type { Membership } from "../../lib/cockpit/shared";
 import { MfaGate } from "./MfaGate";
+import { QuickAdd } from "../../components/cockpit/QuickAdd";
 import { supabase } from "../../lib/supabase";
 import { BookArt, CardArt2, ChartArt, CheckArt, FolderArt, GavelArt, HeadsetArt, ImportArt, InboxArt, ScalesArt, SearchArt, ShieldArt, TasksArt, TrashArt } from "../../components/cockpit/CockpitIllustrations";
 import "../../styles/cockpit.css";
@@ -198,6 +199,7 @@ export function CockpitFrame({
         <main ref={mainRef}>{body}</main>
       </div>
       {controlRoom && stripReady && <Suspense fallback={null}><ControlStrip onWall={path === "/workspace/control"} /></Suspense>}
+      {hasMember && !bookkeeper && <QuickAdd />}
     </div>
     </ClientNamesProvider>
   );
