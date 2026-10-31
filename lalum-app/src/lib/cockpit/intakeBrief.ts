@@ -23,7 +23,25 @@ export type Action = { kind: "go"; to: string } | { kind: "panel"; panel: Panel 
 export type Topic = "deadlines" | "drafting" | "checks" | "client";
 export interface Step { id: string; topic: Topic; title: string; when: string; action: Action }
 
-export const TOPICS: Array<[Topic, string]> = [["deadlines", "מועדים וסיכונים"], ["drafting", "ניסוח"], ["checks", "בדיקות ואימות"], ["client", "לקוח ותקשורת"]];
+/** The deep reading of the whole matter (edge function lalum-matter-brief). quote_ok is false when the quote was not found verbatim. */
+export interface Grounded { text: string; doc: number; quote: string; quote_ok: boolean }
+export interface MatterMap {
+  summary: string;
+  facts: Array<Grounded & { kind: "fact" | "claim"; side: string }>;
+  risks: Array<Grounded & { severity: "high" | "medium" | "low" }>;
+  gaps: Array<{ text: string; why: string }>;
+  timeline: Array<{ date: string; event: string; doc: number; quote: string; quote_ok: boolean }>;
+  questions: Question[];
+  truncated?: boolean;
+}
+
+/** The three questions that decide come first, then the matter's own questions from the deep reading, then the rest. */
+export function mergeQuestions(base: Question[], extra: Question[], max = MAX_QUESTIONS + 2): Question[] {
+  const seen = new Set<string>();
+  return [...base.slice(0, 3), ...extra.slice(0, 3), ...base.slice(3)].filter((q) => !seen.has(q.id) && seen.add(q.id)).slice(0, max);
+}
+
+export const TOPICS: Array<[Topic, string]> =[["deadlines", "מועדים וסיכונים"], ["drafting", "ניסוח"], ["checks", "בדיקות ואימות"], ["client", "לקוח ותקשורת"]];
 export const MAX_QUESTIONS = 6;
 export const MAX_PER_TOPIC = 3;
 const UNKNOWN: Option = { id: "unknown", label: "לא ידוע עדיין" };
@@ -143,7 +161,7 @@ export function questionsFor(input: BriefInput, map: BriefMap): Question[] {
 }
 
 /** Suggested next steps, grouped by topic, at most MAX_PER_TOPIC in each. Every step opens a screen or panel that already exists. */
-export function stepsFor(input: BriefInput, map: BriefMap, a: Answers, matterId: string): Step[] {
+export function stepsFor(input: BriefInput, map: BriefMap, a: Answers, matterId: string, gaps = 0): Step[] {
   const s: Step[] = [];
   const add = (topic: Topic, id: string, title: string, when: string, action: Action) => { if (!s.some((x) => x.id === id) && s.filter((x) => x.topic === topic).length < MAX_PER_TOPIC) s.push({ id, topic, title, when, action }); };
   const m360: Action = { kind: "go", to: `/workspace/matter-360?matter=${matterId}` };
@@ -164,7 +182,8 @@ export function stepsFor(input: BriefInput, map: BriefMap, a: Answers, matterId:
   if (a.dd === "partial" || a.dd === "none") add("checks", "dd", "משימה: להשלים בדיקת נאותות", "ההצהרות בהסכם צריכות לשקף את מה שנבדק בפועל.", { kind: "go", to: "/workspace/tasks" });
 
   const open = ["goal", "side"].some((k) => !a[k] || a[k] === "unknown") || a.stage === "dispute";
-  if (open) add("client", "meet", "פגישה עם הלקוח", "נשארו שאלות שרק הלקוח יכול לענות עליהן.", { kind: "go", to: "/workspace/scheduling" });
+  if (gaps) add("client", "meet", "פגישה עם הלקוח", `הניתוח מצא ${gaps} פערים שרק הלקוח יכול להשלים.`, { kind: "go", to: "/workspace/scheduling" });
+  else if (open) add("client", "meet", "פגישה עם הלקוח", "נשארו שאלות שרק הלקוח יכול לענות עליהן.", { kind: "go", to: "/workspace/scheduling" });
   add("client", "task", "משימה לצוות", "השתמשו כדי לחלק את העבודה בתיק עם אחראי ומועד.", { kind: "go", to: "/workspace/tasks" });
   add("client", "copy", "העתקת סיכום הקליטה", "השתמשו כדי להדביק את התמונה במייל או בהערה לתיק.", { kind: "copy" });
   return s;

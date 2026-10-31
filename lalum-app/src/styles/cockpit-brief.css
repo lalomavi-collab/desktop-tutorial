@@ -30,3 +30,13 @@
 .ck-brief-topic small { font-size: 13px; color: var(--slate); line-height: 1.5; }
 .ck-brief-topic .ck-btn { flex: none; }
 .ck-brief-foot { border-top: 1px solid var(--line); padding-top: 10px; }
+/* Matter map (deep reading): one sub-topic at a time, every point with its quote and its document under it. */
+.ck-brief-summary { margin: 0; font-size: 15px; line-height: 1.7; color: var(--ink); }
+.ck-brief-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ck-brief-list li { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; font-size: 14.5px; line-height: 1.6; }
+.ck-brief-list li > .ck-badge { align-self: flex-start; }
+.ck-brief-tl li { border-inline-start: 3px solid var(--clay-soft); }
+.ck-brief-src { display: flex; flex-direction: column; gap: 2px; }
+.ck-brief-src .ck-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ck-brief-quote { font-size: 13.5px; color: var(--slate); font-style: normal; border-inline-start: 2px solid var(--line-strong); padding-inline-start: 8px; }
+.ck-brief-quote::before, .ck-brief-quote::after { content: '"'; }
