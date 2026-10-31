@@ -78,6 +78,10 @@ The wordmark is artwork. Use `src/components/Wordmark.tsx` inside the app. It in
 
 By the owner's request (30.10.2026, "the look of Clio's apps, a quality professional app"), the cockpit offers a navy look beside the beige and the dark ones, not instead of them; the three swatches at the top of the rail switch between them, beige stays the default, and the choice is remembered per browser. The navy look is a skin: `src/styles/cockpit-navy.css`, applied as `data-ck-skin="navy"` on `.ck-root` over the light (mint) theme. Cool grey ground, flat white cards with a hairline, one deep navy (`#14324f`) for the rail, the primary action and selection, Heebo at every level, 16px cards and 10px controls. Charts move from green to a navy and blue ramp; red stays for expenses and risk, amber for caution. The drawings keep their shapes, recoloured by CSS. The dark theme and the public site are unchanged. Contrast of the skin's tokens is checked by `npm run cockpit-text-check`.
 
+## The entry gate
+
+By the owner's request (31.10.2026, after Clio's "select the application" screen), the first screen after a partner or admin signs in is `/workspace/start`: the wordmark large, one question, and six cards that open the parts of the system (matters, finance, dashboard, clients, diary, LEX). Each card points at a screen that already exists, carries one soft tint of its own and one of the cockpit drawings, and reads like an app icon; on a phone the cards become two columns of tiles with the name only. The card opened last is offered first. The bookkeeper skips the gate and lands in finance; a client goes to the portal. The rail logo leads back to the gate. It follows the three looks through the same tokens (`src/styles/cockpit-gate.css`).
+
 ## Not this system: documents and posts
 
 Documents (docx, html, pdf), social images and decks use the Prestige palette from the root `CLAUDE.md`: Obsidian `#1B1B1B`, Gold `#D4AF37`, Cream `#FFFDD0`, Burgundy `#800020`. That palette is not used in the app.
