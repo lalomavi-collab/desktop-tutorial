@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import { CONFLICT, fmt, MATTER_STATUS, PRACTICE, RESPONSE, ROLE } from "../../lib/cockpit/shared";
+import { ROLE } from "../../lib/cockpit/shared";
 import { CockpitFrame } from "./CockpitFrame";
 import { trashMatter } from "../../lib/cockpit/bin";
 import { rememberMatter } from "../../lib/cockpit/recentMatters";
-import { runBulk, setAll, toggle } from "../../lib/cockpit/bulk";
+import { runBulk } from "../../lib/cockpit/bulk";
 import { useClientNames } from "../../components/cockpit/ClientNames";
 import { CardArt, EmptyArt, HeroArt } from "../../components/cockpit/CockpitArt";
 import { Wordmark } from "../../components/Wordmark";
 import { MatterInsights } from "../../components/cockpit/CockpitInsights";
+import { MatterTable } from "../../components/cockpit/MatterTable";
 import { IntakeForm } from "./Intake";
 import { MatterCockpit } from "./MatterCockpit";
 
@@ -50,12 +51,11 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
     let live = true;
     (async () => {
       if (!supabase) return;
-      const { data } = await supabase.from("lalum_v_admin_matters").select("*").order("dispatched_at", { ascending: false }).limit(100);
+      const { data } = await supabase.from("lalum_v_admin_matters").select("*").order("dispatched_at", { ascending: false }).limit(500);
       if (live) setRows((data as Row[] | null) ?? []);
     })();
     return () => { live = false; };
   }, []);
-  const risk = (r: string | null) => (r === "HIGH_RISK" ? <span className="ck-badge red dot">סיכון גבוה</span> : r === "CAUTION" ? <span className="ck-badge yellow dot">זהירות</span> : r === "NOT_ASSESSED" ? <span className="ck-badge">לא נבדק</span> : <span className="ck-badge green dot">תקין</span>);
   return (
     <div className="ck-stack">
       <div className="ck-card ck-hero"><div className="ck-hero-art"><HeroArt /></div><div className="ck-row" style={{ justifyContent: "space-between", flex: 1 }}><div><div className="ck-hero-title">{/^lalum$/i.test(firmName.trim()) ? <Wordmark height={28} label={firmName} /> : firmName}</div><div className="ck-meta">{userName} · {ROLE[role] ?? role}</div></div><span className="ck-pii" title="מידע מזהה הוסתר לפני כל עיבוד חיצוני">🔒 מידע מזהה מוסתר ומאובטח</span></div></div>
@@ -82,28 +82,7 @@ function MatterList({ firmId, firmName, userName, role, platformAdmin }: { firmI
           <button className="ck-btn" onClick={() => setSel(new Set())}>ניקוי סימון</button>
         </div>)}
       {rows == null ? <div className="ck-meta">טוען...</div> : rows.length === 0 ? <div className="ck-card ck-empty"><EmptyArt /><div className="ck-meta">אין תיקים עדיין. פתחו תיק חדש כדי להתחיל.</div></div> : (
-        <>
-        <div className="ck-mlist" role="list" aria-label="רשימת התיקים">
-          {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
-            <details key={x.matter_id} role="listitem" className={`ck-mrow${x.sla_breached ? " breach" : ""}`}>
-              <summary><span className="ck-mrow-main"><span className="ck-mrow-title">{name(x)}</span><span className="ck-mrow-sub"><span className={`ck-badge ${t}`}>{l}</span><span className="ck-meta">{MATTER_STATUS[x.matter_status]}</span></span></span></summary>
-              <div className="ck-mrow-body">
-                <dl><dt>תחום</dt><dd>{PRACTICE[x.practice_area]}</dd><dt>סיכון</dt><dd>{risk(x.risk_level)}</dd><dt>תגובת שותף</dt><dd>{RESPONSE[x.partner_response]}</dd><dt>נקלט</dt><dd>{fmt(x.dispatched_at)}</dd></dl>
-                {isPartner && <label className="ck-mrow-pick"><input type="checkbox" checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} />&nbsp;סימון לפעולה על כמה תיקים</label>}
-                <div className="ck-row"><Link className="ck-btn primary" to={`/workspace?matter=${x.matter_id}`}>פתיחת התיק</Link>{isPartner && <button className="ck-btn" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button>}</div>
-              </div>
-            </details>); })}
-        </div>
-        <div className="ck-table-wrap ck-has-mlist"><table className="ck-table"><thead><tr>{isPartner && <th><input type="checkbox" aria-label="סימון כל התיקים" checked={sel.size > 0 && sel.size === rows.length} onChange={(e) => setSel(setAll(rows.map((x) => x.matter_id), e.target.checked))} /></th>}<th>תיק</th><th>תחום</th><th>סטטוס</th><th>ניגוד עניינים</th><th>סיכון</th><th>תגובת שותף</th><th>נקלט</th>{isPartner && <th>סל</th>}</tr></thead><tbody>
-          {rows.map((x) => { const [t, l] = CONFLICT[x.conflict_status] ?? ["yellow", x.conflict_status]; return (
-            <tr key={x.matter_id} className={x.sla_breached ? "breach" : ""}>
-              {isPartner && <td><input type="checkbox" aria-label={`סימון ${name(x)}`} checked={sel.has(x.matter_id)} onChange={() => setSel((s0) => toggle(s0, x.matter_id))} /></td>}
-              <td><Link to={`/workspace?matter=${x.matter_id}`} style={{ textDecoration: "underline" }}>{name(x)}</Link></td>
-              <td>{PRACTICE[x.practice_area]}</td><td>{MATTER_STATUS[x.matter_status]}</td><td><span className={`ck-badge ${t}`}>{l}</span></td><td>{risk(x.risk_level)}</td><td>{RESPONSE[x.partner_response]}</td><td>{fmt(x.dispatched_at)}</td>
-              {isPartner && <td><button className="ck-btn sm quiet" aria-label={`העברת ${name(x)} לסל המיחזור`} onClick={() => { setTrashing(x); setReason(""); setTrashMsg(""); }}>התיק לסל</button></td>}
-            </tr>); })}
-        </tbody></table></div>
-        </>
+        <MatterTable rows={rows} isPartner={isPartner} sel={sel} setSel={setSel} onTrash={(x) => { setTrashing(x); setReason(""); setTrashMsg(""); }} />
       )}
       {bulkOpen && (
         <aside className="ck-drawer" aria-label="העברת תיקים מסומנים לסל המיחזור">
