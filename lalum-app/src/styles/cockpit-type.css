@@ -81,7 +81,7 @@
 .ck-ditem .ck-docacts { padding-inline: 12px; }
 .ck-ditem .ck-docacts .ck-row { gap: 8px; }
 
-.ck-tools { display: flex; flex-direction: column; border: 1px solid var(--line-strong); border-radius: 16px; overflow: hidden; background: var(--card); }
+.ck-tools { display: flex; flex-direction: column; border: 1px solid var(--line-strong); border-radius: 16px; overflow: hidden; background: var(--card); flex-shrink: 0; }
 .ck-tools > details + details, .ck-tools > details + div, .ck-tools > div + details { border-top: 1px solid var(--line); }
 .ck-root[data-ck-theme] .ck-tools > details > summary.ck-btn {
   width: 100%; justify-content: space-between; align-items: center; gap: 10px; text-align: start;
